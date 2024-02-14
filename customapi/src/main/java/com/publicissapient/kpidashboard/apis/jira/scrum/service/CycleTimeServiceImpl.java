@@ -83,7 +83,6 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
         log.info("LEAD-TIME -> requestTrackerId[{}]", kpiRequest.getRequestTrackerId());
         DataCount dataCount = new DataCount();
         projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest, dataCount);
-
         log.debug("[LEAD-TIME-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
                 kpiRequest.getRequestTrackerId(), projectNode);
         return kpiElement;

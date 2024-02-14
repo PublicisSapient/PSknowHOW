@@ -18,21 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -41,19 +30,17 @@ import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.jira.service.NonTrendKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
-import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 /**
- * All Jira NonTrend KPIs service have to implement this class {@link NonTrendKPIService}
+ * All Jira NonTrend KPIs service have to implement this class
+ * {@link NonTrendKPIService}
  *
  * @author purgupta2
  */
@@ -93,24 +80,6 @@ public abstract class JiraIterationKPIService implements NonTrendKPIService {
 		iterationKpiModalVal.setDelay(iterationStatus.getDelay());
 		modalValues.add(iterationKpiModalVal);
 		overAllmodalValues.add(iterationKpiModalVal);
-	}
-
-	public void populateIterationDataForTestWithoutStory(List<IterationKpiModalValue> overAllModalValues,
-			TestCaseDetails testCaseDetails) {
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(testCaseDetails.getNumber());
-		iterationKpiModalValue.setDescription(testCaseDetails.getName());
-		overAllModalValues.add(iterationKpiModalValue);
-	}
-
-	public void populateIterationDataForDefectWithoutStory(List<IterationKpiModalValue> overAllModalValues,
-			JiraIssue jiraIssue) {
-
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
-		overAllModalValues.add(iterationKpiModalValue);
 	}
 
 	/**

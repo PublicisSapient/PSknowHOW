@@ -294,24 +294,25 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService
     private Double getAverageSprintCapacity(Node leafNode, List<SprintDetails> sprintDetails,
                                             List<JiraIssue> allJiraIssue, FieldMapping fieldMapping) {
         int sprintCountForBackLogStrength = customApiConfig.getSprintCountForBackLogStrength();
-
-        List<SprintDetails> sprintForStregthCalculation = sprintDetails.stream()
-                .filter(sprintDetail -> null != sprintDetail.getEndDate()
-                        && DateTime.parse(sprintDetail.getEndDate()).isBefore(DateTime.now()))
-                .limit(sprintCountForBackLogStrength).toList();
-
-        Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
-        Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap = new HashMap<>();
-        getSprintForProject(allJiraIssue, sprintDetails, currentSprintLeafVelocityMap);
         AtomicDouble storyPoint = new AtomicDouble();
-        sprintForStregthCalculation.forEach(sprintDetail -> {
-            Pair<String, String> currentNodeIdentifier = Pair
-                    .of(leafNode.getProjectFilter().getBasicProjectConfigId().toString(), sprintDetail.getSprintID());
-            double sprintVelocityForCurrentLeaf = calculateSprintVelocityValue(currentSprintLeafVelocityMap,
-                    currentNodeIdentifier, sprintWiseIssues, fieldMapping);
-            storyPoint.set(storyPoint.doubleValue() + sprintVelocityForCurrentLeaf);
-        });
-        log.debug("Velocity for {} sprints is {}", sprintCountForBackLogStrength, storyPoint.get());
+        if (!sprintDetails.isEmpty()) {
+            List<SprintDetails> sprintForStregthCalculation = sprintDetails.stream()
+                    .filter(sprintDetail -> null != sprintDetail.getEndDate()
+                            && DateTime.parse(sprintDetail.getEndDate()).isBefore(DateTime.now()))
+                    .limit(sprintCountForBackLogStrength).toList();
+
+            Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
+            Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap = new HashMap<>();
+            getSprintForProject(allJiraIssue, sprintDetails, currentSprintLeafVelocityMap);
+            sprintForStregthCalculation.forEach(sprintDetail -> {
+                Pair<String, String> currentNodeIdentifier = Pair
+                        .of(leafNode.getProjectFilter().getBasicProjectConfigId().toString(), sprintDetail.getSprintID());
+                double sprintVelocityForCurrentLeaf = calculateSprintVelocityValue(currentSprintLeafVelocityMap,
+                        currentNodeIdentifier, sprintWiseIssues, fieldMapping);
+                storyPoint.set(storyPoint.doubleValue() + sprintVelocityForCurrentLeaf);
+            });
+            log.debug("Velocity for {} sprints is {}", sprintCountForBackLogStrength, storyPoint.get());
+        }
         return storyPoint.get() / sprintCountForBackLogStrength;
     }
 

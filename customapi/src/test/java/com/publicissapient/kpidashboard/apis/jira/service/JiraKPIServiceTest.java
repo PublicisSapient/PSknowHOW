@@ -18,14 +18,14 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import static org.mockito.Mockito.when;
+import static org.testng.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,13 +34,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertNotNull;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
 /**
  * @author anisingh4
@@ -48,116 +49,116 @@ import static org.testng.Assert.assertNotNull;
 @ExtendWith(SpringExtension.class)
 public class JiraKPIServiceTest {
 
-    @InjectMocks
-    JiraKpiServiceTestImpl jiraKPIService;
+	@InjectMocks
+	JiraKpiServiceTestImpl jiraKPIService;
 
-    @Mock
-    private CustomApiConfig customApiConfig;
+	@Mock
+	private CustomApiConfig customApiConfig;
 
-    private Map<String, String> aggregationCriteriaMap;
-    @Mock
-    private JiraServiceR jiraService;
+	private Map<String, String> aggregationCriteriaMap;
+	@Mock
+	private JiraServiceR jiraService;
 
-    private static List<JiraIssueCustomHistory> getJiraIssueCustomHistories() {
-        JiraIssueCustomHistory issueCustomHistory = new JiraIssueCustomHistory();
-        issueCustomHistory.setStoryID("DTS-123");
-        List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
-        jiraIssueCustomHistories.add(issueCustomHistory);
-        return jiraIssueCustomHistories;
-    }
+	private static List<JiraIssueCustomHistory> getJiraIssueCustomHistories() {
+		JiraIssueCustomHistory issueCustomHistory = new JiraIssueCustomHistory();
+		issueCustomHistory.setStoryID("DTS-123");
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+		jiraIssueCustomHistories.add(issueCustomHistory);
+		return jiraIssueCustomHistories;
+	}
 
-    private static List<JiraIssue> getJiraIssues() {
-        JiraIssue jiraIssue = new JiraIssue();
-        jiraIssue.setNumber("123");
-        List<JiraIssue> jiraIssues = new ArrayList<>();
-        jiraIssues.add(jiraIssue);
-        return jiraIssues;
-    }
+	private static List<JiraIssue> getJiraIssues() {
+		JiraIssue jiraIssue = new JiraIssue();
+		jiraIssue.setNumber("123");
+		List<JiraIssue> jiraIssues = new ArrayList<>();
+		jiraIssues.add(jiraIssue);
+		return jiraIssues;
+	}
 
-    @Before
-    public void init() {
-        MockitoAnnotations.openMocks(this);
+	@Before
+	public void init() {
+		MockitoAnnotations.openMocks(this);
 
-        aggregationCriteriaMap = new HashMap<>();
-        aggregationCriteriaMap.put("kpi1", Constant.PERCENTILE);
-        aggregationCriteriaMap.put("kpi2", Constant.MEDIAN);
-        aggregationCriteriaMap.put("kpi3", Constant.AVERAGE);
-        aggregationCriteriaMap.put("kpi4", Constant.SUM);
-    }
+		aggregationCriteriaMap = new HashMap<>();
+		aggregationCriteriaMap.put("kpi1", Constant.PERCENTILE);
+		aggregationCriteriaMap.put("kpi2", Constant.MEDIAN);
+		aggregationCriteriaMap.put("kpi3", Constant.AVERAGE);
+		aggregationCriteriaMap.put("kpi4", Constant.SUM);
+	}
 
-    private List<Map<String, Long>> createAggregationInputData1() {
-        List<Map<String, Long>> aggregatedValueList = new ArrayList<>();
-        Map<String, Long> aggregatedValuesMap1 = new HashMap<>();
-        aggregatedValuesMap1.put("Bug", 1L);
-        Map<String, Long> aggregatedValuesMap2 = new HashMap<>();
-        aggregatedValuesMap2.put("Bug", 4L);
-        Map<String, Long> aggregatedValuesMap3 = new HashMap<>();
-        aggregatedValuesMap3.put("Bug", 3L);
-        Map<String, Long> aggregatedValuesMap4 = new HashMap<>();
-        aggregatedValuesMap4.put("Bug", 0L);
-        Map<String, Long> aggregatedValuesMap5 = new HashMap<>();
-        aggregatedValuesMap5.put("Bug", 2L);
-        Map<String, Long> aggregatedValuesMap6 = new HashMap<>();
-        aggregatedValuesMap5.put("Bug", 6L);
+	private List<Map<String, Long>> createAggregationInputData1() {
+		List<Map<String, Long>> aggregatedValueList = new ArrayList<>();
+		Map<String, Long> aggregatedValuesMap1 = new HashMap<>();
+		aggregatedValuesMap1.put("Bug", 1L);
+		Map<String, Long> aggregatedValuesMap2 = new HashMap<>();
+		aggregatedValuesMap2.put("Bug", 4L);
+		Map<String, Long> aggregatedValuesMap3 = new HashMap<>();
+		aggregatedValuesMap3.put("Bug", 3L);
+		Map<String, Long> aggregatedValuesMap4 = new HashMap<>();
+		aggregatedValuesMap4.put("Bug", 0L);
+		Map<String, Long> aggregatedValuesMap5 = new HashMap<>();
+		aggregatedValuesMap5.put("Bug", 2L);
+		Map<String, Long> aggregatedValuesMap6 = new HashMap<>();
+		aggregatedValuesMap5.put("Bug", 6L);
 
-        aggregatedValueList.add(aggregatedValuesMap1);
-        aggregatedValueList.add(aggregatedValuesMap2);
-        aggregatedValueList.add(aggregatedValuesMap3);
-        aggregatedValueList.add(aggregatedValuesMap4);
-        aggregatedValueList.add(aggregatedValuesMap5);
-        aggregatedValueList.add(aggregatedValuesMap6);
-        return aggregatedValueList;
-    }
+		aggregatedValueList.add(aggregatedValuesMap1);
+		aggregatedValueList.add(aggregatedValuesMap2);
+		aggregatedValueList.add(aggregatedValuesMap3);
+		aggregatedValueList.add(aggregatedValuesMap4);
+		aggregatedValueList.add(aggregatedValuesMap5);
+		aggregatedValueList.add(aggregatedValuesMap6);
+		return aggregatedValueList;
+	}
 
-    @Test
-    public void testGetJiraIssuesFromBaseClass() {
-        List<JiraIssue> jiraIssues = getJiraIssues();
-        when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
-        assertNotNull(jiraKPIService.getJiraIssuesFromBaseClass(List.of("123")));
-    }
+	@Test
+	public void testGetJiraIssuesFromBaseClass() {
+		List<JiraIssue> jiraIssues = getJiraIssues();
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
+		assertNotNull(jiraKPIService.getJiraIssuesFromBaseClass(List.of("123")));
+	}
 
-    @Test
-    public void testGetJiraIssuesCustomHistoryFromBaseClass() {
-        List<JiraIssueCustomHistory> jiraIssueCustomHistories = getJiraIssueCustomHistories();
-        when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistories);
-        assertNotNull(jiraKPIService.getJiraIssuesCustomHistoryFromBaseClass(List.of("DTS-123")));
-    }
+	@Test
+	public void testGetJiraIssuesCustomHistoryFromBaseClass() {
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = getJiraIssueCustomHistories();
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistories);
+		assertNotNull(jiraKPIService.getJiraIssuesCustomHistoryFromBaseClass(List.of("DTS-123")));
+	}
 
-    @Test
-    public void testGetJiraIssuesCustomHistoryFromBaseClass_WithNoParam() {
-        List<JiraIssueCustomHistory> jiraIssueCustomHistories = getJiraIssueCustomHistories();
-        when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistories);
-        assertNotNull(jiraKPIService.getJiraIssuesCustomHistoryFromBaseClass());
-    }
+	@Test
+	public void testGetJiraIssuesCustomHistoryFromBaseClass_WithNoParam() {
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = getJiraIssueCustomHistories();
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistories);
+		assertNotNull(jiraKPIService.getJiraIssuesCustomHistoryFromBaseClass());
+	}
 
-    @Test
-    public void testCalcWeekDays() {
-        assertNotNull(jiraKPIService.getLastNMonth(10));
-    }
+	@Test
+	public void testCalcWeekDays() {
+		assertNotNull(jiraKPIService.getLastNMonth(10));
+	}
 
-    public static class JiraKpiServiceTestImpl extends JiraKPIService {
+	public static class JiraKpiServiceTestImpl extends JiraKPIService {
 
-        @Override
-        public String getQualifierType() {
-            return null;
-        }
+		@Override
+		public String getQualifierType() {
+			return null;
+		}
 
-        @Override
-        public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-                                     TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-            return null;
-        }
+		@Override
+		public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+				TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+			return null;
+		}
 
-        @Override
-        public Object calculateKPIMetrics(Object o) {
-            return null;
-        }
+		@Override
+		public Object calculateKPIMetrics(Object o) {
+			return null;
+		}
 
-        @Override
-        public Object fetchKPIDataFromDb(List leafNodeList, String startDate, String endDate, KpiRequest kpiRequest) {
-            return null;
-        }
+		@Override
+		public Object fetchKPIDataFromDb(List leafNodeList, String startDate, String endDate, KpiRequest kpiRequest) {
+			return null;
+		}
 
-    }
+	}
 
 }

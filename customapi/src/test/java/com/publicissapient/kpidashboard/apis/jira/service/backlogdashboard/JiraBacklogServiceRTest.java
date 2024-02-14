@@ -14,6 +14,33 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.bson.types.ObjectId;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -37,258 +64,234 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import org.bson.types.ObjectId;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JiraBacklogServiceRTest {
-    public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-    public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-    @Mock
-    KpiHelperService kpiHelperService;
-    @Mock
-    FilterHelperService filterHelperService;
-    List<KpiElement> mockKpiElementList = new ArrayList<>();
-    @InjectMocks
-    private JiraBacklogServiceR jiraServiceR;
-    @Mock
-    private CacheService cacheService;
-    @Mock
-    private FlowLoadServiceImpl flowLoadService;
-    @SuppressWarnings("rawtypes")
-    @Mock
-    private List<JiraBacklogKPIService> services;
-    private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-    private String[] projectKey;
-    private List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
-    private KpiElement ibKpiElement;
-    private Map<String, JiraBacklogKPIService> jiraServiceCache = new HashMap<>();
-    @Mock
-    private JiraNonTrendKPIServiceFactory jiraKPIServiceFactory;
-    @Mock
-    private UserAuthorizedProjectsService authorizedProjectsService;
-    @Mock
-    SprintRepository sprintRepository;
-    @Mock
-    JiraIssueRepository jiraIssueRepository;
-    @Mock
-    JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-    @Mock
-    ConfigHelperService configHelperService;
-    @Mock
-    private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
-    @Mock
-    private FlowLoadServiceImpl service;
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	@Mock
+	KpiHelperService kpiHelperService;
+	@Mock
+	FilterHelperService filterHelperService;
+	List<KpiElement> mockKpiElementList = new ArrayList<>();
+	@Mock
+	SprintRepository sprintRepository;
+	@Mock
+	JiraIssueRepository jiraIssueRepository;
+	@Mock
+	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Mock
+	ConfigHelperService configHelperService;
+	@InjectMocks
+	private JiraBacklogServiceR jiraServiceR;
+	@Mock
+	private CacheService cacheService;
+	@Mock
+	private FlowLoadServiceImpl flowLoadService;
+	@SuppressWarnings("rawtypes")
+	@Mock
+	private List<JiraBacklogKPIService> services;
+	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private String[] projectKey;
+	private List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
+	private KpiElement ibKpiElement;
+	private Map<String, JiraBacklogKPIService> jiraServiceCache = new HashMap<>();
+	@Mock
+	private JiraNonTrendKPIServiceFactory jiraKPIServiceFactory;
+	@Mock
+	private UserAuthorizedProjectsService authorizedProjectsService;
+	@Mock
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+	@Mock
+	private FlowLoadServiceImpl service;
 
-    @Before
-    public void setup() throws ApplicationException {
-        MockitoAnnotations.openMocks(this);
-        List<NonTrendKPIService> mockServices = Arrays.asList(service);
-        JiraNonTrendKPIServiceFactory serviceFactory = JiraNonTrendKPIServiceFactory.builder().services(mockServices).build();
-        doReturn(KPICode.FLOW_LOAD.name()).when(service).getQualifierType();
-        doReturn(new KpiElement()).when(service).getKpiData(any(), any(), any());
-        serviceFactory.initMyServiceCache();
+	@Before
+	public void setup() throws ApplicationException {
+		MockitoAnnotations.openMocks(this);
+		List<NonTrendKPIService> mockServices = Arrays.asList(service);
+		JiraNonTrendKPIServiceFactory serviceFactory = JiraNonTrendKPIServiceFactory.builder().services(mockServices)
+				.build();
+		doReturn(KPICode.FLOW_LOAD.name()).when(service).getQualifierType();
+		doReturn(new KpiElement()).when(service).getKpiData(any(), any(), any());
+		serviceFactory.initMyServiceCache();
 
-        AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-                .newInstance("/json/default/account_hierarchy_filter_data.json");
-        accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
-        HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
-        hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
+		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
+				.newInstance("/json/default/account_hierarchy_filter_data.json");
+		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
+		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
+		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
 
-        ProjectBasicConfig projectConfig = new ProjectBasicConfig();
-        projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
-        projectConfig.setProjectName("Scrum Project");
-        projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
+		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectConfig.setProjectName("Scrum Project");
+		projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 
-        FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
-                .newInstance("/json/default/scrum_project_field_mappings.json");
-        FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-        fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+				.newInstance("/json/default/scrum_project_field_mappings.json");
+		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
-        when(filterHelperService.getHierarachyLevelId(4, "project", false)).thenReturn("project");
+		when(filterHelperService.getHierarachyLevelId(4, "project", false)).thenReturn("project");
 
-    }
+	}
 
-    @Test(expected = Exception.class)
-    public void testProcessException() throws Exception {
+	@Test(expected = Exception.class)
+	public void testProcessException() throws Exception {
 
-        KpiRequest kpiRequest = createKpiRequest(6);
-        kpiRequest.setSprintIncluded(null);
+		KpiRequest kpiRequest = createKpiRequest(6);
+		kpiRequest.setSprintIncluded(null);
 
-        jiraServiceR.process(kpiRequest);
+		jiraServiceR.process(kpiRequest);
 
-    }
+	}
 
-    @Test
-    public void TestProcess_pickFromCache() throws Exception {
+	@Test
+	public void TestProcess_pickFromCache() throws Exception {
 
-        KpiRequest kpiRequest = createKpiRequest(5);
-        when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-        when(kpiHelperService.getAuthorizedFilteredList(any(),any())).thenReturn(accountHierarchyDataList);
-        when(kpiHelperService.getProjectKeyCache(any(),any())).thenReturn(kpiRequest.getIds());
-        when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
-        when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
-                .thenReturn(new ArrayList<KpiElement>());
-        List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
+		KpiRequest kpiRequest = createKpiRequest(5);
+		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
+		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
+				.thenReturn(new ArrayList<KpiElement>());
+		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
-        assertEquals(0, resultList.size());
-    }
+		assertEquals(0, resultList.size());
+	}
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void TestProcessWithApplicationException() throws Exception {
+	@SuppressWarnings("unchecked")
+	@Test
+	public void TestProcessWithApplicationException() throws Exception {
 
-        KpiRequest kpiRequest = createKpiRequest(4);
+		KpiRequest kpiRequest = createKpiRequest(4);
 
-        @SuppressWarnings("rawtypes")
-        JiraBacklogKPIService jiraKPIService = flowLoadService;
-        jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
+		@SuppressWarnings("rawtypes")
+		JiraBacklogKPIService jiraKPIService = flowLoadService;
+		jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
 
-        try (MockedStatic<JiraNonTrendKPIServiceFactory> utilities = Mockito.mockStatic(JiraNonTrendKPIServiceFactory.class)) {
-            utilities.when((MockedStatic.Verification) JiraNonTrendKPIServiceFactory.getJiraKPIService(KPICode.FLOW_LOAD.name()))
-                    .thenReturn(jiraKPIService);
-        }
-        doThrow(ApplicationException.class).when(service).getKpiData(any(), any(), any());
-        Map<String, Integer> map = new HashMap<>();
-        Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-                .collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
-        hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
-        when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
-        when(cacheService.getFromApplicationCache(any(),any(),any(),any())).thenReturn(null);
-        when(filterHelperService.getFilteredBuilds(any(),any())).thenReturn(accountHierarchyDataList);
-        when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
-        when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-        when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream().filter(s->s.getLeafNodeId().equalsIgnoreCase("Scrum Project_6335363749794a18e8a4479b")).collect(Collectors.toList()));
-        when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-        when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
-        when(kpiHelperService.getAuthorizedFilteredList(any(),any())).thenReturn(accountHierarchyDataList);
-        when(kpiHelperService.getProjectKeyCache(any(),any())).thenReturn(kpiRequest.getIds());
-        List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
+		try (MockedStatic<JiraNonTrendKPIServiceFactory> utilities = Mockito
+				.mockStatic(JiraNonTrendKPIServiceFactory.class)) {
+			utilities.when((MockedStatic.Verification) JiraNonTrendKPIServiceFactory
+					.getJiraKPIService(KPICode.FLOW_LOAD.name())).thenReturn(jiraKPIService);
+		}
+		doThrow(ApplicationException.class).when(service).getKpiData(any(), any(), any());
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
+		when(filterHelperService.getFilteredBuilds(any(), any())).thenReturn(accountHierarchyDataList);
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
+		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
+		when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream()
+				.filter(s -> s.getLeafNodeId().equalsIgnoreCase("Scrum Project_6335363749794a18e8a4479b"))
+				.collect(Collectors.toList()));
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
+		when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
+		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
-        resultList.forEach(k -> {
+		resultList.forEach(k -> {
 
-            KPICode kpi = KPICode.getKPI(k.getKpiId());
+			KPICode kpi = KPICode.getKPI(k.getKpiId());
 
-            switch (kpi) {
+			switch (kpi) {
 
-                case FLOW_LOAD:
-                    assertThat("Kpi Name :", k.getKpiName(), equalTo("FLOW_LOAD"));
-                    break;
+			case FLOW_LOAD:
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("FLOW_LOAD"));
+				break;
 
-                default:
-                    break;
-            }
+			default:
+				break;
+			}
 
-        });
+		});
 
-    }
+	}
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void TestProcess2() throws Exception {
+	@SuppressWarnings("unchecked")
+	@Test
+	public void TestProcess2() throws Exception {
 
-        KpiRequest kpiRequest = createKpiRequest(4);
+		KpiRequest kpiRequest = createKpiRequest(4);
 
-        @SuppressWarnings("rawtypes")
-        JiraBacklogKPIService jiraKPIService = flowLoadService;
-        jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
+		@SuppressWarnings("rawtypes")
+		JiraBacklogKPIService jiraKPIService = flowLoadService;
+		jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
 
-        try (MockedStatic<JiraNonTrendKPIServiceFactory> utilities = Mockito.mockStatic(JiraNonTrendKPIServiceFactory.class)) {
-            utilities.when((MockedStatic.Verification) JiraNonTrendKPIServiceFactory.getJiraKPIService(KPICode.FLOW_LOAD.name()))
-                    .thenReturn(jiraKPIService);
-        }
+		try (MockedStatic<JiraNonTrendKPIServiceFactory> utilities = Mockito
+				.mockStatic(JiraNonTrendKPIServiceFactory.class)) {
+			utilities.when((MockedStatic.Verification) JiraNonTrendKPIServiceFactory
+					.getJiraKPIService(KPICode.FLOW_LOAD.name())).thenReturn(jiraKPIService);
+		}
 
-        Map<String, Integer> map = new HashMap<>();
-        Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-                .collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
-        hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
-        when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
-        when(cacheService.getFromApplicationCache(any(),any(),any(),any())).thenReturn(null);
-        when(filterHelperService.getFilteredBuilds(any(),any())).thenReturn(accountHierarchyDataList);
-        when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
-        when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-        when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream().filter(s->s.getLeafNodeId().equalsIgnoreCase("Scrum Project_6335363749794a18e8a4479b")).collect(Collectors.toList()));
-        when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-        when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
-        when(kpiHelperService.getAuthorizedFilteredList(any(),any())).thenReturn(accountHierarchyDataList);
-        when(kpiHelperService.getProjectKeyCache(any(),any())).thenReturn(kpiRequest.getIds());
-        List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
+		when(filterHelperService.getFilteredBuilds(any(), any())).thenReturn(accountHierarchyDataList);
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
+		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
+		when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream()
+				.filter(s -> s.getLeafNodeId().equalsIgnoreCase("Scrum Project_6335363749794a18e8a4479b"))
+				.collect(Collectors.toList()));
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
+		when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
+		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
-        resultList.forEach(k -> {
+		resultList.forEach(k -> {
 
-            KPICode kpi = KPICode.getKPI(k.getKpiId());
+			KPICode kpi = KPICode.getKPI(k.getKpiId());
 
-            switch (kpi) {
+			switch (kpi) {
 
-                case FLOW_LOAD:
-                    assertThat("Kpi Name :", k.getKpiName(), equalTo("FLOW_LOAD"));
-                    break;
+			case FLOW_LOAD:
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("FLOW_LOAD"));
+				break;
 
-                default:
-                    break;
-            }
+			default:
+				break;
+			}
 
-        });
+		});
 
-    }
+	}
 
-    private KpiRequest createKpiRequest(int level) {
-        KpiRequest kpiRequest = new KpiRequest();
-        List<KpiElement> kpiList = new ArrayList<>();
+	private KpiRequest createKpiRequest(int level) {
+		KpiRequest kpiRequest = new KpiRequest();
+		List<KpiElement> kpiList = new ArrayList<>();
 
-        addKpiElement(kpiList, KPICode.FLOW_LOAD.getKpiId(), KPICode.FLOW_LOAD.name(),
-                "Backlog", "");
-        kpiRequest.setLevel(level);
-        kpiRequest.setIds(new String[]{"Scrum Project_6335363749794a18e8a4479b"});
-        kpiRequest.setKpiList(kpiList);
-        kpiRequest.setRequestTrackerId();
-        kpiRequest.setLabel("project");
-        Map<String,List<String>> s=new HashMap<>();
-        s.put("project", Arrays.asList("Scrum Project_6335363749794a18e8a4479b"));
-        kpiRequest.setSelectedMap(s);
-        kpiRequest.setSprintIncluded(Arrays.asList());
-        return kpiRequest;
-    }
+		addKpiElement(kpiList, KPICode.FLOW_LOAD.getKpiId(), KPICode.FLOW_LOAD.name(), "Backlog", "");
+		kpiRequest.setLevel(level);
+		kpiRequest.setIds(new String[] { "Scrum Project_6335363749794a18e8a4479b" });
+		kpiRequest.setKpiList(kpiList);
+		kpiRequest.setRequestTrackerId();
+		kpiRequest.setLabel("project");
+		Map<String, List<String>> s = new HashMap<>();
+		s.put("project", Arrays.asList("Scrum Project_6335363749794a18e8a4479b"));
+		kpiRequest.setSelectedMap(s);
+		kpiRequest.setSprintIncluded(Arrays.asList());
+		return kpiRequest;
+	}
 
-    private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category,
-                               String kpiUnit) {
-        KpiElement kpiElement = new KpiElement();
-        kpiElement.setKpiId(kpiId);
-        kpiElement.setKpiName(kpiName);
-        kpiElement.setKpiCategory(category);
-        kpiElement.setKpiUnit(kpiUnit);
-        kpiElement.setKpiSource("Jira");
-        kpiElement.setMaxValue("500");
-        kpiElement.setGroupId(1);
-        kpiElement.setChartType("gaugeChart");
-        kpiList.add(kpiElement);
-    }
+	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category,
+			String kpiUnit) {
+		KpiElement kpiElement = new KpiElement();
+		kpiElement.setKpiId(kpiId);
+		kpiElement.setKpiName(kpiName);
+		kpiElement.setKpiCategory(category);
+		kpiElement.setKpiUnit(kpiUnit);
+		kpiElement.setKpiSource("Jira");
+		kpiElement.setMaxValue("500");
+		kpiElement.setGroupId(1);
+		kpiElement.setChartType("gaugeChart");
+		kpiList.add(kpiElement);
+	}
 
 }

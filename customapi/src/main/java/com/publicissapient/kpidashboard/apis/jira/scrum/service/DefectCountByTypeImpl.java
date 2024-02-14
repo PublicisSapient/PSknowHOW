@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -70,6 +69,32 @@ public class DefectCountByTypeImpl extends JiraBacklogKPIService<Integer, List<O
 	@Autowired
 	JiraIssueRepository jiraIssueRepository;
 
+	private static Set<String> getExcludeStatuses(FieldMapping fieldMapping) {
+		Set<String> excludeStatuses = new HashSet<>();
+		excludeStatuses.add(Optional.ofNullable(fieldMapping.getJiraDefectRejectionStatusKPI155()).orElse(""));
+		excludeStatuses.add(Optional.ofNullable(fieldMapping.getJiraLiveStatusKPI155()).orElse(""));
+		excludeStatuses.addAll(
+				Optional.ofNullable(fieldMapping.getJiraDodKPI155()).isPresent() ? fieldMapping.getJiraDodKPI155()
+						: new HashSet<>());
+		return excludeStatuses;
+	}
+
+	private static List<JiraIssue> getJiraIssueListAfterDefectsWithStatusExcluded(List<JiraIssue> jiraIssues,
+			Set<String> excludeStatuses) {
+		Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase).collect(Collectors.toSet());
+		jiraIssues = jiraIssues.stream()
+				.filter(jiraIssue -> !excludeStatus.contains(jiraIssue.getJiraStatus().toUpperCase()))
+				.collect(Collectors.toList());
+		return jiraIssues;
+	}
+
+	private static void getIssuesStatusCount(Map<String, List<JiraIssue>> statusData,
+			Map<String, Integer> statusWiseCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> statusEntry : statusData.entrySet()) {
+			statusWiseCountMap.put(statusEntry.getKey(), statusEntry.getValue().size());
+		}
+	}
+
 	/**
 	 *
 	 * @param kpiRequest
@@ -85,7 +110,7 @@ public class DefectCountByTypeImpl extends JiraBacklogKPIService<Integer, List<O
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
-			projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
+		projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
 		log.info("DefectCountByType -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
@@ -148,32 +173,6 @@ public class DefectCountByTypeImpl extends JiraBacklogKPIService<Integer, List<O
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 		}
 		return resultListMap;
-	}
-
-	private static Set<String> getExcludeStatuses(FieldMapping fieldMapping) {
-		Set<String> excludeStatuses = new HashSet<>();
-		excludeStatuses.add(Optional.ofNullable(fieldMapping.getJiraDefectRejectionStatusKPI155()).orElse(""));
-		excludeStatuses.add(Optional.ofNullable(fieldMapping.getJiraLiveStatusKPI155()).orElse(""));
-		excludeStatuses.addAll(
-				Optional.ofNullable(fieldMapping.getJiraDodKPI155()).isPresent() ? fieldMapping.getJiraDodKPI155()
-						: new HashSet<>());
-		return excludeStatuses;
-	}
-
-	private static List<JiraIssue> getJiraIssueListAfterDefectsWithStatusExcluded(List<JiraIssue> jiraIssues,
-			Set<String> excludeStatuses) {
-		Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase).collect(Collectors.toSet());
-		jiraIssues = jiraIssues.stream()
-				.filter(jiraIssue -> !excludeStatus.contains(jiraIssue.getJiraStatus().toUpperCase()))
-				.collect(Collectors.toList());
-		return jiraIssues;
-	}
-
-	private static void getIssuesStatusCount(Map<String, List<JiraIssue>> statusData,
-			Map<String, Integer> statusWiseCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> statusEntry : statusData.entrySet()) {
-			statusWiseCountMap.put(statusEntry.getKey(), statusEntry.getValue().size());
-		}
 	}
 
 	private void constructData(KpiElement kpiElement, String requestTrackerId, List<KPIExcelData> excelData,
