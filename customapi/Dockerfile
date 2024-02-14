@@ -1,5 +1,5 @@
 # Use a base image
-FROM psknowhow/amazoncorretto:8.1
+FROM amazoncorretto:17-al2023-jdk
 
 # Set a non-root user
 ARG USER=knowhowuser
