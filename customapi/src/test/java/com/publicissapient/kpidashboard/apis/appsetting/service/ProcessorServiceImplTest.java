@@ -29,7 +29,10 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
@@ -82,6 +85,9 @@ public class ProcessorServiceImplTest {
 
 	@Mock
 	private CustomApiConfig customApiConfig;
+
+	@Mock
+	private CacheService cacheService;
 
 	/**
 	 * method includes preprocesses for test cases
@@ -249,5 +255,13 @@ public class ProcessorServiceImplTest {
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request"));
 		ServiceResponse response = processorService.fetchActiveSprint("132_TestSprint");
 		assertFalse(response.getSuccess());
+	}
+
+	@Test
+	public void saveRepoToolTraceLogsTest() {
+
+		processorService.saveRepoToolTraceLogs(new RepoToolsStatusResponse("project", "repo", "src",
+				Constant.SUCCESS, "timestamp"));
+
 	}
 }
