@@ -24,6 +24,8 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +96,22 @@ public class ReleaseDefectByTestPhaseImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(bugList);
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		KpiElement kpiElement = releaseDefectByTestingPhaseImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail);
+		assertNotNull(kpiElement.getTrendValueList());
+	}
+
+	@Test
+	public void getKpiData_withExclusionCriteria() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
+		List<FieldMapping> values = new ArrayList<>( fieldMappingMap.values());
+		values.get(0).setExcludeRCAFromKPI163(Arrays.asList("CODE ISSUE"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(bugList);
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
