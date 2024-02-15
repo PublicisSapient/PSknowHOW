@@ -1,5 +1,5 @@
 # Use a base image
-FROM psknowhow/amazoncorretto:8.1
+FROM amazoncorretto:17
 
 # Change bash as default and install necessary packages
 RUN ln -sf /bin/bash /bin/sh \

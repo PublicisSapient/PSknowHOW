@@ -30,7 +30,6 @@ import { SharedService } from '../services/shared.service';
 import { GetAuthService } from '../services/getauth.service';
 import { HttpService } from '../services/http.service';
 import { NavigationEnd, Router } from '@angular/router';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-dashboard',
@@ -60,7 +59,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
     private service: SharedService,
     private getAuth: GetAuthService,
     private httpService: HttpService,
-    private renderer: Renderer2,
+    private renderer: Renderer2
   ) {
     this.sideNavStyle ={ 'toggled' :this.isApply};
     this.renderer.listen('document', 'click', (e: Event) => {
@@ -102,10 +101,9 @@ export class DashboardComponent implements OnInit, AfterContentInit {
 
   reloadApp(){
     this.displayModal=false;
-    this.router.navigate(['./dashboard/mydashboard']).then(success =>{
-    window.location.reload();
+      this.router.navigate(['./dashboard/mydashboard']).then(success =>{
+      window.location.reload();
     });
-
   }
 
   ngAfterContentInit() {

@@ -198,7 +198,7 @@ public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFact
 		@Nonnull
 		@Override
 		public String getApplicationFileEncoding() {
-			return null;
+			return "";
 		}
 	}
 

@@ -15,17 +15,19 @@
  *    limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.config;
+package com.publicissapient.kpidashboard.common.config;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.converter.ZonedDateTimeReadConverter;
+import com.publicissapient.kpidashboard.common.converter.ZonedDateTimeWriteConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 
-import com.publicissapient.kpidashboard.apis.converter.DateToJodaDateTimeConverter;
+import com.publicissapient.kpidashboard.common.converter.DateToJodaDateTimeConverter;
 
 @Configuration
 public class MongoConfig {
@@ -38,6 +40,8 @@ public class MongoConfig {
 	public MongoCustomConversions customConversions() {
 		List<Converter<?, ?>> converters = new ArrayList<>();
 		converters.add(new DateToJodaDateTimeConverter());
+		converters.add(new ZonedDateTimeReadConverter());
+		converters.add(new ZonedDateTimeWriteConverter());
 		return new MongoCustomConversions(converters);
 	}
 

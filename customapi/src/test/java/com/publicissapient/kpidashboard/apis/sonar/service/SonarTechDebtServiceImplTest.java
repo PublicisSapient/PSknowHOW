@@ -389,15 +389,15 @@ public class SonarTechDebtServiceImplTest {
 
 	@Test
 	public void testGetTechDebtValueWithDouble() {
-		assertEquals(new Long(42), stdServiceImpl.getTechDebtValue(42.0));
-		assertEquals(new Long(123), stdServiceImpl.getTechDebtValue("123"));
-		assertEquals(new Long(456), stdServiceImpl.getTechDebtValue(456L));
-		assertEquals(new Long(-1), stdServiceImpl.getTechDebtValue(null));
+		assertEquals(Long.valueOf(42), stdServiceImpl.getTechDebtValue(42.0));
+		assertEquals(Long.valueOf(123), stdServiceImpl.getTechDebtValue("123"));
+		assertEquals(Long.valueOf(456), stdServiceImpl.getTechDebtValue(456L));
+		assertEquals(Long.valueOf(-1), stdServiceImpl.getTechDebtValue(null));
 	}
 
 	@Test
 	public void testThresold(){
-		assertEquals(new Double(0), stdServiceImpl.calculateThresholdValue(new FieldMapping()));
+		assertEquals(Double.valueOf(0), stdServiceImpl.calculateThresholdValue(new FieldMapping()));
 	}
 
 

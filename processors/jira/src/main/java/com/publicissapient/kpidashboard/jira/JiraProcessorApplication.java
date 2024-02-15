@@ -60,13 +60,17 @@ public class JiraProcessorApplication {
 	}
 
 	@Bean
+	public DataSource dataSource() {
+		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
+				.addScript("classpath:org/springframework/batch/core/schema-drop-h2.sql")
+				.addScript("classpath:org/springframework/batch/core/schema-h2.sql")
+				.build();
+	}
+
+	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
 
-	@Bean
-	public DataSource dataSource() {
-		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
-	}
 }

@@ -139,20 +139,16 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
 		} else {
-			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(tokenAuthProperties.getResourceName())) {
-				String token = userTokenAuthenticationDTO.getAuthToken();
-				if (StringUtils.isBlank(token)) {
-					Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
-					if (Objects.nonNull(authCookieToken)) {
-						token = authCookieToken.getValue();
-					} else {
-						return null;
-					}
+			String token = userTokenAuthenticationDTO.getAuthToken();
+			if (StringUtils.isBlank(token)) {
+				Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
+				if (Objects.nonNull(authCookieToken)) {
+					token = authCookieToken.getValue();
+				} else {
+					return null;
 				}
-				return createAuthentication(token, response);
-			} else {
-				return null;
 			}
+			return createAuthentication(token, response);
 		}
 
 	}
@@ -164,22 +160,17 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
 		} else {
-			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(tokenAuthProperties.getResourceName())) {
-				String token = userTokenAuthenticationDTO.getAuthToken();
-				if (StringUtils.isBlank(token)) {
-					Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
-					if (Objects.nonNull(authCookieToken)) {
-						token = authCookieToken.getValue();
-					} else {
-						return null;
-					}
+			String token = userTokenAuthenticationDTO.getAuthToken();
+			if (StringUtils.isBlank(token)) {
+				Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
+				if (Objects.nonNull(authCookieToken)) {
+					token = authCookieToken.getValue();
+				} else {
+					return null;
 				}
-				return token;
-			} else {
-				return null;
 			}
+			return token;
 		}
-
 	}
 
 	@Override
@@ -346,7 +337,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			json.put(PROJECTS_ACCESS, projectAccessesWithRole);
 			return json;
 		}
-		return null;
+		return new JSONObject();
 	}
 
 	@Override
