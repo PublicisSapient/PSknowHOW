@@ -23,7 +23,6 @@ import java.util.List;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,9 +62,6 @@ public class ProcessorController {
 
 	@Autowired
 	private ProcessorService processorService;
-
-	@Autowired
-	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
