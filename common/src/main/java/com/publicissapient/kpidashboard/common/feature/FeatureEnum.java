@@ -29,7 +29,11 @@ public enum FeatureEnum implements Feature {
 
     @EnabledByDefault
     @Label("Custom-api Daily Standup")
-    DAILY_STANDUP;
+    DAILY_STANDUP,
+
+    @EnabledByDefault
+    @Label("Google Analytics")
+    GOOGLE_ANALYTICS;
 
     public boolean isActive() {
         return FeatureContext.getFeatureManager().isActive(this);
