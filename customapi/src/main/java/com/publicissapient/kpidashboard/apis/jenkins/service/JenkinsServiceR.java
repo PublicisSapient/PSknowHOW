@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -39,6 +37,7 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jenkins.factory.JenkinsKPIServiceFactory;
+import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -214,8 +213,8 @@ public class JenkinsServiceR {
 	 * This method is called when the request for kpi is done from exposed API
 	 *
 	 * @param kpiRequest
-	 *            Jenkins KPI request true if flow for precalculated, false for direct
-	 *            flow.
+	 *            Jenkins KPI request true if flow for precalculated, false for
+	 *            direct flow.
 	 * @return List of KPI data
 	 * @throws EntityNotFoundException
 	 *             EntityNotFoundException
