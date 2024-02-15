@@ -24,7 +24,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
-import org.apache.commons.lang.StringUtils;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
@@ -54,6 +53,8 @@ import com.publicissapient.kpidashboard.common.repository.application.SprintTrac
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
 import lombok.extern.slf4j.Slf4j;
+import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
+
 /**
  * This class provides various methods related to operations on Processor Data
  *
