@@ -149,7 +149,6 @@ public class JiraBacklogServiceRTest {
 	public void TestProcess_pickFromCache() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(5);
-		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
 		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
@@ -180,16 +179,8 @@ public class JiraBacklogServiceRTest {
 		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
-		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
-		when(filterHelperService.getFilteredBuilds(any(), any())).thenReturn(accountHierarchyDataList);
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream()
-				.filter(s -> s.getLeafNodeId().equalsIgnoreCase("Scrum Project_6335363749794a18e8a4479b"))
-				.collect(Collectors.toList()));
-		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-		when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
 		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
@@ -233,14 +224,7 @@ public class JiraBacklogServiceRTest {
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
-		when(filterHelperService.getFilteredBuilds(any(), any())).thenReturn(accountHierarchyDataList);
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream()
-				.filter(s -> s.getLeafNodeId().equalsIgnoreCase("Scrum Project_6335363749794a18e8a4479b"))
-				.collect(Collectors.toList()));
-		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-		when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
 		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
