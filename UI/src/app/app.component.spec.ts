@@ -43,7 +43,6 @@ describe('AppComponent', () => {
     authorization = TestBed.inject(GetAuthorizationService);
     sharedService = TestBed.inject(SharedService);
     primengConfig = TestBed.inject(PrimeNGConfig);
-    spyOn(httpService, 'getAnalyticsFlag').and.returnValue(of({ success: true, data: { analyticsSwitch: true } }));
     spyOn(gaService, 'load').and.returnValue(Promise.resolve(['gaTagManager']));
     jasmine.createSpy('checkAuth').and.returnValue(true);
     spyOn(sharedService, 'setSelectedType');
