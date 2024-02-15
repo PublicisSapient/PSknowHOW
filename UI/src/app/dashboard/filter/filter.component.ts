@@ -594,6 +594,10 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   onSelectedTrendValueChange($event) {
+    /** Refreshing kpiFilter backup when project is changing */
+    this.service.setAddtionalFilterBackup({});
+    this.service.setKpiSubFilterObj({})
+
     this.additionalFiltersArr.forEach((additionalFilter) => {
       this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
     });
@@ -1196,7 +1200,13 @@ export class FilterComponent implements OnInit, OnDestroy {
   /*'type' argument: to understand onload or onchange
     1: onload
     2: onchange */
-  handleIterationFilters(level) {
+  handleIterationFilters(level,isManually?) {
+    /** Refreshing kpiFilter backup when project/sprint is changing */
+    if(isManually){
+     this.service.setAddtionalFilterBackup({...this.service.getAddtionalFilterBackup(), kpiFilters: {}});
+     this.service.setKpiSubFilterObj({})
+    }
+
     this.lastSyncData = {};
     this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
@@ -1400,6 +1410,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
         this.service.setAddtionalFilterBackup({});
+        this.service.setKpiSubFilterObj({})
         this.router.navigate(['./authentication/login']);
       }
     });
@@ -1487,7 +1498,14 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     });
   }
-  handleMilestoneFilter(level) {
+  
+  handleMilestoneFilter(level,isManually?) {
+   /** Refreshing kpiFilter backup when project/sprint is changing */
+   if(isManually){
+    this.service.setAddtionalFilterBackup({...this.service.getAddtionalFilterBackup(), kpiFilters: {}});
+    this.service.setKpiSubFilterObj({})
+   }
+
     const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
     this.filteredAddFilters['release'] = []
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['release']) {
@@ -1728,7 +1746,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         selectedSprint = { ...selectedSprint, [element['nodeId']]: element['additionalFilters'] }
       }
     });
-    this.service.setAddtionalFilterBackup({ sprint: selectedSprint });
+    this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), sprint: selectedSprint });
   }
 
   /**

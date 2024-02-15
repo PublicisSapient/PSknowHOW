@@ -836,7 +836,7 @@ const completeHierarchyData = {
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
     spyOn(sharedService, 'setNoSprints');
     spyOn(component, 'createFilterApplyData');
-    component.handleIterationFilters('project');
+    component.handleIterationFilters('project',true);
     expect(spy).toHaveBeenCalled();
   });
 
@@ -1537,7 +1537,7 @@ const completeHierarchyData = {
     ]
     component.initializeFilterForm();
     component.filterForm?.get('selectedTrendValue').setValue('DOTC_63b51633f33fd2360e9e72bd')
-    component.handleMilestoneFilter('project');
+    component.handleMilestoneFilter('project',true);
     expect(spyFunct).toHaveBeenCalled();
   })
 
