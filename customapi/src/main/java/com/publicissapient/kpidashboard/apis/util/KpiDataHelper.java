@@ -703,8 +703,9 @@ public final class KpiDataHelper {
 								.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime, LocalDateTime
 										.ofInstant(Instant.parse(sprintDetail.getStartDate()), ZoneId.systemDefault()),
 										endLocalDate));
+					} else {
+						return false; // Don't save completedIssue if issueDateMap is empty
 					}
-					return true;
 				}).collect(Collectors.toSet());
 			}
 		}
