@@ -54,5 +54,11 @@ public interface ProcessorService {
 	 */
 	ServiceResponse fetchActiveSprint(String sprintId);
 
+	/**
+	 * saves the response statuses for repo tools
+	 *
+	 * @param repoToolsStatusResponse
+	 * 		repo tool response status
+	 */
 	void saveRepoToolTraceLogs(RepoToolsStatusResponse repoToolsStatusResponse);
 }
