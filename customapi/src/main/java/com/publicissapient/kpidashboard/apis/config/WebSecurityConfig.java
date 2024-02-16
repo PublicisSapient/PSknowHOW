@@ -129,6 +129,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 				.antMatchers("/auth-types-status").permitAll().antMatchers("/pushData/*").permitAll()
 				.antMatchers("/getversionmetadata").permitAll()
 				.antMatchers("/kpiIntegrationValues").permitAll()
+				.antMatchers("/processor/saveRepoToolsStatus").permitAll()
 				.antMatchers("/v1/kpi/{kpiID}").permitAll()
 
 				// management metrics
