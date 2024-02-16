@@ -83,7 +83,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private static final String USER_EMAIL = "emailAddress";
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final Object USER_AUTHORITIES = "authorities";
-	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 	@Autowired
 	AuthenticationService authenticationService;
 	@Autowired
@@ -100,81 +99,26 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private CookieUtil cookieUtil;
 
 	@Override
-	public UserTokenAuthenticationDTO addAuthentication(HttpServletResponse response, Authentication authentication) {
-		String jwt = createJwtToken(authentication);
-		UserTokenAuthenticationDTO data = new UserTokenAuthenticationDTO();
-		data.setUserName(authentication.getName());
-		data.setUserRoles(getRoles(authentication.getAuthorities()).stream().collect(Collectors.toList()));
-		data.setAuthToken(jwt);
-		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
-		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
-		cookie.setSecure(true);
-		response.addCookie(cookie);
-		cookieUtil.addSameSiteCookieAttribute(response);
-		return data;
-	}
-
-	public String createJwtToken(Authentication authentication) {
-		return Jwts.builder().setSubject(authentication.getName()).claim(DETAILS_CLAIM, authentication.getDetails())
+	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
+		String jwt = Jwts.builder().setSubject(authentication.getName())
+				.claim(DETAILS_CLAIM, authentication.getDetails())
 				.claim(ROLES_CLAIM, getRoles(authentication.getAuthorities()))
 				.setExpiration(new Date(System.currentTimeMillis() + tokenAuthProperties.getExpirationTime()))
 				.signWith(SignatureAlgorithm.HS512, tokenAuthProperties.getSecret()).compact();
-	}
-
-	@Override
-	public boolean isJWTTokenExpired(String jwtToken) {
-		Claims decodedJWT = Jwts.parser()
-				.setSigningKey(tokenAuthProperties.getSecret())
-				.parseClaimsJws(jwtToken)
-				.getBody();
-		Date expiresAt = decodedJWT.getExpiration();
-		return new Date().after(expiresAt);
+		UserTokenData data = new UserTokenData();
+		data.setUserName(authentication.getName());
+		data.setUserToken(jwt);
+		userTokenReopository.deleteAllByUserName(authentication.getName());
+		userTokenReopository.save(data);
+		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
+		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
+		response.addCookie(cookie);
+		cookieUtil.addSameSiteCookieAttribute(response);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Authentication getAuthentication(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
-			HttpServletRequest httpServletRequest, HttpServletResponse response) {
-
-		if (customApiConfig.isSsoLogin()) {
-			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
-		} else {
-			String token = userTokenAuthenticationDTO.getAuthToken();
-			if (StringUtils.isBlank(token)) {
-				Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
-				if (Objects.nonNull(authCookieToken)) {
-					token = authCookieToken.getValue();
-				} else {
-					return null;
-				}
-			}
-			return createAuthentication(token, response);
-		}
-
-	}
-
-	@Override
-	public String getAuthToken(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
-			HttpServletRequest httpServletRequest) {
-
-		if (customApiConfig.isSsoLogin()) {
-			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
-		} else {
-			String token = userTokenAuthenticationDTO.getAuthToken();
-			if (StringUtils.isBlank(token)) {
-				Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
-				if (Objects.nonNull(authCookieToken)) {
-					token = authCookieToken.getValue();
-				} else {
-					return null;
-				}
-			}
-			return token;
-		}
-	}
-
-	@Override
-	public Authentication validateAuthentication(HttpServletRequest request, HttpServletResponse response) {
+	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
@@ -191,6 +135,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			}
 			return createAuthentication(token, response);
 		}
+
 	}
 
 	private Authentication createAuthentication(String token, HttpServletResponse response) {
@@ -203,8 +148,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
 					authorities);
 			authentication.setDetails(claims.get(DETAILS_CLAIM));
-			Date tokenExpiration = claims.getExpiration();
-			response.setHeader(AUTH_DETAILS_UPDATED_FLAG, setUpdateAuthFlag(tokenExpiration));
+			List<UserTokenData> userTokenData = userTokenReopository.findAllByUserName(username);
+			response.setHeader(AUTH_DETAILS_UPDATED_FLAG, setUpdateAuthFlag(userTokenData));
 
 			return authentication;
 
@@ -285,16 +230,14 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	}
 
 	@Override
-	public String setUpdateAuthFlag(Date tokenExpiration) {
-		if (tokenExpiration != null) {
-
-			SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT);
-			String expiryDate = dateFormat.format(tokenExpiration);
-
+	public String setUpdateAuthFlag(List<UserTokenData> userTokenDataList) {
+		UserTokenData userTokenData = getLatestUser(userTokenDataList);
+		if (userTokenData != null) {
+			String expiryDate = userTokenData.getExpiryDate();
 			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
 					.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
 					.optionalEnd().toFormatter();
-			if (LocalDateTime.parse(expiryDate, formatter).isAfter(LocalDateTime.now())) {
+			if (LocalDateTime.parse(expiryDate, formatter).isBefore(LocalDateTime.now())) {
 				return Boolean.toString(true);
 			}
 		}
@@ -310,11 +253,10 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			List<UserTokenData> userTokenDataList = userTokenReopository.findAllByUserName(userName);
 			UserTokenData userTokenData = getLatestUser(userTokenDataList);
 			if (userTokenData != null) {
-				updateExpiryDate(userTokenData.getUserName(), LocalDateTime.now().toString());
+				updateExpiryDate(userTokenData.getUserName(), null);
 			} else {
 				userTokenReopository.deleteAllByUserName(userName);
-				userTokenData = new UserTokenData(userName, cookieUtil.getAuthCookie(request).getValue(),
-						LocalDateTime.now().toString());
+				userTokenData = new UserTokenData(userName, cookieUtil.getAuthCookie(request).getValue(), null);
 				userTokenReopository.save(userTokenData);
 			}
 			List<String> authorities = new ArrayList<>(getRoles(authentication.getAuthorities()));
@@ -337,14 +279,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			json.put(PROJECTS_ACCESS, projectAccessesWithRole);
 			return json;
 		}
-		return new JSONObject();
-	}
-
-	@Override
-	public String getUserNameFromToken(String jwtToken){
-		Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(jwtToken)
-				.getBody();
-		return claims.getSubject();
+		return null;
 	}
 
 }

@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 
@@ -47,7 +48,7 @@ public interface TokenAuthenticationService {
 	 * @param authentication
 	 *            the authentication
 	 */
-	UserTokenAuthenticationDTO addAuthentication(HttpServletResponse response, Authentication authentication);
+	void addAuthentication(HttpServletResponse response, Authentication authentication);
 
 	/**
 	 * Gets authentication.
@@ -56,39 +57,7 @@ public interface TokenAuthenticationService {
 	 *            the request
 	 * @return the authentication
 	 */
-	Authentication getAuthentication(UserTokenAuthenticationDTO request, HttpServletRequest httpServletRequest,
-			HttpServletResponse response);
-
-	/**
-	 *
-	 * @param jwtToken
-	 * @return
-	 */
-	boolean isJWTTokenExpired(String jwtToken);
-
-	/**
-	 *
-	 * @param jwtToken
-	 * @return
-	 */
-	String getUserNameFromToken(String jwtToken);
-
-	/**
-	 *
-	 * @param userTokenAuthenticationDTO
-	 * @param httpServletRequest
-	 * @return
-	 */
-	String getAuthToken(UserTokenAuthenticationDTO userTokenAuthenticationDTO, HttpServletRequest httpServletRequest);
-
-	/**
-	 * validate token
-	 * 
-	 * @param httpServletRequest
-	 * @param response
-	 * @return
-	 */
-	Authentication validateAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse response);
+	Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response);
 
 	/**
 	 * This method returns Projects related to user
@@ -118,7 +87,7 @@ public interface TokenAuthenticationService {
 
 	void updateExpiryDate(String username, String expiryDate);
 
-	String setUpdateAuthFlag(Date userTokenData);
+	String setUpdateAuthFlag(List<UserTokenData> userTokenData);
 
 	JSONObject getOrSaveUserByToken(HttpServletRequest request, Authentication authentication);
 

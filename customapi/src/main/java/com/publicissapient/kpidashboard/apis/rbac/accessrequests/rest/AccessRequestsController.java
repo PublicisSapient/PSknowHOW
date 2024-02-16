@@ -74,9 +74,6 @@ public class AccessRequestsController {
 
 	@Autowired
 	private ProjectAccessManager projectAccessManager;
-	
-	@Autowired
-	private AuthProperties authProperties;
 
 	/**
 	 * Gets all access requests data.
@@ -253,12 +250,9 @@ public class AccessRequestsController {
 	 * @return responseEntity with data,message and status
 	 */
 	@RequestMapping(value = "/{status}/notification", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponse> getNotificationByStatus(@PathVariable("status") String status,
-			HttpServletRequest request) {
+	public ResponseEntity<ServiceResponse> getNotificationByStatus(@PathVariable("status") String status) {
 		log.info("Getting requests count with current status {}", status);
-		String token = authProperties.getResourceAPIKey();
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(accessRequestsHelperService.getNotificationByStatus(status, token));
+		return ResponseEntity.status(HttpStatus.OK).body(accessRequestsHelperService.getNotificationByStatus(status));
 	}
 
 }

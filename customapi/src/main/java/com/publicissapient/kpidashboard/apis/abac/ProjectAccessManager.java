@@ -390,13 +390,13 @@ public class ProjectAccessManager {
 	 */
 	private String getEmailAddress(AccessRequest accessRequestsData) {
 		String email = "";
-		email = getUserInfo(accessRequestsData.getUsername()).getEmailAddress().toLowerCase();
+		email = getUserInfo(accessRequestsData.getUsername()).getEmailAddress();
 		if (StringUtils.isEmpty(email)) {
 			Authentication authentication = authenticationRepository.findByUsername(accessRequestsData.getUsername());
 			if (null == authentication) {
 				log.error("User {} Does not Exist in Authentication Collection", accessRequestsData.getUsername());
 			} else {
-				email = authentication.getEmail().toLowerCase();
+				email = authentication.getEmail();
 			}
 		}
 		return email;
@@ -776,6 +776,7 @@ public class ProjectAccessManager {
 		UserInfo userInfo = getUserInfo(username);
 
 		List<ProjectsAccess> projectsAccesses = userInfo.getProjectsAccess();
+
 		List<RoleWiseProjects> result = new ArrayList<>();
 
 		if (CollectionUtils.isNotEmpty(projectsAccesses)) {

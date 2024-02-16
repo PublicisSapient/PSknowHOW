@@ -62,15 +62,6 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	private final AuthProperties authProperties;
 	private final UserInfoRepository userInfoRepository;
 
-	// ------- auth-N-auth required code starts here -------
-	private static final String RESPONSE = "response {}";
-	private static final String DATA_FOUND = "data found";
-	private static final String FETCHED_RESPONSE = "fetched response {}";
-	private static final String ERROR_CODE = "Error while fetching from {}. with status {}";
-	private static final String ERROR_MESSAGE = "Error while fetching from {}:  {}";
-
-	// ----- auth-N-auth required code end here ----------------
-
 	@Autowired
 	public DefaultAuthenticationServiceImpl(AuthenticationRepository authenticationRepository,
 			AuthProperties authProperties, UserInfoRepository userInfoRepository) {
@@ -78,9 +69,6 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		this.authProperties = authProperties;
 		this.userInfoRepository = userInfoRepository;
 	}
-
-	@Autowired
-	private RestTemplate restTemplate;
 
 	/**
 	 * {@inheritDoc}
@@ -375,32 +363,5 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	public Iterable<Authentication> getAuthenticationByApproved(boolean approved) {
 		return authenticationRepository.findByApproved(approved);
 	}
-
-	// ---- auth-N-auth required code starts here ----
-
-	/**
-	 *
-	 * @param responseEntity
-	 * @param url
-	 * @return
-	 */
-	public ServiceResponse getAuthNAuthResponse(ResponseEntity<ServiceResponse> responseEntity, String url) {
-		ServiceResponse fetchDataResponse = new ServiceResponse();
-		try {
-			log.info(RESPONSE, responseEntity);
-			if (responseEntity.getStatusCode() == HttpStatus.OK) {
-				log.info(DATA_FOUND);
-				fetchDataResponse = responseEntity.getBody();
-				log.info(FETCHED_RESPONSE, fetchDataResponse);
-			} else {
-				String statusCode = responseEntity.getStatusCode().toString();
-				log.error(ERROR_CODE, url, statusCode);
-			}
-		} catch (Exception exception) {
-			log.error(ERROR_MESSAGE, url, exception.getMessage());
-		}
-		return fetchDataResponse;
-	}
-	// --- auth-N-auth required code end here --------------
 
 }

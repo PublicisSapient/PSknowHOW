@@ -543,42 +543,4 @@ public final class CommonUtils {
 		return sb.toString();
 	}
 
-
-	// -- auth-N-auth changes starts here ------
-
-	/**
-	 *
-	 * @param apiKey
-	 * @param usingBasicAuth
-	 * @return
-	 */
-
-	public static HttpHeaders getHeaders(String apiKey, boolean usingBasicAuth) {
-		HttpHeaders headers = new HttpHeaders();
-		if (apiKey != null && !apiKey.isEmpty()) {
-			if (usingBasicAuth) {
-				headers.set("x-api-key", apiKey);
-			} else {
-				headers.add("x-api-key", apiKey);
-			}
-		}
-		return headers;
-	}
-
-	/**
-	 * This method returns api end Point url
-	 *
-	 * @return api end Point
-	 */
-	public static String getAPIEndPointURL(String centralAuthEndPoint, String resourceEndPoint, String username) {
-
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(centralAuthEndPoint);
-		uriBuilder.path(resourceEndPoint);
-		if (!username.isEmpty()) {
-			uriBuilder.path(username);
-		}
-		return uriBuilder.toUriString();
-	}
-
-	// -- auth-N-auth changes ends here ------
 }

@@ -25,11 +25,6 @@ public class ServiceResponse extends BaseResponse {
 
 	private Object data;
 
-	// --- auth-N-auth required code starts here --------------
-	public ServiceResponse() {
-	}
-
-	// --- auth-N-auth required code end here --------------
 	/**
 	 * 
 	 * @param isSuccess
