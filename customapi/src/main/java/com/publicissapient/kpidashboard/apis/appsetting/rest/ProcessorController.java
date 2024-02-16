@@ -147,8 +147,16 @@ public class ProcessorController {
 
 	}
 
+	/**
+	 * to be hit by repo tool platform to save repo tool tracelogs
+	 * @param request
+	 * 			http request with api key
+	 * @param repoToolsStatusResponse
+	 * 			status to be saved in trace logs
+	 * @return {@code ResponseEntity<>} with HttpStatus OK if authorized
+	 */
 	@PostMapping(path = "/saveRepoToolsStatus", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity saveRepoToolsStatus(HttpServletRequest request,
+	public ResponseEntity<ServiceResponse> saveRepoToolsStatus(HttpServletRequest request,
 			@NonNull @RequestBody RepoToolsStatusResponse repoToolsStatusResponse) {
 		log.info("Received {} request for /saveRepoToolsStatus", request.getMethod());
 		Boolean isApiAuth = restAPIUtils.decryptPassword(customApiConfig.getxApiKey())
