@@ -38,6 +38,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         const httpErrorHandler = req.headers.get('httpErrorHandler') || 'global';
         const requestArea = req.headers.get('requestArea') || 'internal';
 
+
         if (req.headers.get('httpErrorHandler')) {
             req = req.clone({ headers: req.headers.delete('httpErrorHandler') });
         }
@@ -54,7 +55,8 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             req = req.clone({ headers: req.headers.set('Content-Type', ['text/csv']) });
         }
         const requestId = uuid.v4();
-        req = req.clone({ headers: req.headers.set('request-Id', requestId) });
+                req = req.clone({ headers: req.headers.set('request-Id', requestId) });
+
 
         const redirectExceptions = [
             environment.baseUrl + '/api/jenkins/kpi',
@@ -82,12 +84,10 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             .pipe(
                 tap(event => {
                     if (event instanceof HttpResponse){
-                        /**Todo: Not autochanging the user role on role change. User will have to manually logout when his/her role is changed. 
-                         * Currently commiting this code as per comment on ticket DTS-30823 */
-                        // if(!event?.url?.includes('api/authdetails') &&
-                        // ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
-                        //     this.httpService.getAuthDetails();
-                        // }
+                        if(!event?.url?.includes('api/authdetails') &&
+                        ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
+                            this.httpService.getAuthDetails();
+                        }
                     }
                 }),
                 catchError((err) => {
@@ -96,14 +96,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                         if (requestArea === 'internal') {
                             this.service.setCurrentUserDetails({});
                             if(!environment.SSO_LOGIN){
-                                if(environment.AUTHENTICATION_SERVICE){
-                                    /** redirect to central login url*/
-                                    let redirect_uri = window.location.href;
-                                    localStorage.setItem('redirect_uri', window.location.hash);
-                                    window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
-                                }else{
-                                    this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
-                                }
+                                this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                             }
                         }
 

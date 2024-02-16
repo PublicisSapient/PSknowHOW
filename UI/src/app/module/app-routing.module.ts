@@ -35,7 +35,6 @@ import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/un
 import { MilestoneComponent } from '../dashboard/milestone/milestone.component';
 import { DoraComponent } from '../dashboard/dora/dora.component';
 import { FeatureGuard } from '../services/feature.guard';
-import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
 /**
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
@@ -45,13 +44,13 @@ import { PageNotFoundComponent } from '../page-not-found/page-not-found.componen
 
 
 const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-  // {
-  //   path: 'authentication',
-  //   loadChildren: () => import('../authentication/authentication.module').then(m => m.AuthenticationModule),
-  //   resolve: [Logged],
-  //   // canActivate: [SSOGuard]
-  // },
+  { path: '', redirectTo: 'authentication', pathMatch: 'full' },
+  {
+    path: 'authentication',
+    loadChildren: () => import('../authentication/authentication.module').then(m => m.AuthenticationModule),
+    resolve: [Logged],
+    canActivate: [SSOGuard]
+  },
   {
     path: 'dashboard', component: DashboardComponent,
     canActivateChild : [FeatureGuard],
@@ -64,7 +63,7 @@ const routes: Routes = [
         }
       },
       {
-        path: 'iteration', component: IterationComponent, pathMatch: 'full',// canActivate: [AccessGuard],
+        path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "Iteration"
         }
@@ -110,16 +109,14 @@ const routes: Routes = [
       },
       { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
 
-    ], //canActivate: [AuthGuard]
+    ], canActivate: [AuthGuard]
   },
   { path: 'authentication-fail', component: SsoAuthFailureComponent },
-  { path: 'pageNotFound', component: PageNotFoundComponent },
-  // { path: '**', redirectTo: 'authentication' }
-  { path: '**', redirectTo: 'pageNotFound' }
+  { path: '**', redirectTo: 'authentication' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy'})],
+  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' })],
 
   exports: [RouterModule],
   providers: [
