@@ -58,8 +58,7 @@ public class GitHubURIBuilder {
 	 */
 	public String build() throws URISyntaxException {
 		URI uri = getURI();
-		String scheme = "ssh".equalsIgnoreCase(uri.getScheme()) ? "https" : uri.getScheme();
-		final URIBuilder builder = new URIBuilder(scheme + "://" + uri.getHost() + getCommitPath());
+		final URIBuilder builder = new URIBuilder(uri.toString() + getCommitPath());
 		if (uri.getPort() > 0) {
 			builder.setPort(uri.getPort());
 		}
@@ -80,8 +79,7 @@ public class GitHubURIBuilder {
 	 */
 	public String mergeRequestUrlbuild() throws URISyntaxException {
 		URI uri = getURI();
-		String scheme = "ssh".equalsIgnoreCase(uri.getScheme()) ? "https" : uri.getScheme();
-		final URIBuilder builder = new URIBuilder(scheme + "://" + uri.getHost() + getMRPath());
+		final URIBuilder builder = new URIBuilder(uri.toString() + getMRPath());
 		if (uri.getPort() > 0) {
 			builder.setPort(uri.getPort());
 		}
