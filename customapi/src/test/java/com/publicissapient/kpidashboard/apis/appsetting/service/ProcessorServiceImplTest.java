@@ -22,6 +22,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -124,7 +128,7 @@ public class ProcessorServiceImplTest {
 	@Test
 	public void testRunProcessorAtm() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToAtmProcessor");
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), any(HttpMethod.class), any(),
 				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
 		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
 		ServiceResponse response = processorService.runProcessor("Atm", null);
@@ -137,7 +141,7 @@ public class ProcessorServiceImplTest {
 	@Test
 	public void testRunProcessorSonar() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToSonarProcessor");
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), any(HttpMethod.class), any(),
 				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
 		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
 		ServiceResponse response = processorService.runProcessor("Sonar", null);
@@ -151,7 +155,7 @@ public class ProcessorServiceImplTest {
 	public void testRunProcessorBitbucket() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString()))
 				.thenReturn("validUrlToBitbucketProcessor");
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), any(HttpMethod.class), any(),
 				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
 		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
 		ProcessorExecutionBasicConfig processorExecutionBasicConfig = new ProcessorExecutionBasicConfig();
@@ -166,7 +170,7 @@ public class ProcessorServiceImplTest {
 	@Test
 	public void testRunProcessorExcel() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToExcelProcessor");
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), any(HttpMethod.class), any(),
 				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
 		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
 		ServiceResponse response = processorService.runProcessor("Excel", null);
@@ -179,7 +183,7 @@ public class ProcessorServiceImplTest {
 	@Test
 	public void testRunProcessorBamboo() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToBambooProcessor");
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), any(HttpMethod.class), any(),
 				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
 		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
 		ServiceResponse response = processorService.runProcessor("Bamboo", null);
@@ -192,7 +196,7 @@ public class ProcessorServiceImplTest {
 	@Test
 	public void testRunProcessorJenkins() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJenkinsProcessor");
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), any(HttpMethod.class), any(),
 				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
 		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
 		ServiceResponse response = processorService.runProcessor("Jenkins", null);
@@ -205,7 +209,7 @@ public class ProcessorServiceImplTest {
 	@Test
 	public void testRunProcessorJira() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), any(HttpMethod.class), any(),
 				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
 		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
 		ServiceResponse response = processorService.runProcessor("Jira", null);
@@ -218,7 +222,7 @@ public class ProcessorServiceImplTest {
 	@Test
 	public void testRunProcessorSonar500() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToSonarProcessor");
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), any(HttpMethod.class), any(),
 				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
 		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.INTERNAL_SERVER_ERROR);
 		ServiceResponse response = processorService.runProcessor("Sonar", null);
@@ -231,7 +235,7 @@ public class ProcessorServiceImplTest {
 	@Test
 	public void testRunProcessorSonar404() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToSonarProcessor");
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), any(HttpMethod.class), any(),
 				Mockito.<Class<String>>any())).thenThrow(new ResourceAccessException(""));
 		ServiceResponse response = processorService.runProcessor("Sonar", null);
 		assertFalse(response.getSuccess());
@@ -240,7 +244,7 @@ public class ProcessorServiceImplTest {
 	@Test
 	public void fetchActiveSprint() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), any(HttpMethod.class), any(),
 				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
 		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
 		ServiceResponse response = processorService.fetchActiveSprint("132_TestSprint");
@@ -250,7 +254,7 @@ public class ProcessorServiceImplTest {
 	@Test
 	public void fetchActiveSprint_HttpClientErrorException() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), any(HttpMethod.class), any(),
 				Mockito.<Class<String>>any()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request"));
 		ServiceResponse response = processorService.fetchActiveSprint("132_TestSprint");
@@ -262,6 +266,7 @@ public class ProcessorServiceImplTest {
 
 		processorService.saveRepoToolTraceLogs(new RepoToolsStatusResponse("project", "repo", "src",
 				Constant.SUCCESS, "timestamp"));
+		verify(cacheService, times(3)).clearCache(anyString());
 
 	}
 }
