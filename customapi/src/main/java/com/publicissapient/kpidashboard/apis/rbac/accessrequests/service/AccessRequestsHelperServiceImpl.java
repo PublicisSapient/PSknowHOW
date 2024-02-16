@@ -62,8 +62,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperService {
 
-	@Autowired CustomApiConfig customApiConfig;
-
 	private static final String SUPERADMINROLENAME = "ROLE_SUPERADMIN";
 	/**
 	 * Repeated String used in logging info
@@ -261,7 +259,7 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 	 *         is found,false if not data found
 	 */
 	@Override
-	public ServiceResponse getNotificationByStatus(String status , String token) {
+	public ServiceResponse getNotificationByStatus(String status) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		List<AccessRequest> accessRequest = null;
 		String message = "Found Pending Approval Count";
@@ -269,13 +267,7 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 		List<NotificationDataDTO> notificationDataList = new ArrayList<>();
 		if (user.getAuthorities().contains(SUPERADMINROLENAME)) {
 			accessRequest = repository.findByStatus(status);
-			NotificationDataDTO userApprovalNotification;
-			if (customApiConfig.isCentralAuthSwitch() && Objects.nonNull(token)) {
-				userApprovalNotification = newCentralAuthUserApprovalRequestNotification(token);
-			} else {
-				userApprovalNotification = newUserApprovalRequestNotification();
-			}
-
+			NotificationDataDTO userApprovalNotification = newUserApprovalRequestNotification();
 			notificationDataList.add(userApprovalNotification);
 		} else if (user.getAuthorities().contains(Constant.ROLE_PROJECT_ADMIN)) {
 			List<String> roleList = Arrays.asList(Constant.ROLE_PROJECT_ADMIN);
@@ -309,19 +301,6 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 	private NotificationDataDTO newUserApprovalRequestNotification() {
 		List<com.publicissapient.kpidashboard.apis.auth.model.Authentication> nonApprovedUserList = authenticationRepository
 				.findByApproved(false);
-		NotificationDataDTO notificationDataDTO = new NotificationDataDTO();
-		notificationDataDTO.setType(NotificationEnum.USER_APPROVAL.getValue());
-		if (CollectionUtils.isEmpty(nonApprovedUserList)) {
-			notificationDataDTO.setCount(0);
-		} else {
-			notificationDataDTO.setCount(nonApprovedUserList.size());
-		}
-		return notificationDataDTO;
-	}
-
-	private NotificationDataDTO newCentralAuthUserApprovalRequestNotification(String token) {
-		List<UserInfoDTO> nonApprovedUserList =
-				userInfoServiceImpl.findAllUnapprovedUsers(token);
 		NotificationDataDTO notificationDataDTO = new NotificationDataDTO();
 		notificationDataDTO.setType(NotificationEnum.USER_APPROVAL.getValue());
 		if (CollectionUtils.isEmpty(nonApprovedUserList)) {

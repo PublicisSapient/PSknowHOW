@@ -62,7 +62,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
 		}
 
-		Authentication authentication = tokenAuthenticationService.validateAuthentication((HttpServletRequest) request,
+		Authentication authentication = tokenAuthenticationService.getAuthentication((HttpServletRequest) request,
 				(HttpServletResponse) response);
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);

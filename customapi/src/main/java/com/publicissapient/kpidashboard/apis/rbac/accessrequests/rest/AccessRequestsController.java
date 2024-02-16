@@ -18,10 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.rbac.accessrequests.rest;
 
-
 import javax.validation.Valid;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,7 +40,6 @@ import com.publicissapient.kpidashboard.apis.abac.AccessRequestListener;
 import com.publicissapient.kpidashboard.apis.abac.GrantAccessListener;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.abac.RejectAccessListener;
-import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
@@ -52,8 +49,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDecision;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
