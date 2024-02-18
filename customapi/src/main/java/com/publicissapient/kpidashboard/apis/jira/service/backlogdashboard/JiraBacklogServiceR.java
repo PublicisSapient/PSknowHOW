@@ -14,6 +14,22 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveAction;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.stereotype.Service;
+
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -38,27 +54,13 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.SerializationUtils;
-import org.apache.commons.lang.StringUtils;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * This class handle all Backlog JIRA based KPI request and call each KPIs service
- * in thread. It is responsible for cache of KPI data at different level.
+ * This class handle all Backlog JIRA based KPI request and call each KPIs
+ * service in thread. It is responsible for cache of KPI data at different
+ * level.
  *
  * @author purgupta2
  */
@@ -66,227 +68,273 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 
-    private final ThreadLocal<List<JiraIssue>> threadLocalJiraIssues = ThreadLocal.withInitial(ArrayList::new);
-    private final ThreadLocal<List<JiraIssueCustomHistory>> threadLocalHistory = ThreadLocal.withInitial(ArrayList::new);
-    JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
-    @Autowired
-    private KpiHelperService kpiHelperService;
-    @Autowired
-    private FilterHelperService filterHelperService;
-    @Autowired
-    private CacheService cacheService;
-    @Autowired
-    private SprintRepository sprintRepository;
-    @Autowired
-    private JiraIssueRepository jiraIssueRepository;
-    @Autowired
-    private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-    @Autowired
-    private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
-    @Autowired
-    private CustomApiConfig customApiConfig;
-    private List<SprintDetails> futureSprintDetails;
-    private List<JiraIssue> jiraIssueList;
-    private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
+	private final ThreadLocal<List<JiraIssue>> threadLocalJiraIssues = ThreadLocal.withInitial(ArrayList::new);
+	private final ThreadLocal<List<JiraIssueCustomHistory>> threadLocalHistory = ThreadLocal
+			.withInitial(ArrayList::new);
+	JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
+	@Autowired
+	private KpiHelperService kpiHelperService;
+	@Autowired
+	private FilterHelperService filterHelperService;
+	@Autowired
+	private CacheService cacheService;
+	@Autowired
+	private SprintRepository sprintRepository;
+	@Autowired
+	private JiraIssueRepository jiraIssueRepository;
+	@Autowired
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Autowired
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+	@Autowired
+	private CustomApiConfig customApiConfig;
+	private List<SprintDetails> futureSprintDetails;
+	private List<JiraIssue> jiraIssueList;
+	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 
-    /**
-     * This method process scrum jira based Backlog kpis request, cache data and call service
-     * in multiple thread.
-     *
-     * @param kpiRequest JIRA KPI request true if flow for precalculated, false for direct
-     *                   flow.
-     * @return List of KPI data
-     * @throws EntityNotFoundException EntityNotFoundException
-     */
-    @SuppressWarnings({"PMD.AvoidCatchingGenericException", "unchecked"})
-    @Override
-    public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
+	/**
+	 * This method process scrum jira based Backlog kpis request, cache data and
+	 * call service in multiple thread.
+	 *
+	 * @param kpiRequest
+	 *            JIRA KPI request true if flow for precalculated, false for direct
+	 *            flow.
+	 * @return List of KPI data
+	 * @throws EntityNotFoundException
+	 *             EntityNotFoundException
+	 */
+	@SuppressWarnings({ "PMD.AvoidCatchingGenericException", "unchecked" })
+	@Override
+	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
-        log.info("Processing KPI calculation for data {}", kpiRequest.getKpiList());
-        List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new).collect(Collectors.toList());
-        List<KpiElement> responseList = new ArrayList<>();
-        String[] projectKeyCache = null;
-        try {
-            Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
-            String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(), false);
-            if (null != groupName) {
-                kpiRequest.setLabel(groupName.toUpperCase());
-            } else {
-                log.error("label name for selected hierarchy not found");
-            }
-            List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest);
-            if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-                projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList);
+		log.info("Processing KPI calculation for data {}", kpiRequest.getKpiList());
+		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
+				.toList();
+		List<KpiElement> responseList = new ArrayList<>();
+		String[] projectKeyCache = null;
+		try {
+			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
+					false);
+			if (null != groupName) {
+				kpiRequest.setLabel(groupName.toUpperCase());
+			} else {
+				log.error("label name for selected hierarchy not found");
+			}
+			List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest);
+			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
+				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList);
 
-                filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
-                if (filteredAccountDataList.isEmpty()) {
-                    return responseList;
-                }
-                Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(), groupId, kpiRequest.getSprintIncluded());
-                if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) && null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
-                    log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
-                    return (List<KpiElement>) cachedData;
-                }
+				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest,
+						filteredAccountDataList);
+				if (filteredAccountDataList.isEmpty()) {
+					return responseList;
+				}
+				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
+						groupId, kpiRequest.getSprintIncluded());
+				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+						&& null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
+					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
+					return (List<KpiElement>) cachedData;
+				}
 
-                Node filteredNode = getFilteredNodes(kpiRequest, filteredAccountDataList);
+				Node filteredNode = getFilteredNodes(kpiRequest, filteredAccountDataList);
 
-                if (!CollectionUtils.isEmpty(origRequestedKpis) && StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
-                    updateJiraIssueList(filteredAccountDataList);
-                }
-                // set filter value to show on trend line. If subprojects are
-                // in
-                // selection then show subprojects on trend line else show
-                // projects
-                kpiRequest.setFilterToShowOnTrend(groupName);
+				if (!CollectionUtils.isEmpty(origRequestedKpis)
+						&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
+					updateJiraIssueList(filteredAccountDataList);
+				}
+				// set filter value to show on trend line. If subprojects are
+				// in
+				// selection then show subprojects on trend line else show
+				// projects
+				kpiRequest.setFilterToShowOnTrend(groupName);
 
-                ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+				List<ParallelJiraServices> listOfTask = new ArrayList<>();
+				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
+					listOfTask.add(new ParallelJiraServices(kpiRequest, responseList, kpiEle, filteredNode));
+				}
 
-                List<CompletableFuture<Void>> futures = new ArrayList<>();
+				ForkJoinTask.invokeAll(listOfTask);
+				List<KpiElement> missingKpis = origRequestedKpis.stream()
+						.filter(reqKpi -> responseList.stream()
+								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
+						.toList();
+				responseList.addAll(missingKpis);
 
-                for (KpiElement kpiEle : kpiRequest.getKpiList()) {
-                    CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                        threadLocalJiraIssues.set(jiraIssueList);
-                        threadLocalHistory.set(jiraIssueCustomHistoryList);
+				kpiHelperService.setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
+			} else {
+				responseList.addAll(origRequestedKpis);
+			}
 
-                        try {
-                            calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
-                        } catch (Exception e) {
-                            log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
-                        }
-                    }, executorService);
-                    futures.add(future);
-                }
+		} catch (Exception e) {
+			log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
+			throw new HttpMessageNotWritableException(e.getMessage(), e);
+		} finally {
+			threadLocalJiraIssues.remove();
+			threadLocalHistory.remove();
+		}
 
-                CompletableFuture<Void>[] futureArray = futures.toArray(new CompletableFuture[0]);
+		return responseList;
+	}
 
-                CompletableFuture<Void> allOf = CompletableFuture.allOf(futureArray);
-                allOf.join(); // Wait for all tasks to complete
+	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+		Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
 
-                executorService.shutdown();
-                List<KpiElement> missingKpis = origRequestedKpis.stream().filter(reqKpi -> responseList.stream().noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId()))).collect(Collectors.toList());
-                responseList.addAll(missingKpis);
+		filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
+				filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
+		return filteredNode;
+	}
 
-                kpiHelperService.setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
-            } else {
-                responseList.addAll(origRequestedKpis);
-            }
+	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest) {
+		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
+				.cacheAccountHierarchyData();
 
-        } catch (Exception e) {
-            log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
-            throw new HttpMessageNotWritableException(e.getMessage(), e);
-        } finally {
-            threadLocalJiraIssues.remove();
-            threadLocalHistory.remove();
-        }
+		List<AccountHierarchyData> projectAccountHierarchyData = accountDataListAll.stream()
+				.filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId()
+						.equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.PROJECT.toLowerCase()).get(0)))
+				.toList();
+		if (projectAccountHierarchyData.isEmpty()) {
+			return accountDataListAll.stream()
+					.filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId()
+							.equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).get(0)))
+					.toList();
+		}
+		return projectAccountHierarchyData;
+	}
 
-        return responseList;
-    }
+	private void updateJiraIssueList(List<AccountHierarchyData> filteredAccountDataList) {
+		futureProjectWiseSprintDetails(filteredAccountDataList.get(0).getBasicProjectConfigId(),
+				SprintDetails.SPRINT_STATE_FUTURE);
+		fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+		fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+		fetchJiraIssueReleaseForProject(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+	}
 
-    private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
-        Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
+	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
+		return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi3");
+	}
 
-        filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
-                filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
-        return filteredNode;
-    }
+	public void futureProjectWiseSprintDetails(ObjectId basicProjectConfigId, String sprintState) {
+		futureSprintDetails = sprintRepository
+				.findByBasicProjectConfigIdAndStateIgnoreCaseOrderByStartDateASC(basicProjectConfigId, sprintState);
+	}
 
-    private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest) {
-        List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
-                .cacheAccountHierarchyData();
+	public void fetchJiraIssues(String basicProjectConfigId) {
+		jiraIssueList = jiraIssueRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
+	}
 
-        List<AccountHierarchyData> projectAccountHierarchyData = accountDataListAll.stream()
-                .filter(accountHierarchyData ->
-                        accountHierarchyData.getLeafNodeId().equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.PROJECT.toLowerCase()).get(0))
-                )
-                .collect(Collectors.toList());
-        if (projectAccountHierarchyData.isEmpty()){
-            return accountDataListAll.stream()
-                    .filter(accountHierarchyData ->
-                            accountHierarchyData.getLeafNodeId().equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).get(0))
-                    )
-                    .collect(Collectors.toList());
-        }
-        return projectAccountHierarchyData;
-    }
+	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId) {
+		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
+				.findByBasicProjectConfigIdIn(basicProjectConfigId);
+	}
 
-    private void updateJiraIssueList(List<AccountHierarchyData> filteredAccountDataList) {
-        futureProjectWiseSprintDetails(filteredAccountDataList.get(0).getBasicProjectConfigId(), SprintDetails.SPRINT_STATE_FUTURE);
-        fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), CommonConstant.BACKLOG);
-        fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), CommonConstant.BACKLOG);
-        fetchJiraIssueReleaseForProject(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), CommonConstant.BACKLOG);
-    }
+	public void fetchJiraIssueReleaseForProject(String basicProjectConfigId) {
+		jiraIssueReleaseStatus = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId);
+	}
 
-    private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
-        return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi3");
-    }
+	public JiraIssueReleaseStatus getJiraIssueReleaseForProject() {
+		return jiraIssueReleaseStatus;
+	}
 
-    public void futureProjectWiseSprintDetails(ObjectId basicProjectConfigId, String sprintState) {
-        futureSprintDetails = sprintRepository.findByBasicProjectConfigIdAndStateIgnoreCaseOrderByStartDateASC(basicProjectConfigId, sprintState);
-    }
+	public List<JiraIssue> getJiraIssuesForCurrentSprint() {
+		return threadLocalJiraIssues.get();
+	}
 
-    public void fetchJiraIssues(String basicProjectConfigId, String board) {
-        if (board.equalsIgnoreCase(CommonConstant.BACKLOG)) {
-            jiraIssueList = jiraIssueRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
-        }
-    }
+	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
+		return threadLocalHistory.get();
+	}
 
-    public void fetchJiraIssuesCustomHistory(String basicProjectConfigId, String board) {
-        if (board.equalsIgnoreCase(CommonConstant.BACKLOG)) {
-            jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
-        }
-    }
+	/**
+	 * This method return list of 5 distinct future sprint names
+	 *
+	 * @return return list of sprintNames
+	 */
+	public List<String> getFutureSprintsList() {
+		List<String> sprintNames = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(futureSprintDetails)) {
+			sprintNames = futureSprintDetails.stream()
+					.sorted(Comparator.comparing(SprintDetails::getStartDate,
+							Comparator.nullsLast(Comparator.naturalOrder())))
+					.map(SprintDetails::getSprintName).distinct()
+					.limit(customApiConfig.getSprintCountForBackLogStrength()).toList();
 
-    public void fetchJiraIssueReleaseForProject(String basicProjectConfigId, String board) {
+		}
+		return sprintNames;
+	}
 
-        if (board.equalsIgnoreCase(CommonConstant.BACKLOG)) {
-            jiraIssueReleaseStatus = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId);
-        }
-    }
+	public class ParallelJiraServices extends RecursiveAction {
+		private static final long serialVersionUID = 1L;
+		private final KpiRequest kpiRequest;
+		private final transient List<KpiElement> responseList;
+		private final transient KpiElement kpiEle;
+		Node filteredAccountData;
 
-    public JiraIssueReleaseStatus getJiraIssueReleaseForProject() {
-        return jiraIssueReleaseStatus;
-    }
+		/*
+		 * @param kpiRequest
+		 *
+		 * @param responseList
+		 *
+		 * @param kpiEle
+		 *
+		 * @param treeAggregatorDetail
+		 */
+		public ParallelJiraServices(KpiRequest kpiRequest, List<KpiElement> responseList, KpiElement kpiEle,
+				Node filteredAccountData) {
+			super();
+			this.kpiRequest = kpiRequest;
+			this.responseList = responseList;
+			this.kpiEle = kpiEle;
+			this.filteredAccountData = filteredAccountData;
+		}
 
-    public List<JiraIssue> getJiraIssuesForCurrentSprint() {
-        return threadLocalJiraIssues.get();
-    }
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @return
+		 */
+		@Override
+		public void compute() {
+			try {
+				threadLocalJiraIssues.set(jiraIssueList);
+				threadLocalHistory.set(jiraIssueCustomHistoryList);
+				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredAccountData);
+			} catch (Exception e) {
+				log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", e);
+			}
+		}
 
-    public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
-        return threadLocalHistory.get();
-    }
+		/**
+		 * This method call by multiple thread, take object of specific KPI and call
+		 * method of these KPIs
+		 *
+		 * @param kpiRequest
+		 *            JIRA KPI request
+		 * @param responseList
+		 *            List of KpiElements having data of each KPI
+		 * @param kpiElement
+		 *            kpiElement object
+		 * @param filteredAccountNode
+		 *            filter tree object
+		 * @throws ApplicationException
+		 *             ApplicationException
+		 */
+		private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
+				KpiElement kpiElement, Node filteredAccountNode) throws ApplicationException {
 
-    private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList, KpiElement kpiElement, Node filteredAccountNode) throws ApplicationException {
-
-        JiraBacklogKPIService jiraKPIService = null;
-        KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
-        jiraKPIService = (JiraBacklogKPIService) JiraNonTrendKPIServiceFactory.getJiraKPIService(kpi.name());
-        long startTime = System.currentTimeMillis();
-        if (KPICode.THROUGHPUT.equals(kpi)) {
-            log.info("No need to fetch Throughput KPI data");
-        } else {
-            Node nodeDataClone = (Node) SerializationUtils
-                    .clone(filteredAccountNode);
-            responseList.add(jiraKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone));
-            long processTime = System.currentTimeMillis() - startTime;
-            log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
-        }
-    }
-
-    /**
-     * This method return list of 5 distinct future sprint names
-     *
-     * @return return list of sprintNames
-     */
-    public List<String> getFutureSprintsList() {
-        List<String> sprintNames = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(futureSprintDetails)) {
-            sprintNames = futureSprintDetails.stream()
-                    .sorted(Comparator.comparing(SprintDetails::getStartDate,
-                            Comparator.nullsLast(Comparator.naturalOrder())))
-                    .map(SprintDetails::getSprintName).distinct()
-                    .limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
-
-        }
-        return sprintNames;
-    }
+			JiraBacklogKPIService jiraKPIService = null;
+			KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+			jiraKPIService = (JiraBacklogKPIService) JiraNonTrendKPIServiceFactory.getJiraKPIService(kpi.name());
+			long startTime = System.currentTimeMillis();
+			if (KPICode.THROUGHPUT.equals(kpi)) {
+				log.info("No need to fetch Throughput KPI data");
+			} else {
+				Node nodeDataClone = (Node) SerializationUtils.clone(filteredAccountNode);
+				responseList.add(jiraKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone));
+				long processTime = System.currentTimeMillis() - startTime;
+				log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+						processTime);
+			}
+		}
+	}
 }

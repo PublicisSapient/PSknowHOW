@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -56,12 +55,18 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class BackLogCountByStatusServiceImpl extends JiraBacklogKPIService<Integer, List<Object>> {
 
+	private static final String PROJECT_WISE_JIRA_ISSUE = "Jira Issue";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
 	private ConfigHelperService configHelperService;
 
-	private static final String PROJECT_WISE_JIRA_ISSUE = "Jira Issue";
+	private static void getIssuesStatusCount(Map<String, List<JiraIssue>> statusData,
+			Map<String, Integer> statusWiseCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> statusEntry : statusData.entrySet()) {
+			statusWiseCountMap.put(statusEntry.getKey(), statusEntry.getValue().size());
+		}
+	}
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
@@ -95,16 +100,9 @@ public class BackLogCountByStatusServiceImpl extends JiraBacklogKPIService<Integ
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
 
-			projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
+		projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
 		log.info("BackLogCountByStatusServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
-	}
-
-	private static void getIssuesStatusCount(Map<String, List<JiraIssue>> statusData,
-			Map<String, Integer> statusWiseCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> statusEntry : statusData.entrySet()) {
-			statusWiseCountMap.put(statusEntry.getKey(), statusEntry.getValue().size());
-		}
 	}
 
 	/**

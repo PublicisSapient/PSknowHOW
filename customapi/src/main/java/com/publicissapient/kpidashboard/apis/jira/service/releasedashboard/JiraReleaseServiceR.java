@@ -112,7 +112,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 
         log.info("Processing KPI calculation for data {}", kpiRequest.getKpiList());
         List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
-                .collect(Collectors.toList());
+                .toList();
         List<KpiElement> responseList = new ArrayList<>();
         String[] projectKeyCache = null;
         try {
@@ -182,7 +182,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
                 List<KpiElement> missingKpis = origRequestedKpis.stream()
                         .filter(reqKpi -> responseList.stream()
                                 .noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
-                        .collect(Collectors.toList());
+                        .toList();
                 responseList.addAll(missingKpis);
 
                 kpiHelperService.setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
@@ -211,7 +211,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
                 .filter(accountHierarchyData ->
                         accountHierarchyData.getLeafNodeId().equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.RELEASE.toLowerCase()).get(0))
                 )
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
@@ -321,9 +321,6 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
         JiraReleaseKPIService jiraKPIService = null;
         KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
         jiraKPIService = (JiraReleaseKPIService) JiraNonTrendKPIServiceFactory.getJiraKPIService(kpi.name());
-        if (jiraKPIService == null) {
-            throw new ApplicationException(JiraKPIServiceFactory.class, "Jira KPI Service Factory not initalized");
-        }
         long startTime = System.currentTimeMillis();
         if (KPICode.THROUGHPUT.equals(kpi)) {
             log.info("No need to fetch Throughput KPI data");

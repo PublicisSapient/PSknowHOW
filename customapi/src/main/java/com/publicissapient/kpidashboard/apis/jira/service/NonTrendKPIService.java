@@ -14,42 +14,47 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service;
 
+import java.util.Map;
+
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author purgupta2
  */
 public interface NonTrendKPIService {
 
-    String getQualifierType();
+	String getQualifierType();
 
-    /**
-     * Gets Kpi data based on kpi request
-     *
-     * @param kpiRequest
-     * @param kpiElement
-     * @param filteredNode
-     * @return kpi data
-     * @throws ApplicationException
-     */
-    KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-                          Node filteredNode) throws ApplicationException;
+	/**
+	 * Gets Kpi data based on kpi request
+	 *
+	 * @param kpiRequest
+	 *            kpiRequest
+	 * @param kpiElement
+	 *            kpiElement
+	 * @param filteredNode
+	 *            filteredNode
+	 * @return kpi data
+	 * @throws ApplicationException
+	 *             ApplicationException
+	 */
+	KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node filteredNode) throws ApplicationException;
 
-    /**
-     *
-     * @param leafNode
-     * @param startDate
-     * @param endDate
-     * @param kpiRequest
-     * @return map of String and Object
-     */
-    Map<String, Object> fetchKPIDataFromDb(Node leafNode, final String startDate,
-                                                  final String endDate, final KpiRequest kpiRequest);
+	/**
+	 *
+	 * @param leafNode
+	 *            leafNode
+	 * @param startDate
+	 *            startDate
+	 * @param endDate
+	 *            endDate
+	 * @param kpiRequest
+	 *            kpiRequest
+	 * @return map of String and Object
+	 */
+	Map<String, Object> fetchKPIDataFromDb(Node leafNode, final String startDate, final String endDate,
+			final KpiRequest kpiRequest);
 }
-

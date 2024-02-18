@@ -158,10 +158,15 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService
         resultMap.put(ISSUES, jiraIssues);
 
         List<String> issueNumbers = jiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
-        List<JiraIssueCustomHistory> customHistoryForIssues = jiraIssueCustomHistoryRepository.findByStoryIDIn(issueNumbers);
+        List<JiraIssueCustomHistory> jiraIssueCustomHistories = getJiraIssuesCustomHistoryFromBaseClass();
+        List<JiraIssueCustomHistory> customHistoryForIssues= jiraIssueCustomHistories.stream()
+                .filter(history -> issueNumbers.contains(history.getStoryID()))
+                .collect(Collectors.toList());
+
         resultMap.put(HISTORY, customHistoryForIssues);
 
-        Map<String, Object> sprintVelocityStoryMap = kpiHelperService
+        Map<String, Object> sprintVelocityStoryMap =
+                kpiHelperService
                 .fetchBackLogReadinessFromdb(kpiRequest, projectNode);
 
         resultMap.putAll(sprintVelocityStoryMap);

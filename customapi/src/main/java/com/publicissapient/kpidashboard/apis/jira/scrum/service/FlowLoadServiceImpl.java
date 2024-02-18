@@ -37,7 +37,6 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -102,12 +101,13 @@ public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Obje
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
 		List<DataCount> trendValueList = new ArrayList<>();
-			projectWiseLeafNodeValue(projectNode, trendValueList, kpiElement, kpiRequest);
+		projectWiseLeafNodeValue(projectNode, trendValueList, kpiElement, kpiRequest);
 
 		return kpiElement;
 	}
 
-	private void projectWiseLeafNodeValue(Node leafNode, List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node leafNode, List<DataCount> trendValueList, KpiElement kpiElement,
+			KpiRequest kpiRequest) {
 
 		int monthToSubtract = customApiConfig.getFlowKpiMonthCount();
 

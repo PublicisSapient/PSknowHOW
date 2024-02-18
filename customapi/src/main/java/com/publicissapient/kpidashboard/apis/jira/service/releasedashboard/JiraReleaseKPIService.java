@@ -81,9 +81,8 @@ public abstract class JiraReleaseKPIService implements NonTrendKPIService {
                 && CollectionUtils.isNotEmpty(jiraIssuesForCurrentRelease)) {
             defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
             defectType.addAll(fieldMapping.getJiradefecttype());
-            List<JiraIssue> finalFilteredJiraIssue = filteredJiraIssue;
-            finalFilteredJiraIssue.addAll(jiraIssuesForCurrentRelease.stream()
-                    .filter(jiraIssue -> defectType.contains(jiraIssue.getTypeName())).collect(Collectors.toList()));
+            filteredJiraIssue.addAll(jiraIssuesForCurrentRelease.stream()
+                    .filter(jiraIssue -> defectType.contains(jiraIssue.getTypeName())).toList());
         } else
             filteredJiraIssue = jiraIssuesForCurrentRelease;
         return filteredJiraIssue;

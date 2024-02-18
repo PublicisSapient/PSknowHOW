@@ -14,22 +14,24 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service;
 
+import java.util.List;
+
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-
-import java.util.List;
 
 /**
  * @author purgupta2
  */
 public interface JiraNonTrendKPIServiceR {
 
-    /**
-     *
-     * @param kpiRequest
-     * @return List of KpiElement
-     * @throws EntityNotFoundException
-     */
-    List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException;
+	/**
+	 *
+	 * @param kpiRequest
+	 *            kpiRequest
+	 * @return List of KpiElement
+	 * @throws EntityNotFoundException
+	 *             EntityNotFoundException
+	 */
+	List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException;
 }

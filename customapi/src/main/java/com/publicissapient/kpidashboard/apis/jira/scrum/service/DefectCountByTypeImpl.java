@@ -80,8 +80,7 @@ public class DefectCountByTypeImpl extends JiraBacklogKPIService<Integer, List<O
 	}
 
 	private static List<JiraIssue> getJiraIssueListAfterDefectsWithStatusExcluded(List<JiraIssue> jiraIssues,
-			Set<String> excludeStatuses) {
-		Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase).collect(Collectors.toSet());
+			Set<String> excludeStatuses) {		Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase).collect(Collectors.toSet());
 		jiraIssues = jiraIssues.stream()
 				.filter(jiraIssue -> !excludeStatus.contains(jiraIssue.getJiraStatus().toUpperCase()))
 				.collect(Collectors.toList());

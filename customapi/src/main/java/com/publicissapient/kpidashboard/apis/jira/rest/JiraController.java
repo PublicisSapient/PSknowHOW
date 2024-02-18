@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import com.publicissapient.kpidashboard.apis.jira.service.NonTrendServiceFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +44,11 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraNonTrendKPIServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceKanbanR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraToolConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.jira.service.NonTrendServiceFactory;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -191,7 +192,9 @@ public class JiraController {
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
 			throw new MissingServletRequestParameterException("kpiList", "List");
 		}
-		List<KpiElement> responseList = serviceFactory.getService(kpiRequest.getKpiList().get(0).getKpiCategory()).process(kpiRequest);
+		JiraNonTrendKPIServiceR jiraNonTrendKPIServiceR = serviceFactory
+				.getService(kpiRequest.getKpiList().get(0).getKpiCategory());
+		List<KpiElement> responseList = jiraNonTrendKPIServiceR.process(kpiRequest);
 		MDC.put("TotalJiraRequestTime", String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
 
 		MDC.clear();

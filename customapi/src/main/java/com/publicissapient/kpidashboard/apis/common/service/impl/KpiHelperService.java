@@ -669,8 +669,7 @@ public class KpiHelperService { // NOPMD
 		});
 
 		List<SprintDetails> sprintDetailList = sprintRepository.findBySprintIDIn(sprintList);
-		sprintDetailList.sort((sprintDetail1, sprintDetail2) -> sprintDetail1.getStartDate()
-				.compareTo(sprintDetail2.getStartDate()));
+		sprintDetailList.sort(Comparator.comparing(SprintDetails::getStartDate));
 		List<SprintDetails> sprintDetails=sprintDetailList.stream().limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
