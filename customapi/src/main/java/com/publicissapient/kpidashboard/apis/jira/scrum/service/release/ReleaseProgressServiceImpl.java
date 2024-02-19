@@ -80,38 +80,6 @@ public class ReleaseProgressServiceImpl extends JiraReleaseKPIService {
 	@Autowired
 	private CommonServiceImpl commonService;
 
-	/**
-	 * Create issueCountDrillDown
-	 *
-	 * @param issueCountStatusMap
-	 * @param releaseStatus
-	 * @param releaseStatusCount
-	 * @param issueCountDcList
-	 */
-	private static void createIssueCountDrillDown(Map<String, Integer> issueCountStatusMap, String releaseStatus,
-			long releaseStatusCount, List<DataCount> issueCountDcList) {
-		List<DataCount> drillDownList = new ArrayList<>();
-		issueCountStatusMap.forEach((status, count) -> drillDownList.add(new DataCount(status, count, null)));
-		DataCount releaseStatusDc = new DataCount(releaseStatus, releaseStatusCount, drillDownList);
-		issueCountDcList.add(releaseStatusDc);
-	}
-
-	/**
-	 * Create storyPointDrillDown
-	 *
-	 * @param spStatusMap
-	 * @param releaseStatus
-	 * @param releaseStatusSp
-	 * @param storyPointDcList
-	 */
-	private static void createSpDrillDown(Map<String, Double> spStatusMap, String releaseStatus, double releaseStatusSp,
-			List<DataCount> storyPointDcList) {
-		List<DataCount> spDrillDownList = new ArrayList<>();
-		spStatusMap.forEach((status, spVal) -> spDrillDownList.add(new DataCount(status, spVal, null)));
-		DataCount spDc = new DataCount(releaseStatus, releaseStatusSp, spDrillDownList);
-		storyPointDcList.add(spDc);
-	}
-
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
@@ -290,6 +258,38 @@ public class ReleaseProgressServiceImpl extends JiraReleaseKPIService {
 	private Map<String, Double> createStatusWiseSpMap(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
 		return jiraIssueList.stream().collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingDouble(
 				jiraIssue -> KpiDataHelper.calculateStoryPoints(Collections.singletonList(jiraIssue), fieldMapping))));
+	}
+
+	/**
+	 * Create issueCountDrillDown
+	 *
+	 * @param issueCountStatusMap
+	 * @param releaseStatus
+	 * @param releaseStatusCount
+	 * @param issueCountDcList
+	 */
+	private static void createIssueCountDrillDown(Map<String, Integer> issueCountStatusMap, String releaseStatus,
+			long releaseStatusCount, List<DataCount> issueCountDcList) {
+		List<DataCount> drillDownList = new ArrayList<>();
+		issueCountStatusMap.forEach((status, count) -> drillDownList.add(new DataCount(status, count, null)));
+		DataCount releaseStatusDc = new DataCount(releaseStatus, releaseStatusCount, drillDownList);
+		issueCountDcList.add(releaseStatusDc);
+	}
+
+	/**
+	 * Create storyPointDrillDown
+	 *
+	 * @param spStatusMap
+	 * @param releaseStatus
+	 * @param releaseStatusSp
+	 * @param storyPointDcList
+	 */
+	private static void createSpDrillDown(Map<String, Double> spStatusMap, String releaseStatus, double releaseStatusSp,
+			List<DataCount> storyPointDcList) {
+		List<DataCount> spDrillDownList = new ArrayList<>();
+		spStatusMap.forEach((status, spVal) -> spDrillDownList.add(new DataCount(status, spVal, null)));
+		DataCount spDc = new DataCount(releaseStatus, releaseStatusSp, spDrillDownList);
+		storyPointDcList.add(spDc);
 	}
 
 }

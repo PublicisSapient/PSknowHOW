@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
-import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
 
 import java.util.ArrayList;
@@ -58,22 +57,6 @@ public class JiraKPIServiceTest {
 	private Map<String, String> aggregationCriteriaMap;
 	@Mock
 	private JiraServiceR jiraService;
-
-	private static List<JiraIssueCustomHistory> getJiraIssueCustomHistories() {
-		JiraIssueCustomHistory issueCustomHistory = new JiraIssueCustomHistory();
-		issueCustomHistory.setStoryID("DTS-123");
-		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
-		jiraIssueCustomHistories.add(issueCustomHistory);
-		return jiraIssueCustomHistories;
-	}
-
-	private static List<JiraIssue> getJiraIssues() {
-		JiraIssue jiraIssue = new JiraIssue();
-		jiraIssue.setNumber("123");
-		List<JiraIssue> jiraIssues = new ArrayList<>();
-		jiraIssues.add(jiraIssue);
-		return jiraIssues;
-	}
 
 	@Before
 	public void init() {
@@ -139,5 +122,22 @@ public class JiraKPIServiceTest {
 		}
 
 	}
+
+	private static List<JiraIssueCustomHistory> getJiraIssueCustomHistories() {
+		JiraIssueCustomHistory issueCustomHistory = new JiraIssueCustomHistory();
+		issueCustomHistory.setStoryID("DTS-123");
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+		jiraIssueCustomHistories.add(issueCustomHistory);
+		return jiraIssueCustomHistories;
+	}
+
+	private static List<JiraIssue> getJiraIssues() {
+		JiraIssue jiraIssue = new JiraIssue();
+		jiraIssue.setNumber("123");
+		List<JiraIssue> jiraIssues = new ArrayList<>();
+		jiraIssues.add(jiraIssue);
+		return jiraIssues;
+	}
+
 
 }

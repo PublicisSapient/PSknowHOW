@@ -81,32 +81,6 @@ public class ReleaseEpicProgressServiceImpl extends JiraReleaseKPIService {
 	@Autowired
 	private CommonServiceImpl commonService;
 
-	/**
-	 * create drill down
-	 *
-	 * @param issueCountStatusMap
-	 *            issueCountStatusMap
-	 * @param releaseStatus
-	 *            releaseStatus
-	 * @param releaseStatusCount
-	 *            releaseStatusCount
-	 * @param issueSize
-	 *            issueSize
-	 * @param issueCountDcList
-	 *            issueCountDcList
-	 * @param fieldMapping
-	 *            fieldMapping
-	 */
-	private static void createIssueCountDrillDown(Map<String, List<JiraIssue>> issueCountStatusMap,
-			String releaseStatus, long releaseStatusCount, double issueSize, List<DataCount> issueCountDcList,
-			FieldMapping fieldMapping) {
-		List<DataCount> drillDownList = new ArrayList<>();
-		issueCountStatusMap.forEach((status, issueList) -> drillDownList.add(new DataCount(status, issueList.size(),
-				KpiDataHelper.calculateStoryPoints(issueList, fieldMapping), null)));
-		DataCount releaseStatusDc = new DataCount(releaseStatus, releaseStatusCount, issueSize, drillDownList);
-		issueCountDcList.add(releaseStatusDc);
-	}
-
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
 			throws ApplicationException {
@@ -275,6 +249,32 @@ public class ReleaseEpicProgressServiceImpl extends JiraReleaseKPIService {
 		issueCountDc.setKpiGroup(name);
 		issueCountDc.setUrl(url);
 		return issueCountDc;
+	}
+
+	/**
+	 * create drill down
+	 *
+	 * @param issueCountStatusMap
+	 *            issueCountStatusMap
+	 * @param releaseStatus
+	 *            releaseStatus
+	 * @param releaseStatusCount
+	 *            releaseStatusCount
+	 * @param issueSize
+	 *            issueSize
+	 * @param issueCountDcList
+	 *            issueCountDcList
+	 * @param fieldMapping
+	 *            fieldMapping
+	 */
+	private static void createIssueCountDrillDown(Map<String, List<JiraIssue>> issueCountStatusMap,
+			String releaseStatus, long releaseStatusCount, double issueSize, List<DataCount> issueCountDcList,
+			FieldMapping fieldMapping) {
+		List<DataCount> drillDownList = new ArrayList<>();
+		issueCountStatusMap.forEach((status, issueList) -> drillDownList.add(new DataCount(status, issueList.size(),
+				KpiDataHelper.calculateStoryPoints(issueList, fieldMapping), null)));
+		DataCount releaseStatusDc = new DataCount(releaseStatus, releaseStatusCount, issueSize, drillDownList);
+		issueCountDcList.add(releaseStatusDc);
 	}
 
 	/**

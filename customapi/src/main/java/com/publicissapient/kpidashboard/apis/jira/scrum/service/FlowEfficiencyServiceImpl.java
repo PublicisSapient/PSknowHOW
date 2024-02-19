@@ -323,6 +323,7 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 		return (1 - (wait / total)) * 100;
 	}
 
+
 	public double calculateAverage(List<JiraIssueCustomHistory> jiraIssueList,
 			Map<JiraIssueCustomHistory, Double> flowEfficiencyMap) {
 		return jiraIssueList.stream().filter(flowEfficiencyMap::containsKey).mapToDouble(flowEfficiencyMap::get)

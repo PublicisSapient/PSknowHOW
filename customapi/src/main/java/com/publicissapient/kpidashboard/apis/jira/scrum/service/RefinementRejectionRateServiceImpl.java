@@ -398,6 +398,20 @@ public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Do
 	}
 
 	/**
+	 * Not In Use
+	 *
+	 * @param valueList
+	 *            values
+	 * @param kpiName
+	 *            kpiName
+	 * @return
+	 */
+	@Override
+	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
+		return calculateKpiValueForDouble(valueList, kpiName);
+	}
+
+	/**
 	 * This method help create Jira issue on category basis for project ID
 	 * 
 	 * @param node

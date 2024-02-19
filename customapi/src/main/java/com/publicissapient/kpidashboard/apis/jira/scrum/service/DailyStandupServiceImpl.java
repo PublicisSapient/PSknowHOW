@@ -37,7 +37,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -49,7 +48,6 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -61,6 +59,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -86,10 +85,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getFilteredJiraIssue;
-import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getFilteredJiraIssueHistory;
-import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getInSprintStatusLogs;
 
 /**
  * kpi of iteration dashboard, Daily Standup View which runs for the active
@@ -147,7 +142,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
-			sprintWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
+		sprintWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
@@ -285,14 +280,15 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 						CommonConstant.COMPLETED_ISSUES));
 
 				if (CollectionUtils.isNotEmpty(allIssues)) {
-					List<JiraIssue> filteredAllJiraIssue = getFilteredJiraIssue(allIssues, totalJiraIssueList);
+					List<JiraIssue> filteredAllJiraIssue = IterationKpiHelper.getFilteredJiraIssue(allIssues,
+							totalJiraIssueList);
 					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
 							sprintDetails, null, filteredAllJiraIssue);
 
-					List<JiraIssue> filteredNotCompletedJiraIssue = getFilteredJiraIssue(notCompletedIssues,
-							new ArrayList<>(totalIssueList));
+					List<JiraIssue> filteredNotCompletedJiraIssue = IterationKpiHelper
+							.getFilteredJiraIssue(notCompletedIssues, new ArrayList<>(totalIssueList));
 
-					List<JiraIssueCustomHistory> issueHistoryList = getFilteredJiraIssueHistory(
+					List<JiraIssueCustomHistory> issueHistoryList = IterationKpiHelper.getFilteredJiraIssueHistory(
 							totalIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
 							totalHistoryList);
 
@@ -477,11 +473,11 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 								.equalsIgnoreCase(jiraIssue.getNumber()))
 						.findFirst().orElse(new JiraIssueCustomHistory());
 
-				List<JiraHistoryChangeLog> inSprintStatusLogs = getInSprintStatusLogs(
+				List<JiraHistoryChangeLog> inSprintStatusLogs = IterationKpiHelper.getInSprintStatusLogs(
 						issueHistory.getStatusUpdationLog(), sprintStartDate, sprintEndDate);
-				List<JiraHistoryChangeLog> inSprintAssigneeLogs = getInSprintStatusLogs(
+				List<JiraHistoryChangeLog> inSprintAssigneeLogs = IterationKpiHelper.getInSprintStatusLogs(
 						issueHistory.getAssigneeUpdationLog(), sprintStartDate, sprintEndDate);
-				List<JiraHistoryChangeLog> inSprintWorkLogs = getInSprintStatusLogs(issueHistory.getWorkLog(),
+				List<JiraHistoryChangeLog> inSprintWorkLogs = IterationKpiHelper.getInSprintStatusLogs(issueHistory.getWorkLog(),
 						sprintStartDate, sprintEndDate);
 
 				IterationKpiModalValue iterationKpiModalValue = mapOfModalObject.get(jiraIssue.getNumber());

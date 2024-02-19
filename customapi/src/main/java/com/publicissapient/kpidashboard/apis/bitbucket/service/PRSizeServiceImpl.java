@@ -67,23 +67,24 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, Map<String, Object>> {
 
-    public static final String MR_COUNT = "No of MRs";
-    public static final String WEEK_FREQUENCY = "week";
-    public static final String DAY_FREQUENCY = "day";
-    private static final String REPO_TOOLS = "RepoTool";
-    @Autowired
-    private ConfigHelperService configHelperService;
+	private static final String REPO_TOOLS = "RepoTool";
+	public static final String MR_COUNT = "No of MRs";
+	public static final String WEEK_FREQUENCY = "week";
+	public static final String DAY_FREQUENCY = "day";
 
-    @Autowired
-    private RepoToolsConfigServiceImpl repoToolsConfigService;
+	@Autowired
+	private ConfigHelperService configHelperService;
 
-    @Autowired
-    private CustomApiConfig customApiConfig;
+	@Autowired
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
-    @Override
-    public String getQualifierType() {
-        return KPICode.PR_SIZE.name();
-    }
+	@Autowired
+	private CustomApiConfig customApiConfig;
+
+	@Override
+	public String getQualifierType() {
+		return KPICode.PR_SIZE.name();
+	}
 
     @Override
     public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -186,108 +187,106 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
         kpiElement.setExcelColumns(KPIExcelColumn.PR_SIZE.getColumns());
     }
 
-    private void aggPRSize(Map<String, Long> aggPRSizeForRepo, Map<String, Long> prSizeForRepo,
-                           Map<String, Long> aggMRCount, Map<String, Long> mrCount) {
-        if (MapUtils.isNotEmpty(prSizeForRepo)) {
-            prSizeForRepo.forEach((key, value) -> aggPRSizeForRepo.merge(key, value, Long::sum));
-        }
-        if (MapUtils.isNotEmpty(mrCount)) {
-            mrCount.forEach((key, value) -> aggMRCount.merge(key, value, Long::sum));
-        }
-    }
+	private void aggPRSize(Map<String, Long> aggPRSizeForRepo, Map<String, Long> prSizeForRepo,
+			Map<String, Long> aggMRCount, Map<String, Long> mrCount) {
+		if (MapUtils.isNotEmpty(prSizeForRepo)) {
+			prSizeForRepo.forEach((key, value) -> aggPRSizeForRepo.merge(key, value, Long::sum));
+		}
+		if (MapUtils.isNotEmpty(mrCount)) {
+			mrCount.forEach((key, value) -> aggMRCount.merge(key, value, Long::sum));
+		}
+	}
 
-    /**
-     * create date wise pr size map
-     *
-     * @param repoToolKpiMetricResponsesCommit
-     * @param repoName
-     * @param branchName
-     * @param dateWisePickupTime
-     * @param dateWiseMRCount
-     */
-    private void createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesCommit,
-                                        String repoName, String branchName, Map<String, Long> dateWisePickupTime,
-                                        Map<String, Long> dateWiseMRCount) {
+	/**
+	 * create date wise pr size map
+	 * @param repoToolKpiMetricResponsesCommit
+	 * @param repoName
+	 * @param branchName
+	 * @param dateWisePickupTime
+	 * @param dateWiseMRCount
+	 */
+	private void createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesCommit,
+			String repoName, String branchName, Map<String, Long> dateWisePickupTime,
+			Map<String, Long> dateWiseMRCount) {
 
-        for (RepoToolKpiMetricResponse response : repoToolKpiMetricResponsesCommit) {
-            if (response.getRepositories() != null) {
-                Optional<Branches> matchingBranch = response.getRepositories().stream()
-                        .filter(repository -> repository.getName().equals(repoName))
-                        .flatMap(repository -> repository.getBranches().stream())
-                        .filter(branch -> branch.getName().equals(branchName)).findFirst();
-                long prSize = matchingBranch.isPresent() ? matchingBranch.get().getLinesChanged() : 0l;
-                long mergeRequests = matchingBranch.isPresent() ? matchingBranch.get().getMergeRequests() : 0l;
-                dateWisePickupTime.put(response.getDateLabel(), prSize);
-                dateWiseMRCount.put(response.getDateLabel(), mergeRequests);
-            }
-        }
-    }
+		for (RepoToolKpiMetricResponse response : repoToolKpiMetricResponsesCommit) {
+			if (response.getRepositories() != null) {
+				Optional<Branches> matchingBranch = response.getRepositories().stream()
+						.filter(repository -> repository.getName().equals(repoName))
+						.flatMap(repository -> repository.getBranches().stream())
+						.filter(branch -> branch.getName().equals(branchName)).findFirst();
+				long prSize = matchingBranch.isPresent() ? matchingBranch.get().getLinesChanged() : 0l;
+				long mergeRequests = matchingBranch.isPresent() ? matchingBranch.get().getMergeRequests() : 0l;
+				dateWisePickupTime.put(response.getDateLabel(), prSize);
+				dateWiseMRCount.put(response.getDateLabel(), mergeRequests);
+			}
+		}
+	}
 
-    /**
-     * create data count object by day/week filter
-     *
-     * @param weekWisePRSize
-     * @param weekWiseMRCount
-     * @param excelDataLoader
-     * @param branchName
-     * @param projectName
-     * @param aggDataMap
-     * @param kpiRequest
-     */
-    private void setWeekWisePRSize(Map<String, Long> weekWisePRSize, Map<String, Long> weekWiseMRCount,
-                                   Map<String, Long> excelDataLoader, String branchName, String projectName,
-                                   Map<String, List<DataCount>> aggDataMap, KpiRequest kpiRequest) {
-        LocalDate currentDate = LocalDate.now();
-        Integer dataPoints = kpiRequest.getXAxisDataPoints();
-        String duration = kpiRequest.getDuration();
-        for (int i = 0; i < dataPoints; i++) {
-            CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
-            long prSize = weekWisePRSize.getOrDefault(dateRange.getStartDate().toString(), 0l);
-            String date = getDateRange(dateRange, duration);
-            aggDataMap.putIfAbsent(branchName, new ArrayList<>());
-            DataCount dataCount = setDataCount(projectName, date, prSize,
-                    weekWiseMRCount.getOrDefault(dateRange.getStartDate().toString(), 0l));
-            aggDataMap.get(branchName).add(dataCount);
-            excelDataLoader.put(date, prSize);
-            currentDate = getNextRangeDate(duration, currentDate);
+	/**
+	 * create data count object by day/week filter
+	 * @param weekWisePRSize
+	 * @param weekWiseMRCount
+	 * @param excelDataLoader
+	 * @param branchName
+	 * @param projectName
+	 * @param aggDataMap
+	 * @param kpiRequest
+	 */
+	private void setWeekWisePRSize(Map<String, Long> weekWisePRSize, Map<String, Long> weekWiseMRCount,
+			Map<String, Long> excelDataLoader, String branchName, String projectName,
+			Map<String, List<DataCount>> aggDataMap, KpiRequest kpiRequest) {
+		LocalDate currentDate = LocalDate.now();
+		Integer dataPoints = kpiRequest.getXAxisDataPoints();
+		String duration = kpiRequest.getDuration();
+		for (int i = 0; i < dataPoints; i++) {
+			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
+			long prSize = weekWisePRSize.getOrDefault(dateRange.getStartDate().toString(), 0l);
+			String date = getDateRange(dateRange, duration);
+			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
+			DataCount dataCount = setDataCount(projectName, date, prSize,
+					weekWiseMRCount.getOrDefault(dateRange.getStartDate().toString(), 0l));
+			aggDataMap.get(branchName).add(dataCount);
+			excelDataLoader.put(date, prSize);
+			currentDate = getNextRangeDate(duration, currentDate);
 
-        }
+		}
 
-    }
+	}
 
-    private String getDateRange(CustomDateRange dateRange, String duration) {
-        String range = null;
-        if (CommonConstant.WEEK.equalsIgnoreCase(duration)) {
-            range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
-                    DateUtil.DISPLAY_DATE_FORMAT) + " to "
-                    + DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
-                    DateUtil.DISPLAY_DATE_FORMAT);
-        } else {
-            range = dateRange.getStartDate().toString();
-        }
-        return range;
-    }
+	private String getDateRange(CustomDateRange dateRange, String duration) {
+		String range = null;
+		if (CommonConstant.WEEK.equalsIgnoreCase(duration)) {
+			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to "
+					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT);
+		} else {
+			range = dateRange.getStartDate().toString();
+		}
+		return range;
+	}
 
-    private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
-        if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
-            currentDate = currentDate.minusWeeks(1);
-        } else {
-            currentDate = currentDate.minusDays(1);
-        }
-        return currentDate;
-    }
+	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
+		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
+			currentDate = currentDate.minusWeeks(1);
+		} else {
+			currentDate = currentDate.minusDays(1);
+		}
+		return currentDate;
+	}
 
-    private DataCount setDataCount(String projectName, String week, Long value, Long mrCount) {
-        Map<String, Object> hoverMap = new HashMap<>();
-        hoverMap.put(MR_COUNT, mrCount);
-        DataCount dataCount = new DataCount();
-        dataCount.setData(String.valueOf(value == null ? 0l : value));
-        dataCount.setSProjectName(projectName);
-        dataCount.setDate(week);
-        dataCount.setHoverValue(hoverMap);
-        dataCount.setValue(value == null ? 0l : value);
-        return dataCount;
-    }
+	private DataCount setDataCount(String projectName, String week, Long value, Long mrCount) {
+		Map<String, Object> hoverMap = new HashMap<>();
+		hoverMap.put(MR_COUNT, mrCount);
+		DataCount dataCount = new DataCount();
+		dataCount.setData(String.valueOf(value == null ? 0l : value));
+		dataCount.setSProjectName(projectName);
+		dataCount.setDate(week);
+		dataCount.setHoverValue(hoverMap);
+		dataCount.setValue(value == null ? 0l : value);
+		return dataCount;
+	}
 
     /**
      * get kpi data from repo tools api
@@ -331,27 +330,27 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
         return repoToolKpiMetricResponseList;
     }
 
-    private void populateExcelDataObject(String requestTrackerId, List<Map<String, Long>> repoWiseMRList,
-                                         List<String> repoList, List<String> branchList, List<KPIExcelData> validationDataMap, Node node) {
-        if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+	private void populateExcelDataObject(String requestTrackerId, List<Map<String, Long>> repoWiseMRList,
+			List<String> repoList, List<String> branchList, List<KPIExcelData> validationDataMap, Node node) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
-            String projectName = node.getProjectFilter().getName();
+			String projectName = node.getProjectFilter().getName();
 
-            KPIExcelUtility.populatePRSizeExcelData(projectName, repoWiseMRList, repoList, branchList,
-                    validationDataMap);
+			KPIExcelUtility.populatePRSizeExcelData(projectName, repoWiseMRList, repoList, branchList,
+					validationDataMap);
 
-        }
-    }
+		}
+	}
 
-    @Override
-    public Long calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-        return null;
-    }
+	@Override
+	public Long calculateKPIMetrics(Map<String, Object> stringObjectMap) {
+		return null;
+	}
 
-    @Override
-    public Long calculateKpiValue(List<Long> valueList, String kpiId) {
-        return calculateKpiValueForLong(valueList, kpiId);
-    }
+	@Override
+	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
+		return calculateKpiValueForLong(valueList, kpiId);
+	}
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,

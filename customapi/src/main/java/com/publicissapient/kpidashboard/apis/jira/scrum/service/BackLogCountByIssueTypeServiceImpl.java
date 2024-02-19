@@ -56,18 +56,12 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class BackLogCountByIssueTypeServiceImpl extends JiraBacklogKPIService<Integer, List<Object>> {
 
-	private static final String PROJECT_WISE_JIRA_ISSUE = "Jira Issue";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
 	private ConfigHelperService configHelperService;
 
-	private static void getIssuesTypeCount(Map<String, List<JiraIssue>> issuesTypeData,
-			Map<String, Integer> typeWiseCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> statusEntry : issuesTypeData.entrySet()) {
-			typeWiseCountMap.put(statusEntry.getKey(), statusEntry.getValue().size());
-		}
-	}
+	private static final String PROJECT_WISE_JIRA_ISSUE = "Jira Issue";
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
@@ -105,6 +99,13 @@ public class BackLogCountByIssueTypeServiceImpl extends JiraBacklogKPIService<In
 		projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
 		log.info("BackLogCountByIssueTypeServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
+	}
+
+	private static void getIssuesTypeCount(Map<String, List<JiraIssue>> issuesTypeData,
+			Map<String, Integer> typeWiseCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> statusEntry : issuesTypeData.entrySet()) {
+			typeWiseCountMap.put(statusEntry.getKey(), statusEntry.getValue().size());
+		}
 	}
 
 	/**

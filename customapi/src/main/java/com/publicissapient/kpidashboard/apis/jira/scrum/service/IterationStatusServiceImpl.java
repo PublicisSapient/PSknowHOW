@@ -18,6 +18,28 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.stereotype.Component;
+
+import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -40,26 +62,8 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.stereotype.Component;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class fetches the daily closure on Iteration dashboard. Trend analysis
@@ -72,35 +76,35 @@ import java.util.stream.Collectors;
 @Slf4j
 public class IterationStatusServiceImpl extends JiraIterationKPIService {
 
-    private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
+	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 
-    private static final String OPEN_ISSUES = "openIssuesCausingDelay";
-    private static final String DELAY_DETAILS = "delayDetails";
-    private static final String SEARCH_BY_PRIORITY = "Filter by priority";
-    private static final String PARSE_EXCEPTION = "Exception while parse date...";
-    private static final String TOTALISSUES = "totalIssues";
-    private static final String SPRINT = "sprint";
-    private static final String JIRAISSUEMAP = "jiraIssueMap";
-    private static final String JIRAOPENISSUEMAP = "jiraOpenIssueMap";
-    private static final String COMPLETED_ISSUES = "completedIssues";
-    private static final String ISSUES_CAUSING_DELAY = "Delayed";
-    private static final String DAYS = "Days";
-    private static final String NET_DELAYED_ISSUES = "Net Delay";
-    private static final String LABELINFO = "(Issues Count)";
-    private static final String ISSUES_DONE_BEFORE_TIME = "Done Before Time";
-    private static final String NOT_COMPLETED_ISSUES = "notCompletedIssues";
-    private static final String JIRAISSUECUSTOMHISTORYMAP = "jiraIssueCustomHistoryMap";
-    private static final String JIRAOPENISSUECUSTOMHISTORYMAP = "jiraOpenIssueCustomHistoryMap";
-    private static final String OVERALL = "Overall";
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
+	private static final String OPEN_ISSUES = "openIssuesCausingDelay";
+	private static final String DELAY_DETAILS = "delayDetails";
+	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
+	private static final String PARSE_EXCEPTION = "Exception while parse date...";
+	private static final String TOTALISSUES = "totalIssues";
+	private static final String SPRINT = "sprint";
+	private static final String JIRAISSUEMAP = "jiraIssueMap";
+	private static final String JIRAOPENISSUEMAP = "jiraOpenIssueMap";
+	private static final String COMPLETED_ISSUES = "completedIssues";
+	private static final String ISSUES_CAUSING_DELAY = "Delayed";
+	private static final String DAYS = "Days";
+	private static final String NET_DELAYED_ISSUES = "Net Delay";
+	private static final String LABELINFO = "(Issues Count)";
+	private static final String ISSUES_DONE_BEFORE_TIME = "Done Before Time";
+	private static final String NOT_COMPLETED_ISSUES = "notCompletedIssues";
+	private static final String JIRAISSUECUSTOMHISTORYMAP = "jiraIssueCustomHistoryMap";
+	private static final String JIRAOPENISSUECUSTOMHISTORYMAP = "jiraOpenIssueCustomHistoryMap";
+	private static final String OVERALL = "Overall";
+	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
-    private static Integer getRemainingEstimateTime(JiraIssue issueObject) {
-        Integer remainingEstimate = 0;
-        if (issueObject.getRemainingEstimateMinutes() != null) {
-            remainingEstimate = (issueObject.getRemainingEstimateMinutes() / 60) / 8;
-        }
-        return remainingEstimate;
-    }
+	private static Integer getRemainingEstimateTime(JiraIssue issueObject) {
+		Integer remainingEstimate = 0;
+		if (issueObject.getRemainingEstimateMinutes() != null) {
+			remainingEstimate = (issueObject.getRemainingEstimateMinutes() / 60) / 8;
+		}
+		return remainingEstimate;
+	}
 
     @Override
     public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -179,30 +183,30 @@ public class IterationStatusServiceImpl extends JiraIterationKPIService {
         return resultListMap;
     }
 
-    private Map<String, JiraIssueCustomHistory> jiraIssueCustomHistoryMapping(List<String> issues,
-                                                                              List<JiraIssueCustomHistory> totalJiraIssuesHistory) {
-        Map<String, JiraIssueCustomHistory> jiraOpenIssueCustomHistoryMap;
-        List<JiraIssueCustomHistory> historyList = totalJiraIssuesHistory.stream()
-                .filter(f -> CollectionUtils.containsAny(Arrays.asList(f.getStoryID()), issues))
-                .collect(Collectors.toList());
-        jiraOpenIssueCustomHistoryMap = historyList.stream()
-                .collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, Function.identity()));
-        return jiraOpenIssueCustomHistoryMap;
-    }
+	private Map<String, JiraIssueCustomHistory> jiraIssueCustomHistoryMapping(List<String> issues,
+			List<JiraIssueCustomHistory> totalJiraIssuesHistory) {
+		Map<String, JiraIssueCustomHistory> jiraOpenIssueCustomHistoryMap;
+		List<JiraIssueCustomHistory> historyList = totalJiraIssuesHistory.stream()
+				.filter(f -> CollectionUtils.containsAny(Arrays.asList(f.getStoryID()), issues))
+				.collect(Collectors.toList());
+		jiraOpenIssueCustomHistoryMap = historyList.stream()
+				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, Function.identity()));
+		return jiraOpenIssueCustomHistoryMap;
+	}
 
-    private Map<String, JiraIssue> jiraIssuesMapping(List<JiraIssue> totalJiraIssues, Set<SprintIssue> sprintIssues,
-                                                     List<String> issues, SprintDetails sprintDetails) {
-        Set<JiraIssue> filtersOpenIssuesList;
-        Map<String, JiraIssue> jiraOpenIssueMap;
-        List<JiraIssue> jiraIssueList = totalJiraIssues.stream()
-                .filter(f -> CollectionUtils.containsAny(Arrays.asList(f.getNumber()), issues))
-                .collect(Collectors.toList());
-        filtersOpenIssuesList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-                sprintIssues, jiraIssueList);
-        jiraOpenIssueMap = filtersOpenIssuesList.stream()
-                .collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
-        return jiraOpenIssueMap;
-    }
+	private Map<String, JiraIssue> jiraIssuesMapping(List<JiraIssue> totalJiraIssues, Set<SprintIssue> sprintIssues,
+			List<String> issues, SprintDetails sprintDetails) {
+		Set<JiraIssue> filtersOpenIssuesList;
+		Map<String, JiraIssue> jiraOpenIssueMap;
+		List<JiraIssue> jiraIssueList = totalJiraIssues.stream()
+				.filter(f -> CollectionUtils.containsAny(Arrays.asList(f.getNumber()), issues))
+				.collect(Collectors.toList());
+		filtersOpenIssuesList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
+				sprintIssues, jiraIssueList);
+		jiraOpenIssueMap = filtersOpenIssuesList.stream()
+				.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
+		return jiraOpenIssueMap;
+	}
 
     /**
      * Populates KPI value to sprint leaf nodes and gives the trend analysis at
@@ -401,242 +405,242 @@ public class IterationStatusServiceImpl extends JiraIterationKPIService {
         return issuesCausedDelay;
     }
 
-    /*
-     * this method calculates the net delay
-     */
-    private List<IterationStatus> calculateNetDelay(List<IterationStatus> delayDetails,
-                                                    List<IterationStatus> openIssuesCausingDelay) {
-        List<IterationStatus> iterationKpiModalValuesNetDelay = new ArrayList<>();
-        if ((delayDetails != null) && !delayDetails.isEmpty()) {
-            iterationKpiModalValuesNetDelay.addAll(delayDetails);
-        }
-        if ((openIssuesCausingDelay != null) && !openIssuesCausingDelay.isEmpty()) {
-            iterationKpiModalValuesNetDelay.addAll(openIssuesCausingDelay);
-        }
-        return iterationKpiModalValuesNetDelay;
-    }
+	/*
+	 * this method calculates the net delay
+	 */
+	private List<IterationStatus> calculateNetDelay(List<IterationStatus> delayDetails,
+			List<IterationStatus> openIssuesCausingDelay) {
+		List<IterationStatus> iterationKpiModalValuesNetDelay = new ArrayList<>();
+		if ((delayDetails != null) && !delayDetails.isEmpty()) {
+			iterationKpiModalValuesNetDelay.addAll(delayDetails);
+		}
+		if ((openIssuesCausingDelay != null) && !openIssuesCausingDelay.isEmpty()) {
+			iterationKpiModalValuesNetDelay.addAll(openIssuesCausingDelay);
+		}
+		return iterationKpiModalValuesNetDelay;
+	}
 
-    /*
-     * method to find delay in closed issues
-     */
-    private Map<String, List<IterationStatus>> findDelayOfClosedIssues(Set<SprintIssue> completedIssues,
-                                                                       Map<String, JiraIssue> jiraMap, Map<String, JiraIssueCustomHistory> jiraHistoryMap, String startDate,
-                                                                       String endDate) {
-        Map<String, List<IterationStatus>> resultList = new HashMap<>();
-        List<IterationStatus> jiraBeforeTimeIssueList = new ArrayList<>();
-        List<IterationStatus> jiraAfterTimeIssueList = new ArrayList<>();
-        List<IterationStatus> jiraDelayIssueList = new ArrayList<>();
-        for (SprintIssue story : completedIssues) {
-            IterationStatus iterationKpiModalValue;
-            JiraIssueCustomHistory issueHistoryObject = jiraHistoryMap.get(story.getNumber());
-            JiraIssue issueObject = jiraMap.get(story.getNumber());
-            if ((Objects.nonNull(issueHistoryObject)) && Objects.nonNull(issueObject)) {
-                String closedDate = findClosedDate(issueHistoryObject, startDate, endDate, story.getStatus());
-                String dueDate = issueObject.getDueDate();
-                if (StringUtils.isNotEmpty(dueDate) && StringUtils.isNotEmpty(closedDate)) {
-                    // count the number of days excluding weekends
-                    int daysDiff = CommonUtils.closedStoryAndPotentialDelays(DateTime.parse(dueDate),
-                            DateTime.parse(closedDate));
-                    if (daysDiff > 0) {
-                        iterationKpiModalValue = prepareStoryDetails(issueObject, "-" + daysDiff);
-                        jiraBeforeTimeIssueList.add(iterationKpiModalValue);
-                    } else {
-                        iterationKpiModalValue = prepareStoryDetails(issueObject, String.valueOf(daysDiff * -1));
-                        jiraAfterTimeIssueList.add(iterationKpiModalValue);
-                    }
-                }
-            }
-        }
-        jiraDelayIssueList.addAll(jiraBeforeTimeIssueList);
-        jiraDelayIssueList.addAll(jiraAfterTimeIssueList);
-        resultList.computeIfPresent(DELAY_DETAILS, (k, v) -> {
-            v.addAll(jiraDelayIssueList);
-            return v;
-        });
-        resultList.putIfAbsent(DELAY_DETAILS, jiraDelayIssueList);
-        resultList.put("issuesClosedAfterDelayDate", jiraAfterTimeIssueList);
-        resultList.put("issuesClosedBeforeDueDate", jiraBeforeTimeIssueList);
-        return resultList;
-    }
+	/*
+	 * method to find delay in closed issues
+	 */
+	private Map<String, List<IterationStatus>> findDelayOfClosedIssues(Set<SprintIssue> completedIssues,
+			Map<String, JiraIssue> jiraMap, Map<String, JiraIssueCustomHistory> jiraHistoryMap, String startDate,
+			String endDate) {
+		Map<String, List<IterationStatus>> resultList = new HashMap<>();
+		List<IterationStatus> jiraBeforeTimeIssueList = new ArrayList<>();
+		List<IterationStatus> jiraAfterTimeIssueList = new ArrayList<>();
+		List<IterationStatus> jiraDelayIssueList = new ArrayList<>();
+		for (SprintIssue story : completedIssues) {
+			IterationStatus iterationKpiModalValue;
+			JiraIssueCustomHistory issueHistoryObject = jiraHistoryMap.get(story.getNumber());
+			JiraIssue issueObject = jiraMap.get(story.getNumber());
+			if ((Objects.nonNull(issueHistoryObject)) && Objects.nonNull(issueObject)) {
+				String closedDate = findClosedDate(issueHistoryObject, startDate, endDate, story.getStatus());
+				String dueDate = issueObject.getDueDate();
+				if (StringUtils.isNotEmpty(dueDate) && StringUtils.isNotEmpty(closedDate)) {
+					// count the number of days excluding weekends
+					int daysDiff = CommonUtils.closedStoryAndPotentialDelays(DateTime.parse(dueDate),
+							DateTime.parse(closedDate));
+					if (daysDiff > 0) {
+						iterationKpiModalValue = prepareStoryDetails(issueObject, "-" + daysDiff);
+						jiraBeforeTimeIssueList.add(iterationKpiModalValue);
+					} else {
+						iterationKpiModalValue = prepareStoryDetails(issueObject, String.valueOf(daysDiff * -1));
+						jiraAfterTimeIssueList.add(iterationKpiModalValue);
+					}
+				}
+			}
+		}
+		jiraDelayIssueList.addAll(jiraBeforeTimeIssueList);
+		jiraDelayIssueList.addAll(jiraAfterTimeIssueList);
+		resultList.computeIfPresent(DELAY_DETAILS, (k, v) -> {
+			v.addAll(jiraDelayIssueList);
+			return v;
+		});
+		resultList.putIfAbsent(DELAY_DETAILS, jiraDelayIssueList);
+		resultList.put("issuesClosedAfterDelayDate", jiraAfterTimeIssueList);
+		resultList.put("issuesClosedBeforeDueDate", jiraBeforeTimeIssueList);
+		return resultList;
+	}
 
-    private IterationStatus prepareStoryDetails(JiraIssue issueObject, String delay) {
-        IterationStatus iterationStatus = new IterationStatus();
-        iterationStatus.setIssueId(issueObject.getNumber());
-        iterationStatus.setUrl(issueObject.getUrl());
-        iterationStatus.setTypeName(issueObject.getTypeName());
-        iterationStatus.setPriority(issueObject.getPriority());
-        iterationStatus.setIssueDescription(issueObject.getName());
-        iterationStatus.setIssueStatus(issueObject.getStatus());
-        iterationStatus.setDueDate(DateUtil.dateTimeConverter(issueObject.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC,
-                DateUtil.DISPLAY_DATE_FORMAT));
-        if (issueObject.getRemainingEstimateMinutes() != null) {
-            iterationStatus.setRemainingEstimateMinutes(issueObject.getRemainingEstimateMinutes() / 60);
-        }
-        iterationStatus.setDelay(delay);
-        return iterationStatus;
-    }
+	private IterationStatus prepareStoryDetails(JiraIssue issueObject, String delay) {
+		IterationStatus iterationStatus = new IterationStatus();
+		iterationStatus.setIssueId(issueObject.getNumber());
+		iterationStatus.setUrl(issueObject.getUrl());
+		iterationStatus.setTypeName(issueObject.getTypeName());
+		iterationStatus.setPriority(issueObject.getPriority());
+		iterationStatus.setIssueDescription(issueObject.getName());
+		iterationStatus.setIssueStatus(issueObject.getStatus());
+		iterationStatus.setDueDate(DateUtil.dateTimeConverter(issueObject.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC,
+				DateUtil.DISPLAY_DATE_FORMAT));
+		if (issueObject.getRemainingEstimateMinutes() != null) {
+			iterationStatus.setRemainingEstimateMinutes(issueObject.getRemainingEstimateMinutes() / 60);
+		}
+		iterationStatus.setDelay(delay);
+		return iterationStatus;
+	}
 
-    private Map<String, List<IterationStatus>> findDelayOfOpenIssues(Set<SprintIssue> openIssues,
-                                                                     Map<String, JiraIssue> jiraOpenMap, Map<String, JiraIssueCustomHistory> jiraOpenHistoryMap,
-                                                                     String startDate, String endDate, Map<String, List<IterationStatus>> resultList) throws ParseException {
+	private Map<String, List<IterationStatus>> findDelayOfOpenIssues(Set<SprintIssue> openIssues,
+			Map<String, JiraIssue> jiraOpenMap, Map<String, JiraIssueCustomHistory> jiraOpenHistoryMap,
+			String startDate, String endDate, Map<String, List<IterationStatus>> resultList) throws ParseException {
 
-        Map<String, List<IterationStatus>> resultListOpenIssues = new HashMap<>();
-        List<IterationStatus> jiraDelayIssueList = new ArrayList<>();
-        List<IterationStatus> jiraNegativeDelayIssueList = new ArrayList<>();
-        for (SprintIssue story : openIssues) {
-            IterationStatus iterationKpiModalValue;
-            JiraIssueCustomHistory issueHistoryObject = jiraOpenHistoryMap.get(story.getNumber());
-            JiraIssue issueObject = jiraOpenMap.get(story.getNumber());
-            if ((Objects.nonNull(issueHistoryObject)) && Objects.nonNull(issueObject)
-                    && StringUtils.isNotEmpty(issueObject.getDueDate())) {
-                iterationKpiModalValue = createIterationKpiModal(startDate, endDate, issueObject);
-                if ((iterationKpiModalValue.getIssueId() != null)) {
-                    if (Integer.parseInt(iterationKpiModalValue.getDelay()) > 0) {
-                        jiraNegativeDelayIssueList.add(iterationKpiModalValue);
-                    } else {
-                        jiraDelayIssueList.add(iterationKpiModalValue);
-                    }
-                }
-            }
-        }
-        resultList.computeIfPresent(DELAY_DETAILS, (k, v) -> {
-            v.addAll(jiraDelayIssueList);
-            return v;
-        });
-        resultList.putIfAbsent(DELAY_DETAILS, jiraDelayIssueList);
-        resultListOpenIssues.put(OPEN_ISSUES, jiraNegativeDelayIssueList);
-        return resultListOpenIssues;
-    }
+		Map<String, List<IterationStatus>> resultListOpenIssues = new HashMap<>();
+		List<IterationStatus> jiraDelayIssueList = new ArrayList<>();
+		List<IterationStatus> jiraNegativeDelayIssueList = new ArrayList<>();
+		for (SprintIssue story : openIssues) {
+			IterationStatus iterationKpiModalValue;
+			JiraIssueCustomHistory issueHistoryObject = jiraOpenHistoryMap.get(story.getNumber());
+			JiraIssue issueObject = jiraOpenMap.get(story.getNumber());
+			if ((Objects.nonNull(issueHistoryObject)) && Objects.nonNull(issueObject)
+					&& StringUtils.isNotEmpty(issueObject.getDueDate())) {
+				iterationKpiModalValue = createIterationKpiModal(startDate, endDate, issueObject);
+				if ((iterationKpiModalValue.getIssueId() != null)) {
+					if (Integer.parseInt(iterationKpiModalValue.getDelay()) > 0) {
+						jiraNegativeDelayIssueList.add(iterationKpiModalValue);
+					} else {
+						jiraDelayIssueList.add(iterationKpiModalValue);
+					}
+				}
+			}
+		}
+		resultList.computeIfPresent(DELAY_DETAILS, (k, v) -> {
+			v.addAll(jiraDelayIssueList);
+			return v;
+		});
+		resultList.putIfAbsent(DELAY_DETAILS, jiraDelayIssueList);
+		resultListOpenIssues.put(OPEN_ISSUES, jiraNegativeDelayIssueList);
+		return resultListOpenIssues;
+	}
 
-    private IterationStatus createIterationKpiModal(String startDate, String endDate, JiraIssue issueObject)
-            throws ParseException {
-        IterationStatus iterationKpiModalValue;
-        SimpleDateFormat sdformat = new SimpleDateFormat(DATE_FORMAT);
-        DateTime dueDate = DateTime.parse(issueObject.getDueDate());
-        Date storyDueDate = sdformat.parse(String.valueOf(dueDate));
-        Date sprintEndData = sdformat.parse(String.valueOf(endDate));
-        Date todayDate = sdformat.parse(String.valueOf(DateTime.now()));
-        Date sprintStartDate = sdformat.parse(String.valueOf(startDate));
-        /*
-         * case of stories past the due date and are closed curr date, duedate,
-         * sprintenddate
-         */
-        if (todayDate.compareTo(storyDueDate) > 0) { // if current date > than story due date .i.e story
-            // past the due date
-            if (todayDate.compareTo(sprintEndData) > 0) {// if curr date is > sprint end date .i.e closed
-                // sprint case
+	private IterationStatus createIterationKpiModal(String startDate, String endDate, JiraIssue issueObject)
+			throws ParseException {
+		IterationStatus iterationKpiModalValue;
+		SimpleDateFormat sdformat = new SimpleDateFormat(DATE_FORMAT);
+		DateTime dueDate = DateTime.parse(issueObject.getDueDate());
+		Date storyDueDate = sdformat.parse(String.valueOf(dueDate));
+		Date sprintEndData = sdformat.parse(String.valueOf(endDate));
+		Date todayDate = sdformat.parse(String.valueOf(DateTime.now()));
+		Date sprintStartDate = sdformat.parse(String.valueOf(startDate));
+		/*
+		 * case of stories past the due date and are closed curr date, duedate,
+		 * sprintenddate
+		 */
+		if (todayDate.compareTo(storyDueDate) > 0) { // if current date > than story due date .i.e story
+			// past the due date
+			if (todayDate.compareTo(sprintEndData) > 0) {// if curr date is > sprint end date .i.e closed
+				// sprint case
 
-                // delayList =
-                // String.valueOf(potentialDelayOfStoriesPastDueDateClosedSprint(issueObject,
-                // endDate,
-                // startDate)); // due date passed and closed sprint
-                iterationKpiModalValue = potentialDelayOfStoriesPastDueDateClosedSprint(issueObject, endDate);
-            } else {// if curr date is < sprint end date .i.e active sprint case, Story spillage
-                // case
-                if (storyDueDate.compareTo(sprintStartDate) < 0) { // spilled story and due date not changed
-                    // < sprint start date
-                    iterationKpiModalValue = spilledIssues(startDate, issueObject);
-                } else {
-                    // duedate passed but active sprint
-                    iterationKpiModalValue = issuesPastDueDateInsideSprint(dueDate, startDate, endDate, issueObject);
-                }
-            }
-        } else { // if current date is less than story due date, stories inside due date but not
-            // closed, Active story case
-            iterationKpiModalValue = potentialDelayOfStoriesInsideDueDate(endDate, dueDate, issueObject);
-        }
-        return iterationKpiModalValue;
-    }
+				// delayList =
+				// String.valueOf(potentialDelayOfStoriesPastDueDateClosedSprint(issueObject,
+				// endDate,
+				// startDate)); // due date passed and closed sprint
+				iterationKpiModalValue = potentialDelayOfStoriesPastDueDateClosedSprint(issueObject, endDate);
+			} else {// if curr date is < sprint end date .i.e active sprint case, Story spillage
+				// case
+				if (storyDueDate.compareTo(sprintStartDate) < 0) { // spilled story and due date not changed
+					// < sprint start date
+					iterationKpiModalValue = spilledIssues(startDate, issueObject);
+				} else {
+					// duedate passed but active sprint
+					iterationKpiModalValue = issuesPastDueDateInsideSprint(dueDate, startDate, endDate, issueObject);
+				}
+			}
+		} else { // if current date is less than story due date, stories inside due date but not
+			// closed, Active story case
+			iterationKpiModalValue = potentialDelayOfStoriesInsideDueDate(endDate, dueDate, issueObject);
+		}
+		return iterationKpiModalValue;
+	}
 
-    private IterationStatus potentialDelayOfStoriesInsideDueDate(String endDate, DateTime dueDate,
-                                                                 JiraIssue issueObject) throws ParseException {
-        SimpleDateFormat sdformat = new SimpleDateFormat(DATE_FORMAT);
-        Date sprintEndData = sdformat.parse(String.valueOf(endDate));
-        DateTime currDate = DateTime.now();
-        Date todayDate = sdformat.parse(String.valueOf(currDate));
-        String delayList = null;
-        String diffREDelays = null;
-        IterationStatus iterationStatus = new IterationStatus();
-        if (todayDate.compareTo(sprintEndData) < 0) {
-            Integer daysDiff = CommonUtils.closedStoryAndPotentialDelays(dueDate, currDate);
-            Integer remainingEstimateTime = getRemainingEstimateTime(issueObject);
-            if (remainingEstimateTime > daysDiff) {
-                diffREDelays = String.valueOf(remainingEstimateTime - daysDiff);
-                diffREDelays = String.valueOf(Integer.valueOf(diffREDelays));
-            } else {
-                daysDiff = daysDiff - remainingEstimateTime;
-                diffREDelays = (daysDiff == 0) ? String.valueOf(daysDiff) : "-" + (daysDiff);
-            }
-            delayList = diffREDelays;
-            iterationStatus = prepareStoryDetails(issueObject, delayList);
-        }
-        return iterationStatus;
-    }
+	private IterationStatus potentialDelayOfStoriesInsideDueDate(String endDate, DateTime dueDate,
+			JiraIssue issueObject) throws ParseException {
+		SimpleDateFormat sdformat = new SimpleDateFormat(DATE_FORMAT);
+		Date sprintEndData = sdformat.parse(String.valueOf(endDate));
+		DateTime currDate = DateTime.now();
+		Date todayDate = sdformat.parse(String.valueOf(currDate));
+		String delayList = null;
+		String diffREDelays = null;
+		IterationStatus iterationStatus = new IterationStatus();
+		if (todayDate.compareTo(sprintEndData) < 0) {
+			Integer daysDiff = CommonUtils.closedStoryAndPotentialDelays(dueDate, currDate);
+			Integer remainingEstimateTime = getRemainingEstimateTime(issueObject);
+			if (remainingEstimateTime > daysDiff) {
+				diffREDelays = String.valueOf(remainingEstimateTime - daysDiff);
+				diffREDelays = String.valueOf(Integer.valueOf(diffREDelays));
+			} else {
+				daysDiff = daysDiff - remainingEstimateTime;
+				diffREDelays = (daysDiff == 0) ? String.valueOf(daysDiff) : "-" + (daysDiff);
+			}
+			delayList = diffREDelays;
+			iterationStatus = prepareStoryDetails(issueObject, delayList);
+		}
+		return iterationStatus;
+	}
 
-    private IterationStatus issuesPastDueDateInsideSprint(DateTime dueDate, String startDate, String endDate,
-                                                          JiraIssue issueObject) throws ParseException {
-        SimpleDateFormat sdformat = new SimpleDateFormat(DATE_FORMAT);
-        Date storyDueDate = sdformat.parse(String.valueOf(dueDate));
-        Date sprintStartDate = sdformat.parse(String.valueOf(startDate));
-        Date sprintEndDate = sdformat.parse(String.valueOf(endDate));
-        Integer delayList = 0;
-        Integer delayDaysAlready = 0;
-        DateTime currDate = DateTime.now();
-        IterationStatus iterationStatus = new IterationStatus();
-        if (storyDueDate.compareTo(sprintStartDate) >= 0 && storyDueDate.compareTo(sprintEndDate) < 0) {
-            delayDaysAlready = CommonUtils.openStoryDelay(currDate, dueDate, false);
-            Integer remainingEstimateTime = getRemainingEstimateTime(issueObject);
-            if (remainingEstimateTime > 0) {
-                delayDaysAlready = remainingEstimateTime + delayDaysAlready;
-            }
-            delayList = (delayList + (delayDaysAlready));
-            iterationStatus = prepareStoryDetails(issueObject, String.valueOf(delayList));
-        }
-        return iterationStatus;
-    }
+	private IterationStatus issuesPastDueDateInsideSprint(DateTime dueDate, String startDate, String endDate,
+			JiraIssue issueObject) throws ParseException {
+		SimpleDateFormat sdformat = new SimpleDateFormat(DATE_FORMAT);
+		Date storyDueDate = sdformat.parse(String.valueOf(dueDate));
+		Date sprintStartDate = sdformat.parse(String.valueOf(startDate));
+		Date sprintEndDate = sdformat.parse(String.valueOf(endDate));
+		Integer delayList = 0;
+		Integer delayDaysAlready = 0;
+		DateTime currDate = DateTime.now();
+		IterationStatus iterationStatus = new IterationStatus();
+		if (storyDueDate.compareTo(sprintStartDate) >= 0 && storyDueDate.compareTo(sprintEndDate) < 0) {
+			delayDaysAlready = CommonUtils.openStoryDelay(currDate, dueDate, false);
+			Integer remainingEstimateTime = getRemainingEstimateTime(issueObject);
+			if (remainingEstimateTime > 0) {
+				delayDaysAlready = remainingEstimateTime + delayDaysAlready;
+			}
+			delayList = (delayList + (delayDaysAlready));
+			iterationStatus = prepareStoryDetails(issueObject, String.valueOf(delayList));
+		}
+		return iterationStatus;
+	}
 
-    private IterationStatus spilledIssues(String startDate, JiraIssue issueObject) {
-        DateTime currDate = DateTime.now();
-        DateTime sprintStart = DateTime.parse(startDate);
-        Integer delayDaysAlready = 0;
-        Integer delayList = 0;
-        Integer estimateTime = getRemainingEstimateTime(issueObject);
-        delayDaysAlready = CommonUtils.openStoryDelay(currDate, sprintStart, true);
-        delayList = (delayList + delayDaysAlready + estimateTime);
-        return prepareStoryDetails(issueObject, String.valueOf(delayList));
-    }
+	private IterationStatus spilledIssues(String startDate, JiraIssue issueObject) {
+		DateTime currDate = DateTime.now();
+		DateTime sprintStart = DateTime.parse(startDate);
+		Integer delayDaysAlready = 0;
+		Integer delayList = 0;
+		Integer estimateTime = getRemainingEstimateTime(issueObject);
+		delayDaysAlready = CommonUtils.openStoryDelay(currDate, sprintStart, true);
+		delayList = (delayList + delayDaysAlready + estimateTime);
+		return prepareStoryDetails(issueObject, String.valueOf(delayList));
+	}
 
-    private IterationStatus potentialDelayOfStoriesPastDueDateClosedSprint(JiraIssue issueObject, String endDate)
-            throws ParseException {
-        Integer delayList = 0;
-        IterationStatus iterationStatus = new IterationStatus();
-        SimpleDateFormat sdformat = new SimpleDateFormat(DATE_FORMAT);
-        DateTime dueDate = DateTime.parse(issueObject.getDueDate());
-        Date storyDueDate = sdformat.parse(String.valueOf(dueDate));
-        Date sprintEndData = sdformat.parse(String.valueOf(endDate));
-        DateTime sprintEnd = DateTime.parse(endDate);
-        if (storyDueDate.compareTo(sprintEndData) < 0) {
-            Integer delayDaysAlready = CommonUtils.closedStoryAndPotentialDelays(sprintEnd, dueDate);
-            delayList = (delayList + delayDaysAlready) * -1;
-            iterationStatus = prepareStoryDetails(issueObject, String.valueOf(delayList));
-        }
-        return iterationStatus;
-    }
+	private IterationStatus potentialDelayOfStoriesPastDueDateClosedSprint(JiraIssue issueObject, String endDate)
+			throws ParseException {
+		Integer delayList = 0;
+		IterationStatus iterationStatus = new IterationStatus();
+		SimpleDateFormat sdformat = new SimpleDateFormat(DATE_FORMAT);
+		DateTime dueDate = DateTime.parse(issueObject.getDueDate());
+		Date storyDueDate = sdformat.parse(String.valueOf(dueDate));
+		Date sprintEndData = sdformat.parse(String.valueOf(endDate));
+		DateTime sprintEnd = DateTime.parse(endDate);
+		if (storyDueDate.compareTo(sprintEndData) < 0) {
+			Integer delayDaysAlready = CommonUtils.closedStoryAndPotentialDelays(sprintEnd, dueDate);
+			delayList = (delayList + delayDaysAlready) * -1;
+			iterationStatus = prepareStoryDetails(issueObject, String.valueOf(delayList));
+		}
+		return iterationStatus;
+	}
 
-    public String findClosedDate(JiraIssueCustomHistory issueHistoryObject, String startDate, String endDate,
-                                 String status) {
-        String date;
-        for (int i = 0; i < issueHistoryObject.getStatusUpdationLog().size(); i++) {
-            if (issueHistoryObject.getStatusUpdationLog().get(i).getChangedTo().equalsIgnoreCase(status)) {
-                date = issueHistoryObject.getStatusUpdationLog().get(i).getUpdatedOn().toString();
-                DateTime closedDate = DateTime.parse(date);
-                DateTime startDateValue = DateTime.parse(startDate);
-                DateTime endDateValue = DateTime.parse(endDate);
-                if (closedDate.isAfter(startDateValue) && closedDate.isBefore(endDateValue)) {
-                    return date;
-                }
-            }
-        }
-        return null;
-    }
+	public String findClosedDate(JiraIssueCustomHistory issueHistoryObject, String startDate, String endDate,
+			String status) {
+		String date;
+		for (int i = 0; i < issueHistoryObject.getStatusUpdationLog().size(); i++) {
+			if (issueHistoryObject.getStatusUpdationLog().get(i).getChangedTo().equalsIgnoreCase(status)) {
+				date = issueHistoryObject.getStatusUpdationLog().get(i).getUpdatedOn().toString();
+				DateTime closedDate = DateTime.parse(date);
+				DateTime startDateValue = DateTime.parse(startDate);
+				DateTime endDateValue = DateTime.parse(endDate);
+				if (closedDate.isAfter(startDateValue) && closedDate.isBefore(endDateValue)) {
+					return date;
+				}
+			}
+		}
+		return null;
+	}
 }

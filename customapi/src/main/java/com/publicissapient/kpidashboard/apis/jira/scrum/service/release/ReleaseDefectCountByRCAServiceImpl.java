@@ -63,35 +63,6 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 	@Autowired
 	private ConfigHelperService configHelperService;
 
-	/**
-	 * create rca wise jira issue map
-	 *
-	 * @param rcaData
-	 * @param rcaCountMap
-	 */
-	private static void getRCAWiseCount(Map<String, List<JiraIssue>> rcaData, Map<String, Integer> rcaCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> rcaEntry : rcaData.entrySet()) {
-			String rca = rcaEntry.getKey();
-			List<JiraIssue> issues = rcaEntry.getValue();
-			rcaCountMap.put(rca, issues.size());
-		}
-	}
-
-	/**
-	 * create map of data count by filter
-	 *
-	 * @param dataCountListForAllRCA
-	 * @param overallRCACountMapAggregate
-	 */
-	private static void overallRCACountMap(List<DataCount> dataCountListForAllRCA,
-			Map<String, Integer> overallRCACountMapAggregate) {
-		for (DataCount dataCount : dataCountListForAllRCA) {
-			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
-			statusCountMap.forEach(
-					(rca, rcaCountValue) -> overallRCACountMapAggregate.merge(rca, rcaCountValue, Integer::sum));
-		}
-	}
-
 	@Override
 	public String getQualifierType() {
 		return KPICode.DEFECT_COUNT_BY_RCA_RELEASE.name();
@@ -216,6 +187,35 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 		scopeWiseDefectsMap.put(OPEN_DEFECT,
 				openIssues.stream().filter(hasNonEmptyRootCauseList).collect(groupingByRootCause));
 		return scopeWiseDefectsMap;
+	}
+
+	/**
+	 * create rca wise jira issue map
+	 *
+	 * @param rcaData
+	 * @param rcaCountMap
+	 */
+	private static void getRCAWiseCount(Map<String, List<JiraIssue>> rcaData, Map<String, Integer> rcaCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> rcaEntry : rcaData.entrySet()) {
+			String rca = rcaEntry.getKey();
+			List<JiraIssue> issues = rcaEntry.getValue();
+			rcaCountMap.put(rca, issues.size());
+		}
+	}
+
+	/**
+	 * create map of data count by filter
+	 *
+	 * @param dataCountListForAllRCA
+	 * @param overallRCACountMapAggregate
+	 */
+	private static void overallRCACountMap(List<DataCount> dataCountListForAllRCA,
+			Map<String, Integer> overallRCACountMapAggregate) {
+		for (DataCount dataCount : dataCountListForAllRCA) {
+			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
+			statusCountMap.forEach(
+					(rca, rcaCountValue) -> overallRCACountMapAggregate.merge(rca, rcaCountValue, Integer::sum));
+		}
 	}
 
 	/**

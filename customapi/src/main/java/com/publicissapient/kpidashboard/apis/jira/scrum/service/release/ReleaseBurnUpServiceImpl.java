@@ -79,16 +79,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 
-	public static final String RELEASE_PREDICTION = "Release Prediction";
-	public static final String ISSUE_COUNT_PREDICTION = "issueCountPrediction";
-	public static final String ISSUE_SIZE_PREDICTION = "issueSizePrediction";
-	public static final String SHOW_PREDICTION = "showPrediction";
-	public static final String OVERALL_COMPLETED = "OVERALL COMPLETED";
-	public static final String IS_PREDICTION_BOUNDARY = "isPredictionBoundary";
-	public static final String IS_ISSUE_COUNT_ACHIEVED = "isIssueCountAchieved";
-	public static final String IS_STORY_POINT_ACHIEVED = "isStoryPointAchieved";
-	public static final String OVERALL_ISSUE = "OVERALL ISSUE";
-	public static final String DEV_COMPLETE_DATE_MAP = "devCompleteDateMap";
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String ADDED_TO_RELEASE = "addedToRelease";
 	private static final String FULL_RELEASE = "fullRelease";
@@ -102,83 +92,29 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	private static final String RELEASE_PROGRESS = "Release Progress";
 	private static final String LINE_GRAPH_TYPE = "line";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	public static final String RELEASE_PREDICTION = "Release Prediction";
+	public static final String ISSUE_COUNT_PREDICTION = "issueCountPrediction";
+	public static final String ISSUE_SIZE_PREDICTION = "issueSizePrediction";
+	public static final String SHOW_PREDICTION = "showPrediction";
+	public static final String OVERALL_COMPLETED = "OVERALL COMPLETED";
 	private static final String AVG_ISSUE_COUNT = "avgIssueCount";
 	private static final String AVG_STORY_POINT = "avgStoryPoint";
-	private final List<JiraIssue> allReleaseTaggedIssue = new ArrayList<>();
+	public static final String IS_PREDICTION_BOUNDARY = "isPredictionBoundary";
+	public static final String IS_ISSUE_COUNT_ACHIEVED = "isIssueCountAchieved";
+	public static final String IS_STORY_POINT_ACHIEVED = "isStoryPointAchieved";
+	public static final String OVERALL_ISSUE = "OVERALL ISSUE";
+	public static final String DEV_COMPLETE_DATE_MAP = "devCompleteDateMap";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
+
 	@Autowired
 	private ConfigHelperService configHelperService;
+
 	@Autowired
 	private CommonServiceImpl commonService;
+
 	private LocalDate tempStartDate = null;
-
-	private static Map<String, LocalDate> getMapOfCloseStatus(List<JiraHistoryChangeLog> statusUpdateLog,
-			JiraIssueReleaseStatus jiraIssueReleaseStatus, FieldMapping fieldMapping) {
-		Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
-		for (JiraHistoryChangeLog jiraHistoryChangeLog : statusUpdateLog) {
-			LocalDate activityDate = LocalDate.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
-					DATE_TIME_FORMATTER);
-			// reopened scenario
-			if (jiraIssueReleaseStatus.getClosedList().containsValue(jiraHistoryChangeLog.getChangedFrom())
-					&& jiraHistoryChangeLog.getChangedTo().equalsIgnoreCase(fieldMapping.getStoryFirstStatus())) {
-				closedStatusDateMap.clear();
-			}
-			// first close date of last close cycle
-			if (jiraIssueReleaseStatus.getClosedList().containsValue(jiraHistoryChangeLog.getChangedTo())) {
-				if (closedStatusDateMap.containsKey(jiraHistoryChangeLog.getChangedTo())) {
-					closedStatusDateMap.clear();
-				}
-				closedStatusDateMap.put(jiraHistoryChangeLog.getChangedTo(), activityDate);
-			}
-		}
-		return closedStatusDateMap;
-	}
-
-	/**
-	 * Method to find first close date of last close cycle
-	 *
-	 * @param statusUpdateLog
-	 *            statusUpdateLog
-	 * @param devOrQaDoneStatus
-	 *            Dev or Qa Done Status
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @return Map<String,LocalDate>
-	 */
-	private static LocalDate getDoneDateBasedOnStatus(List<JiraHistoryChangeLog> statusUpdateLog,
-			List<String> devOrQaDoneStatus, FieldMapping fieldMapping) {
-		Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
-		for (JiraHistoryChangeLog jiraHistoryChangeLog : statusUpdateLog) {
-			LocalDate activityDate = LocalDate.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
-					DATE_TIME_FORMATTER);
-			// reopened scenario
-			if (devOrQaDoneStatus.contains(jiraHistoryChangeLog.getChangedFrom().toLowerCase())
-					&& jiraHistoryChangeLog.getChangedTo().equalsIgnoreCase(fieldMapping.getStoryFirstStatus())) {
-				closedStatusDateMap.clear();
-			}
-			// first close date of last close cycle
-			if (devOrQaDoneStatus.contains(jiraHistoryChangeLog.getChangedTo().toLowerCase())) {
-				if (closedStatusDateMap.containsKey(jiraHistoryChangeLog.getChangedTo().toLowerCase())) {
-					closedStatusDateMap.clear();
-				}
-				closedStatusDateMap.put(jiraHistoryChangeLog.getChangedTo().toLowerCase(), activityDate);
-			}
-		}
-		// Getting the min date of closed status.
-		return closedStatusDateMap.values().stream().filter(Objects::nonNull).min(LocalDate::compareTo).orElse(null);
-	}
-
-	/**
-	 * DeepClone the map
-	 *
-	 * @param originalMap
-	 * @return
-	 */
-	public static Map<LocalDate, List<JiraIssue>> deepCopyMap(Map<LocalDate, List<JiraIssue>> originalMap) {
-		return originalMap.entrySet().stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, entry -> new ArrayList<>(entry.getValue())));
-	}
+	private final List<JiraIssue> allReleaseTaggedIssue = new ArrayList<>();
 
 	/**
 	 * {@inheritDoc}
@@ -355,6 +291,40 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			devCompletedReleaseMap.putIfAbsent(updatedLog, jiraIssueList);
 			devCompletedReleaseMap.remove(null);
 		}
+	}
+
+	/**
+	 * Method to find first close date of last close cycle
+	 *
+	 * @param statusUpdateLog
+	 *            statusUpdateLog
+	 * @param devOrQaDoneStatus
+	 *            Dev or Qa Done Status
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return Map<String,LocalDate>
+	 */
+	private static LocalDate getDoneDateBasedOnStatus(List<JiraHistoryChangeLog> statusUpdateLog,
+			List<String> devOrQaDoneStatus, FieldMapping fieldMapping) {
+		Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
+		for (JiraHistoryChangeLog jiraHistoryChangeLog : statusUpdateLog) {
+			LocalDate activityDate = LocalDate.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
+					DATE_TIME_FORMATTER);
+			// reopened scenario
+			if (devOrQaDoneStatus.contains(jiraHistoryChangeLog.getChangedFrom().toLowerCase())
+					&& jiraHistoryChangeLog.getChangedTo().equalsIgnoreCase(fieldMapping.getStoryFirstStatus())) {
+				closedStatusDateMap.clear();
+			}
+			// first close date of last close cycle
+			if (devOrQaDoneStatus.contains(jiraHistoryChangeLog.getChangedTo().toLowerCase())) {
+				if (closedStatusDateMap.containsKey(jiraHistoryChangeLog.getChangedTo().toLowerCase())) {
+					closedStatusDateMap.clear();
+				}
+				closedStatusDateMap.put(jiraHistoryChangeLog.getChangedTo().toLowerCase(), activityDate);
+			}
+		}
+		// Getting the min date of closed status.
+		return closedStatusDateMap.values().stream().filter(Objects::nonNull).min(LocalDate::compareTo).orElse(null);
 	}
 
 	/**
@@ -724,6 +694,18 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 		return rangedCompletedMap;
 	}
 
+	/**
+	 * DeepClone the map
+	 * @param originalMap
+	 * @return
+	 */
+	public static Map<LocalDate, List<JiraIssue>> deepCopyMap(Map<LocalDate, List<JiraIssue>> originalMap) {
+		return originalMap.entrySet().stream()
+				.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						entry -> new ArrayList<>(entry.getValue())
+				));
+	}
 	/**
 	 * Method for calculation x-axis duration & range
 	 *

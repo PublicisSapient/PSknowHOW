@@ -63,37 +63,6 @@ public class ReleaseDefectCountByAssigneeServiceImpl extends JiraReleaseKPIServi
 	@Autowired
 	private ConfigHelperService configHelperService;
 
-	/**
-	 * create assignee wise count map of total and open defects
-	 *
-	 * @param assigneeData
-	 * @param assigneeCountMap
-	 * @return
-	 */
-	private static void getAssigneeWiseCount(Map<String, List<JiraIssue>> assigneeData,
-			Map<String, Integer> assigneeCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> assigneeEntry : assigneeData.entrySet()) {
-			String assignee = assigneeEntry.getKey();
-			List<JiraIssue> issues = assigneeEntry.getValue();
-			assigneeCountMap.put(assignee, issues.size());
-		}
-	}
-
-	/**
-	 * create map of data count by filter
-	 *
-	 * @param dataCountListForAllAssignees
-	 * @param overallAssigneeCountMapAggregate
-	 */
-	private static void overallAssigneeCountMap(List<DataCount> dataCountListForAllAssignees,
-			Map<String, Integer> overallAssigneeCountMapAggregate) {
-		for (DataCount dataCount : dataCountListForAllAssignees) {
-			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
-			statusCountMap.forEach((assignee, assigneeCountValue) -> overallAssigneeCountMapAggregate.merge(assignee,
-					assigneeCountValue, Integer::sum));
-		}
-	}
-
 	@Override
 	public String getQualifierType() {
 		return KPICode.DEFECT_COUNT_BY_ASSIGNEE_RELEASE.name();
@@ -220,6 +189,37 @@ public class ReleaseDefectCountByAssigneeServiceImpl extends JiraReleaseKPIServi
 		scopeWiseDefectsMap.put(OPEN_DEFECT,
 				openIssues.stream().filter(hasNonEmptyRootCauseList).collect(groupingByAssignee));
 		return scopeWiseDefectsMap;
+	}
+
+	/**
+	 * create assignee wise count map of total and open defects
+	 *
+	 * @param assigneeData
+	 * @param assigneeCountMap
+	 * @return
+	 */
+	private static void getAssigneeWiseCount(Map<String, List<JiraIssue>> assigneeData,
+			Map<String, Integer> assigneeCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> assigneeEntry : assigneeData.entrySet()) {
+			String assignee = assigneeEntry.getKey();
+			List<JiraIssue> issues = assigneeEntry.getValue();
+			assigneeCountMap.put(assignee, issues.size());
+		}
+	}
+
+	/**
+	 * create map of data count by filter
+	 *
+	 * @param dataCountListForAllAssignees
+	 * @param overallAssigneeCountMapAggregate
+	 */
+	private static void overallAssigneeCountMap(List<DataCount> dataCountListForAllAssignees,
+			Map<String, Integer> overallAssigneeCountMapAggregate) {
+		for (DataCount dataCount : dataCountListForAllAssignees) {
+			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
+			statusCountMap.forEach((assignee, assigneeCountValue) -> overallAssigneeCountMapAggregate.merge(assignee,
+					assigneeCountValue, Integer::sum));
+		}
 	}
 
 	/**
