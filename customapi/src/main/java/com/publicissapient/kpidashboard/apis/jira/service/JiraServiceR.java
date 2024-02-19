@@ -22,12 +22,12 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
 import org.apache.commons.collections4.CollectionUtils;
+import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
@@ -56,7 +56,7 @@ import lombok.extern.slf4j.Slf4j;
  * in thread. It is responsible for cache of KPI data at different level.
  *
  * @author tauakram
- *
+ * @implNote {@link KpiIntegrationServiceImpl }
  */
 @Service
 @Slf4j
@@ -83,6 +83,8 @@ public class JiraServiceR {
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+
+	private boolean referFromProjectCache = true;
 
 	/**
 	 * This method process scrum JIRA based kpi request, cache data and call service
@@ -190,7 +192,7 @@ public class JiraServiceR {
 		 * @param treeAggregatorDetail
 		 */
 		public ParallelJiraServices(KpiRequest kpiRequest, List<KpiElement> responseList, KpiElement kpiEle,
-				TreeAggregatorDetail treeAggregatorDetail) {
+									TreeAggregatorDetail treeAggregatorDetail) {
 			super();
 			this.kpiRequest = kpiRequest;
 			this.responseList = responseList;
@@ -227,7 +229,7 @@ public class JiraServiceR {
 		 *             ApplicationException
 		 */
 		private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-				KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+													  KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
 			JiraKPIService<?, ?, ?> jiraKPIService = null;
 
@@ -250,6 +252,23 @@ public class JiraServiceR {
 			}
 		}
 
+	}
+
+	/**
+	 * This method is called when the request for kpi is done from exposed API
+	 *
+	 * @param kpiRequest
+	 *            JIRA KPI request true if flow for precalculated, false for direct
+	 *            flow.
+	 * @return List of KPI data
+	 * @throws EntityNotFoundException
+	 *             EntityNotFoundException
+	 */
+	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
+		referFromProjectCache = false;
+		List<KpiElement> kpiElementList = process(kpiRequest);
+		referFromProjectCache = true;
+		return kpiElementList;
 	}
 
 }

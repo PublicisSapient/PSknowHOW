@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
+
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,7 +77,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 /**
  * Test class for @{BacklogReadinessEfficiencyServiceImpl}
- * 
+ *
  * @author dhachuda
  *
  */
@@ -159,9 +159,11 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 4);
 
+		List<SprintDetails> sprintDetailsList = new ArrayList<>();
+		sprintDetailsList.add(sprintDetails);
 		Map<String, Object> sprintVelocityStoryMap = new HashMap<>();
 		sprintVelocityStoryMap.put("sprintVelocityKey", storyList);
-		sprintVelocityStoryMap.put("sprintWiseSprintDetailMap", List.of(sprintDetails));
+		sprintVelocityStoryMap.put("sprintWiseSprintDetailMap", sprintDetailsList);
 
 		when(kpiHelperService.fetchBackLogReadinessFromdb(any(), any())).thenReturn(sprintVelocityStoryMap);
 
@@ -184,7 +186,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		try {
 			KpiElement kpiElement = backlogReadinessEfficiencyServiceImpl.getKpiData(kpiRequest,
 					kpiRequest.getKpiList().get(0), treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
-			assertEquals(DataCount.class,kpiElement.getTrendValueList().getClass());
+			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {
 
