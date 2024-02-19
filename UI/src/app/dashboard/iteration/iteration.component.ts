@@ -333,7 +333,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.loaderJiraArray.push(element.kpiId);
     });
     this.kpiLoader = true;
-    this.jiraKpiRequest = this.httpService.postKpi(postData, source)
+    this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // getData = require('../../../test/resource/fakeIterationKpi.json');
