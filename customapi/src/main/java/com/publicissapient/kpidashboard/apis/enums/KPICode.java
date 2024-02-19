@@ -483,11 +483,6 @@ public enum KPICode {
      * Flow Efficiency (Backlog)
      */
     FLOW_EFFICIENCY("kpi170", KPISource.JIRA.name()),
-
-    /**
-     * Build frequency KPI (Speed)
-     */
-    BUILD_FREQUENCY("kpi172", KPISource.JENKINS.name()),
     /**
      * Cycle Time (Backlog)
      */

@@ -106,7 +106,6 @@ public enum KPIExcelColumn {
 
 	CHANGE_FAILURE_RATE("kpi116", Arrays.asList("Project", "Job Name", "Total Build Count", "Total Build Failure Count",
 			"Build Failure Percentage", "Weeks")),
-	BUILD_FREQUENCY("kpi172", Arrays.asList("Project Name", "Job Name","Weeks", "Start Date", "Build Url")),
 
 	TEST_EXECUTION_AND_PASS_PERCENTAGE("kpi70",
 			Arrays.asList("Sprint Name", "Total Test", "Executed Test", "Execution %", "Passed Test", "Passed %")),

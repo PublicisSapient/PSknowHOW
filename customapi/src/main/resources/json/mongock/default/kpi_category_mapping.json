@@ -255,11 +255,5 @@
     "categoryId": "categoryTwo",
     "kpiOrder": 15,
     "kanban": false
-  },
-  {
-    "kpiId": "kpi172",
-    "categoryId": "categoryOne",
-    "kpiOrder": 10,
-    "kanban": false
   }
 ]

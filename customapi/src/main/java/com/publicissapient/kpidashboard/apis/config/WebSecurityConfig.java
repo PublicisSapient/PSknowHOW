@@ -143,8 +143,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/error").permitAll().requestMatchers("/authenticationProviders").permitAll()
                         .requestMatchers("/auth-types-status").permitAll().requestMatchers("/pushData/*").permitAll()
                         .requestMatchers("/getversionmetadata").permitAll()
-                        .requestMatchers("/kpiIntegrationValues").permitAll()
-                        .requestMatchers("/v1/kpi/{kpiID}").permitAll()
 
                         // management metrics
                         .requestMatchers("/info").permitAll().requestMatchers("/health").permitAll().requestMatchers("/env").permitAll()
