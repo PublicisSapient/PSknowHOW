@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -104,8 +103,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
 		log.info("Processing KPI calculation for data {}", kpiRequest.getKpiList());
-		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
-				.toList();
+		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new).toList();
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] projectKeyCache = null;
 		try {
@@ -174,10 +172,8 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 
 				executorService.shutdown();
 
-				List<KpiElement> missingKpis = origRequestedKpis.stream()
-						.filter(reqKpi -> responseList.stream()
-								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
-						.toList();
+				List<KpiElement> missingKpis = origRequestedKpis.stream().filter(reqKpi -> responseList.stream()
+						.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId()))).toList();
 				responseList.addAll(missingKpis);
 
 				kpiHelperService.setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
@@ -214,10 +210,8 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
 				.cacheAccountHierarchyData();
 
-		return accountDataListAll.stream()
-				.filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId()
-						.equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).get(0)))
-				.toList();
+		return accountDataListAll.stream().filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId()
+				.equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).get(0))).toList();
 	}
 
 	private void updateJiraIssueList(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
@@ -251,16 +245,16 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		sprintDetails.stream().filter(sd -> sd.getBasicProjectConfigId().toString().equals(basicProjectConfigId))
 				.forEach(sprintDetails1 -> {
 					if (!CollectionUtils.isEmpty(sprintDetails1.getCompletedIssues())) {
-						totalIssuesList.addAll(sprintDetails1.getCompletedIssues().stream().map(SprintIssue::getNumber)
-								.toList());
+						totalIssuesList.addAll(
+								sprintDetails1.getCompletedIssues().stream().map(SprintIssue::getNumber).toList());
 					}
 					if (!CollectionUtils.isEmpty(sprintDetails1.getNotCompletedIssues())) {
-						totalIssuesList.addAll(sprintDetails1.getNotCompletedIssues().stream()
-								.map(SprintIssue::getNumber).toList());
+						totalIssuesList.addAll(
+								sprintDetails1.getNotCompletedIssues().stream().map(SprintIssue::getNumber).toList());
 					}
 					if (!CollectionUtils.isEmpty(sprintDetails1.getPuntedIssues())) {
-						totalIssuesList.addAll(sprintDetails1.getPuntedIssues().stream().map(SprintIssue::getNumber)
-								.toList());
+						totalIssuesList
+								.addAll(sprintDetails1.getPuntedIssues().stream().map(SprintIssue::getNumber).toList());
 					}
 					if (!CollectionUtils.isEmpty(sprintDetails1.getCompletedIssuesAnotherSprint())) {
 						totalIssuesList.addAll(sprintDetails1.getCompletedIssuesAnotherSprint().stream()

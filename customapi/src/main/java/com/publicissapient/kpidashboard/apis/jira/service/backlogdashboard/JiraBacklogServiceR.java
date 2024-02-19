@@ -20,7 +20,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -108,8 +107,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
 		log.info("Processing KPI calculation for data {}", kpiRequest.getKpiList());
-		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
-				.toList();
+		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new).toList();
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] projectKeyCache = null;
 		try {
@@ -156,10 +154,8 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 				}
 
 				ForkJoinTask.invokeAll(listOfTask);
-				List<KpiElement> missingKpis = origRequestedKpis.stream()
-						.filter(reqKpi -> responseList.stream()
-								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
-						.toList();
+				List<KpiElement> missingKpis = origRequestedKpis.stream().filter(reqKpi -> responseList.stream()
+						.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId()))).toList();
 				responseList.addAll(missingKpis);
 
 				kpiHelperService.setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
@@ -195,10 +191,8 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 						.equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.PROJECT.toLowerCase()).get(0)))
 				.toList();
 		if (projectAccountHierarchyData.isEmpty()) {
-			return accountDataListAll.stream()
-					.filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId()
-							.equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).get(0)))
-					.toList();
+			return accountDataListAll.stream().filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId()
+					.equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).get(0))).toList();
 		}
 		return projectAccountHierarchyData;
 	}

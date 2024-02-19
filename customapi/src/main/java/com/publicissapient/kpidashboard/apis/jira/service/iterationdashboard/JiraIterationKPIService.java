@@ -86,7 +86,8 @@ public abstract class JiraIterationKPIService implements NonTrendKPIService {
 	 * to maintain values upto 2 places of decimal
 	 *
 	 * @param value
-	 * @return
+	 *            value
+	 * @return double
 	 */
 	public double roundingOff(double value) {
 		return (double) Math.round(value * 100) / 100;
@@ -96,12 +97,18 @@ public abstract class JiraIterationKPIService implements NonTrendKPIService {
 	 * For Assigning IterationKPiData
 	 *
 	 * @param label
+	 *            label
 	 * @param fieldMapping
+	 *            fieldMapping
 	 * @param issueCount
+	 *            issueCount
 	 * @param storyPoint
+	 *            storyPoint
 	 * @param originalEstimate
+	 *            originalEstimate
 	 * @param modalvalue
-	 * @return
+	 *            modalvalue
+	 * @return IterationKpiData
 	 */
 	public IterationKpiData createIterationKpiData(String label, FieldMapping fieldMapping, Integer issueCount,
 			Double storyPoint, Double originalEstimate, List<IterationKpiModalValue> modalvalue) {
