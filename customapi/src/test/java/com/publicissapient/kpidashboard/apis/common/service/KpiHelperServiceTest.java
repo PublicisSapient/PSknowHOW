@@ -515,7 +515,7 @@ public class KpiHelperServiceTest {
 	@Test
 	public void getAuthorizedFilteredList(){
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_INJECTION_RATE.getKpiId());
-		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
+		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
 		when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList);
 		kpiHelperService.getAuthorizedFilteredList(kpiRequest,accountHierarchyDataList);
 	}
