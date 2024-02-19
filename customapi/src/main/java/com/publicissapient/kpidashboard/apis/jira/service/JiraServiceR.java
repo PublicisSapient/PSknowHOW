@@ -27,6 +27,8 @@ import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
@@ -73,7 +75,7 @@ import lombok.extern.slf4j.Slf4j;
  * in thread. It is responsible for cache of KPI data at different level.
  *
  * @author tauakram
- *
+ * @implNote {@link KpiIntegrationServiceImpl }
  */
 @Service
 @Slf4j
@@ -103,6 +105,8 @@ public class JiraServiceR {
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+
+	private boolean referFromProjectCache = true;
 
 	private final ThreadLocal<List<SprintDetails>> threadLocalSprintDetails = ThreadLocal.withInitial(ArrayList::new);
 	private final ThreadLocal<List<JiraIssue>> threadLocalJiraIssues = ThreadLocal.withInitial(ArrayList::new);
@@ -269,7 +273,7 @@ public class JiraServiceR {
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
 			List<AccountHierarchyData> filteredAccountDataList) {
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
 			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
 		}
 
@@ -284,7 +288,7 @@ public class JiraServiceR {
 	 */
 	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
 		String[] projectKeyCache;
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
 			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 		} else {
 			projectKeyCache = kpiRequest.getIds();
@@ -550,6 +554,23 @@ public class JiraServiceR {
 			}
 		}
 
+	}
+
+	/**
+	 * This method is called when the request for kpi is done from exposed API
+	 *
+	 * @param kpiRequest
+	 *            JIRA KPI request true if flow for precalculated, false for direct
+	 *            flow.
+	 * @return List of KPI data
+	 * @throws EntityNotFoundException
+	 *             EntityNotFoundException
+	 */
+	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
+		referFromProjectCache = false;
+		List<KpiElement> kpiElementList = process(kpiRequest);
+		referFromProjectCache = true;
+		return kpiElementList;
 	}
 
 }

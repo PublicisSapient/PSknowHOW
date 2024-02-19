@@ -216,9 +216,10 @@ public class ScrumAzureIssueClientImplTest {
 		String[] jiraIssueType = new String[] { "Story", "Defect", "Pre Story", "Feature", "Enabler Story" };
 		fieldMapping.setJiraIssueTypeNames(jiraIssueType);
 		fieldMapping.setRootCause("customfield_19121");
-
+		fieldMapping.setRootCauseIdentifier("Labels");
 		jiraType = new ArrayList<>();
 		jiraType.add("story");
+		jiraType.add("defect");
 		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(jiraType);
 		fieldMapping.setJiraTechDebtIssueType(jiraType);
 		fieldMapping.setJiraIssueTypeKPI35(jiraType);
@@ -284,6 +285,8 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setJiraDorKPI171(Arrays.asList("In Progress"));
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
+		fieldMapping.setRootCauseValues(Arrays.asList("Coding", "None"));
+		fieldMapping.setRootCause("Coding");
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Pre Story" }));
 		fieldMapping.setJiraStoryIdentification(jiraType);
@@ -325,7 +328,7 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setStoryFirstStatus("Open");
 
 		fieldMapping.setRootCause("customfield_19121");
-
+		fieldMapping.setRootCauseIdentifier("Labels");
 		fieldMapping.setJiraDefectRejectionStatusKPI37("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI14("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusAVR("Dropped");
@@ -424,6 +427,7 @@ public class ScrumAzureIssueClientImplTest {
 		fields.setSystemWorkItemType("defect");
 		fields.setSystemTitle("systemTitle");
 		fields.setMicrosoftVSTSCommonPriority(1);
+		fields.setSystemTags("Coding");
 		Value issue = new Value();
 		issue.setId(1);
 		issue.setUrl("https://testDomain.com/jira/rest/api/2/");
