@@ -82,6 +82,9 @@ public class JiraController {
 	@Autowired
 	private NonTrendServiceFactory serviceFactory;
 
+	public static final String JIRASCRUMKPIREQ = "JiraScrumKpiRequest";
+	public static final String KPILIST = "kpiList";
+
 	/**
 	 * This method handles Jira Scrum KPIs request.
 	 * 
@@ -94,7 +97,7 @@ public class JiraController {
 	public ResponseEntity<List<KpiElement>> getJiraAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception {// NOSONAR
 
-		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
+		MDC.put(JIRASCRUMKPIREQ, kpiRequest.getRequestTrackerId());
 		log.info("Received Jira KPI request {}", kpiRequest);
 
 		long jiraRequestStartTime = System.currentTimeMillis();
@@ -103,7 +106,7 @@ public class JiraController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException(KPILIST, "List");
 		}
 
 		List<KpiElement> responseList = jiraService.process(kpiRequest);
@@ -129,7 +132,7 @@ public class JiraController {
 	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getJiraKanbanAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception { // NOSONAR
-		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
+		MDC.put(JIRASCRUMKPIREQ, kpiRequest.getRequestTrackerId());
 		log.info("Received Jira Kanban KPI request {}", kpiRequest);
 		long jiraKanbanRequestStartTime = System.currentTimeMillis();
 		MDC.put("JiraKanbanRequestStartTime", String.valueOf(jiraKanbanRequestStartTime));
@@ -137,7 +140,7 @@ public class JiraController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException(KPILIST, "List");
 		}
 
 		List<KpiElement> responseList = jiraServiceKanban.process(kpiRequest);
@@ -181,7 +184,7 @@ public class JiraController {
 	public ResponseEntity<List<KpiElement>> getJiraIterationMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception {// NOSONAR
 
-		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
+		MDC.put(JIRASCRUMKPIREQ, kpiRequest.getRequestTrackerId());
 		log.info("Received Jira KPI request for iteration{}", kpiRequest);
 
 		long jiraRequestStartTime = System.currentTimeMillis();
@@ -190,7 +193,7 @@ public class JiraController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException(KPILIST, "List");
 		}
 		JiraNonTrendKPIServiceR jiraNonTrendKPIServiceR = serviceFactory
 				.getService(kpiRequest.getKpiList().get(0).getKpiCategory());

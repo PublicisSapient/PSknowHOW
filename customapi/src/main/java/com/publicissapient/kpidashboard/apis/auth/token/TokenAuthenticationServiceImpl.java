@@ -84,6 +84,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final Object USER_AUTHORITIES = "authorities";
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	public static final String EXCEPTION_MSG = "No implementation is found for SSO";
 	@Autowired
 	AuthenticationService authenticationService;
 	@Autowired
@@ -137,7 +138,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			HttpServletRequest httpServletRequest, HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()) {
-			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
+			throw new NoSSOImplementationFoundException(EXCEPTION_MSG);
 		} else {
 			String token = userTokenAuthenticationDTO.getAuthToken();
 			if (StringUtils.isBlank(token)) {
@@ -158,7 +159,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			HttpServletRequest httpServletRequest) {
 
 		if (customApiConfig.isSsoLogin()) {
-			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
+			throw new NoSSOImplementationFoundException(EXCEPTION_MSG);
 		} else {
 			String token = userTokenAuthenticationDTO.getAuthToken();
 			if (StringUtils.isBlank(token)) {
@@ -177,7 +178,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	public Authentication validateAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()) {
-			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
+			throw new NoSSOImplementationFoundException(EXCEPTION_MSG);
 		} else {
 			Cookie authCookie = cookieUtil.getAuthCookie(request);
 			if (StringUtils.isBlank(authCookie.getValue())) {

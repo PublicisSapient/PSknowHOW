@@ -200,36 +200,22 @@ public class KpiHelperService { // NOPMD
 	 * @return
 	 */
 	public static List<JiraIssue> excludePriorityAndIncludeRCA(List<JiraIssue> allDefects,
-			Map<String, List<String>> projectWisePriority, Map<String, Set<String>> projectWiseRCA) {
+															   Map<String, List<String>> projectWisePriority,
+															   Map<String, Set<String>> projectWiseRCA) {
 		Set<JiraIssue> defects = new HashSet<>(allDefects);
-		List<JiraIssue> priorityRemaining = new ArrayList<>();
+		List<JiraIssue> remainingDefects = new ArrayList<>();
+
 		for (JiraIssue jiraIssue : defects) {
-			if (CollectionUtils.isNotEmpty(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()))) {
-				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId())
-						.contains(jiraIssue.getPriority().toLowerCase()))) {
-					priorityRemaining.add(jiraIssue);
-				}
-			} else {
-				priorityRemaining.add(jiraIssue);
+			String projectId = jiraIssue.getBasicProjectConfigId();
+			List<String> priorities = projectWisePriority.getOrDefault(projectId, Collections.emptyList());
+			Set<String> rcas = projectWiseRCA.getOrDefault(projectId, Collections.emptySet());
+
+			if (!priorities.contains(jiraIssue.getPriority().toLowerCase()) || rcas.isEmpty() || rcas.stream()
+					.anyMatch(rca -> jiraIssue.getRootCauseList().contains(rca.toLowerCase()))) {
+				remainingDefects.add(jiraIssue);
 			}
 		}
-
-		List<JiraIssue> rcaRemaining = new ArrayList<>();
-		for (JiraIssue jiraIssue : priorityRemaining) {
-			// Filter priorityRemaining based on configured Root Causes (RCA) for the
-			// project, or include if no RCA is configured.
-			if (CollectionUtils.isNotEmpty(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()))) {
-				for (String toFindRca : jiraIssue.getRootCauseList()) {
-					if ((projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
-						rcaRemaining.add(jiraIssue);
-					}
-				}
-			} else {
-				rcaRemaining.add(jiraIssue);
-			}
-		}
-		return rcaRemaining;
-
+		return remainingDefects;
 	}
 
 	public static void addRCAProjectWise(Map<String, Set<String>> projectWiseRCA, Node leaf, List<String> excludeRCA) {
