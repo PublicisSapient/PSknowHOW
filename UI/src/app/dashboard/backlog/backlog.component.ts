@@ -495,7 +495,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
 
   handleSelectedOptionForCard(event, kpi) {
-    this.kpiSelectedFilterObj['action'] = 'update'
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
     if (event && Object.keys(event)?.length !== 0) {
       for (const key in event) {
@@ -509,7 +508,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
 
     this.getChartDataForCard(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
-    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj);
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj,'backlog','');
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 
@@ -558,7 +557,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
   }
 
   setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters?){
-    this.kpiSelectedFilterObj  = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId,this.kpiSelectedFilterObj, refreshValue, initialValue, filters)
+    this.kpiSelectedFilterObj  = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId,this.kpiSelectedFilterObj,'backlog', refreshValue, initialValue, '',filters)
     this.getDropdownArray(kpiId);
   }
 
@@ -790,7 +789,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
   }
 
   handleSelectedOption(event, kpi) {
-    this.kpiSelectedFilterObj['action'] = 'update'
     const selectedFilterBackup =  this.kpiSelectedFilterObj[kpi?.kpiId];
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
     /** When we have single dropdown */
@@ -817,7 +815,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
-    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj);
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj,'backlog','');
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 
