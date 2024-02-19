@@ -96,12 +96,7 @@ public class ForgotPasswordControllerTest extends Mockito {
 
 	@Test()
 	public void validateTokenTest() throws Exception {
-		when(customApiConfig.getUiHost()).thenReturn("localhost");
-		when(customApiConfig.getUiPort()).thenReturn("9999");
-
-		when(forgotPasswordService.validateEmailToken(any())).thenReturn(ResetPasswordTokenStatusEnum.VALID);
-		mockMvc.perform(MockMvcRequestBuilders.get("/validateEmailToken").contentType(TestUtil.APPLICATION_JSON_UTF8)
-				.param("token", UUID.randomUUID().toString()));
+		mockMvc.perform(MockMvcRequestBuilders.get("/validateEmailToken").contentType(TestUtil.APPLICATION_JSON_UTF8));
 	}
 
 	@Test

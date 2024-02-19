@@ -19,7 +19,6 @@
 
 package com.publicissapient.kpidashboard.apis.rbac.signupapproval.rest;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.bson.types.ObjectId;
@@ -39,9 +38,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
-import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,14 +49,8 @@ public class SignupRequestsControllerTest {
 	AuthenticationService authenticationService;
 	@Mock
 	SignupManager signupManager;
-	@Mock
-	private CustomApiConfig customApiConfig;
-	@Mock
-	UserInfoServiceImpl userInfoService;
 	private MockMvc mockMvc;
 	private String testId;
-	@Mock
-	private CookieUtil cookieUtil;
 	@InjectMocks
 	private SignupRequestsController signupRequestsController;
 
@@ -90,7 +80,6 @@ public class SignupRequestsControllerTest {
 	 */
 	@Test
 	public void testGetUnApprovedRequests() throws Exception {
-		when(customApiConfig.isCentralAuthSwitch()).thenReturn(false);
 		mockMvc.perform(MockMvcRequestBuilders.get("/userapprovals").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}

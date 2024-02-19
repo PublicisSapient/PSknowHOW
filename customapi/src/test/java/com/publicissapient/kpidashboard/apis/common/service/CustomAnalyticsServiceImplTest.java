@@ -23,9 +23,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONObject;
 import org.junit.Test;
@@ -47,6 +45,8 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CustomAnalyticsServiceImplTest {
@@ -86,7 +86,7 @@ public class CustomAnalyticsServiceImplTest {
 		when(userInfoRepository.findByUsername(Mockito.anyString())).thenReturn(user);
 		when(authenticationRepository.findByUsername(Mockito.anyString())).thenReturn(authentication);
 		when(projectAccessManager.getProjectAccessesWithRole(Mockito.anyString())).thenReturn(listRoleWiseProjects);
-		Map<String, Object> json = customAnalyticsServiceImpl.addAnalyticsData(resp, "test" ,"token");
+		JSONObject json = customAnalyticsServiceImpl.addAnalyticsData(resp, "test" );
 		assertEquals("test", json.get("user_name"));
 		assertEquals(json.get("authorities"), user.getAuthorities());
 

@@ -26,11 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Assertions;
@@ -40,14 +35,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
-import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
+import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
+import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
 /**
  *
@@ -317,19 +315,4 @@ public class AuthenticationServiceTest {
 		when(authRepo.findByApproved(true)).thenReturn(authenticationList);
 		Assertions.assertTrue(authService.getAuthenticationByApproved(true).iterator().hasNext());
 	}
-
-	@Test
-	public void getAuthNAuthResponseTest() {
-		ResponseEntity<ServiceResponse> responseEntity = new ResponseEntity<ServiceResponse>(
-				HttpStatusCode.valueOf(200));
-		Assertions.assertNull(authService.getAuthNAuthResponse(responseEntity, "test.com"));
-	}
-
-	@Test
-	public void getAuthNAuthResponseWhenError() {
-		ResponseEntity<ServiceResponse> responseEntity = new ResponseEntity<ServiceResponse>(
-				HttpStatusCode.valueOf(503));
-		Assertions.assertNotNull(authService.getAuthNAuthResponse(responseEntity, "test.com"));
-	}
-
 }

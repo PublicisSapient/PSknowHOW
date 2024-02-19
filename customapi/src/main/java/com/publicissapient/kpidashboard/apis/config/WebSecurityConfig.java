@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
+import com.publicissapient.kpidashboard.apis.auth.ldap.LdapLoginRequestFilter;
+import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -150,11 +152,14 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/actuator/togglz**").permitAll()
                         .requestMatchers("/togglz-console**").permitAll()
                         .requestMatchers("/actuator**").permitAll().requestMatchers("/forgotPassword").permitAll()
-                        .requestMatchers("/validateToken**").permitAll().requestMatchers("/resetPassword").permitAll()
+                        .requestMatchers("/forgotPassword").permitAll()
+                        .requestMatchers("/validateToken**").permitAll()
+                        .requestMatchers("/resetPassword").permitAll()
                         .requestMatchers("/cache/clearAllCache").permitAll().requestMatchers(HttpMethod.GET, "/cache/clearCache/**")
                         .permitAll().requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated())
-                .addFilterBefore(apiTokenRequestFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(standardLoginRequestFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(ldapLoginRequestFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(corsFilter(), ChannelProcessingFilter.class)
                 .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint))
@@ -189,6 +194,19 @@ public class WebSecurityConfig implements WebMvcConfigurer {
             auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider());
         }
         auth.authenticationProvider(apiTokenAuthenticationProvider);
+    }
+
+    @Bean
+    protected StandardLoginRequestFilter standardLoginRequestFilter(AuthenticationManager authenticationManager) throws Exception {
+        return new StandardLoginRequestFilter("/login", authenticationManager, authenticationResultHandler,
+                customAuthenticationFailureHandler, customApiConfig, authTypesConfigService);
+    }
+
+    // update authenticatoin result handler
+    @Bean
+    protected LdapLoginRequestFilter ldapLoginRequestFilter(AuthenticationManager authenticationManager) throws Exception {
+        return new LdapLoginRequestFilter("/ldap", authenticationManager, authenticationResultHandler,
+                customAuthenticationFailureHandler, customApiConfig, adServerDetailsService, authTypesConfigService);
     }
 
     @Bean

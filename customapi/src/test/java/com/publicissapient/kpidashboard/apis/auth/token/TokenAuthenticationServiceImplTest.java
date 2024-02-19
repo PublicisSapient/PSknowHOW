@@ -18,24 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.auth.token;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.testng.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import org.json.simple.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
@@ -56,13 +47,7 @@ import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
-import com.publicissapient.kpidashboard.common.model.rbac.AccessNode;
-import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
-import com.publicissapient.kpidashboard.common.model.rbac.ProjectsForAccessRequest;
-import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
+import com.publicissapient.kpidashboard.common.model.rbac.*;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 
 import jakarta.servlet.http.Cookie;
@@ -106,24 +91,13 @@ public class TokenAuthenticationServiceImplTest {
 	@Mock
 	private CustomApiConfig customApiConfig;
 
-	@Mock
-	UserTokenAuthenticationDTO userTokenAuthenticationDTO;
-
 	@Before
 	public void setup() {
 		MockitoAnnotations.openMocks(this);
 		SecurityContextHolder.clearContext();
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
 				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
-	}
 
-	@Test
-	public void testValidateAuthentication() {
-		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
-		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
-				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
-		service.validateAuthentication(request, response);
-		Assert.assertNotNull(authentication);
 	}
 
 	@Test
@@ -142,7 +116,7 @@ public class TokenAuthenticationServiceImplTest {
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
 				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
-		Authentication authentication = service.getAuthentication(userTokenAuthenticationDTO,request,response);
+		Authentication authentication = service.getAuthentication(request,response);
 		Assert.assertNotNull(authentication);
 		assertTrue(authentication.isAuthenticated());
 		assertNotNull(authentication.getAuthorities());
@@ -152,9 +126,8 @@ public class TokenAuthenticationServiceImplTest {
 
 	@Test
 	public void testGetAuthenticationWhenValidTokenProvided() {
-		when(userTokenAuthenticationDTO.getAuthToken()).thenReturn(AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L));
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
-		Authentication authentication = service.getAuthentication(userTokenAuthenticationDTO,request,response);
+		Authentication authentication = service.getAuthentication(request,response);
 		Assert.assertNotNull(authentication);
 		assertTrue(authentication.isAuthenticated());
 		assertNotNull(authentication.getAuthorities());

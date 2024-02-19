@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.auth.rest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,21 +30,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.ResponseCookie;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
-import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RunWith(MockitoJUnitRunner.class)
-@WebMvcTest(UserTokenDeletionControllerApplication.class)
 public class UserTokenDeletionControllerApplicationTest extends Mockito {
 
 	private MockMvc mockMvc;
@@ -58,11 +53,6 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 
 	@Mock
 	private CookieUtil cookieUtil;
-	@Mock
-	UserInfoServiceImpl userInfoService;
-
-	@Mock
-	AuthProperties authProperties;
 
 	@InjectMocks
 	private UserTokenDeletionControllerApplication userTokenDeletionControllerApplication;
@@ -82,15 +72,10 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 	@Test
 	public void testDeleteUserToken() throws Exception {
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("foo1", "bar1"));
-		when(authProperties.getResourceAPIKey()).thenReturn("ResourceAPIKey");
 		ResponseCookie foo11 = ResponseCookie.from("foo1", "bar1").build();
 		request.setAttribute("Authorization", "Bearer abcde");
-		when(userInfoService.getCentralAuthUserDeleteUserToken(anyString() , anyString())).thenReturn(true);
-		mockMvc.perform(get("/userlogout").cookie(new Cookie("foo1", "bar1")))
-				.andExpect(status().isOk());
-
-
+		when(cookieUtil.deleteAccessTokenCookie()).thenReturn(foo11);
+		mockMvc.perform(get("/userlogout")).andExpect(status().isOk());
 	}
 
 }
