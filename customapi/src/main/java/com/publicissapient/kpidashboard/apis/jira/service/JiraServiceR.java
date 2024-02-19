@@ -117,9 +117,9 @@ public class JiraServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
 					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
+				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList);
 
-				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
+				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
@@ -153,7 +153,7 @@ public class JiraServiceR {
 						.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId()))).toList();
 				responseList.addAll(missingKpis);
 
-				setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
+				kpiHelperService.setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
 			} else {
 				responseList.addAll(origRequestedKpis);
 			}
@@ -164,62 +164,6 @@ public class JiraServiceR {
 		}
 
 		return responseList;
-	}
-
-	/**
-	 * @param kpiRequest
-	 *            kpiRequest
-	 * @param filteredAccountDataList
-	 *            filteredAccountDataList
-	 * @return list of AccountHierarchyData
-	 */
-	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
-			List<AccountHierarchyData> filteredAccountDataList) {
-		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
-			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
-		}
-
-		return filteredAccountDataList;
-	}
-
-	/**
-	 * @param kpiRequest
-	 *            kpiRequest
-	 * @param filteredAccountDataList
-	 *            filteredAccountDataList
-	 */
-	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
-		String[] projectKeyCache;
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
-			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
-		} else {
-			projectKeyCache = kpiRequest.getIds();
-		}
-
-		return projectKeyCache;
-	}
-
-	/**
-	 *
-	 * @param kpiRequest
-	 *            kpiRequest
-	 * @param responseList
-	 *            responseList
-	 * @param groupId
-	 *            groupId
-	 */
-	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
-			String[] projects) {
-		Integer sprintLevel = filterHelperService.getHierarchyIdLevelMap(false)
-				.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
-
-		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& sprintLevel >= kpiRequest.getLevel() && isLeadTimeDuration(kpiRequest.getKpiList())) {
-			cacheService.setIntoApplicationCache(projects, responseList, KPISource.JIRA.name(), groupId,
-					kpiRequest.getSprintIncluded());
-		}
-
 	}
 
 	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
