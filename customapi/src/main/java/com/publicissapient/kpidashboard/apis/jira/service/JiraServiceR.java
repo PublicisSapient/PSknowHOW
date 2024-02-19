@@ -72,9 +72,6 @@ public class JiraServiceR {
 	private CacheService cacheService;
 
 	@Autowired
-	private UserAuthorizedProjectsService authorizedProjectsService;
-
-	@Autowired
 	private SprintRepository sprintRepository;
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
