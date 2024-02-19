@@ -111,27 +111,6 @@ public class JiraKPIServiceTest {
 	}
 
 	@Test
-	public void testGetJiraIssuesFromBaseClass() {
-		List<JiraIssue> jiraIssues = getJiraIssues();
-		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
-		assertNotNull(jiraKPIService.getJiraIssuesFromBaseClass(List.of("123")));
-	}
-
-	@Test
-	public void testGetJiraIssuesCustomHistoryFromBaseClass() {
-		List<JiraIssueCustomHistory> jiraIssueCustomHistories = getJiraIssueCustomHistories();
-		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistories);
-		assertNotNull(jiraKPIService.getJiraIssuesCustomHistoryFromBaseClass(List.of("DTS-123")));
-	}
-
-	@Test
-	public void testGetJiraIssuesCustomHistoryFromBaseClass_WithNoParam() {
-		List<JiraIssueCustomHistory> jiraIssueCustomHistories = getJiraIssueCustomHistories();
-		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistories);
-		assertNotNull(jiraKPIService.getJiraIssuesCustomHistoryFromBaseClass());
-	}
-
-	@Test
 	public void testCalcWeekDays() {
 		assertNotNull(jiraKPIService.getLastNMonth(10));
 	}

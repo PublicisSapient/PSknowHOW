@@ -300,7 +300,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 				threadLocalHistory.set(jiraIssueCustomHistoryList);
 				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredAccountData);
 			} catch (Exception e) {
-				log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", e);
+				log.error("[PARALLEL_JIRA_BACKLOG_SERVICE].Exception occurred", e);
 			}
 		}
 
