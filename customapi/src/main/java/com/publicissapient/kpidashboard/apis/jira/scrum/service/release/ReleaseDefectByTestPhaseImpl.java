@@ -16,6 +16,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -138,9 +140,34 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 			List<JiraIssue> releaseIssues = getFilteredReleaseJiraIssuesFromBaseClass(fieldMapping);
-			resultListMap.put(TOTAL_ISSUES, releaseIssues);
+			List<JiraIssue> rcaExcludedIssues = excludeRCAMatchingIssues(leafNode, fieldMapping, releaseIssues);
+			resultListMap.put(TOTAL_ISSUES, rcaExcludedIssues);
 		}
 		return resultListMap;
+	}
+
+	/**
+	 * to remove jiraissue containing specified rcas
+	 * 
+	 * @param leafNode
+	 *            leafNode
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @param releaseIssues
+	 *            releaseIssues
+	 * @return excluded jiraissue
+	 */
+	private List<JiraIssue> excludeRCAMatchingIssues(Node leafNode, FieldMapping fieldMapping,
+			List<JiraIssue> releaseIssues) {
+		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
+		KpiHelperService.addRCAProjectWise(projectWiseRCA, leafNode, fieldMapping.getExcludeRCAFromKPI163());
+		List<JiraIssue> rcaFreeIssues = new ArrayList<>();
+		releaseIssues.stream().filter(jiraIssue -> {
+			Set<String> rcas = projectWiseRCA.getOrDefault(jiraIssue.getBasicProjectConfigId(), Collections.emptySet());
+			return rcas.isEmpty()
+					|| jiraIssue.getRootCauseList().stream().noneMatch(rc -> rcas.contains(rc.toLowerCase()));
+		}).forEach(rcaFreeIssues::add);
+		return rcaFreeIssues;
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
