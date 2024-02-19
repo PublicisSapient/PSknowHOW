@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -350,13 +351,23 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	}
 
 	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
-			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue,List<JiraIssueCustomHistory> historyForIssues,List<String> status) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+		Optional<JiraIssueCustomHistory> jiraCustomHistory = historyForIssues.stream()
+				.filter(history -> history.getStoryID().equals(jiraIssue.getNumber())).findAny();
+		if(jiraCustomHistory.isPresent())
+		{
+			iterationKpiModalValue.setCreatedDate(DateUtil.dateTimeFormatter(jiraCustomHistory.get().getCreatedDate().toDate(),DateUtil.DISPLAY_DATE_FORMAT));
+			Optional<JiraHistoryChangeLog> sprint = jiraCustomHistory.get().getStatusUpdationLog().stream()
+					.filter(sprintDetails -> CollectionUtils.isNotEmpty(status) && status.contains(sprintDetails.getChangedTo()))
+					.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn)).findFirst();
+			iterationKpiModalValue.setDorDate(DateUtil.dateTimeFormatter(sprint.get().getUpdatedOn(),DateUtil.DISPLAY_DATE_FORMAT));
+		}
 		iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
 		overAllmodalValues.add(iterationKpiModalValue);
 		modalValues.add(iterationKpiModalValue);

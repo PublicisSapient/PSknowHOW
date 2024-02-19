@@ -39,6 +39,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -325,9 +326,22 @@ public class JiraKPIServiceTest {
 		jiraIssue.setNumber("1");
 		jiraIssue.setPriority("5");
 		jiraIssue.setName("Testing");
+		List<String> status = new ArrayList<>();
+		status.add("In Development");
 		List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 		List<IterationKpiModalValue> modalValues = new ArrayList<>();
-		jiraKPIService.populateBackLogData(overAllmodalValues, modalValues, jiraIssue);
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+		JiraIssueCustomHistory issueCustomHistory = new JiraIssueCustomHistory();
+		issueCustomHistory.setStoryID("1");
+		issueCustomHistory.setCreatedDate(DateTime.now().now());
+		jiraIssueCustomHistories.add(issueCustomHistory);
+		List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
+		JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
+		jiraHistoryChangeLog.setChangedTo("In Development");
+		jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.now());
+		statusUpdationLog.add(jiraHistoryChangeLog);
+		issueCustomHistory.setStatusUpdationLog(statusUpdationLog);
+		jiraKPIService.populateBackLogData(overAllmodalValues, modalValues, jiraIssue,jiraIssueCustomHistories,status);
 		assertNotNull(modalValues);
 		assertNotNull(overAllmodalValues);
 	}
