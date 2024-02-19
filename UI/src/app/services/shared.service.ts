@@ -93,6 +93,7 @@ export class SharedService {
   globalConfigData : any
   visibleSideBarSubject = new BehaviorSubject(false);
   visibleSideBarObs = this.visibleSideBarSubject.asObservable();
+  addtionalFilterBackup = {} ;
   projectQueryParamSubject = new BehaviorSubject<any>('');
   projectQueryParamObs = this.projectQueryParamSubject.asObservable();
   sprintQueryParamSubject = new BehaviorSubject<any>('');
@@ -405,6 +406,14 @@ export class SharedService {
   setSprintQueryParamInFilters(value) {
     this.sprintQueryParamSubject.next({value});
   }
+
+   setAddtionalFilterBackup(data){
+      this.addtionalFilterBackup = data;
+    }
+
+    getAddtionalFilterBackup(){
+      return this.addtionalFilterBackup;
+    }
 }
 
 

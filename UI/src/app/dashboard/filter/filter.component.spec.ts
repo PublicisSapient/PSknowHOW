@@ -266,7 +266,7 @@ const completeHierarchyData = {
     TestBed.configureTestingModule({
       declarations: [FilterComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      imports: [FormsModule, HttpClientTestingModule, ReactiveFormsModule, NgSelectModule, FormsModule, RouterTestingModule 
+      imports: [FormsModule, HttpClientTestingModule, ReactiveFormsModule, NgSelectModule, FormsModule, RouterTestingModule
       ],
       providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService,
         { provide: APP_CONFIG, useValue: AppConfig }]
@@ -1146,6 +1146,7 @@ const completeHierarchyData = {
     spyOn(component,"sortAlphabetically");
     spyOn(sharedService,"setSelectedLevel");
     spyOn(sharedService,"setSelectedTrends");
+    spyOn(component,"setSelectedSprintOnServiceLayer");
     component.filterForm.get('selectedLevel').setValue("hierarchyLevelOne");
     component.filterForm.get('selectedTrendValue').setValue("AutoTest1_hierarchyLevelOne");
     spyOn(component,"compileGAData");
@@ -1164,6 +1165,7 @@ const completeHierarchyData = {
     spyOn(component,"sortAlphabetically");
     spyOn(sharedService,"setSelectedLevel");
     spyOn(sharedService,"setSelectedTrends");
+    spyOn(component,"setSelectedSprintOnServiceLayer");
     component.ngOnInit();
     component.filterForm?.get('selectedLevel')?.setValue("hierarchyLevelOne");
     component.filterForm?.get('selectedTrendValue')?.setValue("AutoTest1_hierarchyLevelOne");
@@ -2578,5 +2580,31 @@ const completeHierarchyData = {
       expect(result).toBeUndefined();
     });
   });
+
+  it('should set sprint list in service layer',()=>{
+      component.selectedFilterArray = [{
+        nodeId : 'a123',
+        additionalFilters : [{
+          nodeiId : 'sp123'
+        }]
+      }]
+      const spyObj = spyOn(sharedService,'setAddtionalFilterBackup');
+      component.setSelectedSprintOnServiceLayer();
+      expect(spyObj).toHaveBeenCalled();
+    })
+
+    it('should get backup sprints',()=>{
+      component.selectedTab = 'speed';
+      sharedService.setAddtionalFilterBackup({
+        sprint : {
+          'p1' : [
+            {nodeId : 'sp1',}
+          ]
+        }
+      })
+      spyOn(sharedService,'getSelectedTrends').and.returnValue([{nodeId : 'p1'}])
+      const rValue = component.getSprintsWhichWasAlreadySelected();
+      expect(rValue).not.toBeNull();
+    })
 
 });
