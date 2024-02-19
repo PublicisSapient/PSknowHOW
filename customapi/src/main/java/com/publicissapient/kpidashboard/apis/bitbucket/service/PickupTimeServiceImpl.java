@@ -67,12 +67,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Object>, Map<String, Object>> {
 
-	private static final String REPO_TOOLS = "RepoTool";
 	public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 	public static final String MR_COUNT = "No of MRs";
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
-
+	private static final String REPO_TOOLS = "RepoTool";
 	@Autowired
 	private ConfigHelperService configHelperService;
 
@@ -87,104 +86,104 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 		return KPICode.PICKUP_TIME.name();
 	}
 
-    @Override
-    public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-                                 Node projectNode) throws ApplicationException {
+	@Override
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
+			throws ApplicationException {
 
-        Map<String, Node> mapTmp = new HashMap<>();
-        mapTmp.put(projectNode.getId(),projectNode);
-        projectWiseLeafNodeValue(kpiElement, mapTmp, projectNode, kpiRequest);
-        log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", kpiRequest.getRequestTrackerId(),
-                projectNode);
+		Map<String, Node> mapTmp = new HashMap<>();
+		mapTmp.put(projectNode.getId(), projectNode);
+		projectWiseLeafNodeValue(kpiElement, mapTmp, projectNode, kpiRequest);
+		log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", kpiRequest.getRequestTrackerId(),
+				projectNode);
 
-        Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-        calculateAggregatedValueMap(projectNode, nodeWiseKPIValue, KPICode.PICKUP_TIME);
+		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
+		calculateAggregatedValueMap(projectNode, nodeWiseKPIValue, KPICode.PICKUP_TIME);
 
-        Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
-                KPICode.PICKUP_TIME);
-        Map<String, Map<String, List<DataCount>>> kpiFilterWiseProjectWiseDc = new LinkedHashMap<>();
-        trendValuesMap.forEach((issueType, dataCounts) -> {
-            Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
-                    .collect(Collectors.groupingBy(DataCount::getData));
-            kpiFilterWiseProjectWiseDc.put(issueType, projectWiseDc);
-        });
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.PICKUP_TIME);
+		Map<String, Map<String, List<DataCount>>> kpiFilterWiseProjectWiseDc = new LinkedHashMap<>();
+		trendValuesMap.forEach((issueType, dataCounts) -> {
+			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
+					.collect(Collectors.groupingBy(DataCount::getData));
+			kpiFilterWiseProjectWiseDc.put(issueType, projectWiseDc);
+		});
 
-        List<DataCountGroup> dataCountGroups = new ArrayList<>();
-        kpiFilterWiseProjectWiseDc.forEach((issueType, projectWiseDc) -> {
-            DataCountGroup dataCountGroup = new DataCountGroup();
-            List<DataCount> dataList = new ArrayList<>();
-            projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
-            dataCountGroup.setFilter(issueType);
-            dataCountGroup.setValue(dataList);
-            dataCountGroups.add(dataCountGroup);
-        });
-        kpiElement.setTrendValueList(dataCountGroups);
-        return kpiElement;
-    }
+		List<DataCountGroup> dataCountGroups = new ArrayList<>();
+		kpiFilterWiseProjectWiseDc.forEach((issueType, projectWiseDc) -> {
+			DataCountGroup dataCountGroup = new DataCountGroup();
+			List<DataCount> dataList = new ArrayList<>();
+			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
+			dataCountGroup.setFilter(issueType);
+			dataCountGroup.setValue(dataList);
+			dataCountGroups.add(dataCountGroup);
+		});
+		kpiElement.setTrendValueList(dataCountGroups);
+		return kpiElement;
+	}
 
+	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, Node projectLeafNode,
+			KpiRequest kpiRequest) {
 
-    private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
-                                          Node projectLeafNode, KpiRequest kpiRequest) {
+		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
+		String requestTrackerId = getRequestTrackerId();
+		LocalDate localEndDate = dateRange.getEndDate();
 
-        CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
-        String requestTrackerId = getRequestTrackerId();
-        LocalDate localEndDate = dateRange.getEndDate();
+		Integer dataPoints = kpiRequest.getXAxisDataPoints();
+		String duration = kpiRequest.getDuration();
 
-        Integer dataPoints = kpiRequest.getXAxisDataPoints();
-        String duration = kpiRequest.getDuration();
+		// gets the tool configuration
+		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = getRepoToolsKpiMetricResponse(localEndDate,
+				toolMap, projectLeafNode, dataPoints, duration);
+		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
+			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
+			return;
+		}
 
-        // gets the tool configuration
-        Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-        List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = getRepoToolsKpiMetricResponse(localEndDate,
-                toolMap, projectLeafNode, dataPoints, duration);
-        if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
-            log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}",
-                    projectLeafNode);
-            return;
-        }
+		List<KPIExcelData> excelData = new ArrayList<>();
+		ProjectFilter accountHierarchyData = projectLeafNode.getProjectFilter();
+		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+		List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null ? Collections.emptyList()
+				: toolMap.get(configId).get(REPO_TOOLS);
+		if (CollectionUtils.isEmpty(reposList)) {
+			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}",
+					projectLeafNode.getProjectFilter());
+			return;
+		}
 
-        List<KPIExcelData> excelData = new ArrayList<>();
-        ProjectFilter accountHierarchyData = projectLeafNode.getProjectFilter();
-        ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-        List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null ? Collections.emptyList()
-                : toolMap.get(configId).get(REPO_TOOLS);
-        if (CollectionUtils.isEmpty(reposList)) {
-            log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}", projectLeafNode.getProjectFilter());
-            return;
-        }
+		List<Map<String, Double>> repoWisePickupTimeList = new ArrayList<>();
+		List<String> repoList = new ArrayList<>();
+		List<String> branchList = new ArrayList<>();
+		String projectName = projectLeafNode.getProjectFilter().getName();
+		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
+		Map<String, Double> aggPickupTimeForRepo = new HashMap<>();
+		Map<String, Integer> aggMRCount = new HashMap<>();
+		reposList.forEach(repo -> {
+			if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
+					&& repo.getProcessorItemList().get(0).getId() != null) {
+				Map<String, Double> excelDataLoader = new HashMap<>();
+				String branchName = getBranchSubFilter(repo, projectName);
+				Map<String, Double> dateWisePickupTime = new HashMap<>();
+				Map<String, Integer> dateWiseMRCount = new HashMap<>();
+				createDateLabelWiseMap(repoToolKpiMetricResponseList, repo.getRepositoryName(), repo.getBranch(),
+						dateWisePickupTime, dateWiseMRCount);
+				aggPickupTime(aggPickupTimeForRepo, dateWisePickupTime, aggMRCount, dateWiseMRCount);
+				setWeekWisePickupTime(dateWisePickupTime, dateWiseMRCount, excelDataLoader, branchName, projectName,
+						aggDataMap, kpiRequest);
+				repoWisePickupTimeList.add(excelDataLoader);
+				repoList.add(repo.getUrl());
+				branchList.add(repo.getBranch());
 
-        List<Map<String, Double>> repoWisePickupTimeList = new ArrayList<>();
-        List<String> repoList = new ArrayList<>();
-        List<String> branchList = new ArrayList<>();
-        String projectName = projectLeafNode.getProjectFilter().getName();
-        Map<String, List<DataCount>> aggDataMap = new HashMap<>();
-        Map<String, Double> aggPickupTimeForRepo = new HashMap<>();
-        Map<String, Integer> aggMRCount = new HashMap<>();
-        reposList.forEach(repo -> {
-            if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
-                    && repo.getProcessorItemList().get(0).getId() != null) {
-                Map<String, Double> excelDataLoader = new HashMap<>();
-                String branchName = getBranchSubFilter(repo, projectName);
-                Map<String, Double> dateWisePickupTime = new HashMap<>();
-                Map<String, Integer> dateWiseMRCount = new HashMap<>();
-                createDateLabelWiseMap(repoToolKpiMetricResponseList, repo.getRepositoryName(), repo.getBranch(),
-                        dateWisePickupTime, dateWiseMRCount);
-                aggPickupTime(aggPickupTimeForRepo, dateWisePickupTime, aggMRCount, dateWiseMRCount);
-                setWeekWisePickupTime(dateWisePickupTime, dateWiseMRCount, excelDataLoader, branchName, projectName,
-                        aggDataMap, kpiRequest);
-                repoWisePickupTimeList.add(excelDataLoader);
-                repoList.add(repo.getUrl());
-                branchList.add(repo.getBranch());
-
-            }
-        });
-        setWeekWisePickupTime(aggPickupTimeForRepo, aggMRCount, new HashMap<>(), Constant.AGGREGATED_VALUE,
-                projectName, aggDataMap, kpiRequest);
-        mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
-        populateExcelDataObject(requestTrackerId, repoWisePickupTimeList, repoList, branchList, excelData, projectLeafNode);
-        kpiElement.setExcelData(excelData);
-        kpiElement.setExcelColumns(KPIExcelColumn.PICKUP_TIME.getColumns());
-    }
+			}
+		});
+		setWeekWisePickupTime(aggPickupTimeForRepo, aggMRCount, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName,
+				aggDataMap, kpiRequest);
+		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
+		populateExcelDataObject(requestTrackerId, repoWisePickupTimeList, repoList, branchList, excelData,
+				projectLeafNode);
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.PICKUP_TIME.getColumns());
+	}
 
 	private void aggPickupTime(Map<String, Double> aggPickupTimeForRepo, Map<String, Double> pickupTimeForRepo,
 			Map<String, Integer> aggMRCount, Map<String, Integer> mrCount) {
@@ -198,6 +197,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 
 	/**
 	 * create date wise pr size map
+	 * 
 	 * @param repoToolKpiMetricResponsesCommit
 	 * @param repoName
 	 * @param branchName
@@ -290,58 +290,58 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 		return dataCount;
 	}
 
-    /**
-     * get kpi metrics from repo tools api
-     *
-     * @param endDate
-     * @param toolMap
-     * @param node
-     * @param dataPoint
-     * @param duration
-     * @return
-     */
-    private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
-                                                                          Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node, Integer dataPoint, String duration) {
+	/**
+	 * get kpi metrics from repo tools api
+	 *
+	 * @param endDate
+	 * @param toolMap
+	 * @param node
+	 * @param dataPoint
+	 * @param duration
+	 * @return
+	 */
+	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
+			Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node, Integer dataPoint, String duration) {
 
-        List<String> projectCodeList = new ArrayList<>();
-        ProjectFilter accountHierarchyData = node.getProjectFilter();
-        ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-        List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(REPO_TOOLS,
-                Collections.emptyList());
-        if (!CollectionUtils.isEmpty(tools)) {
-            projectCodeList.add(node.getId());
-        }
+		List<String> projectCodeList = new ArrayList<>();
+		ProjectFilter accountHierarchyData = node.getProjectFilter();
+		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(REPO_TOOLS,
+				Collections.emptyList());
+		if (!CollectionUtils.isEmpty(tools)) {
+			projectCodeList.add(node.getId());
+		}
 
-        List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 
-        if (CollectionUtils.isNotEmpty(projectCodeList)) {
-            LocalDate startDate = LocalDate.now().minusDays(dataPoint);
-            if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-                startDate = LocalDate.now().minusWeeks(dataPoint);
-                while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
-                    startDate = startDate.minusDays(1);
-                }
-            }
-            String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
-            repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
-                    customApiConfig.getRepoToolPickupTimeUrl(), startDate.toString(), endDate.toString(),
-                    debbieDuration);
-        }
+		if (CollectionUtils.isNotEmpty(projectCodeList)) {
+			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
+			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+				startDate = LocalDate.now().minusWeeks(dataPoint);
+				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+					startDate = startDate.minusDays(1);
+				}
+			}
+			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
+			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
+					customApiConfig.getRepoToolPickupTimeUrl(), startDate.toString(), endDate.toString(),
+					debbieDuration);
+		}
 
-        return repoToolKpiMetricResponseList;
-    }
+		return repoToolKpiMetricResponseList;
+	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<Map<String, Double>> repoWiseMRList,
 			List<String> repoList, List<String> branchList, List<KPIExcelData> validationDataMap, Node node) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
-            String projectName = node.getProjectFilter().getName();
+			String projectName = node.getProjectFilter().getName();
 
-            KPIExcelUtility.populatePickupTimeExcelData(projectName, repoWiseMRList, repoList, branchList,
-                    validationDataMap);
+			KPIExcelUtility.populatePickupTimeExcelData(projectName, repoWiseMRList, repoList, branchList,
+					validationDataMap);
 
-        }
-    }
+		}
+	}
 
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -360,7 +360,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI160(),KPICode.PICKUP_TIME.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI160(), KPICode.PICKUP_TIME.getKpiId());
 	}
 }

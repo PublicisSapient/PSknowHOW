@@ -77,8 +77,8 @@ public abstract class BitBucketKPIService<R, S, T> extends ToolsKPIService<R, S>
 	 * @return
 	 * @throws ApplicationException
 	 */
-	public abstract KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			Node projectNode) throws ApplicationException;
+	public abstract KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
+			throws ApplicationException;
 
 	/**
 	 * This method creates branch filters for kpis

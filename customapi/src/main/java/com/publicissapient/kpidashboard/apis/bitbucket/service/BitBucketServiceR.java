@@ -128,18 +128,19 @@ public class BitBucketServiceR {
 		return responseList;
 	}
 
-    private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
-        Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
+	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+		Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
 
-        if (null != filteredNode.getAccountHierarchy()) {
-            filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
-                    filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
-        }
+		if (null != filteredNode.getAccountHierarchy()) {
+			filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
+					filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
+		}
 
-        return filteredNode;
-    }
+		return filteredNode;
+	}
 
-    private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList, KpiElement kpiElement, Node filteredAccountNode) throws ApplicationException {
+	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
+			KpiElement kpiElement, Node filteredAccountNode) throws ApplicationException {
 
 		BitBucketKPIService<?, ?, ?> bitBucketKPIService = null;
 
@@ -149,9 +150,8 @@ public class BitBucketServiceR {
 
 		long startTime = System.currentTimeMillis();
 
-        Node nodeDataClone = (Node) SerializationUtils
-                .clone(filteredAccountNode);
-        responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone));
+		Node nodeDataClone = (Node) SerializationUtils.clone(filteredAccountNode);
+		responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone));
 
 		long processTime = System.currentTimeMillis() - startTime;
 		log.info("[BITBUCKET-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);

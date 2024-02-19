@@ -122,9 +122,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
 			throws ApplicationException {
-		if (Filters.getFilter(releaseNode.getGroupName()) == Filters.RELEASE) {
-			releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
-		}
+		releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
 		log.info("ReleaseBurnUpServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}

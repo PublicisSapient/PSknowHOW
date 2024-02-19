@@ -84,9 +84,7 @@ public class ReleaseEpicProgressServiceImpl extends JiraReleaseKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
 			throws ApplicationException {
-		if (Filters.getFilter(releaseNode.getGroupName()) == Filters.RELEASE) {
-			releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
-		}
+		releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
 		log.info("ReleaseEpicProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}

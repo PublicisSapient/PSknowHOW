@@ -116,9 +116,7 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
-		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
-			sprintWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
-		}
+		sprintWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 

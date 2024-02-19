@@ -26,7 +26,6 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -116,7 +115,8 @@ public class DefectReopenRateServiceImpl extends JiraBacklogKPIService<Double, L
 	 */
 
 	@SuppressWarnings("java:S3776")
-	private void projectWiseLeafNodeValues(Node leafNode, DataCount trendValue, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValues(Node leafNode, DataCount trendValue, KpiElement kpiElement,
+			KpiRequest kpiRequest) {
 		if (leafNode != null) {
 			Map<String, Object> kpiResultDbMap = fetchKPIDataFromDb(leafNode, null, null, kpiRequest);
 			List<JiraIssue> totalDefects = (List<JiraIssue>) kpiResultDbMap.get(TOTAL_JIRA_DEFECTS);

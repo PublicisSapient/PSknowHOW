@@ -67,11 +67,10 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, Map<String, Object>> {
 
-	private static final String REPO_TOOLS = "RepoTool";
 	public static final String MR_COUNT = "No of MRs";
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
-
+	private static final String REPO_TOOLS = "RepoTool";
 	@Autowired
 	private ConfigHelperService configHelperService;
 
@@ -86,106 +85,105 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		return KPICode.PR_SIZE.name();
 	}
 
-    @Override
-    public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-                                 Node projectNode) throws ApplicationException {
+	@Override
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
+			throws ApplicationException {
 
+		Map<String, Node> mapTmp = new HashMap<>();
+		mapTmp.put(projectNode.getId(), projectNode);
+		projectWiseLeafNodeValue(kpiElement, mapTmp, projectNode, kpiRequest);
+		log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", kpiRequest.getRequestTrackerId(),
+				projectNode);
 
-        Map<String, Node> mapTmp = new HashMap<>();
-        mapTmp.put(projectNode.getId(),projectNode);
-        projectWiseLeafNodeValue(kpiElement, mapTmp, projectNode, kpiRequest);
-        log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", kpiRequest.getRequestTrackerId(),
-                projectNode);
+		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
+		calculateAggregatedValueMap(projectNode, nodeWiseKPIValue, KPICode.PR_SIZE);
 
-        Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-        calculateAggregatedValueMap(projectNode, nodeWiseKPIValue, KPICode.PR_SIZE);
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.PR_SIZE);
+		Map<String, Map<String, List<DataCount>>> kpiFilterWiseProjectWiseDc = new LinkedHashMap<>();
+		trendValuesMap.forEach((issueType, dataCounts) -> {
+			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
+					.collect(Collectors.groupingBy(DataCount::getData));
+			kpiFilterWiseProjectWiseDc.put(issueType, projectWiseDc);
+		});
+		List<DataCountGroup> dataCountGroups = new ArrayList<>();
+		kpiFilterWiseProjectWiseDc.forEach((issueType, projectWiseDc) -> {
+			DataCountGroup dataCountGroup = new DataCountGroup();
+			List<DataCount> dataList = new ArrayList<>();
+			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
+			dataCountGroup.setFilter(issueType);
+			dataCountGroup.setValue(dataList);
+			dataCountGroups.add(dataCountGroup);
+		});
+		kpiElement.setTrendValueList(dataCountGroups);
+		return kpiElement;
+	}
 
-        Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.PR_SIZE);
-        Map<String, Map<String, List<DataCount>>> kpiFilterWiseProjectWiseDc = new LinkedHashMap<>();
-        trendValuesMap.forEach((issueType, dataCounts) -> {
-            Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
-                    .collect(Collectors.groupingBy(DataCount::getData));
-            kpiFilterWiseProjectWiseDc.put(issueType, projectWiseDc);
-        });
-        List<DataCountGroup> dataCountGroups = new ArrayList<>();
-        kpiFilterWiseProjectWiseDc.forEach((issueType, projectWiseDc) -> {
-            DataCountGroup dataCountGroup = new DataCountGroup();
-            List<DataCount> dataList = new ArrayList<>();
-            projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
-            dataCountGroup.setFilter(issueType);
-            dataCountGroup.setValue(dataList);
-            dataCountGroups.add(dataCountGroup);
-        });
-        kpiElement.setTrendValueList(dataCountGroups);
-        return kpiElement;
-    }
+	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, Node projectLeafNode,
+			KpiRequest kpiRequest) {
 
+		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
+		String requestTrackerId = getRequestTrackerId();
+		LocalDate localEndDate = dateRange.getEndDate();
 
-    private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
-                                          Node projectLeafNode, KpiRequest kpiRequest) {
+		Integer dataPoints = kpiRequest.getXAxisDataPoints();
+		String duration = kpiRequest.getDuration();
 
-        CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
-        String requestTrackerId = getRequestTrackerId();
-        LocalDate localEndDate = dateRange.getEndDate();
+		// gets the tool configuration
+		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 
-        Integer dataPoints = kpiRequest.getXAxisDataPoints();
-        String duration = kpiRequest.getDuration();
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = getRepoToolsKpiMetricResponse(localEndDate,
+				toolMap, projectLeafNode, dataPoints, duration);
 
-        // gets the tool configuration
-        Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
+		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
+			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
+			return;
+		}
 
-        List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = getRepoToolsKpiMetricResponse(localEndDate,
-                toolMap, projectLeafNode, dataPoints, duration);
+		List<KPIExcelData> excelData = new ArrayList<>();
 
-        if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
-            log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}",
-                    projectLeafNode);
-            return;
-        }
+		ProjectFilter accountHierarchyData = projectLeafNode.getProjectFilter();
+		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+		List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null ? Collections.emptyList()
+				: toolMap.get(configId).get(REPO_TOOLS);
+		if (CollectionUtils.isEmpty(reposList)) {
+			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}",
+					projectLeafNode.getProjectFilter());
+			return;
+		}
 
-        List<KPIExcelData> excelData = new ArrayList<>();
+		List<Map<String, Long>> repoWisePRSizeList = new ArrayList<>();
+		List<String> repoList = new ArrayList<>();
+		List<String> branchList = new ArrayList<>();
+		String projectName = projectLeafNode.getProjectFilter().getName();
+		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
+		Map<String, Long> aggPRSizeForRepo = new HashMap<>();
+		Map<String, Long> aggMRCount = new HashMap<>();
+		reposList.forEach(repo -> {
+			if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
+					&& repo.getProcessorItemList().get(0).getId() != null) {
+				Map<String, Long> excelDataLoader = new HashMap<>();
+				String branchName = getBranchSubFilter(repo, projectName);
+				Map<String, Long> dateWisePRSize = new HashMap<>();
+				Map<String, Long> dateWiseMRCount = new HashMap<>();
+				createDateLabelWiseMap(repoToolKpiMetricResponseList, repo.getRepositoryName(), repo.getBranch(),
+						dateWisePRSize, dateWiseMRCount);
+				aggPRSize(aggPRSizeForRepo, dateWisePRSize, aggMRCount, dateWiseMRCount);
+				setWeekWisePRSize(dateWisePRSize, dateWiseMRCount, excelDataLoader, branchName, projectName, aggDataMap,
+						kpiRequest);
+				repoWisePRSizeList.add(excelDataLoader);
+				repoList.add(repo.getUrl());
+				branchList.add(repo.getBranch());
 
-        ProjectFilter accountHierarchyData = projectLeafNode.getProjectFilter();
-        ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-        List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null ? Collections.emptyList()
-                : toolMap.get(configId).get(REPO_TOOLS);
-        if (CollectionUtils.isEmpty(reposList)) {
-            log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}", projectLeafNode.getProjectFilter());
-            return;
-        }
-
-        List<Map<String, Long>> repoWisePRSizeList = new ArrayList<>();
-        List<String> repoList = new ArrayList<>();
-        List<String> branchList = new ArrayList<>();
-        String projectName = projectLeafNode.getProjectFilter().getName();
-        Map<String, List<DataCount>> aggDataMap = new HashMap<>();
-        Map<String, Long> aggPRSizeForRepo = new HashMap<>();
-        Map<String, Long> aggMRCount = new HashMap<>();
-        reposList.forEach(repo -> {
-            if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
-                    && repo.getProcessorItemList().get(0).getId() != null) {
-                Map<String, Long> excelDataLoader = new HashMap<>();
-                String branchName = getBranchSubFilter(repo, projectName);
-                Map<String, Long> dateWisePRSize = new HashMap<>();
-                Map<String, Long> dateWiseMRCount = new HashMap<>();
-                createDateLabelWiseMap(repoToolKpiMetricResponseList, repo.getRepositoryName(), repo.getBranch(),
-                        dateWisePRSize, dateWiseMRCount);
-                aggPRSize(aggPRSizeForRepo, dateWisePRSize, aggMRCount, dateWiseMRCount);
-                setWeekWisePRSize(dateWisePRSize, dateWiseMRCount, excelDataLoader, branchName, projectName,
-                        aggDataMap, kpiRequest);
-                repoWisePRSizeList.add(excelDataLoader);
-                repoList.add(repo.getUrl());
-                branchList.add(repo.getBranch());
-
-            }
-        });
-        setWeekWisePRSize(aggPRSizeForRepo, aggMRCount, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName,
-                aggDataMap, kpiRequest);
-        mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
-        populateExcelDataObject(requestTrackerId, repoWisePRSizeList, repoList, branchList, excelData, projectLeafNode);
-        kpiElement.setExcelData(excelData);
-        kpiElement.setExcelColumns(KPIExcelColumn.PR_SIZE.getColumns());
-    }
+			}
+		});
+		setWeekWisePRSize(aggPRSizeForRepo, aggMRCount, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName,
+				aggDataMap, kpiRequest);
+		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
+		populateExcelDataObject(requestTrackerId, repoWisePRSizeList, repoList, branchList, excelData, projectLeafNode);
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.PR_SIZE.getColumns());
+	}
 
 	private void aggPRSize(Map<String, Long> aggPRSizeForRepo, Map<String, Long> prSizeForRepo,
 			Map<String, Long> aggMRCount, Map<String, Long> mrCount) {
@@ -199,6 +197,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 
 	/**
 	 * create date wise pr size map
+	 * 
 	 * @param repoToolKpiMetricResponsesCommit
 	 * @param repoName
 	 * @param branchName
@@ -225,6 +224,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 
 	/**
 	 * create data count object by day/week filter
+	 * 
 	 * @param weekWisePRSize
 	 * @param weekWiseMRCount
 	 * @param excelDataLoader
@@ -288,47 +288,46 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		return dataCount;
 	}
 
-    /**
-     * get kpi data from repo tools api
-     *
-     * @param endDate
-     * @param toolMap
-     * @param node
-     * @param dataPoint
-     * @param duration
-     * @return
-     */
-    private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
-                                                                          Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node, Integer dataPoint, String duration) {
+	/**
+	 * get kpi data from repo tools api
+	 *
+	 * @param endDate
+	 * @param toolMap
+	 * @param node
+	 * @param dataPoint
+	 * @param duration
+	 * @return
+	 */
+	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
+			Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node, Integer dataPoint, String duration) {
 
-        List<String> projectCodeList = new ArrayList<>();
-        ProjectFilter accountHierarchyData = node.getProjectFilter();
-        ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-        List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(REPO_TOOLS,
-                Collections.emptyList());
-        if (!CollectionUtils.isEmpty(tools)) {
-            projectCodeList.add(node.getId());
-        }
+		List<String> projectCodeList = new ArrayList<>();
+		ProjectFilter accountHierarchyData = node.getProjectFilter();
+		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(REPO_TOOLS,
+				Collections.emptyList());
+		if (!CollectionUtils.isEmpty(tools)) {
+			projectCodeList.add(node.getId());
+		}
 
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 
-        List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(projectCodeList)) {
+			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
+			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+				startDate = LocalDate.now().minusWeeks(dataPoint);
+				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+					startDate = startDate.minusDays(1);
+				}
+			}
 
-        if (CollectionUtils.isNotEmpty(projectCodeList)) {
-            LocalDate startDate = LocalDate.now().minusDays(dataPoint);
-            if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-                startDate = LocalDate.now().minusWeeks(dataPoint);
-                while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
-                    startDate = startDate.minusDays(1);
-                }
-            }
+			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
+			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
+					customApiConfig.getRepoToolPRSizeUrl(), startDate.toString(), endDate.toString(), debbieDuration);
+		}
 
-            String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
-            repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
-                    customApiConfig.getRepoToolPRSizeUrl(), startDate.toString(), endDate.toString(), debbieDuration);
-        }
-
-        return repoToolKpiMetricResponseList;
-    }
+		return repoToolKpiMetricResponseList;
+	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<Map<String, Long>> repoWiseMRList,
 			List<String> repoList, List<String> branchList, List<KPIExcelData> validationDataMap, Node node) {

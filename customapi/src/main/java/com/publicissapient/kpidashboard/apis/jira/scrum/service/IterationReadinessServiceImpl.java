@@ -79,9 +79,7 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
 
-		if (Filters.getFilter(projectNode.getGroupName()) == Filters.PROJECT) {
-			projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
-		}
+		projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
 		log.info("Iteration Readiness Service impl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 

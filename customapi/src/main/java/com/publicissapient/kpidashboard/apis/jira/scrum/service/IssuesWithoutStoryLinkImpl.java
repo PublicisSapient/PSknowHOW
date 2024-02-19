@@ -301,7 +301,8 @@ public class IssuesWithoutStoryLinkImpl extends JiraBacklogKPIService<Integer, L
 		return KPICode.ISSUES_WITHOUT_STORY_LINK.name();
 	}
 
-	private void projectWiseLeafNodeValue(DataCount trendValue, Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(DataCount trendValue, Node leafNode, KpiElement kpiElement,
+			KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
 		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();

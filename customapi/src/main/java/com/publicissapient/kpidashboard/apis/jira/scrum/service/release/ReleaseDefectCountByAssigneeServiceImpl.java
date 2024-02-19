@@ -71,9 +71,7 @@ public class ReleaseDefectCountByAssigneeServiceImpl extends JiraReleaseKPIServi
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
 			throws ApplicationException {
-		if (Filters.getFilter(releaseNode.getGroupName()) == Filters.RELEASE) {
-			releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
-		}
+		releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
 		log.info("ReleaseDefectCountByAssigneeServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}

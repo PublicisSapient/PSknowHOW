@@ -58,6 +58,22 @@ public class JiraKPIServiceTest {
 	@Mock
 	private JiraServiceR jiraService;
 
+	private static List<JiraIssueCustomHistory> getJiraIssueCustomHistories() {
+		JiraIssueCustomHistory issueCustomHistory = new JiraIssueCustomHistory();
+		issueCustomHistory.setStoryID("DTS-123");
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+		jiraIssueCustomHistories.add(issueCustomHistory);
+		return jiraIssueCustomHistories;
+	}
+
+	private static List<JiraIssue> getJiraIssues() {
+		JiraIssue jiraIssue = new JiraIssue();
+		jiraIssue.setNumber("123");
+		List<JiraIssue> jiraIssues = new ArrayList<>();
+		jiraIssues.add(jiraIssue);
+		return jiraIssues;
+	}
+
 	@Before
 	public void init() {
 		MockitoAnnotations.openMocks(this);
@@ -122,22 +138,5 @@ public class JiraKPIServiceTest {
 		}
 
 	}
-
-	private static List<JiraIssueCustomHistory> getJiraIssueCustomHistories() {
-		JiraIssueCustomHistory issueCustomHistory = new JiraIssueCustomHistory();
-		issueCustomHistory.setStoryID("DTS-123");
-		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
-		jiraIssueCustomHistories.add(issueCustomHistory);
-		return jiraIssueCustomHistories;
-	}
-
-	private static List<JiraIssue> getJiraIssues() {
-		JiraIssue jiraIssue = new JiraIssue();
-		jiraIssue.setNumber("123");
-		List<JiraIssue> jiraIssues = new ArrayList<>();
-		jiraIssues.add(jiraIssue);
-		return jiraIssues;
-	}
-
 
 }

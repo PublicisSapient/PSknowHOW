@@ -121,7 +121,7 @@ public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Do
 		List<DataCount> trendValueList = new ArrayList<>();
 		Map<String, Node> mapTmp = new HashMap<>();
 		mapTmp.put(projectNode.getId(),projectNode);
-				projectWiseLeafNodeValue(projectNode, trendValueList, kpiElement, kpiRequest, mapTmp);
+		projectWiseLeafNodeValue(projectNode, trendValueList, kpiElement, kpiRequest, mapTmp);
 
 		return kpiElement;
 	}
