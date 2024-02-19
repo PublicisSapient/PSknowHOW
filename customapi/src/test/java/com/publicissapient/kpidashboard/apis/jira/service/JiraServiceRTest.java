@@ -171,7 +171,6 @@ public class JiraServiceRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMapping.setJiraSubTaskDefectType(Arrays.asList("Bug"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 	}
 
@@ -202,10 +201,8 @@ public class JiraServiceRTest {
 		// .thenReturn(new ArrayList<KpiElement>());
 		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
 				.thenReturn(new ArrayList<KpiElement>());
-		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
 		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
-		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
@@ -222,11 +219,7 @@ public class JiraServiceRTest {
 		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
-		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
-		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 	}
 
@@ -282,13 +275,7 @@ public class JiraServiceRTest {
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
-		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream()
-				.filter(s -> s.getLeafNodeId().equalsIgnoreCase("38296_Scrum Project_6335363749794a18e8a4479b"))
-				.collect(Collectors.toList()));
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-		when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
 		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
 //		when(mcokAbstract.getKpiData(any(), any(), any())).thenReturn(rcaKpiElement);
@@ -334,13 +321,7 @@ public class JiraServiceRTest {
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
-		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream()
-				.filter(s -> s.getLeafNodeId().equalsIgnoreCase("38296_Scrum Project_6335363749794a18e8a4479b"))
-				.collect(Collectors.toList()));
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-		when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
 		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
 //		when(mcokAbstract.getKpiData(any(), any(), any())).thenReturn(rcaKpiElement);
