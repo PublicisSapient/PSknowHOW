@@ -24,7 +24,6 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -56,7 +55,6 @@ import lombok.extern.slf4j.Slf4j;
  * aggregationService (for aggregation).
  *
  * @author tauakram
- * @implNote {@link KpiIntegrationServiceImpl }
  *
  */
 
@@ -75,8 +73,6 @@ public class ZephyrService {
 
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
-
-	private boolean referFromProjectCache = true;
 
 	/**
 	 * Process the zephyr based KPI requests.
@@ -105,6 +101,7 @@ public class ZephyrService {
 			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
 					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
+
 				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
 				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
 				if (filteredAccountDataList.isEmpty()) {
@@ -160,7 +157,7 @@ public class ZephyrService {
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
 			List<AccountHierarchyData> filteredAccountDataList) {
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
+		if (!authorizedProjectsService.ifSuperAdminUser()) {
 			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
 		}
 		return filteredAccountDataList;
@@ -169,7 +166,7 @@ public class ZephyrService {
 	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
 		String[] projectKeyCache;
 
-		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
+		if (!authorizedProjectsService.ifSuperAdminUser()) {
 			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 		} else {
 			projectKeyCache = kpiRequest.getIds();
@@ -274,23 +271,6 @@ public class ZephyrService {
 			long processTime = System.currentTimeMillis() - startTime;
 			log.info("[ZEPHYR-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
 		}
-	}
-
-	/**
-	 * This method is called when the request for kpi is done from exposed API
-	 *
-	 * @param kpiRequest
-	 *            Zephyr KPI request true if flow for precalculated, false for direct
-	 *            flow.
-	 * @return List of KPI data
-	 * @throws EntityNotFoundException
-	 *             EntityNotFoundException
-	 */
-	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
-		referFromProjectCache = false;
-		List<KpiElement> kpiElementList = process(kpiRequest);
-		referFromProjectCache = true;
-		return kpiElementList;
 	}
 
 }

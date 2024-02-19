@@ -149,11 +149,8 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		List<SprintDetails> sprintDetailsList = new ArrayList<>();
-		sprintDetailsList.add(sprintDetails);
 		Map<String, Object> sprintVelocityStoryMap = new HashMap<>();
 		sprintVelocityStoryMap.put("sprintVelocityKey", storyList);
-		sprintVelocityStoryMap.put("sprintWiseSprintDetailMap", sprintDetailsList);
 
 		when(kpiHelperService.fetchBackLogReadinessFromdb(any(), any())).thenReturn(sprintVelocityStoryMap);
 
