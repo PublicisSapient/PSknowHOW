@@ -31,7 +31,7 @@ import { GuestGuard } from '../services/guest.guard';
 import { BacklogComponent } from '../dashboard/backlog/backlog.component';
 import { SSOGuard } from '../services/sso.guard';
 import { SsoAuthFailureComponent } from '../component/sso-auth-failure/sso-auth-failure.component';
-import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/unauthorised-access.component';
+//import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/unauthorised-access.component';
 import { MilestoneComponent } from '../dashboard/milestone/milestone.component';
 import { DoraComponent } from '../dashboard/dora/dora.component';
 import { FeatureGuard } from '../services/feature.guard';
@@ -99,7 +99,7 @@ const routes: Routes = [
         }
       },
       { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
-      { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
+     // { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
       {
         path: 'Config',
         loadChildren: () => import('../config/config.module').then(m => m.ConfigModule), canLoad: [FeatureGuard],

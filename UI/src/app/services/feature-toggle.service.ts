@@ -11,14 +11,14 @@ export class FeatureFlagsService {
 
   constructor(private roleService: GetAuthorizationService, private http: HttpService) { }
 
-  async loadConfig() {
-    return await this.http.getFeatureFlags();
+  loadConfig() {
+    return this.http.getFeatureFlags();
   }
 
   async isFeatureEnabled(key: string) {
-    if (this.config) {
+    if (this.config?.length) {
       this.config = features.concat(this.config);
-      let requiredConfig = this.config.filter(feature => feature['name'].toLowerCase() === key.toLowerCase())[0];
+     let requiredConfig = this.config.filter(feature => feature['name']?.toLowerCase() === key?.toLowerCase())[0];
       if (requiredConfig) {
         if (requiredConfig.enabled) {
           return true;
@@ -29,7 +29,7 @@ export class FeatureFlagsService {
         return true;
       }
     } else {
-      this.config = this.loadConfig();
+      this.config = await this.loadConfig();
       this.config = features.concat(this.config);
       return this.isFeatureEnabled(key);
     }

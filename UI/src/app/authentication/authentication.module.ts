@@ -46,7 +46,7 @@ import { SharedModuleModule } from '../shared-module/shared-module.module';
     LoginComponent,
     RegisterComponent,
     ForgotPasswordComponent,
-    ResetPasswordComponent,
+    ResetPasswordComponent
   ],
   providers: [MessageService]
 })

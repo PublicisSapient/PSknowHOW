@@ -13,22 +13,21 @@ export class FeatureGuard implements CanLoad, CanActivateChild {
         private router: Router
     ) { }
 
-    canLoad(
+    async canLoad(
         route: Route,
         segments: UrlSegment[]
     ):
-        | Observable<boolean | UrlTree>
-        | Promise<boolean | UrlTree>
-        | boolean
-        | UrlTree {
-        const {
-            data: { feature }, // <-- Get the module name from route data
-        } = route;
-        if (feature) {
-            const isEnabled = this.featureFlagsService.isFeatureEnabled(feature);
-            if (isEnabled) {
-                return true;
-            }
+          Promise<
+             boolean |
+             UrlTree> {
+         const {
+             data: { feature }, // <-- Get the module name from route data
+         } = route;
+         if (feature) {
+             const isEnabled = await this.featureFlagsService.isFeatureEnabled(feature);
+             if (isEnabled) {
+                 return true;
+             }
         } else {
             return true;
         }
@@ -36,18 +35,21 @@ export class FeatureGuard implements CanLoad, CanActivateChild {
         return false;
     }
 
-    canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
+    async canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<
+        boolean |
+        UrlTree> {
         const {
             data: { feature }, // <-- Get the module name from route data
         } = childRoute;
         if (feature) {
-            const isEnabled = this.featureFlagsService.isFeatureEnabled(feature);
+            const isEnabled = await this.featureFlagsService.isFeatureEnabled(feature)
             if (isEnabled) {
                 return true;
             }
         } else {
             return true;
         }
+        //the below line will work when 'isEnabled' is false
         this.router.navigate(['/']);
         return false;
     }
