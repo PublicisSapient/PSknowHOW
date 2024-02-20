@@ -37,7 +37,7 @@ spec:
           #   tcpSocket:
           #     port: 8080
           #   initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-          #   periodSeconds: 5          # Check every 5 seconds
+          #   periodSeconds: 5          # Check every 5 secondss
           # livenessProbe:
           #   tcpSocket:
           #     port: 8080
