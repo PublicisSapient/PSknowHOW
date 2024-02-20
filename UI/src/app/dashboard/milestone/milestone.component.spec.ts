@@ -573,6 +573,9 @@ describe('MilestoneComponent', () => {
         const kpi = {
             'kpiId': 'kpi123'
         }
+        component.filterApplyData = {
+            ids : ['fakeRelease']
+        }
         component.handleSelectedOption(event, kpi)
         component.kpiSelectedFilterObj['kpi123'] = {};
         component.kpiSelectedFilterObj['kpi123'] = event
@@ -797,6 +800,9 @@ describe('MilestoneComponent', () => {
         const kpi = {
             'kpiId': 'kpi123'
         }
+        component.filterApplyData = {
+            ids : ['fakeRelease']
+        }
         component.handleSelectedOption(event, kpi)
         component.kpiSelectedFilterObj['kpi123'] = {};
         component.kpiSelectedFilterObj['kpi123'] = event
@@ -1020,12 +1026,18 @@ describe('MilestoneComponent', () => {
     })
 
     it("should create kpi wise list", () => {
+        component.filterApplyData = {ids : ['fakeRelease']}
+        spyOn(component,'getChartData');
+        spyOn(helperService,'setFilterValueIfAlreadyHaveBackup');
         const fakeKPi = helperService.createKpiWiseId(fakeMilestoneKpiResponse.response);
         component.createAllKpiArray(fakeKPi)
         expect(component.allKpiArray.length).toBeGreaterThan(0);
     })
 
     it("should create kpi array when trendvalueList is object", () => {
+        component.filterApplyData = {ids : ['fakeRelease']}
+        spyOn(component,'getChartData');
+        spyOn(helperService,'setFilterValueIfAlreadyHaveBackup');
         let kpi = [{
             kpiId: "kpi141",
             trendValueList: {

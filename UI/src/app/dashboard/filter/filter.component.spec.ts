@@ -1825,4 +1825,35 @@ const completeHierarchyData = {
     expect(rValue).not.toBeNull();
   })
 
+  it('should set not blank kpi filter for release and sprint when changing',()=>{
+  component.selectedTab = 'iteration';
+  const mockObj ={
+    kpiFilters : {
+      iteration : {},
+      release : {},
+    }
+  }
+  spyOn(sharedService,'getAddtionalFilterBackup').and.returnValue(mockObj);
+  spyOn(sharedService, 'setAddtionalFilterBackup')
+  const spyobj =  spyOn(sharedService, 'setKpiSubFilterObj')
+    component.refreshKpiLevelFiltersBackup('sprint',true);
+    expect(spyobj).toHaveBeenCalled();
+  })
+
+  it('should set blank kpi filter for backlog component',()=>{
+    component.selectedTab = 'backlog';
+    const mockObj ={
+      kpiFilters : {
+        backlog : {}
+      }
+    }
+    spyOn(sharedService,'getAddtionalFilterBackup').and.returnValue(mockObj);
+    const spyobj = spyOn(sharedService, 'setAddtionalFilterBackup')
+    spyOn(sharedService, 'setKpiSubFilterObj')
+
+      component.refreshKpiLevelFiltersBackup('project',true);
+      expect(spyobj).toHaveBeenCalled();
+    })
+  
+
 });
