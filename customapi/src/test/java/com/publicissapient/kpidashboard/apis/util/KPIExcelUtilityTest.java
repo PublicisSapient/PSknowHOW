@@ -808,7 +808,7 @@ public class KPIExcelUtilityTest {
 		jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.now());
 		statusUpdationLog.add(jiraHistoryChangeLog);
 		issueCustomHistory.setStatusUpdationLog(statusUpdationLog);
-		KPIExcelUtility.populateBackLogData(overAllmodalValues, modalValues, jiraIssue, Optional.of(issueCustomHistory),status);
+		KPIExcelUtility.populateBackLogData(overAllmodalValues, modalValues, jiraIssue, issueCustomHistory,status);
 		Assert.assertNotNull(modalValues);
 		Assert.assertNotNull(overAllmodalValues);
 	}

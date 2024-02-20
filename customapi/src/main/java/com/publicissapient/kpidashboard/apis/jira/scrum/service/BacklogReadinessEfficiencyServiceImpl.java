@@ -211,7 +211,6 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 			List<Double> overAllStoryPoints = Arrays.asList(0.0D);
 			AtomicLong overAllCycleTime = new AtomicLong(0);
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
-
 			typeAndPriorityWiseIssues
 					.forEach((issueType, priorityWiseIssue) -> priorityWiseIssue.forEach((priority, issues) -> {
 						issueTypes.add(issueType);
@@ -220,10 +219,9 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 						Double storyPoint = 0.0D;
 						long cycleTime = 0;
 						List<IterationKpiModalValue> modalValues = new ArrayList<>();
+						Map<String,JiraIssueCustomHistory> jiraIssueCustomHistoryMap = historyForIssues.stream().collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID,jiraIssueCustomHistory->jiraIssueCustomHistory));
 						for (JiraIssue jiraIssue : issues) {
-							Optional<JiraIssueCustomHistory> jiraCustomHistory = historyForIssues.stream()
-									.filter(history -> history.getStoryID().equals(jiraIssue.getNumber())).findAny();
-							KPIExcelUtility.populateBackLogData(overAllmodalValues, modalValues, jiraIssue,jiraCustomHistory,fieldMapping.getReadyForDevelopmentStatusKPI138());
+							KPIExcelUtility.populateBackLogData(overAllmodalValues, modalValues, jiraIssue,jiraIssueCustomHistoryMap.getOrDefault(jiraIssue.getNumber(),new JiraIssueCustomHistory()),fieldMapping.getReadyForDevelopmentStatusKPI138());
 							issueCount = issueCount + 1;
 							overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 							AtomicLong difference = getActivityCycleTimeForAnIssue(
