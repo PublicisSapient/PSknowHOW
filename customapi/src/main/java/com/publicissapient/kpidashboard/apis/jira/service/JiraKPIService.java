@@ -360,13 +360,14 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
 		Optional<JiraIssueCustomHistory> jiraCustomHistory = historyForIssues.stream()
 				.filter(history -> history.getStoryID().equals(jiraIssue.getNumber())).findAny();
-		if(jiraCustomHistory.isPresent())
-		{
+		if(jiraCustomHistory.isPresent()) {
 			iterationKpiModalValue.setCreatedDate(DateUtil.dateTimeFormatter(jiraCustomHistory.get().getCreatedDate().toDate(),DateUtil.DISPLAY_DATE_FORMAT));
 			Optional<JiraHistoryChangeLog> sprint = jiraCustomHistory.get().getStatusUpdationLog().stream()
 					.filter(sprintDetails -> CollectionUtils.isNotEmpty(status) && status.contains(sprintDetails.getChangedTo()))
 					.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn)).findFirst();
-			iterationKpiModalValue.setDorDate(DateUtil.dateTimeFormatter(sprint.get().getUpdatedOn(),DateUtil.DISPLAY_DATE_FORMAT));
+			if(sprint.isPresent()) {
+				iterationKpiModalValue.setDorDate(DateUtil.dateTimeFormatter(sprint.get().getUpdatedOn(),DateUtil.DISPLAY_DATE_FORMAT));
+			}
 		}
 		iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
 		overAllmodalValues.add(iterationKpiModalValue);
