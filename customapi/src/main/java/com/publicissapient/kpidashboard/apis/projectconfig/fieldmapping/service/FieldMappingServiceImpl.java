@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -35,10 +37,14 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.enums.FieldMappingEnum;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.ConfigurationHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
@@ -197,6 +203,36 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			projectBasicConfigObj = projectBasicConfig.get();
 		}
 		return projectBasicConfigObj;
+	}
+
+	@Override
+	public List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId)
+			throws NoSuchFieldException, IllegalAccessException {
+		FieldMappingEnum fieldMappingEnum = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase());
+		List<String> fields = fieldMappingEnum.getFields();
+
+		FieldMapping fieldMapping = getFieldMapping(projectToolConfigId);
+		List<FieldMappingResponse> fieldMappingResponses = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(fields)) {
+			Class<FieldMapping> fieldMappingClass = FieldMapping.class;
+			for (String field : fields) {
+				FieldMappingResponse mappingResponse = new FieldMappingResponse();
+				Object value = getFieldMappingField(fieldMapping, fieldMappingClass, field);
+				mappingResponse.setFieldName(field);
+				mappingResponse.setOriginalValue(value);
+				mappingResponse.setHistory((List<ConfigurationHistoryChangeLog>) getFieldMappingField(fieldMapping,
+						fieldMappingClass.getSuperclass(), "history" + field));
+				fieldMappingResponses.add(mappingResponse);
+			}
+		}
+		return fieldMappingResponses;
+	}
+
+	private Object getFieldMappingField(FieldMapping fieldMapping, Class<?> fieldMapping1, String field)
+			throws NoSuchFieldException, IllegalAccessException {
+		Field declaredField = fieldMapping1.getDeclaredField(field);
+		declaredField.setAccessible(true); // This is necessary if the field is private
+		return declaredField.get(fieldMapping); // normall value
 	}
 
 	private void clearCache() {

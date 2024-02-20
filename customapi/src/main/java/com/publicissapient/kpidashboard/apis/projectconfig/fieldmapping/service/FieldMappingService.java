@@ -18,10 +18,14 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service;
 
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+
+import java.util.List;
 
 /**
  * @author anisingh4
@@ -59,4 +63,5 @@ public interface FieldMappingService {
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
+	List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId) throws NoSuchFieldException, IllegalAccessException;
 }

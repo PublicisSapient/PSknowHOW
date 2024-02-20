@@ -18,9 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.rest;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,12 +37,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.abac.ContextAwarePolicyEnforcement;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingService;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.FieldMappingDTO;
@@ -91,7 +96,7 @@ public class FieldMappingController {
 
 	@RequestMapping(value = "/tools/{projectToolConfigId}/saveMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> saveFieldMapping(@PathVariable String projectToolConfigId,
-															@RequestBody FieldMappingDTO fieldMappingDTO) {
+			@RequestBody FieldMappingDTO fieldMappingDTO) {
 
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
 
@@ -107,8 +112,7 @@ public class FieldMappingController {
 
 		String finalProjectToolConfigId = projectToolConfigId;
 		Optional<ProjectToolConfig> projectToolConfigOptional = projectToolConfigs.stream()
-				.filter(t -> t.getId().toString().equals(finalProjectToolConfigId))
-				.findFirst();
+				.filter(t -> t.getId().toString().equals(finalProjectToolConfigId)).findFirst();
 		ProjectToolConfig projectToolConfig = projectToolConfigOptional.orElse(null);
 
 		boolean result = fieldMappingService.compareMappingOnSave(projectToolConfigId, fieldMapping);
@@ -132,7 +136,6 @@ public class FieldMappingController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getFieldMapping(@PathVariable String projectToolConfigId) {
 
@@ -149,6 +152,31 @@ public class FieldMappingController {
 			response = new ServiceResponse(false, "no field mapping found for " + projectToolConfigId, null);
 		} else {
 			response = new ServiceResponse(true, "field mappings", result);
+		}
+
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+	@RequestMapping(value = "/tools/fieldMapping/{projectToolConfigId}/{kpiId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	public ResponseEntity<ServiceResponse> getFieldMapping(@PathVariable String projectToolConfigId,
+			@PathVariable String kpiId) {
+		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
+		KPICode kpi = KPICode.getKPI(kpiId);
+		List<FieldMappingResponse> kpiSpecificFieldsAndHistory = new ArrayList<>();
+		if (!Objects.equals(kpi.getKpiId(), KPICode.INVALID.getKpiId())) {
+			try {
+				kpiSpecificFieldsAndHistory = fieldMappingService.getKpiSpecificFieldsAndHistory(kpi,
+						projectToolConfigId);
+			} catch ( NoSuchFieldException | IllegalAccessException e) {
+				log.error("Field/ Class not found in FieldMapping collection");
+			}
+		}
+		log.info("getFieldMapping result : {}", kpiSpecificFieldsAndHistory);
+		ServiceResponse response;
+		if (CollectionUtils.isEmpty(kpiSpecificFieldsAndHistory)) {
+			response = new ServiceResponse(false, "no field mapping found for " + projectToolConfigId, null);
+		} else {
+			response = new ServiceResponse(true, "field mappings", kpiSpecificFieldsAndHistory);
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);

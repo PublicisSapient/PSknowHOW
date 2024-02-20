@@ -40,7 +40,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Document(collection = "field_mapping")
-public class FieldMapping extends BasicModel {
+public class FieldMapping extends FieldMappingHistory {
 
 	public static final String READY_FOR_TESTING = "Ready For Testing";
 	public static final String IN_TESTING = "In Testing";
