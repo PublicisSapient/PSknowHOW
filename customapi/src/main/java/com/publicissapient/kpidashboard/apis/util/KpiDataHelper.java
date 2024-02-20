@@ -712,23 +712,11 @@ public final class KpiDataHelper {
 		return completedIssues;
 	}
 
-	private static Set<SprintIssue> getCombinationalCompletedSet(Set<SprintIssue> typeWiseIssues,
-			Set<SprintIssue> statusWiseIssues) {
-		Set<SprintIssue> newCompletedSet;
-		if (CollectionUtils.isNotEmpty(typeWiseIssues) && CollectionUtils.isNotEmpty(statusWiseIssues)) {
-			newCompletedSet = new HashSet<>(CollectionUtils.intersection(typeWiseIssues, statusWiseIssues));
-		} else if (CollectionUtils.isNotEmpty(typeWiseIssues)) {
-			newCompletedSet = typeWiseIssues;
-		} else {
-			newCompletedSet = statusWiseIssues;
-		}
-		return newCompletedSet;
-	}
-
 	private static Set<SprintIssue> filteringByFieldMapping(SprintDetails dbSprintDetail,
 			List<String> fieldMapingCompletionType, List<String> fieldMappingCompletionStatus) {
 		Set<SprintIssue> typeWiseIssues = new HashSet<>();
 		Set<SprintIssue> statusWiseIssues = new HashSet<>();
+		Set<SprintIssue> newCompletedSet = null;
 		if (CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)
 				&& CollectionUtils.isNotEmpty(fieldMapingCompletionType)) {
 			statusWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
@@ -743,6 +731,7 @@ public final class KpiDataHelper {
 			typeWiseIssues.addAll(dbSprintDetail.getNotCompletedIssues().stream()
 					.filter(issue -> fieldMapingCompletionType.contains(issue.getTypeName()))
 					.collect(Collectors.toSet()));
+			newCompletedSet = new HashSet<>(CollectionUtils.intersection(typeWiseIssues, statusWiseIssues));
 		} else if (CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)) {
 			statusWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
 					.filter(issue -> fieldMappingCompletionStatus.contains(issue.getStatus()))
@@ -750,12 +739,14 @@ public final class KpiDataHelper {
 			statusWiseIssues.addAll(dbSprintDetail.getNotCompletedIssues().stream()
 					.filter(issue -> fieldMappingCompletionStatus.contains(issue.getStatus()))
 					.collect(Collectors.toSet()));
+			newCompletedSet= statusWiseIssues;
 		} else if (CollectionUtils.isNotEmpty(fieldMapingCompletionType)) {
 			typeWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
 					.filter(issue -> fieldMapingCompletionType.contains(issue.getTypeName()))
 					.collect(Collectors.toSet()));
+			newCompletedSet=typeWiseIssues;
 		}
-		return getCombinationalCompletedSet(typeWiseIssues, statusWiseIssues);
+		return newCompletedSet;
 	}
 
 	/**
