@@ -1,0 +1,170 @@
+# This is a SecretProviderClass example using user-assigned identity to access your key vault. The secretObjects section is used to create Kubernetes secrets from the  mounted Azure Key Vault secrets.
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: uat-secretproviderclass
+  namespace: uat-knowhow
+spec:
+  provider: azure
+  parameters:
+    usePodIdentity: "false"
+    useVMManagedIdentity:   "true"                                                         # Set to true for  using managed identity
+    userAssignedIdentityID: "19ae5e85-a9ef-4e1a-bb4f-a8dd2bd0d55c"  # Set the   clientID of the user-assigned managed identity to use, from the previous step
+    keyvaultName:   speedtoolskeyvault                                                                  # Set to the name of your key vault
+    objects:  |
+      array:
+        - |
+          objectName: uatknhdbusername
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: uatknhdbpassword
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: uatknhdbhost
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: uatknhdbconnectionstring
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: uatrabbitpass
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: uatdebbieuser
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: uatdebbiepassword
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: uat-sendgrid-apikey
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: uat-repo-tool-api-key
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: uat-debbie-secret-key
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: uat-debbie-internal-key
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: uat-debbie-db-url
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: tenginequerypass
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: knowhowaesEncryptionKey
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: knowhow-auth-secret
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: debbietengineauthtoken
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: debbiemailhostpass
+          objectType: secret
+          objectVersion: ""
+    tenantId: "d52c9ea1-7c21-47b1-82a3-33a74b1f74b8"                 # The tenant ID of the key vault
+  secretObjects:                                    #https://secrets-store-csi-driver.sigs.k8s.io/topics/sync-as-kubernetes-secret
+  - secretName: uatknhdbusername
+    type: Opaque
+    data:
+    - objectName: uatknhdbusername                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: uatknhdbusername                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: uatknhdbpassword
+    type: Opaque
+    data:
+    - objectName: uatknhdbpassword
+      key: uatknhdbpassword
+  - secretName: uatknhdbhost
+    type: Opaque
+    data:
+    - objectName: uatknhdbhost
+      key: uatknhdbhost
+  - secretName: uatknhdbconnectionstring
+    type: Opaque
+    data:
+    - objectName: uatknhdbconnectionstring                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: uatknhdbconnectionstring                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: uatrabbitpass
+    type: Opaque
+    data:
+    - objectName: uatrabbitpass
+      key: uatrabbitpass
+  - secretName: uatdebbieuser
+    type: Opaque
+    data:
+    - objectName: uatdebbieuser
+      key: uatdebbieuser
+  - secretName: uatdebbiepassword
+    type: Opaque
+    data:
+    - objectName: uatdebbiepassword                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: uatdebbiepassword                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: uat-sendgrid-apikey
+    type: Opaque
+    data:
+    - objectName: uat-sendgrid-apikey
+      key: uat-sendgrid-apikey
+  - secretName: uat-repo-tool-api-key
+    type: Opaque
+    data:
+    - objectName: uat-repo-tool-api-key
+      key: uat-repo-tool-api-key
+  - secretName: uat-debbie-secret-key
+    type: Opaque
+    data:
+    - objectName: uat-debbie-secret-key                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: uat-debbie-secret-key                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: uat-debbie-internal-key
+    type: Opaque
+    data:
+    - objectName: uat-debbie-internal-key
+      key: uat-debbie-internal-key
+  - secretName: uat-debbie-db-url
+    type: Opaque
+    data:
+    - objectName: uat-debbie-db-url
+      key: uat-debbie-db-url
+  - secretName: tenginequerypass
+    type: Opaque
+    data:
+    - objectName: tenginequerypass
+      key: tenginequerypass
+  - secretName: knowhowaesEncryptionKey
+    type: Opaque
+    data:
+    - objectName: knowhowaesEncryptionKey                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: knowhowaesEncryptionKey                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: knowhow-auth-secret
+    type: Opaque
+    data:
+    - objectName: knowhow-auth-secret
+      key: knowhow-auth-secret
+  - secretName: debbietengineauthtoken
+    type: Opaque
+    data:
+    - objectName: debbietengineauthtoken
+      key: debbietengineauthtoken
+  - secretName: debbiemailhostpass
+    type: Opaque
+    data:
+    - objectName: debbiemailhostpass
+      key: debbiemailhostpass
