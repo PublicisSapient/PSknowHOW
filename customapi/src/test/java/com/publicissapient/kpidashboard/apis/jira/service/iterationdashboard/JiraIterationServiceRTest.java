@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -167,8 +168,8 @@ public class JiraIterationServiceRTest {
 
 		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
 				.thenReturn(new ArrayList<KpiElement>());
-		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
@@ -204,8 +205,8 @@ public class JiraIterationServiceRTest {
 				.filter(s -> s.getLeafNodeId().equalsIgnoreCase("38296_Scrum Project_6335363749794a18e8a4479b"))
 				.collect(Collectors.toList()));
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
 		resultList.forEach(k -> {
@@ -254,8 +255,8 @@ public class JiraIterationServiceRTest {
 				.filter(s -> s.getLeafNodeId().equalsIgnoreCase("38296_Scrum Project_6335363749794a18e8a4479b"))
 				.collect(Collectors.toList()));
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
 		resultList.forEach(k -> {

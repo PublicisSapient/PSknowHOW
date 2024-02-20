@@ -22,6 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -201,8 +202,8 @@ public class JiraServiceRTest {
 		// .thenReturn(new ArrayList<KpiElement>());
 		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
 				.thenReturn(new ArrayList<KpiElement>());
-		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
@@ -276,8 +277,8 @@ public class JiraServiceRTest {
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 //		when(mcokAbstract.getKpiData(any(), any(), any())).thenReturn(rcaKpiElement);
 
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
@@ -322,8 +323,8 @@ public class JiraServiceRTest {
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-		when(kpiHelperService.getAuthorizedFilteredList(any(), any())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.getProjectKeyCache(any(), any())).thenReturn(kpiRequest.getIds());
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 //		when(mcokAbstract.getKpiData(any(), any(), any())).thenReturn(rcaKpiElement);
 
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);

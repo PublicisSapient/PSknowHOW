@@ -500,7 +500,7 @@ public class KpiHelperServiceTest {
 	public void getProjectKeyCache(){
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_INJECTION_RATE.getKpiId());
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		kpiHelperService.getProjectKeyCache(kpiRequest,accountHierarchyDataList);
+		kpiHelperService.getProjectKeyCache(kpiRequest,accountHierarchyDataList,true);
 	}
 
 	@Test
@@ -509,7 +509,7 @@ public class KpiHelperServiceTest {
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
 		String[] projectKey = new String[0];
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		kpiHelperService.getProjectKeyCache(kpiRequest,accountHierarchyDataList);
+		kpiHelperService.getProjectKeyCache(kpiRequest,accountHierarchyDataList,true);
 	}
 
 	@Test
@@ -517,7 +517,7 @@ public class KpiHelperServiceTest {
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_INJECTION_RATE.getKpiId());
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
 		when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList);
-		kpiHelperService.getAuthorizedFilteredList(kpiRequest,accountHierarchyDataList);
+		kpiHelperService.getAuthorizedFilteredList(kpiRequest,accountHierarchyDataList,true);
 	}
 
 	@Test
