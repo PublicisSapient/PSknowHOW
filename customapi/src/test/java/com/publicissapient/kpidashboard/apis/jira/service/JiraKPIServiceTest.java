@@ -18,12 +18,19 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import org.joda.time.DateTime;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -36,6 +43,8 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author anisingh4
@@ -61,7 +70,33 @@ public class JiraKPIServiceTest {
 		aggregationCriteriaMap.put("kpi3", Constant.AVERAGE);
 		aggregationCriteriaMap.put("kpi4", Constant.SUM);
 	}
-
+	@Test
+	public void testPopulateBackLogData() {
+		JiraIssue jiraIssue = new JiraIssue();
+		jiraIssue.setTypeName("bug");
+		jiraIssue.setUrl("abc");
+		jiraIssue.setNumber("1");
+		jiraIssue.setPriority("5");
+		jiraIssue.setName("Testing");
+		List<String> status = new ArrayList<>();
+		status.add("In Development");
+		List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
+		List<IterationKpiModalValue> modalValues = new ArrayList<>();
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+		JiraIssueCustomHistory issueCustomHistory = new JiraIssueCustomHistory();
+		issueCustomHistory.setStoryID("1");
+		issueCustomHistory.setCreatedDate(DateTime.now().now());
+		jiraIssueCustomHistories.add(issueCustomHistory);
+		List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
+		JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
+		jiraHistoryChangeLog.setChangedTo("In Development");
+		jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.now());
+		statusUpdationLog.add(jiraHistoryChangeLog);
+		issueCustomHistory.setStatusUpdationLog(statusUpdationLog);
+		jiraKPIService.populateBackLogData(overAllmodalValues, modalValues, jiraIssue,jiraIssueCustomHistories,status);
+		assertNotNull(modalValues);
+		assertNotNull(overAllmodalValues);
+	}
 	private List<Map<String, Long>> createAggregationInputData1() {
 		List<Map<String, Long>> aggregatedValueList = new ArrayList<>();
 		Map<String, Long> aggregatedValuesMap1 = new HashMap<>();
@@ -86,6 +121,7 @@ public class JiraKPIServiceTest {
 		return aggregatedValueList;
 	}
 
+
 	public static class JiraKpiServiceTestImpl extends JiraKPIService {
 
 		@Override
@@ -108,6 +144,5 @@ public class JiraKPIServiceTest {
 		public Object fetchKPIDataFromDb(List leafNodeList, String startDate, String endDate, KpiRequest kpiRequest) {
 			return null;
 		}
-
 	}
 }

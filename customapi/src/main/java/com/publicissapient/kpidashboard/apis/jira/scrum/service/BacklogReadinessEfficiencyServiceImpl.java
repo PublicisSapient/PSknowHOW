@@ -220,7 +220,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 						long cycleTime = 0;
 						List<IterationKpiModalValue> modalValues = new ArrayList<>();
 						for (JiraIssue jiraIssue : issues) {
-							populateBackLogData(overAllmodalValues, modalValues, jiraIssue);
+							populateBackLogData(overAllmodalValues, modalValues, jiraIssue,historyForIssues,fieldMapping.getReadyForDevelopmentStatusKPI138());
 							issueCount = issueCount + 1;
 							overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 							AtomicLong difference = getActivityCycleTimeForAnIssue(
