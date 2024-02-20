@@ -584,11 +584,18 @@ public class KPIExcelDataService {
 		category.add(CommonConstant.BACKLOG);
 		Callable<List<KpiElement>> jiraKpiDataTask = () -> {
 			if (category.contains(pair.getValue().getKpiList().get(0).getKpiCategory())) {
+				//when request coming from ITERATION/RELEASE/BACKLOG board
+				if(Boolean.TRUE.equals(apiAuth)){
+					return serviceFactory.getService(pair.getValue().getKpiList().get(0).getKpiCategory())
+							.processWithExposedApiToken(pair.getValue());
+				}
 				return serviceFactory.getService(pair.getValue().getKpiList().get(0).getKpiCategory())
 						.process(pair.getValue());
-			} else if (Boolean.TRUE.equals(apiAuth)) {
-				return jiraServiceR.processWithExposedApiToken(pair.getValue());
 			} else {
+				//when request coming from trend boards
+				if (Boolean.TRUE.equals(apiAuth)) {
+					return jiraServiceR.processWithExposedApiToken(pair.getValue());
+				}
 				return jiraServiceR.process(pair.getValue());
 			}
 		};

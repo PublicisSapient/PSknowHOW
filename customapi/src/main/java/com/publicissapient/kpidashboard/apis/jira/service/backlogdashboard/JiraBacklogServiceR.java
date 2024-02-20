@@ -90,6 +90,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 	private List<SprintDetails> futureSprintDetails;
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
+	private boolean referFromProjectCache = true;
 
 	/**
 	 * This method process scrum jira based Backlog kpis request, cache data and
@@ -121,10 +122,10 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 			}
 			List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList);
+				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList, referFromProjectCache);
 
 				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest,
-						filteredAccountDataList);
+						filteredAccountDataList, referFromProjectCache);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
@@ -330,5 +331,12 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 						processTime);
 			}
 		}
+	}
+
+	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
+		referFromProjectCache = false;
+		List<KpiElement> kpiElementList = process(kpiRequest);
+		referFromProjectCache = true;
+		return kpiElementList;
 	}
 }

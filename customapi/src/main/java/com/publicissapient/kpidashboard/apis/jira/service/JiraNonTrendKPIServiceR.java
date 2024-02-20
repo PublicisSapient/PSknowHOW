@@ -34,4 +34,16 @@ public interface JiraNonTrendKPIServiceR {
 	 *             EntityNotFoundException
 	 */
 	List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException;
+
+	/**
+	 * This method is called when the request for kpi is done from exposed API
+	 *
+	 * @param kpiRequest
+	 *            JIRA KPI request true if flow for precalculated, false for direct
+	 *            flow.
+	 * @return List of KPI data
+	 * @throws EntityNotFoundException
+	 *             EntityNotFoundException
+	 */
+	List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException;
 }

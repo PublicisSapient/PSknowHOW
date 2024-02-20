@@ -98,6 +98,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	private Set<JiraIssue> subtaskDefectReleaseList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 	private List<String> releaseList;
+	private boolean referFromProjectCache = true;
 
 	/**
 	 * This method process scrum jira based release kpis request, cache data and
@@ -130,10 +131,10 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest);
 
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList);
+				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList, referFromProjectCache);
 
 				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest,
-						filteredAccountDataList);
+						filteredAccountDataList, referFromProjectCache);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
@@ -340,6 +341,13 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 			long processTime = System.currentTimeMillis() - startTime;
 			log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
 		}
+	}
+
+	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
+		referFromProjectCache = false;
+		List<KpiElement> kpiElementList = process(kpiRequest);
+		referFromProjectCache = true;
+		return kpiElementList;
 	}
 
 }
