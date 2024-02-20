@@ -190,7 +190,7 @@ export class GroupstackchartComponent implements OnChanges {
       // .padding(0.2);// bar width
       const actualTypes = [];
       data.forEach(function (d) {
-        if (d.type && !actualTypes.includes(d.type)) {
+        if (d.type && !actualTypes.includes(d.type) && d.type !== 'drillDown') {
           actualTypes.push(d.type);
         }
       });
@@ -204,12 +204,14 @@ export class GroupstackchartComponent implements OnChanges {
         d.forEach((dx) => {
           d2[dx.type] = dx.value;
           for (let key in dx?.hoverText) {
-            if (!this.isAggregationStacks) {
-              d2['hoverSum'] = dx?.value + ' ' + this.unit;
-            } else {
-              d2['hoverSum'] += (dx?.hoverText[key]);
+            if (key.indexOf('drillDown') === -1) {
+              if (!this.isAggregationStacks) {
+                d2['hoverSum'] = dx?.value + ' ' + this.unit;
+              } else {
+                d2['hoverSum'] += (dx?.hoverText[key]);
+              }
+              d2['hoverText'][key] = dx?.hoverText[key];
             }
-            d2['hoverText'][key] = dx?.hoverText[key];
           }
         });
         return d2;
@@ -274,6 +276,9 @@ export class GroupstackchartComponent implements OnChanges {
         .attr('class', 'serie')
         .attr('fill', function (d) {
           return z(d.key);
+        })
+        .attr('data-name', function (d) {
+          return (d.key);
         });
 
       // Define the div for the tooltip
@@ -295,33 +300,14 @@ export class GroupstackchartComponent implements OnChanges {
         .attr('y', function (d) {
           return y(d[1]);
         })
+        .attr('data-prop', function (d) {
+          return JSON.stringify(d.data);
+        })
         .style('cursor', 'pointer')
         .attr('height', function (d) {
           return !self.isDrilledDown && !isNaN(y(d[0]) - y(d[1])) ? y(d[0]) - y(d[1]) : 0;
         })
         .attr('width', x0.bandwidth())
-        .on('click', function (event, d) {
-          self.isDrilledDown = true;
-          d3.select(self.elem).select('#back_icon').attr('class', 'p-d-block');
-          if (d?.data?.hoverText) {
-            const newData = d.data.hoverText;
-            self.transformedData = self.formatDrilledDownData(newData);
-            self.dataPoints = self.transformedData?.length ? self.transformedData.length : 0;
-            self.dataLength = self.dataPoints;
-            self.newXCaption = d.data.group;
-            self.draw(self.transformedData);
-
-            d3.select(elem).select('#back_icon').attr('class', 'p-d-flex')
-              .on('click', (event, d) => {
-                self.isDrilledDown = false;
-                self.transformedData = JSON.parse(JSON.stringify(self.transformData(self.data)));
-                self.dataPoints = self.transformedData.length;
-                self.dataLength = self.dataPoints;
-                self.draw(self.transformedData);
-                d3.select(elem).select('#back_icon').attr('class', 'p-d-none');
-              });
-          }
-        })
         .on('mouseover', function (event, d) {
           const topValue = 75;
           if (d.data?.hoverText) {
@@ -341,7 +327,9 @@ export class GroupstackchartComponent implements OnChanges {
             let htmlString = '';
             if (!self.isDrilledDown) {
               for (let key in d.data?.hoverText) {
-                dataString += `<div class=\'toolTipValue p-d-flex p-align-center\'><div class="stack-key p-mr-1">${key}</div><div>${d.data?.hoverText[key]}</div></div>`;
+                if (key.indexOf('drillDown') === -1) {
+                  dataString += `<div class=\'toolTipValue p-d-flex p-align-center\'><div class="stack-key p-mr-1">${key}</div><div>${d.data?.hoverText[key]}</div></div>`;
+                }
               }
             } else {
               dataString = `<div class=\'toolTipValue p-d-flex p-align-center\'><div class="stack-key p-mr-1">${d.data.group}</div><div>${d.data[d.data.group]}</div></div>`;
@@ -364,15 +352,39 @@ export class GroupstackchartComponent implements OnChanges {
             .duration(500)
             .style('display', 'none')
             .style('opacity', 0);
-
         });
 
-      serie.selectAll('rect')
+      svgX.selectAll('rect.serie-rect1')
+        .on('click', function (event, d) {
+          self.isDrilledDown = true;
+          d3.select(self.elem).select('#back_icon').attr('class', 'p-d-block');
+          const dataName = event.target.parentElement.getAttribute('data-name');
+          const newData = JSON.parse(event.target.getAttribute('data-prop'))['drillDown_' + dataName];
+
+          if (newData) {
+            event.target.setAttribute('fill', '#000');
+            self.transformedData = self.formatData(newData);
+            self.dataPoints = self.transformedData?.length ? self.transformedData.length : 0;
+            self.dataLength = self.dataPoints;
+            self.newXCaption = d.data.group + ' - ' + dataName;
+            self.draw(self.transformedData);
+
+            d3.select(elem).select('#back_icon').attr('class', 'p-d-flex')
+              .on('click', (event, d) => {
+                self.isDrilledDown = false;
+                self.transformedData = JSON.parse(JSON.stringify(self.transformData(self.data)));
+                self.dataPoints = self.transformedData.length;
+                self.dataLength = self.dataPoints;
+                self.draw(self.transformedData);
+                d3.select(elem).select('#back_icon').attr('class', 'p-d-none');
+              });
+          }
+        })
         .style('cursor', self.isDrilledDown ? 'default' : 'pointer')
         .transition()
         .ease(d3.easeLinear)
         .duration(200)
-        .delay(function (d, i) { return i * 200 }) //a different delay for each rect
+        .delay(function (d, i) { return 200 })
         .attr('height', d => { return !isNaN(y(d[0]) - y(d[1])) ? y(d[0]) - y(d[1]) : 0 });
 
 
@@ -389,7 +401,7 @@ export class GroupstackchartComponent implements OnChanges {
 
         let htmlString = '';
         this.sortAlphabetically(stackData);
-        const legendKeys = actualTypes.reverse();
+        const legendKeys = actualTypes.filter(type => type.indexOf('drillDown') === -1).reverse();
 
         legendKeys.forEach((key, i) => {
           if (z(key)) {
@@ -410,35 +422,15 @@ export class GroupstackchartComponent implements OnChanges {
     let result = JSON.parse(JSON.stringify(data));
     result.forEach(element => {
       let obj = {};
-
       element.value.forEach(val => {
+        obj['drillDown' + '_' + val['subFilter']] = [];
         obj[val['subFilter']] = this.filter['filter1'][0] === 'Story Points' ? val['size'] : val['value'];
-        obj['drillDown'] = val['drillDown'];
+        obj['drillDown' + '_' + val['subFilter']].push(...val['drillDown']);
       });
       element.value = obj;
     });
+    console.log(result);
     return result;
-  }
-
-  formatDrilledDownData(dataObj) {
-    if (Object.keys(dataObj)?.length > 0) {
-      // dataObj = this.padData(dataObj);
-      let max = 0;
-      const targetList = [];
-      Object.keys(dataObj)?.forEach((item, index) => {
-        const sprintValue = index + 1;
-        const obj = {};
-        obj['group'] = item;
-        obj['type'] = item;
-        obj['hoverText'] = {};
-        obj['xName'] = sprintValue;
-        obj['value'] = (dataObj[item]);
-        targetList.push(obj);
-        max = Math.max(max, dataObj[item]);
-      });
-      this.maxYValue = max * 1.07;
-      return targetList;
-    }
   }
 
   formatData(dataObj) {
@@ -451,25 +443,30 @@ export class GroupstackchartComponent implements OnChanges {
         const sprintValue = index + 1;
         if (typeof (item?.value) === 'object' && Object.keys(item?.value)?.length > 0) {
           const types = Object.keys(item.value);
-          // if (types.length >= 1) {
           types?.forEach(type => {
-            if (type !== 'drillDown') {
-              const obj = {};
-              obj['group'] = item?.sSprintName;
-              obj['type'] = type;
-              obj['value'] = (this.isAggregationStacks == false) ? (item?.data) : (item?.value[type]);
-              obj['hoverText'] = {};
-              obj['hoverText'][type] = item?.value[type];
-              obj['xName'] = sprintValue;
-              targetList.push(obj);
-              max = Math.max(max, item?.data);
+            const obj = {};
+
+            obj['group'] = item?.sSprintName;
+            obj['type'] = type;
+            obj['value'] = (this.isAggregationStacks == false) ? (item?.data) : (item?.value[type]);
+            obj['hoverText'] = {};
+            obj['hoverText'][type] = item?.value[type];
+            obj['xName'] = sprintValue;
+            max = Math.max(max, item?.data);
+            if (type === 'drillDown') {
+              obj['drillDown'] = item.value[type]?.length ? item.value[type] : [];
             }
+            targetList.push(obj);
           });
         } else {
           const obj = {};
-          obj['group'] = item?.sSprintName;
+          obj['group'] = item?.sSprintName ? item?.sSprintName : item?.subFilter;
           obj['hoverText'] = {};
           obj['xName'] = sprintValue;
+          obj['type'] = item?.subFilter;
+          obj['value'] = this.filter['filter1'][0] === 'Story Points' ? item['size'] : item['value'];
+          obj['drillDown'] = item.value?.drillDown?.length ? item.value['drillDown'] : [];
+          max = Math.max(max, obj['value']);
           targetList.push(obj);
         }
 
