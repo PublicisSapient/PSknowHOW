@@ -37,7 +37,7 @@ spec:
           #   tcpSocket:
           #     port: 8080
           #   initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-          #   periodSeconds: 5          # Check every 5 secondss
+          #   periodSeconds: 5          # Check every 5 seconds
           # livenessProbe:
           #   tcpSocket:
           #     port: 8080
@@ -52,7 +52,7 @@ spec:
             # - name: spring.data.mongodb.host
             #   valueFrom:
             #     secretKeyRef:
-            #       name: knowhow-config-credentials
+            #       name: uat-secretproviderclass
             #       key: uatknhdbhost
             - name: repoToolAPIKey
               valueFrom:
@@ -86,7 +86,18 @@ spec:
               value: "https://uat-authnauth.tools.publicis.sapient.com"
           envFrom:
           - configMapRef:
-              name: knowhow-config
+              name: knowhow-config  
+          volumeMounts:
+            - name: knowhow-secrets-store
+              mountPath: "/mnt/uat-secrets-store"
+              readOnly: true
+      volumes:
+        - name: knowhow-secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "uat-secretproviderclass"
 ---
 apiVersion: v1
 kind: Service
