@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -37,6 +38,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -1879,5 +1881,26 @@ public class KPIExcelUtility {
 			});
 		}
 
+	}
+	public static void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
+									List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue,Optional<JiraIssueCustomHistory> jiraCustomHistory,List<String> status) {
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+		if(jiraCustomHistory.isPresent()) {
+			iterationKpiModalValue.setCreatedDate(DateUtil.dateTimeFormatter(jiraCustomHistory.get().getCreatedDate().toDate(),DateUtil.DISPLAY_DATE_FORMAT));
+			Optional<JiraHistoryChangeLog> sprint = jiraCustomHistory.get().getStatusUpdationLog().stream()
+					.filter(sprintDetails -> CollectionUtils.isNotEmpty(status) && status.contains(sprintDetails.getChangedTo()))
+					.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn)).findFirst();
+			if(sprint.isPresent()) {
+				iterationKpiModalValue.setDorDate(DateUtil.dateTimeFormatter(sprint.get().getUpdatedOn(),DateUtil.DISPLAY_DATE_FORMAT));
+			}
+		}
+		iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+		overAllmodalValues.add(iterationKpiModalValue);
+		modalValues.add(iterationKpiModalValue);
 	}
 }

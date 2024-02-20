@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -220,7 +221,9 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 						long cycleTime = 0;
 						List<IterationKpiModalValue> modalValues = new ArrayList<>();
 						for (JiraIssue jiraIssue : issues) {
-							populateBackLogData(overAllmodalValues, modalValues, jiraIssue,historyForIssues,fieldMapping.getReadyForDevelopmentStatusKPI138());
+							Optional<JiraIssueCustomHistory> jiraCustomHistory = historyForIssues.stream()
+									.filter(history -> history.getStoryID().equals(jiraIssue.getNumber())).findAny();
+							KPIExcelUtility.populateBackLogData(overAllmodalValues, modalValues, jiraIssue,jiraCustomHistory,fieldMapping.getReadyForDevelopmentStatusKPI138());
 							issueCount = issueCount + 1;
 							overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 							AtomicLong difference = getActivityCycleTimeForAnIssue(
