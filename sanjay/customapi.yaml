@@ -1,0 +1,97 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customapi
+  namespace: uat-knowhow
+  labels:
+    app: customapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customapi
+  template:
+    metadata:
+      labels:
+        app: customapi
+    spec:
+      containers:
+        - name: customapi
+          image: speedtools.azurecr.io/knowhow-customapi:10.0.0-SNAPSHOT
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "0.5"
+          env:
+            # - name: spring.data.mongodb.uri
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: uatknhdbconnectionstring
+            #       key: uatknhdbconnectionstring
+            # - name: spring.data.mongodb.host
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: uat-secretproviderclass
+            #       key: uatknhdbhost
+            # - name: repoToolAPIKey
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: knowhow-config-credentials
+            #       key: uat-repo-tool-api-key
+            # - name: aesEncryptionKey
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: knowhow-config-credentials
+            #       key: knowhowaesEncryptionKey
+            # - name: auth.secret
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: knowhow-config-credentials
+            #       key: knowhow-auth-secret
+
+            - name: spring.data.mongodb.username
+              valueFrom:
+                secretKeyRef:
+                  name: uatknhdbusername
+                  key: uatknhdbusername
+            - name: spring.data.mongodb.password
+              valueFrom:
+                secretKeyRef:
+                  name: uatknhdbpassword
+                  key: uatknhdbpassword
+            # - name: mongock.migration-scan-package
+            #   value: com.publicissapient.kpidashboard.apis.mongock.installation  
+            # - name: auth.centralAuthBaseURL
+            #   value: "https://uat-authnauth.tools.publicis.sapient.com"
+          # envFrom:
+          # - configMapRef:
+          #     name: knowhow-config  
+          volumeMounts:
+            - name: knowhow-secrets-store
+              mountPath: "/mnt/uat-secrets-store"
+              readOnly: true
+      volumes:
+        - name: knowhow-secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "uat-secretproviderclass"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customapi
+  namespace: uat-knowhow
+spec:
+  selector:
+    app: customapi
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      

@@ -1,0 +1,35 @@
+# This is a SecretProviderClass example using user-assigned identity to access your key vault. The secretObjects section is used to create Kubernetes secrets from the  mounted Azure Key Vault secrets.
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: uat-secretproviderclass
+  namespace: uat-knowhow
+spec:
+  provider: azure
+  parameters:
+    usePodIdentity: "false"
+    useVMManagedIdentity:   "true"                                                         # Set to true for  using managed identity
+    userAssignedIdentityID: "19ae5e85-a9ef-4e1a-bb4f-a8dd2bd0d55c"  # Set the   clientID of the user-assigned managed identity to use, from the previous step
+    keyvaultName:   speedtoolskeyvault                                                                  # Set to the name of your key vault
+    objects:  |
+      array:
+        - |
+          objectName: uatknhdbusername
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: uatknhdbpassword
+          objectType: secret
+          objectVersion: ""
+    tenantId: "d52c9ea1-7c21-47b1-82a3-33a74b1f74b8"                 # The tenant ID of the key vault
+  secretObjects:                                    #https://secrets-store-csi-driver.sigs.k8s.io/topics/sync-as-kubernetes-secret
+  - secretName: uatknhdbusername
+    type: Opaque
+    data:
+    - objectName: uatknhdbusername                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: uatknhdbusername                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: uatknhdbpassword
+    type: Opaque
+    data:
+    - objectName: uatknhdbpassword
+      key: uatknhdbpassword
