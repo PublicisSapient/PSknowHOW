@@ -94,7 +94,7 @@ export class SharedService {
   visibleSideBarObs = this.visibleSideBarSubject.asObservable();
 
 
-  private currentIssue = new BehaviorSubject({});
+  currentIssue = new BehaviorSubject({});
   currentData = this.currentIssue.asObservable();
 
   constructor() {
