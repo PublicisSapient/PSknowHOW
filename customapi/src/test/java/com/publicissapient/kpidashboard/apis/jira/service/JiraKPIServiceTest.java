@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -37,7 +36,6 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-
 
 /**
  * @author anisingh4
@@ -63,6 +61,7 @@ public class JiraKPIServiceTest {
 		aggregationCriteriaMap.put("kpi3", Constant.AVERAGE);
 		aggregationCriteriaMap.put("kpi4", Constant.SUM);
 	}
+
 	private List<Map<String, Long>> createAggregationInputData1() {
 		List<Map<String, Long>> aggregatedValueList = new ArrayList<>();
 		Map<String, Long> aggregatedValuesMap1 = new HashMap<>();
@@ -86,7 +85,6 @@ public class JiraKPIServiceTest {
 		aggregatedValueList.add(aggregatedValuesMap6);
 		return aggregatedValueList;
 	}
-
 
 	public static class JiraKpiServiceTestImpl extends JiraKPIService {
 
