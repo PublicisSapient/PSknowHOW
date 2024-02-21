@@ -131,7 +131,7 @@ public class ZephyrControllerTest {
 		kpiElementList.add(kpi42);
 		when(zephyrService.process(Mockito.any())).thenReturn(kpiElementList);
 
-		mockMvc.perform(post("/zypher/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/zypher/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful())
 				// .andDo(print())
 				.andExpect(jsonPath("$[0].value").value(100)).andExpect(jsonPath("$[1].value").value(80));
@@ -152,7 +152,7 @@ public class ZephyrControllerTest {
 				"}";
 		// @formatter:on
 
-		mockMvc.perform(post("/zypher/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/zypher/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().isBadRequest());
 
 	}
@@ -191,7 +191,7 @@ public class ZephyrControllerTest {
 
 		when(zephyrServiceKanban.process(Mockito.any())).thenReturn(kpiElementList);
 
-		mockMvc.perform(post("/zypherkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/zypherkanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
 
 	}
@@ -209,7 +209,7 @@ public class ZephyrControllerTest {
 				"}";
 		// @formatter:on
 
-		mockMvc.perform(post("/zypherkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/zypherkanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().isBadRequest());
 
 	}

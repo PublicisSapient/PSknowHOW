@@ -47,6 +47,7 @@ export class NavComponent implements OnInit {
   ssoLogin= environment.SSO_LOGIN;
   visibleSidebar;
   kanban = false;
+  navItems: number = 7;
   
   constructor(
     private httpService: HttpService,
@@ -59,16 +60,18 @@ export class NavComponent implements OnInit {
     this.selectedType = this.service.getSelectedType() ? this.service.getSelectedType() : 'scrum';
     this.kanban= this.selectedType.toLowerCase() === 'scrum' ? false : true;
     const selectedTab = window.location.hash.substring(1);
+    
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
     if(this.selectedTab.includes('-')){
       this.selectedTab = this.selectedTab.split('-').join(' ');
+    }
+    if(this.selectedTab.includes('?')){
+      this.selectedTab = this.selectedTab.split('?')[0];
     }
     if(this.selectedTab !== 'unauthorized access'){
       this.service.setSelectedTypeOrTabRefresh(this.selectedTab,this.selectedType);
     }
   }
-
-
 
   ngOnInit() {
     this.service.visibleSideBarObs.subscribe(value =>{

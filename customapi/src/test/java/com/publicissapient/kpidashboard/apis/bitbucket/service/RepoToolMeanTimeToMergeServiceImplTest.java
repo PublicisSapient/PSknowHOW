@@ -18,9 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
@@ -202,7 +202,7 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any()))
 				.thenReturn(repoToolKpiMetricResponseList);
 		KpiElement kpiElement = meanTimeToMergeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		List<BranchMergeReqCount> out = (List<BranchMergeReqCount>) kpiElement.getTrendValueList();
 		assertThat("merge requests", out.size(), equalTo(2));
 	}

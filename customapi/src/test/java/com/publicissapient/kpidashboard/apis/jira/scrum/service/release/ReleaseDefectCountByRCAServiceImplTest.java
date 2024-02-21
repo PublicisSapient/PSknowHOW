@@ -18,9 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -29,7 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,7 +70,7 @@ public class ReleaseDefectCountByRCAServiceImplTest {
 	@InjectMocks
 	private ReleaseDefectCountByRCAServiceImpl defectCountByRCAService;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraReleaseServiceR jiraService;
 
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -107,7 +108,7 @@ public class ReleaseDefectCountByRCAServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(bugList);
 		KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
 		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(1).getValue()
 				.get(0).getValue()).get(0)).getValue();
@@ -125,7 +126,7 @@ public class ReleaseDefectCountByRCAServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(bugList);
 		KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
 		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(1).getValue()
 				.get(0).getValue()).get(0)).getValue();

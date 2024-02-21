@@ -11,6 +11,7 @@
     "jiraIssueEpicType": [
       "Epic"
     ],
+    "EpicLink" : "Epic",
     "storyFirstStatus": "Open",
     "rootCause": "customfield_19121",
     "jiraDefectCreatedStatus": "Open",
@@ -22,6 +23,7 @@
     ],
     "jiraDefectRemovalIssueType": [],
     "jiraStoryPointsCustomField": "customfield_20803",
+    "jiraStatusMappingCustomField": "customfield_13131",
     "jiraTestAutomationIssueType": [],
     "jiraSprintVelocityIssueType": [],
     "jiraSprintCapacityIssueType": [],

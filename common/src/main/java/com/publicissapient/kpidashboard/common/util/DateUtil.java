@@ -18,6 +18,14 @@
 
 package com.publicissapient.kpidashboard.common.util;
 
+import com.publicissapient.kpidashboard.common.model.application.Week;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.ISODateTimeFormat;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -31,16 +39,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.ISODateTimeFormat;
-
-import com.publicissapient.kpidashboard.common.model.application.Week;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author narsingh9
@@ -157,14 +155,18 @@ public class DateUtil {
 	 * @return converted date
 	 */
 	public static String dateTimeConverterUsingFromAndTo(DateTime dateTime, final String fromFormat,
-			final String toFormat) {
-		try {
-			org.joda.time.format.DateTimeFormatter sourceFormatter = DateTimeFormat.forPattern(fromFormat);
-			DateTime parsedDateTime = sourceFormatter.parseDateTime(dateTime.toString());
-			org.joda.time.format.DateTimeFormatter targetFormatter = DateTimeFormat.forPattern(toFormat);
-			return parsedDateTime.toString(targetFormatter);
-		} catch (IllegalArgumentException e) {
-			log.error("error while parse date", e);
+														 final String toFormat) {
+		if (dateTime != null) {
+			try {
+				org.joda.time.format.DateTimeFormatter sourceFormatter = DateTimeFormat.forPattern(fromFormat);
+				DateTime parsedDateTime = sourceFormatter.parseDateTime(dateTime.toString());
+				org.joda.time.format.DateTimeFormatter targetFormatter = DateTimeFormat.forPattern(toFormat);
+				return parsedDateTime.toString(targetFormatter);
+			} catch (IllegalArgumentException e) {
+				log.error("error while parse date", e);
+				return null;
+			}
+		} else {
 			return null;
 		}
 	}

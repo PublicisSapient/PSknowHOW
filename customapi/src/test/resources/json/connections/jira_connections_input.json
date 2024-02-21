@@ -1,0 +1,24 @@
+[
+  {
+    "_id" : "6114eef595f04f36f1f3cc0e",
+    "type" : "Jira",
+    "connectionName" : "testJira",
+    "cloudEnv" : true,
+    "accessTokenEnabled" : false,
+    "baseUrl" : "https://test.net/",
+    "username" : "testUserName",
+    "apiEndPoint" : "rest/api/2/",
+    "isOAuth" : false,
+    "offline" : false,
+    "createdAt" : "2021-08-12T09:50:45",
+    "updatedAt" : "2023-10-20T07:13:42",
+    "createdBy" : "ST",
+    "connPrivate" : false,
+    "updatedBy" : "ST",
+    "connectionUsers" : [ "ST" ],
+    "vault" : false,
+    "bearerToken" : false,
+    "jaasKrbAuth" : false,
+    "_class" : "com.publicissapient.kpidashboard.common.model.connection.Connection"
+  }
+]

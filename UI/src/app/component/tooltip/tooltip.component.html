@@ -1,4 +1,5 @@
-<div class="tooltip p-p-3" *ngIf="show" (mouseleave)="hideTooltip($event)" [ngStyle]="relativeTooltipTop > 0 ? {'top': toolTipTop ? 150 + 'px' : 30 + 'px'} : {'top': relativeTooltipTop + 'px'}"
+<div class="tooltip p-p-3" *ngIf="show" (mouseleave)="hideTooltip($event)"
+    [ngStyle]="relativeTooltipTop > 0 ? {'top': toolTipTop ? 150 + 'px' : 30 + 'px'} : {'top': relativeTooltipTop + 'px'}"
     [ngClass]="{'tooltip-kpi': kpiName?.length > 0,'tooltip-width': kpiName?.length > 25, 'tooltip-wider': showingMaturityRange, 'bottomArrow': bottomArrow, 'p-d-none': !show}">
     <div class="tooltip-wrapper" [ngClass]="{'tooltip-wrapper-card' : !(showChartView === 'chart')}">
         <p class="p-mb-1 paragraph">{{data?.definition}}</p>
@@ -26,6 +27,12 @@
                     </p>
 
                     <table *ngSwitchCase="'table'" class="p-d-flex p-flex-column p-align-center border">
+                        <caption style="display: none;">Tooltip</caption>
+                        <thead style="display: none;">
+                            <tr>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
                         <ng-container *ngFor="let element of item?.tableRows;last as isLast">
                             <ng-container [ngSwitch]="element?.type">
                                 <tr *ngSwitchCase="'header'" class="border-bottom w-100">

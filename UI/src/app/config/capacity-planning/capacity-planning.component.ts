@@ -23,6 +23,7 @@ import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { ManageAssigneeComponent } from '../manage-assignee/manage-assignee.component';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
+import { HelperService } from 'src/app/services/helper.service';
 
 interface CapacitySubmissionReq {
   projectNodeId: string;
@@ -99,7 +100,8 @@ export class CapacityPlanningComponent implements OnInit {
   showPopuup = false;
   reqObj: CapacitySubmissionReq;
   isAdminForSelectedProject = false;
-  constructor(private http_service: HttpService, private messageService: MessageService, private cdr: ChangeDetectorRef, private getAuthorizationService: GetAuthorizationService) { }
+  constructor(private http_service: HttpService, private messageService: MessageService, private cdr: ChangeDetectorRef, public getAuthorizationService: GetAuthorizationService,
+    private helperService : HelperService) { }
 
   ngOnInit(): void {
     this.cols = {
@@ -213,7 +215,7 @@ export class CapacityPlanningComponent implements OnInit {
   // gets data for filters on load
   getFilterDataOnLoad() {
 
-    if (this.filter_kpiRequest && this.filter_kpiRequest !== '') {
+    if (this.filter_kpiRequest !== '') {
       this.filter_kpiRequest.unsubscribe();
     }
 
@@ -226,12 +228,12 @@ export class CapacityPlanningComponent implements OnInit {
       .subscribe(filterData => {
         if (filterData[0] !== 'error') {
           this.filterData = filterData['data'];
-          if (this.filterData && this.filterData.length > 0) {
+          if (this.filterData?.length > 0) {
             this.projectListArr = this.sortAlphabetically(this.filterData.filter(x => x.labelName.toLowerCase() == 'project'));
-            this.projectListArr = this.makeUniqueArrayList(this.projectListArr);
+            this.projectListArr = this.helperService.makeUniqueArrayList(this.projectListArr);
             const defaultSelection = this.selectedProjectBaseConfigId ? false : true;
             this.checkDefaultFilterSelection(defaultSelection);
-            if (Object.keys(filterData).length === 0) {
+            if (!Object.keys(filterData).length) {
               this.resetProjectSelection();
               // show error message
               this.messageService.add({ severity: 'error', summary: 'Projects not found.' });
@@ -254,22 +256,22 @@ export class CapacityPlanningComponent implements OnInit {
     objArray?.sort((a, b) => a.nodeName.localeCompare(b.nodeName));
     return objArray;
   }
-  makeUniqueArrayList(arr) {
-    let uniqueArray = [];
-    for (let i = 0; i < arr?.length; i++) {
-      const idx = uniqueArray?.findIndex(x => x.nodeId == arr[i]?.nodeId);
-      if (idx == -1) {
-        uniqueArray = [...uniqueArray, arr[i]];
-        uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
-        uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
-      } else {
-        uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-        uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
-      }
-
-    }
-    return uniqueArray;
-  }
+  /** Moved on service layer */
+  // makeUniqueArrayList(arr) {
+  //   let uniqueArray = [];
+  //   for (let i = 0; i < arr?.length; i++) {
+  //     const idx = uniqueArray?.findIndex(x => x.nodeId == arr[i]?.nodeId);
+  //     if (idx == -1) {
+  //       uniqueArray = [...uniqueArray, arr[i]];
+  //       uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
+  //       uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
+  //     } else {
+  //       uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
+  //       uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
+  //     }
+  //   }
+  //   return uniqueArray;
+  // }
 
   checkDefaultFilterSelection(flag) {
     if (flag) {

@@ -152,7 +152,7 @@ public class ZephyrServiceKanban {
 		}
 
 		List<String> durationList = kpiRequest.getSelectedMap().get(CommonConstant.date);
-		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(durationList)) {
+		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(durationList)) {
 			String duration = durationList.get(0);
 			if (NumberUtils.isCreatable(duration)) {
 				kpiRequest.setDuration(CommonConstant.DAYS);

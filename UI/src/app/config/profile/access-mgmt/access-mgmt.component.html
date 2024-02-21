@@ -29,30 +29,31 @@
         [loading]="!dataLoading.includes('allUsers') || !dataLoading.includes('allRoles')" loadingIcon="loading-img">
         <ng-template pTemplate="header">
           <tr>
-            <th>User Name</th>
-            <th>Email</th>
-            <th colspan="3">Access Levels</th>
-            <th rowspan="2">Actions</th>
+            <th scope="col">User Name</th>
+            <th scope="col">Email</th>
+            <th scope="col" colspan="3">Access Levels</th>
+            <th scope="col" rowspan="2">Actions</th>
           </tr>
           <tr>
-            <th class="p-text-center p-d-flex">
+            <th scope="col" class="p-text-center p-d-flex">
               <input pInputText type="text" id="searchByName"
-                (input)="dt.filter($event.target.value, 'username', 'contains')" class="p-inputtext p-column-filter" [ngClass]="{'p-input-custom': ssoLogin && isSuperAdmin}"
-                placeholder="Search by Name">
-              <button type="button" pRipple pButton *ngIf="ssoLogin && isSuperAdmin" (click)="showAddUserForm = !showAddUserForm" icon="pi pi-plus"
-              iconPos="left" class="p-d-flex p-jc-center add-btn-custom" label="Add">
+                (input)="dt.filter($event.target.value, 'username', 'contains')" class="p-inputtext p-column-filter"
+                [ngClass]="{'p-input-custom': ssoLogin && isSuperAdmin}" placeholder="Search by Name">
+              <button type="button" pRipple pButton *ngIf="ssoLogin && isSuperAdmin"
+                (click)="showAddUserForm = !showAddUserForm" icon="pi pi-plus" iconPos="left"
+                class="p-d-flex p-jc-center add-btn-custom" label="Add">
               </button>
             </th>
-            <th class="p-text-center">
+            <th scope="col" class="p-text-center">
               <input pInputText type="text" id="searchByEmail"
                 (input)="dt.filter($event.target.value, 'emailAddress', 'contains')" class="p-inputtext p-column-filter"
                 placeholder="Search by Email">
             </th>
-            <th class="p-text-center" colspan="2">
+            <th scope="col" class="p-text-center" colspan="2">
               <input pInputText type="text" [(ngModel)]="searchProject" id="searchByProject" (input)="filterByProject()"
                 class="p-inputtext p-column-filter" [style]="{'width':'100%'}" placeholder="Search by Project">
             </th>
-            <th colspan="1">
+            <th scope="col" colspan="1">
               <p-dropdown id="searchRole" class="p-column-filter" [autoDisplayFirst]="false" [options]="searchRoleList"
                 [(ngModel)]="searchRole" (onChange)="filterByRole()" [style]="{'width':'100%'}" placeholder="Role"
                 [showClear]="true">
@@ -60,25 +61,22 @@
             </th>
           </tr>
           <tr *ngIf="showAddUserForm">
-            <th class='p-text-center' style="background-color: #e8e8e8;">
-              <input pInputText type="text" [(ngModel)]="addData.username" id="name" class="p-inputtext p-column-filter w-100"
-                placeholder="Enter Username" />
+            <th scope="col" class='p-text-center' style="background-color: #e8e8e8;">
+              <input pInputText type="text" [(ngModel)]="addData.username" id="name"
+                class="p-inputtext p-column-filter w-100" placeholder="Enter Username" />
             </th>
-            <th class='p-text-center' style="background-color: #e8e8e8;">
-              <input pInputText type="email" name="email" pattern='^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$' [(ngModel)]="addData.emailAddress" id="emailAddress" class="p-inputtext p-column-filter w-100"
+            <th scope="col" class='p-text-center' style="background-color: #e8e8e8;">
+              <input pInputText type="email" name="email" pattern='^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+                [(ngModel)]="addData.emailAddress" id="emailAddress" class="p-inputtext p-column-filter w-100"
                 placeholder="Enter Email" />
             </th>
-            <th colspan="3" class="custom-td pad-0" style="background-color: #e8e8e8;">
+            <th scope="col" colspan="3" class="custom-td pad-0" style="background-color: #e8e8e8;">
             </th>
-            <th style="background-color: #e8e8e8;">
-              <!-- <button type="button" pRipple pButton [pRowToggler]="rowData"
-                class="p-button-text p-button-plain btn-toggle"
-                [icon]="expanded ? 'pi pi-minus' : 'pi pi-plus'"></button> -->
+            <th scope="col" style="background-color: #e8e8e8;">
 
 
-              <button type="button" pRipple pButton
-                class="p-button-text p-button-plain btn-toggle p-ml-1" [icon]="'pi pi-trash'"
-                (click)="showAddUserForm = false"></button>
+              <button type="button" pRipple pButton class="p-button-text p-button-plain btn-toggle p-ml-1"
+                [icon]="'pi pi-trash'" (click)="showAddUserForm = false"></button>
 
 
             </th>
@@ -87,50 +85,57 @@
             <td [attr.colspan]="5">
               <ng-container>
                 <table class="project-access-container">
-                  <tr>
-                    <th id="projects" class="p-text-center">Add/ remove Projects</th>
-                    <th id="Role" style="width: 140px;" class="p-text-center">Edit Role</th>
-                    <th id="action" style="width: 140px;" class="p-text-center">Remove Row</th>
-                  </tr>
-                  <tr *ngFor="let access of addData?.projectsAccess; let i = index" [attr.data-index]="i">
-                    <td class="nested-td">
-                      <span *ngFor="let node of access?.accessNodes">
-                        <div class="info-block cross" *ngFor="let item of node.accessItems">
-                          <span (click)="removeProject(item?.itemName, node?.accessItems)">
-                            <div class="crossbtn">✕</div>
-                            <div class="selected-data">
-                              {{ node.accessLevel | namePipe }} - {{ item.itemName.length > 25 ?
+                  <caption style="display: none;">Projects Access</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col" id="projects" class="p-text-center">Add/ remove Projects</th>
+                      <th scope="col" id="Role" style="width: 140px;" class="p-text-center">Edit Role</th>
+                      <th scope="col" id="action" style="width: 140px;" class="p-text-center">Remove Row</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let access of addData?.projectsAccess; let i = index" [attr.data-index]="i">
+                      <td class="nested-td">
+                        <span *ngFor="let node of access?.accessNodes">
+                          <div class="info-block cross" *ngFor="let item of node.accessItems">
+                            <span (click)="removeProject(item?.itemName, node?.accessItems)">
+                              <div class="crossbtn">✕</div>
+                              <div class="selected-data">
+                                {{ node.accessLevel | namePipe }} - {{ item.itemName.length > 25 ?
                                 item.itemName.substring(0,24) + "..." : item.itemName }}
-                            </div>
-                          </span>
+                              </div>
+                            </span>
+                          </div>
+                        </span>
+                        <button pButton pRipple type="button"
+                          class="p-button-sm p-button-success p-button-raised p-mt-2 p-ml-2" icon="pi pi-plus"
+                          iconPos="left" label="Add Projects"
+                          (click)="showDialogToAdd(access?.accessNodes, addData?.projectsAccess, i)"></button>
+                      </td>
+                      <td class="nested-td" style="width:140px;">
+                        <div class="role-box">
+                          <p-dropdown id="roleList" class="mb-2 mr-sm-2" [options]="roleList" [(ngModel)]="access.role"
+                            (onChange)="onRoleChange($event, i, addData?.projectsAccess)">
+                          </p-dropdown>
                         </div>
-                      </span>
-                      <button pButton pRipple type="button"
-                        class="p-button-sm p-button-success p-button-raised p-mt-2 p-ml-2" icon="pi pi-plus"
-                        iconPos="left" label="Add Projects"
-                        (click)="showDialogToAdd(access?.accessNodes, addData?.projectsAccess, i)"></button>
-                    </td>
-                    <td class="nested-td"  style="width:140px;">
-                      <div class="role-box">
-                        <p-dropdown id="roleList" class="mb-2 mr-sm-2" [options]="roleList" [(ngModel)]="access.role"
-                          (onChange)="onRoleChange($event, i, addData?.projectsAccess)">
-                        </p-dropdown>
-                      </div>
-                    </td>
-                    <td class="nested-td" style="width:140px;">
-                      <button pButton pRipple type="button" class="p-button-sm p-button-danger p-button-raised mar-tb-5"
-                        icon="pi pi-minus" iconPos="left" label="Remove Row"
-                        (click)="removeRow(addData?.projectsAccess, i)"></button>
-                    </td>
-                  </tr>
+                      </td>
+                      <td class="nested-td" style="width:140px;">
+                        <button pButton pRipple type="button"
+                          class="p-button-sm p-button-danger p-button-raised mar-tb-5" icon="pi pi-minus" iconPos="left"
+                          label="Remove Row" (click)="removeRow(addData?.projectsAccess, i)"></button>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
-                <button pButton pRipple type="button" class="p-button-sm p-button-success p-button-raised mar-t-16 p-ml-3 p-mb-3"
-                  icon="pi pi-plus" iconPos="left" label="Add Row" (click)="addRow(addData?.projectsAccess)"></button>
+                <button pButton pRipple type="button"
+                  class="p-button-sm p-button-success p-button-raised mar-t-16 p-ml-3 p-mb-3" icon="pi pi-plus"
+                  iconPos="left" label="Add Row" (click)="addRow(addData?.projectsAccess)"></button>
               </ng-container>
             </td>
             <td>
               <button pButton pRipple type="button" class="p-button p-button-success p-button-raised" icon="pi pi-check"
-                iconPos="left" label="Save" (click)="saveAccessChange(addData)" [attr.disabled]="checkIfDisabled() ? true : null"></button>
+                iconPos="left" label="Save" (click)="saveAccessChange(addData)"
+                [attr.disabled]="checkIfDisabled() ? true : null"></button>
             </td>
           </tr>
         </ng-template>
@@ -146,6 +151,11 @@
 
               <ng-container>
                 <table class="n-bordered">
+                  <caption style="display: none;">Projects Access</caption>
+                  <thead style="display: none;">
+                    <th scope="col">Dummy Header</th>
+                  </thead>
+                  <tbody>
                   <tr *ngFor="let access of rowData.projectsAccess">
                     <td class="nested-td">
                       <div *ngFor="let node of access.accessNodes">
@@ -163,6 +173,7 @@
                       </div>
                     </td>
                   </tr>
+                </tbody>
                 </table>
               </ng-container>
             </td>
@@ -185,10 +196,11 @@
             <td [attr.colspan]="5">
               <ng-container>
                 <table class="project-access-container">
+                  <caption style="display: none;">Projects Access</caption>
                   <tr>
-                    <th id="projects" class="p-text-center">Add/ remove Projects</th>
-                    <th id="Role" style="width: 140px;" class="p-text-center">Edit Role</th>
-                    <th id="action" style="width: 150px;" class="p-text-center">Remove Row</th>
+                    <th scope="col" id="projects" class="p-text-center">Add/ remove Projects</th>
+                    <th scope="col" id="Role" style="width: 140px;" class="p-text-center">Edit Role</th>
+                    <th scope="col" id="action" style="width: 150px;" class="p-text-center">Remove Row</th>
                   </tr>
                   <tr *ngFor="let access of rowData.projectsAccess; let i = index" [attr.data-index]="i">
                     <td class="nested-td">
@@ -198,7 +210,7 @@
                             <div class="crossbtn">✕</div>
                             <div class="selected-data">
                               {{ node.accessLevel | namePipe }} - {{ item.itemName.length > 25 ?
-                                item.itemName.substring(0,24) + "..." : item.itemName }}
+                              item.itemName.substring(0,24) + "..." : item.itemName }}
                             </div>
                           </span>
                         </div>
@@ -208,7 +220,7 @@
                         iconPos="left" label="Add Projects"
                         (click)="showDialogToAdd(access.accessNodes, rowData.projectsAccess, i)"></button>
                     </td>
-                    <td class="nested-td"  style="width:140px;">
+                    <td class="nested-td" style="width:140px;">
                       <div class="role-box">
                         <p-dropdown id="roleList" class="mb-2 mr-sm-2" [options]="roleList" [(ngModel)]="access.role"
                           (onChange)="onRoleChange($event, i, rowData.projectsAccess)">
@@ -264,8 +276,8 @@
 
 <p-confirmDialog #cd [transitionOptions]="'0ms'">
   <p-footer>
-      <button *ngIf="accessConfirm" type="button" (click)="cd.accept()" pButton label="Yes"></button>
-      <button *ngIf="accessConfirm" type="button" (click)="cd.reject()" pButton label="No"></button>
-      <button *ngIf="!accessConfirm" type="button" (click)="cd.reject()" pButton label="OK"></button>
+    <button *ngIf="accessConfirm" type="button" (click)="cd.accept()" pButton label="Yes"></button>
+    <button *ngIf="accessConfirm" type="button" (click)="cd.reject()" pButton label="No"></button>
+    <button *ngIf="!accessConfirm" type="button" (click)="cd.reject()" pButton label="OK"></button>
   </p-footer>
 </p-confirmDialog>

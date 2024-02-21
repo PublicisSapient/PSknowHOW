@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +36,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.powermock.reflect.Whitebox;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestOperations;
@@ -245,7 +245,9 @@ public class AzureRepoProcessorJobExecutorTest {
 		Mockito.when(processorItemRepository.findByProcessorIdIn(processorIds)).thenReturn(processorItems);
 		Mockito.when(connectionsRepository.findById(toolConfigs.get(0).getConnectionId()))
 				.thenReturn(Optional.of(connection));
-		Whitebox.invokeMethod(azureRepoProcessorJobExecutor, "addProcessorItems", processor, toolConfigs);
+		Method method = AzureRepoProcessorJobExecutor.class.getDeclaredMethod("addProcessorItems", Processor.class, List.class);
+		method.setAccessible(true);
+		method.invoke(azureRepoProcessorJobExecutor, processor, toolConfigs);
 	}
 
 	@Test

@@ -35,11 +35,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -47,6 +46,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.model.BuildFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.ChangeFailureRateInfo;
 import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
@@ -243,8 +243,9 @@ public class KPIExcelUtility {
 	public static void populateDefectSeepageRateExcelData(String sprint, Map<String, JiraIssue> totalBugList,
 			List<DSRValidationData> dsrValidationDataList, List<KPIExcelData> excelDataList) {
 
-		Map<String, String> labelWiseValidationData =dsrValidationDataList.stream()
-				.collect(Collectors.toMap(DSRValidationData::getIssueNumber, DSRValidationData::getLabel, (x,y)->x+CommonConstant.COMMA+ y));
+		Map<String, String> labelWiseValidationData = dsrValidationDataList.stream()
+				.collect(Collectors.toMap(DSRValidationData::getIssueNumber, DSRValidationData::getLabel,
+						(x, y) -> x + CommonConstant.COMMA + y));
 		totalBugList.forEach((defectId, jiraIssue) -> {
 			String label = Constant.EMPTY_STRING;
 			String present = Constant.EMPTY_STRING;
@@ -318,7 +319,7 @@ public class KPIExcelUtility {
 						&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
 					excelData.setStoryPoint(
-							(roundingOff(jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs"));
+							(roundingOff((double) jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs"));
 				}
 				excelData.setRootCause(jiraIssue.getRootCauseList());
 				excelData.setPriority(jiraIssue.getPriority());
@@ -482,7 +483,7 @@ public class KPIExcelUtility {
 		return description;
 	}
 
-	private static String checkEmptyURL(Object object) {
+	protected static String checkEmptyURL(Object object) {
 		String url = "";
 		if (object instanceof JiraIssue) {
 			JiraIssue jiraIssue = (JiraIssue) object;
@@ -761,7 +762,7 @@ public class KPIExcelUtility {
 					excelData.setStoryPoint(roundingOff.toString());
 				} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
 					excelData.setStoryPoint(
-							roundingOff(jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs");
+							roundingOff((double) jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs");
 				}
 
 				kpiExcelData.add(excelData);
@@ -954,6 +955,30 @@ public class KPIExcelUtility {
 			excelData.setDuration(codeBuildTimeInfo.getDurationList().get(i));
 			kpiExcelData.add(excelData);
 
+		}
+	}
+
+	/**
+	 * populate excel data function for build frequency kpi
+	 * 
+	 * @param kpiExcelData
+	 * @param projectName
+	 * @param buildFrequencyInfo
+	 */
+
+	public static void populateBuildFrequency(List<KPIExcelData> kpiExcelData, String projectName,
+			BuildFrequencyInfo buildFrequencyInfo) {
+
+		for (int i = 0; i < buildFrequencyInfo.getBuildJobList().size(); i++) {
+			KPIExcelData excelData = new KPIExcelData();
+			excelData.setProjectName(projectName);
+			excelData.setJobName(buildFrequencyInfo.getBuildJobList().get(i));
+			Map<String, String> buildUrl = new HashMap<>();
+			buildUrl.put(buildFrequencyInfo.getBuildUrlList().get(i), buildFrequencyInfo.getBuildUrlList().get(i));
+			excelData.setBuildUrl(buildUrl);
+			excelData.setStartDate(buildFrequencyInfo.getBuildStartTimeList().get(i));
+			excelData.setWeeks(buildFrequencyInfo.getWeeksList().get(i));
+			kpiExcelData.add(excelData);
 		}
 	}
 
@@ -1781,25 +1806,6 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateFlowEfficiency(LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiency,
-			List<String> waitTimeList, List<String> totalTimeList, List<KPIExcelData> excelDataList) {
-		AtomicInteger i = new AtomicInteger();
-		flowEfficiency.forEach((issue, value) -> {
-			KPIExcelData kpiExcelData = new KPIExcelData();
-			Map<String, String> url = new HashMap<>();
-			url.put(issue.getStoryID(), checkEmptyURL(issue));
-			kpiExcelData.setIssueID(url);
-			kpiExcelData.setIssueType(issue.getStoryType());
-			kpiExcelData.setIssueDesc(issue.getDescription());
-			kpiExcelData.setSizeInStoryPoints(issue.getEstimate());
-			kpiExcelData.setWaitTime(waitTimeList.get(i.get()));
-			kpiExcelData.setTotalTime(totalTimeList.get(i.get()));
-			kpiExcelData.setFlowEfficiency(value.longValue());
-			excelDataList.add(kpiExcelData);
-			i.set(i.get() + 1);
-		});
-	}
-
-	public static void populateLeadTime(LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiency,
 			List<String> waitTimeList, List<String> totalTimeList, List<KPIExcelData> excelDataList) {
 		AtomicInteger i = new AtomicInteger();
 		flowEfficiency.forEach((issue, value) -> {

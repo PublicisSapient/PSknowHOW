@@ -21,8 +21,11 @@ package com.publicissapient.kpidashboard.apis.rbac.accessrequests.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -58,6 +61,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperService {
+
+	@Autowired CustomApiConfig customApiConfig;
 
 	private static final String SUPERADMINROLENAME = "ROLE_SUPERADMIN";
 	/**
@@ -256,7 +261,7 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 	 *         is found,false if not data found
 	 */
 	@Override
-	public ServiceResponse getNotificationByStatus(String status) {
+	public ServiceResponse getNotificationByStatus(String status , String token) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		List<AccessRequest> accessRequest = null;
 		String message = "Found Pending Approval Count";
@@ -264,7 +269,13 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 		List<NotificationDataDTO> notificationDataList = new ArrayList<>();
 		if (user.getAuthorities().contains(SUPERADMINROLENAME)) {
 			accessRequest = repository.findByStatus(status);
-			NotificationDataDTO userApprovalNotification = newUserApprovalRequestNotification();
+			NotificationDataDTO userApprovalNotification;
+			if (customApiConfig.isCentralAuthSwitch() && Objects.nonNull(token)) {
+				userApprovalNotification = newCentralAuthUserApprovalRequestNotification(token);
+			} else {
+				userApprovalNotification = newUserApprovalRequestNotification();
+			}
+
 			notificationDataList.add(userApprovalNotification);
 		} else if (user.getAuthorities().contains(Constant.ROLE_PROJECT_ADMIN)) {
 			List<String> roleList = Arrays.asList(Constant.ROLE_PROJECT_ADMIN);
@@ -298,6 +309,19 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 	private NotificationDataDTO newUserApprovalRequestNotification() {
 		List<com.publicissapient.kpidashboard.apis.auth.model.Authentication> nonApprovedUserList = authenticationRepository
 				.findByApproved(false);
+		NotificationDataDTO notificationDataDTO = new NotificationDataDTO();
+		notificationDataDTO.setType(NotificationEnum.USER_APPROVAL.getValue());
+		if (CollectionUtils.isEmpty(nonApprovedUserList)) {
+			notificationDataDTO.setCount(0);
+		} else {
+			notificationDataDTO.setCount(nonApprovedUserList.size());
+		}
+		return notificationDataDTO;
+	}
+
+	private NotificationDataDTO newCentralAuthUserApprovalRequestNotification(String token) {
+		List<UserInfoDTO> nonApprovedUserList =
+				userInfoServiceImpl.findAllUnapprovedUsers(token);
 		NotificationDataDTO notificationDataDTO = new NotificationDataDTO();
 		notificationDataDTO.setType(NotificationEnum.USER_APPROVAL.getValue());
 		if (CollectionUtils.isEmpty(nonApprovedUserList)) {

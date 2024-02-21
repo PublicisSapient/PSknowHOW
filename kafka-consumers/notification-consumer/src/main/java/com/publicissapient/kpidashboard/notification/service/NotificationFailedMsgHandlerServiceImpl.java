@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.notification.service;
 
 import java.nio.charset.StandardCharsets;
@@ -5,8 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -16,11 +33,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import com.publicissapient.kpidashboard.notification.config.NotificationConsumerConfig;
 import com.publicissapient.kpidashboard.notification.model.EmailEvent;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -44,19 +61,13 @@ public class NotificationFailedMsgHandlerServiceImpl implements NotificationFail
 		EmailEvent email = consumerRecord.value();
 
 		ProducerRecord<String, Object> producerRecord = buildProducerRecord(key, email, new HashMap<>());
-		ListenableFuture<SendResult<String, Object>> listenableFuture = kafkaTemplate.send(producerRecord);
-		listenableFuture.addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
-
-			@Override
-			public void onFailure(Throwable ex) {
+		CompletableFuture<SendResult<String, Object>> completableFuture = kafkaTemplate.send(producerRecord);
+		completableFuture.whenComplete((result, ex) -> {
+			if (ex == null) {
+				handleSuccess(key, email, result);
+			} else {
 				handleFailure(key, email, ex);
 			}
-
-			@Override
-			public void onSuccess(SendResult<String, Object> result) {
-				handleSuccess(key, email, result);
-			}
-
 		});
 	}
 

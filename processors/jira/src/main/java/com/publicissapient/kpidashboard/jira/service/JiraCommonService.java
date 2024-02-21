@@ -58,7 +58,6 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import com.publicissapient.kpidashboard.jira.client.CustomAsynchronousIssueRestClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
@@ -229,7 +228,7 @@ public class JiraCommonService {
 	 * @throws InterruptedException
 	 *             InterruptedException
 	 */
-	private SearchResult getJqlIssues(ProjectConfFieldMapping projectConfig, String deltaDate, int pageStart)
+	public SearchResult getJqlIssues(ProjectConfFieldMapping projectConfig, String deltaDate, int pageStart)
 			throws InterruptedException {
 		SearchResult searchResult = null;
 		String[] jiraIssueTypeNames = projectConfig.getFieldMapping().getJiraIssueTypeNames();
@@ -290,6 +289,8 @@ public class JiraCommonService {
 	 * @return List of Issue
 	 * @throws InterruptedException
 	 *             InterruptedException
+	 * @throws IOException
+	 *             throws IOException	 *
 	 */
 	public List<Issue> fetchIssueBasedOnBoard(ProjectConfFieldMapping projectConfig,
 			ProcessorJiraRestClient clientIncoming, int pageNumber, String boardId, String deltaDate)
@@ -363,6 +364,10 @@ public class JiraCommonService {
 	 * @param krb5Client
 	 *            krb5Client
 	 * @return List of ProjectVersion
+	 * @throws IOException
+	 *             IOException
+	 * @throws ParseException
+	 *             ParseException
 	 */
 	public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
 			throws IOException, ParseException {
@@ -441,9 +446,14 @@ public class JiraCommonService {
 		return res.toString();
 	}
 
+
 	/**
-	 * Gets api host
-	 **/
+	 * * Gets api host
+	 * 
+	 * @return apiHost
+	 * @throws UnknownHostException
+	 *             UnknownHostException
+	 */
 	public String getApiHost() throws UnknownHostException {
 
 		StringBuilder urlPath = new StringBuilder();

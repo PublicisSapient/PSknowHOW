@@ -704,7 +704,14 @@ describe('FieldMappingComponent', () => {
     expect(Object.keys(component.fieldMappingMetaData)).toEqual(Object.keys(dropDownMetaData.data));
   });
 
- 
+  it('should not get dropdown data', () => {
+    component.selectedToolConfig = [{
+      id: "djhasgdjahdgj"
+    }];
+    spyOn(httpService, 'getKPIConfigMetadata').and.returnValue(of('Error'));
+    component.getDropdownData();
+    expect(component.fieldMappingMetaData).toEqual([]);
+  })
 
   it('should initialize component', () => {
     sharedService.setSelectedFieldMapping(fakeSelectedFieldMappingWithAdditionalFilters);
@@ -735,6 +742,42 @@ describe('FieldMappingComponent', () => {
     const spy = spyOn(component,'getMappings').and.callThrough();;
     component.onUpload(event);
     expect(spy).toBeDefined();
+  });
+
+  it('should export data', () => {
+    component.selectedToolConfig = [{
+      id: "djhasgdjahdgj"
+    }];
+    const response = {
+      "message": "field mappings",
+      "success": true,
+      "data": {
+          "id": "63622c10e9dabd60dcf7c9d2"
+      }
+    }
+    const fileData = {
+      fileName: 'mappings.json',
+      text: JSON.stringify(response.data)
+    }
+    const spy = spyOn<any>(component, 'dyanmicDownloadByHtmlTag')
+    spyOn(httpService, 'getFieldMappings').and.returnValue(of(response));
+    component.export();
+    expect(spy).toHaveBeenCalledWith(fileData)
+  })
+
+  it('should create a dynamic download link and trigger a click event', () => {
+    const fileName = 'test.json';
+    const text = '{"key": "value"}';
+
+    spyOn(document, 'createElement').and.callThrough();
+    const spy = spyOn(document, 'dispatchEvent');
+
+    // Change the access modifier of the 'setting' property from private to public
+    (component as any).setting.element.dynamicDownload = document.createElement('a');
+
+    const element = (component as any).setting.element.dynamicDownload;
+    (component as any).dyanmicDownloadByHtmlTag({fileName, text});
+    expect(element.getAttribute('download')).toBe(fileName);
   });
 
 });

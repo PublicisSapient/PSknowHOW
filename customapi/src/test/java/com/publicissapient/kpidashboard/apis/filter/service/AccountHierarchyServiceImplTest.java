@@ -105,7 +105,7 @@ public class AccountHierarchyServiceImplTest {
 		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
 		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
 		List<SprintDetails> sprintDetails = sprintDetailsDataFactory.getSprintDetails();
-		when(sprintRepository.findBySprintIDIn(anyList())).thenReturn(sprintDetails);
+//		when(sprintRepository.findBySprintIDIn(anyList())).thenReturn(sprintDetails);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();

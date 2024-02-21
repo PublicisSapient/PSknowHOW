@@ -18,11 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -47,12 +47,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
@@ -63,6 +61,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -107,12 +106,16 @@ public class CycleTimeServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMapping.setJiraLiveStatusKPI171(Arrays.asList("Live"));
+		fieldMapping.setJiraDodKPI171(Arrays.asList("Close", "Dropped"));
+		fieldMapping.setStoryFirstStatusKPI171("Open");
+		fieldMapping.setJiraDorKPI171(Arrays.asList("In Progress", "In Analysis"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
 		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
 				.newInstance("/json/default/iteration/jira_issue_custom_history.json");
 		totalJiraIssueHistoryList = jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory();
-		when(customApiConfig.getCycleTimeRange()).thenReturn(xAxisRange);
+//		when(customApiConfig.getCycleTimeRange()).thenReturn(xAxisRange);
 
 	}
 
@@ -125,52 +128,24 @@ public class CycleTimeServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(anyMap(), anyMap(),
 				anyString(), anyString())).thenReturn(totalJiraIssueHistoryList);
-		Map<String, Object> sprintDataListMap = cycleTimeService.fetchKPIDataFromDb(leafNodeList,
+		Map<String, Object> sprintDataListMap = cycleTimeService.fetchKPIDataFromDb(leafNodeList.get(0),
 				LocalDate.now().minusMonths(6).toString(), LocalDate.now().toString(), kpiRequest);
 		assertNotNull(sprintDataListMap);
 	}
 
 	@Test
-	public void testFetchKPIDataFromDbData() throws ApplicationException {
-		List<Node> leafNodeList = new ArrayList<>();
-		Map<String, Object> sprintDataListMap = cycleTimeService.fetchKPIDataFromDb(leafNodeList,
-				LocalDate.now().minusMonths(2).toString(), LocalDate.now().toString(), kpiRequest);
-		assertEquals(1, sprintDataListMap.size());
-	}
-
-	//@Test
 	public void test_CycleTime_Positive() {
 		List<CycleTimeValidationData> cycleTimeValidationDataList = new ArrayList<>();
 		Set<String> issueTypes = totalJiraIssueHistoryList.stream().map(JiraIssueCustomHistory::getStoryType)
 				.collect(Collectors.toSet());
-		/*List<IterationKpiValue> cycleTime = cycleTimeService.getCycleTime(totalJiraIssueHistoryList, fieldMapping,
-				cycleTimeValidationDataList, xAxisRange, issueTypes);
-		assertEquals(10, cycleTime.size());*/
+		DataCount trendValue = new DataCount();
+		cycleTimeService.getCycleTime(totalJiraIssueHistoryList, fieldMapping, cycleTimeValidationDataList,
+				kpiRequest.getKpiList().get(0), trendValue);
+		assertEquals(39, cycleTimeValidationDataList.size());
 
 	}
 
-	//@Test
-	public void test_CycleTime_NoJiraIssue() {
-		List<CycleTimeValidationData> cycleTimeValidationDataList = new ArrayList<>();
-		Set<String> issueTypes = totalJiraIssueHistoryList.stream().map(JiraIssueCustomHistory::getStoryType)
-				.collect(Collectors.toSet());
-		/*List<IterationKpiValue> cycleTime = cycleTimeService.getCycleTime(null, fieldMapping,
-				cycleTimeValidationDataList, xAxisRange, issueTypes);
-		assertEquals(10, cycleTime.size());*/
-	}
-
-	//@Test
-	public void test_CycleTime_NoFieldMapping() {
-		List<CycleTimeValidationData> cycleTimeValidationDataList = new ArrayList<>();
-		// when(customApiConfig.getCycleTimeRange()).thenReturn(xAxisRange);
-		Set<String> issueTypes = totalJiraIssueHistoryList.stream().map(JiraIssueCustomHistory::getStoryType)
-				.collect(Collectors.toSet());
-		/*List<IterationKpiValue> cycleTime = cycleTimeService.getCycleTime(totalJiraIssueHistoryList, null,
-				cycleTimeValidationDataList, xAxisRange, issueTypes);
-		assertEquals(10, cycleTime.size());*/
-	}
-
-	//@Test
+	@Test
 	public void testGetKpiData() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -179,24 +154,19 @@ public class CycleTimeServiceImplTest {
 		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(anyMap(), anyMap(),
 				anyString(), anyString())).thenReturn(totalJiraIssueHistoryList);
 		String kpiRequestTrackerId = "Jira-Excel-5be544de025de212549176a9";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-				.thenReturn(kpiRequestTrackerId);
+//		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+//				.thenReturn(kpiRequestTrackerId);
 
 		KpiElement responseKpiElement = cycleTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		assertNotNull(responseKpiElement);
-		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) responseKpiElement.getTrendValueList();
-		assertEquals(10, trendValueList.size());
+		int size = ((List<IterationKpiValue>) ((DataCount) responseKpiElement.getTrendValueList()).getValue()).size();
+		assertEquals(3, size);
 	}
 
 	@Test
 	public void testGetQualifierType() {
 		assertThat(cycleTimeService.getQualifierType(), equalTo("CYCLE_TIME"));
-	}
-
-	@Test
-	public void calculateKPIMetrics() {
-		assertNull(cycleTimeService.calculateKPIMetrics(new HashMap<>()));
 	}
 
 }

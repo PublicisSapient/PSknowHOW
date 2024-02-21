@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.bamboo.processor;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 
 import org.junit.Assert;
@@ -28,9 +29,9 @@ public class BambooClientFactoryTest {
 	@Test
 	public void testGetBambooClient() throws Exception {
 		BambooClient bambooClient = factory.getBambooClient("build");
-		Assert.assertThat(bambooClient, instanceOf(BambooClientBuildImpl.class));
+		assertThat(bambooClient, instanceOf(BambooClientBuildImpl.class));
 		bambooClient = factory.getBambooClient("deploy");
-		Assert.assertThat(bambooClient, instanceOf(BambooClientDeployImpl.class));
+		assertThat(bambooClient, instanceOf(BambooClientDeployImpl.class));
 	}
 
 	@Test

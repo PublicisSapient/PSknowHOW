@@ -35,6 +35,8 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
+            - name: versionnumber
+              value: {{.Values.image.tag | default .Chart.AppVersion}}
             - name: spring.data.mongodb.uri
               valueFrom:
                 secretKeyRef:

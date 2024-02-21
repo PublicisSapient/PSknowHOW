@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -69,10 +69,9 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 	private JiraCommonService jiraCommonService;
 
 	@Override
-	public ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
+	public void processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
 			throws IOException, ParseException {
 		log.info("Start Fetching Release Data");
-		ProjectRelease projectRelease = null;
 
 		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(
 				CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, projectConfig.getBasicProjectConfigId());
@@ -80,21 +79,18 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 				? accountHierarchyList.get(0)
 				: null;
 
-		saveProjectRelease(projectConfig, accountHierarchy, projectRelease, krb5Client);
-
-		return projectRelease;
+		saveProjectRelease(projectConfig, accountHierarchy, krb5Client);
 	}
 
 	/**
 	 * @param confFieldMapping
 	 * @param accountHierarchy
 	 */
-	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, AccountHierarchy accountHierarchy,
-			ProjectRelease projectRelease, KerberosClient krb5Client) throws IOException, ParseException {
+	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, AccountHierarchy accountHierarchy, KerberosClient krb5Client) throws IOException, ParseException {
 		List<ProjectVersion> projectVersionList = jiraCommonService.getVersion(confFieldMapping, krb5Client);
 		if (CollectionUtils.isNotEmpty(projectVersionList)) {
 			if (null != accountHierarchy) {
-				projectRelease = projectReleaseRepo.findByConfigId(accountHierarchy.getBasicProjectConfigId());
+				ProjectRelease projectRelease = projectReleaseRepo.findByConfigId(accountHierarchy.getBasicProjectConfigId());
 				projectRelease = projectRelease == null ? new ProjectRelease() : projectRelease;
 				projectRelease.setListProjectVersion(projectVersionList);
 				projectRelease.setProjectName(accountHierarchy.getNodeId());

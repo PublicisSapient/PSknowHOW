@@ -18,9 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -49,14 +49,13 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -76,7 +75,7 @@ public class UnplannedWorkStatusServiceImplTest {
 	@InjectMocks
 	private UnplannedWorkStatusServiceImpl unplannedWorkStatusService;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraIterationServiceR jiraService;
 	private List<JiraIssue> storyList = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
@@ -134,8 +133,8 @@ public class UnplannedWorkStatusServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		try {
 			KpiElement kpiElement = unplannedWorkStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
-			assertNotNull((DataCount) kpiElement.getTrendValueList());
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
+			assertNotNull(kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {
 
@@ -159,8 +158,8 @@ public class UnplannedWorkStatusServiceImplTest {
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> returnMap = unplannedWorkStatusService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
-				kpiRequest);
+		Map<String, Object> returnMap = unplannedWorkStatusService.fetchKPIDataFromDb(leafNodeList.get(0), startDate,
+				endDate, kpiRequest);
 		assertNotNull(returnMap);
 	}
 

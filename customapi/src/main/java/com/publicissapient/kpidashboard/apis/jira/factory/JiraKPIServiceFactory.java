@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
  * @author tauakram
  */
 @Service
+@Builder
 public class JiraKPIServiceFactory {
 
 	private static final Map<String, JiraKPIService<?, ?, ?>> JIRA_SERVICE_CACHE = new HashMap<>();

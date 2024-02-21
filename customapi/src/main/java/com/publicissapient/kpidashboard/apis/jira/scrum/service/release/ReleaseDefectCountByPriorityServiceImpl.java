@@ -23,13 +23,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,13 +39,12 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -57,8 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 // Defect count by Priority kpi on release tab
 @Slf4j
 @Component
-public class ReleaseDefectCountByPriorityServiceImpl
-		extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class ReleaseDefectCountByPriorityServiceImpl extends JiraReleaseKPIService {
 
 	private static final String TOTAL_DEFECT = "Total Defects";
 	private static final String OPEN_DEFECT = "Open Defects";
@@ -66,41 +63,28 @@ public class ReleaseDefectCountByPriorityServiceImpl
 	private ConfigHelperService configHelperService;
 
 	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
-	}
-
-	@Override
 	public String getQualifierType() {
 		return KPICode.DEFECT_COUNT_BY_PRIORITY_RELEASE.name();
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.RELEASE) {
-				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
+			throws ApplicationException {
+		releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
 		log.info("ReleaseDefectCountByPriorityServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
 	/**
-	 * @param releaseLeafNodeList
+	 * @param latestRelease
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		List<Node> latestReleaseNode = new ArrayList<>();
-		Node latestRelease = releaseLeafNodeList.get(0);
-		Optional.ofNullable(latestRelease).ifPresent(latestReleaseNode::add);
 		if (latestRelease != null) {
-			Map<String, Object> resultMap = fetchKPIDataFromDb(latestReleaseNode, null, null, kpiRequest);
+			Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 			List<JiraIssue> totalDefects = (List<JiraIssue>) resultMap.get(TOTAL_DEFECT);
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(totalDefects)) {
@@ -166,10 +150,9 @@ public class ReleaseDefectCountByPriorityServiceImpl
 	}
 
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Defect count by Priority Release -> Requested sprint : {}", leafNode.getName());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -185,7 +168,7 @@ public class ReleaseDefectCountByPriorityServiceImpl
 
 	/**
 	 * create priority wise map of total and open defects
-	 * 
+	 *
 	 * @param defectJiraIssueList
 	 * @param openIssues
 	 * @return
@@ -210,7 +193,7 @@ public class ReleaseDefectCountByPriorityServiceImpl
 
 	/**
 	 * create priority wise count map of total and open defects
-	 * 
+	 *
 	 * @param overallPriorityCountMap
 	 * @param priorityData
 	 * @param priorityCountMap
@@ -228,7 +211,7 @@ public class ReleaseDefectCountByPriorityServiceImpl
 
 	/**
 	 * create map of data count by filter
-	 * 
+	 *
 	 * @param dataCountListForAllPriorities
 	 * @param overallPriorityCountMapAggregate
 	 */

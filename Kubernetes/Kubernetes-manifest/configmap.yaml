@@ -9,4 +9,6 @@ data:
   isRepoToolEnable: "true"
   keystorefile: "/usr/lib/jvm/java-1.8.0-amazon-corretto/jre/lib/security/cacerts"
   spring.data.mongodb.database: "kpidashboard"
+  flag.mailWithoutKafka: "false"
+  sendGridEnabled: "true"
   

@@ -1,8 +1,27 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -13,6 +32,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -70,7 +90,7 @@ public class IterationStatusServiceImplTest {
 	@InjectMocks
 	private IterationStatusServiceImpl iterationStatusServiceImpl;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraIterationServiceR jiraService;
 	private List<JiraIssue> storyList = new ArrayList<>();
 	private List<JiraIssueCustomHistory> historyList = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
@@ -134,7 +154,7 @@ public class IterationStatusServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		try {
 			KpiElement kpiElement = iterationStatusServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {
@@ -155,7 +175,7 @@ public class IterationStatusServiceImplTest {
 
 		try {
 			KpiElement kpiElement = iterationStatusServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {

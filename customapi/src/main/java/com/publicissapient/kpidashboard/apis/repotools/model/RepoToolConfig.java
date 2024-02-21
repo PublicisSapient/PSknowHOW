@@ -23,11 +23,13 @@ import com.publicissapient.kpidashboard.common.model.ToolCredential;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class RepoToolConfig {
     @SerializedName("name")
     private String name;

@@ -21,11 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mongodb.client.MongoCollection;
 
 public final class MongockUtil {
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongockUtil.class);
 
 	private MongockUtil() {
 	}
@@ -48,7 +51,7 @@ public final class MongockUtil {
 						Object value = field.get(data);
 						document.append(field.getName(), value);
 					} catch (IllegalAccessException e) {
-						e.printStackTrace();
+						LOGGER.info(e.getMessage());
 					}
 				}
 				documentList.add(document);

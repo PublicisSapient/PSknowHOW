@@ -21,8 +21,8 @@
  */
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
@@ -234,7 +234,7 @@ public class CodeCommitKanbanServiceImplTest {
 						.thenReturn(kpiRequestTrackerId);
 
 		KpiElement kpiElement = codeCommitServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
 			String projectName = data.getFilter();
 			switch (projectName) {

@@ -59,12 +59,4 @@ public class SonarProcessor extends Processor {
 		return sonarKpiMetrics;
 	}
 
-	/**
-	 * @param sonarKpiMetrics
-	 *            new value of {@link #sonarKpiMetrics}.
-	 */
-	public void setSonarKpiMetrics(List<String> sonarKpiMetrics) {
-		this.sonarKpiMetrics = sonarKpiMetrics;
-	}
-
 }

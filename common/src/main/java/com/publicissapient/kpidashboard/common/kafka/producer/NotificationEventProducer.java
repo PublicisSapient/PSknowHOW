@@ -21,8 +21,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
@@ -31,9 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
-
 import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
 
 /**
@@ -56,24 +54,17 @@ public class NotificationEventProducer {
 				ProducerRecord<String, Object> producerRecord = buildProducerRecord(key, email, headerDetails, topic);
 				LOGGER.info(
 						"created producer record.....");
-				ListenableFuture<SendResult<String, Object>> listenableFuture = kafkaTemplate.send(producerRecord);
-				LOGGER.info(
-						"sent msg.....");
-				listenableFuture.addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
-
-					@Override
-					public void onFailure(Throwable ex) {
+				CompletableFuture<SendResult<String, Object>> completableFuture =  kafkaTemplate.send(producerRecord);
+				LOGGER.info("sent msg.....");
+				completableFuture.whenComplete((result, ex) -> {
+					if (ex == null) {
+						handleSuccess(key, email, result);
+					} else {
 						handleFailure(ex);
 					}
-
-					@Override
-					public void onSuccess(SendResult<String, Object> result) {
-						handleSuccess(key, email, result);
-					}
-
 				});
 			}catch(Exception ex) {
-				ex.printStackTrace();
+				LOGGER.info(String.format("Notification Event %s", ex.getMessage()));
 			}
 		} else {
 			LOGGER.info(
@@ -94,11 +85,11 @@ public class NotificationEventProducer {
 		return new ProducerRecord<>(topic, null, key, email, recordHeaders);
 	}
 
-	private void handleFailure(Throwable ex) {
+	public void handleFailure(Throwable ex) {
 		LOGGER.error(FAILURE_MESSAGE + ex.getMessage(), ex);
 	}
 
-	private void handleSuccess(String key, EmailEvent email, SendResult<String, Object> result) {
+	public void handleSuccess(String key, EmailEvent email, SendResult<String, Object> result) {
 		LOGGER.info(SUCCESS_MESSAGE + " key : {}, value : {}, Partition : {}", key, email.getSubject(),
 				result.getRecordMetadata().partition());
 	}

@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;

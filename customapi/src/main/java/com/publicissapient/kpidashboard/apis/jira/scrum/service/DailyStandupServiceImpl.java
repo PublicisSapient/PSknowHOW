@@ -37,8 +37,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -48,18 +48,16 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.CalculatePCDHelper;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
 import com.publicissapient.kpidashboard.apis.model.Filter;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
@@ -97,7 +95,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, List<Object>, Map<String, Object>> {
+public class DailyStandupServiceImpl extends JiraIterationKPIService {
 	public static final String UNCHECKED = "unchecked";
 	public static final String UNASSIGNED = "Unassigned";
 	private static final String SPRINT = "sprint";
@@ -142,13 +140,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 * {@inheritDoc}
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.SPRINT) {
-				sprintWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
+			throws ApplicationException {
+		sprintWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
@@ -157,17 +151,14 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 * analysis at sprint wise.
 	 */
 	@SuppressWarnings(UNCHECKED)
-	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
-		List<Node> latestSprintNode = new ArrayList<>();
-		Node latestSprint = sprintLeafNodeList.get(0);
-		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
-		Object basicProjectConfigId = Objects.requireNonNull(latestSprint).getProjectFilter().getBasicProjectConfigId();
+	private void sprintWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
+		Object basicProjectConfigId = Objects.requireNonNull(sprintLeafNode).getProjectFilter()
+				.getBasicProjectConfigId();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 		List<UserWiseCardDetail> userWiseCardDetails = new ArrayList<>();
 
 		// fetch from db
-		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
+		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNode, null, null, kpiRequest);
 		SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT);
 		if (ObjectUtils.isNotEmpty(sprintDetails)) {
 			List<JiraIssue> notCompletedJiraIssue = (List<JiraIssue>) resultMap.get(NOT_COMPLETED_JIRAISSUE);
@@ -203,10 +194,10 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 
 			// Calculate Delay
 			List<IterationPotentialDelay> iterationPotentialDelayList = CalculatePCDHelper.calculatePotentialDelay(
-					sprintDetails, notCompletedJiraIssue, fieldMapping.getJiraStatusForInProgressKPI154());
+					sprintDetails, notCompletedJiraIssue, fieldMapping.getInProgress154());
 
 			Map<String, IterationPotentialDelay> issueWiseDelay = CalculatePCDHelper.checkMaxDelayAssigneeWise(
-					iterationPotentialDelayList, fieldMapping.getJiraStatusForInProgressKPI154());
+					iterationPotentialDelayList, fieldMapping.getInProgress154());
 			calculateAssigneeWiseMaxDelay(issueWiseDelay, assigneeWiseMaxDelay);
 
 			// Calculate Remaining Capacity
@@ -260,10 +251,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(final List<Node> leafNodeList, final String startDate,
-			final String endDate, final KpiRequest kpiRequest) {
+	public Map<String, Object> fetchKPIDataFromDb(final Node leafNode, final String startDate, final String endDate,
+			final KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Daily Standup View -> Requested sprint : {}", leafNode.getName());
 			SprintDetails sprintDetails;
@@ -277,8 +267,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
-				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
-						dbSprintDetail, fieldMapping.getJiraIterationCompletionStatusKPI119(),
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+						fieldMapping.getJiraIterationCompletionStatusKPI119(),
 						fieldMapping.getJiraIterationCompletionStatusKPI119(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
@@ -483,11 +473,11 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 								.equalsIgnoreCase(jiraIssue.getNumber()))
 						.findFirst().orElse(new JiraIssueCustomHistory());
 
-				List<JiraHistoryChangeLog> inSprintStatusLogs = getInSprintStatusLogs(
+				List<JiraHistoryChangeLog> inSprintStatusLogs = IterationKpiHelper.getInSprintStatusLogs(
 						issueHistory.getStatusUpdationLog(), sprintStartDate, sprintEndDate);
-				List<JiraHistoryChangeLog> inSprintAssigneeLogs = getInSprintStatusLogs(
+				List<JiraHistoryChangeLog> inSprintAssigneeLogs = IterationKpiHelper.getInSprintStatusLogs(
 						issueHistory.getAssigneeUpdationLog(), sprintStartDate, sprintEndDate);
-				List<JiraHistoryChangeLog> inSprintWorkLogs = getInSprintStatusLogs(issueHistory.getWorkLog(),
+				List<JiraHistoryChangeLog> inSprintWorkLogs = IterationKpiHelper.getInSprintStatusLogs(issueHistory.getWorkLog(),
 						sprintStartDate, sprintEndDate);
 
 				IterationKpiModalValue iterationKpiModalValue = mapOfModalObject.get(jiraIssue.getNumber());
@@ -790,14 +780,6 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	@Override
 	public String getQualifierType() {
 		return KPICode.DAILY_STANDUP_VIEW.name();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Map<String, Long> calculateKPIMetrics(Map<String, Object> objectMap) {
-		return new HashMap<>();
 	}
 
 	@Data

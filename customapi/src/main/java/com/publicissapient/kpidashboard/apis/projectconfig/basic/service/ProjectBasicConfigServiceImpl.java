@@ -548,16 +548,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return projectBasicConfigNodes;
 	}
 
-	private void addParentInExistedNode(String value, String groupName,
-			Set<ProjectBasicConfigNode> projectBasicConfigNodes, ProjectBasicConfigNode parentNode) {
-		ProjectBasicConfigNode existedNode = projectBasicConfigNodes.stream()
-				.filter(proNode -> value.equals(proNode.getValue()) && groupName.equals(proNode.getGroupName()))
-				.findAny().orElse(null);
-		if (null != existedNode && (!existedNode.getParent().contains(parentNode))) {
-			existedNode.getParent().add(parentNode);
-		}
-	}
-
 	private ProjectBasicConfigNode createProjectBasicNode(String value, List<ProjectBasicConfigNode> parent,
 			String groupName) {
 		ProjectBasicConfigNode projectBasicNode = new ProjectBasicConfigNode();

@@ -16,13 +16,13 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, ElementRef, ViewChild, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MessageService, MenuItem } from 'primeng/api';
 import { faRotateRight } from '@fortawesome/fontawesome-free';
@@ -45,7 +45,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   @ViewChild('commentSummaryDdn') commentSummaryDdn: ElementRef;
   @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
   @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
-
+  appList: MenuItem[] | undefined;
   subject = new Subject();
   isSuperAdmin = false;
   masterData: any = {};
@@ -128,6 +128,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   noProjects = false;
   selectedRelease = {};
   ssoLogin = environment.SSO_LOGIN;
+  auth_service = environment.AUTHENTICATION_SERVICE;
   lastSyncData: object = {};
   commentList: Array<object> = [];
   showCommentPopup: boolean = false;
@@ -136,18 +137,22 @@ export class FilterComponent implements OnInit, OnDestroy {
   totalProjectSelected: number = 1;
   selectedLevelValue: string = 'project';
   displayModal: boolean = false;
-
+  showSwitchDropdown: boolean = false;
   showHideLoader: boolean = false;
-  kpiListDataProjectLevel: any = {};
+  kpiListDataProjectLevel : any = {};
+  nodeIdQParam: string = '';
+  sprintIdQParam: string = '';
+  displayMessage: boolean = false;
 
   constructor(
-    private service: SharedService,
+    public service: SharedService,
     private httpService: HttpService,
     private getAuthorizationService: GetAuthorizationService,
     public router: Router,
     private ga: GoogleAnalyticsService,
     private messageService: MessageService,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
@@ -159,6 +164,33 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.logout();
         },
       });
+
+      this.appList = [
+          {
+              label: 'KnowHOW',
+              icon: ''
+          },
+          {
+              label: 'Assessments',
+              icon: '',
+              command: () => {
+                 window.open(
+                  environment['MAP_URL'],
+                  '_blank'
+                );
+              }
+          },
+          {
+            label: 'Retros',
+            icon: '',
+            command: () => {
+               window.open(
+                  environment['RETROS_URL'],
+                  '_blank'
+                );
+            }
+          }
+      ];
     }
 
     this.service.currentUserDetailsObs.subscribe(details => {
@@ -288,6 +320,10 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.getLogoImage().subscribe((logoImage) => {
       this.getLogoImage();
     });
+
+    this.service.sprintQueryParamObs.subscribe((val) => {
+      this.sprintIdQParam = val.value;
+    })
   }
 
   initializeFilterForm() {
@@ -421,21 +457,22 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.navigateToSelectedTab();
   }
 
-  makeUniqueArrayList(arr) {
-    let uniqueArray = [];
-    for (let i = 0; i < arr?.length; i++) {
-      const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
-      if (idx == -1) {
-        uniqueArray = [...uniqueArray, arr[i]];
-        uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
-        uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
-      } else {
-        uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-        uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
-      }
-    }
-    return uniqueArray;
-  }
+  /** moved to service layer */
+  // makeUniqueArrayList(arr) {
+  //   let uniqueArray = [];
+  //   for (let i = 0; i < arr?.length; i++) {
+  //     const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
+  //     if (idx == -1) {
+  //       uniqueArray = [...uniqueArray, arr[i]];
+  //       uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
+  //       uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
+  //     } else {
+  //       uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
+  //       uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
+  //     }
+  //   }
+  //   return uniqueArray;
+  // }
 
   getFilterDataOnLoad() {
     if (this.filterKpiRequest && this.filterKpiRequest !== '') {
@@ -464,6 +501,19 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.initializeFilterForm();
         this.noProjects = true;
       } else {
+        /** subscribe to query params */
+        this.service.projectQueryParamObs.subscribe((val) => {
+          this.nodeIdQParam = val.value;
+          if(this.nodeIdQParam){
+            const ifProjectExist = this.filterData?.findIndex((x) => x.nodeId === this.nodeIdQParam);
+            if(ifProjectExist === -1){
+              this.noAccessMsg = true;
+              this.displayMessage = true
+              return;
+            }
+          }
+        })
+
         this.service.setNoProjects(false);
         this.noProjects = false;
       }
@@ -474,7 +524,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         let arr = this.filterData.filter((x) => x.labelName.toLowerCase() === this.additionalFiltersArr[i]['hierarchyLevelId']?.toLowerCase());
         if (arr?.length > 0) {
           arr = this.sortAlphabetically(arr);
-          arr = this.makeUniqueArrayList(arr);
+          arr = this.helperService.makeUniqueArrayList(arr);
           this.additionalFiltersDdn[this.additionalFiltersArr[i]['hierarchyLevelId']] = arr;
           this.toggleDropdownObj[this.additionalFiltersArr[i]['hierarchyLevelId']] = false;
           if (this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sprint') {
@@ -513,8 +563,13 @@ export class FilterComponent implements OnInit, OnDestroy {
   createFormGroup(level, arr?) {
     if (arr?.length > 0) {
       const obj = {};
+      const alreadySelectedSprints = this.getSprintsWhichWasAlreadySelected();
       for (let i = 0; i < arr?.length; i++) {
-        obj[arr[i]['nodeId']] = new UntypedFormControl(false);
+        if(alreadySelectedSprints.includes(arr[i]['nodeId'])){
+          obj[arr[i]['nodeId']] = new UntypedFormControl(true);
+        }else{
+          obj[arr[i]['nodeId']] = new UntypedFormControl(false);
+        }
       }
       this.filterForm.controls[level] = new UntypedFormGroup(obj);
     } else {
@@ -588,7 +643,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSelectedTrendValueChange($event) {
+  onSelectedTrendValueChange(isChangedFromUI?) {
+    /** adding the below check to determine dropdown option change event from */
+    if(isChangedFromUI){
+      this.emptyIdsFromQueryParam();
+    }
     this.additionalFiltersArr.forEach((additionalFilter) => {
       this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
     });
@@ -653,6 +712,10 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
       }
 
+      if(this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity'){
+        this.setSelectedSprintOnServiceLayer();
+      }
+
       if (!applySource) {
         this.filterAdditionalFilters();
       }
@@ -699,6 +762,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.filterApplyData['selectedMap'][this.selectedFilterArray[i]?.labelName].push(this.selectedFilterArray[i]?.nodeId);
         this.filterApplyData['ids'].push(this.selectedFilterArray[i]?.nodeId);
         this.filterApplyData['label'] = this.selectedFilterArray[i]?.labelName;
+        if(this.selectedTab?.toLowerCase() === 'backlog'){
+          this.filterApplyData['selectedMap']['sprint'].push(...this.additionalFiltersDdn['sprint']?.filter((x) => x['parentId']?.includes(this.selectedFilterArray[i]?.nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de=>de.nodeId));
+        }
       }
     }
 
@@ -738,7 +804,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         boardDetails = this.kpiListData['scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === 'iteration');
       }
       this.selectedTab = boardDetails?.boardName;
-      this.router.navigateByUrl(`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`);
+      this.router.navigate([`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`], {queryParamsHandling: 'merge'});
     }
   }
 
@@ -982,7 +1048,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.setDashConfigData(null);
     this.service.selectedtype = '';
     this.initializeFilterForm();
-
+    this.displayMessage = false;
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
@@ -992,7 +1058,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   handleSelect(event) {
     this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() == event?.toLowerCase());
     this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-    this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+    this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
     this.filterForm?.get('selectedTrendValue').setValue('');
     this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId?.toLowerCase() === event?.toLowerCase()));
     this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase();
@@ -1047,20 +1113,23 @@ export class FilterComponent implements OnInit, OnDestroy {
     const selectedLevel = this.service.getSelectedLevel();
     const selectedTrends = this.service.getSelectedTrends();
 
-    if (Object.keys(selectedLevel).length > 0 && selectedTrends.length > 0) {
+    if (Object.keys(selectedLevel).length > 0 && selectedTrends?.length > 0) {
       if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release') {
         if (this.previousType || selectedLevel['hierarchyLevelId'] !== 'project') {
           this.findProjectWhichHasData();
         } else {
           this.defaultFilterSelection = false;
           this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
-          const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
-          this.filterForm.get('selectedTrendValue').setValue(selectedTrendValue);
+          const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend?.['nodeId']) : selectedTrends?.[0]?.['nodeId'];
+          this.filterForm.get('selectedTrendValue').setValue(this.nodeIdQParam ? this.nodeIdQParam : selectedTrendValue);
         }
       } else {
         if (this.previousType === this.kanban) {
           this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
-          const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
+          let selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
+          if(this.nodeIdQParam){
+            selectedTrendValue = this.allowMultipleSelection ? [this.nodeIdQParam] : this.nodeIdQParam
+          }
           this.filterForm.get('selectedTrendValue').setValue(selectedTrendValue);
         } else {
           this.checkDefaultFilterSelection();
@@ -1082,7 +1151,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     if (this.trendLineValueList?.length > 0) {
       this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-      this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+      this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
       this.setTrendValueFilter();
       this.service.setSelectedLevel(this.hierarchyLevels[this.hierarchyLevels.length - 1]);
       this.service.setSelectedTrends([this.trendLineValueList[0]]);
@@ -1126,7 +1195,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     let projectIndex = 0;
     if (this.trendLineValueList?.length > 0) {
       this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-      this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+      this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
 
       for (let i = 0; i < this.trendLineValueList.length; i++) {
         projectIndex = i;
@@ -1138,17 +1207,17 @@ export class FilterComponent implements OnInit, OnDestroy {
           }
         } else {
           this.checkIfProjectHasData();
-          if (Object.keys(this.selectedSprint).length > 0) {
+          if (this.selectedSprint && Object.keys(this.selectedSprint)?.length > 0) {
             break;
           }
         }
       }
       if (projectIndex < this.trendLineValueList?.length) {
-        this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[projectIndex]?.nodeId);
-        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint['nodeId']);
+        this.filterForm?.get('selectedTrendValue')?.setValue(this.nodeIdQParam ? this.nodeIdQParam : this.trendLineValueList[projectIndex]?.nodeId);
+        this.filterForm.get('selectedSprintValue').setValue(this.sprintIdQParam ? this.sprintIdQParam : this.selectedSprint['nodeId']);
       } else {
         this.projectIndex = 0;
-        this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
+        this.filterForm?.get('selectedTrendValue')?.setValue(this.sprintIdQParam ? this.sprintIdQParam : this.trendLineValueList[this.projectIndex]?.nodeId);
       }
       this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === 'project'));
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
@@ -1159,14 +1228,16 @@ export class FilterComponent implements OnInit, OnDestroy {
     let activeSprints = [];
     let closedSprints = [];
     this.selectedSprint = {};
-    const selectedProject = this.selectedProjectData['nodeId'];
+    const selectedProject = this.selectedProjectData?.['nodeId'];
     this.filteredAddFilters['sprint'] = [];
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
       this.filteredAddFilters['sprint'] = [...this.additionalFiltersDdn['sprint']?.filter((x) => x['parentId']?.includes(selectedProject))];
     }
     activeSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'active')];
     closedSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'closed')];
-    if (activeSprints?.length > 0) {
+    if(this.sprintIdQParam){
+      this.selectedSprint = this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == this.sprintIdQParam)[0];
+    }else if (activeSprints?.length > 0) {
       this.selectedSprint = { ...activeSprints[0] };
     } else if (closedSprints?.length > 0) {
       this.selectedSprint = closedSprints[0];
@@ -1184,10 +1255,23 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
+  emptyIdsFromQueryParam(){
+    // Get the current URL tree
+    const currentUrlTree = this.router.createUrlTree([], { relativeTo: this.route });
+    // Navigate to the updated URL without query parameters
+    this.router.navigateByUrl(currentUrlTree);
+    this.service.setProjectQueryParamInFilters('');
+    this.service.setSprintQueryParamInFilters('');
+  }
+
   /*'type' argument: to understand onload or onchange
     1: onload
     2: onchange */
-  handleIterationFilters(level) {
+  handleIterationFilters(level, isChangedFromUI?) {
+    /** adding the below check to determine dropdown option change event from */
+    if(isChangedFromUI){
+      this.emptyIdsFromQueryParam();
+    }
     this.lastSyncData = {};
     this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
@@ -1197,7 +1281,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.filterForm?.get('selectedSprintValue')?.setValue('');
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
         this.checkIfProjectHasData();
-        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint['nodeId']);
+        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint?.['nodeId']);
       }
 
       if (level?.toLowerCase() == 'sprint') {
@@ -1236,16 +1320,16 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (selectedField) {
       const obj = this.filteredAddFilters[filteredAddFiltersKey]?.filter((x) => x['nodeId'] == selectedField)[0];
 
-      if (obj && (obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
+      if (obj && ((obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end'))) {
         return dateString;
       }
 
       if (obj) {
         let d;
         if (type == 'start') {
-          d = new Date(obj[startDateField]);
+          d = new Date(obj[startDateField].split('T')[0]);
         } else {
-          d = new Date(obj[endDateField]);
+          d = new Date(obj[endDateField].split('T')[0]);
         }
         dateString = [this.pad(d.getDate()), this.pad(monthNames[d.getMonth()]), d.getFullYear()].join('/');
       }
@@ -1382,17 +1466,34 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   // logout is clicked  and removing auth token , username
   logout() {
-    this.httpService.logout().subscribe((getData) => {
-      if (!(getData !== null && getData[0] === 'error')) {
+      this.httpService.logout().subscribe((responseData) => {
+      if (responseData && responseData['success']) {
         this.helperService.isKanban = false;
         localStorage.clear();
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
-        this.router.navigate(['./authentication/login']);
+        this.service.setAddtionalFilterBackup({});
+        if(!environment['AUTHENTICATION_SERVICE']){
+          this.router.navigate(['./authentication/login']);
+        } else{
+          let obj = {
+            'resource': environment.RESOURCE
+          };
+          this.httpService.getUserValidation(obj).toPromise()
+          .then((response) => {
+            if (response && !response['success']) {
+              let redirect_uri = window.location.href;
+              window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+            }
+          })
+          .catch((error) => {
+            console.log("cookie not clear on error");
+          });
+        }
       }
-    });
+    })
   }
 
   // when user would want to give access on project from notification list
@@ -1430,7 +1531,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
     let projectList = [];
-    if (this.service.getSelectedLevel()['hierarchyLevelId'].toLowerCase() === 'project') {
+    if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
       projectList = this.service.getSelectedTrends().map(data => data.nodeId);
     }
     this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
@@ -1449,7 +1550,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         if (Object.keys(selectedLevel).length > 0) {
           this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() === selectedLevel['hierarchyLevelId'].toLowerCase());
           this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-          this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+          this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
         }
         this.service.setFilterData(JSON.parse(JSON.stringify(filterApiData)));
         const selectedTrends = this.service.getSelectedTrends();
@@ -1470,14 +1571,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  getCurrentUserDetails() {
-    this.httpService.getCurrentUserDetails().subscribe(details => {
-      if (details['success']) {
-        this.service.setCurrentUserDetails(details['data']);
-      }
-    });
-  }
-  handleMilestoneFilter(level) {
+  handleMilestoneFilter(level, isChangedFromUI?) {
+    /** adding the below check to determine dropdown option change event from */
+    if(isChangedFromUI){
+      this.emptyIdsFromQueryParam();
+    }
     const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
     this.filteredAddFilters['release'] = []
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['release']) {
@@ -1709,4 +1807,34 @@ export class FilterComponent implements OnInit, OnDestroy {
     const final = pId.replace(sortName, longName);
     return final;
   }
+
+  /*Sets the selected sprints on the service layer for storage. */
+  setSelectedSprintOnServiceLayer() {
+    let selectedSprint = {}
+    this.selectedFilterArray.forEach(element => {
+      if (element['additionalFilters'].length) {
+        selectedSprint = { ...selectedSprint, [element['nodeId']]: element['additionalFilters'] }
+      }
+    });
+    this.service.setAddtionalFilterBackup({ sprint: selectedSprint });
+  }
+
+  /**
+  Filters a list of sprints to only include those that were previously selected
+  @returns An array containing the node IDs of sprints that were previously selected */
+
+  getSprintsWhichWasAlreadySelected() {
+    const sprintsWhichWasAlreadySelected = []
+    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()['sprint'] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity') {
+      const selectedProjects = this.service.getSelectedTrends().map(data => data.nodeId);
+      selectedProjects.forEach(nodeId => {
+        const projectWhichSprintWasSelected = Object.keys(this.service.getAddtionalFilterBackup()['sprint']);
+        if (projectWhichSprintWasSelected && projectWhichSprintWasSelected.length && projectWhichSprintWasSelected.includes(nodeId)) {
+          sprintsWhichWasAlreadySelected.push(...this.service.getAddtionalFilterBackup()['sprint'][nodeId].map(details => details.nodeId));
+        }
+      })
+    }
+    return sprintsWhichWasAlreadySelected;
+  }
+
 }

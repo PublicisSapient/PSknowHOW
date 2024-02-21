@@ -30,12 +30,14 @@ import { ProfileComponent } from '../profile.component';
 import { environment } from 'src/environments/environment';
 import { SharedService } from 'src/app/services/shared.service';
 import { of } from 'rxjs';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 describe('MyprofileComponent', () => {
   let component: MyprofileComponent;
   let fixture: ComponentFixture<MyprofileComponent>;
   let httpService;
   let httpMock;
   let shared;
+  let authService;
   const baseUrl = environment.baseUrl;
   const successResponse = { message: 'Email updated successfully', success: true, data: { username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'rishabh.shukla@publicissapient.com' } };
   const hierarchyData = [
@@ -659,6 +661,7 @@ describe('MyprofileComponent', () => {
     httpService = TestBed.inject(HttpService);
     httpMock = TestBed.inject(HttpTestingController);
     shared = TestBed.inject(SharedService);
+    authService = TestBed.inject(GetAuthorizationService)
 
     let localStore = {};
 
@@ -695,4 +698,28 @@ describe('MyprofileComponent', () => {
     expect(Object.keys(component.roleBasedProjectList).length).toEqual(2);
   });
 
+  it('should get error while setting email', () => {
+    const errorResponse = { message: 'got an error', success: false, };
+    spyOn(authService,'checkIfSuperUser').and.returnValue(true);
+    spyOn(authService,'checkIfProjectAdmin').and.returnValue(true);
+    component.ngOnInit();
+    shared.currentUserDetailsSubject.next({user_name : "dummyUser",user_email:"someemail@abc.com"})
+    spyOn(shared,'getCurrentUserDetails').and.returnValue("someemail@abc.com")
+    component.userEmailForm.controls['email'].setValue('someemail@abc.com');
+    component.userEmailForm.controls['confirmEmail'].setValue('someemail@abc.com');
+    spyOn(httpService,'changeEmail').and.returnValue(of(errorResponse))
+    component.setEmail();
+    fixture.detectChanges();
+    expect(component.userEmailConfigured).toBeFalsy();
+  });
+
+  it('should populate dynamicCols with objects based on the hierarchyData from localStorage', () => {
+    localStorage.setItem('hierarchyData','[{"hierarchyLevelId": 1, "hierarchyLevelName": "Level 1"}, {"hierarchyLevelId": 2, "hierarchyLevelName": "Level 2"}]')
+    component.getTableHeadings();
+    expect(component.dynamicCols).toEqual([
+      { id: 1, name: 'Level 1' },
+      { id: 2, name: 'Level 2' },
+      { id: 'projectName', name: 'Projects' },
+    ]);
+  });
 });

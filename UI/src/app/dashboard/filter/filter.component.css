@@ -776,7 +776,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 }
 
 .trend-line-container {
-  min-width: 250px;
+  min-width: 220px;
   width: min-content;
 }
 
@@ -1147,4 +1147,43 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   background-color: rgba(0, 0, 0, 0.1) !important;
   border: 1px solid rgba(0,0,0,0.2) !important;
   opacity: 0.6;
+}
+.icon-dice{
+  cursor: pointer;
+}
+.switch-dropdown{
+  position: absolute;
+  padding: 5px 5px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, .2);
+  background: #fff;
+  list-style: none;
+  z-index: 1;
+  border: 1px solid #000;
+}
+.down-arrow{
+  margin: 0 auto;
+  width: 0;
+  height: 0;
+  content: '';
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #000;
+  z-index: 1;
+}
+.switch-dropdown .app-links{
+  padding: 5px 5px;
+  border-bottom: 1px solid lightgray;
+}
+.switch-dropdown .app-links a, .switch-dropdown .app-links a:hover{
+  color: #000;
+}
+.switch-dropdown .app-links.active a{
+  font-weight: bolder;
+}
+.switch-dropdown .app-links:last-child{
+  border-bottom: none;
+}
+::ng-deep .die-container .p-menu{
+  width: auto;
+  top: 100% !important;
 }

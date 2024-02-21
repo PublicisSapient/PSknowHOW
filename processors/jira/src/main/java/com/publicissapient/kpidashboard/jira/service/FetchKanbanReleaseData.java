@@ -22,7 +22,6 @@ import java.io.IOException;
 import org.json.simple.parser.ParseException;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 public interface FetchKanbanReleaseData {
@@ -32,8 +31,11 @@ public interface FetchKanbanReleaseData {
 	 *            projectConfig
 	 * @param krb5Client
 	 *            krb5Client
-	 * @return ProjectRelease
+	 * @throws IOException
+	 *             ioexception
+	 * @throws ParseException
+	 *             parse excecption
 	 */
-	ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
+	void processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
 			throws IOException, ParseException;
 }

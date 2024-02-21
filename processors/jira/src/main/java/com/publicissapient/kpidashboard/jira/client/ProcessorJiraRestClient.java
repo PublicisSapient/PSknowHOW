@@ -30,5 +30,4 @@ public interface ProcessorJiraRestClient extends JiraRestClient {
 	SearchRestClient getProcessorSearchClient();
 
 	CustomAsynchronousIssueRestClient getCustomIssueClient();
-
 }

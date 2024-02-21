@@ -82,7 +82,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secretname}}
-                  key: debbieinternalapikey
+                  key: {{ .Values.env}}-debbie-internal-key
           ports:
             {{- range $port := .Values.ports }}
             - containerPort: {{ $port }}

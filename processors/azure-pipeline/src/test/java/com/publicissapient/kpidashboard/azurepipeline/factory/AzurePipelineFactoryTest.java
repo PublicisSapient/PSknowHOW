@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.azurepipeline.factory;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 
 import org.junit.Assert;
@@ -47,9 +48,9 @@ class AzurePipelineFactoryTest {
 	void getAzurePipelineClient() {
 		try {
 			AzurePipelineClient azurePipelineClient = azurePipelineFactory.getAzurePipelineClient("Build");
-			Assert.assertThat(azurePipelineClient, instanceOf(DefaultAzurePipelineClient.class));
+			assertThat(azurePipelineClient, instanceOf(DefaultAzurePipelineClient.class));
 			azurePipelineClient = azurePipelineFactory.getAzurePipelineClient("Deploy");
-			Assert.assertThat(azurePipelineClient, instanceOf(AzurePipelineDeploymentClient.class));
+			assertThat(azurePipelineClient, instanceOf(AzurePipelineDeploymentClient.class));
 		} catch (NullPointerException ex) {
 			Assert.assertEquals(null, ex.getMessage());
 		}

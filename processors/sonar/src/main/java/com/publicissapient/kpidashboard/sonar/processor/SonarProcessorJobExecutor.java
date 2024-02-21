@@ -368,7 +368,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 			SonarClient sonarClient, String metrics) {
 		int cnt = 0;
 		for (SonarProcessorItem ci : sonarProjects) {
-			log.info("Looking for Job: {}", ci.getDesc() + " " + ci.getToolConfigId().toString());
+			log.info("Looking for Job: {}", ci.getDesc() + " " + ci.getProjectId());
 			Date date = new Date(ci.getUpdatedTime());
 			long diffInMillies = Math.abs(date.getTime() - new Date().getTime());
 			long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);

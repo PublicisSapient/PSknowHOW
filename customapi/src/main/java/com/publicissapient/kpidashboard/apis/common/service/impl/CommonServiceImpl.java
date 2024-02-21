@@ -32,9 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,6 +46,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -57,6 +55,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -259,7 +258,7 @@ public class CommonServiceImpl implements CommonService {
 						if (accessNode.getAccessItems().stream().anyMatch(item -> item.getItemId()
 								.equalsIgnoreCase(projectMap.get(accessNode.getAccessLevel())))) {
 							usernameList.add(action.getUsername());
-							emailAddresses.add(action.getEmailAddress());
+							emailAddresses.add(action.getEmailAddress().toLowerCase());
 						}
 					});
 				}

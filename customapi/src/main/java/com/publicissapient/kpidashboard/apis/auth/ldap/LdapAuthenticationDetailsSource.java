@@ -18,11 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.auth.ldap;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * The type Ldap authentication details source.

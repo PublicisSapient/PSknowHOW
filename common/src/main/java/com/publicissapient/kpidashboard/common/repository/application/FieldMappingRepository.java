@@ -79,4 +79,12 @@ public interface FieldMappingRepository extends MongoRepository<FieldMapping, Ob
 	 * @return field mapping of the tool
 	 */
 	Optional<FieldMapping> findById(ObjectId id);
+
+	default FieldMapping findByProjectConfigId(String projectConfigId) {
+		if (ObjectId.isValid(projectConfigId)) {
+			return findByBasicProjectConfigId(new ObjectId(projectConfigId));
+		} else {
+			return null;
+		}
+	}
 }

@@ -75,4 +75,7 @@ public interface ProjectBasicConfigRepository extends MongoRepository<ProjectBas
 	List<ProjectBasicConfig> findByHierarchyLevelIdAndValues(String accessLevel, List<String> hierarchyLevelValues);
 
     List<ProjectBasicConfig> findByKanban(boolean isKanban);
+
+	@Query("{'id': ?0}")
+	Optional<ProjectBasicConfig> findByStringId(String id);
 }

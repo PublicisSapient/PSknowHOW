@@ -1,21 +1,22 @@
 package com.publicissapient.kpidashboard.github.processor;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -31,7 +32,7 @@ import com.publicissapient.kpidashboard.github.processor.service.impl.GitHubClie
  * @author narsingh9
  *
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class GitHubClientImplTest {
 	@InjectMocks
 	GitHubClientImpl gitHubClient;
@@ -53,7 +54,7 @@ public class GitHubClientImplTest {
 				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 		List<CommitDetails> commits = gitHubClient.fetchAllCommits(new GitHubProcessorItem(), true, getToolConnection(),
 				new ProjectBasicConfig());
-		Assert.assertEquals(11, commits.size());
+		assertEquals(11, commits.size());
 	}
 
 	@Test
@@ -67,7 +68,7 @@ public class GitHubClientImplTest {
 				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 		List<MergeRequests> mergeRequests = gitHubClient.fetchMergeRequests(new GitHubProcessorItem(), true,
 				getToolConnection(), new ProjectBasicConfig());
-		Assert.assertEquals(1, mergeRequests.size());
+		assertEquals(1, mergeRequests.size());
 	}
 
 	private ProcessorToolConnection getToolConnection() {
@@ -81,6 +82,6 @@ public class GitHubClientImplTest {
 	}
 
 	private String getServerResponse(String resource) throws Exception {
-		return IOUtils.toString(this.getClass().getResourceAsStream(resource));
+		return IOUtils.toString(this.getClass().getResourceAsStream(resource), StandardCharsets.UTF_8);
 	}
 }

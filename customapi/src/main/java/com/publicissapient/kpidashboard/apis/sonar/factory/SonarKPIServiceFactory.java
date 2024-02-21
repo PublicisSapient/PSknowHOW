@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.sonar.service.SonarKPIService;
 
 @Service
+@Builder
 public class SonarKPIServiceFactory {
 
 	private static final Map<String, SonarKPIService<?, ?, ?>> SONAR_SERVICE_CACHE = new HashMap<>();

@@ -58,12 +58,8 @@ public class SprintReportTasklet implements Tasklet {
 	@Autowired
 	private SprintRepository sprintRepository;
 
+	@Value("#{jobParameters['sprintId']}")
 	private String sprintId;
-
-	@Autowired
-	public SprintReportTasklet(@Value("#{jobParameters['sprintId']}") String sprintId) {
-		this.sprintId = sprintId;
-	}
 
 	/**
 	 * @param sc

@@ -18,7 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.auth.service;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 public class ForgotPasswordRequest {
 

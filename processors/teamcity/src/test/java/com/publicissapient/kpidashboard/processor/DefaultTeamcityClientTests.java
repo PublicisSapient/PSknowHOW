@@ -18,11 +18,11 @@
 
 package com.publicissapient.kpidashboard.processor;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -253,6 +254,6 @@ public class DefaultTeamcityClientTests {
 
 	private String getJson(String fileName) throws IOException {
 		InputStream inputStream = DefaultTeamcityClientTests.class.getResourceAsStream(fileName);
-		return IOUtils.toString(inputStream);
+		return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 	}
 }

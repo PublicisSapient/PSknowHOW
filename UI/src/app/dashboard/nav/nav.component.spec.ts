@@ -33,7 +33,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
 import { environment } from 'src/environments/environment';
 import { DatePipe } from '../../../../node_modules/@angular/common';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('NavComponent', () => {
   let component: NavComponent;
@@ -132,6 +132,17 @@ describe('NavComponent', () => {
     expect(spy).toHaveBeenCalled();
   })
 
+  it("should notify if any error came while updating dashboard name",()=>{
+    const fakeRespose = {
+      success : false
+    }
+    component.changedBoardName = "Updated Board name";
+    spyOn(httpService,'submitShowHideOnDashboard').and.returnValue(throwError('Error'))
+    const spy = spyOn(messageService,'add');
+    component.editDashboardName();
+    expect(spy).toHaveBeenCalled();
+  })
+
   it("should open edit model",(done)=>{
     shareService.changedMainDashboardValueSub.next("updated board name");
     component.openEditModal();
@@ -153,6 +164,64 @@ describe('NavComponent', () => {
     }};
     component.stopWorker();
     expect(component.worker).toBe(undefined);
+  })
+
+  it('should set visible flag',()=>{
+    component.setVisibleSideBar("true");
+  })
+
+  describe('isEmptyObject', () => {
+  
+    it('should return true for an empty object', () => {
+      // Arrange
+      const value = {};
+  
+      // Act
+      const result = component.isEmptyObject(value);
+  
+      // Assert
+      expect(result).toBe(true);
+    });
+  
+    it('should return false for an object with properties', () => {
+      // Arrange
+      const value = { prop1: 'value1', prop2: 'value2' };
+  
+      // Act
+      const result = component.isEmptyObject(value);
+  
+      // Assert
+      expect(result).toBe(false);
+    });
+  
+    it('should return false for an object with nested objects', () => {
+      // Arrange
+      const value = { prop1: { nestedProp: 'value' }, prop2: {} };
+  
+      // Act
+      const result = component.isEmptyObject(value);
+  
+      // Assert
+      expect(result).toBe(false);
+    });
+  
+    it('should return false for an object with prototype properties', () => {
+      // Arrange
+      const value = Object.create({ prop: 'value' });
+  
+      // Act
+      const result = component.isEmptyObject(value);
+  
+      // Assert
+      expect(result).toBe(true);
+    });
+  });
+
+  it('should get error while getting dashboard',()=>{
+    spyOn(service,'getDashConfigData').and.returnValue(null);
+    spyOn(httpService,'getShowHideOnDashboard').and.returnValue(throwError('Error'));
+    component.getKpiOrderedList();
+    expect(component.kpiListData).toBeNull();
   })
 
 });

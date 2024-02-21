@@ -18,12 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
+import static org.testng.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -36,6 +39,8 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
 /**
  * @author anisingh4
@@ -50,10 +55,28 @@ public class JiraKPIServiceTest {
 	private CustomApiConfig customApiConfig;
 
 	private Map<String, String> aggregationCriteriaMap;
+	@Mock
+	private JiraServiceR jiraService;
+
+	private static List<JiraIssueCustomHistory> getJiraIssueCustomHistories() {
+		JiraIssueCustomHistory issueCustomHistory = new JiraIssueCustomHistory();
+		issueCustomHistory.setStoryID("DTS-123");
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+		jiraIssueCustomHistories.add(issueCustomHistory);
+		return jiraIssueCustomHistories;
+	}
+
+	private static List<JiraIssue> getJiraIssues() {
+		JiraIssue jiraIssue = new JiraIssue();
+		jiraIssue.setNumber("123");
+		List<JiraIssue> jiraIssues = new ArrayList<>();
+		jiraIssues.add(jiraIssue);
+		return jiraIssues;
+	}
 
 	@Before
 	public void init() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 
 		aggregationCriteriaMap = new HashMap<>();
 		aggregationCriteriaMap.put("kpi1", Constant.PERCENTILE);
@@ -86,6 +109,11 @@ public class JiraKPIServiceTest {
 		return aggregatedValueList;
 	}
 
+	@Test
+	public void testCalcWeekDays() {
+		assertNotNull(jiraKPIService.getLastNMonth(10));
+	}
+
 	public static class JiraKpiServiceTestImpl extends JiraKPIService {
 
 		@Override
@@ -110,4 +138,5 @@ public class JiraKPIServiceTest {
 		}
 
 	}
+
 }

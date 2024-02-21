@@ -18,12 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.jenkins.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -114,6 +117,8 @@ public class CodeBuildTimeKanbanServiceImplTest {
 		BuildDataFactory buildDataFactory = BuildDataFactory
 				.newInstance("/json/non-JiraProcessors/build_details_kanban.json");
 		buildList = buildDataFactory.getbuildDataList();
+		buildList.forEach(
+				build -> build.setStartTime(LocalDateTime.now().minusDays(2).toInstant(ZoneOffset.UTC).toEpochMilli()));
 
 		Map<String, String> aggregationMap = new HashMap<>();
 		aggregationMap.put("kanbanCodeBuildTime", "average");

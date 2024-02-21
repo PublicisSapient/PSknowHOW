@@ -33,6 +33,7 @@ import org.springframework.cache.support.SimpleValueWrapper;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceImpl;
@@ -68,6 +69,8 @@ public class CacheServiceImpl implements CacheService {
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
+	@Autowired
+	private AuthenticationService authNAuthService;
 
 	@Override
 	public void clearCache(String cacheName) {
@@ -257,4 +260,5 @@ public class CacheServiceImpl implements CacheService {
 				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
 
 	}
+
 }

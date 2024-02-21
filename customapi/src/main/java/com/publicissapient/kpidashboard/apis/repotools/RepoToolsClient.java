@@ -20,11 +20,13 @@ package com.publicissapient.kpidashboard.apis.repotools;
 
 import java.net.URI;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -39,8 +41,10 @@ import lombok.extern.slf4j.Slf4j;
  * rest template for repo tools
  */
 @Slf4j
+@Component
 public class RepoToolsClient {
 
+	@Autowired
 	private RestTemplate restTemplate;
 	private static final String X_API_KEY = "X_API_KEY";
 	private HttpHeaders httpHeaders;
@@ -144,7 +148,6 @@ public class RepoToolsClient {
 	 */
 	public void setHttpHeaders(String apiKey) {
 		httpHeaders = new HttpHeaders();
-		this.restTemplate = new RestTemplate();
 		httpHeaders.add(X_API_KEY, apiKey);
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 	}

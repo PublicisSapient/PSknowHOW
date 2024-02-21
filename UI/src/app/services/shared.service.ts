@@ -55,6 +55,7 @@ export class SharedService {
   private passServerRole= new BehaviorSubject<boolean>(false);
   public boardId = 1;
   public isDownloadExcel;
+  private authToken = '';
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
@@ -92,10 +93,14 @@ export class SharedService {
   globalConfigData : any
   visibleSideBarSubject = new BehaviorSubject(false);
   visibleSideBarObs = this.visibleSideBarSubject.asObservable();
+  addtionalFilterBackup = {} ;
+  projectQueryParamSubject = new BehaviorSubject<any>('');
+  projectQueryParamObs = this.projectQueryParamSubject.asObservable();
+  sprintQueryParamSubject = new BehaviorSubject<any>('');
+  sprintQueryParamObs = this.sprintQueryParamSubject.asObservable();
 
-
-  private currentIssue = new BehaviorSubject({});
-  currentData = this.currentIssue.asObservable();
+  public currentIssue = new BehaviorSubject({});
+  public currentData = this.currentIssue.asObservable();
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -385,6 +390,30 @@ export class SharedService {
   getGlobalConfigData(){
     return this.globalConfigData;
   }
+
+  setAuthToken(value){
+    this.authToken = value;
+  }
+
+  getAuthToken(){
+    return this.authToken;
+  }
+
+  setProjectQueryParamInFilters(value) {
+    this.projectQueryParamSubject.next({value});
+  }
+
+  setSprintQueryParamInFilters(value) {
+    this.sprintQueryParamSubject.next({value});
+  }
+
+   setAddtionalFilterBackup(data){
+      this.addtionalFilterBackup = data;
+    }
+
+    getAddtionalFilterBackup(){
+      return this.addtionalFilterBackup;
+    }
 }
 
 

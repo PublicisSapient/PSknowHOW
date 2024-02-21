@@ -60,7 +60,7 @@ public class DataCleanUpServiceFactoryTest {
 
 	@Before
 	public void before() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 
 		when(sonarDataCleanupService.getToolCategory()).thenReturn(ProcessorType.SONAR_ANALYSIS.toString());
 		when(scmDataCleanupService.getToolCategory()).thenReturn(ProcessorType.SCM.toString());

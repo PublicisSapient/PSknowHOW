@@ -91,8 +91,6 @@ div.assignee, button.assignee {
     margin-left: 4px;
     border: 2px solid #000;
     text-align: center;
-    font-family: Arial;
-    /* z-index: 1000; */
 }
 
 button.unassignedBtn {

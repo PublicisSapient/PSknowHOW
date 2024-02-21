@@ -23,12 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -114,8 +115,9 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 		TypedAggregation<KanbanIssueCustomHistory> agg = Aggregation.newAggregation(KanbanIssueCustomHistory.class,
 				list);
 
-		List<IssueHistoryMappedData> data = operations
-				.aggregate(agg, KanbanIssueCustomHistory.class, IssueHistoryMappedData.class).getMappedResults();
+		AggregationResults<IssueHistoryMappedData> aggregate = operations.aggregate(agg, KanbanIssueCustomHistory.class,
+				IssueHistoryMappedData.class);
+		List<IssueHistoryMappedData> data = aggregate.getMappedResults();
 
 		List<KanbanIssueCustomHistory> resultList = new ArrayList<>();
 
@@ -222,6 +224,8 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 		list.add(Aggregation.match(criteriaAggregatedAtProjectLevelForStatus));
 		TypedAggregation<KanbanIssueCustomHistory> agg = Aggregation.newAggregation(KanbanIssueCustomHistory.class,
 				list);
+
+
 		return operations.aggregate(agg, KanbanIssueCustomHistory.class, KanbanIssueCustomHistory.class)
 				.getMappedResults();
 	}

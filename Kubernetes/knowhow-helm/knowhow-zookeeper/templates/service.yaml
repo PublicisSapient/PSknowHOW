@@ -1,16 +1,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: zookeeper
-  labels:
-    {{- include "knowhow-zookeeper.labels" . | nindent 4 }}
+  name: zookeeper-cluster
   namespace: {{ .Values.env}}-knowhow
 spec:
-  type: {{ .Values.service.type }}
-  ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
   selector:
-    {{- include "knowhow-zookeeper.selectorLabels" . | nindent 4 }}
+    app: zookeeper-cluster
+  ports:
+  - name: client
+    port: 2181
+    targetPort: 2181
+  - name: follower
+    port: 2888
+    targetPort: 2888
+  - name: leader
+    port: 3888
+    targetPort: 3888
+  clusterIP: None

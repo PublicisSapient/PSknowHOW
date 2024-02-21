@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -40,15 +41,14 @@ import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Bitbucket service to process bitbucket data.
- * 
+ *
  * @author anisingh4
  */
 @Service
@@ -102,15 +102,12 @@ public class BitBucketServiceR {
 					return (List<KpiElement>) cachedData;
 				}
 
-				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
-						filterHelperService.getHierarchyIdLevelMap(false)
-								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
+				Node filteredNode = getFilteredNodes(kpiRequest, filteredAccountDataList);
 				kpiRequest.setXAxisDataPoints(Integer.parseInt(kpiRequest.getIds()[0]));
 				kpiRequest.setDuration(kpiRequest.getSelectedMap().get(CommonConstant.date).get(0));
 				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 
-					calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
+					calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
 				}
 				List<KpiElement> missingKpis = origRequestedKpis.stream()
 						.filter(reqKpi -> responseList.stream()
@@ -131,8 +128,19 @@ public class BitBucketServiceR {
 		return responseList;
 	}
 
+	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+		Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
+
+		if (null != filteredNode.getAccountHierarchy()) {
+			filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
+					filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
+		}
+
+		return filteredNode;
+	}
+
 	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-			KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+			KpiElement kpiElement, Node filteredAccountNode) throws ApplicationException {
 
 		BitBucketKPIService<?, ?, ?> bitBucketKPIService = null;
 
@@ -142,9 +150,8 @@ public class BitBucketServiceR {
 
 		long startTime = System.currentTimeMillis();
 
-		TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-				.clone(treeAggregatorDetail);
-		responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
+		Node nodeDataClone = (Node) SerializationUtils.clone(filteredAccountNode);
+		responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone));
 
 		long processTime = System.currentTimeMillis() - startTime;
 		log.info("[BITBUCKET-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
@@ -173,7 +180,7 @@ public class BitBucketServiceR {
 
 	/**
 	 * Cache response.
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param groupId

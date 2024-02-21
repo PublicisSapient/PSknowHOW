@@ -2,10 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { KpiTableComponent } from './kpi-table.component';
 import { SharedService } from 'src/app/services/shared.service';
+import { SimpleChange, SimpleChanges } from '@angular/core';
 
 describe('KpiTableComponent', () => {
   let component: KpiTableComponent;
   let fixture: ComponentFixture<KpiTableComponent>;
+  let sharedService
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -16,6 +18,7 @@ describe('KpiTableComponent', () => {
 
     fixture = TestBed.createComponent(KpiTableComponent);
     component = fixture.componentInstance;
+    sharedService = TestBed.inject(SharedService)
     fixture.detectChanges();
   });
 
@@ -54,4 +57,58 @@ describe('KpiTableComponent', () => {
     expect(Object.keys(component.nodeColors)?.length).toEqual(Object.keys(component.colorObj)?.length);
     expect(component.tabs?.length).toEqual(Object.keys(component.nodeColors)?.length);
   })
+
+  describe('YourComponent', () => {
+  
+    beforeEach(() => {
+      spyOn(component, 'assignColorToNodes');
+    });
+  
+    it('should update kpiData if it has changed', () => {
+      const changes: SimpleChanges = {
+        kpiData: new SimpleChange({ value: 5 }, { value: 10 }, false),
+      };
+      component.ngOnChanges(changes);
+      expect(component.kpiData).toEqual({ value: 10 });
+    });
+  
+    it('should not update kpiData if it has not changed', () => {
+      const changes: SimpleChanges = {
+        kpiData: new SimpleChange({ value: 10 }, { value: 10 }, false),
+      };
+      component.ngOnChanges(changes);
+      expect(component.kpiData).toEqual({ value: 10 });
+    });
+  
+    it('should call assignColorToNodes if colorObj has changed', () => {
+      const changes: SimpleChanges = {
+        colorObj: new SimpleChange({ color: 'blue' }, { color: 'red' }, false),
+      };
+      component.ngOnChanges(changes);
+      expect(component.assignColorToNodes).toHaveBeenCalled();
+    });
+  
+    it('should update kpiConfigData if it has changed', () => {
+      const changes: SimpleChanges = {
+        kpiConfigData: new SimpleChange({ config: 'B' }, { config: 'A' }, false),
+      };
+      component.ngOnChanges(changes);
+      expect(component.kpiConfigData).toEqual({ config: 'A' });
+    });
+  
+    it('should not update kpiConfigData if it has not changed', () => {
+      const changes: SimpleChanges = {
+        kpiConfigData: new SimpleChange({ config: 'A' }, { config: 'A' }, false),
+      };
+      component.ngOnChanges(changes);
+      expect(component.kpiConfigData).toEqual({ config: 'A' });
+    });
+
+    it('should set kpi loader',()=>{
+      sharedService.setMaturiyTableLoader(true)
+      component.ngOnInit();
+       expect(component.loader).toBeTruthy();
+    })
+  });
+
 });

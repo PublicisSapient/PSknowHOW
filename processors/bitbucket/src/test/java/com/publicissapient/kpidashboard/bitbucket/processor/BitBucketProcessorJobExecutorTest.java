@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +36,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.reflect.Whitebox;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestClientException;
@@ -145,7 +145,7 @@ class BitBucketProcessorJobExecutorTest {
 		Mockito.when(bitBucketProcessorRepo.findByProcessorName(Mockito.anyString())).thenReturn(bitBucketProcessor);
 		Mockito.when(bitBucketProcessorRepo.save(bitBucketProcessor)).thenReturn(bitBucketProcessor);
 
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		projectConfigList = new ArrayList<>();
 		ProjectBasicConfig p = new ProjectBasicConfig();
 		p.setId(PROCESSORID);
@@ -252,7 +252,13 @@ class BitBucketProcessorJobExecutorTest {
 		String password = "test";
 		String url = "https://test.com/scm.git";
 		try {
-			Whitebox.invokeMethod(basicBitBucketClient, "getResponse", userName, password, url);
+			Method method = BasicBitBucketClient.class.getDeclaredMethod("getResponse", String.class, String.class,
+					String.class);
+			method.setAccessible(true);
+
+			// Invoke the method
+			method.invoke(basicBitBucketClient, userName, password, url);
+
 		} catch (RestClientException e) {
 			assertTrue(true);
 		}

@@ -293,4 +293,95 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
     expect(component.populateDropdowns).toBeFalsy();
     expect(component.displayDialog).toBeFalsy();
   });
+
+  it('should reset radio button', () => {
+    component.fieldMappingForm = new UntypedFormGroup({
+      'fieldName': new UntypedFormControl('')
+    });
+    const spy = spyOn(component, 'handleAdditionalFilters');
+    component.resetRadioButton('fieldName');
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should record scroll position', () => {
+    const scrollPosition = 100;
+    spyOnProperty(document.documentElement, 'scrollTop', 'get').and.returnValue(scrollPosition);
+  
+    component.recordScrollPosition();
+  
+    expect(component.bodyScrollPosition).toEqual(scrollPosition);
+  });
+
+  it('should save dialog with single selection dropdown', () => {
+    component.singleSelectionDropdown = true;
+    component.selectedField = 'fieldName';
+    component.selectedValue = ['selectedValue'];
+    spyOn(component, 'handleAdditionalFilters');
+    component.fieldMappingForm = new UntypedFormGroup({
+      'fieldName': new UntypedFormControl()
+    });
+  
+    component.saveDialog();
+
+    expect(component.handleAdditionalFilters).toHaveBeenCalled();
+    expect(component.populateDropdowns).toBeFalsy();
+    expect(component.displayDialog).toBeFalsy();
+  });
+  
+  it('should save dialog without single selection dropdown', () => {
+    component.singleSelectionDropdown = false;
+    spyOn(component, 'handleAdditionalFilters');
+    component.fieldMappingForm = new UntypedFormGroup({
+      'fieldName': new UntypedFormControl()
+    });
+  
+    component.saveDialog();
+  
+    expect(component.handleAdditionalFilters).toHaveBeenCalled();
+    expect(component.populateDropdowns).toBeFalsy();
+    expect(component.displayDialog).toBeFalsy();
+  });
+
+  it('should change control based on selection', () => {
+    const event = {
+      value: "Labels"
+    };
+    const additionalFilterIdentifier = {
+      "name": "Squad",
+      "code": "sqd"
+    };
+    const spy = spyOn(component, 'handleAdditionalFilters');
+    component.changeControl(event, additionalFilterIdentifier);
+    expect(component.fieldMappingForm.controls['sqdIdentMultiValue']).toBeTruthy();
+    expect(spy).toHaveBeenCalled();
+  });
+  
+  it('should add control for multi-value selection', () => {
+    const event = {
+      value: "Component"
+    };
+    const additionalFilterIdentifier = {
+      "name": "Squad",
+      "code": "sqd"
+    };
+    const spy = spyOn(component, 'handleAdditionalFilters');
+    component.changeControl(event, additionalFilterIdentifier);
+    expect(component.fieldMappingForm.controls['sqdIdentMultiValue']).toBeTruthy();
+    expect(spy).toHaveBeenCalled();
+  });
+  
+  it('should add control for single-value selection', () => {
+    const event = {
+      value: "Other"
+    };
+    const additionalFilterIdentifier = {
+      "name": "Squad",
+      "code": "sqd"
+    };
+    const spy = spyOn(component, 'handleAdditionalFilters');
+    component.changeControl(event, additionalFilterIdentifier);
+    expect(component.fieldMappingForm.controls['sqdIdentSingleValue']).toBeTruthy();
+    expect(spy).toHaveBeenCalled();
+  });
+  
 });

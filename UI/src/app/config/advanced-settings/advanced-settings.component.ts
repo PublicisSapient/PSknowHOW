@@ -17,11 +17,10 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { ConfirmationService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
-import { MessageService } from 'primeng/api';
 import { DatePipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { environment } from 'src/environments/environment';

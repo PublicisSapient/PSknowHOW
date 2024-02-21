@@ -35,8 +35,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.policy.GrantApprovalListener;
@@ -45,6 +48,8 @@ import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupM
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDecision;
 import com.publicissapient.kpidashboard.common.model.rbac.AuthenticationDTO;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -62,6 +67,13 @@ public class SignupRequestsController {
 	private AuthenticationService authenticationService;
 	@Autowired
 	private SignupManager signupManager;
+	@Autowired
+	private CustomApiConfig customApiConfig;
+
+	@Autowired
+	private AuthProperties authProperties;
+	@Autowired
+	UserInfoServiceImpl userInfoService;
 
 	/**
 	 * Gets all unapproved requests data.
@@ -70,13 +82,20 @@ public class SignupRequestsController {
 	 */
 	@GetMapping
 	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
-	public ResponseEntity<ServiceResponse> getAllUnapprovedRequests() {
+	public ResponseEntity<ServiceResponse> getAllUnapprovedRequests(HttpServletRequest request) {
 		log.info("Getting all unapproved requests");
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ServiceResponse(true, "Unapproved User details",
-						mapper.map(authenticationService.getAuthenticationByApproved(false),
-								new TypeToken<List<AuthenticationDTO>>() {
-								}.getType())));
+		if (customApiConfig.isCentralAuthSwitch()) {
+			String centralAuthToken = authProperties.getResourceAPIKey();
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "success_pending_approval",
+					userInfoService.findAllUnapprovedUsers(centralAuthToken)));
+		} else {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "Unapproved User details",
+							mapper.map(authenticationService.getAuthenticationByApproved(false),
+									new TypeToken<List<AuthenticationDTO>>() {
+									}.getType())));
+		}
+
 	}
 
 	@GetMapping("/all")
@@ -100,38 +119,52 @@ public class SignupRequestsController {
 	@PutMapping("/{username}")
 	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
 	public ResponseEntity<ServiceResponse> modifyAccessRequestById(@PathVariable("username") String username,
-			@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
+			@Valid @RequestBody AccessRequestDecision accessRequestDecision, HttpServletRequest request) {
 		ServiceResponse[] serviceResponse = new ServiceResponse[1];
-
+		String token = authProperties.getResourceAPIKey();
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access {}", username);
+			if (customApiConfig.isCentralAuthSwitch()) {
 
-			signupManager.grantAccess(username, new GrantApprovalListener() {
-				@Override
-				public void onSuccess(Authentication authentication) {
-					serviceResponse[0] = new ServiceResponse(true, "Granted", null);
-				}
+				boolean approvedCentral = userInfoService.updateUserApprovalStatus(username, token);
+				serviceResponse[0] = new ServiceResponse(true, "Granted", approvedCentral);
 
-				@Override
-				public void onFailure(Authentication authentication, String message) {
-					serviceResponse[0] = new ServiceResponse(false, message, null);
-				}
-			});
+			} else {
+				signupManager.grantAccess(username, new GrantApprovalListener() {
+					@Override
+					public void onSuccess(Authentication authentication) {
+						serviceResponse[0] = new ServiceResponse(true, "Granted", true);
+					}
+
+					@Override
+					public void onFailure(Authentication authentication, String message) {
+						serviceResponse[0] = new ServiceResponse(false, message, null);
+					}
+				});
+
+			}
 		} else if (Constant.ACCESS_REQUEST_STATUS_REJECTED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Reject access {}", username);
-			signupManager.rejectAccessRequest(username, new RejectApprovalListener() {
-				@Override
-				public void onSuccess(Authentication authentication) {
-					serviceResponse[0] = new ServiceResponse(true, "Rejected Successfully", null);
-				}
 
-				@Override
-				public void onFailure(Authentication authentication, String message) {
-					serviceResponse[0] = new ServiceResponse(false, message, null);
+			if (customApiConfig.isCentralAuthSwitch()) {
 
-				}
-			});
+				boolean rejectedCentral = userInfoService.deleteFromCentralAuthUser(username, token);
+				serviceResponse[0] = new ServiceResponse(true, "Rejected Successfully", rejectedCentral);
 
+			} else {
+				signupManager.rejectAccessRequest(username, new RejectApprovalListener() {
+					@Override
+					public void onSuccess(Authentication authentication) {
+						serviceResponse[0] = new ServiceResponse(true, "Rejected Successfully", null);
+					}
+
+					@Override
+					public void onFailure(Authentication authentication, String message) {
+						serviceResponse[0] = new ServiceResponse(false, message, null);
+
+					}
+				});
+			}
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse[0]);
 	}

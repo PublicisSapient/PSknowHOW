@@ -22,55 +22,63 @@
               "name": "master",
               "average": 30176.5,
               "mergeRequests": 5,
+              "lines_change": 60710.0,
               "merge_requests": [
                 {
                   "id": "1466332986",
                   "link": "https://github.com/PublicisSapient/PSknowHOW/pull/97",
                   "time_to_merge": 876808.0,
                   "created_at": "2023-08-08T06:56:09Z",
-                  "updated_at": "2023-08-22T10:29:37Z"
+                  "updated_at": "2023-08-22T10:29:37Z",
+                  "lines_change": 60710.0
                 },
                 {
                   "id": "1471662702",
                   "link": "https://github.com/PublicisSapient/PSknowHOW/pull/104",
                   "time_to_merge": 500906.0,
                   "created_at": "2023-08-11T11:28:08Z",
-                  "updated_at": "2023-08-21T06:36:34Z"
+                  "updated_at": "2023-08-21T06:36:34Z",
+                  "lines_change": 60710.0
                 },
                 {
                   "id": "1471338851",
                   "link": "https://github.com/PublicisSapient/PSknowHOW/pull/103",
                   "time_to_merge": 448780.0,
                   "created_at": "2023-08-11T06:55:30Z",
-                  "updated_at": "2023-08-18T11:35:10Z"
+                  "updated_at": "2023-08-18T11:35:10Z",
+                  "lines_change": 60710.0
                 },
                 {
                   "id": "1477677201",
                   "link": "https://github.com/PublicisSapient/PSknowHOW/pull/115",
                   "time_to_merge": 390969.0,
                   "created_at": "2023-08-16T15:21:31Z",
-                  "updated_at": "2023-08-23T03:57:40Z"
+                  "updated_at": "2023-08-23T03:57:40Z",
+                  "lines_change": 60710.0
                 },
                 {
                   "id": "1479136912",
                   "link": "https://github.com/PublicisSapient/PSknowHOW/pull/116",
                   "time_to_merge": 171615.0,
                   "created_at": "2023-08-17T14:16:40Z",
-                  "updated_at": "2023-08-21T13:56:55Z"
+                  "updated_at": "2023-08-21T13:56:55Z",
+                  "lines_change": 60710.0
                 },
                 {
                   "id": "1485758519",
                   "link": "https://github.com/PublicisSapient/PSknowHOW/pull/122",
                   "time_to_merge": 14231.0,
                   "created_at": "2023-08-23T05:10:44Z",
-                  "updated_at": "2023-08-23T09:07:55Z"
+                  "updated_at": "2023-08-23T09:07:55Z",
+                  "lines_change": 60710.0
                 },
                 {
                   "id": "1480039212",
                   "link": "https://github.com/PublicisSapient/PSknowHOW/pull/117",
                   "time_to_merge": 278256.0,
                   "created_at": "2023-08-18T06:12:32Z",
-                  "updated_at": "2023-08-23T11:30:08Z"
+                  "updated_at": "2023-08-23T11:30:08Z",
+                  "lines_change": 60710.0
                 }
               ]
             }

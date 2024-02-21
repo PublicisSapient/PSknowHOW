@@ -106,10 +106,10 @@
                 <p-table [columns]="cols.testExecutionKanbanKeys" [value]="testExecutionKanbanData" class="custom-grid"  [loadingIcon]="loading-img">
                   <ng-template pTemplate="header" let-columns>
                     <tr>
-                      <th *ngFor="let col of columns" [ngClass]="{'upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}">
+                      <th *ngFor="let col of columns" [ngClass]="{'upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}" scope="col">
                         {{col.header}}
                     </th>
-                      <th [ngClass]="{'upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}">Action</th>
+                      <th [ngClass]="{'upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}" scope="col">Action</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body"  let-item let-columns="columns">
@@ -145,10 +145,10 @@
                 <p-table [columns]="cols.testExecutionScrumKeys" [value]="testExecutionScrumData" class="custom-grid"  loadingIcon="loading-img">
                   <ng-template pTemplate="header" let-columns>
                     <tr>
-                      <th *ngFor="let col of columns" [ngClass]="{'upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}">
+                      <th *ngFor="let col of columns" [ngClass]="{'upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}" scope="col">
                         {{col.header}}
                     </th>
-                      <th [ngClass]="{'upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}">Action</th>
+                      <th [ngClass]="{'upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}" scope="col">Action</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body"  let-item let-columns="columns">
@@ -182,10 +182,10 @@
                   loadingIcon="loading-img" [expandedRowKeys]="expandedRows" dataKey="startDate" (onRowExpand)="onCapacitySprintRowSelection()"  rowExpandMode="single">
                   <ng-template pTemplate="header" let-columns>
                     <tr>
-                      <th *ngFor="let col of columns" class="upload_sprint_capacity">
+                      <th *ngFor="let col of columns" class="upload_sprint_capacity" scope="col">
                         {{col.header}}
                       </th>
-                      <th class="upload_sprint_capacity">Action</th>
+                      <th class="upload_sprint_capacity" scope="col">Action</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body"  let-item let-columns="columns"  let-expanded="expanded">
@@ -228,20 +228,20 @@
                                 [rowsPerPageOptions]="[20,25,30]" [showCurrentPageReport]="true">
                                 <ng-template pTemplate="header">
                         <tr class="expanded-table-header-row">
-                          <th pSortableColumn="userName" class="expanded-table-header-cell" [style]="{'width':'25%'}">User Name <p-sortIcon field="userName">
+                          <th pSortableColumn="userName" class="expanded-table-header-cell" [style]="{'width':'25%'}" scope="col">User Name <p-sortIcon field="userName">
                             </p-sortIcon>
                           </th>
                 
-                          <th pSortableColumn="role" class="expanded-table-header-cell" [style]="{'width':'25%'}">Domain <p-sortIcon
+                          <th pSortableColumn="role" class="expanded-table-header-cell" [style]="{'width':'25%'}" scope="col">Domain <p-sortIcon
                               field="role"></p-sortIcon>
                           </th>
-                          <th pSortableColumn="plannedCapacity" class="expanded-table-header-cell">Planned Capacity (in Hrs) <p-sortIcon
+                          <th pSortableColumn="plannedCapacity" class="expanded-table-header-cell" scope="col">Planned Capacity (in Hrs) <p-sortIcon
                               field="plannedCapacity"></p-sortIcon>
                           </th>
-                          <th pSortableColumn="leaves" class="expanded-table-header-cell">Leaves (in Hrs) <p-sortIcon field="leaves">
+                          <th pSortableColumn="leaves" class="expanded-table-header-cell" scope="col">Leaves (in Hrs) <p-sortIcon field="leaves">
                             </p-sortIcon>
                           </th>
-                          <th pSortableColumn="availableCapacity" class="expanded-table-header-cell">Available Capacity (in Hrs) <p-sortIcon
+                          <th pSortableColumn="availableCapacity" class="expanded-table-header-cell" scope="col">Available Capacity (in Hrs) <p-sortIcon
                               field="availableCapacity"></p-sortIcon>
                           </th>
                         </tr>
@@ -308,10 +308,10 @@
                 [expandedRowKeys]="expandedRows" loadingIcon="loading-img" expandableRows="true" rowExpandMode="single">
                   <ng-template pTemplate="header" let-columns>
                     <tr>
-                      <th *ngFor="let col of columns" class="upload_sprint_capacity">
+                      <th *ngFor="let col of columns" class="upload_sprint_capacity" scope="col">
                         {{col.header}}
                       </th>
-                      <th class="upload_sprint_capacity">Action</th>
+                      <th class="upload_sprint_capacity" scope="col">Action</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-item let-columns="columns" let-expanded="expanded">
@@ -347,37 +347,37 @@
                           [rowsPerPageOptions]="[20,25,30]" [showCurrentPageReport]="true">
                             <ng-template pTemplate="header">
                                 <tr class="expanded-table-header-row">
-                                  <th pSortableColumn="userName" class="expanded-table-header-cell" [style]="{'width':'25%'}">
+                                  <th pSortableColumn="userName" class="expanded-table-header-cell" [style]="{'width':'25%'}" scope="col">
                                     <div>
                                       <span [ngClass]="{'editable': projectCapacityEditMode}">User Name</span>
                                       <p-sortIcon field="userName"></p-sortIcon>
                                     </div>
                                   </th>
-                                  <th pSortableColumn="happinessRating" class="expanded-table-header-cell" [style]="{'width':'25%'}">
+                                  <th pSortableColumn="happinessRating" class="expanded-table-header-cell" [style]="{'width':'25%'}" scope="col">
                                     <div>
                                       <span [ngClass]="{'editable': projectCapacityEditMode}">Happiness Rating</span>
                                       <p-sortIcon field="happinessRating"></p-sortIcon>
                                     </div>
                                   </th>
-                                  <th pSortableColumn="role" class="expanded-table-header-cell" [style]="{'width':'25%'}">
+                                  <th pSortableColumn="role" class="expanded-table-header-cell" [style]="{'width':'25%'}" scope="col">
                                     <div>
                                       <span [ngClass]="{'editable': projectCapacityEditMode}">Domain</span>
                                       <p-sortIcon field="role"></p-sortIcon>
                                     </div>
                                   </th>
-                                  <th pSortableColumn="plannedCapacity" class="expanded-table-header-cell">
+                                  <th pSortableColumn="plannedCapacity" class="expanded-table-header-cell" scope="col">
                                     <div>
                                       <span [ngClass]="{'editable': projectCapacityEditMode}">Planned Capacity (in Hrs)</span>
                                       <p-sortIcon field="plannedCapacity"></p-sortIcon>
                                     </div>
                                   </th>
-                                  <th pSortableColumn="leaves" class="expanded-table-header-cell">
+                                  <th pSortableColumn="leaves" class="expanded-table-header-cell" scope="col">
                                     <div>
                                       <span [ngClass]="{'editable': projectCapacityEditMode}">Leaves (in Hrs)</span>
                                       <p-sortIcon field="leaves"></p-sortIcon>
                                     </div>
                                   </th>
-                                  <th pSortableColumn="availableCapacity" class="expanded-table-header-cell">
+                                  <th pSortableColumn="availableCapacity" class="expanded-table-header-cell" scope="col">
                                     <div>
                                       <span [ngClass]="{'editable': projectCapacityEditMode}">Available Capacity (in Hrs)</span>
                                       <p-sortIcon field="availableCapacity"></p-sortIcon>

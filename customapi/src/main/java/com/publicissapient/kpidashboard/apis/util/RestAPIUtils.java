@@ -87,7 +87,7 @@ public class RestAPIUtils {
 	 * @return HttpHeaders the http header
 	 */
 	public HttpHeaders addHeaders(HttpHeaders header, String key, String value) {
-		if (null != header) {
+		if (null == header) {
 			header = new HttpHeaders();
 		}
 		header.add(key, value);
@@ -121,27 +121,6 @@ public class RestAPIUtils {
 	public String convertToString(JSONObject jsonData, String key) {
 		Object jsonObj = jsonData.get(key);
 		return jsonObj == null ? null : jsonObj.toString();
-	}
-
-	/**
-	 * Converts list of string to jsonArray.
-	 *
-	 * @param jsonArray
-	 *            the json object
-	 * @param key
-	 *            the project key
-	 * @return the string data
-	 */
-	public List<String> convertListFromArray(JSONArray jsonArray, String key) {
-		List<String> list = new ArrayList<>();
-		for (Object obj : jsonArray) {
-			JSONObject jsonObject = (JSONObject) obj;
-			if (jsonObject != null) {
-				String value = jsonObject.get(key).toString();
-				list.add(value);
-			}
-		}
-		return list;
 	}
 
 	public List<String> convertListFromMultipleArray(JSONArray jsonArray, String key) {

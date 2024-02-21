@@ -45,6 +45,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JiraProcessorUtil {
 
+	private  JiraProcessorUtil(){}
+
 	// not static because not thread safe
 	private static final String SPRINT_SPLIT = "(?=,\\w+=)";
 	private static final String NULL_STR = "null";
@@ -74,7 +76,7 @@ public class JiraProcessorUtil {
 		byte[] responseBytes;
 		try {
 			CharsetDecoder charsetDecoder = StandardCharsets.UTF_8.newDecoder();
-			if (responseStr.isEmpty() || NULL_STR.equalsIgnoreCase(responseStr)) {
+			if (responseStr == null || responseStr.isEmpty() || NULL_STR.equalsIgnoreCase(responseStr)) {
 				return StringUtils.EMPTY;
 			}
 			responseBytes = responseStr.getBytes(StandardCharsets.UTF_8);
@@ -169,7 +171,7 @@ public class JiraProcessorUtil {
 		return sprint;
 	}
 
-	private static void setSprintDetailsFromString(String sprintData, SprintDetails sprint) {
+	public static Object setSprintDetailsFromString(String sprintData, SprintDetails sprint) {
 		sprintData = sprintData.trim().replaceAll("\\s", " ");
 		String sprintDataStr = sprintData.substring(sprintData.indexOf('[') + 1, sprintData.length() - 1);
 		String[] splitStringList = sprintDataStr.split(SPRINT_SPLIT);
@@ -228,6 +230,7 @@ public class JiraProcessorUtil {
 				}
 			}
 		}
+		return null;
 	}
 
 	private static void setSprintDetailsFromJson(String sprintData, SprintDetails sprint) {

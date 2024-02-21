@@ -18,9 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis;
 
-import javax.validation.Validator;
 
-import io.mongock.runner.springboot.EnableMongock;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -38,6 +36,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.util.DefaultLogoInsertor;
 
+import io.mongock.runner.springboot.EnableMongock;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -108,7 +107,7 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 	 * @return Bean of Validator class
 	 */
 	@Bean
-	public Validator validator() {
+	public LocalValidatorFactoryBean validator() {
 		return new LocalValidatorFactoryBean();
 	}
 

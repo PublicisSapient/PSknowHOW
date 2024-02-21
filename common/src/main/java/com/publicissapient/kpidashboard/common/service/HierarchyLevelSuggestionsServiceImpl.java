@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,14 +23,6 @@ public class HierarchyLevelSuggestionsServiceImpl implements HierarchyLevelSugge
 		return hierarchyLevelSuggestionRepository.findAll();
 	}
 
-	/*
-	 * @Autowired private ConfigHelperService configHelperService;
-	 * 
-	 * @Autowired private CacheService cacheService;
-	 * 
-	 * @Override public List<HierarchyLevelSuggestion> getSuggestions() { return
-	 * configHelperService.loadHierarchyLevelSuggestion(); }
-	 */
 
 	@Override
 	public HierarchyLevelSuggestion addIfNotPresent(String hierarchyLevelId, String hierarchyValue) {
@@ -47,7 +39,7 @@ public class HierarchyLevelSuggestionsServiceImpl implements HierarchyLevelSugge
 			suggestions.add(normalizeHierarchyValue);
 			hierarchyLevelSuggestion.setValues(suggestions);
 			addedHierarchyLevel = hierarchyLevelSuggestionRepository.save(hierarchyLevelSuggestion);
-			// cacheService.clearCache(CommonConstant.CACHE_HIERARCHY_LEVEL_VALUE);
+
 		}
 
 		if (Objects.nonNull(existingHierarchyLevel) && CollectionUtils.isNotEmpty(existingHierarchyLevel.getValues())) {
@@ -58,7 +50,6 @@ public class HierarchyLevelSuggestionsServiceImpl implements HierarchyLevelSugge
 			suggestions.addAll(existingSuggestions);
 			existingHierarchyLevel.setValues(suggestions);
 			addedHierarchyLevel = hierarchyLevelSuggestionRepository.save(existingHierarchyLevel);
-			// cacheService.clearCache(CommonConstant.CACHE_HIERARCHY_LEVEL_VALUE);
 		}
 
 		return addedHierarchyLevel;

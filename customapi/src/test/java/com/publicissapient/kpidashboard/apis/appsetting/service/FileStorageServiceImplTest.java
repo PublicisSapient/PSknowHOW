@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -45,10 +46,12 @@ public class FileStorageServiceImplTest {
 	@InjectMocks
 	private FileStorageServiceImpl fileStorageServiceImpl;
 
-	@Test
-	public void testUpload() {
+	private MultipartFile multipartFile;
 
-		MultipartFile multipartFile = new MultipartFile() {
+	@Before
+	public void setup() {
+
+		multipartFile = new MultipartFile() {
 
 			@Override
 			public void transferTo(File dest) throws IOException, IllegalStateException {
@@ -67,7 +70,7 @@ public class FileStorageServiceImplTest {
 
 			@Override
 			public String getOriginalFilename() {
-				return "test_file_for_upload";
+				return "test_file_for_upload.xlsx";
 			}
 
 			@Override
@@ -91,7 +94,19 @@ public class FileStorageServiceImplTest {
 			}
 		};
 
+	}
+
+	@Test
+	public void testUpload() {
+
 		BaseResponse response = fileStorageServiceImpl.upload(multipartFile);
+		Assert.assertTrue(null != response);
+
+	}
+
+	@Test
+	public void testUploadType() {
+		BaseResponse response = fileStorageServiceImpl.upload("type", multipartFile);
 		Assert.assertTrue(null != response);
 
 	}

@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -78,6 +79,9 @@ public class UserInfoControlllerTest {
 	@Mock
 	private UserTokenDeletionService userTokenDeletionService;
 
+	@Mock
+	AuthProperties authProperties;
+
 	/**
 	 * method includes preprocesses for test cases
 	 */
@@ -110,7 +114,6 @@ public class UserInfoControlllerTest {
 		userInfo.setUsername("testuser");
 		authorities = new ArrayList<>();
 		authorities.add("ROLE_GUEST");
-
 	}
 
 	/**

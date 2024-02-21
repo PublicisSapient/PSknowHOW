@@ -41,8 +41,11 @@ services:
       - corsFilterValidOrigin=<Your-Public-IP>,localhost,<Your-DNS>
       - versionnumber=7.0.0
       - JAVA_OPTS-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.username=<DB APPLICATION USERNAME>
-      - spring.data.mongodb.password=<DB APPLICATION PASSWORD>
+      - spring.data.mongodb.uri=mongodb://<DB USER NAME>:<DB PASSWORD>@mongodb:27017/kpidashboard
+      # If your DB is hosted on atlas pass the Connection string in spring.data.mongodb.atlas.uri and mongodb.connection.atlas to "true"
+      - spring.data.mongodb.atlas.uri=mongodb+srv://<USER NAME>:<TOKEN>@<CLUSTER URL>.mongodb.net/kpidashboard
+      # mongodb.connection.atlas Toggle to determine whether to use local MongoDB or MongoDB Atlas
+      - mongodb.connection.atlas=false
       - aesEncryptionKey=<Your AES Encryption KEY here>
       - auth.secret=<Your Auth Secret>
     links:
@@ -90,8 +93,11 @@ services:
       - /etc/hosts:/etc/hosts
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.username=<DB ROOT USERNAME>
-      - spring.data.mongodb.password=<DB APPLICATION PASSWORD>
+      - spring.data.mongodb.uri=mongodb://<DB USER NAME>:<DB PASSWORD>@mongodb:27017/kpidashboard
+      # If your DB is hosted on atlas pass the Connection string in spring.data.mongodb.atlas.uri and mongodb.connection.atlas to "true"
+      - spring.data.mongodb.atlas.uri=mongodb+srv://<USER NAME>:<TOKEN>@<CLUSTER URL>.mongodb.net/kpidashboard
+      # mongodb.connection.atlas Toggle to determine whether to use local MongoDB or MongoDB Atlas
+      - mongodb.connection.atlas=false
       - aesEncryptionKey=<Your AES Encryption KEY here>
     links:
       - MongoDB:mongodb
@@ -115,8 +121,11 @@ services:
       - /etc/hosts:/etc/hosts
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.username=<DB ROOT USERNAME>
-      - spring.data.mongodb.password=<DB APPLICATION PASSWORD>
+      - spring.data.mongodb.uri=mongodb://<DB USER NAME>:<DB PASSWORD>@mongodb:27017/kpidashboard
+      # If your DB is hosted on atlas pass the Connection string in spring.data.mongodb.atlas.uri and mongodb.connection.atlas to "true"
+      - spring.data.mongodb.atlas.uri=mongodb+srv://<USER NAME>:<TOKEN>@<CLUSTER URL>.mongodb.net/kpidashboard
+      # mongodb.connection.atlas Toggle to determine whether to use local MongoDB or MongoDB Atlas
+      - mongodb.connection.atlas=false
       - aesEncryptionKey=<Your AES Encryption KEY here>
     links:
       - MongoDB:mongodb
@@ -139,8 +148,11 @@ services:
       - /etc/hosts:/etc/hosts
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.username=<DB ROOT USERNAME>
-      - spring.data.mongodb.password=<DB APPLICATION PASSWORD>
+      - spring.data.mongodb.uri=mongodb://<DB USER NAME>:<DB PASSWORD>@mongodb:27017/kpidashboard
+      # If your DB is hosted on atlas pass the Connection string in spring.data.mongodb.atlas.uri and mongodb.connection.atlas to "true"
+      - spring.data.mongodb.atlas.uri=mongodb+srv://<USER NAME>:<TOKEN>@<CLUSTER URL>.mongodb.net/kpidashboard
+      # mongodb.connection.atlas Toggle to determine whether to use local MongoDB or MongoDB Atlas
+      - mongodb.connection.atlas=false
       - aesEncryptionKey=<Your AES Encryption KEY here>
     links:
       - MongoDB:mongodb
@@ -164,8 +176,11 @@ services:
       - /etc/hosts:/etc/hosts
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.username=<DB ROOT USERNAME>
-      - spring.data.mongodb.password=<DB APPLICATION PASSWORD>
+      - spring.data.mongodb.uri=mongodb://<DB USER NAME>:<DB PASSWORD>@mongodb:27017/kpidashboard
+      # If your DB is hosted on atlas pass the Connection string in spring.data.mongodb.atlas.uri and mongodb.connection.atlas to "true"
+      - spring.data.mongodb.atlas.uri=mongodb+srv://<USER NAME>:<TOKEN>@<CLUSTER URL>.mongodb.net/kpidashboard
+      # mongodb.connection.atlas Toggle to determine whether to use local MongoDB or MongoDB Atlas
+      - mongodb.connection.atlas=false
       - aesEncryptionKey=<Your AES Encryption KEY here>
     links:
       - MongoDB:mongodb

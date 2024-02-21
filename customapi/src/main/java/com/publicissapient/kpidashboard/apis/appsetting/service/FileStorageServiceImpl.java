@@ -58,9 +58,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
 
-	public static final String STR_CAPACITY = "CAPACITY";
-	public static final String STR_TESTEXECUTION = "TEST_EXECUTION";
-	public static final String STR_KANBAN_CAPACITY = "KANBAN_CAPACITY";
 	public static final String FILE_NAME = "filename";
 	public static final String UPLOAD_SUCCESS = "File uploaded successfully";
 	public static final String UPLOAD_FAIL = "Upload failed : ";

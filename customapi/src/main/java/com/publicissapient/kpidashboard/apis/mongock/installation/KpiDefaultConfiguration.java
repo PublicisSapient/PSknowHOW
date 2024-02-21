@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import com.publicissapient.kpidashboard.apis.data.MetaDataIdentifierDataFactory;
+import com.publicissapient.kpidashboard.apis.mongock.data.MetaDataIdentifierDataFactory;
 import com.publicissapient.kpidashboard.apis.util.MongockUtil;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
 

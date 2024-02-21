@@ -18,14 +18,16 @@
 
 package com.publicissapient.kpidashboard.sonar.processor;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestOperations;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(SpringExtension.class)
 public class SonarRestOperationsFactoryTest {
 
 	@InjectMocks
@@ -34,6 +36,6 @@ public class SonarRestOperationsFactoryTest {
 	@Test
 	public void get() {
 		RestOperations restOperations = sonarRestOperationsFactory.getTypeInstance();
-		Assert.assertTrue(restOperations instanceof RestOperations);
+        Assertions.assertInstanceOf(RestOperations.class, restOperations);
 	}
 }

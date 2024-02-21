@@ -1,0 +1,161 @@
+[
+  {
+    "_id": "6540ae07855dcf9ce69d94b6",
+    "processorName": "RepoTool",
+    "processorType": "SCM",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "isLastSuccess": false
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94b5",
+    "processorName": "GitHubAction",
+    "processorType": "BUILD",
+    "isActive": true,
+    "isOnline": true,
+    "updatedTime": "1699315234153",
+    "isLastSuccess": true,
+    "_class": "com.publicissapient.kpidashboard.githubaction.model.GitHubActionProcessor"
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94b4",
+    "processorName": "JiraTest",
+    "processorType": "TESTING_TOOLS",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1698753302070",
+    "isLastSuccess": true,
+    "_class": "com.publicissapient.kpidashboard.jiratest.model.JiraTestProcessor"
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94b3",
+    "processorName": "AzurePipeline",
+    "processorType": "BUILD",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1698740376363",
+    "isLastSuccess": true,
+    "_class": "com.publicissapient.kpidashboard.azurepipeline.model.AzurePipelineProcessor"
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94b2",
+    "processorName": "AzureRepository",
+    "processorType": "SCM",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1698797297769",
+    "isLastSuccess": true,
+    "_class": "com.publicissapient.kpidashboard.azurerepo.model.AzureRepoProcessor"
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94b1",
+    "processorName": "Azure",
+    "processorType": "AGILE_TOOL",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1699344051391",
+    "isLastSuccess": true,
+    "_class": "com.publicissapient.kpidashboard.azure.model.AzureProcessor"
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94b0",
+    "processorName": "Bamboo",
+    "processorType": "BUILD",
+    "isActive": true,
+    "isOnline": true,
+    "updatedTime": "1699344006068",
+    "isLastSuccess": true,
+    "_class": "com.publicissapient.kpidashboard.bamboo.model.BambooProcessor"
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94af",
+    "processorName": "Jenkins",
+    "processorType": "BUILD",
+    "isActive": true,
+    "isOnline": true,
+    "updatedTime": "1699344035969",
+    "isLastSuccess": true,
+    "_class": "com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor"
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94ae",
+    "processorName": "GitLab",
+    "processorType": "SCM",
+    "isActive": true,
+    "isOnline": false,
+    "errors": [],
+    "updatedTime": "1700479789717",
+    "isLastSuccess": false,
+    "_class": "com.publicissapient.kpidashboard.gitlab.model.GitLabProcessor"
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94ad",
+    "processorName": "Bitbucket",
+    "processorType": "SCM",
+    "isActive": true,
+    "isOnline": true,
+    "updatedTime": "1699344154291",
+    "isLastSuccess": false,
+    "_class": "com.publicissapient.kpidashboard.bitbucket.model.BitbucketProcessor"
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94ac",
+    "processorName": "Teamcity",
+    "processorType": "BUILD",
+    "isActive": true,
+    "isOnline": true,
+    "updatedTime": "1699315204008",
+    "isLastSuccess": true,
+    "_class": "com.publicissapient.kpidashboard.teamcity.model.TeamcityProcessor"
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94ab",
+    "processorName": "GitHub",
+    "processorType": "SCM",
+    "isActive": true,
+    "isOnline": true,
+    "updatedTime": "1699347546725",
+    "isLastSuccess": false,
+    "_class": "com.publicissapient.kpidashboard.github.model.GitHubProcessor"
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94aa",
+    "processorName": "Zephyr",
+    "processorType": "TESTING_TOOLS",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1699344193866",
+    "isLastSuccess": false,
+    "_class": "com.publicissapient.kpidashboard.zephyr.model.ZephyrProcessor"
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94a9",
+    "sonarKpiMetrics": [
+      "lines,ncloc,violations,new_vulnerabilities,critical_violations,major_violations,blocker_violations,minor_violations,info_violations,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index,alert_status,quality_gate_details,sqale_rating"
+    ],
+    "processorName": "Sonar",
+    "processorType": "SONAR_ANALYSIS",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1699344072370",
+    "isLastSuccess": false,
+    "_class": "com.publicissapient.kpidashboard.sonar.model.SonarProcessor"
+  },
+  {
+    "_id": "6540ae07855dcf9ce69d94a8",
+    "processorName": "Jira",
+    "processorType": "AGILE_TOOL",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "isLastSuccess": false,
+    "_class": "com.publicissapient.kpidashboard.jira.model.JiraProcessor"
+  }
+]

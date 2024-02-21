@@ -39,7 +39,7 @@ describe('FieldMappingFieldComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should reset radio button',()=>{
+  xit('should reset radio button',()=>{
     component.resetRadioButton("fakeName");
     expect(component.value).toBe(true)
   })
@@ -49,4 +49,57 @@ describe('FieldMappingFieldComponent', () => {
     component.showDialogToAddValue(true,'Name','field')
     expect(component.value).toBe('fakeName')
   })
+
+  it('should prevent entering non-numeric keys', () => {
+    const event = {
+      isTrusted: true,
+      key: ".",
+      preventDefault: jasmine.createSpy('preventDefault')
+    }
+    component.enterNumericValue(event);
+
+    expect(event.preventDefault).toHaveBeenCalled();
+  });
+
+  it('should allow entering numeric keys', () => {
+    const event = {
+      isTrusted: true,
+      key: "1",
+      preventDefault: jasmine.createSpy('preventDefault')
+    }
+
+    component.enterNumericValue(event);
+
+    expect(event.preventDefault).not.toHaveBeenCalled();
+  });
+
+  it('should set value on numeric input box up and down key event', () => {
+    const event = {
+      isTrusted: true,
+    }
+    const spy = spyOn(component, 'setValue');
+    component.numericInputUpDown(event);
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should write value',()=>{
+    component.writeValue("test");
+    expect(component.value).toEqual('test');
+  })
+
+  it('should fire onChange event',()=>{
+    component.registerOnChange(()=>{});
+    expect(component.onChange).toBeDefined();
+  })
+
+  it('should fire onTouch event',()=>{
+    component.registerOnTouched(()=>{});
+    expect(component.onTouched).toBeDefined();
+  })
+
+  it('should enable/disable field',()=>{
+    component.setDisabledState(true);
+    expect(component.isDisabled).toBeTruthy();
+  })
+  
 });

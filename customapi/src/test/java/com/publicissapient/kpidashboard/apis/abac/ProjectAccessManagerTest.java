@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.abac;
 
 import static org.junit.Assert.assertFalse;
@@ -116,6 +135,7 @@ public class ProjectAccessManagerTest {
 		userInfo.setUsername("user");
 		userInfo.setId(new ObjectId("61e4f7852747353d4405c762"));
 		userInfo.setAuthorities(Lists.newArrayList(Constant.ROLE_VIEWER));
+		userInfo.setEmailAddress("user@gmail.com");
 		userInfo.setProjectsAccess(Lists.newArrayList());
 		Map<String, String> notificationSubjects = new HashMap<String, String>();
 		notificationSubjects.put("Subject", "subject");
@@ -138,7 +158,6 @@ public class ProjectAccessManagerTest {
 		when(customApiConfig.getNotificationSubject()).thenReturn(notificationSubjects);
 		when(commonService.getApiHost()).thenReturn("serverPath");
 		when(rolesRepository.findByRoleName(Constant.ROLE_PROJECT_ADMIN)).thenReturn(roleDataObj());
-		when(authenticationRepository.findByUsername(userInfo.getUsername())).thenReturn(authentication);
 		projectAccessManager.createAccessRequest(accessRequestObj(Constant.ROLE_PROJECT_ADMIN,
 				Constant.ACCESS_REQUEST_STATUS_PENDING, "hierarchyLevel3Id"), accessRequestListener);
 		assertNotNull(accessRequestObj(Constant.ROLE_PROJECT_ADMIN, Constant.ACCESS_REQUEST_STATUS_PENDING,
@@ -443,6 +462,7 @@ public class ProjectAccessManagerTest {
 		UserInfo userInfo = new UserInfo();
 		userInfo.setUsername("user");
 		userInfo.setId(new ObjectId("61e4f7852747353d4405c762"));
+		userInfo.setEmailAddress("user@gmail.com");
 		userInfo.setAuthorities(Lists.newArrayList(Constant.ROLE_VIEWER));
 		userInfo.setProjectsAccess(Lists.newArrayList());
 		AccessItem item = new AccessItem();
@@ -468,7 +488,6 @@ public class ProjectAccessManagerTest {
 		when(customApiConfig.getNotificationSubject()).thenReturn(notificationSubjects);
 		when(commonService.getApiHost()).thenReturn("serverPath");
 		when(rolesRepository.findByRoleName(Constant.ROLE_PROJECT_ADMIN)).thenReturn(roleDataObj());
-		when(authenticationRepository.findByUsername(userInfo.getUsername())).thenReturn(authentication);
 		projectAccessManager.createAccessRequest(
 				accessRequestObj(Constant.ROLE_PROJECT_ADMIN, Constant.ACCESS_REQUEST_STATUS_PENDING, "Project"),
 				accessRequestListener);

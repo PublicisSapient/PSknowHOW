@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
@@ -230,13 +230,7 @@ public class SonarTechDebtKanbanServiceImpl
 		return getSonarHistoryForAllProjects(leafNodeList, getKanbanCurrentDateToFetchFromDb(startDate));
 	}
 
-	@Override
-	public Map<String, Object> getSonarJobWiseKpiData(List<Node> pList, Map<String, Node> tempMap,
-			KpiElement kpiElement) {
-		return new HashMap<>();
-	}
-
-	private Long getTechDebtValue(Object sqlIndex) {
+	public Long getTechDebtValue(Object sqlIndex) {
 		Long techDebtValue = -1l;
 		if (sqlIndex != null) {
 			if (sqlIndex instanceof Double) {

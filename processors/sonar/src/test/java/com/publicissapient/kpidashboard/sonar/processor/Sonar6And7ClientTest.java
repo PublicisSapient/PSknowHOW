@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.sonar.processor;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
@@ -33,6 +35,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
@@ -42,6 +45,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -109,13 +113,13 @@ public class Sonar6And7ClientTest {
 		SONAR_SERVER.setUsername(USER_NAME);
 		SONAR_SERVER.setPassword(PASSWORD);
 		List<SonarProcessorItem> projects = sonar6And7Client.getSonarProjectList(SONAR_SERVER);
-		Assert.assertThat("Projects count: ", projects.size(), is(2));
-		Assert.assertThat("First Project name: ", projects.get(0).getProjectName(),
+		assertThat("Projects count: ", projects.size(), is(2));
+		assertThat("First Project name: ", projects.get(0).getProjectName(),
 				is("testPackage.sonar:TestProject"));
-		Assert.assertThat("Second Project name: ", projects.get(1).getProjectName(),
+		assertThat("Second Project name: ", projects.get(1).getProjectName(),
 				is("testPackage.sonar:AnotherTestProject"));
-		Assert.assertThat("First Project id: ", projects.get(0).getProjectId(), is("AVu3b-MAphY78UZXuYHp"));
-		Assert.assertThat("Second Project id: ", projects.get(1).getProjectId(), is("BVx3b-MAphY78UZXuYHp"));
+		assertThat("First Project id: ", projects.get(0).getProjectId(), is("AVu3b-MAphY78UZXuYHp"));
+		assertThat("Second Project id: ", projects.get(1).getProjectId(), is("BVx3b-MAphY78UZXuYHp"));
 	}
 
 	@Test
@@ -168,17 +172,17 @@ public class Sonar6And7ClientTest {
 				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 		SonarDetails sonarDetail = sonar6And7Client.getLatestSonarDetails(getProject(),
 				new HttpEntity<>(createHeaders(SONAR_SERVER.getUsername(), SONAR_SERVER.getPassword())), METRICS);
-		Assert.assertThat("Sonar metrics: ", sonarDetail.getMetrics().size(), is(19));
-		Assert.assertThat("Type: ", sonarDetail.getType(), is(SonarAnalysisType.STATIC_ANALYSIS));
-		Assert.assertThat("Sonar project name: ", sonarDetail.getName(), is("testPackage.sonar:TestProject"));
-		Assert.assertThat("Sonar version: ", sonarDetail.getVersion(), is("2.0.0"));
+		assertThat("Sonar metrics: ", sonarDetail.getMetrics().size(), is(19));
+		assertThat("Type: ", sonarDetail.getType(), is(SonarAnalysisType.STATIC_ANALYSIS));
+		assertThat("Sonar project name: ", sonarDetail.getName(), is("testPackage.sonar:TestProject"));
+		assertThat("Sonar version: ", sonarDetail.getVersion(), is("2.0.0"));
 	}
 
 	private String getJson(String fileName) throws IOException {
 		String inputData = null;
 		InputStream inputStream = Sonar6And7ClientTest.class.getResourceAsStream(fileName);
 		try {
-			inputData = IOUtils.toString(inputStream);
+			inputData = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 		} catch (IOException ex) {
 			inputData = "";
 		} finally {

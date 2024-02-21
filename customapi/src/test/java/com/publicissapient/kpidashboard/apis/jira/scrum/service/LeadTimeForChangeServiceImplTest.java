@@ -18,9 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -61,7 +61,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -147,7 +146,7 @@ public class LeadTimeForChangeServiceImplTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-		when(configHelperService.getFieldMapping(projectConfig.getId())).thenReturn(fieldMapping);
+//		when(configHelperService.getFieldMapping(projectConfig.getId())).thenReturn(fieldMapping);
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put("LEAD_TIME_FOR_CHANGE", "sum");
 
@@ -194,7 +193,7 @@ public class LeadTimeForChangeServiceImplTest {
 		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
 		when(leadTimeForChangeService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(8);
+//		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(8);
 		try {
 			KpiElement kpiElement = leadTimeForChangeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -214,21 +213,21 @@ public class LeadTimeForChangeServiceImplTest {
 		fieldMapping.setLeadTimeConfigRepoTool(CommonConstant.REPO);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-		when(configHelperService.getFieldMapping(new ObjectId("6335363749794a18e8a4479b"))).thenReturn(fieldMapping);
+//		when(configHelperService.getFieldMapping(new ObjectId("6335363749794a18e8a4479b"))).thenReturn(fieldMapping);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(jiraIssueList);
-		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any(), any()))
-				.thenReturn(issueCustomHistoryList);
+//		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(jiraIssueList);
+//		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any(), any()))
+//				.thenReturn(issueCustomHistoryList);
 		List<String> issueIdList = jiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
 
-		when(mergeRequestRepository.findMergeRequestListBasedOnBasicProjectConfigId(
-				new ObjectId("6335363749794a18e8a4479b"), CommonUtils.convertTestFolderToPatternList(issueIdList),
-				"master")).thenReturn(mergeRequestsList);
+//		when(mergeRequestRepository.findMergeRequestListBasedOnBasicProjectConfigId(
+//				new ObjectId("6335363749794a18e8a4479b"), CommonUtils.convertTestFolderToPatternList(issueIdList),
+//				"master")).thenReturn(mergeRequestsList);
 		when(leadTimeForChangeService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(8);
+//		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(8);
 		try {
 			KpiElement kpiElement = leadTimeForChangeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

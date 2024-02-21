@@ -18,9 +18,14 @@
 
 package com.publicissapient.kpidashboard.sonar.util;
 
-import org.junit.Assert;
-import org.junit.Test;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@ExtendWith(SpringExtension.class)
 public class SonarDashboardUrlTest {
 
 	private static final String SLASH = "/";
@@ -32,12 +37,12 @@ public class SonarDashboardUrlTest {
 
 	@Test
 	public void testWithoutTrailingSlash() {
-		Assert.assertEquals(EXPECTED, new SonarDashboardUrl(INSTANCE_URL, PROJECT_ID).toString());
+		assertEquals(EXPECTED, new SonarDashboardUrl(INSTANCE_URL, PROJECT_ID).toString());
 	}
 
 	@Test
 	public void testWithTrailingSlash() {
-		Assert.assertEquals(EXPECTED, new SonarDashboardUrl(INSTANCE_URL + SLASH, PROJECT_ID).toString());
+		assertEquals(EXPECTED, new SonarDashboardUrl(INSTANCE_URL + SLASH, PROJECT_ID).toString());
 	}
 
 }
