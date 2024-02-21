@@ -65,7 +65,7 @@
                            [items]="trendLineValueList"
                            bindLabel="nodeName"
                            bindValue="nodeId"
-                           [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project') : (selectedTab?.toLowerCase() === 'release') ? handleMilestoneFilter('project') : onSelectedTrendValueChange()"
+                           [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project',true) : (selectedTab?.toLowerCase() === 'release') ? handleMilestoneFilter('project',true) : onSelectedTrendValueChange()"
                            class="trend-line-value p-pb-0">
                            <ng-template ng-option-tmp let-item="item" let-index="index">
                               {{item.nodeName}} 
@@ -75,7 +75,7 @@
                      </div>
                      <div *ngIf="selectedTab?.toLowerCase() === 'iteration'" class="form-check filter-box p-col-lg trend-line-container sprint-filter abc iteration-selected-sprint">
                      <ng-select  formControlName="selectedSprintValue" [dropdownPosition]="'bottom'"
-                        (change)="handleIterationFilters('sprint')" placeholder="Sprint" [clearable]="false"
+                        (change)="handleIterationFilters('sprint',true)" placeholder="Sprint" [clearable]="false"
                         class="p-pb-0">
                         <ng-option *ngFor="let item of filteredAddFilters['sprint']" [value]="item.nodeId">
                            {{item.nodeName}}{{item.sprintState?.toLowerCase() === 'active'? ' (Active)' : ' (Closed)'}}
@@ -84,7 +84,7 @@
                   </div>
                   <div *ngIf="selectedTab?.toLowerCase() === 'release'" class="form-check filter-box p-col-lg trend-line-container sprint-filter abc iteration-selected-sprint">
                      <ng-select  formControlName="selectedRelease" [dropdownPosition]="'bottom'"
-                        (change)="handleMilestoneFilter('release')" placeholder="Release" [clearable]="false"
+                        (change)="handleMilestoneFilter('release',true)" placeholder="Release" [clearable]="false"
                         class="p-pb-0">
                         <ng-option *ngFor="let item of filteredAddFilters['release']" [value]="item.nodeId">
                            {{item.nodeName}}{{item.releaseState?.toLowerCase() === 'released'? ' (RELEASED)' : ' (UNRELEASED)'}}

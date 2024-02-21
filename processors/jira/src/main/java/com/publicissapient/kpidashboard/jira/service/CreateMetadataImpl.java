@@ -297,6 +297,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.EPICTIMECRITICALITY));
 		fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.EPICUSERBUSINESSVALUE));
 		fieldMapping.setEpicWsjf(customField.get(CommonConstant.EPICWSJF));
+		fieldMapping.setRootCauseIdentifier(JiraConstants.CUSTOM_FIELD);
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping.setJiraStoryPointsCustomField(
 				customField.getOrDefault(CommonConstant.JIRASTORYPOINTSCUSTOMFIELD, StringUtils.EMPTY));
@@ -513,6 +514,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.TIME_CRITICALITY));
 		fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.USER_BUSINESS_VALUE));
 		fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
+		fieldMapping.setRootCauseIdentifier(JiraConstants.CUSTOM_FIELD);
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping
 				.setJiraStoryPointsCustomField(customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));

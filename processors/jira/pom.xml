@@ -15,7 +15,7 @@
 	<groupId>com.publicissapient.kpidashboard</groupId>
 	<artifactId>jira-processor</artifactId>
 	<description>Jira processor fetches data from JIRA api</description>
-	<version>8.3.1-SNAPSHOT</version>
+	<version>8.3.4-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -357,6 +357,6 @@
 	</build>
 
 	<scm>
-		<tag>4.6.1</tag>
+		<tag>8.3.3</tag>
 	</scm>
 </project>

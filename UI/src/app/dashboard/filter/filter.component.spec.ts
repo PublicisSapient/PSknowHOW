@@ -836,7 +836,7 @@ const completeHierarchyData = {
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
     spyOn(sharedService, 'setNoSprints');
     spyOn(component, 'createFilterApplyData');
-    component.handleIterationFilters('project');
+    component.handleIterationFilters('project',true);
     expect(spy).toHaveBeenCalled();
   });
 
@@ -1042,6 +1042,7 @@ const completeHierarchyData = {
     spyOn(component,"sortAlphabetically");
     spyOn(sharedService,"setSelectedLevel");
     spyOn(sharedService,"setSelectedTrends");
+    spyOn(component,"setSelectedSprintOnServiceLayer");
     component.filterForm.get('selectedLevel').setValue("hierarchyLevelOne");
     component.filterForm.get('selectedTrendValue').setValue("AutoTest1_hierarchyLevelOne");
     spyOn(component,"compileGAData");
@@ -1060,6 +1061,7 @@ const completeHierarchyData = {
     spyOn(component,"sortAlphabetically");
     spyOn(sharedService,"setSelectedLevel");
     spyOn(sharedService,"setSelectedTrends");
+    spyOn(component,"setSelectedSprintOnServiceLayer");
     component.ngOnInit();
     component.filterForm?.get('selectedLevel')?.setValue("hierarchyLevelOne");
     component.filterForm?.get('selectedTrendValue')?.setValue("AutoTest1_hierarchyLevelOne");
@@ -1535,7 +1537,7 @@ const completeHierarchyData = {
     ]
     component.initializeFilterForm();
     component.filterForm?.get('selectedTrendValue').setValue('DOTC_63b51633f33fd2360e9e72bd')
-    component.handleMilestoneFilter('project');
+    component.handleMilestoneFilter('project',true);
     expect(spyFunct).toHaveBeenCalled();
   })
 
@@ -1796,5 +1798,62 @@ const completeHierarchyData = {
     const value1 = component.parentIDClean("Demo_port");
     expect(value1).toBe("Demo Portfolio");
   })
+
+  it('should set sprint list in service layer',()=>{
+    component.selectedFilterArray = [{
+      nodeId : 'a123',
+      additionalFilters : [{
+        nodeiId : 'sp123'
+      }]
+    }]
+    const spyObj = spyOn(sharedService,'setAddtionalFilterBackup');
+    component.setSelectedSprintOnServiceLayer();
+    expect(spyObj).toHaveBeenCalled();
+  })
+
+  it('should get backup sprints',()=>{
+    component.selectedTab = 'speed';
+    sharedService.setAddtionalFilterBackup({
+      sprint : {
+        'p1' : [
+          {nodeId : 'sp1',}
+        ]
+      }
+    })
+    spyOn(sharedService,'getSelectedTrends').and.returnValue([{nodeId : 'p1'}])
+    const rValue = component.getSprintsWhichWasAlreadySelected();
+    expect(rValue).not.toBeNull();
+  })
+
+  it('should set not blank kpi filter for release and sprint when changing',()=>{
+  component.selectedTab = 'iteration';
+  const mockObj ={
+    kpiFilters : {
+      iteration : {},
+      release : {},
+    }
+  }
+  spyOn(sharedService,'getAddtionalFilterBackup').and.returnValue(mockObj);
+  spyOn(sharedService, 'setAddtionalFilterBackup')
+  const spyobj =  spyOn(sharedService, 'setKpiSubFilterObj')
+    component.refreshKpiLevelFiltersBackup('sprint',true);
+    expect(spyobj).toHaveBeenCalled();
+  })
+
+  it('should set blank kpi filter for backlog component',()=>{
+    component.selectedTab = 'backlog';
+    const mockObj ={
+      kpiFilters : {
+        backlog : {}
+      }
+    }
+    spyOn(sharedService,'getAddtionalFilterBackup').and.returnValue(mockObj);
+    const spyobj = spyOn(sharedService, 'setAddtionalFilterBackup')
+    spyOn(sharedService, 'setKpiSubFilterObj')
+
+      component.refreshKpiLevelFiltersBackup('project',true);
+      expect(spyobj).toHaveBeenCalled();
+    })
+  
 
 });

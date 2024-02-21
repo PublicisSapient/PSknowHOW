@@ -92,6 +92,7 @@ export class SharedService {
   globalConfigData : any
   visibleSideBarSubject = new BehaviorSubject(false);
   visibleSideBarObs = this.visibleSideBarSubject.asObservable();
+  addtionalFilterBackup = {} ;
 
 
   private currentIssue = new BehaviorSubject({});
@@ -384,6 +385,14 @@ export class SharedService {
 
   getGlobalConfigData(){
     return this.globalConfigData;
+  }
+
+  setAddtionalFilterBackup(data){
+    this.addtionalFilterBackup = data;
+  }
+
+  getAddtionalFilterBackup(){
+    return this.addtionalFilterBackup;
   }
 }
 

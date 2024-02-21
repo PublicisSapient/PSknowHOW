@@ -138,7 +138,8 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 				.anyMatch(fields.getSystemWorkItemType()::equalsIgnoreCase)) {
 			try {
 				String rootCauseFieldFromFieldMapping = fieldMapping.getRootCause();
-				if (fieldMapping.getRootCauseIdentifier().trim()
+				if (StringUtils.isNotEmpty(
+						fieldMapping.getRootCauseIdentifier()) && fieldMapping.getRootCauseIdentifier().trim()
 						.equalsIgnoreCase(AzureConstants.CUSTOM_FIELD) && fieldsMap.containsKey(
 						rootCauseFieldFromFieldMapping) && fieldsMap.get(rootCauseFieldFromFieldMapping) != null) {
 					// Introduce enum to standarize the values of RCA
@@ -147,7 +148,9 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 						rcaCause = AzureConstants.CODE_ISSUE;
 					}
 					rcaList.add(rcaCause);
-				} else if (fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(AzureConstants.LABELS)) {
+				} else if (StringUtils.isNotEmpty(
+						fieldMapping.getRootCauseIdentifier()) && fieldMapping.getRootCauseIdentifier().trim()
+						.equalsIgnoreCase(AzureConstants.LABELS)) {
 					String[] labelArray = fields.getSystemTags().split(";");
 					List<String> commonLabel = Arrays.asList(labelArray).stream()
 							.filter(x -> fieldMapping.getRootCauseValues().contains(x)).collect(Collectors.toList());

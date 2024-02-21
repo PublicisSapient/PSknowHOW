@@ -18,7 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.repotools.service;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,7 +28,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,6 +93,9 @@ public class RepoToolsConfigServiceImplTest {
     @Mock
     private AesEncryptionService aesEncryptionService;
 
+    @Mock
+    private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+
     RepoToolsClient repoToolsClient = Mockito.mock(RepoToolsClient.class);
 
     @Before
@@ -135,7 +142,7 @@ public class RepoToolsConfigServiceImplTest {
         when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
         when(restAPIUtils.decryptPassword(anyString())).thenReturn("decryptedApiKey");
         repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, Collections.singletonList("branchName"));
-        verify(repoToolsProviderRepository, Mockito.times(1)).findByToolName("github");
+        verify(repoToolsProviderRepository, times(1)).findByToolName("github");
 
     }
 
@@ -151,7 +158,21 @@ public class RepoToolsConfigServiceImplTest {
         when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
                 .thenReturn(projectBasicConfig);
         repoToolsConfigService.triggerScanRepoToolProject(Arrays.asList("5fb364612064a31c9ccd517a"));
-        verify(processorRepository, Mockito.times(1)).findByProcessorName("RepoTool");
+        verify(processorRepository, times(1)).findByProcessorName("RepoTool");
+    }
+
+    @Test
+    public void testSaveRepoToolProjectTraceLog() {
+        RepoToolsStatusResponse repoToolsStatusResponse = new RepoToolsStatusResponse();
+        repoToolsStatusResponse.setProject("example_project_123");
+        repoToolsStatusResponse.setStatus("SUCCESS");
+        ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setLastEnableAssigneeToggleState(false);
+        when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(anyString(),
+                anyString())).thenReturn(Optional.of(processorExecutionTraceLog));
+        repoToolsConfigService.saveRepoToolProjectTraceLog(repoToolsStatusResponse);
+
+        verify(processorExecutionTraceLogService, times(1)).save(any(ProcessorExecutionTraceLog.class));
     }
 
 }

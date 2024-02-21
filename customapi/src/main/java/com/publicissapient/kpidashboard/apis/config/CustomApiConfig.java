@@ -234,6 +234,16 @@ public class CustomApiConfig {// NOPMD
 	private List<String> flowEfficiencyXAxisRange;
 	private List<String> leadTimeRange;
 	private List<String> cycleTimeRange;
+	@Value("${x_api_key}")
+	private String xApiKey;
+
+	public String getxApiKey() {
+		return xApiKey;
+	}
+
+	public void setxApiKey(String xApiKey) {
+		this.xApiKey = xApiKey;
+	}
 
 	public List<String> getCycleTimeRange() {
 		return cycleTimeRange;
