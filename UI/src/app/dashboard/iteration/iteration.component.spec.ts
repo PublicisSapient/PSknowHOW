@@ -36,6 +36,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { DashboardComponent } from '../dashboard.component';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { MessageService } from 'primeng/api';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 describe('IterationComponent', () => {
     let component: IterationComponent;
@@ -45,6 +46,7 @@ describe('IterationComponent', () => {
     let helperService: HelperService;
     let excelService: ExcelService;
     let messageService:MessageService;
+    let featureFlagService: FeatureFlagsService;
     let httpMock;
     let reqJira;
     const baseUrl = environment.baseUrl;
@@ -2032,7 +2034,7 @@ describe('IterationComponent', () => {
                 { provide: APP_CONFIG, useValue: AppConfig },
                 HttpService,
                 { provide: SharedService, useValue: service }
-                , ExcelService, DatePipe,MessageService
+                , ExcelService, DatePipe,MessageService, FeatureFlagsService
 
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -2043,7 +2045,7 @@ describe('IterationComponent', () => {
         httpService = TestBed.inject(HttpService);
         helperService = TestBed.inject(HelperService);
         excelService = TestBed.inject(ExcelService);
-
+        featureFlagService = TestBed.inject(FeatureFlagsService)
         spyOn(helperService, 'colorAccToMaturity').and.returnValue(('#44739f'));
         httpMock = TestBed.inject(HttpTestingController);
         fixture = TestBed.createComponent(IterationComponent);
@@ -3637,9 +3639,5 @@ describe('IterationComponent', () => {
         tick();
         expect(spy).toHaveBeenCalled();
     }));
-      
-
-    });
-
     
-
+});

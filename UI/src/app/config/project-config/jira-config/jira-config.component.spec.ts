@@ -1944,4 +1944,69 @@ describe('JiraConfigComponent', () => {
     component.projectKeyClickHandler('ENGINEERING.KPIDASHBOARD.PROCESSORS');
     expect(spy).toHaveBeenCalled();
   })
+
+  it('should filter teams based on the query', () => {
+    // Arrange
+    const event = { query: 'team' };
+    const teamData = [
+      { name: 'Team 1' },
+      { name: 'Team 2' },
+    ];
+    component.teamData = teamData;
+
+    // Act
+    component.filterTeams(event);
+
+    // Assert
+    expect(component.filteredTeam).toEqual([
+      { name: 'Team 1' },
+      { name: 'Team 2' },
+    ]);
+  });
+
+  it('should handle empty teamData', () => {
+    // Arrange
+    const event = { query: 'team' };
+    component.teamData = [];
+
+    // Act
+    component.filterTeams(event);
+
+    // Assert
+    expect(component.filteredTeam).toEqual([]);
+  });
+
+  it('should handle empty query', () => {
+    // Arrange
+    const event = { query: '' };
+    const teamData = [
+      { name: 'Team 1' },
+      { name: 'Team 2' },
+      { name: 'Another Team' },
+    ];
+    component.teamData = teamData;
+
+    // Act
+    component.filterTeams(event);
+
+    // Assert
+    expect(component.filteredTeam).toEqual(teamData);
+  });
+
+  it('should handle no matching teams', () => {
+    // Arrange
+    const event = { query: 'team' };
+    const teamData = [
+      { name: 'Project 1' },
+      { name: 'Project 2' },
+      { name: 'Another Project' },
+    ];
+    component.teamData = teamData;
+
+    // Act
+    component.filterTeams(event);
+
+    // Assert
+    expect(component.filteredTeam).toEqual([]);
+  });
 });
