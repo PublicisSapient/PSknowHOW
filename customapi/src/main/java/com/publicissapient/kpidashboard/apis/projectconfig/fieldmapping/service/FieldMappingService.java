@@ -64,4 +64,7 @@ public interface FieldMappingService {
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId) throws NoSuchFieldException, IllegalAccessException;
+
+
+	void updateSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId, List<FieldMappingResponse> fieldMappingResponseList);
 }

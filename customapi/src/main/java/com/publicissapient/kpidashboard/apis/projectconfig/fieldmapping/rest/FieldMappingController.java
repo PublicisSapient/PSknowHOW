@@ -182,4 +182,30 @@ public class FieldMappingController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
+	@RequestMapping(value = "/tools/saveMapping/{projectToolConfigId}/{kpiId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	public ResponseEntity<ServiceResponse> saveKpiWiseSpecificFieldmAPPING(@PathVariable String projectToolConfigId,
+																		   @PathVariable String kpiId,
+															@RequestBody List<FieldMappingResponse> fieldMappingResponse) {
+
+		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
+
+		List<ProjectToolConfig> projectToolConfigs = (List<ProjectToolConfig>) configHelperService
+				.loadAllProjectToolConfig();
+		String finalProjectToolConfigId = projectToolConfigId;
+		Optional<ProjectToolConfig> projectToolConfigOptional = projectToolConfigs.stream()
+				.filter(t -> t.getId().toString().equals(finalProjectToolConfigId)).findFirst();
+		ProjectToolConfig projectToolConfig = projectToolConfigOptional.orElse(null);
+
+		ProjectBasicConfig projectBasicConfig = fieldMappingService
+				.getBasicProjectConfigById(projectToolConfig.getBasicProjectConfigId());
+		policy.checkPermission(projectBasicConfig, "UPDATE_PROJECT");
+
+		KPICode kpi = KPICode.getKPI(kpiId);
+		if (!Objects.equals(kpi.getKpiId(), KPICode.INVALID.getKpiId())) {
+			fieldMappingService.updateSpecificFieldsAndHistory(kpi,projectToolConfigId,fieldMappingResponse);
+		}
+
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true,"",""));
+	}
+
 }

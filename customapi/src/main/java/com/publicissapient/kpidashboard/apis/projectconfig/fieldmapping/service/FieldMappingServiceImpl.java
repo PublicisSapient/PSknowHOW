@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +31,10 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -104,6 +109,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+
+	@Autowired
+	private MongoTemplate operations;
 
 	@Override
 	public FieldMapping getFieldMapping(String projectToolConfigId) {
@@ -226,6 +234,25 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			}
 		}
 		return fieldMappingResponses;
+	}
+
+	@Override
+	public void updateSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId, List<FieldMappingResponse> fieldMappingResponseList){
+
+			Query query = new Query(Criteria.where("projectToolConfigId").is(new ObjectId(projectToolConfigId)));
+			Update update = new Update();
+		final String loggedInUser = "shivani";///authenticationService.getLoggedInUser();
+
+			fieldMappingResponseList.forEach(fieldMappingResponse -> {
+				update.set(fieldMappingResponse.getFieldName(), fieldMappingResponse.getOriginalValue());
+				ConfigurationHistoryChangeLog configurationHistoryChangeLog= new ConfigurationHistoryChangeLog();
+				configurationHistoryChangeLog.setChangedTo(fieldMappingResponse.getOriginalValue());
+				configurationHistoryChangeLog.setChangedFrom(fieldMappingResponse.getPreviousValue());
+				configurationHistoryChangeLog.setChangedBy(loggedInUser);
+				configurationHistoryChangeLog.setUpdatedOn(LocalDateTime.now());
+				update.addToSet("history"+fieldMappingResponse.getFieldName(),configurationHistoryChangeLog);
+			});
+			operations.updateFirst(query, update, "field_mapping");
 	}
 
 	private Object getFieldMappingField(FieldMapping fieldMapping, Class<?> fieldMapping1, String field)

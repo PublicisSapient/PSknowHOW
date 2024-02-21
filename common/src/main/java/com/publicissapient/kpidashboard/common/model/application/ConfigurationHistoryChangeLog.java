@@ -36,9 +36,9 @@ import lombok.Setter;
 public class ConfigurationHistoryChangeLog {
 
 	@JsonProperty("Changed From")
-	private String changedFrom;
+	private Object changedFrom;
 	@JsonProperty("Changed To")
-	private String changedTo;
+	private Object changedTo;
 	@JsonProperty("Changed By")
 	private String changedBy;
 	@JsonProperty("Changed At")

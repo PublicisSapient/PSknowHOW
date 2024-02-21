@@ -39,6 +39,7 @@ public class FieldMappingResponse {
 
 	String fieldName;
 	Object originalValue;
+	Object previousValue;
 	List<ConfigurationHistoryChangeLog> history;
 
 
