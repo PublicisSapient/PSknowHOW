@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -66,6 +65,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.ResolutionTimeValidation;
 import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
@@ -1901,21 +1901,26 @@ public class KPIExcelUtility {
 		}
 
 	}
+
 	public static void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
-									List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, JiraIssueCustomHistory jiraCustomHistory, List<String> status) {
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, JiraIssueCustomHistory jiraCustomHistory,
+			List<String> status) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
-			iterationKpiModalValue.setCreatedDate(DateUtil.dateTimeFormatter(jiraCustomHistory.getCreatedDate().toDate(),DateUtil.DISPLAY_DATE_FORMAT));
-			Optional<JiraHistoryChangeLog> sprint = jiraCustomHistory.getStatusUpdationLog().stream()
-					.filter(sprintDetails -> CollectionUtils.isNotEmpty(status) && status.contains(sprintDetails.getChangedTo()))
-					.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn)).findFirst();
-			if(sprint.isPresent()) {
-				iterationKpiModalValue.setDorDate(DateUtil.dateTimeFormatter(sprint.get().getUpdatedOn(), DateUtil.DISPLAY_DATE_FORMAT));
-			}
+		if (ObjectUtils.isNotEmpty(jiraCustomHistory.getCreatedDate()))
+			iterationKpiModalValue.setCreatedDate(DateUtil
+					.dateTimeFormatter(jiraCustomHistory.getCreatedDate().toDate(), DateUtil.DISPLAY_DATE_FORMAT));
+		Optional<JiraHistoryChangeLog> sprint = jiraCustomHistory.getStatusUpdationLog().stream().filter(
+				sprintDetails -> CollectionUtils.isNotEmpty(status) && status.contains(sprintDetails.getChangedTo()))
+				.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn)).findFirst();
+		if (sprint.isPresent()) {
+			iterationKpiModalValue
+					.setDorDate(DateUtil.dateTimeFormatter(sprint.get().getUpdatedOn(), DateUtil.DISPLAY_DATE_FORMAT));
+		}
 		iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
 		overAllmodalValues.add(iterationKpiModalValue);
 		modalValues.add(iterationKpiModalValue);
