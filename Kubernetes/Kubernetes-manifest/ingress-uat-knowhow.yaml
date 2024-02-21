@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: knowhow-ui
+  namespace: uat-knowhow
+  annotations:
+    appgw.ingress.kubernetes.io/appgw-ssl-certificate: wildcard-tools-publicos-sapient-com
+spec:
+  ingressClassName: azure-application-gateway
+  rules:
+    - host: stage-psknowhow.tools.publicis.sapient.com
+      http:
+        paths:
+        - path: /
+          backend:
+            service:
+              name: knowhow-ui
+              port:
+                number: 80
+          pathType: Exact
+
+    

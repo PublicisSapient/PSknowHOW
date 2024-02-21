@@ -27,7 +27,7 @@ spec:
       #   command: ['sh', '-c', "until nslookup knowhow-ui-knowhow.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for knowhow-ui; sleep 2; done"]
       containers:
       - name: knowhow-ui
-        image: speedtools.azurecr.io/knowhow-ui:10.0.0-SNAPSHOT
+        image: speedtools.azurecr.io/knowhow-ui:8.3.2-SNAPSHOT
         imagePullPolicy: Always
         ports:
         - containerPort: 80
@@ -58,11 +58,11 @@ spec:
           - name: ENVIRONMENT
             value: "prod"
           - name: CENTRAL_LOGIN_URL
-            value: "https://uat-authnauth.tools.publicis.sapient.com"
+            value: "https://stage-authnauth.tools.publicis.sapient.com"
           - name: MAP_URL
-            value: "https://preprod-assessmentplatform.tools.publicis.sapient.com"
+            value: "https://stage-assessmentplatform.tools.publicis.sapient.com"
           - name: RETROS_URL
-            value: "https://uat-retrospective.tools.publicis.sapient.com/"
+            value: "https://stage-retrospective.tools.publicis.sapient.com"
 ---
 apiVersion: v1
 kind: Service
