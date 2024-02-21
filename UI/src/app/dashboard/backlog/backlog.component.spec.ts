@@ -3247,7 +3247,6 @@ describe('BacklogComponent', () => {
     
         // check if the kpiSelectedFilterObj was updated correctly
         expect(component.kpiSelectedFilterObj).toEqual({
-          action: 'update',
           1: { filter1: 'value1', filter2: 'value2' }
         });
         expect(component.getChartDataForCard).toHaveBeenCalledWith(1, -1);
