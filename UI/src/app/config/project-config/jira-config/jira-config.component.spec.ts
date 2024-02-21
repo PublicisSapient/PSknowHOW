@@ -2009,4 +2009,60 @@ describe('JiraConfigComponent', () => {
     // Assert
     expect(component.filteredTeam).toEqual([]);
   });
+  
+  it('should handle error when fetching project key list', fakeAsync(() => {
+    // Arrange
+    const version = '1.0';
+    component.selectedConnection = {id: '1'};
+    component.toolForm = new UntypedFormGroup({
+      organizationKey : new UntypedFormControl('orgKey')
+    })
+    component.projectKeyList = [];
+    component.branchList = [];
+    const response = {
+      success: false,
+      message: 'Error'
+    };
+    spyOn(component, 'showLoadingOnFormElement');
+    spyOn(component, 'hideLoadingOnFormElement');
+    const spy = spyOn(messageService, 'add');
+    spyOn(httpService, 'getProjectKeyList').and.returnValue(of(response));
+  
+    // Act
+    component.apiVersionHandler(version);
+    tick();
+  
+    // Assert
+    // expect(component.http.getProjectKeyList).toHaveBeenCalledWith(selectedConnectionId, organizationKey);
+    expect(component.projectKeyList).toEqual([]);
+    expect(component.branchList).toEqual([]);
+    expect(spy).toHaveBeenCalledWith({ severity: 'error', summary: response.message });
+    expect(component.hideLoadingOnFormElement).toHaveBeenCalledWith('projectKey');
+  }));
+  
+  it('should handle exception and show error message', fakeAsync(() => {
+    // Arrange
+    const version = '1.0';
+    component.selectedConnection = {id: '1'};
+    component.toolForm = new UntypedFormGroup({
+      organizationKey : new UntypedFormControl('orgKey')
+    })
+    component.projectKeyList = [];
+    component.branchList = [];
+    
+    spyOn(component, 'showLoadingOnFormElement');
+    const spy = spyOn(messageService, 'add');
+    const errorMessage = 'Something went wrong, Please try again';
+    spyOn(httpService, 'getProjectKeyList').and.throwError(errorMessage);
+    
+  
+    // Act
+    component.apiVersionHandler(version);
+    tick();
+  
+    // Assert
+    expect(component.projectKeyList).toEqual([]);
+    expect(component.branchList).toEqual([]);
+    expect(spy).toHaveBeenCalledWith({ severity: 'error', summary: errorMessage });
+  }));
 });
