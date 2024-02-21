@@ -60,6 +60,22 @@ spec:
                   key: uatknhdbpassword
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "0.5"
+        ports:
+          - containerPort: 50017
+        readinessProbe:
+          tcpSocket:
+            port: 50017
+          initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
+          periodSeconds: 5          # Check every 5 seconds
+        livenessProbe:
+          tcpSocket:
+            port: 50017
+          initialDelaySeconds: 15
+          periodSeconds: 20
         envFrom:
         - configMapRef:
             name: knowhow-config
@@ -74,23 +90,6 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: "uat-secretproviderclass"
-              
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "0.5"
-        ports:
-        - containerPort: 50017
-        readinessProbe:
-          tcpSocket:
-            port: 50017
-          initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-          periodSeconds: 5          # Check every 5 seconds
-        livenessProbe:
-          tcpSocket:
-            port: 50017
-          initialDelaySeconds: 15
-          periodSeconds: 20
 
 ---
 apiVersion: v1
