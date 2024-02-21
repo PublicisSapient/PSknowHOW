@@ -1200,12 +1200,9 @@ export class FilterComponent implements OnInit, OnDestroy {
   /*'type' argument: to understand onload or onchange
     1: onload
     2: onchange */
-  handleIterationFilters(level,isManually?) {
-    /** Refreshing kpiFilter backup when project/sprint is changing */
-    if(isManually){
-     this.service.setAddtionalFilterBackup({...this.service.getAddtionalFilterBackup(), kpiFilters: {}});
-     this.service.setKpiSubFilterObj({})
-    }
+  handleIterationFilters(level, isManually?) {
+    
+    this.refreshKpiLevelFiltersBackup(level, isManually) // Refreshing KPi level filters backup
 
     this.lastSyncData = {};
     this.subject.next(true);
@@ -1498,13 +1495,10 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
-  handleMilestoneFilter(level,isManually?) {
-   /** Refreshing kpiFilter backup when project/sprint is changing */
-   if(isManually){
-    this.service.setAddtionalFilterBackup({...this.service.getAddtionalFilterBackup(), kpiFilters: {}});
-    this.service.setKpiSubFilterObj({})
-   }
+
+  handleMilestoneFilter(level, isManually?) {
+
+    this.refreshKpiLevelFiltersBackup(level, isManually) // Refreshing KPi level filters backup
 
     const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
     this.filteredAddFilters['release'] = []
@@ -1765,6 +1759,21 @@ export class FilterComponent implements OnInit, OnDestroy {
       })
     }
     return sprintsWhichWasAlreadySelected;
+  }
+
+  /************************
+   * Refresh KPI Level Filters when project is changing
+   */
+  refreshKpiLevelFiltersBackup(level, isManually) {
+    if (isManually) {
+      if (level === 'release' || level === 'sprint') {
+        const updatedFilterBackup = { ...this.service.getAddtionalFilterBackup()['kpiFilters'][this.selectedTab.toLowerCase()]= {}}
+        this.service.setKpiSubFilterObj(updatedFilterBackup)
+      } else {
+        this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), kpiFilters: {} });
+        this.service.setKpiSubFilterObj({})
+      }
+    }
   }
 
 }
