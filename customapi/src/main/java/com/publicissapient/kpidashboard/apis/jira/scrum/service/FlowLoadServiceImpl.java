@@ -37,17 +37,15 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogKPIService;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -59,7 +57,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
+public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Object>> {
 	private static final String ISSUE_HISTORY = "Issue History";
 
 	@Autowired
@@ -75,14 +73,9 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 	}
 
 	@Override
-	public Double calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
-	}
-
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 
 		if (leafNode != null) {
 			log.info("Flow Load kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
@@ -105,19 +98,15 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
+			throws ApplicationException {
 		List<DataCount> trendValueList = new ArrayList<>();
-		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
-			Filters filters = Filters.getFilter(k);
-			if (Filters.PROJECT == filters) {
-				projectWiseLeafNodeValue(v, trendValueList, kpiElement, kpiRequest);
-			}
-		});
+		projectWiseLeafNodeValue(projectNode, trendValueList, kpiElement, kpiRequest);
+
 		return kpiElement;
 	}
 
-	private void projectWiseLeafNodeValue(List<Node> leafNode, List<DataCount> trendValueList, KpiElement kpiElement,
+	private void projectWiseLeafNodeValue(Node leafNode, List<DataCount> trendValueList, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 
 		int monthToSubtract = customApiConfig.getFlowKpiMonthCount();
@@ -133,44 +122,42 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		List<JiraIssueCustomHistory> jiraIssueCustomHistories = (List<JiraIssueCustomHistory>) resultMap
 				.get(ISSUE_HISTORY);
 
-		leafNode.forEach(node -> {
-			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate = new HashMap<>();
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(node.getProjectFilter().getBasicProjectConfigId());
-			// Iterating Over All issues history's statusUpdationLog and saving start and
-			// end date for each status
-			jiraIssueCustomHistories.forEach(jiraIssueCustomHistory -> createDateRangeForStatuses(endDate, startDate,
-					statusesWithStartAndEndDate, jiraIssueCustomHistory, fieldMapping));
+		Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate = new HashMap<>();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+		// Iterating Over All issues history's statusUpdationLog and saving start and
+		// end date for each status
+		jiraIssueCustomHistories.forEach(jiraIssueCustomHistory -> createDateRangeForStatuses(endDate, startDate,
+				statusesWithStartAndEndDate, jiraIssueCustomHistory, fieldMapping));
 
-			Map<String, Map<String, Integer>> dateWithStatusCount = new HashMap<>();
-			LocalDate tempStartDate = startDate;
-			while (tempStartDate.compareTo(endDate) <= 0) {
-				dateWithStatusCount.put(tempStartDate.toString(), new HashMap<>());
-				tempStartDate = tempStartDate.plusDays(1);
-			}
-			long totalDays = ChronoUnit.DAYS.between(startDate, endDate) + 2;
-			Map<String, Map<String, Integer>> finalDateWithStatusCount = dateWithStatusCount;
-			// Marking startDate index with plus 1 and end date next index with -1
-			// StartDate and EndDate index are calculated with respect to startDate
-			// Now compute the prefix sum, Since the beginning is marked with one, all the
-			// values after beginning will be incremented by one. Now as increment is only
-			// targeted only till the end of the range, the decrement on index endDate+1
-			// prevents that for every range present after endDate.
-			calculateStatusCountForEachDay(startDate, statusesWithStartAndEndDate, totalDays, finalDateWithStatusCount);
-			dateWithStatusCount = dateWithStatusCount.entrySet().stream().sorted(Map.Entry.comparingByKey())
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
-							LinkedHashMap::new));
+		Map<String, Map<String, Integer>> dateWithStatusCount = new HashMap<>();
+		LocalDate tempStartDate = startDate;
+		while (tempStartDate.compareTo(endDate) <= 0) {
+			dateWithStatusCount.put(tempStartDate.toString(), new HashMap<>());
+			tempStartDate = tempStartDate.plusDays(1);
+		}
+		long totalDays = ChronoUnit.DAYS.between(startDate, endDate) + 2;
+		Map<String, Map<String, Integer>> finalDateWithStatusCount = dateWithStatusCount;
+		// Marking startDate index with plus 1 and end date next index with -1
+		// StartDate and EndDate index are calculated with respect to startDate
+		// Now compute the prefix sum, Since the beginning is marked with one, all the
+		// values after beginning will be incremented by one. Now as increment is only
+		// targeted only till the end of the range, the decrement on index endDate+1
+		// prevents that for every range present after endDate.
+		calculateStatusCountForEachDay(startDate, statusesWithStartAndEndDate, totalDays, finalDateWithStatusCount);
+		dateWithStatusCount = dateWithStatusCount.entrySet().stream().sorted(Map.Entry.comparingByKey())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
+						LinkedHashMap::new));
 
-			if (MapUtils.isNotEmpty(dateWithStatusCount)) {
-				populateTrendValueList(trendValueList, dateWithStatusCount);
-				populateExcelDataObject(requestTrackerId, excelData, dateWithStatusCount);
-				log.debug("FlowLoadServiceImpl -> request id : {} dateWithStatusCount : {}", requestTrackerId,
-						dateWithStatusCount);
-			}
-			kpiElement.setExcelData(excelData);
-			kpiElement.setExcelColumns(KPIExcelColumn.FLOW_LOAD.getColumns());
-			kpiElement.setTrendValueList(trendValueList);
-		});
+		if (MapUtils.isNotEmpty(dateWithStatusCount)) {
+			populateTrendValueList(trendValueList, dateWithStatusCount);
+			populateExcelDataObject(requestTrackerId, excelData, dateWithStatusCount);
+			log.debug("FlowLoadServiceImpl -> request id : {} dateWithStatusCount : {}", requestTrackerId,
+					dateWithStatusCount);
+		}
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(KPIExcelColumn.FLOW_LOAD.getColumns());
+		kpiElement.setTrendValueList(trendValueList);
 
 	}
 

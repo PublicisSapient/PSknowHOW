@@ -1,8 +1,26 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,14 +48,13 @@ import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -56,7 +74,7 @@ public class DefectReopenRateServiceImplTest {
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraBacklogServiceR jiraService;
 	@Mock
 	private KpiHelperService kpiHelperService;
 	@Mock
@@ -107,7 +125,7 @@ public class DefectReopenRateServiceImplTest {
 		try {
 
 			KpiElement kpiElement = defectReopenRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			assertNotNull(kpiElement);
 			assertNotNull(kpiElement.getTrendValueList());
 			Object value = ((DataCount) kpiElement.getTrendValueList()).getValue();
@@ -119,11 +137,6 @@ public class DefectReopenRateServiceImplTest {
 		} catch (ApplicationException applicationException) {
 
 		}
-	}
-
-	@Test
-	public void testCalculateKPIMetrics() {
-		assertNull(defectReopenRateService.calculateKPIMetrics(null));
 	}
 
 	@Test

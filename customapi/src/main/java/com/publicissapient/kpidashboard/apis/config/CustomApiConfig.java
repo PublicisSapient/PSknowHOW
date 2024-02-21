@@ -44,8 +44,6 @@ public class CustomApiConfig {// NOPMD
 	private String aesEncryptionKey;
 	// Number of sprints available on trend charts
 	private int sprintCountForFilters;
-	// Toggle captcha property
-	private boolean captchaRequired;
 	// default image name
 	private String applicationDefaultLogo;
 
@@ -144,6 +142,8 @@ public class CustomApiConfig {// NOPMD
 	@Value("${kafka.mailtopic}")
 	private String kafkaMailTopic;
 	private Map<String, String> notificationSubject;
+	@Value("${centralAuth.switch}")
+	private boolean centralAuthSwitch;
 	@Value("${notification.switch}")
 	private boolean notificationSwitch;
 	@Value("${analytics.switch}")
@@ -202,6 +202,9 @@ public class CustomApiConfig {// NOPMD
 	@Value("${flag.mailWithoutKafka}")
 	private boolean mailWithoutKafka;
 
+	@Value("${sendGridEnabled}")
+	private boolean sendGridEnabled;
+
 	@Value(("${backlog.sprint.count}"))
 	private int sprintCountForBackLogStrength;
 
@@ -234,6 +237,25 @@ public class CustomApiConfig {// NOPMD
 	private List<String> flowEfficiencyXAxisRange;
 	private List<String> leadTimeRange;
 	private List<String> cycleTimeRange;
+	private List<Character> aesKeyValue;
+
+	public List<Character> getAesKeyValue() {
+		return aesKeyValue;
+	}
+
+	public void setAesKeyValue(List<Character> aesKeyValue) {
+		this.aesKeyValue = aesKeyValue;
+	}
+	@Value("${x_api_key}")
+	private String xApiKey;
+
+	public String getxApiKey() {
+		return xApiKey;
+	}
+
+	public void setxApiKey(String xApiKey) {
+		this.xApiKey = xApiKey;
+	}
 
 	public List<String> getCycleTimeRange() {
 		return cycleTimeRange;
@@ -511,25 +533,6 @@ public class CustomApiConfig {// NOPMD
 	 */
 	public void setSprintCountForFilters(int sprintCountForFilters) {
 		this.sprintCountForFilters = sprintCountForFilters;
-	}
-
-	/**
-	 * get captchaRequired
-	 *
-	 * @return the captchaRequired
-	 */
-	public boolean isCaptchaRequired() {
-		return captchaRequired;
-	}
-
-	/**
-	 * set captchaRequired
-	 *
-	 * @param captchaRequired
-	 *            the captchaRequired to set
-	 */
-	public void setCaptchaRequired(boolean captchaRequired) {
-		this.captchaRequired = captchaRequired;
 	}
 
 	/**
@@ -953,6 +956,14 @@ public class CustomApiConfig {// NOPMD
 		this.notificationSwitch = notificationSwitch;
 	}
 
+	public boolean isCentralAuthSwitch() {
+		return centralAuthSwitch;
+	}
+
+	public void setCentralAuthSwitch(boolean centralAuthSwitch) {
+		this.centralAuthSwitch = centralAuthSwitch;
+	}
+
 	public boolean isAnalyticsSwitch() {
 		return analyticsSwitch;
 	}
@@ -1102,6 +1113,14 @@ public class CustomApiConfig {// NOPMD
 
 	public void setMailWithoutKafka(boolean mailWithoutKafka) {
 		this.mailWithoutKafka = mailWithoutKafka;
+	}
+
+	public boolean isSendGridEnabled() {
+		return sendGridEnabled;
+	}
+
+	public void setSendGridEnabled(boolean sendGridEnabled) {
+		this.sendGridEnabled = sendGridEnabled;
 	}
 
 	public String getHostPath() {

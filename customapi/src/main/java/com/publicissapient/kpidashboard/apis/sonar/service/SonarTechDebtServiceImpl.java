@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -107,25 +107,6 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 		log.debug("[SONAR-TECH-DEBT-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), treeAggregatorDetail.getRoot());
 		return kpiElement;
-	}
-
-	/**
-	 * Get all the sonar tech debt data in form of key as sonar-project and value as
-	 * techDebt sqale_index value
-	 * 
-	 * @param pList
-	 *            : project list of nodes
-	 * @param tempMap
-	 *            : containing all nodes of the hierarchy with key as node id and
-	 *            value as node
-	 * @param kpiElement
-	 *            : request info
-	 * @return map having key as sonar-project and value as techDebt sqale_index
-	 *         value
-	 */
-	public Map<String, Object> getSonarJobWiseKpiData(final List<Node> pList, Map<String, Node> tempMap,
-			final KpiElement kpiElement) {
-		return new HashMap<>();
 	}
 
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
@@ -231,7 +212,7 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 	 * @param sqlIndex
 	 * @return tech Debt value
 	 */
-	private Long getTechDebtValue(Object sqlIndex) {
+	public Long getTechDebtValue(Object sqlIndex) {
 
 		Long techDebtValue = -1l;
 		if (sqlIndex != null) {

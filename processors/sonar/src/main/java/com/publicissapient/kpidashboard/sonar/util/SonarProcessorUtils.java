@@ -46,31 +46,10 @@ import lombok.extern.slf4j.Slf4j;
 public final class SonarProcessorUtils {
 
 	private static final String FORMATTED_DATE = "yyyy-MM-dd'T'HH:mm:ssZ";
-	private static final String CODE_QUALITY_STATUS_WARN = "WARN";
-	private static final String CODE_QUALITY_STATUS_ALERT = "ALERT";
 	private static final int HOURS_IN_DAY = 8;
 	private static final String AUTHORIZATION = "Authorization";
 
 	private SonarProcessorUtils() {
-	}
-
-	/**
-	 * Provides JSONArray after parsing data.
-	 * 
-	 * @param url
-	 *            the url
-	 * @param restOp
-	 *            the rest operation
-	 * @param httpHeaders
-	 *            the http header
-	 * @return the json array
-	 * @throws ParseException
-	 *             if the given string doesn’t meet format
-	 */
-	public static JSONArray parseData(String url, RestOperations restOp, HttpEntity<String> httpHeaders)
-			throws ParseException {
-		ResponseEntity<String> response = restOp.exchange(url, HttpMethod.GET, httpHeaders, String.class);
-		return (JSONArray) new JSONParser().parse(response.getBody());
 	}
 
 	/**
@@ -187,45 +166,6 @@ public final class SonarProcessorUtils {
 			}
 		}
 		return headers;
-	}
-
-	/**
-	 * Provides code quality metrics status.
-	 * 
-	 * @param metricStatus
-	 *            the code quality status
-	 * @return the code quality metric status
-	 */
-	public static SonarMetricStatus getMetricStatus(String metricStatus) {
-		if (StringUtils.isBlank(metricStatus)) {
-			return SonarMetricStatus.OK;
-		}
-		switch (metricStatus) {
-		case CODE_QUALITY_STATUS_WARN:
-			return SonarMetricStatus.WARNING;
-		case CODE_QUALITY_STATUS_ALERT:
-			return SonarMetricStatus.ALERT;
-		default:
-			return SonarMetricStatus.OK;
-		}
-	}
-
-	/**
-	 * Parses Timestamp.
-	 * 
-	 * @param prjData
-	 *            the project data
-	 * @param latestVersion
-	 *            the latest version
-	 * @return the JSONObject
-	 */
-	public static JSONObject parseTimestamp(JSONObject prjData, String latestVersion) {
-		JSONObject lvJson = null;
-		JSONObject timeStamp = (JSONObject) prjData.get("v");
-		if (null != timeStamp) {
-			lvJson = (JSONObject) timeStamp.get(latestVersion);
-		}
-		return lvJson;
 	}
 
 	/**

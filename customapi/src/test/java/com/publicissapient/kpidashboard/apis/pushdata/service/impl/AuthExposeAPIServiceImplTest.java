@@ -25,8 +25,8 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 
-import javax.servlet.http.HttpServletRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;

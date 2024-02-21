@@ -592,7 +592,7 @@
               <td class="font-small p-p-0 text-center min-max-width" pFrozenColumn>
                 <div class="cell-indicator">
                   <div class="color-indicator" [ngStyle]="{'background-color': x['marker'] ? x['marker'] : ''}"></div>
-                  <a [href]="x['Issue URL']" class="text-blue p-ml-1" target="_blank">{{x['Issue Id']}}</a>
+                  <a [href]="x['Issue URL']" class="text-blue p-ml-1"  rel="noopener" target="_blank">{{x['Issue Id']}}</a>
                 </div>
               </td>
             </ng-container>
@@ -600,7 +600,7 @@
               <td *ngIf="item && typeOf(x[item]); else elseBlock" class="font-small min-max-width multidata-col"
                 pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())">
                 <ng-container *ngFor="let k of x[item]|keyvalue">
-                  <a [href]="k.value" class="p-d-block text-blue" target="_blank"
+                  <a [href]="k.value" class="p-d-block text-blue"  rel="noopener" target="_blank"
                     *ngIf="k.value.includes('http'); else showText">{{k.key}}</a>
                   <ng-template #showText><span>{{k.value}}</span></ng-template>
                 </ng-container>

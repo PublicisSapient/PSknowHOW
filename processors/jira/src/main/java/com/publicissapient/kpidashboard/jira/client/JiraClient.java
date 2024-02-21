@@ -16,10 +16,10 @@ import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.htmlunit.FailingHttpStatusCodeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -61,6 +61,9 @@ public class JiraClient {
 
 	public ProcessorJiraRestClient getClient(ProjectConfFieldMapping projectConfFieldMapping,
 			KerberosClient krb5Client) {
+		if(null!=krb5Client) {
+			log.info("Kerberos Client will be used in GS system {}", krb5Client);
+		}
 		Optional<Connection> connectionOptional = projectConfFieldMapping.getJira().getConnection();
 		if (connectionOptional.isPresent()) {
 			Connection connection = connectionOptional.get();

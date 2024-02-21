@@ -53,7 +53,7 @@ import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -86,7 +86,7 @@ public class BacklogEpicProgressServiceImplTest {
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraBacklogServiceR jiraService;
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
 	@InjectMocks
@@ -158,7 +158,8 @@ public class BacklogEpicProgressServiceImplTest {
 				.thenReturn(epic);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssueArrayList);
-		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(leafNodeList, "", "", kpiRequest);
+		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0), "", "", kpiRequest);
 
 		Assertions.assertThat(resultListMap).isNotEmpty();
 		Assertions.assertThat(resultListMap.containsKey(TOTAL_ISSUES)).isTrue();
@@ -177,12 +178,8 @@ public class BacklogEpicProgressServiceImplTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.PROJECT) {
-				leafNodeList.addAll(v);
-			}
-		});
-		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(leafNodeList, "", "", kpiRequest);
+		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0), "", "", kpiRequest);
 		assertThat(((Set<JiraIssue>) resultListMap.get(EPIC_LINKED)).size()).isEqualTo(0);
 	}
 
@@ -261,7 +258,7 @@ public class BacklogEpicProgressServiceImplTest {
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssueArrayList);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
 		KpiElement kpiElement = epicProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 

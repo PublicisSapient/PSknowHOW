@@ -20,8 +20,7 @@ package com.publicissapient.kpidashboard.apis.auth;
 
 import java.util.Collection;
 
-import javax.servlet.http.HttpServletResponse;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -36,6 +35,8 @@ import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 /**
  * This class call repository method to save the user authentication.
  * 
@@ -43,6 +44,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
  *
  */
 @Component
+@Slf4j
 public class DefaultAuthenticationResponseService implements AuthenticationResponseService {
 
 	@Autowired
@@ -58,9 +60,8 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 	public void handle(HttpServletResponse response, Authentication authentication) {
 		String emailAddress = StringUtils.EMPTY;
 		String username;
-
 		if (authentication.getPrincipal() instanceof CustomUserDetails) {
-			emailAddress = ((CustomUserDetails) authentication.getPrincipal()).getEmailAddress();
+			emailAddress = ((CustomUserDetails) authentication.getPrincipal()).getEmailAddress().toLowerCase();
 			username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
 
 		} else {

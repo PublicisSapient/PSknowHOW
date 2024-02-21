@@ -30,7 +30,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     }
   ]
 })
-export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor {
+export class FieldMappingFieldComponent implements ControlValueAccessor {
 
   @Input() fieldConfig;
   @Output() onSearch = new EventEmitter();
@@ -56,11 +56,8 @@ export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor 
     this.isDisabled = isDisabled;
   }
 
-  ngOnInit(): void {
-  }
-
   setValue() {
-    this.onChange(this.value);
+    this.onChange(this.value.trim());
   }
 
   resetRadioButton(fieldName) {
@@ -82,7 +79,7 @@ export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor 
         event.preventDefault();
         return;
     }
-}
+ }
   numericInputUpDown(event: any) {
     this.setValue();
   }

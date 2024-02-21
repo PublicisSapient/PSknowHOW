@@ -5,8 +5,9 @@
     "issueId": "15224189",
     "number": "TEST-17746",
     "name": "x-axis line is dark on stacked graphs, it should be standard for all graphs",
+    "epicLick": "epicLick",
     "typeId": "1",
-    "typeName": "Defect",
+    "typeName": "Bug",
     "status": "Closed",
     "state": "Closed",
     "estimate": "0",
@@ -14,6 +15,7 @@
     "changeDate": "2022-07-08T15:22:18.0000000",
     "isDeleted": "False",
     "priority": "P4 - Minor",
+    "devicePlatform" : "abc",
     "labels": [
       "UI"
     ],
@@ -263,7 +265,7 @@
     "assigneeName": "testUser3",
     "jiraStatus": "Closed",
     "timeSpentInMinutes": 30,
-    "basicProjectConfigId": "6335368249794a18e8a4479f",
+    "basicProjectConfigId": "63c04dc7b7617e260763ca4e",
     "productionDefect": false,
     "_class": "com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue"
   },

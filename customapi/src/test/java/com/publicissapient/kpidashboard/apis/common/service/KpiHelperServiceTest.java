@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.common.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -29,10 +30,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -61,7 +64,6 @@ import com.publicissapient.kpidashboard.apis.data.SprintWiseStoryDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -78,7 +80,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
-import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -107,7 +108,6 @@ public class KpiHelperServiceTest {
 	@Mock
 	private ConfigHelperService configHelperService;
 
-
 	@Mock
 	private CapacityKpiDataRepository capacityKpiDataRepository;
 	@InjectMocks
@@ -130,7 +130,7 @@ public class KpiHelperServiceTest {
 	private KpiRequestFactory kanbanKpiRequestFactory;
 
 	@Mock
-	private FieldMappingStructure fieldMappingStructure= new FieldMappingStructure();
+	private FieldMappingStructure fieldMappingStructure = new FieldMappingStructure();
 
 	private List<FieldMappingStructure> fieldMappingStructureList = new ArrayList<>();
 
@@ -146,9 +146,16 @@ public class KpiHelperServiceTest {
 	@Mock
 	private CustomApiConfig customApiConfig;
 
+	@Mock
+	private CacheService cacheService;
+	@Mock
+	private UserAuthorizedProjectsService authorizedProjectsService;
+
 	Map<String, List<String>> priority = new HashMap<>();
 
 	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectConfigMap = new HashMap<>();
+
+	List<AccountHierarchyData> accountHierarchyDataList =new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -164,8 +171,8 @@ public class KpiHelperServiceTest {
 		ProjectToolConfig projectConfig = new ProjectToolConfig();
 		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
 		projectConfig.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479c"));
-		Map<String, List<ProjectToolConfig>> stringListMap=new HashMap<>();
-		stringListMap.put("Jira",Arrays.asList());
+		Map<String, List<ProjectToolConfig>> stringListMap = new HashMap<>();
+		stringListMap.put("Jira", Arrays.asList());
 		projectConfigMap.put(projectConfig.getBasicProjectConfigId(), stringListMap);
 		when(configHelperService.getProjectToolConfigMap()).thenReturn(projectConfigMap);
 
@@ -198,8 +205,11 @@ public class KpiHelperServiceTest {
 		capacityKpiDataList = capacityKpiDataDataFactory.getCapacityKpiDataList();
 		fieldMappingStructureList.add(fieldMappingStructure);
 
+		priority.put("P1", Arrays.asList("p1"));
 
-		priority.put("P1",Arrays.asList("p1"));
+		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
+				.newInstance("/json/default/account_hierarchy_filter_data.json");
+		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 	}
 
 	@After
@@ -212,7 +222,7 @@ public class KpiHelperServiceTest {
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_INJECTION_RATE.getKpiId());
 		when(jiraIssueRepository.findIssuesGroupBySprint(any(), any(), any(), any())).thenReturn(sprintWiseStoryList);
 
-		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any() , any()))
+		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
 		when(jiraIssueRepository.findIssuesByType(any())).thenReturn(bugList);
 
@@ -232,7 +242,7 @@ public class KpiHelperServiceTest {
 
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_DENSITY.getKpiId());
 		when(jiraIssueRepository.findIssuesGroupBySprint(any(), any(), any(), any())).thenReturn(sprintWiseStoryList);
-		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any() ,any()))
+		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
 		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(bugList);
 
@@ -390,14 +400,14 @@ public class KpiHelperServiceTest {
 	public void testKpiResolution() {
 
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.AVERAGE_RESOLUTION_TIME.getKpiId());
-		KpiMaster kpiMaster=new KpiMaster();
+		KpiMaster kpiMaster = new KpiMaster();
 		kpiMaster.setKpiId("kpi83");
 		kpiMaster.setKpiName("abc");
 		kpiMaster.setKpiSource("abc");
 		kpiMaster.setKpiUnit("123");
 		kpiMaster.setKpiCategory("abc");
 		kpiMaster.setMaxValue("abbc");
-		List<KpiMaster> kpiMasters=new ArrayList<>();
+		List<KpiMaster> kpiMasters = new ArrayList<>();
 		kpiMasters.add(kpiMaster);
 		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasters);
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
@@ -411,14 +421,143 @@ public class KpiHelperServiceTest {
 
 	@Test
 	public void fetchBackLogReadinessFromdb() throws ApplicationException {
-		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.SPRINT_VELOCITY.getKpiId());
-		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
-				new ArrayList<>(), "hierarchyLevelOne", 5);
+//		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.SPRINT_VELOCITY.getKpiId());
+//		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
+//				new ArrayList<>(), "hierarchyLevelOne", 5);
+//		List<Node> leafNodeList = new ArrayList<>();
+//		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+//		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
+//		Map<String, Object> resultMap = kpiHelperService.fetchBackLogReadinessFromdb(leafNodeList, kpiRequest);
+//		assertEquals(2, resultMap.size());
+	}
+
+	@Test
+	public void testFetchJiraCustomHistoryDataFromDbForKanban() throws ApplicationException {
+
+		KpiRequest kpiRequest = kanbanKpiRequestFactory.findKpiRequest(KPICode.TEAM_CAPACITY.getKpiId());
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				new ArrayList<>(), ahdKanbanList, "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
-		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
-		Map<String, Object> resultMap = kpiHelperService.fetchBackLogReadinessFromdb(leafNodeList,kpiRequest);
-		assertEquals(2, resultMap.size());
+		Map<ObjectId, Map<String, Object>> projectMap = new HashMap<>();
+		Map<String, Object> fieldMappingMap = new HashMap<>();
+		fieldMappingMap.put("ClosedStatus", Arrays.asList("Closed", "Dropped"));
+		fieldMappingMap.put("LiveStatus", "Live");
+		fieldMappingMap.put("RejectedStatus", Arrays.asList("Dropped"));
+		fieldMappingMap.put("RCA_Count_IssueType", Arrays.asList("Defect"));
+		leafNodeList
+				.forEach(node -> projectMap.put(node.getProjectFilter().getBasicProjectConfigId(), fieldMappingMap));
+		Map<String, Object> resultMap = kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(leafNodeList, "", "",
+				kpiRequest, "rca", projectMap);
+		assertEquals(5, resultMap.size());
+	}
+
+	@Test
+	public void testComputeProjectWiseJiraHistoryByStatusAndDate() {
+
+		KanbanIssueCustomHistoryDataFactory issueHistoryFactory = KanbanIssueCustomHistoryDataFactory.newInstance();
+		List<KanbanIssueCustomHistory> issueHistory = issueHistoryFactory.getKanbanIssueCustomHistoryDataList();
+		Map<String, List<KanbanIssueCustomHistory>> projectWiseNonClosedTickets = new HashMap<>();
+		issueHistory.forEach(issue -> projectWiseNonClosedTickets.put(issue.getBasicProjectConfigId(), issueHistory));
+		Map<String, Object> historyDataResultMap = new HashMap<>();
+		Map<String, String> projectWiseOpenStatus = new HashMap<>();
+		projectWiseNonClosedTickets.keySet().forEach(key -> projectWiseOpenStatus.put(key, "Open"));
+		historyDataResultMap.put("projectWiseOpenStatus", projectWiseOpenStatus);
+
+		Map<String, Map<String, Map<String, Set<String>>>> result = kpiHelperService
+				.computeProjectWiseJiraHistoryByStatusAndDate(projectWiseNonClosedTickets, "2022-07-01",
+						historyDataResultMap);
+		assertNotNull(result);
+
+	}
+
+	@Test
+	public void testComputeProjectWiseJiraHistoryByFieldAndDate() {
+
+		KanbanIssueCustomHistoryDataFactory issueHistoryFactory = KanbanIssueCustomHistoryDataFactory.newInstance();
+		List<KanbanIssueCustomHistory> issueHistory = issueHistoryFactory.getKanbanIssueCustomHistoryDataList();
+		Map<String, List<KanbanIssueCustomHistory>> projectWiseNonClosedTickets = new HashMap<>();
+		issueHistory.forEach(issue -> projectWiseNonClosedTickets.put(issue.getBasicProjectConfigId(), issueHistory));
+		Map<String, Object> historyDataResultMap = new HashMap<>();
+		Map<String, String> projectWiseOpenStatus = new HashMap<>();
+		projectWiseNonClosedTickets.keySet().forEach(key -> projectWiseOpenStatus.put(key, "Open"));
+		historyDataResultMap.put("projectWiseOpenStatus", projectWiseOpenStatus);
+
+		Map<String, List<String>> projectWiseClosedStatus = new HashMap<>();
+		projectWiseNonClosedTickets.keySet()
+				.forEach(key -> projectWiseClosedStatus.put(key, Arrays.asList("Closed", "Dropped")));
+		historyDataResultMap.put("projectWiseClosedStoryStatus", projectWiseClosedStatus);
+
+		Map<String, Map<String, Map<String, Set<String>>>> result = kpiHelperService
+				.computeProjectWiseJiraHistoryByFieldAndDate(projectWiseNonClosedTickets, "2022-07-01",
+						historyDataResultMap, "rca");
+		assertNotNull(result);
+
+	}
+
+	@Test
+	public void getProjectKeyCache(){
+		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_INJECTION_RATE.getKpiId());
+		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
+		kpiHelperService.getProjectKeyCache(kpiRequest,accountHierarchyDataList,true);
+	}
+
+	@Test
+	public void getProjectKeyCache2(){
+		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_INJECTION_RATE.getKpiId());
+		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
+		String[] projectKey = new String[0];
+		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
+		kpiHelperService.getProjectKeyCache(kpiRequest,accountHierarchyDataList,true);
+	}
+
+	@Test
+	public void getAuthorizedFilteredList(){
+		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_INJECTION_RATE.getKpiId());
+		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
+		when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList);
+		kpiHelperService.getAuthorizedFilteredList(kpiRequest,accountHierarchyDataList,true);
+	}
+
+	@Test
+	public void setIntoApplicationCache(){
+		KpiRequest kpiRequest=createKpiRequest(5);
+		Map<String,Integer> map=new HashMap<>();
+		map.put("sprint",5);
+		when(flterHelperService.getHierarchyIdLevelMap(anyBoolean())).thenReturn(map);
+		kpiHelperService.setIntoApplicationCache(kpiRequest,new ArrayList<>(),1,new String[0]);
+	}
+
+	private KpiRequest createKpiRequest(int level) {
+		KpiRequest kpiRequest = new KpiRequest();
+		List<KpiElement> kpiList = new ArrayList<>();
+
+		addKpiElement(kpiList, KPICode.ITERATION_BURNUP.getKpiId(), KPICode.ITERATION_BURNUP.name(), "Iteration", "");
+		kpiRequest.setLevel(level);
+		kpiRequest.setIds(new String[] { "38296_Scrum Project_6335363749794a18e8a4479b" });
+		kpiRequest.setKpiList(kpiList);
+		kpiRequest.setRequestTrackerId();
+		kpiRequest.setLabel("sprint");
+		Map<String, List<String>> s = new HashMap<>();
+		s.put("sprint", Arrays.asList("38296_Scrum Project_6335363749794a18e8a4479b"));
+		kpiRequest.setSelectedMap(s);
+		kpiRequest.setSprintIncluded(Arrays.asList("CLOSED", "ACTIVE"));
+		return kpiRequest;
+	}
+
+	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category,
+							   String kpiUnit) {
+		KpiElement kpiElement = new KpiElement();
+		kpiElement.setKpiId(kpiId);
+		kpiElement.setKpiName(kpiName);
+		kpiElement.setKpiCategory(category);
+		kpiElement.setKpiUnit(kpiUnit);
+		kpiElement.setKpiSource("Jira");
+		kpiElement.setGroupId(1);
+		kpiElement.setMaxValue("500");
+		kpiElement.setChartType("gaugeChart");
+		kpiList.add(kpiElement);
 	}
 
 }

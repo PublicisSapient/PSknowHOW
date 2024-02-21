@@ -1,5 +1,23 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.notification.config;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -16,11 +34,9 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.retry.RetryPolicy;
-import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
+import org.springframework.util.backoff.FixedBackOff;
 import org.thymeleaf.exceptions.TemplateInputException;
 
 import com.publicissapient.kpidashboard.notification.model.EmailEvent;
@@ -64,45 +80,28 @@ public class NotificationEventConsumerConfig {
 	public ConcurrentKafkaListenerContainerFactory<String, EmailEvent> kafkaListenerContainerFactory() {
 		ConcurrentKafkaListenerContainerFactory<String, EmailEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(consumerFactory());
-		factory.setErrorHandler(((thrownException, data) -> {
-			log.info("Exception in consumerConfig is {} and the record is {}", thrownException.getMessage(), data);
-			ConsumerRecord<String, EmailEvent> failedMessage = (ConsumerRecord<String, EmailEvent>) data;
-			notificationFailedMsgHandlerService.handleFailedMessage(failedMessage);
-		}));
-		factory.setRetryTemplate(retryTemplate());
-		factory.setRecoveryCallback((context -> {
-			if (context.getLastThrowable().getCause() instanceof RecoverableDataAccessException) {
-				// invoke recovery logic
-				log.info("Inside the recoverable logic");
-				ConsumerRecord<String, EmailEvent> recoverableMessage = (ConsumerRecord<String, EmailEvent>) context
-						.getAttribute("record");
-				notificationFailedMsgHandlerService.handleRecoverableMessage(recoverableMessage);
-			} else {
-				log.info("Inside the non recoverable logic");
-				throw new RuntimeException(context.getLastThrowable().getMessage());
-			}
-
-			return null;
-		}));
+		factory.setCommonErrorHandler(new GlobalErrorHandler());
+		factory.setCommonErrorHandler(defaultErrorHandler());
 		return factory;
 	}
 
-	private RetryTemplate retryTemplate() {
-
-		FixedBackOffPolicy fixedBackOffPolicy = new FixedBackOffPolicy();
-		fixedBackOffPolicy.setBackOffPeriod(60000);
-		RetryTemplate retryTemplate = new RetryTemplate();
-		retryTemplate.setRetryPolicy(simpleRetryPolicy());
-		retryTemplate.setBackOffPolicy(fixedBackOffPolicy);
-		return retryTemplate;
-	}
-
-	private RetryPolicy simpleRetryPolicy() {
-		Map<Class<? extends Throwable>, Boolean> exceptionsMap = new HashMap<>();
-		exceptionsMap.put(IllegalArgumentException.class, false);
-		exceptionsMap.put(RecoverableDataAccessException.class, true);
-		exceptionsMap.put(TimeoutException.class, true);
-		exceptionsMap.put(TemplateInputException.class, true);
-		return new SimpleRetryPolicy(3, exceptionsMap, true);
+	private DefaultErrorHandler defaultErrorHandler() {
+		FixedBackOff fixedBackOff = new FixedBackOff(60000L, 3);
+		DefaultErrorHandler errorHandler = new DefaultErrorHandler((consumerRecord, exception) -> {
+			if (exception.getCause() instanceof RecoverableDataAccessException) {
+				// invoke recovery logic
+				log.info("Inside the recoverable logic");
+				ConsumerRecord<String, EmailEvent> recoverableMessage = (ConsumerRecord<String, EmailEvent>) consumerRecord;
+				notificationFailedMsgHandlerService.handleRecoverableMessage(recoverableMessage);
+			} else {
+				log.info("Inside the non recoverable logic");
+				throw new IllegalArgumentException(exception.getMessage());
+			}
+		}, fixedBackOff);
+		errorHandler.addRetryableExceptions(RecoverableDataAccessException.class);
+		errorHandler.addRetryableExceptions(TimeoutException.class);
+		errorHandler.addRetryableExceptions(TemplateInputException.class);
+		errorHandler.addNotRetryableExceptions(IllegalArgumentException.class);
+		return errorHandler;
 	}
 }

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -38,7 +38,6 @@ import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 @Service
 public class TestCaseDetailsRepositoryImpl implements TestCaseDetailsRepositoryCustom {
 
-	private static final String UNCHECKED = "unchecked";
 	private static final String BASIC_PROJ_CONF_ID = "basicProjectConfigId";
 	private static final String NIN = "nin";
 	private static final String TEST_CASE_STATUS = "testCaseStatus";

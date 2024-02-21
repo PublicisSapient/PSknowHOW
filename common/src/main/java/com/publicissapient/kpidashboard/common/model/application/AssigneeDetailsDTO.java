@@ -40,6 +40,11 @@ public class AssigneeDetailsDTO {
 	private String displayName;
 
 	@Override
+	public int hashCode() {
+		return java.util.Objects.hash(name, displayName);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof AssigneeDetailsDTO) {
 			AssigneeDetailsDTO that = (AssigneeDetailsDTO) obj;

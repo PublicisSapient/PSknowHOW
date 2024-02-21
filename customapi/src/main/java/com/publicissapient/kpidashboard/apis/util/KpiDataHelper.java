@@ -805,14 +805,6 @@ public final class KpiDataHelper {
 		return dataMap;
 	}
 
-	private static String getTimeValue(String time) {
-		if (time != null && !time.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-			return CommonUtils.convertIntoDays((int) calculateTimeInDays(Long.parseLong(time)));
-		} else {
-			return Constant.NOT_AVAILABLE;
-		}
-	}
-
 	public static String calWeekHours(DateTime startDateTime, DateTime endDateTime) {
 		if (startDateTime != null && endDateTime != null) {
 			int hours = Hours.hoursBetween(startDateTime, endDateTime).getHours();

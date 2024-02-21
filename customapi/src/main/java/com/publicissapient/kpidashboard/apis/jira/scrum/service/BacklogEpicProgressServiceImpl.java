@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,13 +39,12 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.apis.util.ReleaseKpiHelper;
@@ -65,7 +64,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Integer, List<Object>> {
 
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String EPIC_LINKED = "epicLinked";
@@ -85,13 +84,9 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 	private CommonServiceImpl commonService;
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.PROJECT) {
-				projectWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
+			throws ApplicationException {
+			projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
 		log.info("BacklogEpicProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
@@ -99,21 +94,20 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 	/**
 	 * project wise processing
 	 * 
-	 * @param leafNodeList
-	 *            leafNodeList
+	 * @param leafNode
+	 *            leafNode
 	 * @param kpiElement
 	 *            kpiElement
 	 * @param kpiRequest
 	 *            kpiElement
 	 */
-	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (leafNode != null) {
 			Object basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
+			Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, null, null, kpiRequest);
 			List<JiraIssue> totalIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
 			Set<JiraIssue> epicIssues = (Set<JiraIssue>) resultMap.get(EPIC_LINKED);
 			JiraIssueReleaseStatus jiraIssueReleaseStatus = (JiraIssueReleaseStatus) resultMap
@@ -138,10 +132,9 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Backlog Epic Progress -> Requested sprint : {}", leafNode.getName());
 			List<JiraIssue> totalJiraIssue = getBackLogJiraIssuesFromBaseClass();
@@ -319,11 +312,6 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 					.collect(Collectors.toMap(JiraIssue::getNumber, jiraIssue -> jiraIssue));
 			KPIExcelUtility.populateEpicProgessExcelData(epicWiseIssueSize, epicWiseJiraIssue, excelData);
 		}
-	}
-
-	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
 	}
 
 	@Override

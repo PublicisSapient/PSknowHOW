@@ -22,7 +22,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -176,9 +178,27 @@ public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFact
 			return new File(".");
 		}
 
+		@Nonnull
+		@Override
+		public Optional<Path> getLocalHomeDirectory() {
+			return Optional.empty();
+		}
+
+		@Nonnull
+		@Override
+		public Optional<Path> getSharedHomeDirectory() {
+			return Optional.empty();
+		}
+
 		@Override
 		public String getPropertyValue(final String s) {
 			throw new UnsupportedOperationException("Not implemented");
+		}
+
+		@Nonnull
+		@Override
+		public String getApplicationFileEncoding() {
+			return "";
 		}
 	}
 

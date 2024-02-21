@@ -36,9 +36,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,6 +72,9 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserInfoServiceImplTest {
@@ -116,6 +116,8 @@ public class UserInfoServiceImplTest {
 
 	@Before
 	public void setUp() {
+		when(authProperties.getCentralAuthBaseURL()).thenReturn("https://www.example.com");
+		when(authProperties.getResourceAPIKey()).thenReturn("ResourceAPIKey");
 	}
 
 	@Test
@@ -382,6 +384,34 @@ public class UserInfoServiceImplTest {
 		assertTrue(result.getSuccess());
 	}
 
+	@Test
+	public void validateUpdateUserRole_UserNotFound() {
+		ProjectsAccess pa = new ProjectsAccess();
+		pa.setRole("Role");
+		pa.setAccessNodes(new ArrayList<>());
+
+		List<ProjectsAccess> paList = new ArrayList<>();
+		paList.add(pa);
+
+		UserInfo testUser = new UserInfo();
+		testUser.setUsername("User");
+		testUser.setAuthType(AuthType.SSO);
+		testUser.setAuthorities(Arrays.asList("ROLE_VIEWER"));
+		testUser.setProjectsAccess(paList);
+
+		UserInfo u = new UserInfo();
+		u.setProjectsAccess(paList);
+		u.setUsername("user");
+		u.setAuthType(AuthType.SSO);
+		u.setEmailAddress("testEmail@test.com");
+		when(userInfoRepository.findByUsername("User")).thenReturn(null);
+		when(userInfoRepository.save(any())).thenReturn(testUser);
+		when(projectAccessManager.updateAccessOfUserInfo(any(UserInfo.class), any(UserInfo.class)))
+				.thenReturn(testUser);
+		ServiceResponse result = service.updateUserRole("User", u);
+		assertTrue(result.getSuccess());
+	}
+
 	/**
 	 * method to test deleteUser() ;
 	 * <p>
@@ -428,4 +458,28 @@ public class UserInfoServiceImplTest {
 		assertNotNull(userDetailsResponseDTO);
 	}
 
+	@Test
+	public void getOrSaveDefaultUser() {
+		UserInfo user = new UserInfo();
+		user.setUsername("testUser");
+		user.setAuthType(AuthType.STANDARD);
+		user.setAuthorities(Lists.newArrayList("ROLE_SUPERADMIN"));
+		user.setEmailAddress("email");
+		when(userInfoRepository.count()).thenReturn(1l);
+		when(userInfoRepository.save(any())).thenReturn(user);
+		UserInfoDTO userInfo = service.getOrSaveDefaultUserInfo("user", AuthType.STANDARD, "email");
+		assertNotNull(userInfo);
+	}
+
+	@Test
+	public void getOrSaveUserInfo() {
+		UserInfo user = new UserInfo();
+		user.setUsername("testUser");
+		user.setAuthType(AuthType.STANDARD);
+		user.setAuthorities(Lists.newArrayList("ROLE_SUPERADMIN"));
+		user.setEmailAddress("email");
+		when(userInfoRepository.save(any())).thenReturn(user);
+		UserInfo userInfo = service.getOrSaveUserInfo("user", AuthType.STANDARD, new ArrayList<>());
+		assertNotNull(userInfo);
+	}
 }

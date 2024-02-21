@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -25,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.BeanUtils;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.azure.adapter.AzureAdapter;
@@ -41,6 +40,7 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.azureboards.AzureBoardsWIModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.Fields;
 import com.publicissapient.kpidashboard.common.model.azureboards.Value;
@@ -216,9 +216,10 @@ public class ScrumAzureIssueClientImplTest {
 		String[] jiraIssueType = new String[] { "Story", "Defect", "Pre Story", "Feature", "Enabler Story" };
 		fieldMapping.setJiraIssueTypeNames(jiraIssueType);
 		fieldMapping.setRootCause("customfield_19121");
-
+		fieldMapping.setRootCauseIdentifier("Labels");
 		jiraType = new ArrayList<>();
 		jiraType.add("story");
+		jiraType.add("defect");
 		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(jiraType);
 		fieldMapping.setJiraTechDebtIssueType(jiraType);
 		fieldMapping.setJiraIssueTypeKPI35(jiraType);
@@ -284,6 +285,8 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setJiraDorKPI171(Arrays.asList("In Progress"));
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
+		fieldMapping.setRootCauseValues(Arrays.asList("Coding", "None"));
+		fieldMapping.setRootCause("Coding");
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Pre Story" }));
 		fieldMapping.setJiraStoryIdentification(jiraType);
@@ -325,7 +328,7 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setStoryFirstStatus("Open");
 
 		fieldMapping.setRootCause("customfield_19121");
-
+		fieldMapping.setRootCauseIdentifier("Labels");
 		fieldMapping.setJiraDefectRejectionStatusKPI37("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI14("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusAVR("Dropped");
@@ -405,14 +408,14 @@ public class ScrumAzureIssueClientImplTest {
 
 	private void setProjectConfigFieldMap() throws IllegalAccessException, InvocationTargetException {
 
-		BeanUtils.copyProperties(projectConfFieldMapping, scrumProjectList.get(0));
+		BeanUtils.copyProperties(scrumProjectList.get(0), projectConfFieldMapping);
 		projectConfFieldMapping.setBasicProjectConfigId(scrumProjectList.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
 		projectConfFieldMappingList.add(projectConfFieldMapping);
 
 	}
 
-	private void createIssue() throws URISyntaxException {
+	private void createIssue() throws URISyntaxException, JSONException {
 
 		Map<String, String> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
@@ -424,6 +427,7 @@ public class ScrumAzureIssueClientImplTest {
 		fields.setSystemWorkItemType("defect");
 		fields.setSystemTitle("systemTitle");
 		fields.setMicrosoftVSTSCommonPriority(1);
+		fields.setSystemTags("Coding");
 		Value issue = new Value();
 		issue.setId(1);
 		issue.setUrl("https://testDomain.com/jira/rest/api/2/");

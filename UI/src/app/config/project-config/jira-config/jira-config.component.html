@@ -51,8 +51,8 @@
             </ng-template>
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th style="width: 80px;"></th>
-                    <th *ngFor="let col of columns" [ngClass]="col.class">
+                    <th style="width: 80px;" scope="col"></th>
+                    <th *ngFor="let col of columns" [ngClass]="col.class" scope="col">
                         {{col.header}}
                     </th>
                 </tr>
@@ -87,10 +87,10 @@
             </ng-template>
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th *ngFor="let col of columns" [ngClass]="col.class">
+                    <th *ngFor="let col of columns" [ngClass]="col.class" scope="col">
                         {{col.header}}
                     </th>
-                    <th class="p-text-center" style="width: 180px;">Delete</th>
+                    <th class="p-text-center" style="width: 180px;" scope="col">Delete</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-tool let-columns="columns">
@@ -282,9 +282,9 @@
                     </ng-template>
                     <ng-template pTemplate="header">
                         <tr>
-                            <th class="p-text-left w-25">Identification Type</th>
-                            <th class="p-text-left w-25">Indentification Value</th>
-                            <th class="p-text-left w-50">Depend On</th>
+                            <th class="p-text-left w-25" id="identification-type">Identification Type</th>
+                            <th id="identification-value" class="p-text-left w-25">Indentification Value</th>
+                            <th class="p-text-left w-50" id="depend-on">Depend On</th>
                         </tr>
 
                     </ng-template>
@@ -301,9 +301,9 @@
                                     styleClass="p-datatable-striped" loadingIcon="loading-img">
                                     <ng-template pTemplate="header">
                         <tr>
-                            <th class="p-text-left">Depend On</th>
-                            <th class="p-text-left">Depend On Values</th>
-                            <th class="p-text-left">Depend On CustomField</th>
+                            <th class="p-text-left" id="depend-on">Depend On</th>
+                            <th class="p-text-left" id="depend-on-values">Depend On Values</th>
+                            <th class="p-text-left" id="depend-on-custom-field">Depend On CustomField</th>
                         </tr>
 
                     </ng-template>

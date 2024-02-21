@@ -20,20 +20,21 @@ package com.publicissapient.kpidashboard.githubaction.processor;
 
 import static org.mockito.Mockito.doReturn;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.common.model.application.Build;
@@ -43,7 +44,7 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.githubaction.config.GitHubActionConfig;
 import com.publicissapient.kpidashboard.githubaction.processor.adapter.impl.GitHubActionBuildClient;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class GitHubActionBuildClientTest {
 
 	@InjectMocks
@@ -82,6 +83,6 @@ public class GitHubActionBuildClientTest {
 	}
 
 	private String getServerResponse(String resource) throws Exception {
-		return IOUtils.toString(this.getClass().getResourceAsStream(resource));
+		return IOUtils.toString(this.getClass().getResourceAsStream(resource), StandardCharsets.UTF_8);
 	}
 }

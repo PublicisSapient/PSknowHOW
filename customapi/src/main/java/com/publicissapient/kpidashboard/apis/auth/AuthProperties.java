@@ -23,7 +23,7 @@ import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -67,6 +67,18 @@ public class AuthProperties {// NOPMD
 
 	private Integer accountLockedThreshold;
 	private int accountLockedPeriod;
+
+	// --- auth-N-auth changes starts here ----
+	private String centralAuthBaseURL;
+	private String resourceAPIKey;
+	private String resourcePolicyEndPoint;
+	private String fetchUserDetailsEndPoint;
+	private String fetchPendingUsersApprovalEndPoint;
+	private String updateUserApprovalStatus;
+	private String resourceName;
+
+	private boolean subDomainCookie;
+	private String domain;
 
 	/**
 	 * Gets expiration time.
@@ -370,6 +382,143 @@ public class AuthProperties {// NOPMD
 	 */
 	public void setAccountLockedPeriod(int accountLockedPeriod) {
 		this.accountLockedPeriod = accountLockedPeriod;
+	}
+
+	/**
+	 * Get central auth base url
+	 *
+	 * @return
+	 */
+	public String getCentralAuthBaseURL() {
+		return centralAuthBaseURL;
+	}
+
+	/**
+	 * Set central auth base url
+	 *
+	 * @param centralAuthBaseURL
+	 */
+	public void setCentralAuthBaseURL(String centralAuthBaseURL) {
+		this.centralAuthBaseURL = centralAuthBaseURL;
+	}
+
+	/**
+	 * Set resourceName
+	 *
+	 * @param resourceName
+	 */
+	public void setResourceName(String resourceName) {
+		this.resourceName = resourceName;
+	}
+
+	/**
+	 * get resource Name
+	 * 
+	 * @return resourceName
+	 */
+	public String getResourceName() {
+		return resourceName;
+	}
+
+	/**
+	 * Set central auth userinfo url
+	 *
+	 * @param fetchUserDetailsEndPoint
+	 */
+	public void setFetchUserDetailsEndPoint(String fetchUserDetailsEndPoint) {
+		this.fetchUserDetailsEndPoint = fetchUserDetailsEndPoint;
+	}
+
+	/**
+	 * get central auth userinfo url
+	 * 
+	 * @return
+	 */
+	public String getFetchUserDetailsEndPoint() {
+		return fetchUserDetailsEndPoint;
+	}
+
+	/**
+	 * Set central auth user approval url
+	 *
+	 * @param updateUserApprovalStatus
+	 */
+	public void setUpdateUserApprovalStatus(String updateUserApprovalStatus) {
+		this.updateUserApprovalStatus = updateUserApprovalStatus;
+	}
+
+	/**
+	 * get central auth update user approval url
+	 * 
+	 * @return
+	 */
+	public String getUpdateUserApprovalStatus() {
+		return updateUserApprovalStatus;
+	}
+
+	/**
+	 * Set central auth userinfo url
+	 *
+	 * @param fetchPendingUsersApprovalEndPoint
+	 */
+	public void setFetchPendingUsersApprovalEndPoint(String fetchPendingUsersApprovalEndPoint) {
+		this.fetchPendingUsersApprovalEndPoint = fetchPendingUsersApprovalEndPoint;
+	}
+
+	/**
+	 * get central auth userinfo url
+	 *
+	 * @return
+	 */
+	public String getFetchPendingUsersApprovalEndPoint() {
+		return fetchPendingUsersApprovalEndPoint;
+	}
+
+	/**
+	 * get resourceAPIKey
+	 * 
+	 * @return
+	 */
+	public String getResourceAPIKey() {
+		return resourceAPIKey;
+	}
+
+	/**
+	 * Set resourcePolicyEndPoint
+	 *
+	 * @param resourcePolicyEndPoint
+	 */
+	public void setResourcePolicyEndPoint(String resourcePolicyEndPoint) {
+		this.resourcePolicyEndPoint = resourcePolicyEndPoint;
+	}
+
+	public String getResourcePolicyEndPoint() {
+		return resourcePolicyEndPoint;
+	}
+
+	/**
+	 * Set resourceAPIKey
+	 *
+	 * @param resourceAPIKey
+	 */
+	public void setResourceAPIKey(String resourceAPIKey) {
+		this.resourceAPIKey = resourceAPIKey;
+	}
+
+	public boolean isSubDomainCookie() {
+		return subDomainCookie;
+	}
+
+	public void setSubDomainCookie(boolean subDomainCookie) {
+		this.subDomainCookie = subDomainCookie;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 
 	/**

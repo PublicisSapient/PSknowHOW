@@ -22,9 +22,9 @@
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -85,6 +87,8 @@ public class SonarViolationsServiceImplTest {
 	SonarHistoryRepository sonarHistoryRepository;
 	@Mock
 	private CustomApiConfig customApiConfig;
+	@Mock
+	CacheService cacheService;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
@@ -119,6 +123,10 @@ public class SonarViolationsServiceImplTest {
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
+
+		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONAR.name()))
+				.thenReturn(kpiRequestTrackerId);
 
 	}
 

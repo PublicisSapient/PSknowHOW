@@ -116,17 +116,17 @@
     <section class="p-p-3 user-info-section" *ngIf="selectedUser === 'Overall' else userInfo">
         <p-table [value]="assigneeList" [columns]="columns" [tableStyle]="{'width': '100%'}"
             (sortFunction)="customSort($event)" [customSort]="true" [scrollable]="true"
-            scrollHeight="{{ onFullScreen ? 'calc(100vh - 100px)' : 'calc(100vh - 360px)' }}">
+            [scrollHeight]="onFullScreen ? 'calc(100vh - 100px)' : 'calc(100vh - 360px)'">
             <ng-template pTemplate="header">
                 <tr>
-                    <th pSortableColumn="Team Member">Team Member <p-sortIcon field="assigneeName"></p-sortIcon></th>
-                    <th *ngFor="let col of columns" [pSortableColumn]="col">
+                    <th pSortableColumn="Team Member" scope="col">Team Member <p-sortIcon field="assigneeName"></p-sortIcon></th>
+                    <th *ngFor="let col of columns" [pSortableColumn]="col" scope="col">
                         {{col}} <p-sortIcon field="code"></p-sortIcon>
                     </th>
                 </tr>
                 <tr>
-                    <th>{{totals['Team Member']}}</th>
-                    <th *ngFor="let col of columns">
+                    <th scope="col">{{totals['Team Member']}}</th>
+                    <th *ngFor="let col of columns" scope="col">
                         {{convertToHoursIfTime(totals[col]?.value, totals[col]?.unit)}} {{totals[col]?.unit !== 'day' ?
                         totals[col]?.unit : ''}}
                         {{totals[col]?.unit1 ? ' / ' + convertToHoursIfTime(totals[col]?.value1, totals[col]?.unit1) +'

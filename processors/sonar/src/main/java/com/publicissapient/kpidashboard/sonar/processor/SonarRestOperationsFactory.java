@@ -18,12 +18,15 @@
 
 package com.publicissapient.kpidashboard.sonar.processor;
 
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
+
+import java.time.Duration;
 
 /**
  * Supplier that returns an instance of RestOperations.
@@ -41,9 +44,7 @@ public class SonarRestOperationsFactory implements RestOperationsFactory<RestOpe
 	 */
 	@Override
 	public RestOperations getTypeInstance() {
-		HttpComponentsClientHttpRequestFactory request = new HttpComponentsClientHttpRequestFactory();
-		request.setConnectTimeout(TIME_OUT);
-		request.setReadTimeout(TIME_OUT);
-		return new RestTemplate(request);
+		return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(TIME_OUT)).
+				setReadTimeout(Duration.ofSeconds(TIME_OUT)).build();
 	}
 }

@@ -140,7 +140,6 @@ export class RaiseAccessRequestComponent implements OnInit {
     this.httpService.logout()
       .subscribe(getData => {
         if (!(getData !== null && getData[0] === 'error')) {
-          localStorage.removeItem('auth_token');
           this.sharedService.setCurrentUserDetails({});
 
           this.router.navigate(['./authentication/login']);
