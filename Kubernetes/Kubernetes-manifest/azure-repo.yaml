@@ -24,7 +24,7 @@ spec:
       #   command: ['sh', '-c', "until nslookup customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for customapi; sleep 2; done"]
       containers:
       - name: azure-pipeline-repo
-        image: psknowhow/azure-pipeline-repo:8.1.1
+        image: speedtools.azurecr.io/knowhow-azure-pipeline-repo:8.3.2-SNAPSHOT
         imagePullPolicy: Always
         env:
             - name: spring.data.mongodb.uri
@@ -60,6 +60,13 @@ spec:
                   key: uatknhdbpassword
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "0.5"
+        ports:
+        - containerPort: 50015
+        - containerPort: 50016
         envFrom:
         - configMapRef:
             name: knowhow-config
@@ -76,13 +83,7 @@ spec:
             volumeAttributes:
               secretProviderClass: "uat-secretproviderclass"
 
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "0.5"
-        ports:
-        - containerPort: 50015
-        - containerPort: 50016
+        
 
 ---
 apiVersion: v1
