@@ -30,41 +30,51 @@ spec:
             - name: spring.data.mongodb.uri
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
+                  name: uatknhdbconnectionstring
                   key: uatknhdbconnectionstring
             - name: spring.data.mongodb.host
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
+                  name: uatknhdbhost
                   key: uatknhdbhost
             
             - name: aesEncryptionKey
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
-                  key: knowhowaesEncryptionKey
+                  name: knowhowaesencryptionkeynew
+                  key: knowhowaesencryptionkeynew
             - name: auth.secret
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
+                  name: knowhow-auth-secret
                   key: knowhow-auth-secret
-
             - name: spring.data.mongodb.username
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
+                  name: uatknhdbusername
                   key: uatknhdbusername
             - name: spring.data.mongodb.password
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
+                  name: uatknhdbpassword
                   key: uatknhdbpassword
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
         envFrom:
         - configMapRef:
             name: knowhow-config
-
+        volumeMounts:
+            - name: knowhow-secrets-store
+              mountPath: "/mnt/uat-secrets-store"
+              readOnly: true
+      volumes:
+        - name: knowhow-secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "uat-secretproviderclass"
+              
         resources:
           requests:
             memory: "1Gi"
