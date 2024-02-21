@@ -18,7 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -43,12 +47,13 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author shi6
  */
-
 @Slf4j
 public final class IterationKpiHelper {
 
 	private IterationKpiHelper() {
 	}
+
+	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
 	/*
 	filter all jiraIssues
@@ -119,5 +124,39 @@ public final class IterationKpiHelper {
 		return KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail, completeIssueType, completionStatus,
 				projectIssueWiseClosedDates);
 	}
+
+	public static String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, List<String> fieldMapping) {
+		String devCompleteDate = Constant.DASH;
+		List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
+			devCompleteDate = filterStatusUpdationLog.stream()
+					.filter(jiraHistoryChangeLog -> fieldMapping.contains(jiraHistoryChangeLog.getChangedTo())
+							&& jiraHistoryChangeLog.getUpdatedOn() != null)
+					.findFirst()
+					.map(jiraHistoryChangeLog -> LocalDate
+							.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
+									DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT))
+							.toString())
+					.orElse(devCompleteDate);
+		}
+		return devCompleteDate;
+	}
+
+	// Filtering the history which happened inside the sprint on basis of activity
+	// date
+	public static List<JiraHistoryChangeLog> getInSprintStatusLogs(List<JiraHistoryChangeLog> issueHistoryLogs,
+															LocalDate sprintStartDate, LocalDate sprintEndDate) {
+		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(issueHistoryLogs)) {
+			filterStatusUpdationLogs = issueHistoryLogs.stream()
+					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(
+							LocalDate.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"),
+									DateTimeFormatter.ofPattern(TIME_FORMAT)),
+							sprintStartDate, sprintEndDate))
+					.collect(Collectors.toList());
+		}
+		return filterStatusUpdationLogs;
+	}
+
 
 }

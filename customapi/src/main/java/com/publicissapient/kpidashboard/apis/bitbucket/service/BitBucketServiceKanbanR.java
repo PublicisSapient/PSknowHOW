@@ -41,8 +41,8 @@ import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 
 import lombok.extern.slf4j.Slf4j;
@@ -116,12 +116,10 @@ public class BitBucketServiceKanbanR {
 				return (List<KpiElement>) cachedData;
 			}
 
-			TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, null,
-					filteredAccountDataList, filterHelperService.getFirstHierarachyLevel(), filterHelperService
-							.getHierarchyIdLevelMap(true).getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, 0));
-			for (KpiElement kpiEle : kpiRequest.getKpiList()) {
+			Node filteredNode = getFilteredNodes(kpiRequest, filteredAccountDataList);
 
-				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
+			for (KpiElement kpiEle : kpiRequest.getKpiList()) {
+				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
 			}
 
 			setIntoApplicationCache(kpiRequest, responseList, groupId, kanbanProjectKeyCache);
@@ -138,6 +136,14 @@ public class BitBucketServiceKanbanR {
 		}
 
 		return responseList;
+	}
+
+	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyDataKanban> filteredAccountDataList) {
+		Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
+		filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
+				filteredNode.getAccountHierarchyKanban().getBasicProjectConfigId()));
+
+		return filteredNode;
 	}
 
 	/**
@@ -166,15 +172,15 @@ public class BitBucketServiceKanbanR {
 
 	/**
 	 * Calculates aggregate metrics
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param kpiElement
-	 * @param treeAggregatorDetail
+	 * @param filteredNodeClone
 	 * @throws ApplicationException
 	 */
 	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-			KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+			KpiElement kpiElement, Node filteredNode) throws ApplicationException {
 
 		BitBucketKPIService<?, ?, ?> bitBucketKPIService = null;
 
@@ -184,9 +190,8 @@ public class BitBucketServiceKanbanR {
 
 		long startTime = System.currentTimeMillis();
 
-		TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-				.clone(treeAggregatorDetail);
-		responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
+		Node filteredNodeClone = (Node) SerializationUtils.clone(filteredNode);
+		responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, filteredNodeClone));
 
 		long processTime = System.currentTimeMillis() - startTime;
 		log.info("[BITBUCKET-KANBAN-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
@@ -196,7 +201,7 @@ public class BitBucketServiceKanbanR {
 
 	/**
 	 * Sets cache
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param groupId

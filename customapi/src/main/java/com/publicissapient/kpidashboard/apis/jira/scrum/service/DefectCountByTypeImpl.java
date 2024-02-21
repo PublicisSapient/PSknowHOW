@@ -31,18 +31,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -61,7 +59,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class DefectCountByTypeImpl extends JiraBacklogKPIService<Integer, List<Object>> {
 
 	private static final String PROJECT_WISE_JIRA_ISSUE = "Jira Issue";
 
@@ -73,34 +71,32 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 
 	/**
 	 *
-	 * @param kpiRequest kpiRequest with request details
-	 * @param kpiElement basic details of KPI
-	 * @param treeAggregatorDetail details of project nodes
+	 * @param kpiRequest
+	 *            kpiRequest with request details
+	 * @param kpiElement
+	 *            basic details of KPI
+	 * @param projectNode
+	 *            details of project nodes
 	 * @return KpiElement with data
-	 * @throws ApplicationException exception while processing request
+	 * @throws ApplicationException
+	 *             exception while processing request
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
-			Filters filters = Filters.getFilter(k);
-			if (Filters.PROJECT == filters) {
-				projectWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
+			throws ApplicationException {
+		projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
 		log.info("DefectCountByType -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (leafNode != null) {
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-			Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, "", "", kpiRequest);
+			Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, "", "", kpiRequest);
 			List<JiraIssue> jiraIssues = (List<JiraIssue>) resultMap.get(PROJECT_WISE_JIRA_ISSUE);
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
 			Set<String> excludeStatuses = getExcludeStatuses(fieldMapping);
@@ -128,17 +124,20 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 
 	/**
 	 *
-	 * @param leafNodeList project node details
-	 * @param startDate startDate
-	 * @param endDate endDate
-	 * @param kpiRequest kpiRequest with request details
+	 * @param leafNode
+	 *            project node details
+	 * @param startDate
+	 *            startDate
+	 * @param endDate
+	 *            endDate
+	 * @param kpiRequest
+	 *            kpiRequest with request details
 	 * @return JiraIssues with Original Types
 	 */
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (leafNode != null) {
 			log.info("Defect Count By Type kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -214,11 +213,6 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 	@Override
 	public String getQualifierType() {
 		return KPICode.DEFECT_COUNT_BY_TYPE.name();
-	}
-
-	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
 	}
 
 }

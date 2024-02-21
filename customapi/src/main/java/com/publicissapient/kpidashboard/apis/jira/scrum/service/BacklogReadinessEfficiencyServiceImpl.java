@@ -1,8 +1,24 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,13 +46,12 @@ import com.google.common.util.concurrent.AtomicDouble;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
@@ -45,7 +60,6 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -68,7 +82,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, List<Object>> {
 
 	public static final String UNCHECKED = "unchecked";
 	private static final double DEFAULT_BACKLOG_STRENGTH = 0.0;
@@ -108,19 +122,11 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 	 * Methods get the data for the KPI
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
+			throws ApplicationException {
 		log.info("Backlog readiness efficiency service {}", kpiRequest.getRequestTrackerId());
-
 		DataCount trendValue = new DataCount();
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			Filters filters = Filters.getFilter(k);
-			if (filters == Filters.SPRINT) {
-
-				projectWiseLeafNodeValue(v, trendValue, kpiElement, kpiRequest);
-			}
-		});
+		projectWiseLeafNodeValue(projectNode, trendValue, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
@@ -129,69 +135,51 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		return KPICode.BACKLOG_READINESS_EFFICIENCY.name();
 	}
 
-	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> subCategoryMap) {
-		return null;
-	}
-
 	/**
 	 * Fetches the data from the backlog where the story have completed the grooming
 	 * corresponding history and previous sprint data
 	 */
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		Map<String, Object> resultListMap = new HashMap<>();
 
-		List<JiraIssue> issues = getBackLogStory(leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
-		resultListMap.put(ISSUES, issues);
-
-		List<String> issueNumbers = issues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
-		List<JiraIssueCustomHistory> historyForIssues = jiraIssueCustomHistoryRepository.findByStoryIDIn(issueNumbers);
-		resultListMap.put(HISTORY, historyForIssues);
-
-		List<Node> sprintForStregthCalculation = leafNodeList.stream()
-				.limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
-
-		Map<String, Object> sprintVelocityStoryMap = kpiHelperService
-				.fetchBackLogReadinessFromdb(sprintForStregthCalculation, kpiRequest);
-
-		resultListMap.putAll(sprintVelocityStoryMap);
-
-		return resultListMap;
+		return new HashMap<>();
 	}
 
 	/**
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint level.
 	 *
-	 * @param sprintLeafNodeList
-	 *            sprintLeafNodeList
-	 * @param trendValue
-	 *            trendValue
+	 * @param projectNode
 	 * @param kpiElement
-	 *            kpiElement
 	 * @param kpiRequest
-	 *            kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue, KpiElement kpiElement,
+	private void projectWiseLeafNodeValue(Node projectNode, DataCount trendValue, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
-
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
-		List<Node> latestSprintNode = new ArrayList<>();
-		Node latestSprint = sprintLeafNodeList.get(0);
-		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
-		FieldMapping fieldMapping = latestSprint != null
-				? configHelperService.getFieldMappingMap()
-						.get(latestSprint.getProjectFilter().getBasicProjectConfigId())
+		FieldMapping fieldMapping = projectNode != null
+				? configHelperService.getFieldMappingMap().get(projectNode.getProjectFilter().getBasicProjectConfigId())
 				: new FieldMapping();
 
-		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
+		Map<String, Object> resultMap = new HashMap<>();
 
-		Double avgVelocity = getAverageSprintCapacity(sprintLeafNodeList,
+		List<JiraIssue> jiraIssues = getBackLogStory(projectNode.getProjectFilter().getBasicProjectConfigId());
+		resultMap.put(ISSUES, jiraIssues);
+
+		List<String> issueNumbers = jiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = getJiraIssuesCustomHistoryFromBaseClass();
+		List<JiraIssueCustomHistory> customHistoryForIssues = jiraIssueCustomHistories.stream()
+				.filter(history -> issueNumbers.contains(history.getStoryID())).collect(Collectors.toList());
+
+		resultMap.put(HISTORY, customHistoryForIssues);
+
+		Map<String, Object> sprintVelocityStoryMap = kpiHelperService.fetchBackLogReadinessFromdb(kpiRequest,
+				projectNode);
+
+		resultMap.putAll(sprintVelocityStoryMap);
+
+		Double avgVelocity = getAverageSprintCapacity(projectNode,
 				(List<SprintDetails>) resultMap.get(SPRINT_WISE_SPRINT_DETAIL_MAP),
 				(List<JiraIssue>) resultMap.get(SPRINT_VELOCITY_KEY), fieldMapping);
 
@@ -313,8 +301,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 	/**
 	 * Gets the sprint velocity of n number of previous sprint
 	 *
-	 * @param leafNodeList
-	 *            leafNodeList
+	 * @param leafNode
+	 *            leafNode
 	 * @param sprintDetails
 	 *            sprintDetails
 	 * @param allJiraIssue
@@ -323,31 +311,31 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 	 *            fieldMapping
 	 * @return averageVelocity
 	 */
-	private Double getAverageSprintCapacity(List<Node> leafNodeList, List<SprintDetails> sprintDetails,
+	private Double getAverageSprintCapacity(Node leafNode, List<SprintDetails> sprintDetails,
 			List<JiraIssue> allJiraIssue, FieldMapping fieldMapping) {
 		int sprintCountForBackLogStrength = customApiConfig.getSprintCountForBackLogStrength();
-		List<Node> inputNodes = new ArrayList<>(leafNodeList);
-		Collections.reverse(inputNodes);
+		AtomicDouble storyPoint = new AtomicDouble();
+		if (!sprintDetails.isEmpty()) {
+			List<SprintDetails> sprintForStregthCalculation = sprintDetails.stream()
+					.filter(sprintDetail -> null != sprintDetail.getEndDate()
+							&& DateTime.parse(sprintDetail.getEndDate()).isBefore(DateTime.now()))
+					.limit(sprintCountForBackLogStrength).toList();
 
-		List<Node> sprintForStregthCalculation = inputNodes.stream()
-				.filter(node -> null != node.getSprintFilter().getEndDate()
-						&& DateTime.parse(node.getSprintFilter().getEndDate()).isBefore(DateTime.now()))
-				.limit(sprintCountForBackLogStrength).collect(Collectors.toList());
-
-		if (CollectionUtils.isNotEmpty(sprintForStregthCalculation)) {
-			Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
-			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap = new HashMap<>();
-			getSprintForProject(allJiraIssue, sprintDetails, currentSprintLeafVelocityMap);
-			AtomicDouble storyPoint = new AtomicDouble();
-			sprintForStregthCalculation.forEach(node -> {
-				Pair<String, String> currentNodeIdentifier = Pair.of(
-						node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
-				double sprintVelocityForCurrentLeaf = calculateSprintVelocityValue(currentSprintLeafVelocityMap,
-						currentNodeIdentifier, sprintWiseIssues, fieldMapping);
-				storyPoint.set(storyPoint.doubleValue() + sprintVelocityForCurrentLeaf);
-			});
-			log.debug("Velocity for {} sprints is {}", sprintForStregthCalculation.size(), storyPoint.get());
-			return storyPoint.get() / sprintForStregthCalculation.size();
+			if (CollectionUtils.isNotEmpty(sprintForStregthCalculation)) {
+				Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
+				Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap = new HashMap<>();
+				getSprintForProject(allJiraIssue, sprintDetails, currentSprintLeafVelocityMap);
+				sprintForStregthCalculation.forEach(sprintDetail -> {
+					Pair<String, String> currentNodeIdentifier = Pair.of(
+							leafNode.getProjectFilter().getBasicProjectConfigId().toString(),
+							sprintDetail.getSprintID());
+					double sprintVelocityForCurrentLeaf = calculateSprintVelocityValue(currentSprintLeafVelocityMap,
+							currentNodeIdentifier, sprintWiseIssues, fieldMapping);
+					storyPoint.set(storyPoint.doubleValue() + sprintVelocityForCurrentLeaf);
+				});
+				log.debug("Velocity for {} sprints is {}", sprintCountForBackLogStrength, storyPoint.get());
+				return storyPoint.get() / sprintForStregthCalculation.size();
+			}
 		}
 		return 0D;
 	}

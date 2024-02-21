@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,7 +85,7 @@ public class ReleaseEpicProgressServiceImplTest {
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
-	JiraServiceR jiraService;
+	JiraReleaseServiceR jiraService;
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
 	@InjectMocks
@@ -156,7 +157,7 @@ public class ReleaseEpicProgressServiceImplTest {
 				.thenReturn(epic);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssueArrayList);
-		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(leafNodeList, "", "", kpiRequest);
+		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(leafNodeList.get(0), "", "", kpiRequest);
 
 		assertThat(resultListMap).isNotEmpty();
 		assertThat(resultListMap.containsKey(TOTAL_ISSUES)).isTrue();
@@ -180,7 +181,7 @@ public class ReleaseEpicProgressServiceImplTest {
 				leafNodeList.addAll(v);
 			}
 		});
-		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(leafNodeList, "", "", kpiRequest);
+		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(leafNodeList.get(0), "", "", kpiRequest);
 		assertThat(((Set<JiraIssue>) resultListMap.get(EPIC_LINKED)).size()).isEqualTo(0);
 	}
 
@@ -258,7 +259,7 @@ public class ReleaseEpicProgressServiceImplTest {
 				.forEach(jiraIssue -> jiraIssue.setEpicLinked("EPIC-1"));
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssueArrayList);
 		KpiElement kpiElement = epicProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
@@ -283,7 +284,7 @@ public class ReleaseEpicProgressServiceImplTest {
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssueArrayList);
 		when(jiraService.getSubTaskDefects()).thenReturn(jiraIssueArrayList.stream().filter(defect->defect.getTypeName().equalsIgnoreCase("bug")).collect(Collectors.toSet()));
 		KpiElement kpiElement = epicProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 

@@ -49,7 +49,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -66,7 +66,7 @@ public class FlowDistributionServiceImplTest {
 	@Mock
 	CacheService cacheService;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraBacklogServiceR jiraService;
 	List<JiraIssueCustomHistory> customHistoryList = new ArrayList<>();
 	@InjectMocks
 	private FlowDistributionServiceImpl flowDistributionService;
@@ -116,7 +116,7 @@ public class FlowDistributionServiceImplTest {
 		customHistoryList.get(0).setCreatedDate(DateTime.now());
 		try {
 			KpiElement kpiElement = flowDistributionService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			assertNotNull(kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {

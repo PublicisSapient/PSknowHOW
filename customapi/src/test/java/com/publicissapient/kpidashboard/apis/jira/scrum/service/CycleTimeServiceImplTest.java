@@ -128,17 +128,9 @@ public class CycleTimeServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(anyMap(), anyMap(),
 				anyString(), anyString())).thenReturn(totalJiraIssueHistoryList);
-		Map<String, Object> sprintDataListMap = cycleTimeService.fetchKPIDataFromDb(leafNodeList,
+		Map<String, Object> sprintDataListMap = cycleTimeService.fetchKPIDataFromDb(leafNodeList.get(0),
 				LocalDate.now().minusMonths(6).toString(), LocalDate.now().toString(), kpiRequest);
 		assertNotNull(sprintDataListMap);
-	}
-
-	@Test
-	public void testFetchKPIDataFromDbData() throws ApplicationException {
-		List<Node> leafNodeList = new ArrayList<>();
-		Map<String, Object> sprintDataListMap = cycleTimeService.fetchKPIDataFromDb(leafNodeList,
-				LocalDate.now().minusMonths(2).toString(), LocalDate.now().toString(), kpiRequest);
-		assertEquals(1, sprintDataListMap.size());
 	}
 
 	@Test
@@ -166,7 +158,7 @@ public class CycleTimeServiceImplTest {
 //				.thenReturn(kpiRequestTrackerId);
 
 		KpiElement responseKpiElement = cycleTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		assertNotNull(responseKpiElement);
 		int size = ((List<IterationKpiValue>) ((DataCount) responseKpiElement.getTrendValueList()).getValue()).size();
 		assertEquals(3, size);
@@ -175,11 +167,6 @@ public class CycleTimeServiceImplTest {
 	@Test
 	public void testGetQualifierType() {
 		assertThat(cycleTimeService.getQualifierType(), equalTo("CYCLE_TIME"));
-	}
-
-	@Test
-	public void calculateKPIMetrics() {
-		assertNull(cycleTimeService.calculateKPIMetrics(new HashMap<>()));
 	}
 
 }

@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,13 +35,12 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -58,7 +56,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class ReleaseDefectByTestPhaseImpl extends JiraReleaseKPIService {
 
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String DEFECTS_COUNT = "Defects Count";
@@ -75,41 +73,32 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 	 *            kpiRequest with request details
 	 * @param kpiElement
 	 *            basic details of KPI
-	 * @param treeAggregatorDetail
+	 * @param releaseNode
 	 *            details of project nodes
 	 * @return KpiElement with data
 	 * @throws ApplicationException
 	 *             exception while processing request
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.RELEASE) {
-				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
+			throws ApplicationException {
+		releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
 		log.info("ReleaseDefectByTestPhaseImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		List<Node> latestReleaseNode = new ArrayList<>();
-		Node latestRelease = releaseLeafNodeList.get(0);
 
 		if (latestRelease != null) {
-			Optional.of(latestRelease).ifPresent(latestReleaseNode::add);
-			Map<String, Object> resultMap = fetchKPIDataFromDb(latestReleaseNode, null, null, kpiRequest);
+			Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 			List<JiraIssue> releaseIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
-			Node leafNode = latestReleaseNode.stream().findFirst().orElse(null);
-			if (CollectionUtils.isNotEmpty(releaseIssues) && leafNode != null) {
+			if (CollectionUtils.isNotEmpty(releaseIssues)) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+						.get(latestRelease.getProjectFilter().getBasicProjectConfigId());
 				populateExcelDataObject(requestTrackerId, excelData, releaseIssues);
 				createExcelDataAndTrendValueList(kpiElement, filterDataList, releaseIssues, fieldMapping, excelData,
 						latestRelease);
@@ -120,7 +109,7 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 
 	/**
 	 *
-	 * @param leafNodeList
+	 * @param leafNode
 	 *            project node details
 	 * @param startDate
 	 *            startDate
@@ -131,10 +120,9 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 	 * @return JiraIssues with test phases
 	 */
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("ReleaseDefectByTestPhaseImpl -> Requested sprint : {}", leafNode.getName());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -224,11 +212,6 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 				.collect(Collectors.toSet());
 		dataCount.setValue(dataCountList);
 		return dataCount;
-	}
-
-	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
 	}
 
 	@Override

@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,13 +39,12 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.apis.util.ReleaseKpiHelper;
@@ -66,7 +64,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class ReleaseEpicProgressServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class ReleaseEpicProgressServiceImpl extends JiraReleaseKPIService {
 
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String EPIC_LINKED = "epicLinked";
@@ -84,38 +82,30 @@ public class ReleaseEpicProgressServiceImpl extends JiraKPIService<Integer, List
 	private CommonServiceImpl commonService;
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.RELEASE) {
-				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
+			throws ApplicationException {
+		releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
 		log.info("ReleaseEpicProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
 	/**
 	 * release wise processing
-	 * 
-	 * @param releaseLeafNodeList
+	 *
+	 * @param latestRelease
 	 *            releaseLeafNodeList
 	 * @param kpiElement
 	 *            kpiElement
 	 * @param kpiRequest
 	 *            kpiElement
 	 */
-	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		List<Node> latestReleaseNode = new ArrayList<>();
-		Node latestRelease = releaseLeafNodeList.get(0);
 		if (latestRelease != null) {
 			Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			Optional.ofNullable(latestRelease).ifPresent(latestReleaseNode::add);
-			Map<String, Object> resultMap = fetchKPIDataFromDb(latestReleaseNode, null, null, kpiRequest);
+			Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 			List<JiraIssue> releaseIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
 			Set<JiraIssue> epicIssues = (Set<JiraIssue>) resultMap.get(EPIC_LINKED);
 			JiraIssueReleaseStatus jiraIssueReleaseStatus = (JiraIssueReleaseStatus) resultMap
@@ -140,10 +130,9 @@ public class ReleaseEpicProgressServiceImpl extends JiraKPIService<Integer, List
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Epic Progress -> Requested sprint : {}", leafNode.getName());
 			List<JiraIssue> releaseIssues = ReleaseKpiHelper
@@ -205,7 +194,7 @@ public class ReleaseEpicProgressServiceImpl extends JiraKPIService<Integer, List
 	}
 
 	/**
-	 * 
+	 *
 	 * @param jiraIssueList
 	 *            jiraIssueList
 	 * @param jiraIssueReleaseStatus
@@ -262,7 +251,7 @@ public class ReleaseEpicProgressServiceImpl extends JiraKPIService<Integer, List
 
 	/**
 	 * create drill down
-	 * 
+	 *
 	 * @param issueCountStatusMap
 	 *            issueCountStatusMap
 	 * @param releaseStatus
@@ -308,11 +297,6 @@ public class ReleaseEpicProgressServiceImpl extends JiraKPIService<Integer, List
 					.collect(Collectors.toMap(JiraIssue::getNumber, jiraIssue -> jiraIssue));
 			KPIExcelUtility.populateEpicProgessExcelData(epicWiseIssueSize, epicWiseJiraIssue, excelData);
 		}
-	}
-
-	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
 	}
 
 	@Override

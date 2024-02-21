@@ -22,6 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -171,11 +172,6 @@ public class JiraServiceRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMapping.setJiraSubTaskDefectType(Arrays.asList("Bug"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-
-		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
-		List<SprintDetails> sprintDetails = sprintDetailsDataFactory.getSprintDetails();
-		when(sprintRepository.findBySprintIDIn(anyList())).thenReturn(sprintDetails);
 
 	}
 
@@ -206,7 +202,8 @@ public class JiraServiceRTest {
 		// .thenReturn(new ArrayList<KpiElement>());
 		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
 				.thenReturn(new ArrayList<KpiElement>());
-		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
@@ -223,98 +220,7 @@ public class JiraServiceRTest {
 		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
-		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
-		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-	}
-
-	@Test
-	public void TestProcess_IterationCategory() throws Exception {
-		KpiRequest kpiRequest = createKpiRequest(4);
-		List<KpiElement> kpiList = kpiRequest.getKpiList();
-		kpiList.forEach(element -> element.setKpiCategory(CommonConstant.ITERATION));
-		Map<String, Integer> map = new HashMap<>();
-		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
-		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
-		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
-		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
-		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
-				.newInstance("/json/default/iteration/jira_issue_custom_history.json");
-		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
-		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), anyString()))
-				.thenReturn(jiraIssueDataFactory.getJiraIssues());
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(anyList(), anyList()))
-				.thenReturn(jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory());
-		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-	}
-
-	@Test
-	public void TestProcess_ReleaseCategory() throws Exception {
-		KpiRequest kpiRequest = createKpiRequest(4);
-		List<KpiElement> kpiList = kpiRequest.getKpiList();
-		kpiList.forEach(element -> element.setKpiCategory(CommonConstant.RELEASE));
-		Map<String, Integer> map = new HashMap<>();
-		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
-		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
-		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
-		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance("/json/default/account_hierarchy_filter_data_release.json");
-		List<AccountHierarchyData> releaseAccountHirarchyList = accountHierarchyFilterDataFactory
-				.getAccountHierarchyDataList();
-
-		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(releaseAccountHirarchyList);
-		when(authorizedProjectsService.getProjectKey(releaseAccountHirarchyList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.filterProjects(releaseAccountHirarchyList))
-				.thenReturn(releaseAccountHirarchyList);
-		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
-				.newInstance("/json/default/iteration/jira_issue_custom_history.json");
-
-		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
-		when(jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(anyString(), anyList()))
-				.thenReturn(jiraIssueDataFactory.getJiraIssues());
-//		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(anyList(), anyList()))
-//				.thenReturn(jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory());
-
-		when(jiraIssueRepository.findByBasicProjectConfigIdAndDefectStoryIDInAndOriginalTypeIn(anyString(), anySet(),
-				anyList())).thenReturn(new HashSet<>());
-		JiraIssueReleaseStatusDataFactory jiraIssueReleaseStatusDataFactory = JiraIssueReleaseStatusDataFactory
-				.newInstance("/json/default/jira_issue_release_status.json");
-		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId((anyString())))
-				.thenReturn(jiraIssueReleaseStatusDataFactory.getJiraIssueReleaseStatusList().get(0));
-
-		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-	}
-
-	@Test
-	public void TestProcess_BacklogCategory() throws Exception {
-		KpiRequest kpiRequest = createKpiRequest(4);
-		List<KpiElement> kpiList = kpiRequest.getKpiList();
-		kpiList.forEach(element -> element.setKpiCategory(CommonConstant.BACKLOG));
-		Map<String, Integer> map = new HashMap<>();
-		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
-		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
-		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
-		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
-		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
-				.newInstance("/json/default/iteration/jira_issue_custom_history.json");
-		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
-//		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), anyString()))
-//				.thenReturn(jiraIssueDataFactory.getJiraIssues());
-//		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(anyList(), anyList()))
-//				.thenReturn(jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory());
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 	}
 
@@ -364,8 +270,15 @@ public class JiraServiceRTest {
 			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TOTAL_DEFECT_COUNT.name()))
 					.thenReturn(mcokAbstract);
 		}
-		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
-
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 //		when(mcokAbstract.getKpiData(any(), any(), any())).thenReturn(rcaKpiElement);
 
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
@@ -403,8 +316,15 @@ public class JiraServiceRTest {
 					.thenReturn(mcokAbstract);
 		}
 
-		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
-
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 //		when(mcokAbstract.getKpiData(any(), any(), any())).thenReturn(rcaKpiElement);
 
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);

@@ -51,7 +51,7 @@ import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -91,7 +91,7 @@ public class RefinementRejectionRateServiceImplTest {
 	@Mock
 	private KpiHelperService kpiHelperService;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraBacklogServiceR jiraService;
 
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
@@ -142,8 +142,9 @@ public class RefinementRejectionRateServiceImplTest {
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.anyList(),
 				Mockito.anyList())).thenReturn(unassignedJiraHistoryDataList);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
-		Map<String, Object> responseRefinementList = refinementRejectionRateService.fetchKPIDataFromDb(leafNodeList,
-				customDateRange.getStartDate().toString(), customDateRange.getEndDate().toString(), kpiRequest);
+		Map<String, Object> responseRefinementList = refinementRejectionRateService.fetchKPIDataFromDb(
+				leafNodeList.get(0), customDateRange.getStartDate().toString(), customDateRange.getEndDate().toString(),
+				kpiRequest);
 		assertNotNull(responseRefinementList);
 		assertNotNull(responseRefinementList.get(UNASSIGNED_JIRA_ISSUE));
 		assertNotNull(responseRefinementList.get(UNASSIGNED_JIRA_ISSUE_HISTORY));
@@ -160,7 +161,8 @@ public class RefinementRejectionRateServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
 		KpiElement responseKpiElement = refinementRejectionRateService.getKpiData(kpiRequest,
-				kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+				kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 
 		assertNotNull(responseKpiElement);
 		assertNotNull(responseKpiElement.getTrendValueList());

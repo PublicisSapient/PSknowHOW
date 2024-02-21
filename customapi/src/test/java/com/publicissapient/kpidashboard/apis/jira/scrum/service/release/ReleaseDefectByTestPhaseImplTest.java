@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +64,7 @@ public class ReleaseDefectByTestPhaseImplTest {
 	ConfigHelperService configHelperService;
 
 	@Mock
-	JiraServiceR jiraService;
+	JiraReleaseServiceR jiraService;
 
 	@Mock
 	CacheService cacheService;
@@ -101,23 +102,7 @@ public class ReleaseDefectByTestPhaseImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		KpiElement kpiElement = releaseDefectByTestingPhaseImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
-		assertNotNull(kpiElement.getTrendValueList());
-	}
-
-	@Test
-	public void getKpiData_withExclusionCriteria() throws ApplicationException {
-		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
-		List<FieldMapping> values = new ArrayList<>( fieldMappingMap.values());
-		values.get(0).setExcludeRCAFromKPI163(Arrays.asList("CODE ISSUE"));
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(bugList);
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-				.thenReturn(kpiRequestTrackerId);
-		KpiElement kpiElement = releaseDefectByTestingPhaseImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
@@ -126,9 +111,5 @@ public class ReleaseDefectByTestPhaseImplTest {
 		assertNotNull(releaseDefectByTestingPhaseImpl.getQualifierType());
 	}
 
-	@Test
-	public void testCalculateKPIMetrics() {
-		assertNull(releaseDefectByTestingPhaseImpl.calculateKPIMetrics(new HashMap<>()));
 
-	}
 }

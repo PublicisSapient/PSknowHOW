@@ -241,7 +241,7 @@ public class CodeCommitServiceImplTest {
 
 		try {
 			KpiElement kpiElement = codeCommitServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}
@@ -263,7 +263,7 @@ public class CodeCommitServiceImplTest {
 		maturityRangeMap.put("codeCommit", Arrays.asList("0", "2", "4", "8", "32"));
 		try {
 			KpiElement kpiElement = codeCommitServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 
@@ -284,7 +284,7 @@ public class CodeCommitServiceImplTest {
 
 		try {
 			KpiElement kpiElement = codeCommitServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}
@@ -302,7 +302,7 @@ public class CodeCommitServiceImplTest {
 
 		try {
 			KpiElement kpiElement = codeCommitServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}
@@ -320,7 +320,7 @@ public class CodeCommitServiceImplTest {
 
 		try {
 			KpiElement kpiElement = codeCommitServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}

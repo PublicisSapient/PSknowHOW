@@ -21,12 +21,15 @@ package com.publicissapient.kpidashboard.apis.kpiintegration.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.NonTrendServiceFactory;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -80,6 +83,9 @@ public class KpiIntegrationServiceImpl {
 
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
+
+	@Autowired
+	NonTrendServiceFactory serviceFactory;
 
 	/**
 	 * get kpi element list with maturity assuming req for hierarchy level 4
@@ -185,7 +191,18 @@ public class KpiIntegrationServiceImpl {
 		log.info("Received Jira KPI request {}", kpiRequest);
 		long jiraRequestStartTime = System.currentTimeMillis();
 		MDC.put("JiraRequestStartTime", String.valueOf(jiraRequestStartTime));
-		List<KpiElement> responseList = jiraService.processWithExposedApiToken(kpiRequest);
+		HashSet<String> category = new HashSet<>();
+		category.add(CommonConstant.ITERATION);
+		category.add(CommonConstant.RELEASE);
+		category.add(CommonConstant.BACKLOG);
+		List<KpiElement> responseList;
+		if (category.contains(kpiRequest.getKpiList().get(0).getKpiCategory())) {
+			//when request coming from ITERATION/RELEASE/BACKLOG board
+			responseList = serviceFactory.getService(kpiRequest.getKpiList().get(0).getKpiCategory())
+						.processWithExposedApiToken(kpiRequest);
+		} else {
+			responseList = jiraService.processWithExposedApiToken(kpiRequest);
+		}
 		MDC.put("TotalJiraRequestTime", String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
 		MDC.clear();
 		return responseList;

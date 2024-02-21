@@ -389,10 +389,17 @@ export class HttpService {
     );
   }
 
-  /** POST: This make kpi call of scrum */
-  postKpi(data, source): Observable<any> {
+   /** POST: This make kpi call of scrum */
+   postKpi(data, source): Observable<any> {
     return this.http
-      .post<any>(this.getDataUrl + source + '/kpi', data)
+    .post<any>(this.getDataUrl + source + '/kpi', data)
+      .pipe(catchError(this.handleKpiError));
+  }
+
+  /** POST: This make kpi call for Iterartion/Backlog/Release tabs */
+  postKpiNonTrend(data, source): Observable<any> {
+    return this.http
+      .post<any>(this.getDataUrl + source + '/nonTrend' + '/kpi', data)
       .pipe(catchError(this.handleKpiError));
   }
 

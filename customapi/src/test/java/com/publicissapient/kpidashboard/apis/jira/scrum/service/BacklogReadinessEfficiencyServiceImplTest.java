@@ -19,6 +19,7 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -30,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -73,7 +77,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 /**
  * Test class for @{BacklogReadinessEfficiencyServiceImpl}
- * 
+ *
  * @author dhachuda
  *
  */
@@ -89,7 +93,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 	@Mock
 	private KpiHelperService kpiHelperService;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraBacklogServiceR jiraService;
 	@Mock
 	private SprintVelocityServiceHelper velocityServiceHelper;
 	@Mock
@@ -98,6 +102,8 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
+	@Mock
+	private FilterHelperService filterHelperService;
 
 	private KpiRequest kpiRequest;
 	private List<JiraIssue> storyList = new ArrayList<>();
@@ -127,6 +133,10 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi138");
 		kpiRequest.setLabel("PROJECT");
+		List<String> sprintList = List.of("38296_Scrum Project_6335363749794a18e8a4479b");
+		Map<String,List<String>> stringListMap=new HashMap<>();
+		stringListMap.put("sprint",sprintList);
+		kpiRequest.setSelectedMap(stringListMap);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
@@ -147,7 +157,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 	@Test
 	public void testGetKpiDataProject_closedSprint() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 4);
 
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		sprintDetailsList.add(sprintDetails);
@@ -172,9 +182,10 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(backlogReadinessEfficiencyServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(customApiConfig.getSprintCountForBackLogStrength()).thenReturn(5);
+		when(filterHelperService.getFilteredBuilds(any(),any())).thenReturn(accountHierarchyDataList);
 		try {
 			KpiElement kpiElement = backlogReadinessEfficiencyServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+					kpiRequest.getKpiList().get(0), treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {

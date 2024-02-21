@@ -46,7 +46,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -62,7 +62,7 @@ public class BackLogCountByStatusServiceImplTest {
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraBacklogServiceR jiraService;
 	@InjectMocks
 	private BackLogCountByStatusServiceImpl backLogCountByStatusService;
 	private KpiRequest kpiRequest;
@@ -105,7 +105,7 @@ public class BackLogCountByStatusServiceImplTest {
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(issueList);
 		try {
 			KpiElement kpiElement = backLogCountByStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			assertNotNull(kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {

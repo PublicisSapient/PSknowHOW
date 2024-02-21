@@ -183,11 +183,6 @@ public class LeadTimeServiceImplTest {
 	}
 
 	@Test
-	public void testCalculateKPIMetrics() {
-		assertThat(leadTimeService.calculateKPIMetrics(null), equalTo(0L));
-	}
-
-	@Test
 	public void testFetchKPIDataFromDBData() throws ApplicationException {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
@@ -198,7 +193,7 @@ public class LeadTimeServiceImplTest {
 		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(any(), any(), any(), any()))
 				.thenReturn(jiraIssueCustomHistories);
 
-		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
+		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList.get(0), null, null, kpiRequest);
 		List<JiraIssueCustomHistory> dataMap = (List<JiraIssueCustomHistory>) resultListMap.get(STORY_HISTORY_DATA);
 		assertThat("Lead Time Data :", dataMap.size(), equalTo(92));
 	}
@@ -218,7 +213,7 @@ public class LeadTimeServiceImplTest {
 		try {
 
 			KpiElement responseKpiElement = leadTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			assertNotNull(responseKpiElement);
 			assertEquals(responseKpiElement.getKpiId(), kpiRequest.getKpiList().get(0).getKpiId());
 		} catch (ApplicationException enfe) {
