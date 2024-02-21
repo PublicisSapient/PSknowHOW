@@ -24,6 +24,7 @@ import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getF
 import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.transformIterSprintdetail;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -334,10 +335,12 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
 			jiraIssueModalObject.setPotentialDelay(iterationPotentialDelay.getPotentialDelay() + "d");
-			if (DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
-					.compareTo(LocalDate.parse(iterationPotentialDelay.getPredictedCompletedDate())) >= 0) {
-				if (DateUtil.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC)
-						.compareTo(LocalDate.parse(iterationPotentialDelay.getPredictedCompletedDate())) <= 1) {
+			final LocalDate sprintEndDate = DateUtil.stringToLocalDate(sprintDetails.getEndDate(),
+					DateUtil.TIME_FORMAT_WITH_SEC);
+			final LocalDate predictCompletionDate = LocalDate
+					.parse(iterationPotentialDelay.getPredictedCompletedDate());
+			if (!sprintEndDate.isBefore(predictCompletionDate)) {
+				if (ChronoUnit.DAYS.between(predictCompletionDate, sprintEndDate) < 2) {
 					markerValue = Constant.AMBER;
 				}
 			} else {
@@ -353,5 +356,4 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 		}
 		jiraIssueModalObject.setMarker(markerValue);
 	}
-
 }
