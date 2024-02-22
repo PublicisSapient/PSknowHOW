@@ -72,4 +72,10 @@
     <div *ngSwitchCase="'dropdown'">
         <app-additional-filter-field [fieldMappingMetaData]="fieldMappingMetaData"  (additionalFilterChange)="setAdditionalFilterValue($event)"></app-additional-filter-field>
     </div>
+
+    <div *ngSwitchCase="'conditionalinput'">
+        <app-conditional-input id="fieldConfig?.fieldName" name="fieldConfig?.fieldName" ngDefaultControl 
+        [(ngModel)]="value" (conditionalInputChange)="setValueConditionalInput($event)" [fieldConfig]="fieldConfig" 
+        [id]="fieldConfig?.fieldName"></app-conditional-input>
+    </div>
 </div>

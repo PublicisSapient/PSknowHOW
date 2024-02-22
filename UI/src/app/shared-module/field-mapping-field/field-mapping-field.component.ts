@@ -39,7 +39,6 @@ export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor 
   value;
   isDisabled = false;
 
-  constructor() { }
   onChange = (val) => {
   };
   onTouched = () => { };
@@ -63,6 +62,17 @@ export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor 
     this.onChange(this.value);
   }
 
+  setValueConditionalInput(event) {
+    this.value = event.map((val) => {
+      return {
+        'labelValue': val.labelValue,
+        'countValue': val.countValue
+      }
+    });
+
+    this.onChange(this.value);
+  }
+
   resetRadioButton(fieldName) {
     this.value = true;
     this.setValue();
@@ -79,10 +89,10 @@ export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor 
 
   enterNumericValue(event) {
     if (!!event && !!event.preventDefault && event.key === '.' || event.key === 'e' || event.key === '-' || event.key === '+') {
-        event.preventDefault();
-        return;
+      event.preventDefault();
+      return;
     }
-}
+  }
   numericInputUpDown(event: any) {
     this.setValue();
   }
