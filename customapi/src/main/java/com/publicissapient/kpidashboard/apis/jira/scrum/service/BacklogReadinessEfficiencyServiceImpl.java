@@ -164,105 +164,107 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService
 
 		Map<String, Object> resultMap = new HashMap<>();
 
-		List<JiraIssue> jiraIssues = getBackLogStory(projectNode.getProjectFilter().getBasicProjectConfigId());
-		resultMap.put(ISSUES, jiraIssues);
+		if (projectNode != null) {
+			List<JiraIssue> jiraIssues = getBackLogStory(projectNode.getProjectFilter().getBasicProjectConfigId());
+			resultMap.put(ISSUES, jiraIssues);
 
-		List<String> issueNumbers = jiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
-		List<JiraIssueCustomHistory> jiraIssueCustomHistories = getJiraIssuesCustomHistoryFromBaseClass();
-		List<JiraIssueCustomHistory> customHistoryForIssues = jiraIssueCustomHistories.stream()
-				.filter(history -> issueNumbers.contains(history.getStoryID())).collect(Collectors.toList());
+			List<String> issueNumbers = jiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
+			List<JiraIssueCustomHistory> jiraIssueCustomHistories = getJiraIssuesCustomHistoryFromBaseClass();
+			List<JiraIssueCustomHistory> customHistoryForIssues = jiraIssueCustomHistories.stream()
+					.filter(history -> issueNumbers.contains(history.getStoryID())).collect(Collectors.toList());
 
-		resultMap.put(HISTORY, customHistoryForIssues);
+			resultMap.put(HISTORY, customHistoryForIssues);
 
-		Map<String, Object> sprintVelocityStoryMap = kpiHelperService.fetchBackLogReadinessFromdb(kpiRequest,
-				projectNode);
+			Map<String, Object> sprintVelocityStoryMap = kpiHelperService.fetchBackLogReadinessFromdb(kpiRequest,
+					projectNode);
 
-		resultMap.putAll(sprintVelocityStoryMap);
+			resultMap.putAll(sprintVelocityStoryMap);
 
-		Double avgVelocity = getAverageSprintCapacity(projectNode,
-				(List<SprintDetails>) resultMap.get(SPRINT_WISE_SPRINT_DETAIL_MAP),
-				(List<JiraIssue>) resultMap.get(SPRINT_VELOCITY_KEY), fieldMapping);
+			Double avgVelocity = getAverageSprintCapacity(projectNode,
+					(List<SprintDetails>) resultMap.get(SPRINT_WISE_SPRINT_DETAIL_MAP),
+					(List<JiraIssue>) resultMap.get(SPRINT_VELOCITY_KEY), fieldMapping);
 
-		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
-		if (CollectionUtils.isNotEmpty(allIssues)) {
-			log.info("Backlog items ready for development -> request id : {} total jira Issues : {}", requestTrackerId,
-					allIssues.size());
-			List<JiraIssueCustomHistory> historyForIssues = (List<JiraIssueCustomHistory>) resultMap.get(HISTORY);
-			Map<String, Map<String, List<JiraIssue>>> typeAndPriorityWiseIssues = allIssues.stream().collect(
-					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getPriority)));
+			List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
+			if (CollectionUtils.isNotEmpty(allIssues)) {
+				log.info("Backlog items ready for development -> request id : {} total jira Issues : {}", requestTrackerId,
+						allIssues.size());
+				List<JiraIssueCustomHistory> historyForIssues = (List<JiraIssueCustomHistory>) resultMap.get(HISTORY);
+				Map<String, Map<String, List<JiraIssue>>> typeAndPriorityWiseIssues = allIssues.stream().collect(
+						Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getPriority)));
 
-			Set<String> issueTypes = new HashSet<>();
-			Set<String> priorities = new HashSet<>();
-			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
-			List<Integer> overAllIssueCount = Arrays.asList(0);
-			List<Double> overAllStoryPoints = Arrays.asList(0.0D);
-			AtomicLong overAllCycleTime = new AtomicLong(0);
-			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
+				Set<String> issueTypes = new HashSet<>();
+				Set<String> priorities = new HashSet<>();
+				List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
+				List<Integer> overAllIssueCount = Arrays.asList(0);
+				List<Double> overAllStoryPoints = Arrays.asList(0.0D);
+				AtomicLong overAllCycleTime = new AtomicLong(0);
+				List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 
-			typeAndPriorityWiseIssues
-					.forEach((issueType, priorityWiseIssue) -> priorityWiseIssue.forEach((priority, issues) -> {
-						issueTypes.add(issueType);
-						priorities.add(priority);
-						int issueCount = 0;
-						Double storyPoint = 0.0D;
-						long cycleTime = 0;
-						List<IterationKpiModalValue> modalValues = new ArrayList<>();
-						for (JiraIssue jiraIssue : issues) {
-							populateBackLogData(overAllmodalValues, modalValues, jiraIssue);
-							issueCount = issueCount + 1;
-							overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
-							AtomicLong difference = getActivityCycleTimeForAnIssue(
-									fieldMapping.getReadyForDevelopmentStatusKPI138(), historyForIssues, jiraIssue);
-							cycleTime = cycleTime + difference.get();
-							overAllCycleTime.set(overAllCycleTime.get() + difference.get());
-							if (null != jiraIssue.getStoryPoints()) {
-								storyPoint = storyPoint + jiraIssue.getStoryPoints();
-								overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
+				typeAndPriorityWiseIssues
+						.forEach((issueType, priorityWiseIssue) -> priorityWiseIssue.forEach((priority, issues) -> {
+							issueTypes.add(issueType);
+							priorities.add(priority);
+							int issueCount = 0;
+							Double storyPoint = 0.0D;
+							long cycleTime = 0;
+							List<IterationKpiModalValue> modalValues = new ArrayList<>();
+							for (JiraIssue jiraIssue : issues) {
+								populateBackLogData(overAllmodalValues, modalValues, jiraIssue);
+								issueCount = issueCount + 1;
+								overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
+								AtomicLong difference = getActivityCycleTimeForAnIssue(
+										fieldMapping.getReadyForDevelopmentStatusKPI138(), historyForIssues, jiraIssue);
+								cycleTime = cycleTime + difference.get();
+								overAllCycleTime.set(overAllCycleTime.get() + difference.get());
+								if (null != jiraIssue.getStoryPoints()) {
+									storyPoint = storyPoint + jiraIssue.getStoryPoints();
+									overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
+								}
 							}
-						}
-						List<IterationKpiData> data = new ArrayList<>();
-						IterationKpiData issuesForDevelopment = new IterationKpiData(READY_BACKLOG,
-								Double.valueOf(issueCount), storyPoint, null, null, SP, modalValues);
-						IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH,
-								DEFAULT_BACKLOG_STRENGTH, null, null, SPRINT, null);
-						log.debug("Issue type: {} priority: {} Cycle time: {}", issueType, priority, cycleTime);
-						IterationKpiData averageCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
-								(double) Math.round(cycleTime / (double) issueCount), null, null, DAYS, null);
-						data.add(issuesForDevelopment);
-						data.add(backLogStrength);
-						data.add(averageCycleTime);
-						IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
-						iterationKpiValues.add(iterationKpiValue);
-					}));
-			List<IterationKpiData> data = new ArrayList<>();
+							List<IterationKpiData> data = new ArrayList<>();
+							IterationKpiData issuesForDevelopment = new IterationKpiData(READY_BACKLOG,
+									Double.valueOf(issueCount), storyPoint, null, null, SP, modalValues);
+							IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH,
+									DEFAULT_BACKLOG_STRENGTH, null, null, SPRINT, null);
+							log.debug("Issue type: {} priority: {} Cycle time: {}", issueType, priority, cycleTime);
+							IterationKpiData averageCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
+									(double) Math.round(cycleTime / (double) issueCount), null, null, DAYS, null);
+							data.add(issuesForDevelopment);
+							data.add(backLogStrength);
+							data.add(averageCycleTime);
+							IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
+							iterationKpiValues.add(iterationKpiValue);
+						}));
+				List<IterationKpiData> data = new ArrayList<>();
 
-			IterationKpiData overAllIssues = new IterationKpiData(READY_BACKLOG,
-					Double.valueOf(overAllIssueCount.get(0)), overAllStoryPoints.get(0), null, null, SP,
-					overAllmodalValues);
-			log.debug("Overall  the avg velocity of the previous sprint: {}", avgVelocity);
-			double strength = (avgVelocity == 0D) ? DEFAULT_BACKLOG_STRENGTH
-					: (double) Math.round(overAllStoryPoints.get(0) / avgVelocity * 100) / 100;
-			IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, strength, null, null, SPRINT,
-					null);
-			log.debug("Overall  the cycle time is : {} ", overAllCycleTime.get());
-			IterationKpiData averageOverAllCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
-					(double) Math.round(overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0))), null, null,
-					DAYS, null);
-			data.add(overAllIssues);
-			data.add(backLogStrength);
-			data.add(averageOverAllCycleTime);
-			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
-			iterationKpiValues.add(overAllIterationKpiValue);
+				IterationKpiData overAllIssues = new IterationKpiData(READY_BACKLOG,
+						Double.valueOf(overAllIssueCount.get(0)), overAllStoryPoints.get(0), null, null, SP,
+						overAllmodalValues);
+				log.debug("Overall  the avg velocity of the previous sprint: {}", avgVelocity);
+				double strength = (avgVelocity == 0D) ? DEFAULT_BACKLOG_STRENGTH
+						: (double) Math.round(overAllStoryPoints.get(0) / avgVelocity * 100) / 100;
+				IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, strength, null, null, SPRINT,
+						null);
+				log.debug("Overall  the cycle time is : {} ", overAllCycleTime.get());
+				IterationKpiData averageOverAllCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
+						(double) Math.round(overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0))), null, null,
+						DAYS, null);
+				data.add(overAllIssues);
+				data.add(backLogStrength);
+				data.add(averageOverAllCycleTime);
+				IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
+				iterationKpiValues.add(overAllIterationKpiValue);
 
-			// Create kpi level filters
-			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
-			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, priorities);
-			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
-			// Modal Heads Options
-			trendValue.setValue(iterationKpiValues);
-			kpiElement.setFilters(iterationKpiFilters);
-			kpiElement.setModalHeads(KPIExcelColumn.BACKLOG_READINESS_EFFICIENCY.getColumns());
-			kpiElement.setTrendValueList(trendValue);
+				// Create kpi level filters
+				IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
+				IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, priorities);
+				IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+				// Modal Heads Options
+				trendValue.setValue(iterationKpiValues);
+				kpiElement.setFilters(iterationKpiFilters);
+				kpiElement.setModalHeads(KPIExcelColumn.BACKLOG_READINESS_EFFICIENCY.getColumns());
+				kpiElement.setTrendValueList(trendValue);
+			}
 		}
 	}
 
