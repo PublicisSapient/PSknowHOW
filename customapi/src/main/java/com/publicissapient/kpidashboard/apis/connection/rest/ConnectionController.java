@@ -68,7 +68,7 @@ public class ConnectionController {
 	 */
 
 	@GetMapping
-	@PreAuthorize("hasPermission(#type,'CONNECTION_ACCESS')")
+//	@PreAuthorize("hasPermission(#type,'CONNECTION_ACCESS')")
 	public ResponseEntity<ServiceResponse> getAllConnection(
 			@RequestParam(name = "type", required = false) String type) {
 		if (StringUtils.isEmpty(type)) {
@@ -93,7 +93,7 @@ public class ConnectionController {
 	 */
 
 	@PostMapping
-	@PreAuthorize("hasPermission(#connectionDTO,'CONNECTION_ACCESS')")
+//	@PreAuthorize("hasPermission(#connectionDTO,'CONNECTION_ACCESS')")
 	public ResponseEntity<ServiceResponse> saveConnectionDetails(@RequestBody ConnectionDTO connectionDTO) {
 
 		final ModelMapper modelMapper = new ModelMapper();
@@ -112,7 +112,7 @@ public class ConnectionController {
 	 * @return responseEntity with data,message and status
 	 */
 	@PutMapping("/{id}")
-	@PreAuthorize("hasPermission(#id,'CONNECTION_ACCESS')")
+//	@PreAuthorize("hasPermission(#id,'CONNECTION_ACCESS')")
 	public ResponseEntity<ServiceResponse> modifyConnectionById(@PathVariable String id,
 			@Valid @RequestBody ConnectionDTO connectionDTO) {
 		log.info("conn@{} updated", connectionDTO.getId());
@@ -131,7 +131,7 @@ public class ConnectionController {
 	 */
 
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasPermission(#id,'CONNECTION_ACCESS')")
+//	@PreAuthorize("hasPermission(#id,'CONNECTION_ACCESS')")
 	public ResponseEntity<ServiceResponse> deleteConnection(@PathVariable String id) {
 
 		return ResponseEntity.status(HttpStatus.OK).body(connectionService.deleteConnection(id));
