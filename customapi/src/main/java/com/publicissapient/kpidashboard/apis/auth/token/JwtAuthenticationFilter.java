@@ -24,20 +24,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.GenericFilterBean;
-
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class JwtAuthenticationFilter extends GenericFilterBean {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
@@ -45,15 +41,12 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 	@Autowired
 	private CookieUtil cookieUtil;
 
-	@Autowired
-	private CustomApiConfig customApiConfig;
-
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+	public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws IOException, ServletException {
 
 		if (request != null) {
-			Cookie authCookie = cookieUtil.getAuthCookie((HttpServletRequest) request);
+			Cookie authCookie = cookieUtil.getAuthCookie(request);
 
 			if (authCookie == null) {
 				filterChain.doFilter(request, response);
@@ -62,9 +55,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
 		}
 
-		Authentication authentication = tokenAuthenticationService.getAuthentication((HttpServletRequest) request,
-				(HttpServletResponse) response);
-
+		Authentication authentication = tokenAuthenticationService.getAuthentication(request, response);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		filterChain.doFilter(request, response);
 	}

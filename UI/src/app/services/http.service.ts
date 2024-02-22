@@ -64,7 +64,7 @@ export class HttpService {
   private uploadedImageUrl = this.baseUrl + '/api/file/logo';
   private deleteImageUrl = this.baseUrl + '/api/file/delete';
   private registrationUrl = this.baseUrl + '/api/registerUser';
-  private standardloginUrl = this.baseUrl + '/api/login';
+  private standardloginUrl = this.baseUrl + '/api/signIn';
   private ldapLoginUrl = this.baseUrl + '/api/ldap';
   private crowdSsoLoginLoginUrl = this.baseUrl + '/api/login/crowdsso';
   private getMatchVersionsUrl = this.baseUrl + '/api/getversionmetadata';

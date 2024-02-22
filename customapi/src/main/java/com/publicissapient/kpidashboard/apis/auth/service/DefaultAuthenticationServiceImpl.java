@@ -27,22 +27,19 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -194,31 +191,30 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public org.springframework.security.core.Authentication authenticate(String username, String password) {
-		Authentication authentication = authenticationRepository.findByUsername(username);
+	public org.springframework.security.core.Authentication authenticate(
+			org.springframework.security.core.Authentication authentication, String authType) {
+
+		String username = authentication.getName();
+		String password = (String) authentication.getCredentials();
+		UserInfo dbUsers = userInfoRepository.findByUsername(username);
+		Authentication authenticationDb = authenticationRepository.findByUsername(username);
 		DateTime now = DateTime.now(DateTimeZone.UTC);
 
-		if (checkForResetFailAttempts(authentication, now)) {
+		if (checkForResetFailAttempts(authenticationDb, now)) {
 			resetFailAttempts(username);
-		} else if (checkForLockedUser(authentication)) {
+		} else if (checkForLockedUser(authenticationDb)) {
 			throw new LockedException("Account Locked: Invalid Login Limit Reached " + username);
 		}
 
-		if (authentication != null && !authentication.isApproved()) {
+		if (dbUsers != null && !authenticationDb.isApproved()) {
 			throw new PendingApprovalException("Login Failed: Your access request is pending for approval");
 		}
 
-		if (authentication != null && authentication.checkPassword(password)) {
-			return new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword(),
-					new ArrayList<>());
+		if (authenticationDb != null && authenticationDb.checkPassword(password)) {
+			return new UsernamePasswordAuthenticationToken(authenticationDb.getUsername(),
+					authenticationDb.getPassword(), new ArrayList<>());
 		}
-		// commented code to fix the security issues
-		// throw new BadCredentialsException("Login Failed: Invalid credentials
-		// for user
+
 		throw new BadCredentialsException("Login Failed: The username or password entered is incorrect");
 	}
 

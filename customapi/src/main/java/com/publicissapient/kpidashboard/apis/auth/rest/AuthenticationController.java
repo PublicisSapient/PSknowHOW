@@ -28,6 +28,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,15 +36,16 @@ import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
@@ -52,7 +54,9 @@ import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationRequest;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.ChangePasswordRequest;
+import com.publicissapient.kpidashboard.apis.auth.standard.StandardAuthenticationProvider;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
+import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -66,6 +70,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -73,6 +78,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RestController
 @Slf4j
+@AllArgsConstructor
 public class AuthenticationController {
 
     private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
@@ -86,26 +92,9 @@ public class AuthenticationController {
     private AuthTypesConfigService authTypesConfigService;
     private TokenAuthenticationService tokenAuthenticationService;
 
-    /**
-     * Instantiates a new Authentication controller.
-     *
-     * @param authenticationService         the authentication service
-     * @param authenticationResponseService the authentication response service
-     * @param authProperties                the auth properties
-     */
-    @Autowired
-    public AuthenticationController(AuthenticationService authenticationService,
-                                    AuthenticationResponseService authenticationResponseService, UserInfoService userInfoService,
-                                    AuthProperties authProperties, SignupManager signupManager, AuthTypesConfigService authTypesConfigService,
-                                    TokenAuthenticationService tokenAuthenticationService) {
-        this.authenticationService = authenticationService;
-        this.authenticationResponseService = authenticationResponseService;
-        this.authProperties = authProperties;
-        this.userInfoService = userInfoService;
-        this.signupManager = signupManager;
-        this.authTypesConfigService = authTypesConfigService;
-        this.tokenAuthenticationService = tokenAuthenticationService;
-    }
+    private final StandardAuthenticationProvider standardAuthenticationProvider;
+
+    private final CustomAnalyticsService customAnalyticsService;
 
     /**
      * Register user.
@@ -170,6 +159,21 @@ public class AuthenticationController {
             log.error("Error in registration ", dke);
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ServiceResponse(true,
                     "Cannot complete the registration process, Try with different username", null));
+        }
+    }
+    @PostMapping("/signIn")
+    public ResponseEntity getStandardLocalLogin(@RequestParam("username") String username,
+            @RequestParam("password") String password, HttpServletRequest request, HttpServletResponse response) {
+
+        Authentication authentication = standardAuthenticationProvider
+                .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        authenticationResponseService.handle(response, authentication);
+        Map<String, Object> map = customAnalyticsService.addAnalyticsData(response, username);
+        if (Objects.nonNull(map)) {
+            return ResponseEntity.status(HttpStatus.OK).body(map);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(null);
+
         }
     }
 

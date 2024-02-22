@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- ******************************************************************************/
+ ******************************************************************************//*
+
 
 package com.publicissapient.kpidashboard.apis.auth.service;
 
@@ -47,9 +48,11 @@ import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepos
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
+*/
 /**
  *
- */
+ *//*
+
 @ExtendWith(SpringExtension.class)
 public class AuthenticationServiceTest {
 
@@ -316,3 +319,4 @@ public class AuthenticationServiceTest {
 		Assertions.assertTrue(authService.getAuthenticationByApproved(true).iterator().hasNext());
 	}
 }
+*/

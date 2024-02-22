@@ -76,12 +76,13 @@ public interface AuthenticationService {
 	void delete(String username);
 
 	/**
-	 * 
-	 * @param username
-	 * @param password
+	 *
+	 * @param authentication
+	 * @param authType
 	 * @return
 	 */
-	org.springframework.security.core.Authentication authenticate(String username, String password);
+	org.springframework.security.core.Authentication authenticate(
+			org.springframework.security.core.Authentication authentication, String authType);
 
 	/**
 	 * update failed attempt and date

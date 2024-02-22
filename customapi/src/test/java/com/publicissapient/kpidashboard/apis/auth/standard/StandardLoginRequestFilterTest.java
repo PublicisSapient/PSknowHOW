@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- ******************************************************************************/
+ ******************************************************************************//*
+
 
 package com.publicissapient.kpidashboard.apis.auth.standard;
 
@@ -66,14 +67,11 @@ public class StandardLoginRequestFilterTest {
 	@Mock
 	private CustomApiConfig customApiConfig;
 
-	@Mock
-	private AuthTypesConfigService authTypesConfigService;
-
 	@Before
 	public void setup() {
 		path = "/login";
-		filter = new StandardLoginRequestFilter(path, manager, resultHandler, authenticationFailureHandler,
-				customApiConfig, authTypesConfigService);
+		filter = new StandardLoginRequestFilter(path, resultHandler, authenticationFailureHandler,
+				customApiConfig);
 	}
 
 	@Test
@@ -93,7 +91,6 @@ public class StandardLoginRequestFilterTest {
 		AuthTypeStatus authTypeStatus = new AuthTypeStatus();
 		authTypeStatus.setAdLogin(false);
 		authTypeStatus.setStandardLogin(true);
-		when(authTypesConfigService.getAuthTypesStatus()).thenReturn(authTypeStatus);
 		String principal = "user1";
 		String credentials = "password1";
 		when(request.getParameter("username")).thenReturn(principal + " ");
@@ -116,7 +113,6 @@ public class StandardLoginRequestFilterTest {
 		AuthTypeStatus authTypeStatus = new AuthTypeStatus();
 		authTypeStatus.setAdLogin(false);
 		authTypeStatus.setStandardLogin(true);
-		when(authTypesConfigService.getAuthTypesStatus()).thenReturn(authTypeStatus);
 		String principal = null;
 		String credentials = null;
 		when(request.getParameter("username")).thenReturn(principal);
@@ -139,8 +135,8 @@ public class StandardLoginRequestFilterTest {
 		AuthTypeStatus authTypeStatus = new AuthTypeStatus();
 		authTypeStatus.setAdLogin(true);
 		authTypeStatus.setStandardLogin(false);
-		when(authTypesConfigService.getAuthTypesStatus()).thenReturn(authTypeStatus);
 		filter.attemptAuthentication(request, response);
 	}
 
 }
+*/

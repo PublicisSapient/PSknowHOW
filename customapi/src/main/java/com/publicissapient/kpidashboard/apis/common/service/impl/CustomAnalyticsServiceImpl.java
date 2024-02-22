@@ -18,17 +18,18 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
@@ -88,34 +89,32 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject addAnalyticsData(HttpServletResponse httpServletResponse, String username) {
-		JSONObject json = new JSONObject();
+	public Map<String, Object> addAnalyticsData(HttpServletResponse httpServletResponse, String username) {
+		Map<String, Object> userMap = new HashMap<>();
 		httpServletResponse.setContentType("application/json");
+		UserInfo userinfoKnowHow = userInfoRepository.findByUsername(username);
 		httpServletResponse.setCharacterEncoding("UTF-8");
-		UserInfo userinfo = userInfoRepository.findByUsername(username);
 		Authentication authentication = authenticationRepository.findByUsername(username);
-		String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
-		json.put(USER_NAME, username);
-		json.put(USER_EMAIL, email);
-		json.put(USER_ID, userinfo.getId().toString());
-		json.put(USER_AUTHORITIES, userinfo.getAuthorities());
-		Gson gson = new Gson();
-
-		userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
-
-		List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
-
-		if (projectAccessesWithRole != null) {
-			JsonElement element = gson.toJsonTree(projectAccessesWithRole, new TypeToken<List<RoleWiseProjects>>() {
-			}.getType());
-			json.put(PROJECTS_ACCESS, element.getAsJsonArray());
-		} else {
-			json.put(PROJECTS_ACCESS, new JSONArray());
+		userMap.put(USER_NAME, username);
+		if (Objects.nonNull(userinfoKnowHow)) {
+			String email = authentication == null ? userinfoKnowHow.getEmailAddress().toLowerCase()
+					: authentication.getEmail().toLowerCase();
+			userMap.put(USER_EMAIL, email);
+			userMap.put(USER_ID, userinfoKnowHow.getId().toString());
+			userMap.put(USER_AUTHORITIES, userinfoKnowHow.getAuthorities());
+			userMap.put(USER_AUTH_TYPE, userinfoKnowHow.getAuthType());
+			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
+			if (CollectionUtils.isNotEmpty(projectAccessesWithRole)) {
+				userMap.put(PROJECTS_ACCESS, projectAccessesWithRole);
+			} else {
+				userMap.put(PROJECTS_ACCESS, new JSONArray());
+			}
+			userLoginHistoryService.createUserLoginHistoryInfo(userinfoKnowHow, SUCCESS);
 		}
-		json.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
+		userMap.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
 
 		log.info("Successfully added Google Analytics data to Response.");
-		return json;
+		return userMap;
 
 	}
 

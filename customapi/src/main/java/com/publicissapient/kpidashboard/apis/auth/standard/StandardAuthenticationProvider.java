@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 
 @Component
 public class StandardAuthenticationProvider implements AuthenticationProvider {
@@ -54,8 +55,7 @@ public class StandardAuthenticationProvider implements AuthenticationProvider {
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException { // NOSONAR
 																									   // //NOPMD
 		try {
-			Authentication auth = authService.authenticate(authentication.getName(),
-					(String) authentication.getCredentials());
+			Authentication auth = authService.authenticate(authentication, AuthType.STANDARD.name());
 			authService.resetFailAttempts(authentication.getName());
 			return auth;
 		} catch (BadCredentialsException e) {
