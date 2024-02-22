@@ -128,7 +128,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      if(globalConfig && this.sharedObject){
+      if (globalConfig && this.sharedObject) {
         this.configGlobalData = globalConfig['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
         this.checkForAssigneeDataAndSetupTabs();
         this.processKpiConfigData();
@@ -262,11 +262,11 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   checkForAssigneeDataAndSetupTabs() {
-    this.httpService.getProjectListData().subscribe(responseList => {
+    this.httpService.getProjectListData().subscribe(async responseList => {
       let selectedProject = responseList[0].data.filter((project) => project.id === this.selectedProjectId)[0];
       let showDSVorNot = selectedProject['saveAssigneeDetails'];
-
-      if (this.service.currentSelectedSprint?.sprintState.toLowerCase() === 'active' && showDSVorNot && this.featureFlagService.isFeatureEnabled('DAILY_STANDUP')) {
+      let showDailyStandup = await this.featureFlagService.isFeatureEnabled('DAILY_STANDUP');
+      if (this.service.currentSelectedSprint?.sprintState.toLowerCase() === 'active' && showDSVorNot && showDailyStandup) {
         this.navigationTabs = [
           { 'label': 'Iteration Review', 'count': 0, width: 'half', kpis: [], fullWidthKpis: [] },
           { 'label': 'Iteration Progress', 'count': 0, width: 'full', kpis: [] },
@@ -377,7 +377,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       if (filterData[0] !== 'error') {
         this.service.setGlobalConfigData(filterData);
       }
-  });
+    });
 
 
     this.service.getEmptyData().subscribe((val) => {
@@ -581,9 +581,9 @@ export class IterationComponent implements OnInit, OnDestroy {
         for (let i = 0; i < filters?.length; i++) {
           preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'].toLowerCase() === filters[i].toLowerCase())];
         }
-        if(preAggregatedValues[0]?.hasOwnProperty('value')){
+        if (preAggregatedValues[0]?.hasOwnProperty('value')) {
           this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
-        }else{
+        } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
       } else {

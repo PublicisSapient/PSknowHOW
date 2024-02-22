@@ -123,7 +123,6 @@ export class HttpService {
   private getSuggestionsUrl = this.baseUrl + '/api/suggestions/project';
   private updateSuggestionsUrl = this.baseUrl + '/api/suggestions/account/';
   private getEmm360Url = this.baseUrl + '/api/emm-feed/download';
-  private analyticsSwitchUrl = this.baseUrl + '/api/analytics/switch';
 
   private landingInfoUrl =
     'https://setup-speedy.tools.publicis.sapient.com/landingpage/staticcontent';
@@ -188,11 +187,6 @@ export class HttpService {
         this.userEmail = details['user_email'];
       }
     });
-  }
-
-  /**get analytics on/off switch */
-  getAnalyticsFlag() {
-    return this.http.get(this.analyticsSwitchUrl);
   }
 
   /** getFilterData from the server */
