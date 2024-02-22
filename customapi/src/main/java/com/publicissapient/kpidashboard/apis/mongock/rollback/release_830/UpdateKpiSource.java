@@ -46,15 +46,15 @@ public class UpdateKpiSource {
 		MongoCollection<Document> kpiMasterCollection = mongoTemplate.getCollection("kpi_master");
 
 		List<WriteModel<Document>> bulkOps = new ArrayList<>();
-		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Jira/Azure/Zephyr"),
+		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Jira/Azure"),
 				new Document("$set", new Document(KPI_SOURCE, "Jira"))));
 		bulkOps.add(
 				new UpdateManyModel<>(new Document(KPI_SOURCE, "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"),
 						new Document("$set", new Document(KPI_SOURCE, "Jenkins"))));
 		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Bitbucket/AzureRepository/GitHub/GitLab/RepoTool"),
 				new Document("$set", new Document(KPI_SOURCE, "Bitbucket"))));
-		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Zephyr/JiraTest"),
-				new Document("$set", new Document(KPI_SOURCE, "Zephyr"))));
+		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Zypher/JiraTest"),
+				new Document("$set", new Document(KPI_SOURCE, "Zypher"))));
 		kpiMasterCollection.bulkWrite(bulkOps);
 	}
 
@@ -65,15 +65,15 @@ public class UpdateKpiSource {
 		List<WriteModel<Document>> bulkOps = new ArrayList<>();
 
 		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Jira"),
-				new Document("$set", new Document(KPI_SOURCE, "Jira/Azure/Zephyr"))));
+				new Document("$set", new Document(KPI_SOURCE, "Jira/Azure"))));
 
 		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Jenkins"),
 				new Document("$set", new Document(KPI_SOURCE, "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"))));
 
 		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Bitbucket"),
 				new Document("$set", new Document(KPI_SOURCE, "Bitbucket/AzureRepository/GitHub/GitLab/RepoTool"))));
-		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Zephyr"),
-				new Document("$set", new Document(KPI_SOURCE, "Zephyr/JiraTest"))));
+		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Zypher"),
+				new Document("$set", new Document(KPI_SOURCE, "Zypher/JiraTest"))));
 		kpiMasterCollection.bulkWrite(bulkOps);
 	}
 
