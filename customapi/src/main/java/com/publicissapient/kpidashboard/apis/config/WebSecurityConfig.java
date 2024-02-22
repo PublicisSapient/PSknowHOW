@@ -23,10 +23,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
-import com.publicissapient.kpidashboard.apis.auth.ldap.LdapLoginRequestFilter;
-import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,14 +31,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -52,18 +46,17 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
 import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenAuthenticationProvider;
-import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenRequestFilter;
-import com.publicissapient.kpidashboard.apis.auth.ldap.CustomUserDetailsContextMapper;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.auth.standard.StandardAuthenticationManager;
+import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.token.JwtAuthenticationFilter;
 import com.publicissapient.kpidashboard.apis.errors.CustomAuthenticationEntryPoint;
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+
+import lombok.AllArgsConstructor;
 
 /**
  * Extension of {WebSecurityConfigurerAdapter} to provide configuration
@@ -77,39 +70,25 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
 @Configuration
 @EnableWebSecurity
 @EnableConfigurationProperties
+@AllArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig implements WebMvcConfigurer {
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+	private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Autowired
-    private AuthenticationResultHandler authenticationResultHandler;
+	private AuthenticationResultHandler authenticationResultHandler;
 
-    @Autowired
-    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+	private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
-    @Autowired
-    private AuthenticationProvider standardAuthenticationProvider;
+	private AuthenticationProvider standardAuthenticationProvider;
 
-    @Autowired
-    private ApiTokenAuthenticationProvider apiTokenAuthenticationProvider;
+	private AuthProperties authProperties;
 
-    @Autowired
-    private AuthProperties authProperties;
+	private CustomApiConfig customApiConfig;
 
-    private CustomApiConfig customApiConfig;
-    @Autowired
-    private AuthenticationConfiguration authenticationConfiguration;
+	private AuthTypesConfigService authTypesConfigService;
 
-    @Autowired
-    private ADServerDetailsService adServerDetailsService;
-
-    @Autowired
-    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-
-    @Autowired
-    private AuthTypesConfigService authTypesConfigService;
+	private StandardAuthenticationManager authenticationManager;
 
     public static Properties getProps() throws IOException {
         Properties prop = new Properties();
@@ -117,11 +96,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
             prop.load(in);
         }
         return prop;
-    }
-
-    @Autowired
-    public void setCustomApiConfig(CustomApiConfig customApiConfig) {
-        this.customApiConfig = customApiConfig;
     }
 
     /**
@@ -136,7 +110,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
 		setAuthenticationProvider(authenticationManagerBuilder);
         http.headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable));
-        http.httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint));
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(authz -> authz
                         .requestMatchers("/appinfo").permitAll().requestMatchers("/registerUser")
@@ -158,19 +131,12 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/cache/clearAllCache").permitAll().requestMatchers(HttpMethod.GET, "/cache/clearCache/**")
                         .permitAll().requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated())
-                .addFilterBefore(standardLoginRequestFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(ldapLoginRequestFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(standardLoginRequestFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(corsFilter(), ChannelProcessingFilter.class)
-                .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint))
+                .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint()))
                 .exceptionHandling(Customizer.withDefaults());
         return http.build();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-
     }
 
 	@Bean
@@ -178,40 +144,18 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		return new CorsFilter();
 	}
 
-    protected void setAuthenticationProvider(AuthenticationManagerBuilder auth) throws Exception {
-        List<AuthType> authenticationProviders = authProperties.getAuthenticationProviders();
+	protected void setAuthenticationProvider(AuthenticationManagerBuilder auth) {
+		List<AuthType> authenticationProviders = authProperties.getAuthenticationProviders();
 
-        if (authenticationProviders.contains(AuthType.STANDARD)) {
-            auth.authenticationProvider(standardAuthenticationProvider);
-        }
-        ADServerDetail adServerDetail = adServerDetailsService.getADServerConfig();
-        if (authenticationProviders.contains(AuthType.LDAP) && adServerDetail != null) {
-            auth.ldapAuthentication().userSearchBase(adServerDetail.getRootDn())
-                    .userDnPatterns(adServerDetail.getUserDn()).contextSource().url(adServerDetail.getHost())
-                    .port(adServerDetail.getPort()).managerDn(adServerDetail.getUsername())
-                    .managerPassword(adServerDetail.getPassword()).and().passwordCompare()
-                    .passwordAttribute("password");
-            auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider());
-        }
-        auth.authenticationProvider(apiTokenAuthenticationProvider);
-    }
+		if (authenticationProviders.contains(AuthType.STANDARD)) {
+			auth.authenticationProvider(standardAuthenticationProvider);
+		}
+	}
 
     @Bean
-    protected StandardLoginRequestFilter standardLoginRequestFilter(AuthenticationManager authenticationManager) throws Exception {
+    protected StandardLoginRequestFilter standardLoginRequestFilter(AuthenticationManager authenticationManager){
         return new StandardLoginRequestFilter("/login", authenticationManager, authenticationResultHandler,
                 customAuthenticationFailureHandler, customApiConfig, authTypesConfigService);
-    }
-
-    // update authenticatoin result handler
-    @Bean
-    protected LdapLoginRequestFilter ldapLoginRequestFilter(AuthenticationManager authenticationManager) throws Exception {
-        return new LdapLoginRequestFilter("/ldap", authenticationManager, authenticationResultHandler,
-                customAuthenticationFailureHandler, customApiConfig, adServerDetailsService, authTypesConfigService);
-    }
-
-    @Bean
-    protected ApiTokenRequestFilter apiTokenRequestFilter(AuthenticationManager authenticationManager) {
-        return new ApiTokenRequestFilter("/**", authenticationManager, authenticationResultHandler);
     }
 
 	@Bean
@@ -231,20 +175,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		source.registerCorsConfiguration("/**", config);
 		return source;
 	}
-
-    @Bean
-    protected AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
-        ADServerDetail adServerDetail = adServerDetailsService.getADServerConfig();
-        if (adServerDetail == null || StringUtils.isBlank(adServerDetail.getHost())) {
-            return null;
-        }
-        ActiveDirectoryLdapAuthenticationProvider provider = new ActiveDirectoryLdapAuthenticationProvider(
-                adServerDetail.getDomain(), adServerDetail.getHost(), adServerDetail.getRootDn());
-        provider.setConvertSubErrorCodesToExceptions(true);
-        provider.setUseAuthenticationRequestCredentials(true);
-        provider.setUserDetailsContextMapper(new CustomUserDetailsContextMapper());
-        return provider;
-    }
 
     @Bean
     public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {

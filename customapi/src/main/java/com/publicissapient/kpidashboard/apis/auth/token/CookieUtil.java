@@ -1,19 +1,13 @@
 package com.publicissapient.kpidashboard.apis.auth.token;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
-
-import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 
 import jakarta.servlet.http.Cookie;

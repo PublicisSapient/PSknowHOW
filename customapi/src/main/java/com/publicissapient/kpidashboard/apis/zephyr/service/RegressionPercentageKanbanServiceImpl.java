@@ -253,8 +253,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 		Predicate<TestCaseDetails> predicate = issue -> LocalDateTime
 				.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
 				.isBefore(endDate.atTime(23, 59, 59));
-		List<TestCaseDetails> filteredTests = tests.stream().filter(predicate).collect(Collectors.toList());
-		return filteredTests;
+		return tests.stream().filter(predicate).collect(Collectors.toList());
 	}
 
 	private List<TestCaseDetails> filterKanbanAutomatedDataBasedOnStartAndEndDate(List<TestCaseDetails> tests,
@@ -262,9 +261,8 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 		Predicate<TestCaseDetails> predicate = issue -> StringUtils.isNotEmpty(issue.getTestAutomatedDate())
 				&& LocalDateTime.parse(issue.getTestAutomatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
 						.isBefore(endDate.atTime(23, 59, 59));
-		List<TestCaseDetails> filteredTests = Optional.ofNullable(tests).orElse(Collections.emptyList()).stream()
+		return Optional.ofNullable(tests).orElse(Collections.emptyList()).stream()
 				.filter(predicate).collect(Collectors.toList());
-		return filteredTests;
 	}
 
 	/**
