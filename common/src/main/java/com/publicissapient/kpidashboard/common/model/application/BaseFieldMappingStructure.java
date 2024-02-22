@@ -69,6 +69,9 @@ public class BaseFieldMappingStructure extends BasicModel {
 	class Options {
 		String label;
 		Object value;
+		String operator;
+		String maxValue;
+		String minValue;
 	}
 
 }
