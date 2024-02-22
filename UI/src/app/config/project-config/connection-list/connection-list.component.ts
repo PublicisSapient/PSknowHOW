@@ -75,12 +75,6 @@ export class ConnectionListComponent implements OnInit {
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'connPrivate']
     },
     {
-      connectionType: 'GitHub Action',
-      connectionLabel: 'GitHub Action',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'connPrivate']
-    },
-    {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'Is Connection Private'],
@@ -287,15 +281,6 @@ export class ConnectionListComponent implements OnInit {
       ]
     },
     {
-      label: 'GitHub Action',
-      value: 'GitHub Action',
-      connectionTableCols: [
-        { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
-        { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
-        { field: 'username', header: 'Repo Ownername', class: 'normal' },
-      ]
-    },
-    {
       label: 'GitLab',
       value: 'GitLab',
       connectionTableCols: [
@@ -485,7 +470,7 @@ export class ConnectionListComponent implements OnInit {
     'jiraAuthType': ''
   }
   jiraConnectionDialog: boolean;
-  repoConnections = ['Bitbucket','GitLab','GitHub','Azure Repository'];
+  repoConnections = ['Bitbucket','GitLab','Azure Repository'];
   repoToolsEnabled : boolean;
 
   constructor(private httpService: HttpService, private formBuilder: UntypedFormBuilder, private confirmationService: ConfirmationService, private testConnectionService: TestConnectionService
@@ -1574,6 +1559,12 @@ export class ConnectionListComponent implements OnInit {
         return details[label] !== 'RepoTool';
       }
     })
+    if(this.repoToolsEnabled){
+      const githubIndex = filteredList.findIndex(de=>de[label].toLowerCase() === 'github');
+      if(githubIndex !== -1){
+        filteredList[githubIndex][label] = 'GitHub Action'
+      }
+    }
     return filteredList;
   }
 }
