@@ -55,11 +55,11 @@ public class FieldMapping extends BasicModel {
 
 	// defectPriority
 	private List<String> defectPriority;
-	private List<String> defectPriorityKPI135;
+	private List<LabelCount> defectPriorityKPI135;
 	private List<String> defectPriorityKPI35;
 	private List<String> defectPriorityKPI14;
 	private List<String> defectPriorityQAKPI111;
-	private List<String> defectPriorityKPI82;
+	private List<LabelCount> defectPriorityKPI82;
 	private List<String> defectPriorityKPI133;
 	private String[] jiraIssueTypeNames;
 	private String[] jiraIssueTypeNamesAVR;
@@ -199,6 +199,7 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> rootCauseValue;
 	private List<String> excludeRCAFromFTPR;
+	private List<String> excludeRCAFromKPI163;
 	private List<String> includeRCAForKPI82;
 	private List<String> includeRCAForKPI135;
 	private List<String> includeRCAForKPI14;
@@ -445,6 +446,7 @@ public class FieldMapping extends BasicModel {
 	private String thresholdValueKPI39;
 	private String thresholdValueKPI46;
 	private String thresholdValueKPI8;
+	private String thresholdValueKPI172;
 	private String thresholdValueKPI73;
 	private String thresholdValueKPI113;
 	private String thresholdValueKPI149;

@@ -270,7 +270,7 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 			String projKey = getString(projObj, AzureRepoConstants.RESP_NAME_KEY);
 			JSONObject authorObj = (JSONObject) mergReqObj.get(AzureRepoConstants.RESP_CREATED_BY);
 			String author = getString(authorObj, AzureRepoConstants.RESP_DISP_NAME);
-			String scmRevisionNumber = getString(repoObj, AzureRepoConstants.RESP_ID_KEY);
+			String scmRevisionNumber = getString(repoObj, AzureRepoConstants.MERGED_ID);
 			JSONArray reviewers = (JSONArray) mergReqObj.get(AzureRepoConstants.RESP_REVIEWERS);
 			List<String> reviewersList = new ArrayList<>();
 			if (reviewers != null) {
@@ -278,24 +278,30 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 					reviewersList.add(getString((JSONObject) reviewersObj, AzureRepoConstants.RESP_ID_KEY));
 				}
 			}
-			MergeRequests mergeReq = new MergeRequests();
-			mergeReq.setTitle(title);
-			mergeReq.setState(state);
-			mergeReq.setOpen(isOpen);
-			mergeReq.setClosed(isClosed);
-			mergeReq.setCreatedDate(createdDate);
-			mergeReq.setUpdatedDate(updatedDate);
-			mergeReq.setClosedDate(closedDate);
-			mergeReq.setFromBranch(fromBranch);
-			mergeReq.setToBranch(toBranch);
-			mergeReq.setRepoSlug(repoSlug);
-			mergeReq.setProjKey(projKey);
-			if (proBasicConfig.isSaveAssigneeDetails()) {
-				mergeReq.setAuthor(author);
+			if (scmRevisionNumber != null) {
+				MergeRequests mergeReq = new MergeRequests();
+				mergeReq.setTitle(title);
+				mergeReq.setState(state);
+				mergeReq.setOpen(isOpen);
+				mergeReq.setClosed(isClosed);
+				mergeReq.setCreatedDate(createdDate);
+				mergeReq.setUpdatedDate(updatedDate);
+				mergeReq.setClosedDate(closedDate);
+				mergeReq.setFromBranch(fromBranch);
+				mergeReq.setToBranch(toBranch);
+				mergeReq.setRepoSlug(repoSlug);
+				mergeReq.setProjKey(projKey);
+				setAssigneeDetail(proBasicConfig, author, mergeReq);
+				mergeReq.setRevisionNumber(scmRevisionNumber);
+				mergeReq.setReviewers(reviewersList);
+				mergeRequestList.add(mergeReq);
 			}
-			mergeReq.setRevisionNumber(scmRevisionNumber);
-			mergeReq.setReviewers(reviewersList);
-			mergeRequestList.add(mergeReq);
+		}
+	}
+
+	private static void setAssigneeDetail(ProjectBasicConfig proBasicConfig, String author, MergeRequests mergeReq) {
+		if (proBasicConfig.isSaveAssigneeDetails()) {
+			mergeReq.setAuthor(author);
 		}
 	}
 

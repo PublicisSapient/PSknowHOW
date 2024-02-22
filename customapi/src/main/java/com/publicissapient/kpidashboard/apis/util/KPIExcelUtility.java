@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -35,7 +36,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -47,6 +47,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.model.BuildFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.ChangeFailureRateInfo;
 import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
@@ -64,6 +65,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.ResolutionTimeValidation;
 import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
@@ -243,8 +245,9 @@ public class KPIExcelUtility {
 	public static void populateDefectSeepageRateExcelData(String sprint, Map<String, JiraIssue> totalBugList,
 			List<DSRValidationData> dsrValidationDataList, List<KPIExcelData> excelDataList) {
 
-		Map<String, String> labelWiseValidationData =dsrValidationDataList.stream()
-				.collect(Collectors.toMap(DSRValidationData::getIssueNumber, DSRValidationData::getLabel, (x,y)->x+CommonConstant.COMMA+ y));
+		Map<String, String> labelWiseValidationData = dsrValidationDataList.stream()
+				.collect(Collectors.toMap(DSRValidationData::getIssueNumber, DSRValidationData::getLabel,
+						(x, y) -> x + CommonConstant.COMMA + y));
 		totalBugList.forEach((defectId, jiraIssue) -> {
 			String label = Constant.EMPTY_STRING;
 			String present = Constant.EMPTY_STRING;
@@ -954,6 +957,30 @@ public class KPIExcelUtility {
 			excelData.setDuration(codeBuildTimeInfo.getDurationList().get(i));
 			kpiExcelData.add(excelData);
 
+		}
+	}
+
+	/**
+	 * populate excel data function for build frequency kpi
+	 * 
+	 * @param kpiExcelData
+	 * @param projectName
+	 * @param buildFrequencyInfo
+	 */
+
+	public static void populateBuildFrequency(List<KPIExcelData> kpiExcelData, String projectName,
+			BuildFrequencyInfo buildFrequencyInfo) {
+
+		for (int i = 0; i < buildFrequencyInfo.getBuildJobList().size(); i++) {
+			KPIExcelData excelData = new KPIExcelData();
+			excelData.setProjectName(projectName);
+			excelData.setJobName(buildFrequencyInfo.getBuildJobList().get(i));
+			Map<String, String> buildUrl = new HashMap<>();
+			buildUrl.put(buildFrequencyInfo.getBuildUrlList().get(i), buildFrequencyInfo.getBuildUrlList().get(i));
+			excelData.setBuildUrl(buildUrl);
+			excelData.setStartDate(buildFrequencyInfo.getBuildStartTimeList().get(i));
+			excelData.setWeeks(buildFrequencyInfo.getWeeksList().get(i));
+			kpiExcelData.add(excelData);
 		}
 	}
 
@@ -1873,5 +1900,29 @@ public class KPIExcelUtility {
 			});
 		}
 
+	}
+
+	public static void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, JiraIssueCustomHistory jiraCustomHistory,
+			List<String> status) {
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+		if (ObjectUtils.isNotEmpty(jiraCustomHistory.getCreatedDate()))
+			iterationKpiModalValue.setCreatedDate(DateUtil
+					.dateTimeFormatter(jiraCustomHistory.getCreatedDate().toDate(), DateUtil.DISPLAY_DATE_FORMAT));
+		Optional<JiraHistoryChangeLog> sprint = jiraCustomHistory.getStatusUpdationLog().stream().filter(
+				sprintDetails -> CollectionUtils.isNotEmpty(status) && status.contains(sprintDetails.getChangedTo()))
+				.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn)).findFirst();
+		if (sprint.isPresent()) {
+			iterationKpiModalValue
+					.setDorDate(DateUtil.dateTimeFormatter(sprint.get().getUpdatedOn(), DateUtil.DISPLAY_DATE_FORMAT));
+		}
+		iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+		overAllmodalValues.add(iterationKpiModalValue);
+		modalValues.add(iterationKpiModalValue);
 	}
 }

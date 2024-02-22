@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,6 +32,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -90,6 +94,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 
 	@Override
 	public Long calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -150,6 +155,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			KpiRequest kpiRequest) {
 
 		List<KPIExcelData> excelData = new ArrayList<>();
+		Set<String> issueTypesSet = new LinkedHashSet<>();
 		List<String> rangeList = customApiConfig.getLeadTimeRange();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, LocalDate.now().minusMonths(6).toString(),
 				LocalDate.now().toString(), kpiRequest);
@@ -164,14 +170,21 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(node.getProjectFilter().getBasicProjectConfigId());
+			issueTypesSet.add(CommonConstant.OVERALL);
 			List<CycleTimeValidationData> cycleTimeList = new ArrayList<>();
 			LinkedHashMap<String, List<DataCount>> leadTime = getLeadTime(issueCustomHistoryList, fieldMapping,
-					cycleTimeList, node, rangeList);
+					cycleTimeList, node, rangeList, issueTypesSet);
 			populateExcelDataObject(getRequestTrackerId(), cycleTimeList, excelData);
 			mapTmp.get(node.getId()).setValue(leadTime);
 		}
+
+		// Create kpi level filters
+		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypesSet);
+		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
+
 		List<String> xAxisRange = new ArrayList<>(rangeList);
 		Collections.reverse(xAxisRange);
+		kpiElement.setFilters(iterationKpiFilters);
 		kpiElement.setxAxisValues(xAxisRange);
 		kpiElement.setExcelColumns(KPIExcelColumn.LEAD_TIME.getColumns());
 		kpiElement.setExcelData(excelData);
@@ -233,7 +246,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	 */
 	private LinkedHashMap<String, List<DataCount>> getLeadTime(
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoriesList, FieldMapping fieldMapping,
-			List<CycleTimeValidationData> leadTimeList, Node node, List<String> rangeList) {
+			List<CycleTimeValidationData> leadTimeList, Node node, List<String> rangeList, Set<String> issueTypesSet) {
 
 		Map<Long, String> monthRangeMap = new HashMap<>();
 		Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseJiraIssuesMap = new LinkedHashMap<>();
@@ -262,6 +275,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 						cycleTime.getLiveLocalDateTime(), monthRangeMap)){
 					BacklogKpiHelper.setValueInCycleTime(jiraIssueCustomHistory.getCreatedDate(), cycleTime.getLiveTime(),
 							LEAD_TIME, cycleTimeValidationData, issueTypes);
+					issueTypesSet.addAll(issueTypes);
 					leadTimeList.add(cycleTimeValidationData);
 				}
 			}

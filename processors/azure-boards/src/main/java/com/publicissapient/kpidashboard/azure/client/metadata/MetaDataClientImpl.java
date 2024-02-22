@@ -274,6 +274,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
 			fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
 		}
+		fieldMapping.setRootCauseIdentifier(AzureConstants.CUSTOM_FIELD);
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping.setJiraStatusForDevelopmentAVR(workflowMap.get(CommonConstant.DEVELOPMENT));
 		fieldMapping.setJiraStatusForDevelopmentKPI82(workflowMap.get(CommonConstant.DEVELOPMENT));
