@@ -32,6 +32,7 @@ describe('FooterComponent', () => {
   let component: FooterComponent;
   let fixture: ComponentFixture<FooterComponent>;
   let httpService ;
+  let sharedService;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -46,6 +47,7 @@ describe('FooterComponent', () => {
     fixture = TestBed.createComponent(FooterComponent);
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
+    sharedService = TestBed.inject(SharedService);
     fixture.detectChanges();
   });
 
@@ -62,5 +64,18 @@ describe('FooterComponent', () => {
     spyOn(httpService,'getMatchVersions').and.returnValue(of(fakeRespose));
     component.getMatchVersions();
     expect(component.currentversion).not.toBe('');
-  })
+  });
+
+  it('should subscribe to isSideNav flag', () => {
+    // Arrange=
+    const isSideNavFlag = true;
+  
+    // Act
+    sharedService.isSideNav.next(isSideNavFlag);
+    fixture.detectChanges();
+  
+    // Assert
+    expect(component.isSide).toBe(isSideNavFlag);
+  });
+
 });

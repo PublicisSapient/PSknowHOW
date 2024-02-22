@@ -8,6 +8,7 @@ import { MessageService } from 'primeng/api';
 import { ProjectFilterComponent } from './project-filter.component';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { environment } from 'src/environments/environment';
+import { of } from 'rxjs';
 
 const allProjectsData = require('../../../test/resource/projectFilterAllProjects.json');
 const filteredData = [
@@ -79,6 +80,7 @@ describe('ProjectFilterComponent', () => {
   let httpService: HttpService;
   let sharedService: SharedService;
   let httpMock;
+  let messageService: MessageService;
   const baseUrl = environment.baseUrl;
 
   beforeEach(async () => {
@@ -97,6 +99,7 @@ describe('ProjectFilterComponent', () => {
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
     httpMock = TestBed.inject(HttpTestingController);
+    messageService = TestBed.inject(MessageService);
     // fixture.detectChanges();
   });
 
@@ -153,4 +156,16 @@ describe('ProjectFilterComponent', () => {
     });
     expect(component.filteredData).toEqual(filteredData);
   });
+
+  it('should give error on getting projects', () => {
+    component.resetDropdowns = true;
+    const errorResponse = {
+      success: false,
+      message: 'Error'
+    }
+    spyOn(httpService, 'getAllProjects').and.returnValue(of(errorResponse));
+    const spy = spyOn(messageService, 'add')
+    component.getProjects();
+    expect(spy).toHaveBeenCalled();
+  })
 });

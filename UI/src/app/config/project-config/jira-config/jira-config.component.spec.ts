@@ -2065,4 +2065,32 @@ describe('JiraConfigComponent', () => {
     expect(component.branchList).toEqual([]);
     expect(spy).toHaveBeenCalledWith({ severity: 'error', summary: errorMessage });
   }));
+
+  it('should give error on bamboo plan select', fakeAsync(() => {
+    component.urlParam = 'Bamboo';
+    component.selectedConnection = {
+      "id": "63b409e88ec44416b3ce96b3",
+    }
+    // component.initializeFields(component.urlParam);
+    component.bambooProjectDataFromAPI = [{
+      "jobNameKey": "REL-BAM",
+      "projectAndPlanName": "12th oct - bamboo-upgrade"
+    }];
+    component.bambooPlanKeyForSelectedPlan = '';
+    component.toolForm = new UntypedFormGroup({
+      planKey : new UntypedFormControl()
+    })
+    const errorResponse = {
+      success: false,
+      message: 'No plans details found'
+    }
+    component.bambooBranchList = [];
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getBranchesForProject').and.returnValue(of(errorResponse));
+    const spy = spyOn(messageService, 'add');
+    component.bambooPlanSelectHandler('12th oct - bamboo-upgrade', 'planName');
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }))
 });
