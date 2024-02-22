@@ -33,9 +33,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
@@ -275,6 +277,26 @@ public class JiraIterationServiceRTest {
 
 		});
 
+	}
+
+	@Test
+	public void processWithExposedApiToken() throws EntityNotFoundException {
+		KpiRequest kpiRequest = createKpiRequest(5);
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
+		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
+				.thenReturn(new ArrayList<KpiElement>());
+		List<KpiElement> resultList = jiraServiceR.processWithExposedApiToken(kpiRequest);
+		assertEquals(0, resultList.size());
+	}
+
+	@Test
+	public void getJiraIssuesForCurrentSprint(){
+		jiraServiceR.getJiraIssuesForCurrentSprint();
+	}
+
+	@Test
+	public void getJiraIssuesCustomHistoryForCurrentSprint(){
+		jiraServiceR.getJiraIssuesCustomHistoryForCurrentSprint();
 	}
 
 	private KpiRequest createKpiRequest(int level) {

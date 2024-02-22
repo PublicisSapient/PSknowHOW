@@ -34,8 +34,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import org.bson.types.ObjectId;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
@@ -277,6 +279,41 @@ public class JiraReleaseServiceRTest {
 
 		});
 
+	}
+
+	@Test
+	public void processWithExposedApiToken() throws EntityNotFoundException {
+		KpiRequest kpiRequest = createKpiRequest(5);
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
+		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
+				.thenReturn(new ArrayList<KpiElement>());
+		List<KpiElement> resultList = jiraServiceR.processWithExposedApiToken(kpiRequest);
+		assertEquals(0, resultList.size());
+	}
+
+	@Test
+	public void getJiraIssueReleaseForProject(){
+		jiraServiceR.getJiraIssueReleaseForProject();
+	}
+
+	@Test
+	public void getReleaseList(){
+		jiraServiceR.getReleaseList();
+	}
+
+	@Test
+	public void getSubTaskDefects(){
+		jiraServiceR.getSubTaskDefects();
+	}
+
+	@Test
+	public void getJiraIssuesCustomHistoryForCurrentSprint(){
+		jiraServiceR.getJiraIssuesCustomHistoryForCurrentSprint();
+	}
+
+	@Test
+	public void getJiraIssuesForSelectedRelease(){
+		jiraServiceR.getJiraIssuesForSelectedRelease();
 	}
 
 	private KpiRequest createKpiRequest(int level) {

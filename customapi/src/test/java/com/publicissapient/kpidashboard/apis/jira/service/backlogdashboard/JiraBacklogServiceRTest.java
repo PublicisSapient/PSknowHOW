@@ -21,8 +21,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -105,6 +111,8 @@ public class JiraBacklogServiceRTest {
 	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 	@Mock
 	private FlowLoadServiceImpl service;
+	@Mock
+	private CustomApiConfig customApiConfig;
 
 	@Before
 	public void setup() throws ApplicationException {
@@ -246,6 +254,47 @@ public class JiraBacklogServiceRTest {
 
 		});
 
+	}
+
+	@Test
+	public void processWithExposedApiToken() throws EntityNotFoundException {
+		KpiRequest kpiRequest = createKpiRequest(5);
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
+		List<KpiElement> resultList = jiraServiceR.processWithExposedApiToken(kpiRequest);
+		assertEquals(0, resultList.size());
+	}
+
+	@Test
+	public void testGetFutureSprintsList() throws NoSuchFieldException, IllegalAccessException {
+		// Creating test data
+		List<SprintDetails> futureSprintDetails = new ArrayList<>();
+		futureSprintDetails.add(new SprintDetails("s1","sone","1","future",String.valueOf(LocalDate.of(2024, 3, 8)),String.valueOf(LocalDate.of(2024, 4, 8)),"",null,null,null,null,null,null,null,null,null,null,null));
+
+		// Using reflection to set the private field futureSprintDetails
+		Field field = JiraBacklogServiceR.class.getDeclaredField("futureSprintDetails");
+		field.setAccessible(true);
+		field.set(jiraServiceR, futureSprintDetails);
+		when(customApiConfig.getSprintCountForBackLogStrength()).thenReturn(5); // Set the expected limit
+
+		List<String> result = jiraServiceR.getFutureSprintsList();
+
+		// Asserting the result
+		assertEquals(1, result.size()); // Ensure correct number of sprints returned
+	}
+
+	@Test
+	public void getJiraIssueReleaseForProject(){
+		jiraServiceR.getJiraIssueReleaseForProject();
+	}
+
+	@Test
+	public void getJiraIssuesForCurrentSprint(){
+		jiraServiceR.getJiraIssuesForCurrentSprint();
+	}
+
+	@Test
+	public void getJiraIssuesCustomHistoryForCurrentSprint(){
+		jiraServiceR.getJiraIssuesCustomHistoryForCurrentSprint();
 	}
 
 	private KpiRequest createKpiRequest(int level) {

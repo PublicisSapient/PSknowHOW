@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -398,6 +399,17 @@ public class JiraServiceRTest {
 		kpiRequest.setRequestTrackerId();
 		kpiRequest.setSprintIncluded(Arrays.asList());
 		return kpiRequest;
+	}
+
+	@Test
+	public void processWithExposedApiToken() throws EntityNotFoundException {
+		KpiRequest kpiRequest = createKpiRequest(4);
+		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
+				.thenReturn(new ArrayList<KpiElement>());
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
+		List<KpiElement> resultList = jiraServiceR.processWithExposedApiToken(kpiRequest);
+		assertEquals(0, resultList.size());
 	}
 
 }
