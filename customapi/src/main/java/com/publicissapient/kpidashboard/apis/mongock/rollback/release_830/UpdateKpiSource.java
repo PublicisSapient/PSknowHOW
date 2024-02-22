@@ -66,10 +66,8 @@ public class UpdateKpiSource {
 
 		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Jira"),
 				new Document("$set", new Document(KPI_SOURCE, "Jira/Azure"))));
-
 		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Jenkins"),
 				new Document("$set", new Document(KPI_SOURCE, "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"))));
-
 		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Bitbucket"),
 				new Document("$set", new Document(KPI_SOURCE, "Bitbucket/AzureRepository/GitHub/GitLab/RepoTool"))));
 		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Zypher"),
