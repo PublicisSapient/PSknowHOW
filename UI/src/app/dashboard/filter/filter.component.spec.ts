@@ -269,8 +269,8 @@ const completeHierarchyData = {
       imports: [FormsModule, HttpClientTestingModule, ReactiveFormsModule, NgSelectModule, FormsModule, RouterTestingModule
       ],
       providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService,
-        { provide: APP_CONFIG, useValue: AppConfig }]
-        // { provide: Router, useClass: MockRouter }]
+        { provide: APP_CONFIG, useValue: AppConfig },
+        { provide: Router, useClass: MockRouter }]
     })
       .compileComponents();
   });
@@ -697,13 +697,13 @@ const completeHierarchyData = {
     expect(component.kpiListData.username).toBe('dummy user');
   });
 
-  xit('should navigate To Selected Tab', inject([Router], (router: Router) => {
+  it('should navigate To Selected Tab', inject([Router], (router: Router) => {
     component.selectedTab = 'Speed';
     component.kanban = false;
     component.kpiListData = configGlobalData['data'];
-    const spy = spyOn(router, 'navigate');
+    const spy = spyOn(router, 'navigateByUrl');
     component.navigateToSelectedTab();
-    expect(spy).toHaveBeenCalledWith(['/dashboard/speed']);
+    expect(spy).toHaveBeenCalledWith('/dashboard/speed');
   }));
 
   it('should get kpiorder list', fakeAsync(() => {
@@ -2139,7 +2139,7 @@ const completeHierarchyData = {
     expect(spy).toHaveBeenCalled();
   });
 
-  xit('should navigate to home page', () => {
+  it('should navigate to home page', () => {
     (router as any).url = '/somepath/Config';
     component.kanban = true;
     component.selectedTab = 'maturity';
