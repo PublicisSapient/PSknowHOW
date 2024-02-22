@@ -46,7 +46,7 @@ public class UpdateKpiSource {
 		MongoCollection<Document> kpiMasterCollection = mongoTemplate.getCollection("kpi_master");
 
 		List<WriteModel<Document>> bulkOps = new ArrayList<>();
-		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Jira/Azure1"),
+		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Jira/Azure"),
 				new Document("$set", new Document(KPI_SOURCE, "Jira"))));
 		bulkOps.add(
 				new UpdateManyModel<>(new Document(KPI_SOURCE, "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"),
