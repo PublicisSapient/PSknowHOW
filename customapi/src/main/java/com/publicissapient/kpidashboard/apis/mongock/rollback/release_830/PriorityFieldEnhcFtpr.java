@@ -79,7 +79,7 @@ public class PriorityFieldEnhcFtpr {
         mongoTemplate.getCollection("field_mapping_structure")
                 .updateMany(
                         new Document("fieldName", new Document("$in", Arrays.asList("defectPriorityKPI82", "defectPriorityKPI135"))),
-                        new Document("$set", new Document("options", options))
+                        new Document("$set", new Document("fieldType" , "conditionalinput").append("options", options))
                 );
     }
 
