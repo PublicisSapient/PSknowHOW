@@ -1674,51 +1674,59 @@ public class KpiHelperService { // NOPMD
 	/**
 	 * Create PriorityWise Count map from FieldMapping & configPriority
 	 *
-	 * @param projectWisePriorityCount projectWisePriorityCount
-	 * @param configPriority           configPriority
-	 * @param leaf                     Node
-	 * @param defectPriorityCount      From FieldMapping
+	 * @param projectWisePriorityCount
+	 *            projectWisePriorityCount
+	 * @param configPriority
+	 *            configPriority
+	 * @param leaf
+	 *            Node
+	 * @param defectPriorityCount
+	 *            From FieldMapping
 	 */
 	public static void addPriorityCountProjectWise(Map<String, Map<String, Integer>> projectWisePriorityCount,
-												   Map<String, List<String>> configPriority, Node leaf, List<LabelCount> defectPriorityCount) {
+			Map<String, List<String>> configPriority, Node leaf, List<LabelCount> defectPriorityCount) {
 		if (CollectionUtils.isNotEmpty(defectPriorityCount)) {
-			defectPriorityCount.forEach(labelCount -> labelCount.setLabelValue(labelCount.getLabelValue().toUpperCase()));
+			defectPriorityCount
+					.forEach(labelCount -> labelCount.setLabelValue(labelCount.getLabelValue().toUpperCase()));
 			if (CollectionUtils.isNotEmpty(defectPriorityCount)) {
 				Map<String, Integer> priorityValues = new HashMap<>();
-				defectPriorityCount.forEach(label ->
-						configPriority.get(label.getLabelValue())
-								.forEach(priorityValue ->
-										priorityValues.put(priorityValue.toLowerCase(), label.getCountValue())
-								)
-				);
-				projectWisePriorityCount.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), priorityValues);
+				defectPriorityCount.forEach(label -> configPriority.get(label.getLabelValue()).forEach(
+						priorityValue -> priorityValues.put(priorityValue.toLowerCase(), label.getCountValue())));
+				projectWisePriorityCount.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(),
+						priorityValues);
 			}
 		}
 	}
 
-
 	/**
 	 * Exclude Defects based on the Priority Count tagged to Story
 	 *
-	 * @param projectWisePriority projectWisePriorityCount Map
-	 * @param defects             List<JiraIssue> Defect List
+	 * @param projectWisePriority
+	 *            projectWisePriorityCount Map
+	 * @param defects
+	 *            List<JiraIssue> Defect List
 	 * @return List of Defects which are remaining after exclusion of priority count
 	 */
-	public static List<JiraIssue> excludeDefectByPriorityCount(Map<String, Map<String, Integer>> projectWisePriority, Set<JiraIssue> defects) {
+	public static List<JiraIssue> excludeDefectByPriorityCount(Map<String, Map<String, Integer>> projectWisePriority,
+			Set<JiraIssue> defects) {
+		// creating storyWise linked defects priority count map
 		Map<String, Map<String, Integer>> storiesBugPriorityCount = new HashMap<>();
 		defects.forEach(defect -> {
 			Set<String> linkedStories = defect.getDefectStoryID();
-			linkedStories.forEach(linkedStory -> storiesBugPriorityCount.computeIfAbsent(linkedStory, k ->
-					new HashMap<>()).merge(defect.getPriority().toLowerCase(), 1, Integer::sum));
+			linkedStories
+					.forEach(linkedStory -> storiesBugPriorityCount.computeIfAbsent(linkedStory, k -> new HashMap<>())
+							.merge(defect.getPriority().toLowerCase(), 1, Integer::sum));
 		});
 
 		List<JiraIssue> remainingDefects = new ArrayList<>();
 		for (JiraIssue defect : defects) {
-			if (org.apache.commons.collections4.MapUtils.isNotEmpty(projectWisePriority.get(defect.getBasicProjectConfigId()))) {
+			if (org.apache.commons.collections4.MapUtils
+					.isNotEmpty(projectWisePriority.get(defect.getBasicProjectConfigId()))) {
 				Map<String, Integer> projPriorityCountMap = projectWisePriority.get(defect.getBasicProjectConfigId());
 				Set<String> linkedStories = defect.getDefectStoryID();
-				linkedStories.forEach(linked -> {
-					Map<String, Integer> storyLinkedBugPriority = storiesBugPriorityCount.getOrDefault(linked, new HashMap<>());
+				linkedStories.forEach(linked -> { // iterating through all linked stories
+					Map<String, Integer> storyLinkedBugPriority = storiesBugPriorityCount.getOrDefault(linked,
+							new HashMap<>());
 					storyLinkedBugPriority.forEach((priority, count) -> {
 						if (projPriorityCountMap.getOrDefault(priority, 0) >= count) {
 							remainingDefects.add(defect);
