@@ -15,7 +15,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>common</artifactId>
 	<groupId>com.publicissapient.kpidashboard</groupId>
-	<version>8.3.4-SNAPSHOT</version>
+	<version>8.3.4</version>
 	<packaging>jar</packaging>
 	<description>Common package used by all microservices</description>
 
@@ -289,6 +289,6 @@
 	</build>
 
 	<scm>
-		<tag>8.3.3</tag>
+		<tag>8.3.4</tag>
 	</scm>
 </project>

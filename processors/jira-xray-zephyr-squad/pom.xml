@@ -23,7 +23,7 @@
 	<groupId>com.publicissapient.kpidashboard</groupId>
 	<description>Jira Test Processor Microservice</description>
 	<packaging>jar</packaging>
-	<version>8.3.4-SNAPSHOT</version>
+	<version>8.3.4</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -304,6 +304,6 @@
 	</build>
 
 	<scm>
-		<tag>8.3.3</tag>
+		<tag>8.3.4</tag>
 	</scm>
 </project>
