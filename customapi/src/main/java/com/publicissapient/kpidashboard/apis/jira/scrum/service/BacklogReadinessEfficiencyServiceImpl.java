@@ -47,6 +47,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -200,6 +201,9 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 			log.info("Backlog items ready for development -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
 			List<JiraIssueCustomHistory> historyForIssues = (List<JiraIssueCustomHistory>) resultMap.get(HISTORY);
+			Map<String, JiraIssueCustomHistory> jiraIssueCustomHistoryMap = historyForIssues.stream()
+					.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID,
+							jiraIssueCustomHistory -> jiraIssueCustomHistory, (e1, e2) -> e1));
 			Map<String, Map<String, List<JiraIssue>>> typeAndPriorityWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getPriority)));
 
@@ -220,7 +224,10 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 						long cycleTime = 0;
 						List<IterationKpiModalValue> modalValues = new ArrayList<>();
 						for (JiraIssue jiraIssue : issues) {
-							populateBackLogData(overAllmodalValues, modalValues, jiraIssue);
+							KPIExcelUtility.populateBackLogData(overAllmodalValues, modalValues, jiraIssue,
+									jiraIssueCustomHistoryMap.getOrDefault(jiraIssue.getNumber(),
+											new JiraIssueCustomHistory()),
+									fieldMapping.getReadyForDevelopmentStatusKPI138());
 							issueCount = issueCount + 1;
 							overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 							AtomicLong difference = getActivityCycleTimeForAnIssue(

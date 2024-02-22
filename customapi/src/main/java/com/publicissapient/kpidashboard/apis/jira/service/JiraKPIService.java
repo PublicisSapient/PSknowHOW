@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -348,20 +347,6 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	public JiraIssueReleaseStatus getJiraIssueReleaseStatus() {
 		return jiraService.getJiraIssueReleaseForProject();
 	}
-
-	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
-			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
-		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
-		iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
-		overAllmodalValues.add(iterationKpiModalValue);
-		modalValues.add(iterationKpiModalValue);
-	}
-
 	public List<String> getReleaseList() {
 		return jiraService.getReleaseList();
 	}
