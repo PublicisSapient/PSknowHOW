@@ -18,17 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.auth.token;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 
-import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

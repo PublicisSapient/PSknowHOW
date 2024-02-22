@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.auth;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
