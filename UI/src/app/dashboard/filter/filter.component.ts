@@ -457,7 +457,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.navigateToSelectedTab();
   }
 
-  /** moved to service layer */ 
+  /** moved to service layer */
   // makeUniqueArrayList(arr) {
   //   let uniqueArray = [];
   //   for (let i = 0; i < arr?.length; i++) {
@@ -507,9 +507,9 @@ export class FilterComponent implements OnInit, OnDestroy {
           if(this.nodeIdQParam){
             const ifProjectExist = this.filterData?.findIndex((x) => x.nodeId === this.nodeIdQParam);
             if(ifProjectExist === -1){
-              this.noAccessMsg = true; 
+              this.noAccessMsg = true;
               this.displayMessage = true
-              return; 
+              return;
             }
           }
         })
@@ -563,8 +563,13 @@ export class FilterComponent implements OnInit, OnDestroy {
   createFormGroup(level, arr?) {
     if (arr?.length > 0) {
       const obj = {};
+      const alreadySelectedSprints = this.getSprintsWhichWasAlreadySelected();
       for (let i = 0; i < arr?.length; i++) {
-        obj[arr[i]['nodeId']] = new UntypedFormControl(false);
+        if(alreadySelectedSprints.includes(arr[i]['nodeId'])){
+          obj[arr[i]['nodeId']] = new UntypedFormControl(true);
+        }else{
+          obj[arr[i]['nodeId']] = new UntypedFormControl(false);
+        }
       }
       this.filterForm.controls[level] = new UntypedFormGroup(obj);
     } else {
@@ -707,6 +712,10 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
       }
 
+      if(this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity'){
+        this.setSelectedSprintOnServiceLayer();
+      }
+
       if (!applySource) {
         this.filterAdditionalFilters();
       }
@@ -753,6 +762,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.filterApplyData['selectedMap'][this.selectedFilterArray[i]?.labelName].push(this.selectedFilterArray[i]?.nodeId);
         this.filterApplyData['ids'].push(this.selectedFilterArray[i]?.nodeId);
         this.filterApplyData['label'] = this.selectedFilterArray[i]?.labelName;
+        if(this.selectedTab?.toLowerCase() === 'backlog'){
+          this.filterApplyData['selectedMap']['sprint'].push(...this.additionalFiltersDdn['sprint']?.filter((x) => x['parentId']?.includes(this.selectedFilterArray[i]?.nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de=>de.nodeId));
+        }
       }
     }
 
@@ -1315,9 +1327,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (obj) {
         let d;
         if (type == 'start') {
-          d = new Date(obj[startDateField]);
+          d = new Date(obj[startDateField].split('T')[0]);
         } else {
-          d = new Date(obj[endDateField]);
+          d = new Date(obj[endDateField].split('T')[0]);
         }
         dateString = [this.pad(d.getDate()), this.pad(monthNames[d.getMonth()]), d.getFullYear()].join('/');
       }
@@ -1462,6 +1474,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
+        this.service.setAddtionalFilterBackup({});
         if(!environment['AUTHENTICATION_SERVICE']){
           this.router.navigate(['./authentication/login']);
         } else{
@@ -1794,4 +1807,34 @@ export class FilterComponent implements OnInit, OnDestroy {
     const final = pId.replace(sortName, longName);
     return final;
   }
+
+  /*Sets the selected sprints on the service layer for storage. */
+  setSelectedSprintOnServiceLayer() {
+    let selectedSprint = {}
+    this.selectedFilterArray.forEach(element => {
+      if (element['additionalFilters'].length) {
+        selectedSprint = { ...selectedSprint, [element['nodeId']]: element['additionalFilters'] }
+      }
+    });
+    this.service.setAddtionalFilterBackup({ sprint: selectedSprint });
+  }
+
+  /**
+  Filters a list of sprints to only include those that were previously selected
+  @returns An array containing the node IDs of sprints that were previously selected */
+
+  getSprintsWhichWasAlreadySelected() {
+    const sprintsWhichWasAlreadySelected = []
+    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()['sprint'] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity') {
+      const selectedProjects = this.service.getSelectedTrends().map(data => data.nodeId);
+      selectedProjects.forEach(nodeId => {
+        const projectWhichSprintWasSelected = Object.keys(this.service.getAddtionalFilterBackup()['sprint']);
+        if (projectWhichSprintWasSelected && projectWhichSprintWasSelected.length && projectWhichSprintWasSelected.includes(nodeId)) {
+          sprintsWhichWasAlreadySelected.push(...this.service.getAddtionalFilterBackup()['sprint'][nodeId].map(details => details.nodeId));
+        }
+      })
+    }
+    return sprintsWhichWasAlreadySelected;
+  }
+
 }

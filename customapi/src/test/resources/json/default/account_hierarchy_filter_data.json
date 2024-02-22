@@ -508,5 +508,88 @@
     "leafNodeId": "38294_Scrum Project_6335363749794a18e8a4479b",
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "labelName": "sprint"
+  },
+  {
+    "node": [
+      {
+        "groupName": "hierarchyLevelOne",
+        "level": 1,
+        "name": "Sample One",
+        "id": "Sample One_hierarchyLevelOne",
+        "value": 0,
+        "accountHierarchy": {
+          "nodeName": "Sample One",
+          "path": "",
+          "beginDate": null,
+          "isDeleted": "False",
+          "basicProjectConfigId": "6335363749794a18e8a4479b",
+          "endDate": null,
+          "labelName": "hierarchyLevelOne",
+          "createdDat": "2022-09-19T13:44:33.200",
+          "nodeId": "Sample One_hierarchyLevelOne"
+        },
+        "parentId": null
+      },
+      {
+        "groupName": "hierarchyLevelTwo",
+        "level": 2,
+        "name": "Sample Two",
+        "id": "Sample Two_hierarchyLevelTwo",
+        "value": 0,
+        "accountHierarchy": {
+          "nodeName": "Sample Two",
+          "path": "Sample One_hierarchyLevelOne",
+          "beginDate": null,
+          "isDeleted": "False",
+          "basicProjectConfigId": "6335363749794a18e8a4479b",
+          "endDate": null,
+          "labelName": "hierarchyLevelTwo",
+          "createdDat": "2022-09-29T11:37:52.002",
+          "nodeId": "Sample Two_hierarchyLevelTwo"
+        },
+        "parentId": "Sample One_hierarchyLevelOne"
+      },
+      {
+        "groupName": "hierarchyLevelThree",
+        "level": 3,
+        "name": "Sample Three",
+        "id": "Sample Three_hierarchyLevelThree",
+        "value": 0,
+        "accountHierarchy": {
+          "nodeName": "Sample Three",
+          "path": "Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
+          "beginDate": null,
+          "isDeleted": "False",
+          "basicProjectConfigId": "6335363749794a18e8a4479b",
+          "endDate": null,
+          "labelName": "hierarchyLevelThree",
+          "createdDat": "2022-09-29T11:37:52.002",
+          "nodeId": "Sample Three_hierarchyLevelThree"
+        },
+        "parentId": "Sample Two_hierarchyLevelTwo"
+      },
+      {
+        "groupName": "project",
+        "level": 4,
+        "name": "Scrum Project",
+        "id": "Scrum Project_6335363749794a18e8a4479b",
+        "value": 0,
+        "accountHierarchy": {
+          "nodeName": "Scrum Project",
+          "path": "Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
+          "beginDate": null,
+          "isDeleted": "False",
+          "basicProjectConfigId": "6335363749794a18e8a4479b",
+          "endDate": null,
+          "labelName": "project",
+          "createdDat": "2022-09-29T11:37:52.002",
+          "nodeId": "Scrum Project_6335363749794a18e8a4479b"
+        },
+        "parentId": "Sample Three_hierarchyLevelThree"
+      }
+    ],
+    "leafNodeId": "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "labelName": "project"
   }
 ]

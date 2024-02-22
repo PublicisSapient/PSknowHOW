@@ -53,7 +53,7 @@ import com.publicissapient.kpidashboard.apis.data.JiraIssueReleaseStatusDataFact
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -96,7 +96,7 @@ public class DailyStandupServiceImplTest {
 	private FieldMappingRepository fieldMappingRepository;
 
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraIterationServiceR jiraService;
 
 	@Mock
 	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
@@ -176,7 +176,7 @@ public class DailyStandupServiceImplTest {
 		capacityKpiData.setCapacityPerSprint(12.0);
 
 		KpiElement kpiData = dailyStandupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 		assertNotNull(kpiData.getTrendValueList());
 
 	}
@@ -201,7 +201,7 @@ public class DailyStandupServiceImplTest {
 		try {
 
 			KpiElement kpiElement = dailyStandupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull(kpiElement.getTrendValueList());
 			List<DailyStandupServiceImpl.UserWiseCardDetail> trendValueList = (List<DailyStandupServiceImpl.UserWiseCardDetail>) kpiElement
 					.getTrendValueList();
@@ -246,7 +246,7 @@ public class DailyStandupServiceImplTest {
 		when(capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(any(), any())).thenReturn(capacityKpiData);
 		try {
 			KpiElement kpiElement = dailyStandupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull(kpiElement.getTrendValueList());
 			List<DailyStandupServiceImpl.UserWiseCardDetail> trendValueList = (List<DailyStandupServiceImpl.UserWiseCardDetail>) kpiElement
 					.getTrendValueList();

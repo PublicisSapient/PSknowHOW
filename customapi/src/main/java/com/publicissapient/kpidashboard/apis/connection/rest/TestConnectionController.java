@@ -48,6 +48,8 @@ public class TestConnectionController {
 	@Autowired
 	TestConnectionService testConnectionService;
 
+	public static final String SONAR_CONNECTION_MSG = "validating Sonar connections credentials";
+
 	/**
 	 * Validate JIRA connection
 	 * 
@@ -72,7 +74,7 @@ public class TestConnectionController {
 	 */
 	@RequestMapping(path = "/sonar", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> validateSonarConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
-		log.info("validating Sonar connections credentials");
+		log.info(SONAR_CONNECTION_MSG);
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
@@ -202,7 +204,7 @@ public class TestConnectionController {
 
 	@PostMapping("/github")
 	public ResponseEntity<ServiceResponse> validateGitHubConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
-		log.info("validating Sonar connections credentials");
+		log.info(SONAR_CONNECTION_MSG);
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
@@ -212,7 +214,7 @@ public class TestConnectionController {
 
 	@PostMapping("/repotool")
 	public ResponseEntity<ServiceResponse> validateRepoToolsConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
-		log.info("validating Sonar connections credentials");
+		log.info(SONAR_CONNECTION_MSG);
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK).body(testConnectionService.validateConnection(connection, CommonConstant.REPO_TOOLS));

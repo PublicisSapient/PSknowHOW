@@ -259,7 +259,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
         value: 6
       });
 
-    this.jiraKpiRequest = this.httpService.postKpi(postData, source)
+    this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
@@ -596,7 +596,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
       kpi171Payload.kpiList = [kpi171];
 
-      this.httpService.postKpi(kpi171Payload, 'jira').subscribe(data => {
+      this.httpService.postKpiNonTrend(kpi171Payload, 'jira').subscribe(data => {
         const kpi171Data = data.find(kpi => kpi.kpiId === kpiId);
         this.allKpiArray.push(kpi171Data);
         this.getChartDataForCardWithCombinationFilter(kpiId, JSON.parse(JSON.stringify(kpi171Data.trendValueList)));

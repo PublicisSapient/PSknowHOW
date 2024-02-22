@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -32,7 +31,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.repotools.model.Branches;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
@@ -55,6 +53,7 @@ import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -67,16 +66,15 @@ import java.util.stream.Collectors;
  * This service reflects the logic for the number of check-ins in master
  * metrics. The logic represent the calculations at the sprint, build and
  * release level.
- *
  */
 @Component
 @Slf4j
 public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object>, Map<String, Object>> {
 
-	private static final String NO_CHECKIN = "No. of Check in";
-	private static final String NO_MERGE = "No. of Merge Requests";
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
+	private static final String NO_CHECKIN = "No. of Check in";
+	private static final String NO_MERGE = "No. of Merge Requests";
 	private static final String REPO_TOOLS = "RepoTool";
 
 	@Autowired
@@ -84,7 +82,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
-	
+
 	@Autowired
 	private CustomApiConfig customApiConfig;
 
@@ -94,24 +92,18 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
+			throws ApplicationException {
 
-		Node root = treeAggregatorDetail.getRoot();
-		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-
-		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.PROJECT) {
-				projectWiseLeafNodeValue(kpiElement, mapTmp, v, kpiRequest);
-			}
-
-		});
+		Map<String, Node> mapTmp = new HashMap<>();
+		mapTmp.put(projectNode.getId(), projectNode);
+		projectWiseLeafNodeValue(kpiElement, mapTmp, projectNode, kpiRequest);
 
 		log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", kpiRequest.getRequestTrackerId(),
-				root);
+				projectNode);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.REPO_TOOL_CODE_COMMIT);
+		calculateAggregatedValueMap(projectNode, nodeWiseKPIValue, KPICode.REPO_TOOL_CODE_COMMIT);
 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.CODE_COMMIT);
@@ -140,11 +132,10 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 	 * project wise.
 	 *
 	 * @param kpiElement
-	 * @param mapTmp
-	 * @param projectLeafNodeList
+	 * @param projectLeafNode
 	 */
-	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
-			List<Node> projectLeafNodeList, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, Node projectLeafNode,
+			KpiRequest kpiRequest) {
 
 		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
 		String requestTrackerId = getRequestTrackerId();
@@ -157,65 +148,61 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseCommitList = getRepoToolsKpiMetricResponse(
-				localEndDate, toolMap, projectLeafNodeList, customApiConfig.getRepoToolCodeCommmitsUrl(), duration,
+				localEndDate, toolMap, projectLeafNode, customApiConfig.getRepoToolCodeCommmitsUrl(), duration,
 				dataPoints);
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseMergeList = getRepoToolsKpiMetricResponse(localEndDate,
-				toolMap, projectLeafNodeList, customApiConfig.getRepoToolMeanTimeToMergeUrl(), duration, dataPoints);
+				toolMap, projectLeafNode, customApiConfig.getRepoToolMeanTimeToMergeUrl(), duration, dataPoints);
 		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseCommitList)
 				&& CollectionUtils.isEmpty(repoToolKpiMetricResponseMergeList)) {
-			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}",
-					projectLeafNodeList.get(0));
+			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
 			return;
 		}
 		List<KPIExcelData> excelData = new ArrayList<>();
-		projectLeafNodeList.stream().forEach(node -> {
-			ProjectFilter accountHierarchyData = node.getProjectFilter();
-			ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-			List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null ? Collections.emptyList()
-					: toolMap.get(configId).get(REPO_TOOLS);
-			if (CollectionUtils.isEmpty(reposList)) {
-				log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getProjectFilter());
-				return;
+		ProjectFilter accountHierarchyData = projectLeafNode.getProjectFilter();
+		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+		List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null ? Collections.emptyList()
+				: toolMap.get(configId).get(REPO_TOOLS);
+		if (CollectionUtils.isEmpty(reposList)) {
+			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}",
+					projectLeafNode.getProjectFilter());
+			return;
+		}
+
+		List<Map<String, Long>> repoWiseCommitList = new ArrayList<>();
+		List<Map<String, Long>> repoWiseMergeRequestList = new ArrayList<>();
+		List<String> repoList = new ArrayList<>();
+		List<String> branchList = new ArrayList<>();
+		String projectName = projectLeafNode.getProjectFilter().getName();
+		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
+		Map<String, Long> aggCommitCountForRepo = new HashMap<>();
+		Map<String, Long> aggMergeCountForRepo = new HashMap<>();
+		reposList.forEach(repo -> {
+			if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
+					&& repo.getProcessorItemList().get(0).getId() != null) {
+				Map<String, Long> excelDataLoader = new HashMap<>();
+				Map<String, Long> mergeRequestExcelDataLoader = new HashMap<>();
+				Map<String, Long> dateWiseCommitList = new HashMap<>();
+				Map<String, Long> dateWiseMRList = new HashMap<>();
+
+				createDateLabelWiseMap(repoToolKpiMetricResponseCommitList, repoToolKpiMetricResponseMergeList,
+						repo.getRepositoryName(), repo.getBranch(), dateWiseCommitList, dateWiseMRList);
+				aggCommitAndMergeCount(aggCommitCountForRepo, aggMergeCountForRepo, dateWiseCommitList, dateWiseMRList);
+				List<DataCount> dayWiseCount = setDayWiseCountForProject(dateWiseCommitList, dateWiseMRList,
+						excelDataLoader, projectName, mergeRequestExcelDataLoader, duration, dataPoints);
+				aggDataMap.put(getBranchSubFilter(repo, projectName), dayWiseCount);
+				repoWiseCommitList.add(excelDataLoader);
+				repoWiseMergeRequestList.add(mergeRequestExcelDataLoader);
+				repoList.add(repo.getUrl());
+				branchList.add(repo.getBranch());
+
 			}
-
-			List<Map<String, Long>> repoWiseCommitList = new ArrayList<>();
-			List<Map<String, Long>> repoWiseMergeRequestList = new ArrayList<>();
-			List<String> repoList = new ArrayList<>();
-			List<String> branchList = new ArrayList<>();
-			String projectName = node.getProjectFilter().getName();
-			Map<String, List<DataCount>> aggDataMap = new HashMap<>();
-			Map<String, Long> aggCommitCountForRepo = new HashMap<>();
-			Map<String, Long> aggMergeCountForRepo = new HashMap<>();
-			reposList.forEach(repo -> {
-				if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
-						&& repo.getProcessorItemList().get(0).getId() != null) {
-					Map<String, Long> excelDataLoader = new HashMap<>();
-					Map<String, Long> mergeRequestExcelDataLoader = new HashMap<>();
-					Map<String, Long> dateWiseCommitList = new HashMap<>();
-					Map<String, Long> dateWiseMRList = new HashMap<>();
-
-					createDateLabelWiseMap(repoToolKpiMetricResponseCommitList, repoToolKpiMetricResponseMergeList,
-							repo.getRepositoryName(), repo.getBranch(), dateWiseCommitList, dateWiseMRList);
-					aggCommitAndMergeCount(aggCommitCountForRepo, aggMergeCountForRepo, dateWiseCommitList,
-							dateWiseMRList);
-					List<DataCount> dayWiseCount = setDayWiseCountForProject(dateWiseCommitList, dateWiseMRList,
-							excelDataLoader, projectName, mergeRequestExcelDataLoader, duration, dataPoints);
-					aggDataMap.put(getBranchSubFilter(repo, projectName), dayWiseCount);
-					repoWiseCommitList.add(excelDataLoader);
-					repoWiseMergeRequestList.add(mergeRequestExcelDataLoader);
-					repoList.add(repo.getUrl());
-					branchList.add(repo.getBranch());
-
-				}
-			});
-			List<DataCount> dayWiseCount = setDayWiseCountForProject(aggCommitCountForRepo, aggMergeCountForRepo,
-					new HashMap<>(), projectName, new HashMap<>(), duration, dataPoints);
-			aggDataMap.put(Constant.AGGREGATED_VALUE, dayWiseCount);
-			mapTmp.get(node.getId()).setValue(aggDataMap);
-
-			populateExcelData(requestTrackerId, repoWiseCommitList, repoList, branchList, excelData, node,
-					repoWiseMergeRequestList);
 		});
+		List<DataCount> dayWiseCount = setDayWiseCountForProject(aggCommitCountForRepo, aggMergeCountForRepo,
+				new HashMap<>(), projectName, new HashMap<>(), duration, dataPoints);
+		aggDataMap.put(Constant.AGGREGATED_VALUE, dayWiseCount);
+		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
+		populateExcelData(requestTrackerId, repoWiseCommitList, repoList, branchList, excelData, projectLeafNode,
+				repoWiseMergeRequestList);
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CODE_COMMIT.getColumns());
 	}
@@ -259,15 +246,11 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 
 	/**
 	 * create data count object by day/week filter
+	 *
 	 * @param mergeCountForRepo
-	 * 			list of merge request
 	 * @param commitCountForRepo
-	 *			list of commits
 	 * @param excelDataLoader
-	 * 			map of filter and commits
 	 * @param mergeRequestExcelDataLoader
-	 * 			map of filter and merge requests
-	 * @return list of data count
 	 */
 	private List<DataCount> setDayWiseCountForProject(Map<String, Long> commitCountForRepo,
 			Map<String, Long> mergeCountForRepo, Map<String, Long> excelDataLoader, String projectName,
@@ -307,7 +290,6 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			dayWiseCommitCount.add(dataCount);
 			currentDate = getNextRangeDate(duration, currentDate);
 		}
-		Collections.reverse(dayWiseCommitCount);
 		return dayWiseCommitCount;
 
 	}
@@ -342,28 +324,26 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 
 	/**
 	 * get kpi data from repo tools api
+	 *
 	 * @param endDate
 	 * @param toolMap
-	 * @param nodeList
+	 * @param node
 	 * @param kpi
 	 * @param duration
 	 * @param dataPoint
 	 * @return
 	 */
 	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
-			Map<ObjectId, Map<String, List<Tool>>> toolMap, List<Node> nodeList, String kpi, String duration,
-			Integer dataPoint) {
+			Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node, String kpi, String duration, Integer dataPoint) {
 
 		List<String> projectCodeList = new ArrayList<>();
-		nodeList.forEach(node -> {
-			ProjectFilter accountHierarchyData = node.getProjectFilter();
-			ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-			List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(REPO_TOOLS,
-					Collections.emptyList());
-			if (!CollectionUtils.isEmpty(tools)) {
-				projectCodeList.add(node.getId());
-			}
-		});
+		ProjectFilter accountHierarchyData = node.getProjectFilter();
+		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(REPO_TOOLS,
+				Collections.emptyList());
+		if (!CollectionUtils.isEmpty(tools)) {
+			projectCodeList.add(node.getId());
+		}
 
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 
@@ -424,8 +404,9 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI157(),KPICode.REPO_TOOL_CODE_COMMIT.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI157(),
+				KPICode.REPO_TOOL_CODE_COMMIT.getKpiId());
 	}
 
 }

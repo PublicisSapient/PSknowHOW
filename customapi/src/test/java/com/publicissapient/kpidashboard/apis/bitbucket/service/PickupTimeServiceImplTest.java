@@ -219,7 +219,7 @@ public class PickupTimeServiceImplTest {
         when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any())).thenReturn(repoToolKpiMetricResponseList);
         try {
             KpiElement kpiElement = pickupTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-                    treeAggregatorDetail);
+                    treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
         } catch (ApplicationException e) {
             e.printStackTrace();
         }

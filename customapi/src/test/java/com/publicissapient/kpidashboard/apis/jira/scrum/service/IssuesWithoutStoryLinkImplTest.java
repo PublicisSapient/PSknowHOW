@@ -120,7 +120,7 @@ public class IssuesWithoutStoryLinkImplTest {
 		when(testCaseDetailsRepository.findNonRegressionTestDetails(Mockito.anyMap(), Mockito.anyMap(),
 				Mockito.anyString())).thenReturn(totalTestCaseList);
 		Map<String, Object> defectDataListMap = issuesWithoutStoryLink
-				.fetchKPIDataFromDbForTestWithoutStory(leafNodeList);
+				.fetchKPIDataFromDbForTestWithoutStory(leafNodeList.get(0));
 		assertNotNull(defectDataListMap);
 	}
 
@@ -132,7 +132,7 @@ public class IssuesWithoutStoryLinkImplTest {
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> defectDataListMap = issuesWithoutStoryLink
-				.fetchKPIDataFromDbForDefectsWithoutStoryLink(leafNodeList);
+				.fetchKPIDataFromDbForDefectsWithoutStoryLink(leafNodeList.get(0));
 		assertNotNull(defectDataListMap);
 	}
 
@@ -143,19 +143,14 @@ public class IssuesWithoutStoryLinkImplTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> defectDataListMap = issuesWithoutStoryLink.fetchKPIDataFromDb(leafNodeList, null, null,
-				kpiRequest);
+		Map<String, Object> defectDataListMap = issuesWithoutStoryLink.fetchKPIDataFromDb(leafNodeList.get(0), null,
+				null, kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
 
 	@Test
 	public void testGetQualifierType() {
 		assertThat(issuesWithoutStoryLink.getQualifierType(), equalTo("ISSUES_WITHOUT_STORY_LINK"));
-	}
-
-	@Test
-	public void testCalculateKPIMetrics() {
-		assertThat("Total Defects value :", issuesWithoutStoryLink.calculateKPIMetrics(null), equalTo(null));
 	}
 
 	@Test
@@ -169,7 +164,8 @@ public class IssuesWithoutStoryLinkImplTest {
 			}
 		});
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		KpiElement kpiData = issuesWithoutStoryLink.getKpiData(kpiRequest, kpiElement, treeAggregatorDetail);
+		KpiElement kpiData = issuesWithoutStoryLink.getKpiData(kpiRequest, kpiElement,
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		assertEquals(null, kpiData.getValue());
 	}
 }

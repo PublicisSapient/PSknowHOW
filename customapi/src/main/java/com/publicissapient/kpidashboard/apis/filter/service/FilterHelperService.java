@@ -119,7 +119,7 @@ public class FilterHelperService {
 	/**
 	 * filter data based on sprint state
 	 * 
-	 * @param sprintStateRequestList
+	 * @param sprintStateList
 	 *            sprintStateList
 	 * @param hierarchyDataAll
 	 *            hierarchyDataAll
@@ -293,10 +293,8 @@ public class FilterHelperService {
 	/**
 	 * clean filter data
 	 * 
-	 * @param basicProjectConfigId
+	 * @param basicConfig
 	 *            id
-	 * @param isKanban
-	 *            kanban or scrum
 	 */
 	public void cleanFilterData(ProjectBasicConfigDTO basicConfig) {
 		ObjectId basicProjectConfigId = basicConfig.getId();
