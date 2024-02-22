@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.enums.FieldMappingEnum;
@@ -112,6 +114,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	@Autowired
 	private MongoTemplate operations;
+
+	@Autowired
+	private AuthenticationService authenticationService;
 
 	@Override
 	public FieldMapping getFieldMapping(String projectToolConfigId) {
@@ -237,22 +242,32 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	@Override
-	public void updateSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId, List<FieldMappingResponse> fieldMappingResponseList){
+	public void updateSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfig,
+			List<FieldMappingResponse> fieldMappingResponseList) {
+		if (projectToolConfig != null && CollectionUtils.isNotEmpty(fieldMappingResponseList)) {
+			ObjectId projectToolConfigId = projectToolConfig.getId();
 
-			Query query = new Query(Criteria.where("projectToolConfigId").is(new ObjectId(projectToolConfigId)));
+			ProjectBasicConfig projectBasicConfig = ((Map<String, ProjectBasicConfig>) cacheService
+					.cacheProjectConfigMapData()).get(projectToolConfig.getBasicProjectConfigId());
+
+			Query query = new Query(Criteria.where("projectToolConfigId").is(projectToolConfigId));
 			Update update = new Update();
-		final String loggedInUser = "shivani";///authenticationService.getLoggedInUser();
+			final String loggedInUser = authenticationService.getLoggedInUser();
 
 			fieldMappingResponseList.forEach(fieldMappingResponse -> {
 				update.set(fieldMappingResponse.getFieldName(), fieldMappingResponse.getOriginalValue());
-				ConfigurationHistoryChangeLog configurationHistoryChangeLog= new ConfigurationHistoryChangeLog();
+				ConfigurationHistoryChangeLog configurationHistoryChangeLog = new ConfigurationHistoryChangeLog();
 				configurationHistoryChangeLog.setChangedTo(fieldMappingResponse.getOriginalValue());
 				configurationHistoryChangeLog.setChangedFrom(fieldMappingResponse.getPreviousValue());
 				configurationHistoryChangeLog.setChangedBy(loggedInUser);
 				configurationHistoryChangeLog.setUpdatedOn(LocalDateTime.now());
-				update.addToSet("history"+fieldMappingResponse.getFieldName(),configurationHistoryChangeLog);
+				update.addToSet("history" + fieldMappingResponse.getFieldName(), configurationHistoryChangeLog);
 			});
 			operations.updateFirst(query, update, "field_mapping");
+			saveTemplateCode(projectBasicConfig, projectToolConfig);
+			cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
+			clearCache();
+		}
 	}
 
 	private Object getFieldMappingField(FieldMapping fieldMapping, Class<?> fieldMapping1, String field)
@@ -404,42 +419,28 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		if (projectBasicConfigOpt.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
 
-			List<String> fieldNameList = Arrays.asList(JIRA_DEFECT_TYPE, "sprintName", JIRA_STORY_POINTS_CUSTOM_FIELD,
-					ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION,
-					EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_TIME_CRITICALITY, EPIC_JOB_SIZE,
-					READY_FOR_DEVELOPMENT_STATUS, "additionalFilterConfig", "jiraDueDateField",
-					"jiraDueDateCustomField", EPIC_PLANNED_VALUE, EPIC_ACHIEVED_VALUE);
-
-			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE,
-					JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS);
-
 			Optional<ProjectToolConfig> projectToolConfigOpt = toolConfigRepository
 					.findById(fieldMapping.getProjectToolConfigId());
 			azureSprintReportStatusUpdateBasedOnFieldChange(fieldMapping, existingFieldMapping, projectBasicConfig,
 					projectToolConfigOpt);
 
-			if ((!projectBasicConfig.getIsKanban()
-					&& isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
-					|| (projectBasicConfig.getIsKanban()
-							&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping, fieldNameListKanban))) {
-				List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
-						.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
-								Collections.singletonList(basicProjectConfigId.toHexString()));
+			List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
+					.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
+							Collections.singletonList(basicProjectConfigId.toHexString()));
 
-				if (!traceLogs.isEmpty()) {
-					for (ProcessorExecutionTraceLog traceLog : traceLogs) {
-						if (traceLog != null) {
-							traceLog.setLastSuccessfulRun(null);
-							traceLog.setLastSavedEntryUpdatedDateByType(new HashMap<>());
-						}
+			if (!traceLogs.isEmpty()) {
+				for (ProcessorExecutionTraceLog traceLog : traceLogs) {
+					if (traceLog != null) {
+						traceLog.setLastSuccessfulRun(null);
+						traceLog.setLastSavedEntryUpdatedDateByType(new HashMap<>());
 					}
-					processorExecutionTraceLogRepository.saveAll(traceLogs);
 				}
-
-				saveTemplateCode(projectBasicConfig, projectToolConfigOpt);
-
+				processorExecutionTraceLogRepository.saveAll(traceLogs);
 			}
+			projectToolConfigOpt.ifPresent(projectToolConfig -> saveTemplateCode(projectBasicConfig, projectToolConfig));
+
 		}
+
 	}
 
 	/**
@@ -465,22 +466,20 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 	}
 
-	private void saveTemplateCode(ProjectBasicConfig projectBasicConfig,
-			Optional<ProjectToolConfig> projectToolConfigOpt) {
-		if (projectToolConfigOpt.isPresent()) {
-			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
-			if (projectBasicConfig.getIsKanban()
-					&& projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)) {
-				projectToolConfig.setMetadataTemplateCode("9");
-				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
-			} else if (!projectBasicConfig.getIsKanban()
-					&& projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)) {
-				projectToolConfig.setMetadataTemplateCode("10");
-				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+	private void saveTemplateCode(ProjectBasicConfig projectBasicConfig, ProjectToolConfig projectToolConfig) {
+		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)) {
+			if (projectBasicConfig.getIsKanban() && !projectToolConfig.getMetadataTemplateCode()
+					.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN)) {
+				projectToolConfig.setMetadataTemplateCode(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN);
+				toolConfigRepository.save(projectToolConfig);
+			} else if (!projectBasicConfig.getIsKanban() && !projectToolConfig.getMetadataTemplateCode()
+					.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM)) {
+				projectToolConfig.setMetadataTemplateCode(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM);
+				toolConfigRepository.save(projectToolConfig);
 			}
-
-			toolConfigRepository.save(projectToolConfig);
+			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 		}
+
 	}
 
 	private boolean compareJiraData(ObjectId basicProjectConfigId, FieldMapping fieldMapping,
@@ -613,12 +612,5 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 		return isUpdated;
 	}
-
-	/**
-	 * Return true if zephyr tool is configured.
-	 *
-	 * @param fieldMapping
-	 * @return
-	 */
 
 }

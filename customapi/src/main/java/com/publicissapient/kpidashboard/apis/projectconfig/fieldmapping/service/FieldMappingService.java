@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service
 
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -66,5 +67,5 @@ public interface FieldMappingService {
 	List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId) throws NoSuchFieldException, IllegalAccessException;
 
 
-	void updateSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId, List<FieldMappingResponse> fieldMappingResponseList);
+	void updateSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfigId, List<FieldMappingResponse> fieldMappingResponseList);
 }
