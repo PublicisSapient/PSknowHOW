@@ -19,4 +19,7 @@ spec:
                 number: 80
           pathType: Exact
 
-    
+status:
+  loadBalancer:
+    ingress:
+    - ip: 20.238.114.114
