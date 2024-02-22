@@ -420,8 +420,12 @@ export class DeveloperComponent implements OnInit {
       if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
 
         const tempArr = {};
-        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+        if (Array.isArray(this.kpiSelectedFilterObj[kpiId])) {
+          for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+            tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+          }
+        } else {
+          tempArr[this.kpiSelectedFilterObj[kpiId]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId])[0]?.value);
         }
         this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
 
@@ -518,7 +522,7 @@ export class DeveloperComponent implements OnInit {
           delete event[key];
           this.kpiSelectedFilterObj[kpi?.kpiId] = event;
         } else {
-          this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
+          this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];
         }
       }
     } else {
