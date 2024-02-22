@@ -28,67 +28,51 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+
 /***
  * @author rendk
  */
 @ChangeUnit(id = "r_kpi_source_update", order = "9101", author = "rendk", systemVersion = "9.1.0")
 public class UpdateKpiSource {
-    private final MongoTemplate mongoTemplate;
-    private static final String KPI_SOURCE = "kpiSource";
+	private final MongoTemplate mongoTemplate;
+	private static final String KPI_SOURCE = "kpiSource";
 
-    public UpdateKpiSource(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-    }
+	public UpdateKpiSource(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
+	}
 
-    @Execution
-    public void execution()
-    {
-        MongoCollection<Document> kpiMasterCollection = mongoTemplate.getCollection("kpi_master");
+	@Execution
+	public void execution() {
+		MongoCollection<Document> kpiMasterCollection = mongoTemplate.getCollection("kpi_master");
 
-        List<WriteModel<Document>> bulkOps = new ArrayList<>();
-        bulkOps.add(new UpdateManyModel<>(
-                new Document(KPI_SOURCE, "Jira/Azure/Zephyr"),
-                new Document("$set", new Document(KPI_SOURCE, "Jira"))
-        ));
-        bulkOps.add(new UpdateManyModel<>(
-                new Document(KPI_SOURCE, "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"),
-                new Document("$set", new Document(KPI_SOURCE, "Jenkins"))
-        ));
-        bulkOps.add(new UpdateManyModel<>(
-                new Document(KPI_SOURCE, "Bitbucket/AzureRepository/GitHub/GitLab/RepoTool"),
-                new Document("$set", new Document(KPI_SOURCE, "Bitbucket"))
-        ));
-        bulkOps.add(new UpdateManyModel<>(
-                new Document(KPI_SOURCE, "Zephyr/JiraTest"),
-                new Document("$set", new Document(KPI_SOURCE, "Zephyr"))
-        ));
-        kpiMasterCollection.bulkWrite(bulkOps);
-    }
-    @RollbackExecution
-    public void rollBack() {
+		List<WriteModel<Document>> bulkOps = new ArrayList<>();
+		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Jira/Azure1"),
+				new Document("$set", new Document(KPI_SOURCE, "Jira"))));
+		bulkOps.add(
+				new UpdateManyModel<>(new Document(KPI_SOURCE, "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"),
+						new Document("$set", new Document(KPI_SOURCE, "Jenkins"))));
+		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Bitbucket/AzureRepository/GitHub/GitLab/RepoTool"),
+				new Document("$set", new Document(KPI_SOURCE, "Bitbucket"))));
+		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Zypher/JiraTest"),
+				new Document("$set", new Document(KPI_SOURCE, "Zypher"))));
+		kpiMasterCollection.bulkWrite(bulkOps);
+	}
 
-        MongoCollection<Document> kpiMasterCollection = mongoTemplate.getCollection("kpi_master");
-        List<WriteModel<Document>> bulkOps = new ArrayList<>();
+	@RollbackExecution
+	public void rollBack() {
 
-        bulkOps.add(new UpdateManyModel<>(
-                new Document(KPI_SOURCE, "Jira"),
-                new Document("$set", new Document(KPI_SOURCE, "Jira/Azure/Zephyr"))
-        ));
+		MongoCollection<Document> kpiMasterCollection = mongoTemplate.getCollection("kpi_master");
+		List<WriteModel<Document>> bulkOps = new ArrayList<>();
 
-        bulkOps.add(new UpdateManyModel<>(
-                new Document(KPI_SOURCE, "Jenkins"),
-                new Document("$set", new Document(KPI_SOURCE, "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"))
-        ));
-
-        bulkOps.add(new UpdateManyModel<>(
-                new Document(KPI_SOURCE, "Bitbucket"),
-                new Document("$set", new Document(KPI_SOURCE, "Bitbucket/AzureRepository/GitHub/GitLab/RepoTool"))
-        ));
-        bulkOps.add(new UpdateManyModel<>(
-                new Document(KPI_SOURCE, "Zephyr"),
-                new Document("$set", new Document(KPI_SOURCE, "Zephyr/JiraTest"))
-        ));
-        kpiMasterCollection.bulkWrite(bulkOps);
-    }
+		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Jira"),
+				new Document("$set", new Document(KPI_SOURCE, "Jira/Azure"))));
+		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Jenkins"),
+				new Document("$set", new Document(KPI_SOURCE, "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"))));
+		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Bitbucket"),
+				new Document("$set", new Document(KPI_SOURCE, "Bitbucket/AzureRepository/GitHub/GitLab/RepoTool"))));
+		bulkOps.add(new UpdateManyModel<>(new Document(KPI_SOURCE, "Zypher"),
+				new Document("$set", new Document(KPI_SOURCE, "Zypher/JiraTest"))));
+		kpiMasterCollection.bulkWrite(bulkOps);
+	}
 
 }
