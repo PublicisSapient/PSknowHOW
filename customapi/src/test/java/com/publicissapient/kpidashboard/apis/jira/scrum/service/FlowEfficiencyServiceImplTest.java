@@ -149,7 +149,7 @@ public class FlowEfficiencyServiceImplTest {
         List<Map<String, Object>> typeCountMap = new ArrayList<>();
         when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
         KpiElement responseKpiElement = flowEfficiencyService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-                treeAggregatorDetail);
+                treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 
         assertNotNull(responseKpiElement);
         assertEquals(responseKpiElement.getKpiId(), kpiRequest.getKpiList().get(0).getKpiId());

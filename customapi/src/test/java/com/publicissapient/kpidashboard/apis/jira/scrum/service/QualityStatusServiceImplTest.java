@@ -54,13 +54,12 @@ import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -87,7 +86,7 @@ public class QualityStatusServiceImplTest {
 	@Mock
 	private KpiHelperService kpiHelperService;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraIterationServiceR jiraService;
 
 	private List<JiraIssue> storyList = new ArrayList<>();
 
@@ -99,7 +98,6 @@ public class QualityStatusServiceImplTest {
 	private KpiRequest kpiRequest;
 	private List<JiraIssue> linkedStories = new ArrayList<>();
 	Map<String, List<String>> priority = new HashMap<>();
-
 
 	@Before
 	public void setup() {
@@ -124,7 +122,7 @@ public class QualityStatusServiceImplTest {
 		List<String> linked = bugList.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
 				.collect(Collectors.toList());
 		linkedStories = jiraIssueDataFactory.findIssueByNumberList(linked);
-		priority.put("P1",Arrays.asList("p1"));
+		priority.put("P1", Arrays.asList("p1"));
 	}
 
 	private void setMockProjectConfig() {
@@ -160,8 +158,8 @@ public class QualityStatusServiceImplTest {
 		when(customApiConfig.getPriority()).thenReturn(priority);
 		try {
 			KpiElement kpiElement = qualityStatusServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
-			assertNotNull((DataCount) kpiElement.getTrendValueList());
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
+			assertNotNull(kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {
 

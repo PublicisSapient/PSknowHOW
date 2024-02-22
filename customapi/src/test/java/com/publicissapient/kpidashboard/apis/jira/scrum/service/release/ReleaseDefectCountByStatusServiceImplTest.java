@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
+import com.publicissapient.kpidashboard.apis.model.Node;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -67,7 +69,9 @@ public class ReleaseDefectCountByStatusServiceImplTest {
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
-	JiraServiceR jiraService;
+	JiraReleaseServiceR jiraService;
+
+
 	@InjectMocks
 	private ReleaseDefectCountByStatusServiceImpl defectCountByStatusService;
 	private KpiRequest kpiRequest;
@@ -106,8 +110,10 @@ public class ReleaseDefectCountByStatusServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(bugList);
+
 		KpiElement kpiElement = defectCountByStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
+
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
 		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(0).getValue()
 				.get(0).getValue()).get(0)).getValue();
@@ -125,7 +131,7 @@ public class ReleaseDefectCountByStatusServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(bugList);
 		KpiElement kpiElement = defectCountByStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
 		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(0).getValue()
 				.get(0).getValue()).get(0)).getValue();

@@ -762,6 +762,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.filterApplyData['selectedMap'][this.selectedFilterArray[i]?.labelName].push(this.selectedFilterArray[i]?.nodeId);
         this.filterApplyData['ids'].push(this.selectedFilterArray[i]?.nodeId);
         this.filterApplyData['label'] = this.selectedFilterArray[i]?.labelName;
+        if(this.selectedTab?.toLowerCase() === 'backlog'){
+          this.filterApplyData['selectedMap']['sprint'].push(...this.additionalFiltersDdn['sprint']?.filter((x) => x['parentId']?.includes(this.selectedFilterArray[i]?.nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de=>de.nodeId));
+        }
       }
     }
 

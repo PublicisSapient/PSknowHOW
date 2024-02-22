@@ -2265,7 +2265,7 @@ describe('IterationComponent', () => {
         };
         component.jiraKpiData = {};
         component.loaderJiraArray = ['kpi14'];
-        const spy = spyOn(httpService, 'postKpi').and.returnValue(of(fakeJiraGroupId1));
+        const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(fakeJiraGroupId1));
         const spycreateKpiWiseId = spyOn(helperService, 'createKpiWiseId').and.returnValue(jiraKpiData);
         const spycreateAllKpiArray = spyOn(component, 'createAllKpiArray');
         component.postJiraKpi(fakeJiraPayload, 'jira');
@@ -3631,7 +3631,7 @@ describe('IterationComponent', () => {
         };
         component.jiraKpiData = {};
         component.loaderJiraArray = ['kpi14'];
-        const spy = spyOn(httpService, 'postKpi').and.returnValue(of(null));
+        const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(null));
         spyOn(helperService, 'createKpiWiseId').and.returnValue(jiraKpiData);
         component.postJiraKpi(fakeJiraPayload, 'jira');
         tick();

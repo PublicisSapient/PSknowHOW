@@ -123,7 +123,6 @@ export class HttpService {
   private getSuggestionsUrl = this.baseUrl + '/api/suggestions/project';
   private updateSuggestionsUrl = this.baseUrl + '/api/suggestions/account/';
   private getEmm360Url = this.baseUrl + '/api/emm-feed/download';
-  private analyticsSwitchUrl = this.baseUrl + '/api/analytics/switch';
 
   private landingInfoUrl =
     'https://setup-speedy.tools.publicis.sapient.com/landingpage/staticcontent';
@@ -188,11 +187,6 @@ export class HttpService {
         this.userEmail = details['user_email'];
       }
     });
-  }
-
-  /**get analytics on/off switch */
-  getAnalyticsFlag() {
-    return this.http.get(this.analyticsSwitchUrl);
   }
 
   /** getFilterData from the server */
@@ -389,10 +383,17 @@ export class HttpService {
     );
   }
 
-  /** POST: This make kpi call of scrum */
-  postKpi(data, source): Observable<any> {
+   /** POST: This make kpi call of scrum */
+   postKpi(data, source): Observable<any> {
     return this.http
-      .post<any>(this.getDataUrl + source + '/kpi', data)
+    .post<any>(this.getDataUrl + source + '/kpi', data)
+      .pipe(catchError(this.handleKpiError));
+  }
+
+  /** POST: This make kpi call for Iterartion/Backlog/Release tabs */
+  postKpiNonTrend(data, source): Observable<any> {
+    return this.http
+      .post<any>(this.getDataUrl + source + '/nonTrend' + '/kpi', data)
       .pipe(catchError(this.handleKpiError));
   }
 

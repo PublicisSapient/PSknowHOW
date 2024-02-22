@@ -10,10 +10,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
@@ -34,13 +34,11 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -53,7 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class DevCompletionStatusServiceImpl extends JiraIterationKPIService {
 
 	public static final String UNCHECKED = "unchecked";
 	public static final String ISSUE_CUSTOM_HISTORY = "issues custom history";
@@ -76,16 +74,12 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 	private ConfigHelperService configHelperService;
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
+			throws ApplicationException {
 		DataCount trendValue = new DataCount();
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
-			Filters filters = Filters.getFilter(k);
-			if (Filters.SPRINT == filters) {
-				projectWiseLeafNodeValue(v, trendValue, kpiElement, kpiRequest);
-			}
-		});
+		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
+			projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
+		}
 		return kpiElement;
 	}
 
@@ -95,15 +89,9 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 	}
 
 	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> subCategoryMap) {
-		return null;
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Dev Completed Status -> Requested sprint : {}", leafNode.getName());
 			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
@@ -148,25 +136,17 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint level.
 	 *
-	 * @param sprintLeafNodeList
-	 * @param trendValue
+	 * @param latestSprint
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("java:S3776")
-	private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node latestSprint, DataCount trendValue, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
-
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
-		List<Node> latestSprintNode = new ArrayList<>();
-		Node latestSprint = sprintLeafNodeList.get(0);
-		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
 		Object basicProjectConfigId = Objects.requireNonNull(latestSprint).getProjectFilter().getBasicProjectConfigId();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
+		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprint, null, null, kpiRequest);
 
 		SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT_DETAILS);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
@@ -376,7 +356,7 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 				JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream().filter(
 						jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(jiraIssue.getNumber()))
 						.findFirst().orElse(new JiraIssueCustomHistory());
-				String devCompletionDate = getDevCompletionDate(issueCustomHistory,
+				String devCompletionDate = IterationKpiHelper.getDevCompletionDate(issueCustomHistory,
 						fieldMapping.getJiraDevDoneStatusKPI145());
 				compltedIssues.putIfAbsent(jiraIssue, devCompletionDate);
 			});
