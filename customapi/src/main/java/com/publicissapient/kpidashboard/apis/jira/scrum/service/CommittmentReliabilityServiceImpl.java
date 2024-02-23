@@ -186,8 +186,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseInitialScopeCompletedIssues = new HashMap<>();
 
 		Map<String, String> markerInfo = new HashMap<>(); //
-		markerInfo.put(Constant.AMBER, "Issue finishing in the last two days of the iteration are marked in AMBER"); //
-		markerInfo.put(Constant.RED, "Issues finishing post issue due date are marked in RED"); //
+		markerInfo.put(Constant.AMBER, "Issue finishing in the last two days of the iteration are marked in AMBER");
+		markerInfo.put(Constant.RED, "Issues finishing post issue due date are marked in RED");
 
 		if (CollectionUtils.isNotEmpty(allJiraIssue) && CollectionUtils.isNotEmpty(sprintDetails)) {
 			sprintDetails.forEach(sd -> {
@@ -458,9 +458,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	 */
 	private void populateExcelData(String requestTrackerId, List<KPIExcelData> excelData,
 			List<CommitmentReliabilityValidationData> validationDataList, Node node, FieldMapping fieldMapping) {
-		Map<String, String> markerInfo = new HashMap<>(); //
-		markerInfo.put(Constant.AMBER, "Issue finishing in the last two days of the iteration are marked in AMBER"); //
-		markerInfo.put(Constant.RED, "Issues finishing post issue due date are marked in RED"); //
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			String sprintName = node.getSprintFilter().getName();
