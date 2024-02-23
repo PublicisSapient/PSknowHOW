@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import lombok.extern.slf4j.Slf4j;
@@ -166,8 +168,6 @@ public class RepoToolsConfigServiceImpl {
 		List<ProjectToolConfig> projectRepos = projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(
 				CommonConstant.REPO_TOOLS, new ObjectId(basicProjectconfigIdList.get(0)));
 
-		List<ProcessorExecutionTraceLog> processorExecutionTraceLogList = new ArrayList<>();
-
 		try {
 
 			List<ProjectToolConfig> projectToolConfigList = projectRepos.stream()
@@ -177,12 +177,6 @@ public class RepoToolsConfigServiceImpl {
 			if (CollectionUtils.isNotEmpty(projectToolConfigList)) {
 				String projectCode = createProjectCode(basicProjectconfigIdList.get(0));
 
-				// create ProcessorExecutionTraceLog
-				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-						new ObjectId(basicProjectconfigIdList.get(0)).toHexString());
-				processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-				repoToolsClient = createRepoToolsClient();
-
 				// api call to start project scanning
 				httpStatus = repoToolsClient.triggerScanCall(projectCode,
 						customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolTriggerScan(),
@@ -191,13 +185,6 @@ public class RepoToolsConfigServiceImpl {
 				// save ProcessorItemRepository for all the ProjectToolConfig
 				processorItemRepository.saveAll(createProcessorItemList(projectToolConfigList, processor.getId()));
 
-				if (httpStatus == HttpStatus.OK.value()) {
-					// save ProcessorExecutionTraceLog
-					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-					processorExecutionTraceLog.setExecutionSuccess(true);
-					processorExecutionTraceLogList.add(processorExecutionTraceLog);
-					processorExecutionTraceLogService.save(processorExecutionTraceLog);
-				}
 			}
 		} catch (Exception ex) {
 			log.error("Exception occcured while scanning project {}", basicProjectconfigIdList, ex);
@@ -339,21 +326,27 @@ public class RepoToolsConfigServiceImpl {
 	}
 
 	/**
-	 * create ProcessorExecutionTraceLog to track repo tool project scan
+	 * create and save ProcessorExecutionTraceLog to track repo tool project scan
 	 * 
-	 * @param basicProjectConfigId
-	 * @return
+	 * @param repoToolsStatusResponse Object containing repo tool scanning status
 	 */
-	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
+	public void saveRepoToolProjectTraceLog(RepoToolsStatusResponse repoToolsStatusResponse) {
+
+		String basicProjectConfigId = repoToolsStatusResponse.getProject()
+				.substring(repoToolsStatusResponse.getProject().lastIndexOf('_') + 1);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.REPO_TOOLS);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
-		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
-				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.REPO_TOOLS, basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
+				ProcessorConstants.REPO_TOOLS, basicProjectConfigId);
 		existingTraceLogOptional.ifPresent(
 				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
-		return processorExecutionTraceLog;
+		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+		processorExecutionTraceLog.setExecutionSuccess(
+				Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()));
+		processorExecutionTraceLogService.save(processorExecutionTraceLog);
+
 	}
 
 }

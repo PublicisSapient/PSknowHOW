@@ -70,16 +70,26 @@ export class DoraComponent implements OnInit {
   toolTipTop: number = 0;
 
   constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
-    this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
-      if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'dora') {
-        this.allKpiArray = [];
-        this.kpiChartData = {};
-        this.kpiSelectedFilterObj = {};
-        this.kpiDropdowns = {};
-        this.sharedObject = sharedobject;
-        if (this.globalConfig || this.service.getDashConfigData()) {
-          this.receiveSharedData(sharedobject);
+
+    this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
+      if (Object.keys(x).length > 0) {
+        this.colorObj = x;
+        this.trendBoxColorObj = { ...x };
+        let tempObj = {};
+        for (const key in this.trendBoxColorObj) {
+          const idx = key.lastIndexOf('_');
+          const nodeName = key.slice(0, idx);
+          this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+          tempObj[nodeName] = [];
         }
+      }
+      this.kpiLoader = true;
+      return this.service.passDataToDashboard;
+    }), distinctUntilChanged()).subscribe((sharedobject: any) => {
+      // used to get all filter data when user click on apply button in filter
+      if (sharedobject?.filterData?.length) {
+        this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
+        this.receiveSharedData(sharedobject);
         this.noTabAccess = false;
       } else {
         this.noTabAccess = true;
@@ -93,19 +103,6 @@ export class DoraComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
-      if (Object.keys(x).length > 0) {
-        this.colorObj = x;
-        if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-          this.trendBoxColorObj = { ...x };
-          for (const key in this.trendBoxColorObj) {
-            const idx = key.lastIndexOf('_');
-            const nodeName = key.slice(0, idx);
-            this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-          }
-        }
-      }
-    }));
 
     this.httpService.getConfigDetails().subscribe(filterData => {
       if (filterData[0] !== 'error') {
@@ -365,9 +362,13 @@ export class DoraComponent implements OnInit {
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
       if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
         const tempArr = {};
-        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value[0]?.aggregationValue;
+        if (Array.isArray(this.kpiSelectedFilterObj[kpiId])) {
+          for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+            tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+            tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value[0]?.aggregationValue;
+          }
+        } else {
+          tempArr[this.kpiSelectedFilterObj[kpiId]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId])[0]?.value);
         }
         this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
       } else {
@@ -441,10 +442,10 @@ export class DoraComponent implements OnInit {
           this.kpiSelectedFilterObj[kpi?.kpiId] = event;
         } else if (Array.isArray(event[key])) {
           for (let i = 0; i < event[key]?.length; i++) {
-            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
+            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], Array.isArray(event[key]) ? event[key][i] : event[key]];
           }
         } else {
-          this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
+          this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];   
         }
       }
     } else {
@@ -579,11 +580,11 @@ export class DoraComponent implements OnInit {
       };
 
       let maturityRange = JSON.parse(JSON.stringify(selectedKPI.maturityRange));
-      
+
       let maturityLevel = JSON.parse(JSON.stringify(selectedKPI.maturityLevel));
       let displayRange = maturityLevel.map((item) => item.displayRange);
       let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(maturityRange);
-    
+
       if (findIncrementalOrDecrementalRange === 'decremental') {
         maturityRange = maturityRange.reverse();
       } else {

@@ -570,7 +570,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 		Map<String, Object> hoverMap = new LinkedHashMap<>();
 		if (STORY_POINTS.equalsIgnoreCase(key)) {
 			valueMap.forEach((s, jiraIssues) -> {
-				long storyPoints = (long) KpiDataHelper.calculateStoryPoints(jiraIssues, fieldMapping);
+				double storyPoints = roundingOff(KpiDataHelper.calculateStoryPoints(jiraIssues, fieldMapping));
 				hoverMap.put(s, storyPoints);
 			});
 		}

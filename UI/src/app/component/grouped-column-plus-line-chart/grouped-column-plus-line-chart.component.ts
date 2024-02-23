@@ -507,13 +507,17 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
       const duration = 250;
 
       try {
-         const unFormatedData= JSON.parse(JSON.stringify(self.unmodifiedData));
-         unFormatedData[0].value = unFormatedData[0].value.map(details=>{
+         let unFormatedData= JSON.parse(JSON.stringify(self.unmodifiedData));
+         unFormatedData = unFormatedData.map(project =>{
+          const index = this.service.getSelectedTrends().findIndex(seleceProject=>seleceProject.nodeName.toLowerCase() === project.data.toLowerCase())
+          project.value.map(details=>{
           const XValue = details.date || details.sSprintName;
-          const projectName = '_'+this.service.getSelectedTrends()[0]?.nodeName;
+          const projectName = '_'+this.service.getSelectedTrends()[index]?.nodeName;
           const removeProject = XValue.includes(projectName) ? XValue.replace(projectName,'') : XValue;
-           return {...details,sortSprint:removeProject};
+          details['sortSprint'] = removeProject;
         })
+        return project;
+      })
         const newRawData = unFormatedData;
          const colorArr = this.color;
         /* Add line into SVG acoording to data */

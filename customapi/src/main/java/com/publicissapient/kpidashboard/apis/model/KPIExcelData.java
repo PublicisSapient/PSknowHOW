@@ -403,10 +403,10 @@ public class KPIExcelData {
 	@JsonProperty("Testing Phase")
 	private String testingPhase;
 
+	@JsonProperty("Escaped defect identifier")
+	private String escapedIdentifier;
+
 	@JsonProperty("marker")
 	private String marker;
-
-
-
 
 }

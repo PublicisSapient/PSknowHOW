@@ -829,9 +829,14 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 }
               } else {
                 const tempArr = {};
-                for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-                  tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+                if(Array.isArray(this.kpiSelectedFilterObj[kpiId])){
+                    for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+                        tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+                      }
+                }else{
+                    tempArr[this.kpiSelectedFilterObj[kpiId]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId])[0]?.value);
                 }
+                
                 this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
               }
             } else {
@@ -974,7 +979,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             }
             let filtersApplied = Object.keys(this.colorObj);
 
-            filtersApplied = filtersApplied.map((x) => x.split('_')[0]);
+            //filtersApplied = filtersApplied.map((x) => x.split('_')[0]);
+            filtersApplied = filtersApplied.map((x) => {
+              let parts = x.split('_');
+              return parts.slice(0, parts.length - 1).join('_');
+            });
 
             filtersApplied.forEach((hierarchyName) => {
                 let obj = {
@@ -1221,13 +1230,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
               delete event[key];
               this.kpiSelectedFilterObj[kpi?.kpiId] = event;
             } else if(Array.isArray(event[key])){
-              for (let i = 0; i < event[key]?.length; i++) {
-                this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
-              }
-            }else{
                 for (let i = 0; i < event[key]?.length; i++) {
-                    this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
+                    this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], Array.isArray(event[key]) ? event[key][i] : event[key]];
                   }
+            }else{
+             this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];   
             }
           }
         } else {

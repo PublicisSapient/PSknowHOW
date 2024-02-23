@@ -296,6 +296,9 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(JIRA_ISSUE_STATUS);
 		query.fields().include(URL);
 		query.fields().include(NAME);
+		query.fields().include("labels");
+		query.fields().include("uatDefectGroup");
+		query.fields().include(SPRINT_ID);
 		return operations.find(query, JiraIssue.class);
 
 	}

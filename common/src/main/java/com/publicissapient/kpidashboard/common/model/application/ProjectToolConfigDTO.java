@@ -65,6 +65,7 @@ public class ProjectToolConfigDTO {
 	private String updatedAt;
 	private boolean queryEnabled;
 	private String boardQuery;
+	private String team;
 	private List<BoardDetails> boards;
 	// TestCase Fields For zephyr tool
 	private List<String> regressionAutomationLabels;

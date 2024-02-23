@@ -160,19 +160,32 @@
                                 </ng-container>
                             </div>
                             <div *ngSwitchCase="'autoComplete'" class="p-mb-3 p-autoComplete-custom">
-                                <div class="p-d-flex p-flex-column">
+                                <div class="p-d-flex p-flex-column" *ngIf="form_elem.multiple">
                                     <label for="{{form_elem.id}}">{{form_elem.label}}</label>
                                     <p-autoComplete inputId="{{form_elem.id}}" formControlName="{{form_elem.id}}"
                                         [suggestions]="this[form_elem.suggestions]"
                                         (completeMethod)="form_elem.filterEventHandler($event)"
                                         [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
-                                        field="boardName" [multiple]="true" dropdown="true" [unique]="true" pTooltip="<span class='tooltiptext'>
+                                        field="{{form_elem.field}}" [multiple]="true" dropdown="true" [unique]="true" pTooltip="<span class='tooltiptext'>
                                         {{form_elem.tooltip}}
                                       </span>" tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
                                         (onUnselect)="form_elem.unselectEventHandler($event)"
                                         (onSelect)="form_elem.selectEventHandler($event)"
-                                        (onDropdownClick)="form_elem.dropdownClickHandler($event, this)"
-                                        [type]="'search'" [disabled]="form_elem.disabled() || this.isLoading">
+                                        [disabled]="form_elem.disabled() || this.isLoading">
+                                    </p-autoComplete>
+                                </div>
+                                <div class="p-d-flex p-flex-column" *ngIf="!form_elem.multiple">
+                                    <label for="{{form_elem.id}}">{{form_elem.label}}</label>
+                                    <p-autoComplete inputId="{{form_elem.id}}" formControlName="{{form_elem.id}}"
+                                        [suggestions]="this[form_elem.suggestions]"
+                                        (completeMethod)="form_elem.filterEventHandler($event)"
+                                        [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
+                                        field="{{form_elem.field}}" [multiple]="false" dropdown="true" [unique]="true" pTooltip="<span class='tooltiptext'>
+                                        {{form_elem.tooltip}}
+                                      </span>" tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
+                                        (onUnselect)="form_elem.unselectEventHandler($event)"
+                                        (onSelect)="form_elem.selectEventHandler($event)"
+                                        [disabled]="form_elem.disabled() || this.isLoading">
                                     </p-autoComplete>
                                 </div>
                             </div>

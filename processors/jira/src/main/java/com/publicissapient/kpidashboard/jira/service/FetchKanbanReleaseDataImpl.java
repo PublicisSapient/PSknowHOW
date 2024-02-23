@@ -161,8 +161,8 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 				kanbanAccountHierarchy.setBasicProjectConfigId(projectBasicConfig.getId());
 				kanbanAccountHierarchy.setIsDeleted(JiraConstants.FALSE);
 				kanbanAccountHierarchy.setLabelName(hierarchyLevel.getHierarchyLevelId());
-				String versionName = projectVersion.getName() + JiraConstants.COMBINE_IDS_SYMBOL + projectRelease
-						.getProjectName().split(JiraConstants.COMBINE_IDS_SYMBOL + projectRelease.getConfigId())[0];
+				String versionName = projectVersion.getName() + JiraConstants.COMBINE_IDS_SYMBOL
+						+ projectBasicConfig.getProjectName();
 				String versionId = projectVersion.getId() + JiraConstants.COMBINE_IDS_SYMBOL
 						+ projectRelease.getProjectId();
 				kanbanAccountHierarchy.setNodeId(versionId);

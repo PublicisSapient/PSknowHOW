@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -46,6 +48,9 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @implNote {@link KpiIntegrationServiceImpl }
+ */
 @Service
 @Slf4j
 public class JenkinsServiceR {
@@ -61,6 +66,8 @@ public class JenkinsServiceR {
 
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
+
+	private boolean referFromProjectCache = true;
 
 	@SuppressWarnings({ "unchecked" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
@@ -135,7 +142,7 @@ public class JenkinsServiceR {
 			List<AccountHierarchyData> filteredAccountDataList) {
 
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
 			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
 		}
 
@@ -148,7 +155,7 @@ public class JenkinsServiceR {
 	 */
 	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
 		String[] projectKeyCache;
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
 			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 		} else {
 			projectKeyCache = kpiRequest.getIds();
@@ -203,4 +210,20 @@ public class JenkinsServiceR {
 		}
 	}
 
+	/**
+	 * This method is called when the request for kpi is done from exposed API
+	 *
+	 * @param kpiRequest
+	 *            Jenkins KPI request true if flow for precalculated, false for direct
+	 *            flow.
+	 * @return List of KPI data
+	 * @throws EntityNotFoundException
+	 *             EntityNotFoundException
+	 */
+	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
+		referFromProjectCache = false;
+		List<KpiElement> kpiElementList = process(kpiRequest);
+		referFromProjectCache = true;
+		return kpiElementList;
+	}
 }
