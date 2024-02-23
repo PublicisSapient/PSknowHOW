@@ -697,10 +697,17 @@ public class KPIExcelUtility {
 	 */
 
 	public static void populateCommittmentReliability(String sprint, Map<String, JiraIssue> totalStoriesMap,
-			Set<JiraIssue> initialIssueNumber, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+			Set<JiraIssue> initialIssueNumber, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping,
+													 Set<String> addedIssue, Set<JiraIssue> puntedIssue ) {
+
 		if (MapUtils.isNotEmpty(totalStoriesMap)) {
 
+			Set<String> puntedIssueSet = new HashSet<>();
+			puntedIssue.forEach(issue -> puntedIssueSet.add(issue.getIssueId()));
+
+
 			totalStoriesMap.forEach((storyId, jiraIssue) -> {
+
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setSprintName(sprint);
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
@@ -713,6 +720,14 @@ public class KPIExcelUtility {
 					excelData.setInitialCommited("Y");
 				}
 
+				if (addedIssue.contains(jiraIssue.getNumber())) {
+					excelData.setMarker(Constant.RED);
+				} else if (puntedIssueSet.contains(jiraIssue.getNumber())) {
+					excelData.setMarker(Constant.AMBER);
+				} else {
+					excelData.setMarker("");
+				}
+
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 					Double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));
@@ -720,6 +735,7 @@ public class KPIExcelUtility {
 				} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
 					excelData.setStoryPoint(roundingOff(jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs");
 				}
+				excelData.setMarker("#00ff00");
 
 				kpiExcelData.add(excelData);
 

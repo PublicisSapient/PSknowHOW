@@ -403,5 +403,10 @@ public class KPIExcelData {
 	@JsonProperty("Testing Phase")
 	private String testingPhase;
 
+	@JsonProperty("marker")
+	private String marker;
+
+
+
 
 }
