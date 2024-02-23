@@ -69,11 +69,11 @@ public class PriorityFieldEnhcFtpr {
 
     public void updateOptions() {
         List<Document> options = Arrays.asList(
-                new Document("label", "p1").append("value", "p1").append("operator", "<").append("maxValue", "10").append("minValue", "1"),
-                new Document("label", "p2").append("value", "p2").append("operator", "<").append("maxValue", "10").append("minValue", "1"),
-                new Document("label", "p3").append("value", "p3").append("operator", "<").append("maxValue", "10").append("minValue", "1"),
-                new Document("label", "p4").append("value", "p4").append("operator", "<").append("maxValue", "10").append("minValue", "1"),
-                new Document("label", "p5").append("value", "p5").append("operator", "<").append("maxValue", "10").append("minValue", "1")
+                new Document("labelValue", "p1").append("value", "p1").append("operator", "<").append("maxValue", "10").append("minValue", "1"),
+                new Document("labelValue", "p2").append("value", "p2").append("operator", "<").append("maxValue", "10").append("minValue", "1"),
+                new Document("labelValue", "p3").append("value", "p3").append("operator", "<").append("maxValue", "10").append("minValue", "1"),
+                new Document("labelValue", "p4").append("value", "p4").append("operator", "<").append("maxValue", "10").append("minValue", "1"),
+                new Document("labelValue", "p5").append("value", "p5").append("operator", "<").append("maxValue", "10").append("minValue", "1")
         );
 
         mongoTemplate.getCollection("field_mapping_structure")
