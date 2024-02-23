@@ -735,7 +735,6 @@ public class KPIExcelUtility {
 				} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
 					excelData.setStoryPoint(roundingOff(jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs");
 				}
-				excelData.setMarker("#00ff00");
 
 				kpiExcelData.add(excelData);
 

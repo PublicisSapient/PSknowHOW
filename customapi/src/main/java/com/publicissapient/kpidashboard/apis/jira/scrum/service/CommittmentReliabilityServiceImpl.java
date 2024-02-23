@@ -85,11 +85,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private static final String INITIALCMPLTD_ORIGINAL_ESTIMATE = "initialCompletedIssueOriginalEstimate";
 	private static final String SPECIAL_SYMBOL = "#";
 
-	private static final String SCOPE_ADDED = "Scope added"; //
-	private static final String SCOPE_REMOVED = "Scope removed"; //
-	private static final String PUNTED_ISSUES = "puntedIssues"; //
-	private static final String ADDED_ISSUES = "addedIssues"; //
-
 	@Autowired
 	private SprintRepository sprintRepository;
 	@Autowired
@@ -483,7 +478,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 					data.getInitialIssueNumber().stream()
 							.forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));
 					KPIExcelUtility.populateCommittmentReliability(sprintName, totalSprintStoryMap,
-							data.getInitialIssueNumber(), excelData, fieldMapping, data.addedIssue, data.puntedIssue);
+							data.getInitialIssueNumber(), excelData, fieldMapping, data.getAddedIssue(), data.getPuntedIssue());
 
 
 				});
