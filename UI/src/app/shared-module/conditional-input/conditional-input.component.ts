@@ -22,19 +22,20 @@ export class ConditionalInputComponent implements OnInit {
       this.finalValue = [...this.templateData];
       this.valueObj.forEach(element => {
         let opt = this.fieldConfig.options.filter((opt) => opt.labelValue === element.labelValue)[0];
-        opt.countValue = element.countValue;
+        if (opt) {
+          opt['countValue'] = element.countValue;
+        }
       });
     }
   }
 
   setValue(event) {
-    if (event.value.filter((val) => val.labelValue === event.itemValue.labelValue).length > 1) {
-      event.value = event.value.filter((val) => val.labelValue !== event.itemValue.labelValue);
-    }
     this.templateLabels = event.value.map((val) => val.labelValue);
     this.templateData = this.fieldConfig.options.filter((opt) => this.templateLabels.includes(opt.labelValue));
-    let selectedOption = this.templateData.filter((opt) => opt.labelValue ===  event.itemValue.labelValue)[0];
-    selectedOption['countValue'] = selectedOption['minValue'];
+    let selectedOption = this.templateData.filter((opt) => opt.labelValue === event.itemValue.labelValue)[0];
+    if (selectedOption) {
+      selectedOption['countValue'] = selectedOption['minValue'];
+    }
     this.setOutput();
   }
 
