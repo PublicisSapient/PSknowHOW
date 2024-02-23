@@ -33,6 +33,8 @@ export class ConditionalInputComponent implements OnInit {
     }
     this.templateLabels = event.value.map((val) => val.labelValue);
     this.templateData = this.fieldConfig.options.filter((opt) => this.templateLabels.includes(opt.labelValue));
+    let selectedOption = this.templateData.filter((opt) => opt.labelValue ===  event.itemValue.labelValue)[0];
+    selectedOption['countValue'] = selectedOption['minValue'];
     this.setOutput();
   }
 
