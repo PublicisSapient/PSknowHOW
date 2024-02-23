@@ -59,7 +59,7 @@ export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor 
   }
 
   setValue() {
-    this.onChange(this.value);
+    this.onChange(this.value.trim());
   }
 
   setValueConditionalInput(event) {
