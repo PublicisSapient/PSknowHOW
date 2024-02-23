@@ -1727,8 +1727,10 @@ public class KpiHelperService { // NOPMD
 				linkedStories.forEach(linked -> { // iterating through all linked stories
 					Map<String, Integer> storyLinkedBugPriority = storiesBugPriorityCount.getOrDefault(linked,
 							new HashMap<>());
-					storyLinkedBugPriority.forEach((priority, count) -> {
-						if (projPriorityCountMap.getOrDefault(priority, 0) >= count) {
+					storyLinkedBugPriority.forEach((priority, defectCount) -> {
+						// if defectCount of the story w.r.t priority is greater than of fieldMapping
+						// include it as ftp defect
+						if (projPriorityCountMap.getOrDefault(priority, 0) > defectCount) {
 							remainingDefects.add(defect);
 						}
 					});
