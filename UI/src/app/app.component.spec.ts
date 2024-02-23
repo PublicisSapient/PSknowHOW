@@ -125,4 +125,9 @@ describe('AppComponent', () => {
     component.ngOnInit();
     expect(component.authorized).toBeFalse();
   });*/
+  
+  it('should set authorized to true on init', () => {
+    expect(component.authorized).toBeTrue();
+  });
+
 });

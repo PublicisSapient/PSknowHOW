@@ -853,4 +853,144 @@ describe('AccessMgmtComponent', () => {
     component.deleteAccessReq(username, isSuperAdmin);
     expect(spy).toHaveBeenCalled()
   });
+
+  it('should add or remove projects/nodes when accessType is project', () => {
+    const accessItem = {
+      value: [
+        { itemId: '1', itemName: 'Project 1' },
+        { itemId: '2', itemName: 'Project 2' }
+      ],
+      valueRemoved: {
+        val: [
+          { code: '1', name: 'Project 1' }
+        ]
+      },
+      accessType: 'project'
+    };
+    component.addedProjectsOrNodes = [{
+      accessLevel: 'project',
+      accessItems: [
+        { itemId: '3', itemName: 'Project 3' }
+      ]
+    }];
+  
+    component.projectSelectedEvent(accessItem);
+  
+    // Check if the projects/nodes are added correctly
+    expect(component.addedProjectsOrNodes).toEqual([
+      {
+        accessLevel: 'project',
+        accessItems: [
+          { itemId: '1', itemName: 'Project 1' },
+          { itemId: '2', itemName: 'Project 2' }
+        ]
+      }
+    ]);
+    
+  });
+
+  it('should add or remove projects/nodes when accessItem is not project', () => {
+    const accessItem = {
+      value: [
+        { itemId: '1', itemName: 'item 1' },
+        { itemId: '2', itemName: 'item 2' }
+      ],
+      valueRemoved: {
+      },
+      accessType: 'category1'
+    };
+    component.addedProjectsOrNodes = [{
+      accessLevel: 'project',
+      accessItems: [
+        { itemId: '3', itemName: 'Project 3' }
+      ]
+    }];
+  
+    component.projectSelectedEvent(accessItem);
+  
+    // Check if the projects/nodes are added correctly
+    expect(component.addedProjectsOrNodes).toEqual([{
+        accessLevel: 'category1',
+        accessItems: [
+          { itemId: '1', itemName: 'item 1' },
+          { itemId: '2', itemName: 'item 2' }
+        ]
+      },{
+        accessLevel: 'category1',
+        accessItems: [
+          { itemId: '1', itemName: 'item 1' },
+          { itemId: '2', itemName: 'item 2' }
+        ]
+      }
+
+    ]);
+    
+  });
+
+  it('should add or remove projects/nodes when accessItem is not project and valueRemoved is empty', () => {
+    const accessItem = {
+      value: [
+        { itemId: '1', itemName: 'item 1' },
+        { itemId: '2', itemName: 'item 2' }
+      ],
+      valueRemoved: {
+      },
+      accessType: 'category1'
+    };
+    component.addedProjectsOrNodes = [{
+      accessLevel: 'category1',
+      accessItems: [
+        { itemId: '3', itemName: 'item 3' }
+      ]
+    }];
+  
+    component.projectSelectedEvent(accessItem);
+  
+    // Check if the projects/nodes are added correctly
+    expect(component.addedProjectsOrNodes).toEqual([{
+        accessLevel: 'category1',
+        accessItems: [
+          { itemId: '3', itemName: 'item 3' },
+          { itemId: '1', itemName: 'item 1' },
+          { itemId: '2', itemName: 'item 2' }
+        ]
+      }
+
+    ]);
+    
+  });
+
+  it('should add or remove projects/nodes when accessItem is not project and valueRemoved is not empty', () => {
+    const accessItem = {
+      value: [
+        { itemId: '1', itemName: 'item 1' },
+        { itemId: '2', itemName: 'item 2' }
+      ],
+      valueRemoved: {
+        val: [
+          { code: '1', name: 'item 1' }
+        ]
+      },
+      accessType: 'category1'
+    };
+    component.addedProjectsOrNodes = [{
+      accessLevel: 'category1',
+      accessItems: [
+        { itemId: '3', itemName: 'item 3' }
+      ]
+    }];
+  
+    component.projectSelectedEvent(accessItem);
+  
+    // Check if the projects/nodes are added correctly
+    expect(component.addedProjectsOrNodes).toEqual([{
+        accessLevel: 'category1',
+        accessItems: [
+          { itemId: '3', itemName: 'item 3' },
+        ]
+      }
+
+    ]);
+    
+  });
 });
