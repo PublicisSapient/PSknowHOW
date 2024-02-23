@@ -1883,21 +1883,25 @@ public class KPIExcelUtility {
 
 	}
 	public static void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
-									List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue,JiraIssueCustomHistory jiraCustomHistory,List<String> status) {
+										   List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, JiraIssueCustomHistory jiraCustomHistory,
+										   List<String> status) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
 		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
 		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
-			iterationKpiModalValue.setCreatedDate(DateUtil.dateTimeFormatter(jiraCustomHistory.getCreatedDate().toDate(),DateUtil.DISPLAY_DATE_FORMAT));
-			Optional<JiraHistoryChangeLog> sprint = jiraCustomHistory.getStatusUpdationLog().stream()
-					.filter(sprintDetails -> CollectionUtils.isNotEmpty(status) && status.contains(sprintDetails.getChangedTo()))
-					.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn)).findFirst();
-			if(sprint.isPresent()) {
-				iterationKpiModalValue.setDorDate(DateUtil.dateTimeFormatter(sprint.get().getUpdatedOn(),DateUtil.DISPLAY_DATE_FORMAT));
-			}
-			iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+		if (ObjectUtils.isNotEmpty(jiraCustomHistory.getCreatedDate()))
+			iterationKpiModalValue.setCreatedDate(DateUtil
+					.dateTimeFormatter(jiraCustomHistory.getCreatedDate().toDate(), DateUtil.DISPLAY_DATE_FORMAT));
+		Optional<JiraHistoryChangeLog> sprint = jiraCustomHistory.getStatusUpdationLog().stream().filter(
+						sprintDetails -> CollectionUtils.isNotEmpty(status) && status.contains(sprintDetails.getChangedTo()))
+				.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn)).findFirst();
+		if (sprint.isPresent()) {
+			iterationKpiModalValue
+					.setDorDate(DateUtil.dateTimeFormatter(sprint.get().getUpdatedOn(), DateUtil.DISPLAY_DATE_FORMAT));
+		}
+		iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
 		overAllmodalValues.add(iterationKpiModalValue);
 		modalValues.add(iterationKpiModalValue);
 	}

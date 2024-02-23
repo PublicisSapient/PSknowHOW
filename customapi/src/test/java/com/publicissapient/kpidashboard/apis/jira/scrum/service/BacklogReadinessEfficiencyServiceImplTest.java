@@ -154,7 +154,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		jiraIssueCustomHistories = jiraIssueCustomHistoryDataFactory.getJiraIssueCustomHistory();
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testGetKpiDataProject_closedSprint() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 4);
