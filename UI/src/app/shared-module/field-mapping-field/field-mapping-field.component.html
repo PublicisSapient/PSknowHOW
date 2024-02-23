@@ -75,7 +75,7 @@
 
     <div *ngSwitchCase="'conditionalinput'">
         <app-conditional-input id="fieldConfig?.fieldName" name="fieldConfig?.fieldName" ngDefaultControl 
-        [(ngModel)]="value" (conditionalInputChange)="setValueConditionalInput($event)" [fieldConfig]="fieldConfig" 
+        [valueObj]="value" (conditionalInputChange)="setValueConditionalInput($event)" [fieldConfig]="fieldConfig" 
         [id]="fieldConfig?.fieldName"></app-conditional-input>
     </div>
 </div>
