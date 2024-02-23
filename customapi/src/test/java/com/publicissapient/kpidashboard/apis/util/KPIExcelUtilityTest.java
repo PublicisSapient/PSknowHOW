@@ -291,7 +291,7 @@ public class KPIExcelUtilityTest {
 		Map<String, String> defectIdDetails = excelData.getDefectId();
 		assertEquals(1, defectIdDetails.size());
 		// Depending on your kpiId logic, assert the corresponding fields
-//		assertEquals(Constant.EXCEL_YES, excelData.getEscapedDefect());
+		// assertEquals(Constant.EXCEL_YES, excelData.getEscapedDefect());
 	}
 
 	@Test
@@ -389,13 +389,13 @@ public class KPIExcelUtilityTest {
 		// Create a mock of KanbanJiraIssue
 		KanbanJiraIssue openIssue = mock(KanbanJiraIssue.class);
 		when(openIssue.getNumber()).thenReturn("OPEN-1");
-//		when(openIssue.getTypeName()).thenReturn("Bug");
-//		when(openIssue.getPriority()).thenReturn("High");
+		// when(openIssue.getTypeName()).thenReturn("Bug");
+		// when(openIssue.getPriority()).thenReturn("High");
 
 		KanbanIssueCustomHistory closedIssue = mock(KanbanIssueCustomHistory.class);
 		when(closedIssue.getStoryID()).thenReturn("CLOSED-1");
-//		when(closedIssue.getStoryType()).thenReturn("Story");
-//		when(closedIssue.getPriority()).thenReturn("Low");
+		// when(closedIssue.getStoryType()).thenReturn("Story");
+		// when(closedIssue.getPriority()).thenReturn("Low");
 
 		// Mock data
 		List<KanbanJiraIssue> openIssues = Arrays.asList(openIssue);
@@ -787,6 +787,7 @@ public class KPIExcelUtilityTest {
 		assertEquals(1, kpiExcelData.size());
 		assertEquals("Sprint1", kpiExcelData.get(0).getSprintName());
 	}
+
 	@Test
 	public void testPopulateBackLogData() {
 		JiraIssue jiraIssue = new JiraIssue();
@@ -808,7 +809,7 @@ public class KPIExcelUtilityTest {
 		jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.now());
 		statusUpdationLog.add(jiraHistoryChangeLog);
 		issueCustomHistory.setStatusUpdationLog(statusUpdationLog);
-		KPIExcelUtility.populateBackLogData(overAllmodalValues, modalValues, jiraIssue, issueCustomHistory,status);
+		KPIExcelUtility.populateBackLogData(overAllmodalValues, modalValues, jiraIssue, issueCustomHistory, status);
 		Assert.assertNotNull(modalValues);
 		Assert.assertNotNull(overAllmodalValues);
 	}

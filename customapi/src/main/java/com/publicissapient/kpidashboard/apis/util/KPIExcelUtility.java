@@ -1882,9 +1882,10 @@ public class KPIExcelUtility {
 		}
 
 	}
+
 	public static void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
-										   List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, JiraIssueCustomHistory jiraCustomHistory,
-										   List<String> status) {
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue, JiraIssueCustomHistory jiraCustomHistory,
+			List<String> status) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
@@ -1895,7 +1896,7 @@ public class KPIExcelUtility {
 			iterationKpiModalValue.setCreatedDate(DateUtil
 					.dateTimeFormatter(jiraCustomHistory.getCreatedDate().toDate(), DateUtil.DISPLAY_DATE_FORMAT));
 		Optional<JiraHistoryChangeLog> sprint = jiraCustomHistory.getStatusUpdationLog().stream().filter(
-						sprintDetails -> CollectionUtils.isNotEmpty(status) && status.contains(sprintDetails.getChangedTo()))
+				sprintDetails -> CollectionUtils.isNotEmpty(status) && status.contains(sprintDetails.getChangedTo()))
 				.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn)).findFirst();
 		if (sprint.isPresent()) {
 			iterationKpiModalValue

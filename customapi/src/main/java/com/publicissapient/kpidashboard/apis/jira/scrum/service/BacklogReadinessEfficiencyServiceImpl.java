@@ -187,8 +187,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService
 
 			List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 			if (CollectionUtils.isNotEmpty(allIssues)) {
-				log.info("Backlog items ready for development -> request id : {} total jira Issues : {}", requestTrackerId,
-						allIssues.size());
+				log.info("Backlog items ready for development -> request id : {} total jira Issues : {}",
+						requestTrackerId, allIssues.size());
 				List<JiraIssueCustomHistory> historyForIssues = (List<JiraIssueCustomHistory>) resultMap.get(HISTORY);
 				Map<String, JiraIssueCustomHistory> jiraIssueCustomHistoryMap = historyForIssues.stream()
 						.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID,
@@ -254,8 +254,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService
 						null);
 				log.debug("Overall  the cycle time is : {} ", overAllCycleTime.get());
 				IterationKpiData averageOverAllCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
-						(double) Math.round(overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0))), null, null,
-						DAYS, null);
+						(double) Math.round(overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0))), null,
+						null, DAYS, null);
 				data.add(overAllIssues);
 				data.add(backLogStrength);
 				data.add(averageOverAllCycleTime);
