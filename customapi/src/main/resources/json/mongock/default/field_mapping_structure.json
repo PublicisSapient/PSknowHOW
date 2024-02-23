@@ -483,31 +483,46 @@
   {
     "fieldName" : "defectPriorityKPI135" ,
     "fieldLabel" : "Priority to be excluded" ,
-    "fieldType" : "multiselect" ,
+    "fieldType" : "conditionalinput" ,
     "section" : "Defects Mapping" ,
     "tooltip" : {
       "definition" : "Priority values of defects which are to be excluded in 'FTPR' calculation"
     } ,
-    "options" : [
+    "options": [
       {
-        "label" : "p1" ,
-        "value" : "p1"
-      } ,
+        "labelValue": "p1",
+        "value": "p1",
+        "operator": "<",
+        "maxValue": "10",
+        "minValue": "1"
+      },
       {
-        "label" : "p2" ,
-        "value" : "p2"
-      } ,
+        "labelValue": "p2",
+        "value": "p2",
+        "operator": "<",
+        "maxValue": "10",
+        "minValue": "1"
+      },
       {
-        "label" : "p3" ,
-        "value" : "p3"
-      } ,
+        "labelValue": "p3",
+        "value": "p3",
+        "operator": "<",
+        "maxValue": "10",
+        "minValue": "1"
+      },
       {
-        "label" : "p4" ,
-        "value" : "p4"
-      } ,
+        "labelValue": "p4",
+        "value": "p4",
+        "operator": "<",
+        "maxValue": "10",
+        "minValue": "1"
+      },
       {
-        "label" : "p5" ,
-        "value" : "p5"
+        "labelValue": "p5",
+        "value": "p5",
+        "operator": "<",
+        "maxValue": "10",
+        "minValue": "1"
       }
     ]
   } ,
@@ -576,31 +591,46 @@
   {
     "fieldName" : "defectPriorityKPI82" ,
     "fieldLabel" : "Priority to be excluded" ,
-    "fieldType" : "multiselect" ,
+    "fieldType" : "conditionalinput" ,
     "section" : "Defects Mapping" ,
     "tooltip" : {
       "definition" : "Priority values of defects which are to be excluded in 'FTPR' calculation"
     } ,
-    "options" : [
+    "options": [
       {
-        "label" : "p1" ,
-        "value" : "p1"
-      } ,
+        "labelValue": "p1",
+        "value": "p1",
+        "operator": "<",
+        "maxValue": "10",
+        "minValue": "1"
+      },
       {
-        "label" : "p2" ,
-        "value" : "p2"
-      } ,
+        "labelValue": "p2",
+        "value": "p2",
+        "operator": "<",
+        "maxValue": "10",
+        "minValue": "1"
+      },
       {
-        "label" : "p3" ,
-        "value" : "p3"
-      } ,
+        "labelValue": "p3",
+        "value": "p3",
+        "operator": "<",
+        "maxValue": "10",
+        "minValue": "1"
+      },
       {
-        "label" : "p4" ,
-        "value" : "p4"
-      } ,
+        "labelValue": "p4",
+        "value": "p4",
+        "operator": "<",
+        "maxValue": "10",
+        "minValue": "1"
+      },
       {
-        "label" : "p5" ,
-        "value" : "p5"
+        "labelValue": "p5",
+        "value": "p5",
+        "operator": "<",
+        "maxValue": "10",
+        "minValue": "1"
       }
     ]
   } ,
