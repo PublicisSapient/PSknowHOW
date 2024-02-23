@@ -113,15 +113,12 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-
 		Node root = treeAggregatorDetail.getRoot();
-
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 				sprintWiseLeafNodeValue(mapTmp, v, kpiElement, kpiRequest);
-
 
 			}
 		});
@@ -159,9 +156,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		kpiElement.setTrendValueList(dataCountGroups);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 
-
 		return kpiElement;
-
 	}
 
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList, KpiElement kpiElement,
@@ -181,7 +176,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		List<JiraIssue> allJiraIssue = (List<JiraIssue>) resultMap.get(PROJECT_WISE_TOTAL_ISSUE);
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINT_DETAILS);
-
 
 		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseCreatedIssues = new HashMap<>();
 		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseClosedIssues = new HashMap<>();
@@ -250,13 +244,12 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 				totalPresentInitialIssue = sprintWiseInitialScopeIssues.get(currentNodeIdentifier);
 				totalAddedIssue = sprintWiseAddedIssues.get(currentNodeIdentifier);
 
-
 				if (CollectionUtils.isNotEmpty(sprintWisePuntedIssues.get(currentNodeIdentifier))) {
 					totalPresentInitialIssue.addAll(sprintWisePuntedIssues.get(currentNodeIdentifier));
 					totalPuntedIssue = sprintWisePuntedIssues.get(currentNodeIdentifier);
 
 				}
-				if(CollectionUtils.isNotEmpty(sprintWiseAddedIssues.get(currentNodeIdentifier))){
+				if (CollectionUtils.isNotEmpty(sprintWiseAddedIssues.get(currentNodeIdentifier))) {
 					totalAddedIssue = sprintWiseAddedIssues.get(currentNodeIdentifier);
 				}
 				totalPresentCompltdInitialIssue = sprintWiseInitialScopeCompletedIssues.get(currentNodeIdentifier);
@@ -457,7 +450,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 	/**
 	 * generate Excel
-	 *p
+	 * 
 	 * @param requestTrackerId
 	 */
 	private void populateExcelData(String requestTrackerId, List<KPIExcelData> excelData,
@@ -471,15 +464,14 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			if (CollectionUtils.isNotEmpty(validationDataList)) {
 				validationDataList.stream().forEach(data -> {
 
-
 					Map<String, JiraIssue> totalSprintStoryMap = new HashMap<>();
 					data.getTotalIssueNumbers().stream()
 							.forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));
 					data.getInitialIssueNumber().stream()
 							.forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));
 					KPIExcelUtility.populateCommittmentReliability(sprintName, totalSprintStoryMap,
-							data.getInitialIssueNumber(), excelData, fieldMapping, data.getAddedIssue(), data.getPuntedIssue());
-
+							data.getInitialIssueNumber(), excelData, fieldMapping, data.getAddedIssue(),
+							data.getPuntedIssue());
 
 				});
 
@@ -579,7 +571,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI72(),KPICode.COMMITMENT_RELIABILITY.getKpiId());
 	}
 
