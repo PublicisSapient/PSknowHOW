@@ -743,13 +743,9 @@ public class KPIExcelUtility {
 
 	public static void populateCommittmentReliability(String sprint, Map<String, JiraIssue> totalStoriesMap,
 			Set<JiraIssue> initialIssueNumber, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping,
-													 Set<String> addedIssue, Set<JiraIssue> puntedIssue ) {
+													 Set<String> addedIssue, Set<String> puntedIssue ) {
 
 		if (MapUtils.isNotEmpty(totalStoriesMap)) {
-
-			Set<String> puntedIssueSet = new HashSet<>();
-			puntedIssue.forEach(issue -> puntedIssueSet.add(issue.getIssueId()));
-
 
 			totalStoriesMap.forEach((storyId, jiraIssue) -> {
 
@@ -767,7 +763,7 @@ public class KPIExcelUtility {
 
 				if (addedIssue.contains(jiraIssue.getNumber())) {
 					excelData.setMarker(Constant.RED);
-				} else if (puntedIssueSet.contains(jiraIssue.getNumber())) {
+				} else if (puntedIssue.contains(jiraIssue.getNumber())) {
 					excelData.setMarker(Constant.AMBER);
 				} else {
 					excelData.setMarker("");
