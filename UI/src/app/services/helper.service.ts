@@ -644,5 +644,64 @@ export class HelperService {
         }
         return kpiCommentsCountObj
       }
-    
+
+    createBackupOfFiltersSelection(filterbackup, tab, subFilter) {
+        let savedDetails = this.sharedService.getAddtionalFilterBackup();
+        if (tab === 'backlog') {
+            let tabSpecfic = (savedDetails['kpiFilters'] && savedDetails['kpiFilters'][tab]) ? savedDetails['kpiFilters'][tab] : {}
+            savedDetails = { ...savedDetails, kpiFilters: { ...savedDetails['kpiFilters'], ...{ [tab]: { ...tabSpecfic, ...filterbackup } } } };
+        } else {
+            const subFilterValues = (savedDetails['kpiFilters'] && savedDetails['kpiFilters'][tab] && savedDetails['kpiFilters'][tab][subFilter]) ? savedDetails['kpiFilters'][tab][subFilter] : {};
+            const combineSubFilterValues = { ...subFilterValues, ...filterbackup };
+            savedDetails = { ...savedDetails, kpiFilters: { ...savedDetails['kpiFilters'], ...{ [tab]: { [subFilter]: combineSubFilterValues } } } };
+        }
+        this.sharedService.setAddtionalFilterBackup(savedDetails);
+    }
+
+    setFilterValueIfAlreadyHaveBackup(kpiId, kpiSelectedFilterObj, tab, refreshValue, initialValue, subFilter, filters?) {
+        let haveBackup = {}
+
+        if (tab === 'backlog') {
+            if (this.sharedService.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.sharedService.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(tab) && this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab].hasOwnProperty(kpiId)) {
+                haveBackup = this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab][kpiId];
+            }
+        } else {
+            if (this.sharedService.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.sharedService.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(tab) && this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab].hasOwnProperty(subFilter)) {
+                haveBackup = this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab][subFilter][kpiId];
+            }
+        }
+
+        kpiSelectedFilterObj[kpiId] = refreshValue;
+        if (haveBackup && Object.keys(haveBackup).length) {
+            if (filters) {
+                const tempObj = {};
+                for (const key in haveBackup) {
+                    tempObj[key] = haveBackup[key];
+                }
+                kpiSelectedFilterObj[kpiId] = { ...tempObj };
+            }
+            else if (Array.isArray(refreshValue)) {
+                kpiSelectedFilterObj[kpiId] = haveBackup;
+            } else {
+                kpiSelectedFilterObj[kpiId] = { 'filter1': haveBackup['filter1'] };;
+            }
+
+        } else {
+            if (filters) {
+                const tempObj = {};
+                for (const key in filters) {
+                    tempObj[key] = initialValue;
+                }
+                kpiSelectedFilterObj[kpiId] = { ...tempObj };
+            }
+            else if (Array.isArray(refreshValue)) {
+                kpiSelectedFilterObj[kpiId]?.push(initialValue);
+            } else {
+                kpiSelectedFilterObj[kpiId] = { 'filter1': initialValue }
+            }
+        }
+        this.createBackupOfFiltersSelection(kpiSelectedFilterObj, tab, subFilter);
+        this.sharedService.setKpiSubFilterObj(kpiSelectedFilterObj);
+        return kpiSelectedFilterObj;
+    }
 }
