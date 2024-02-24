@@ -101,5 +101,12 @@ describe('FieldMappingFieldComponent', () => {
     component.setDisabledState(true);
     expect(component.isDisabled).toBeTruthy();
   })
+
+  it('should reset radio button', () => {
+    component.value = false;
+    spyOn(component, 'setValue');
+    component.resetRadioButton(true)
+    expect(component.value).toBe(true);
+  })
   
 });
