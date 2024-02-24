@@ -37,7 +37,7 @@
 		<guava.version>31.1-jre</guava.version>
 		<final.name>bamboo-processor</final.name>
 		<maven.javadoc.plugin.version>3.0.0-M1</maven.javadoc.plugin.version>
-		<lombok.version>1.18.16</lombok.version>
+		<lombok.version>1.18.28</lombok.version>
 		<logback-encoder-custom.version>5.2</logback-encoder-custom.version>
 		<commons-io.version>2.11.0</commons-io.version>
 		<commons-lang3.version>3.6</commons-lang3.version>

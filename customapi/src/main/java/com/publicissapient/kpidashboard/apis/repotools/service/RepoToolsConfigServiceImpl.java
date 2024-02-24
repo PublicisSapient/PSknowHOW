@@ -101,7 +101,13 @@ public class RepoToolsConfigServiceImpl {
 	public static final String SCM = "scm";
 	public static final String REPO_NAME = "repoName";
 	public static final String REPO_BRANCH = "defaultBranch";
-	public static final String VALID_REPO = ".git";
+	public static final String BITBUCKET = "bitbucket";
+	public static final String BITBUCKET_CLOUD_IDENTIFIER = "bitbucket.org";
+	public static final String PROJECT = "/projects/";
+	public static final String REPOS = "/repos/";
+
+
+
 
 	private RepoToolsClient repoToolsClient;
 
@@ -120,25 +126,26 @@ public class RepoToolsConfigServiceImpl {
 	public int configureRepoToolProject(ProjectToolConfig projectToolConfig, Connection connection,
 			List<String> branchNames) {
 		int httpStatus;
-		if (!connection.getHttpUrl().contains(projectToolConfig.getRepositoryName() + VALID_REPO)) {
-			return HttpStatus.INTERNAL_SERVER_ERROR.value();
-		}
 		try {
 			// create scanning account
 			ToolCredential toolCredential = new ToolCredential(connection.getUsername(),
 					aesEncryptionService.decrypt(connection.getAccessToken(), customApiConfig.getAesEncryptionKey()),
 					connection.getEmail());
-			LocalDateTime fistScan = LocalDateTime.now().minusMonths(6);
 			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
 					.findByToolName(connection.getRepoToolProvider().toLowerCase());
-
+			String[] split = projectToolConfig.getGitFullUrl().split("/");
+			String name = split[split.length-1];
+			String apiEndPoint = null;
+			if (repoToolsProvider.getToolName().equalsIgnoreCase(BITBUCKET) && !projectToolConfig.getGitFullUrl().contains(BITBUCKET_CLOUD_IDENTIFIER)) {
+				apiEndPoint = connection.getApiEndPoint() + PROJECT + split[split.length - 2] + REPOS+ name;
+			}
 			// create configuration details for repo tool
-			RepoToolConfig repoToolConfig = new RepoToolConfig(projectToolConfig.getRepositoryName(),
-					projectToolConfig.getIsNew(), projectToolConfig.getBasicProjectConfigId().toString(),
-					connection.getHttpUrl(), repoToolsProvider.getRepoToolProvider(), connection.getHttpUrl(),
+			RepoToolConfig repoToolConfig = new RepoToolConfig(name,
+					projectToolConfig.getIsNew(), projectToolConfig.getGitFullUrl(),
+					apiEndPoint, repoToolsProvider.getRepoToolProvider(),
 					projectToolConfig.getDefaultBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
-					fistScan.toString().replace("T", " "), toolCredential, branchNames, connection.getIsCloneable());
+					 toolCredential, branchNames);
 
 			repoToolsClient = createRepoToolsClient();
 			// api call to enroll the project
@@ -217,13 +224,13 @@ public class RepoToolsConfigServiceImpl {
 		repoToolsClient = createRepoToolsClient();
 		if (toolList.size() > 1) {
 			toolList.remove(tool);
-			toolList = toolList.stream().filter(projectToolConfig -> projectToolConfig.getRepositoryName()
-					.equalsIgnoreCase(tool.getRepositoryName())).collect(Collectors.toList());
+			toolList = toolList.stream().filter(projectToolConfig -> projectToolConfig.getGitFullUrl()
+					.equalsIgnoreCase(tool.getGitFullUrl())).collect(Collectors.toList());
 			if (toolList.size() > 1) {
 				// delete only the repository
 				String deleteRepoUrl = customApiConfig.getRepoToolURL()
 						+ String.format(customApiConfig.getRepoToolDeleteRepoUrl(),
-								createProjectCode(basicProjectConfigId), tool.getRepositoryName());
+								createProjectCode(basicProjectConfigId), tool.getGitFullUrl());
 				httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
 						restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 			} else {
@@ -293,7 +300,7 @@ public class RepoToolsConfigServiceImpl {
 			item.setActive(Boolean.TRUE);
 			item.getToolDetailsMap().put(TOOL_BRANCH, tool.getBranch());
 			item.getToolDetailsMap().put(SCM, tool.getToolName());
-			item.getToolDetailsMap().put(REPO_NAME, tool.getRepositoryName());
+			item.getToolDetailsMap().put(REPO_NAME, tool.getGitFullUrl());
 			item.getToolDetailsMap().put(REPO_BRANCH, tool.getDefaultBranch());
 			processorItemList.add(item);
 		});

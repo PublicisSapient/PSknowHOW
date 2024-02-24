@@ -107,25 +107,27 @@ public class RepoToolsConfigServiceImplTest {
         projectToolConfig.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
         projectToolConfig.setBasicProjectConfigId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectToolConfig.setBranch("test1");
-        projectToolConfig.setRepositoryName("testHttpUrl");
+        projectToolConfig.setGitFullUrl("testHttpUrl");
 
         projectToolConfig1.setId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
         projectToolConfig1.setToolName(toolName);
         projectToolConfig1.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
         projectToolConfig1.setBasicProjectConfigId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectToolConfig1.setBranch("test1");
-        projectToolConfig1.setRepositoryName("testRepo2");
+        projectToolConfig1.setGitFullUrl("testRepo2");
 
         connection.setUsername("test1");
         connection.setAccessToken("testToken");
         connection.setEmail("testEmail");
         connection.setType(toolName);
-        connection.setSshUrl("testSshUrl");
-        connection.setHttpUrl("testHttpUrl.git");
+        connection.setBaseUrl("testSshUrl");
+        connection.setApiEndPoint("testHttpUrl.git");
         connection.setRepoToolProvider("github");
 
         projectBasicConfig.setId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectBasicConfig.setProjectName("testProj");
+
+
 
 
     }

@@ -159,11 +159,11 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
 				.findByToolName(connection.getRepoToolProvider());
 		String apiUrl = "";
-			Matcher matcher = URL_PATTERN.matcher(connection.getHttpUrl());
+			Matcher matcher = URL_PATTERN.matcher(connection.getBaseUrl());
 			if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITHUB))
 				apiUrl = repoToolsProvider.getTestApiUrl() + connection.getUsername();
 			else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET)) {
-				if (connection.getHttpUrl().contains(CLOUD_BITBUCKET)) {
+				if (connection.getBaseUrl().contains(CLOUD_BITBUCKET)) {
 					apiUrl = repoToolsProvider.getTestApiUrl();
 				} else if (matcher.find()) {
 					apiUrl = matcher.group(1).concat(matcher.group(2)).concat(repoToolsProvider.getTestServerApiUrl());
