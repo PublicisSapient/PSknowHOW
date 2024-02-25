@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.basic.rest.service.service;
 
-import static com.publicissapient.kpidashboard.common.model.application.QProjectToolConfig.projectToolConfig;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -362,7 +361,8 @@ public class FieldMappingServiceImplTest {
 
 		when(fieldMappingRepository.findByProjectToolConfigId(any(ObjectId.class))).thenReturn(this.scrumFieldMapping);
 		List<FieldMappingResponse> fieldMappingResponses = fieldMappingService.getKpiSpecificFieldsAndHistory(
-				KPICode.getKPI("kpi36"), createProjectToolConfigOpt(scrumFieldMapping.getBasicProjectConfigId()).get().getId().toString());
+				KPICode.getKPI("kpi36"),
+				createProjectToolConfigOpt(scrumFieldMapping.getBasicProjectConfigId()).get().getId().toString());
 		assertNotNull(fieldMappingResponses);
 		Map<String, Object> collect = fieldMappingResponses.stream()
 				.filter(response -> Objects.nonNull(response.getOriginalValue()))
@@ -390,7 +390,8 @@ public class FieldMappingServiceImplTest {
 		when(tokenAuthenticationService.getUserProjects()).thenReturn(configIds);
 		when(fieldMappingRepository.findByProjectToolConfigId(any(ObjectId.class))).thenReturn(this.scrumFieldMapping2);
 		List<FieldMappingResponse> fieldMappingResponses = fieldMappingService.getKpiSpecificFieldsAndHistory(
-				KPICode.getKPI("kpi36"), createProjectToolConfigOpt(scrumFieldMapping.getBasicProjectConfigId()).get().getId().toString());
+				KPICode.getKPI("kpi36"),
+				createProjectToolConfigOpt(scrumFieldMapping.getBasicProjectConfigId()).get().getId().toString());
 		assertNotNull(fieldMappingResponses);
 		Map<String, Object> collect = fieldMappingResponses.stream().filter(
 				response -> Objects.nonNull(response.getOriginalValue()) && Objects.nonNull(response.getHistory()))
@@ -483,20 +484,24 @@ public class FieldMappingServiceImplTest {
 
 	@Test
 	public void addFieldMappingForAzure() {
-		 FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping scrumFieldMapping2 = fieldMappingDataFactory.getFieldMappings().get(0);
-		scrumFieldMapping2.setJiraIterationCompletionStatusCustomField(Arrays.asList("1","2","3"));
-		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class))).thenReturn(scrumFieldMapping);
-		doReturn(createProjectBasicConfig(false, scrumFieldMapping2.getBasicProjectConfigId())).when(projectBasicConfigRepository).findById(Mockito.any(ObjectId.class));
+		scrumFieldMapping2.setJiraIterationCompletionStatusCustomField(Arrays.asList("1", "2", "3"));
+		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class)))
+				.thenReturn(scrumFieldMapping);
+		doReturn(createProjectBasicConfig(false, scrumFieldMapping2.getBasicProjectConfigId()))
+				.when(projectBasicConfigRepository).findById(Mockito.any(ObjectId.class));
 		when(fieldMappingRepository.save(Mockito.any(FieldMapping.class))).thenReturn(scrumFieldMapping);
 
-		List<ProcessorExecutionTraceLog> tracelogList= new ArrayList<>();
+		List<ProcessorExecutionTraceLog> tracelogList = new ArrayList<>();
 		tracelogList.add(createProcessorExecutionTraceLog());
 
-		doReturn(tracelogList).when(processorExecutionTraceLogRepository).findByProcessorNameAndBasicProjectConfigIdIn(anyString(),anyList());
+		doReturn(tracelogList).when(processorExecutionTraceLogRepository)
+				.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), anyList());
 
-		Optional<ProjectToolConfig> projectToolConfigOpt = createProjectToolConfigOpt(scrumFieldMapping.getBasicProjectConfigId());
+		Optional<ProjectToolConfig> projectToolConfigOpt = createProjectToolConfigOpt(
+				scrumFieldMapping.getBasicProjectConfigId());
 		projectToolConfigOpt.get().setToolName(ProcessorConstants.AZURE);
 		when(projectToolConfigRepository.findById(any(ObjectId.class))).thenReturn(projectToolConfigOpt);
 		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", scrumFieldMapping2);
@@ -506,7 +511,8 @@ public class FieldMappingServiceImplTest {
 	}
 
 	private void mockRepositoriesForScrum() {
-		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class))).thenReturn(scrumFieldMapping);
+		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class)))
+				.thenReturn(scrumFieldMapping);
 		when(projectBasicConfigRepository.findById(Mockito.any(ObjectId.class)))
 				.thenReturn(createProjectBasicConfig(false, scrumFieldMapping.getBasicProjectConfigId()));
 		when(fieldMappingRepository.save(Mockito.any(FieldMapping.class))).thenReturn(scrumFieldMapping);
