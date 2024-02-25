@@ -18,15 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service;
 
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-
-import java.util.List;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 
 /**
  * @author anisingh4
@@ -36,8 +36,6 @@ public interface FieldMappingService {
 	FieldMapping getFieldMapping(String projectToolConfigId);
 
 	FieldMapping addFieldMapping(String projectToolConfigId, FieldMapping fieldMapping);
-
-	boolean compareMappingOnSave(String projectToolConfigId, FieldMapping fieldMapping);
 
 	/**
 	 * Gets ProjectBasicConfig object by its id.
@@ -64,8 +62,21 @@ public interface FieldMappingService {
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
-	List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId) throws NoSuchFieldException, IllegalAccessException;
+	/**
+	 *
+	 * @param kpi
+	 *            valid KpiId
+	 * @param projectToolConfigId
+	 *            projectToolConfigId
+	 * @return list of FieldMappingResponse
+	 * @throws NoSuchFieldException
+	 *             NoSuchFieldException
+	 * @throws IllegalAccessException
+	 *             IllegalAccessException
+	 */
+	List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId)
+			throws NoSuchFieldException, IllegalAccessException;
 
-
-	void updateSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfigId, List<FieldMappingResponse> fieldMappingResponseList);
+	void updateSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfigId,
+			List<FieldMappingResponse> fieldMappingResponseList);
 }

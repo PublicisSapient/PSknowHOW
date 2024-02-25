@@ -42,6 +42,6 @@ public class ConfigurationHistoryChangeLog {
 	@JsonProperty("Changed By")
 	private String changedBy;
 	@JsonProperty("Changed At")
-	private LocalDateTime updatedOn;
+	private String updatedOn;
 
 }

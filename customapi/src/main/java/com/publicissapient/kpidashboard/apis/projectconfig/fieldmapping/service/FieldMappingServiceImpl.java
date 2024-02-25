@@ -23,11 +23,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -44,6 +47,7 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.enums.FieldMappingEnum;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -52,6 +56,7 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.ConfigurationHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
@@ -69,25 +74,8 @@ import lombok.extern.slf4j.Slf4j;
 public class FieldMappingServiceImpl implements FieldMappingService {
 
 	public static final String INVALID_PROJECT_TOOL_CONFIG_ID = "Invalid projectToolConfigId";
-	public static final String JIRA_STORY_POINTS_CUSTOM_FIELD = "jiraStoryPointsCustomField";
-	public static final String ROOT_CAUSE = "rootCause";
-	public static final String JIRA_ISSUE_TYPE_NAMES = "jiraIssueTypeNames";
-	public static final String STORY_FIRST_STATUS = "storyFirstStatus";
-	public static final String EPIC_COST_OF_DELAY = "epicCostOfDelay";
-	public static final String EPIC_RISK_REDUCTION = "epicRiskReduction";
-	public static final String EPIC_USER_BUSINESS_VALUE = "epicUserBusinessValue";
-	public static final String EPIC_WSJF = "epicWsjf";
-	public static final String EPIC_TIME_CRITICALITY = "epicTimeCriticality";
-	public static final String EPIC_JOB_SIZE = "epicJobSize";
-	public static final String EPIC_PLANNED_VALUE = "epicPlannedValue";
-
-	public static final String EPIC_ACHIEVED_VALUE = "epicAchievedValue";
-	public static final String READY_FOR_DEVELOPMENT_STATUS = "readyForDevelopmentStatusKPI138";
-	public static final String ESTIMATION_CRITERIA = "estimationCriteria";
-	public static final String JIRA_ISSUE_EPIC_TYPE = "jiraIssueEpicType";
 	public static final String JIRA_TECH_DEBT_CUSTOMFIELD = "jiraTechDebtCustomField";
 	public static final String JIRA_TECH_DEBT_VALUE = "jiraTechDebtValue";
-	public static final String JIRA_DEFECT_TYPE = "jiradefecttype";
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 
@@ -117,6 +105,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	@Autowired
 	private AuthenticationService authenticationService;
+
+	@Autowired
+	private KpiHelperService kPIHelperService;
 
 	@Override
 	public FieldMapping getFieldMapping(String projectToolConfigId) {
@@ -157,33 +148,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	@Override
-	public boolean compareMappingOnSave(String projectToolConfigId, FieldMapping fieldMapping) {
-
-		boolean mappingUpdated = false;
-
-		if (!ObjectId.isValid(projectToolConfigId)) {
-			throw new IllegalArgumentException(INVALID_PROJECT_TOOL_CONFIG_ID);
-		}
-
-		if (fieldMapping == null) {
-			throw new IllegalArgumentException("Field mapping can't be null");
-		}
-
-		fieldMapping.setProjectToolConfigId(new ObjectId(projectToolConfigId));
-
-		FieldMapping existingFieldMapping = fieldMappingRepository
-				.findByProjectToolConfigId(new ObjectId(projectToolConfigId));
-
-		if (existingFieldMapping != null) {
-			fieldMapping.setId(existingFieldMapping.getId());
-			mappingUpdated = compareJiraData(existingFieldMapping.getBasicProjectConfigId(), fieldMapping,
-					existingFieldMapping);
-		}
-
-		return mappingUpdated;
-	}
-
-	@Override
 	public boolean hasProjectAccess(String projectToolConfigId) {
 		Optional<ProjectBasicConfig> projectBasicConfig;
 		ProjectToolConfig projectToolConfig = toolConfigRepository.findById(projectToolConfigId);
@@ -191,9 +155,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			projectBasicConfig = projectBasicConfigRepository.findById(projectToolConfig.getBasicProjectConfigId());
 
 			Set<String> configIds = tokenAuthenticationService.getUserProjects();
-			if (projectBasicConfig.isPresent() && configIds.contains(projectBasicConfig.get().getId().toString())) {
-				return true;
-			}
+			return projectBasicConfig.isPresent() && configIds.contains(projectBasicConfig.get().getId().toString());
 
 		}
 		return false;
@@ -218,6 +180,11 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		return projectBasicConfigObj;
 	}
 
+	/*
+	 * for all the fields present in the FieldMapping Enum, get its name, the
+	 * original value and its history upto 5 limit in reverse order i.e., latest
+	 * first from fieldmapping table
+	 */
 	@Override
 	public List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId)
 			throws NoSuchFieldException, IllegalAccessException {
@@ -233,40 +200,103 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				Object value = getFieldMappingField(fieldMapping, fieldMappingClass, field);
 				mappingResponse.setFieldName(field);
 				mappingResponse.setOriginalValue(value);
-				mappingResponse.setHistory((List<ConfigurationHistoryChangeLog>) getFieldMappingField(fieldMapping,
-						fieldMappingClass.getSuperclass(), "history" + field));
+				List<ConfigurationHistoryChangeLog> changeLogs = (List<ConfigurationHistoryChangeLog>) getFieldMappingField(
+						fieldMapping, fieldMappingClass.getSuperclass(), "history" + field);
+				if (CollectionUtils.isNotEmpty(changeLogs)) {
+					mappingResponse.setHistory(changeLogs.stream()
+							.sorted(Comparator.comparing(ConfigurationHistoryChangeLog::getUpdatedOn).reversed())
+							.limit(5).collect(Collectors.toList()));
+				}
 				fieldMappingResponses.add(mappingResponse);
 			}
 		}
 		return fieldMappingResponses;
 	}
 
+	/**
+	 * for each changed field present in the fieldMappingResponseList-- the normal
+	 * value and its history implementation has to be updated by bulkupdate
+	 * operation
+	 * 
+	 * if there is diversion from the default configuration field then the prompt
+	 * should appear only once
+	 * 
+	 * if some processor level field is changed, then only the tracelog to be
+	 * deleted if the field matches the azure level field the tool repo is to be
+	 * updated
+	 * 
+	 * @param kpi
+	 *            kpiCode
+	 * @param projectToolConfig
+	 *            projectToolConfig
+	 * @param fieldMappingResponseList
+	 *            fieldMappingResponseList
+	 */
 	@Override
 	public void updateSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfig,
 			List<FieldMappingResponse> fieldMappingResponseList) {
-		if (projectToolConfig != null && CollectionUtils.isNotEmpty(fieldMappingResponseList)) {
-			ObjectId projectToolConfigId = projectToolConfig.getId();
+		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService
+				.loadFieldMappingStructure();
+		if (projectToolConfig != null && CollectionUtils.isNotEmpty(fieldMappingResponseList)
+				&& CollectionUtils.isNotEmpty(fieldMappingStructureList)) {
+			FieldMappingEnum fieldMappingEnum = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase());
+			List<String> fieldList = fieldMappingEnum.getFields();
+			List<FieldMappingStructure> fieldMappingStructure = kPIHelperService
+					.getFieldMappingStructure(fieldMappingStructureList, fieldList);
+			Map<String, FieldMappingStructure> fieldMappingStructureMap = fieldMappingStructure.stream()
+					.collect(Collectors.toMap(FieldMappingStructure::getFieldName, Function.identity()));
 
+			ObjectId projectToolConfigId = projectToolConfig.getId();
 			ProjectBasicConfig projectBasicConfig = ((Map<String, ProjectBasicConfig>) cacheService
-					.cacheProjectConfigMapData()).get(projectToolConfig.getBasicProjectConfigId());
+					.cacheProjectConfigMapData()).get(projectToolConfig.getBasicProjectConfigId().toString());
 
 			Query query = new Query(Criteria.where("projectToolConfigId").is(projectToolConfigId));
 			Update update = new Update();
 			final String loggedInUser = authenticationService.getLoggedInUser();
-
-			fieldMappingResponseList.forEach(fieldMappingResponse -> {
+			boolean cleanTraceLog = false;
+			for (FieldMappingResponse fieldMappingResponse : fieldMappingResponseList) {
 				update.set(fieldMappingResponse.getFieldName(), fieldMappingResponse.getOriginalValue());
+				if (!cleanTraceLog) {
+					cleanTraceLog = fieldMappingStructureMap
+							.getOrDefault(fieldMappingResponse.getFieldName(), new FieldMappingStructure())
+							.isProcessorCommon();
+				}
+				azureSprintReportStatusUpdateBasedOnFieldChange(fieldMappingResponse.getFieldName(), projectToolConfig,
+						projectBasicConfig);
 				ConfigurationHistoryChangeLog configurationHistoryChangeLog = new ConfigurationHistoryChangeLog();
 				configurationHistoryChangeLog.setChangedTo(fieldMappingResponse.getOriginalValue());
 				configurationHistoryChangeLog.setChangedFrom(fieldMappingResponse.getPreviousValue());
 				configurationHistoryChangeLog.setChangedBy(loggedInUser);
-				configurationHistoryChangeLog.setUpdatedOn(LocalDateTime.now());
+				configurationHistoryChangeLog.setUpdatedOn(LocalDateTime.now().toString());
 				update.addToSet("history" + fieldMappingResponse.getFieldName(), configurationHistoryChangeLog);
-			});
+			}
 			operations.updateFirst(query, update, "field_mapping");
 			saveTemplateCode(projectBasicConfig, projectToolConfig);
+			if (cleanTraceLog)
+				removeTraceLog(projectBasicConfig.getId());
 			cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 			clearCache();
+		}
+	}
+
+	/**
+	 * if jiraIterationCompletionStatusCustomField field mapping changes then put
+	 * identifier to change in sprint report issues based on status for azure board
+	 * 
+	 * @param fieldName
+	 *            fieldName
+	 * @param projectToolConfig
+	 *            projectToolConfig
+	 * @param projectBasicConfig
+	 *            projectBasicConfig
+	 */
+	private void azureSprintReportStatusUpdateBasedOnFieldChange(String fieldName, ProjectToolConfig projectToolConfig,
+			ProjectBasicConfig projectBasicConfig) {
+		if (fieldName.equalsIgnoreCase("jiraIterationCompletionStatusCustomField")
+				&& projectToolConfig.getToolName().equals(ProcessorConstants.AZURE)
+				&& !projectBasicConfig.getIsKanban()) {
+			projectToolConfig.setAzureIterationStatusFieldUpdate(true);
+			toolConfigRepository.save(projectToolConfig);
 		}
 	}
 
@@ -274,7 +304,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			throws NoSuchFieldException, IllegalAccessException {
 		Field declaredField = fieldMapping1.getDeclaredField(field);
 		declaredField.setAccessible(true); // This is necessary if the field is private
-		return declaredField.get(fieldMapping); // normall value
+		return declaredField.get(fieldMapping);
 	}
 
 	private void clearCache() {
@@ -294,6 +324,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 * @param saved
 	 *            object from database
 	 * @param fieldNameList
+	 *            fieldNameList
 	 * @return true or false
 	 */
 	private boolean isMappingUpdated(FieldMapping unsaved, FieldMapping saved, List<String> fieldNameList) {
@@ -328,33 +359,13 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	/**
-	 * Checks if fields are updated.
-	 *
 	 * @param unsaved
-	 *            object from request
+	 *            new field mapping
 	 * @param saved
-	 *            object from database
-	 * @param fieldNameListKanban
-	 * @return true or false
-	 */
-	private boolean isKanbanMappingUpdated(FieldMapping unsaved, FieldMapping saved, List<String> fieldNameListKanban) {
-		boolean isUpdated;
-
-		isUpdated = checkFieldsForUpdation(unsaved, saved, fieldNameListKanban);
-
-		if (!isUpdated && CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraTechDebtIdentification())) {
-			List<String> tachDebtFieldList = Arrays.asList(JIRA_TECH_DEBT_CUSTOMFIELD, JIRA_TECH_DEBT_VALUE);
-			isUpdated = checkFieldsForUpdation(unsaved, saved, tachDebtFieldList);
-		}
-
-		return isUpdated;
-	}
-
-	/**
-	 * @param unsaved
-	 * @param saved
+	 *            fieldmapping already in db
 	 * @param fieldNameList
-	 * @return
+	 *            input fieldNameList
+	 * @return updated or not
 	 */
 	private boolean checkFieldsForUpdation(FieldMapping unsaved, FieldMapping saved, List<String> fieldNameList) {
 		boolean isUpdated = false;
@@ -409,8 +420,11 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 * Checks if fields are updated and then unset changeDate in jira collections.
 	 *
 	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
 	 * @param fieldMapping
+	 *            fieldMapping
 	 * @param existingFieldMapping
+	 *            existingFieldMapping
 	 */
 	private void updateJiraData(ObjectId basicProjectConfigId, FieldMapping fieldMapping,
 			FieldMapping existingFieldMapping) {
@@ -418,26 +432,13 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				.findById(basicProjectConfigId);
 		if (projectBasicConfigOpt.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
-
 			Optional<ProjectToolConfig> projectToolConfigOpt = toolConfigRepository
 					.findById(fieldMapping.getProjectToolConfigId());
 			azureSprintReportStatusUpdateBasedOnFieldChange(fieldMapping, existingFieldMapping, projectBasicConfig,
 					projectToolConfigOpt);
-
-			List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
-					.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
-							Collections.singletonList(basicProjectConfigId.toHexString()));
-
-			if (!traceLogs.isEmpty()) {
-				for (ProcessorExecutionTraceLog traceLog : traceLogs) {
-					if (traceLog != null) {
-						traceLog.setLastSuccessfulRun(null);
-						traceLog.setLastSavedEntryUpdatedDateByType(new HashMap<>());
-					}
-				}
-				processorExecutionTraceLogRepository.saveAll(traceLogs);
-			}
-			projectToolConfigOpt.ifPresent(projectToolConfig -> saveTemplateCode(projectBasicConfig, projectToolConfig));
+			removeTraceLog(basicProjectConfigId);
+			projectToolConfigOpt
+					.ifPresent(projectToolConfig -> saveTemplateCode(projectBasicConfig, projectToolConfig));
 
 		}
 
@@ -448,14 +449,19 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 * identifier to change in sprint report issues based on status for azure board
 	 *
 	 * @param fieldMapping
+	 *            fieldMapping
 	 * @param existingFieldMapping
+	 *            existingFieldMapping
 	 * @param projectBasicConfig
+	 *            projectBasicConfig
 	 * @param projectToolConfigOpt
+	 *            projectToolConfigOpt
 	 */
 	private void azureSprintReportStatusUpdateBasedOnFieldChange(FieldMapping fieldMapping,
 			FieldMapping existingFieldMapping, ProjectBasicConfig projectBasicConfig,
 			Optional<ProjectToolConfig> projectToolConfigOpt) {
-		List<String> azureIterationStatusFieldList = Arrays.asList("jiraIterationCompletionStatusCustomField");
+		List<String> azureIterationStatusFieldList = Collections
+				.singletonList("jiraIterationCompletionStatusCustomField");
 		if (projectToolConfigOpt.isPresent()
 				&& projectToolConfigOpt.get().getToolName().equals(ProcessorConstants.AZURE)
 				&& !projectBasicConfig.getIsKanban()
@@ -482,135 +488,27 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	}
 
-	private boolean compareJiraData(ObjectId basicProjectConfigId, FieldMapping fieldMapping,
-			FieldMapping existingFieldMapping) {
-		boolean isUpdated = false;
-		Optional<ProjectBasicConfig> projectBasicConfigOpt = projectBasicConfigRepository
-				.findById(basicProjectConfigId);
-		if (projectBasicConfigOpt.isPresent()) {
-			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
+	/**
+	 * remove trace log, when u directly import some fieldmapping or when some
+	 * processor common field is get update
+	 * 
+	 * @param basicProjectConfigId
+	 *            project Basic Config id
+	 */
+	private void removeTraceLog(ObjectId basicProjectConfigId) {
+		List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
+						Collections.singletonList(basicProjectConfigId.toHexString()));
 
-			List<String> fieldNameList = Arrays.asList("sprintName", JIRA_DEFECT_TYPE,
-
-					"defectPriorityKPI135", "defectPriorityKPI14", "defectPriorityQAKPI111", "defectPriorityKPI82",
-					"defectPriorityKPI133",
-
-					JIRA_ISSUE_TYPE_NAMES, JIRA_ISSUE_EPIC_TYPE,
-
-					STORY_FIRST_STATUS, "storyFirstStatusKPI148", "storyFirstStatusKPI3", ROOT_CAUSE,
-
-					"jiraStatusForDevelopmentKPI82", "jiraStatusForDevelopmentKPI135",
-
-					"jiraStatusForQaKPI148", "jiraStatusForQaKPI138", "jiraStatusForQaKPI82",
-
-					"jiraDefectInjectionIssueTypeKPI14",
-
-					"jiraDodKPI14", "jiraDodQAKPI111", "jiraDodKPI3", "jiraDodPDA", "jiraDodKPI152", "jiraDodKPI151",
-					"jiraDodKPI37", "jiraDodKPI166",
-
-					"jiraDefectCreatedStatusKPI14",
-
-					"jiraDefectRejectionStatusKPI28", "jiraDefectRejectionStatusKPI34",
-					"jiraDefectRejectionStatusKPI37", "jiraDefectRejectionStatusKPI35",
-					"jiraDefectRejectionStatusKPI82", "jiraDefectRejectionStatusKPI135",
-					"jiraDefectRejectionStatusKPI133", "jiraDefectRejectionStatusRCAKPI36",
-					"jiraDefectRejectionStatusKPI14", "jiraDefectRejectionStatusQAKPI111",
-					"jiraDefectRejectionStatusKPI152", "jiraDefectRejectionStatusKPI151",
-
-					"jiraIssueTypeKPI35",
-
-					"jiraDefectRemovalStatusKPI34", "jiraDefectRemovalIssueTypeKPI34",
-
-					"jiraDefectClosedStatusKPI137", JIRA_STORY_POINTS_CUSTOM_FIELD, "jiraTestAutomationIssueType",
-
-					"jiraSprintVelocityIssueTypeKPI138",
-
-					"jiraSprintCapacityIssueTypeKpi46",
-
-					"jiraDefectCountlIssueTypeKPI28", "jiraDefectCountlIssueTypeKPI36",
-
-					"jiraIssueDeliverdStatusKPI138", "jiraIssueDeliverdStatusKPI126", "jiraIssueDeliverdStatusKPI82",
-					READY_FOR_DEVELOPMENT_STATUS,
-
-					"jiraDorKPI3", "storyFirstStatusKPI3",
-
-					"jiraIssueTypeKPI3", "jiraStoryIdentification", "jiraStoryIdentificationKpi40",
-					"jiraStoryIdentificationKPI164", "jiraStoryIdentificationKPI129", "jiraStoryIdentificationKPI166",
-
-					"jiraLiveStatusKPI3", "jiraLiveStatusLTK", "jiraLiveStatusNOPK", "jiraLiveStatusNOSK",
-					"jiraLiveStatusNORK", "jiraLiveStatusOTA", "jiraLiveStatusPDA", "jiraLiveStatusKPI152",
-					"jiraLiveStatusKPI151",
-
-					"includeRCAForKPI82", "includeRCAForKPI135", "includeRCAForKPI14", "includeRCAForQAKPI111",
-					"includeRCAForKPI133",
-
-					"resolutionTypeForRejectionKPI28", "resolutionTypeForRejectionKPI34",
-					"resolutionTypeForRejectionKPI37", "resolutionTypeForRejectionKPI35",
-					"resolutionTypeForRejectionKPI82", "resolutionTypeForRejectionKPI135",
-					"resolutionTypeForRejectionKPI133", "resolutionTypeForRejectionRCAKPI36",
-					"resolutionTypeForRejectionKPI14", "resolutionTypeForRejectionQAKPI111",
-
-					"jiraQAKPI111IssueType", "jiraDefectDroppedStatusKPI127", "jiraItrQSIssueTypeKPI133",
-
-					EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION, EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_TIME_CRITICALITY,
-					EPIC_JOB_SIZE,
-
-					"jiraStatusForInProgressKPI122", "jiraStatusForInProgressKPI145", "jiraStatusForInProgressKPI125",
-					"jiraStatusForInProgressKPI128", "jiraStatusForInProgressKPI123", "jiraStatusForInProgressKPI119",
-					"jiraStatusForInProgressKPI148", ESTIMATION_CRITERIA,
-
-					"additionalFilterConfig",
-
-					"issueStatusExcluMissingWorkKPI124", "jiraOnHoldStatus",
-
-					"jiraKPI82StoryIdentification", "jiraKPI135StoryIdentification",
-
-					"jiraWaitStatusKPI131",
-
-					"jiraBlockedStatusKPI131",
-
-					"jiraIncludeBlockedStatusKPI131", "jiraDueDateField", "jiraDueDateCustomField",
-					"jiraDevDueDateCustomField",
-
-					"jiraDevDoneStatusKPI119", "jiraDevDoneStatusKPI145", "jiraDevDoneStatusKPI128",
-					"jiraRejectedInRefinementKPI139", "jiraAcceptedInRefinementKPI139", "jiraReadyForRefinementKPI139",
-
-					"jiraFtprRejectStatusKPI135", "jiraFtprRejectStatusKPI82",
-
-					"jiraIterationCompletionStatusCustomField", "jiraIterationCompletionStatusKPI135",
-					"jiraIterationCompletionStatusKPI122", "jiraIterationCompletionStatusKPI75",
-					"jiraIterationCompletionStatusKPI145", "jiraIterationCompletionStatusKPI140",
-					"jiraIterationCompletionStatusKPI132", "jiraIterationCompletionStatusKPI136",
-					"jiraIterationCompletionStatusKpi72", "jiraIterationCompletionStatusKpi39",
-					"jiraIterationCompletionStatusKpi5", "jiraIterationCompletionStatusKPI124",
-					"jiraIterationCompletionStatusKPI123", "jiraIterationCompletionStatusKPI125",
-					"jiraIterationCompletionStatusKPI120", "jiraIterationCompletionStatusKPI128",
-					"jiraIterationCompletionStatusKPI134", "jiraIterationCompletionStatusKPI133",
-					"jiraIterationCompletionStatusKPI119", "jiraIterationCompletionStatusKPI131",
-					"jiraIterationCompletionStatusKPI138",
-
-					"jiraIterationIssuetypeKPI122", "jiraIterationIssuetypeKPI138", "jiraIterationIssuetypeKPI131",
-					"jiraIterationIssuetypeKPI128", "jiraIterationIssuetypeKPI134", "jiraIterationIssuetypeKPI145",
-					"jiraIterationIssuetypeKpi72", "jiraIterationIssuetypeKPI119", "jiraIterationIssuetypeKpi5",
-					"jiraIterationIssuetypeKPI75", "jiraIterationIssuetypeKPI123", "jiraIterationIssuetypeKPI125",
-					"jiraIterationIssuetypeKPI120", "jiraIterationIssuetypeKPI124", "jiraIterationIssuetypeKPI39");
-
-			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE,
-					JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "ticketDeliverdStatus", "jiraTicketTriagedStatus",
-					"jiraTicketRejectedStatus", "jiraTicketClosedStatus", "jiraLiveStatus", "ticketCountIssueType",
-					"kanbanRCACountIssueType", "jiraTicketVelocityIssueType", "kanbanCycleTimeIssueType",
-					"storyPointToHourMapping", EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION, JIRA_ISSUE_EPIC_TYPE,
-					EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_JOB_SIZE, EPIC_TIME_CRITICALITY);
-
-			if ((!projectBasicConfig.getIsKanban()
-					&& isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
-					|| (projectBasicConfig.getIsKanban()
-							&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping, fieldNameListKanban))) {
-
-				isUpdated = true;
+		if (!traceLogs.isEmpty()) {
+			for (ProcessorExecutionTraceLog traceLog : traceLogs) {
+				if (traceLog != null) {
+					traceLog.setLastSuccessfulRun(null);
+					traceLog.setLastSavedEntryUpdatedDateByType(new HashMap<>());
+				}
 			}
+			processorExecutionTraceLogRepository.saveAll(traceLogs);
 		}
-		return isUpdated;
 	}
 
 }

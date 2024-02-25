@@ -25,6 +25,10 @@ import java.util.Arrays;
 public enum KPICode {
 
     /**
+     * JIRA_PROCESSOR field
+     */
+    JIRA_PROCESSOR("kpi0", KPISource.JIRA.name()),
+    /**
      * The Dor to dod.
      */
     LEAD_TIME("kpi3", KPISource.JIRA.name()),
