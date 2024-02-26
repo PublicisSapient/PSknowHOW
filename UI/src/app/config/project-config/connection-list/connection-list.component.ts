@@ -131,8 +131,8 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'RepoTool',
       connectionLabel: 'RepoTool',
-      labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Http Url', 'Is Cloneable', 'SSH Url', 'Username', 'Access Token', 'User Email', 'Is Connection Private'],
-      inputFields: ['type', 'repoToolProvider', 'connectionName', 'httpUrl', 'isCloneable', 'sshUrl', 'username', 'accessToken', 'email', 'connPrivate']
+      labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Base Url', 'Api End Point', 'Username', 'Access Token', 'User Email', 'Is Connection Private'],
+      inputFields: ['type', 'repoToolProvider', 'connectionName', 'baseUrl', 'apiEndPoint', 'username', 'accessToken', 'email', 'connPrivate']
     }
   ];
 
@@ -1042,10 +1042,10 @@ export class ConnectionListComponent implements OnInit {
       this.basicConnectionForm.controls['password'].enable();
       this.basicConnectionForm.controls['accessTokenEnabled'].enable();
       this.basicConnectionForm.controls['accessToken'].disable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'repotool' && !!this.basicConnectionForm.controls['isCloneable'] && this.connection['isCloneable'] === false) {
-      this.basicConnectionForm.controls['sshUrl'].disable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'repotool' && !!this.basicConnectionForm.controls['isCloneable'] && this.connection['isCloneable'] === true) {
-      this.basicConnectionForm.controls['sshUrl'].enable();
+    } else if (this.selectedConnectionType.toLowerCase() === 'repotool') {
+      if(!!this.basicConnectionForm.controls['repoToolProvider'] && this.basicConnectionForm.controls['repoToolProvider'].value === 'Bitbucket')
+      this.basicConnectionForm.controls['apiEndPoint'].enable();
+      else {this.basicConnectionForm.controls['apiEndPoint'].disable()};
     }
 
     if(this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true){
@@ -1123,13 +1123,12 @@ export class ConnectionListComponent implements OnInit {
         }
       }
 
-      if (field === 'isCloneable' && type.toLowerCase() === 'repotool') {
-        if (event.checked) {
-          this.basicConnectionForm.controls['sshUrl']?.enable();
-        } else {
-          this.basicConnectionForm.controls['sshUrl'].setValue('');
-          this.basicConnectionForm.controls['sshUrl']?.disable();
-        }
+      if (this.connection.type === "RepoTool") {
+         if(event.toLowerCase() === 'bitbucket'){
+          this.basicConnectionForm.controls[field]?.enable();
+         }else{
+          this.basicConnectionForm.controls[field]?.disable();
+         }
       }
     }
 

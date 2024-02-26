@@ -2214,12 +2214,12 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
-                label: 'Repository Name',
-                id: 'repositoryName',
+                label: 'Full Repo Url',
+                id: 'gitFullUrl',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Repository Name.<br / <i>Impacted : All Repository based KPIs</i>`,
+                tooltip: `Full Repository URL`,
                 // onFocusOut : this.getGitActionWorkflowName
               },
               {
