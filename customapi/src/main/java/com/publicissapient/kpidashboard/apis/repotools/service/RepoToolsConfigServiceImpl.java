@@ -131,21 +131,24 @@ public class RepoToolsConfigServiceImpl {
 			ToolCredential toolCredential = new ToolCredential(connection.getUsername(),
 					aesEncryptionService.decrypt(connection.getAccessToken(), customApiConfig.getAesEncryptionKey()),
 					connection.getEmail());
+			LocalDateTime fistScan = LocalDateTime.now().minusMonths(6);
 			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
 					.findByToolName(connection.getRepoToolProvider().toLowerCase());
 			String[] split = projectToolConfig.getGitFullUrl().split("/");
-			String name = split[split.length-1];
+			String name = split[split.length - 1];
+			if (name.contains("."))
+				name = name.split(".git")[0];
 			String apiEndPoint = null;
-			if (repoToolsProvider.getToolName().equalsIgnoreCase(BITBUCKET) && !projectToolConfig.getGitFullUrl().contains(BITBUCKET_CLOUD_IDENTIFIER)) {
-				apiEndPoint = connection.getApiEndPoint() + PROJECT + split[split.length - 2] + REPOS+ name;
+			if (repoToolsProvider.getToolName().equalsIgnoreCase(BITBUCKET)
+					&& !projectToolConfig.getGitFullUrl().contains(BITBUCKET_CLOUD_IDENTIFIER)) {
+				apiEndPoint = connection.getApiEndPoint() + PROJECT + split[split.length - 2] + REPOS + name;
 			}
 			// create configuration details for repo tool
-			RepoToolConfig repoToolConfig = new RepoToolConfig(name,
-					projectToolConfig.getIsNew(), projectToolConfig.getGitFullUrl(),
-					apiEndPoint, repoToolsProvider.getRepoToolProvider(),
-					projectToolConfig.getDefaultBranch(),
+			RepoToolConfig repoToolConfig = new RepoToolConfig(name, projectToolConfig.getIsNew(),
+					projectToolConfig.getBasicProjectConfigId().toString(), projectToolConfig.getGitFullUrl(),
+					apiEndPoint, repoToolsProvider.getRepoToolProvider(), "", projectToolConfig.getDefaultBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
-					 toolCredential, branchNames);
+					fistScan.toString().replace("T", " "), toolCredential, branchNames, false);
 
 			repoToolsClient = createRepoToolsClient();
 			// api call to enroll the project
