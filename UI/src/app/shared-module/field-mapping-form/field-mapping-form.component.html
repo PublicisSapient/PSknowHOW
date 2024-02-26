@@ -21,9 +21,9 @@
         <p-accordionTab *ngFor="let section of fieldMappingSectionList" [header]="section">
             <div class="p-p-0">
                 <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of formConfig[section]">            
-                    <span *ngIf="field?.processorCommon"><i class="fas fa-sync-alt p-mr-1"></i></span>
+                    <span class="field?.processorCommon"><i class="fas fa-sync-alt p-mr-2"></i></span>
                     <label class="field-title">
-                        {{field['fieldLabel']}}&nbsp;
+                        {{field['fieldLabel']}}
                         <span class="font-black p-mr-1" *ngIf="field?.mandatory">*</span>
                         <span class="fa fa-info-circle"
                             aria-hidden="true" pTooltip="<span>
