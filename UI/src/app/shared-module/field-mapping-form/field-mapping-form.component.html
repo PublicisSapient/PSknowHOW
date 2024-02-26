@@ -20,8 +20,9 @@
     <p-accordion [multiple]="true" [style]="{'width':'100%'}" #accordion [activeIndex]="[0,1,2,3,4,5,6]">
         <p-accordionTab *ngFor="let section of fieldMappingSectionList" [header]="section">
             <div class="p-p-0">
-                <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of formConfig[section]">            
-                    <span *ngIf="field?.processorCommon"><i class="fas fa-sync-alt p-mr-1"></i></span>
+                <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of formConfig[section]">
+
+                  <div><span *ngIf="field?.processorCommon"><i class="fas fa-sync-alt p-mr-1"></i></span>
                     <label class="field-title">
                         {{field['fieldLabel']}}&nbsp;
                         <span class="font-black p-mr-1" *ngIf="field?.mandatory">*</span>
@@ -34,6 +35,7 @@
                                             </span>" tooltipPosition="top" tooltipEvent="hover"
                             tooltipStyleClass="tooltiptext" [escape]="false"></span>
                     </label>
+                  </div>
                     <ng-container *ngIf="!field?.nestedFields else nestedFieldContainer">
                         <div class="w-60vw">
                             <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="field"
