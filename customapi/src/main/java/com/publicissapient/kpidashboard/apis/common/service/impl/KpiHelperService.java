@@ -1728,11 +1728,11 @@ public class KpiHelperService { // NOPMD
 					Map<String, Integer> storyLinkedBugPriority = storiesBugPriorityCount.getOrDefault(linked,
 							new HashMap<>());
 					storyLinkedBugPriority.forEach((priority, defectCount) -> {
-						// if defectCount of the story w.r.t priority is greater than of fieldMapping
+						// if defectCount of the story w.r.t priority is greater than of fieldMapping or no exclusion for priority is defined in field mapping
 						// include it as defect
-						if (projPriorityCountMap.getOrDefault(priority, 0) > defectCount) {
-							remainingDefects.add(defect);
-						}
+                        if (!projPriorityCountMap.containsKey(priority) || projPriorityCountMap.get(priority) < defectCount) {
+                            remainingDefects.add(defect);
+                        }
 					});
 				});
 			} else {
