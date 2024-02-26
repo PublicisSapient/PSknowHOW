@@ -294,7 +294,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.navigationTabs[0]['count']++;
       }
 
-      this.navigationTabs.map(tabDetails => {
+      this.navigationTabs.forEach(tabDetails => {
         if (tabDetails['width'] === 'half') {
           let fullWidthKPis = [];
           let halfWithKpis = []
