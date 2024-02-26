@@ -492,35 +492,35 @@
       {
         "labelValue": "p1",
         "value": "p1",
-        "operator": "<",
+        "operator": "<=",
         "maxValue": "10",
         "minValue": "1"
       },
       {
         "labelValue": "p2",
         "value": "p2",
-        "operator": "<",
+        "operator": "<=",
         "maxValue": "10",
         "minValue": "1"
       },
       {
         "labelValue": "p3",
         "value": "p3",
-        "operator": "<",
+        "operator": "<=",
         "maxValue": "10",
         "minValue": "1"
       },
       {
         "labelValue": "p4",
         "value": "p4",
-        "operator": "<",
+        "operator": "<=",
         "maxValue": "10",
         "minValue": "1"
       },
       {
         "labelValue": "p5",
         "value": "p5",
-        "operator": "<",
+        "operator": "<=",
         "maxValue": "10",
         "minValue": "1"
       }
@@ -600,35 +600,35 @@
       {
         "labelValue": "p1",
         "value": "p1",
-        "operator": "<",
+        "operator": "<=",
         "maxValue": "10",
         "minValue": "1"
       },
       {
         "labelValue": "p2",
         "value": "p2",
-        "operator": "<",
+        "operator": "<=",
         "maxValue": "10",
         "minValue": "1"
       },
       {
         "labelValue": "p3",
         "value": "p3",
-        "operator": "<",
+        "operator": "<=",
         "maxValue": "10",
         "minValue": "1"
       },
       {
         "labelValue": "p4",
         "value": "p4",
-        "operator": "<",
+        "operator": "<=",
         "maxValue": "10",
         "minValue": "1"
       },
       {
         "labelValue": "p5",
         "value": "p5",
-        "operator": "<",
+        "operator": "<=",
         "maxValue": "10",
         "minValue": "1"
       }
