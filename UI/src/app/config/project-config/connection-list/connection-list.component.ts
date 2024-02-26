@@ -378,7 +378,7 @@ export class ConnectionListComponent implements OnInit {
         { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
         { field: 'username', header: 'User Name', class: 'normal' },
         { field: 'repoToolProvider', header: 'RepoTool Provider', class: 'normal' },
-        { field: 'httpUrl', header: 'Http URL', class: 'long-text' },
+        { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
         // { field: 'cloneable', header: 'Is Cloneable', class: 'small-text' },
       ]
     }
