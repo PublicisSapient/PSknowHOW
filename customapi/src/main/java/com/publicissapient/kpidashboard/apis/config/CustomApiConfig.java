@@ -238,6 +238,7 @@ public class CustomApiConfig {// NOPMD
 	private List<String> leadTimeRange;
 	private List<String> cycleTimeRange;
 	private List<Character> aesKeyValue;
+	private int sprintCountForKpiCalculation;
 
 	public List<Character> getAesKeyValue() {
 		return aesKeyValue;
@@ -1190,5 +1191,13 @@ public class CustomApiConfig {// NOPMD
 
 	public void setSonarMonthCount(Integer sonarMonthCount) {
 		this.sonarMonthCount = sonarMonthCount;
+	}
+
+	public int getSprintCountForKpiCalculation() {
+		return sprintCountForKpiCalculation;
+	}
+
+	public void setSprintCountForKpiCalculation(int sprintCountForKpiCalculation) {
+		this.sprintCountForKpiCalculation = sprintCountForKpiCalculation;
 	}
 }
