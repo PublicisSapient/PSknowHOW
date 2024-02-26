@@ -22,10 +22,10 @@
             <div class="p-p-0">
                 <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of formConfig[section]">
                     
+                    <span *ngIf="field?.processorCommon"><i class="fas fa-sync-alt p-mr-1"></i></span>
                     <label class="field-title">
-                        <span *ngIf="field?.processorCommon"><i class="fas fa-sync-alt p-mr-1"></i></span>
                         {{field['fieldLabel']}}&nbsp;
-                        <span *ngIf="field?.mandatory">*</span>
+                        <span class="font-black" *ngIf="field?.mandatory">*</span>
                         <span class="fa fa-info-circle"
                             aria-hidden="true" pTooltip="<span>
                                             Definition:
