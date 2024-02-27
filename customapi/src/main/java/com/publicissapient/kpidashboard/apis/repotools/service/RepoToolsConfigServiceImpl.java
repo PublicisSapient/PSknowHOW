@@ -228,13 +228,13 @@ public class RepoToolsConfigServiceImpl {
 		repoToolsClient = createRepoToolsClient();
 		if (toolList.size() > 1) {
 			toolList.remove(tool);
-			toolList = toolList.stream().filter(projectToolConfig -> projectToolConfig.getGitFullUrl()
-					.equalsIgnoreCase(tool.getGitFullUrl())).collect(Collectors.toList());
+			toolList = toolList.stream().filter(projectToolConfig -> projectToolConfig.getRepositoryName()
+					.equalsIgnoreCase(tool.getRepositoryName())).collect(Collectors.toList());
 			if (toolList.size() > 1) {
 				// delete only the repository
 				String deleteRepoUrl = customApiConfig.getRepoToolURL()
 						+ String.format(customApiConfig.getRepoToolDeleteRepoUrl(),
-								createProjectCode(basicProjectConfigId), tool.getGitFullUrl());
+								createProjectCode(basicProjectConfigId), tool.getRepositoryName());
 				httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
 						restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 			} else {
@@ -304,7 +304,7 @@ public class RepoToolsConfigServiceImpl {
 			item.setActive(Boolean.TRUE);
 			item.getToolDetailsMap().put(TOOL_BRANCH, tool.getBranch());
 			item.getToolDetailsMap().put(SCM, tool.getToolName());
-			item.getToolDetailsMap().put(REPO_NAME, tool.getGitFullUrl());
+			item.getToolDetailsMap().put(REPO_NAME, tool.getRepositoryName());
 			item.getToolDetailsMap().put(REPO_BRANCH, tool.getDefaultBranch());
 			processorItemList.add(item);
 		});
