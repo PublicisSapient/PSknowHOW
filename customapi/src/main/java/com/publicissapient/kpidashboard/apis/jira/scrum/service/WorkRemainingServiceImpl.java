@@ -121,7 +121,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 						.collect(Collectors.toSet());
 
 				sprintDetails = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
-						fieldMapping.getJiraIterationCompletionStatusKPI119(),
+						fieldMapping.getJiraIterationIssuetypeKPI119(),
 						fieldMapping.getJiraIterationCompletionStatusKPI119(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
