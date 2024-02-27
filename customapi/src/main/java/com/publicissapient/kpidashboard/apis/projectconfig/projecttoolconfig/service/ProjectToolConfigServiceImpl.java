@@ -402,6 +402,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setEnv(e.getEnv());
 			projectConfToolDto.setRepoSlug(e.getRepoSlug());
 			projectConfToolDto.setRepositoryName(e.getRepositoryName());
+			projectConfToolDto.setGitFullUrl(e.getGitFullUrl());
 			projectConfToolDto.setBitbucketProjKey(e.getBitbucketProjKey());
 			projectConfToolDto.setCreatedAt(e.getCreatedAt());
 			projectConfToolDto.setUpdatedAt(e.getUpdatedAt());
