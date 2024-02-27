@@ -412,7 +412,7 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
 					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
 				IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
-				if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+				if (StringUtils.isNotEmpty(issueField.getValue().toString())) {
 					createFirstEntryOfChangeLog(dueDateChangeLog, issue,
 							LocalDateTime
 									.parse(JiraProcessorUtil
