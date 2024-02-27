@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.common.model.application.LabelCount;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -126,7 +127,7 @@ public class FTPRServiceImplTest {
 		fieldMapping.setJiraDefectRejectionStatusKPI135("");
 		fieldMapping.setResolutionTypeForRejectionKPI135(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(Arrays.asList("Closed"));
-		fieldMapping.setDefectPriorityKPI135(Arrays.asList("p2", "p1"));
+		fieldMapping.setDefectPriorityKPI135(Arrays.asList(new LabelCount("p2",1),new LabelCount("p1",3)));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
