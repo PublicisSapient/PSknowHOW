@@ -2201,7 +2201,7 @@ export class JiraConfigComponent implements OnInit {
             },
             { field: 'username', header: 'User Name', class: 'normal' },
             { field: 'repoToolProvider', header: 'RepoTool Provider', class: 'normal' },
-            { field: 'httpUrl', header: 'Http URL', class: 'long-text' },
+            { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
           ];
           this.configuredToolTableCols = [
             { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
@@ -2214,12 +2214,12 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
-                label: 'Repository Name',
-                id: 'repositoryName',
+                label: 'Git Full Url',
+                id: 'gitFullUrl',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Repository Name.<br / <i>Impacted : All Repository based KPIs</i>`,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
                 // onFocusOut : this.getGitActionWorkflowName
               },
               {

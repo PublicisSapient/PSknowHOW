@@ -55,6 +55,7 @@ public class ProjectToolConfigDTO {
 	private String branch;
 	private String defaultBranch;
 	private String env;
+	private String gitFullUrl;
 	private String repositoryName;
 	private String repoSlug;
 	private String bitbucketProjKey;

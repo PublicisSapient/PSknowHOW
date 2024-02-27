@@ -2034,3 +2034,6 @@ p-dialog .p-button-cancel.p-button-secondary {
   text-transform: capitalize;
   font-size: 10px;
 }
+.font-black{
+  color: #000;
+}
