@@ -63,6 +63,8 @@ spec:
                   key: uatknhdbpassword
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
+            - name:  notification.switch
+              value: "false"
         envFrom:
         - configMapRef:
             name: knowhow-config

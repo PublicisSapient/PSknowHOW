@@ -83,6 +83,8 @@ spec:
               value: com.publicissapient.kpidashboard.apis.mongock.installation  
             - name: auth.centralAuthBaseURL
               value: "https://stage-authnauth.tools.publicis.sapient.com"
+            - name:  notification.switch
+              value: "false"
           envFrom:
           - configMapRef:
               name: knowhow-config  
