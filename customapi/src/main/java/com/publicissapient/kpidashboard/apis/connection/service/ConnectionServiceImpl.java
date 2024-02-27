@@ -340,6 +340,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			existingConnection = checkConnDetailsSonar(inputConn, currConn, api);
 			break;
 		case TOOL_BAMBOO:
+		case REPO_TOOLS:
 		case TOOL_TEAMCITY:
 			if (checkConnDetails(inputConn, currConn))
 				existingConnection = currConn;
@@ -365,10 +366,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 			break;
 		case TOOL_ZEPHYR:
 			existingConnection = checkConnDetailsZephyr(inputConn, currConn, api);
-			break;
-		case REPO_TOOLS:
-			if (inputConn.getBaseUrl().equals(currConn.getBaseUrl()))
-				existingConnection = currConn;
 			break;
 		default:
 			existingConnection = new Connection();

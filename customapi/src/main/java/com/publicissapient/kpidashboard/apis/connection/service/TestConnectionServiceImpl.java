@@ -64,7 +64,6 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private static final String VALID_MSG = "Valid Credentials ";
 	private static final String INVALID_MSG = "Invalid Credentials ";
 	private static final String WRONG_JIRA_BEARER = "{\"expand\":\"projects\",\"projects\":[]}";
-	private static final Pattern URL_PATTERN = Pattern.compile("^(https?://)([^/?#]+)([^?#]*)(\\?[^#]*)?(#.*)?$");
 	private static final String APPICATION_JSON = "application/json";
 	private static final String CLOUD_BITBUCKET_IDENTIFIER = "bitbucket.org";
 	@Autowired
