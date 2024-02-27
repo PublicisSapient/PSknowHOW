@@ -19,8 +19,6 @@
 import { Component, OnInit} from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
-import { GoogleAnalyticsService } from '../../services/google-analytics.service';
-import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
@@ -52,9 +50,7 @@ export class NavComponent implements OnInit {
     private httpService: HttpService,
     private messageService: MessageService,
     public service: SharedService,
-    public router: Router,
-    private ga: GoogleAnalyticsService,
-    private helper: HelperService,
+    public router: Router
   ) {
     this.selectedType = this.service.getSelectedType() ? this.service.getSelectedType() : 'scrum';
     this.kanban= this.selectedType.toLowerCase() === 'scrum' ? false : true;
@@ -83,7 +79,6 @@ export class NavComponent implements OnInit {
       }
     });
 
-    this.startWorker();
     this.getKpiOrderedList();
   }
 
@@ -120,26 +115,6 @@ export class NavComponent implements OnInit {
           this.configOthersData[i]?.isEnabled;
       }
     }
-  }
-
-  startWorker() {
-    if (typeof Worker !== 'undefined') {
-      // Create a new
-      this.worker = new Worker(new URL('../../app.worker',import.meta.url), { type: 'module' });
-      this.worker.onmessage = ({ data }) => {
-        this.stopWorker();
-      };
-      this.worker.postMessage(localStorage.getItem('auth_token'));
-    } else {
-      // Web Workers are not supported in this environment.
-      // You should add a fallback so that your program still executes correctly.
-      console.log('Web workers not supported!!!');
-    }
-  }
-
-  stopWorker() {
-    this.worker.terminate();
-    this.worker = undefined;
   }
 
   getKpiOrderedList() {
