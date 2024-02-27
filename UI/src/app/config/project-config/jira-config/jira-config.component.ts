@@ -2276,14 +2276,14 @@ export class JiraConfigComponent implements OnInit {
         for (const obj in this.selectedToolConfig[0]) {
           if (obj !== 'queryEnabled' && obj !== "team") {
             if (this.toolForm && this.toolForm.controls[obj]) {
-             
+
                 this.toolForm.controls[obj].setValue(
                   this.selectedToolConfig[0][obj],
                 );
-             
+
                 this.toolForm.controls[obj].markAsDirty();
               }
-            
+
           } else if (obj === 'queryEnabled') {
             if (this.urlParam === 'Jira' || this.urlParam === 'Azure') {
               this.queryEnabled = this.selectedToolConfig[0]['queryEnabled'];
@@ -2419,9 +2419,9 @@ export class JiraConfigComponent implements OnInit {
           delete submitData[obj];
         }
 
-        if (obj === 'azurePipelineName') {
+        /* if (obj === 'azurePipelineName') {
           delete submitData[obj];
-        }
+        } */
       }
 
     }
@@ -2438,6 +2438,7 @@ export class JiraConfigComponent implements OnInit {
     if (this.urlParam === 'AzurePipeline') {
       submitData['apiVersion'] = this.azurePipelineApiVersion;
       submitData['deploymentProjectName'] = this.tool['azurePipelineName'].value;
+      submitData['azurePipelineName'] = this.azurePipelineList.find(de=>de.code===this.tool['azurePipelineName'].value).name;
     }
 
     submitData['toolName'] = this.urlParam;
