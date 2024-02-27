@@ -2419,9 +2419,6 @@ export class JiraConfigComponent implements OnInit {
           delete submitData[obj];
         }
 
-        /* if (obj === 'azurePipelineName') {
-          delete submitData[obj];
-        } */
       }
 
     }
