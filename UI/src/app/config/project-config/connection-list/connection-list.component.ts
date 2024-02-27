@@ -1378,7 +1378,7 @@ export class ConnectionListComponent implements OnInit {
         break;
 
       case 'RepoTool':
-        this.testConnectionService.testRepoTool(reqData['httpUrl'], reqData['repoToolProvider'], reqData['username'], reqData['accessToken'], reqData['email']).subscribe(next => {
+        this.testConnectionService.testRepoTool(reqData['baseUrl'],reqData['apiEndPoint'], reqData['repoToolProvider'], reqData['username'], reqData['accessToken'], reqData['email']).subscribe(next => {
           if (next.success && next.data === 200) {
             this.testConnectionMsg = 'Valid Connection';
             this.testConnectionValid = true;
