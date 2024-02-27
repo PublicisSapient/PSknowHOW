@@ -66,7 +66,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private static final String WRONG_JIRA_BEARER = "{\"expand\":\"projects\",\"projects\":[]}";
 	private static final Pattern URL_PATTERN = Pattern.compile("^(https?://)([^/?#]+)([^?#]*)(\\?[^#]*)?(#.*)?$");
 	private static final String APPICATION_JSON = "application/json";
-	private static final String CLOUD_BITBUCKET = "bitbucket.org";
+	private static final String CLOUD_BITBUCKET_IDENTIFIER = "bitbucket.org";
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
@@ -155,25 +155,18 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return new ServiceResponse(false, "Password/API token missing", HttpStatus.NOT_FOUND);
 	}
 
-	private String getApiForRepoTool(Connection connection){
-		RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
-				.findByToolName(connection.getRepoToolProvider());
+	private String getApiForRepoTool(Connection connection) {
 		String apiUrl = "";
-			Matcher matcher = URL_PATTERN.matcher(connection.getBaseUrl());
-			if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITHUB))
-				apiUrl = repoToolsProvider.getTestApiUrl() + connection.getUsername();
-			else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET)) {
-				if (connection.getBaseUrl().contains(CLOUD_BITBUCKET)) {
-					apiUrl = repoToolsProvider.getTestApiUrl();
-				} else if (matcher.find()) {
-					apiUrl = matcher.group(1).concat(matcher.group(2)).concat(repoToolsProvider.getTestServerApiUrl());
-				}
-			} else {
-				if (matcher.find()) {
-					apiUrl = createApiUrl(matcher.group(1).concat(matcher.group(2)), Constant.TOOL_GITLAB);
-				}
-			}
-		return apiUrl;
+		if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITHUB)) {
+			apiUrl = createGitHubTestConnectionUrl(connection);
+		} else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITLAB)) {
+			apiUrl = createApiUrl(connection.getBaseUrl(), Constant.TOOL_GITLAB);
+		} else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET)) {
+			if(connection.getBaseUrl().contains(CLOUD_BITBUCKET_IDENTIFIER))
+				connection.setCloudEnv(true);
+			apiUrl = createBitBucketUrl(connection);
+		}
+		return apiUrl.trim();
 	}
 
 	private boolean testConnection(Connection connection, String toolName, String apiUrl, String password,

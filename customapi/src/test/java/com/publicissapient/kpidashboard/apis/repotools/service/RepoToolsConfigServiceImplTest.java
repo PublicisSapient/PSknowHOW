@@ -87,6 +87,8 @@ public class RepoToolsConfigServiceImplTest {
     @Mock
     private ProcessorRepository processorRepository;
 
+    private RepoToolsProvider repoToolsProvider = new RepoToolsProvider();
+
     @Mock
     private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
@@ -124,6 +126,8 @@ public class RepoToolsConfigServiceImplTest {
         connection.setApiEndPoint("testHttpUrl.git");
         connection.setRepoToolProvider("github");
 
+        repoToolsProvider.setToolName("github");
+
         projectBasicConfig.setId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectBasicConfig.setProjectName("testProj");
 
@@ -135,12 +139,12 @@ public class RepoToolsConfigServiceImplTest {
 
     @Test
     public void testConfigureRepoToolsProject() {
-        when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(new RepoToolsProvider());
+        when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(repoToolsProvider);
 		when(customApiConfig.getRepoToolAPIKey()).thenReturn("repoToolAPIKey");
 		when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
 				.thenReturn(projectBasicConfig);
         when(repoToolsProviderRepository.findByToolName(anyString()))
-                .thenReturn(new RepoToolsProvider());
+                .thenReturn(repoToolsProvider);
         when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
         when(restAPIUtils.decryptPassword(anyString())).thenReturn("decryptedApiKey");
         repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, Collections.singletonList("branchName"));
@@ -154,8 +158,6 @@ public class RepoToolsConfigServiceImplTest {
         when(processorRepository.findByProcessorName(CommonConstant.REPO_TOOLS)).thenReturn(new Processor());
         when(projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(CommonConstant.REPO_TOOLS,
                 new ObjectId("5fb364612064a31c9ccd517a"))).thenReturn(Arrays.asList(projectToolConfig));
-        when(processorExecutionTraceLogRepository
-                .findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.REPO_TOOLS, "5fb364612064a31c9ccd517a")).thenReturn(Optional.of(new ProcessorExecutionTraceLog()));
         when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
         when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
                 .thenReturn(projectBasicConfig);

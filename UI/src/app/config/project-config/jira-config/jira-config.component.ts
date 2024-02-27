@@ -2214,12 +2214,12 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
-                label: 'Full Repo Url',
+                label: 'Git Full Url',
                 id: 'gitFullUrl',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Full Repository URL`,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
                 // onFocusOut : this.getGitActionWorkflowName
               },
               {
@@ -2276,14 +2276,14 @@ export class JiraConfigComponent implements OnInit {
         for (const obj in this.selectedToolConfig[0]) {
           if (obj !== 'queryEnabled' && obj !== "team") {
             if (this.toolForm && this.toolForm.controls[obj]) {
-             
+
                 this.toolForm.controls[obj].setValue(
                   this.selectedToolConfig[0][obj],
                 );
-             
+
                 this.toolForm.controls[obj].markAsDirty();
               }
-            
+
           } else if (obj === 'queryEnabled') {
             if (this.urlParam === 'Jira' || this.urlParam === 'Azure') {
               this.queryEnabled = this.selectedToolConfig[0]['queryEnabled'];
