@@ -45,7 +45,7 @@ import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -64,7 +64,7 @@ public class IterationReadinessServiceImplTest {
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
-	JiraServiceR jiraService;
+	JiraBacklogServiceR jiraService;
 	@InjectMocks
 	IterationReadinessServiceImpl iterationReadinessService;
 	private KpiRequest kpiRequest;
@@ -113,8 +113,8 @@ public class IterationReadinessServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(issueList);
 		when(jiraService.getFutureSprintsList()).thenReturn(new ArrayList<>());
-		Map<String, Object> sprintDataListMap = iterationReadinessService.fetchKPIDataFromDb(leafNodeList, null, null,
-				kpiRequest);
+		Map<String, Object> sprintDataListMap = iterationReadinessService.fetchKPIDataFromDb(leafNodeList.get(0), null,
+				null, kpiRequest);
 		assertNotNull(sprintDataListMap);
 	}
 
@@ -128,8 +128,8 @@ public class IterationReadinessServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(issueList);
 		when(jiraService.getFutureSprintsList()).thenReturn(sprintList);
-		Map<String, Object> sprintDataListMap = iterationReadinessService.fetchKPIDataFromDb(leafNodeList, null, null,
-				kpiRequest);
+		Map<String, Object> sprintDataListMap = iterationReadinessService.fetchKPIDataFromDb(leafNodeList.get(0), null,
+				null, kpiRequest);
 		assertNotNull(sprintDataListMap);
 	}
 
@@ -145,7 +145,7 @@ public class IterationReadinessServiceImplTest {
 		when(jiraService.getFutureSprintsList()).thenReturn(sprintList);
 		try {
 			KpiElement kpiElement = iterationReadinessService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			assertNotNull(kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {

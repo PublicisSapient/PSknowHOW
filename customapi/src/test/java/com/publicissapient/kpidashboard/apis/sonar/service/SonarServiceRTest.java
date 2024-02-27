@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -232,6 +234,13 @@ public class SonarServiceRTest {
 		List<KpiElement> resultList = sonarService.process(kpiRequest);
 		assertThat("Kpi list :", resultList.size(), equalTo(1));
 
+	}
+
+	@Test
+	public void processWithExposedApiToken() throws EntityNotFoundException {
+		createKpiRequest("Excel-Sonar", 2, kpiRequest);
+		List<KpiElement> resultList = sonarService.processWithExposedApiToken(kpiRequest);
+		assertEquals(1, resultList.size());
 	}
 
 	private void createKpiRequest(String source, int level, KpiRequest kpiRequest) {

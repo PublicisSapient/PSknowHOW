@@ -2265,7 +2265,7 @@ describe('IterationComponent', () => {
         };
         component.jiraKpiData = {};
         component.loaderJiraArray = ['kpi14'];
-        const spy = spyOn(httpService, 'postKpi').and.returnValue(of(fakeJiraGroupId1));
+        const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(fakeJiraGroupId1));
         const spycreateKpiWiseId = spyOn(helperService, 'createKpiWiseId').and.returnValue(jiraKpiData);
         const spycreateAllKpiArray = spyOn(component, 'createAllKpiArray');
         component.postJiraKpi(fakeJiraPayload, 'jira');
@@ -2468,7 +2468,8 @@ describe('IterationComponent', () => {
     });
 
     it('should handle selected option', () => {
-        const event = {
+        component.filterApplyData = {ids : ['fakeRelease']}
+       const event = {
             "filter1": [
                 "Tech Story"
             ],
@@ -2972,12 +2973,18 @@ describe('IterationComponent', () => {
     })
 
     it("should create kpi wise list()",()=>{
+        component.filterApplyData = {
+            ids : ['fakeSprint']
+        }
         const fakeKPi = helperService.createKpiWiseId(fakeKpiResponse.response);
          component.createAllKpiArray(fakeKPi)
          expect(component.allKpiArray.length).toBeGreaterThan(0);
        })
 
        it("should create kpi array when trendvalueList is object",()=>{
+        component.filterApplyData = {
+            ids : ['fakeSprint']
+        }
         let kpi = [{
             kpiId: "kpi141",
             trendValueList: {
@@ -3239,6 +3246,7 @@ describe('IterationComponent', () => {
 
 
       it("should createapiarry for radiobutton",()=>{
+        component.filterApplyData = {ids : ['release1']}
         const data = {
             kpi141 : {
                 kpiId: "kpi141",
@@ -3305,6 +3313,7 @@ describe('IterationComponent', () => {
       })
 
       it("should createapiarry for dropdown",()=>{
+        component.filterApplyData = {ids : ['release1']}
         const data = {
             kpi141 : {
                 kpiId: "kpi141",
@@ -3370,6 +3379,7 @@ describe('IterationComponent', () => {
       })
 
       it("should createapiarry for multi dropdown",()=>{
+        component.filterApplyData = {ids : ['release1']}
         const data = {
             kpi141 : {
                 kpiId: "kpi141",
@@ -3631,7 +3641,7 @@ describe('IterationComponent', () => {
         };
         component.jiraKpiData = {};
         component.loaderJiraArray = ['kpi14'];
-        const spy = spyOn(httpService, 'postKpi').and.returnValue(of(null));
+        const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(null));
         spyOn(helperService, 'createKpiWiseId').and.returnValue(jiraKpiData);
         component.postJiraKpi(fakeJiraPayload, 'jira');
         tick();

@@ -46,14 +46,13 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
@@ -73,11 +72,12 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * This service for managing Release BurnUp Kpi on Release Board. Gives analysis
  * of release scope vs progress for released version & release prediction based
- * on closure rate (dev or qa) for unreleased version. {@link JiraKPIService}
+ * on closure rate (dev or qa) for unreleased version.
+ * {@link JiraReleaseKPIService}
  */
 @Slf4j
 @Component
-public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String ADDED_TO_RELEASE = "addedToRelease";
@@ -120,13 +120,9 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	 * {@inheritDoc}
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.RELEASE) {
-				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
+			throws ApplicationException {
+		releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
 		log.info("ReleaseBurnUpServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
@@ -135,10 +131,9 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Release BurnUp -> Requested release : {}", leafNode.getName());
 
@@ -333,7 +328,7 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	/**
 	 * Populate Release Wise Leaf Node Value
 	 *
-	 * @param releaseLeafNodeList
+	 * @param latestRelease
 	 *            List<Node>
 	 * @param kpiElement
 	 *            kpiElement
@@ -341,22 +336,15 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	 *            kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement, // NOSONAR
+	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, // NOSONAR
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		List<Node> latestReleaseNode = new ArrayList<>();
-		Node latestRelease = releaseLeafNodeList.get(0);
-
-		if (latestRelease == null) {
-			return;
-		}
 		String startDate = latestRelease.getReleaseFilter().getStartDate();
 		String endDate = latestRelease.getReleaseFilter().getEndDate();
 		String releaseState = Optional.ofNullable(latestRelease.getAccountHierarchy().getReleaseState()).orElse("");
-		Optional.of(latestRelease).ifPresent(latestReleaseNode::add);
 
-		Map<String, Object> resultMap = fetchKPIDataFromDb(latestReleaseNode, null, null, kpiRequest);
+		Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 		List<JiraIssue> releaseIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
 		Map<LocalDate, List<JiraIssue>> completedReleaseMap = (Map<LocalDate, List<JiraIssue>>) resultMap
 				.get(RELEASE_PROGRESS);
@@ -846,8 +834,8 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 				ticketEstimate = jiraIssueList.stream()
 						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
 			} else {
-				double totalOriginalEstimate = jiraIssueList.stream()
-						.mapToDouble(jiraIssue -> Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0))
+				double totalOriginalEstimate = jiraIssueList.stream().mapToDouble(
+						jiraIssue -> Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0))
 						.sum();
 				double inHours = totalOriginalEstimate / 60;
 				ticketEstimate = inHours / fieldMapping.getStoryPointToHourMapping();
@@ -1025,7 +1013,7 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 
 	/**
 	 * Convert to JiraIssueWiseDateMap
-	 * 
+	 *
 	 * @param dateWiseJiraIssueMap
 	 *            dateWiseJiraIssueMap
 	 * @return Map<String, LocalDate>
@@ -1083,14 +1071,6 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	@Override
 	public String getQualifierType() {
 		return KPICode.RELEASE_BURNUP.name();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
 	}
 
 }

@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.jenkins.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -36,12 +37,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -260,6 +263,16 @@ public class JenkinsServiceRTest {
 		List<KpiElement> resultList = jenkinsServiceR.process(kpiRequest);
 		assertThat("Kpi list :", resultList.size(), equalTo(1));
 
+	}
+
+	@Test
+	public void processWithExposedApiToken() throws EntityNotFoundException {
+		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
+		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
+		when(cacheService.getFromApplicationCache(any(), any(), any(), any()))
+				.thenReturn(Arrays.asList(buildKpiElement));
+		List<KpiElement> resultList = jenkinsServiceR.processWithExposedApiToken(kpiRequest);
+		assertEquals(1, resultList.size());
 	}
 
 	private KpiRequest createKpiRequest(int level, String source) {

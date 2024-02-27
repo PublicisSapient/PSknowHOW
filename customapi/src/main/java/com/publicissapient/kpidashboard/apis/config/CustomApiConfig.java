@@ -246,6 +246,16 @@ public class CustomApiConfig {// NOPMD
 	public void setAesKeyValue(List<Character> aesKeyValue) {
 		this.aesKeyValue = aesKeyValue;
 	}
+	@Value("${x_api_key}")
+	private String xApiKey;
+
+	public String getxApiKey() {
+		return xApiKey;
+	}
+
+	public void setxApiKey(String xApiKey) {
+		this.xApiKey = xApiKey;
+	}
 
 	public List<String> getCycleTimeRange() {
 		return cycleTimeRange;

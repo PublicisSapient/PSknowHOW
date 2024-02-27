@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.zephyr.service;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -140,6 +142,14 @@ public class ZephyrServiceTest {
 
 		}
 
+	}
+
+	@Test
+	public void processWithExposedApiToken() throws EntityNotFoundException {
+		KpiRequest kpiRequest = new KpiRequest();
+		createKpiRequest("zephyr",5, kpiRequest);
+		List<KpiElement> resultList = zephyrService.processWithExposedApiToken(kpiRequest);
+		assertEquals(1, resultList.size());
 	}
 
 	private void createKpiRequest(String source, int level, KpiRequest kpiRequest) {

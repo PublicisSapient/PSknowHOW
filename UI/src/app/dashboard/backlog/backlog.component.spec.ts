@@ -2391,7 +2391,7 @@ describe('BacklogComponent', () => {
         };
         component.jiraKpiData = {};
         component.loaderJiraArray = ['kpi14'];
-        const spy = spyOn(httpService, 'postKpi').and.returnValue(of(fakeJiraGroupId1));
+        const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(fakeJiraGroupId1));
         const spycreateKpiWiseId = spyOn(helperService, 'createKpiWiseId').and.returnValue(jiraKpiData);
         const spycreateAllKpiArray = spyOn(component, 'createAllKpiArray');
         component.postJiraKpi(fakeJiraPayload, 'jira');
@@ -2404,7 +2404,7 @@ describe('BacklogComponent', () => {
         
         component.jiraKpiData = {};
         component.loaderJiraArray = ['kpi14'];
-        const spy = spyOn(httpService, 'postKpi').and.returnValue(of(null));
+        const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(null));
         component.postJiraKpi(fakeJiraPayload, 'jira');
         tick();
     }));
@@ -3161,7 +3161,7 @@ describe('BacklogComponent', () => {
         }
         component.kpiSpecificLoader = [];
         spyOn(component, 'getChartDataForCardWithCombinationFilter');
-        const spy = spyOn(httpService, 'postKpi').and.returnValue(of(fakeJiraData));
+        const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(fakeJiraData));
         component.getkpi171Data('kpi171', fakeKpi171Data)
         expect(spy).toHaveBeenCalled();
     })
@@ -3247,7 +3247,6 @@ describe('BacklogComponent', () => {
     
         // check if the kpiSelectedFilterObj was updated correctly
         expect(component.kpiSelectedFilterObj).toEqual({
-          action: 'update',
           1: { filter1: 'value1', filter2: 'value2' }
         });
         expect(component.getChartDataForCard).toHaveBeenCalledWith(1, -1);
