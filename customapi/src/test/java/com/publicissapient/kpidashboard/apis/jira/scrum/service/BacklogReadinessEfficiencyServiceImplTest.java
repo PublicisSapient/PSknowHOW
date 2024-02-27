@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.junit.Assert.assertEquals;
@@ -134,8 +133,8 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi138");
 		kpiRequest.setLabel("PROJECT");
 		List<String> sprintList = List.of("38296_Scrum Project_6335363749794a18e8a4479b");
-		Map<String,List<String>> stringListMap=new HashMap<>();
-		stringListMap.put("sprint",sprintList);
+		Map<String, List<String>> stringListMap = new HashMap<>();
+		stringListMap.put("sprint", sprintList);
 		kpiRequest.setSelectedMap(stringListMap);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
@@ -182,10 +181,11 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(backlogReadinessEfficiencyServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(customApiConfig.getSprintCountForBackLogStrength()).thenReturn(5);
-		when(filterHelperService.getFilteredBuilds(any(),any())).thenReturn(accountHierarchyDataList);
+		when(filterHelperService.getFilteredBuilds(any(), any())).thenReturn(accountHierarchyDataList);
 		try {
 			KpiElement kpiElement = backlogReadinessEfficiencyServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+					kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {
