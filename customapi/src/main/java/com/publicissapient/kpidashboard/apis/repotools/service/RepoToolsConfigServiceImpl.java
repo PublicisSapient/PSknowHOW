@@ -138,6 +138,7 @@ public class RepoToolsConfigServiceImpl {
 			String name = split[split.length - 1];
 			if (name.contains("."))
 				name = name.split(".git")[0];
+			projectToolConfig.setRepositoryName(name);
 			String apiEndPoint = null;
 			if (repoToolsProvider.getToolName().equalsIgnoreCase(BITBUCKET)
 					&& !projectToolConfig.getGitFullUrl().contains(BITBUCKET_CLOUD_IDENTIFIER)) {

@@ -125,7 +125,7 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 		processorToolConnection.setQueryEnabled(toolConfig.isQueryEnabled());
 		processorToolConnection.setBoardQuery(toolConfig.getBoardQuery());
 		processorToolConnection.setBoards(toolConfig.getBoards());
-		processorToolConnection.setRepositoryName(toolConfig.getGitFullUrl());
+		processorToolConnection.setRepositoryName(toolConfig.getRepositoryName());
 		processorToolConnection.setWorkflowID(toolConfig.getWorkflowID());
 		processorToolConnection.setConnectionId(toolConfig.getConnectionId());
 		processorToolConnection.setConnectionName(connection.getConnectionName());
