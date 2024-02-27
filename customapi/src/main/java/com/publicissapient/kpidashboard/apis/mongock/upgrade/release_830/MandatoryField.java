@@ -40,6 +40,10 @@ public class MandatoryField {
 	private static final String WAIT_STATUS_KPI131 = "jiraWaitStatusKPI131";
 	private static final String EPIC_TYPE = "jiraIssueEpicTypeKPI153";
 	private static final String DOD_KPI111 = "jiraDodQAKPI111";
+	private static final String ITERATION_COMPLETIONKPI122 = "jiraIterationCompletionStatusKPI122";
+	private static final String ITERATION_COMPLETIONKPI119 = "jiraIterationCompletionStatusKPI119";
+	private static final String ITERATION_COMPLETIONKPI123 = "jiraIterationCompletionStatusKPI123";
+
 	private final MongoTemplate mongoTemplate;
 
 	public MandatoryField(MongoTemplate mongoTemplate) {
@@ -135,14 +139,13 @@ public class MandatoryField {
 		}
 
 		String[] completionStatusTypes = { "jiraIterationCompletionStatusKpi72", "jiraIterationCompletionStatusKpi5",
-				"jiraIterationCompletionStatusKpi39", "jiraIterationCompletionStatusKPI138",
-				"jiraIterationCompletionStatusKPI122", "jiraIterationCompletionStatusKPI119",
-				"jiraIterationCompletionStatusKPI131", "jiraIterationCompletionStatusKPI134",
-				"jiraIterationCompletionStatusKPI133", "jiraIterationCompletionStatusKPI128",
-				"jiraIterationCompletionStatusKPI120", "jiraIterationCompletionStatusKPI125",
-				"jiraIterationCompletionStatusKPI123", "jiraIterationCompletionStatusKPI135",
-				"jiraIterationCompletionStatusKPI124", "jiraIterationCompletionStatusKPI75",
-				"jiraIterationCompletionStatusKPI145", "jiraIterationCompletionStatusKPI119",
+				"jiraIterationCompletionStatusKpi39", "jiraIterationCompletionStatusKPI138", ITERATION_COMPLETIONKPI122,
+				ITERATION_COMPLETIONKPI119, "jiraIterationCompletionStatusKPI131",
+				"jiraIterationCompletionStatusKPI134", "jiraIterationCompletionStatusKPI133",
+				"jiraIterationCompletionStatusKPI128", "jiraIterationCompletionStatusKPI120",
+				"jiraIterationCompletionStatusKPI125", ITERATION_COMPLETIONKPI123,
+				"jiraIterationCompletionStatusKPI135", "jiraIterationCompletionStatusKPI124",
+				"jiraIterationCompletionStatusKPI75", "jiraIterationCompletionStatusKPI145",
 				"jiraIterationCompletionStatusKPI154", "jiraIterationCompletionStatusCustomField" };
 
 		for (String completionStatusType : completionStatusTypes) {
@@ -153,9 +156,9 @@ public class MandatoryField {
 		updateFieldLabel(bulkOps, EPIC_TYPE, "Issue type to identify epic/feature");
 		updateFieldLabel(bulkOps, WAIT_STATUS_KPI131, "Status to identify Wait Statuses");
 
-		addInfoToTooltip(bulkOps, "jiraIterationCompletionStatusKPI122",
+		addInfoToTooltip(bulkOps, ITERATION_COMPLETIONKPI122,
 				"All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion). The configured value need to be same as defined in \"Custom Completion status/es \" under work remaining ");
-		addInfoToTooltip(bulkOps, "jiraIterationCompletionStatusKPI123",
+		addInfoToTooltip(bulkOps, ITERATION_COMPLETIONKPI123,
 				"All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion). The configured value need to be same as defined in\"Status to identify In progress issues\" under work remaining ");
 
 		bulkOps.execute();
@@ -258,6 +261,39 @@ public class MandatoryField {
 		processorCommonAndMandatoryFieldUnset(bulkOps, "jiraIssueEpicType", false, true);
 		processorCommonAndMandatoryFieldUnset(bulkOps, "jiraSubTaskDefectType", false, true);
 		processorCommonAndMandatoryFieldUnset(bulkOps, "jiraSubTaskIdentification", false, true);
+
+		String[] issueTypes = { "jiraIterationIssuetypeKPI39", "jiraIterationIssuetypeKPI138",
+				"jiraIterationIssuetypeKPI119", "jiraIterationIssuetypeKPI131", "jiraIterationIssuetypeKPI134",
+				"jiraIterationIssuetypeKPI128", "jiraIterationIssuetypeKPI120", "jiraIterationIssuetypeKPI125",
+				"jiraIterationIssuetypeKPI123", "jiraIterationIssuetypeKPI124", "jiraIterationIssuetypeKPI75",
+				"jiraIterationIssuetypeKPI145", "jiraIterationIssuetypeKPI122" };
+
+		for (String issueType : issueTypes) {
+			updateFieldLabel(bulkOps, issueType, "Issue types to consider ‘Completed status’");
+		}
+
+		String[] completionStatusTypes = { "jiraIterationCompletionStatusKpi72", "jiraIterationCompletionStatusKpi5",
+				"jiraIterationCompletionStatusKpi39", "jiraIterationCompletionStatusKPI138", ITERATION_COMPLETIONKPI122,
+				ITERATION_COMPLETIONKPI119, "jiraIterationCompletionStatusKPI131",
+				"jiraIterationCompletionStatusKPI134", "jiraIterationCompletionStatusKPI133",
+				"jiraIterationCompletionStatusKPI128", "jiraIterationCompletionStatusKPI120",
+				"jiraIterationCompletionStatusKPI125", ITERATION_COMPLETIONKPI123,
+				"jiraIterationCompletionStatusKPI135", "jiraIterationCompletionStatusKPI124",
+				"jiraIterationCompletionStatusKPI75", "jiraIterationCompletionStatusKPI145",
+				"jiraIterationCompletionStatusKPI154", "jiraIterationCompletionStatusCustomField" };
+
+		for (String completionStatusType : completionStatusTypes) {
+			updateFieldLabel(bulkOps, completionStatusType, "Status to identify completed issues");
+		}
+
+		updateFieldLabel(bulkOps, DOD_KPI111, "Status considered for defect closure");
+		updateFieldLabel(bulkOps, EPIC_TYPE, "Epic Issue Type");
+		updateFieldLabel(bulkOps, WAIT_STATUS_KPI131, "Status that signify queue");
+
+		addInfoToTooltip(bulkOps, ITERATION_COMPLETIONKPI122,
+				"All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion).");
+		addInfoToTooltip(bulkOps, ITERATION_COMPLETIONKPI123,
+				"All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion).");
 
 		bulkOps.execute();
 	}
