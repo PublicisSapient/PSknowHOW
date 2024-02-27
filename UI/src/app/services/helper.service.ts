@@ -565,17 +565,32 @@ export class HelperService {
         })
       }
 
-      createBackupOfFiltersSelection(filterbackup){
+    createBackupOfFiltersSelection(filterbackup, tab, subFilter) {
         let savedDetails = this.sharedService.getAddtionalFilterBackup();
-        savedDetails =  {...savedDetails, kpiFilters : {...savedDetails['kpiFilters'], ...filterbackup}};
-        this.sharedService.setAddtionalFilterBackup(savedDetails);
-      }
-
-      setFilterValueIfAlreadyHaveBackup(kpiId,kpiSelectedFilterObj, refreshValue, initialValue, filters?) {
-        let haveBackup = {}
-        if (this.sharedService.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.sharedService.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(kpiId)) {
-          haveBackup = this.sharedService.getAddtionalFilterBackup()['kpiFilters'][kpiId];
+        if (tab === 'backlog') {
+            let tabSpecfic = (savedDetails['kpiFilters'] && savedDetails['kpiFilters'][tab]) ? savedDetails['kpiFilters'][tab] : {}
+            savedDetails = { ...savedDetails, kpiFilters: { ...savedDetails['kpiFilters'], ...{ [tab]: { ...tabSpecfic, ...filterbackup } } } };
+        } else {
+            const subFilterValues = (savedDetails['kpiFilters'] && savedDetails['kpiFilters'][tab] && savedDetails['kpiFilters'][tab][subFilter]) ? savedDetails['kpiFilters'][tab][subFilter] : {} ;
+            const combineSubFilterValues = {...subFilterValues,...filterbackup};
+            savedDetails = { ...savedDetails, kpiFilters: { ...savedDetails['kpiFilters'], ...{ [tab]:  {[subFilter]: combineSubFilterValues} } } };
         }
+        this.sharedService.setAddtionalFilterBackup(savedDetails);
+       }
+
+      setFilterValueIfAlreadyHaveBackup(kpiId,kpiSelectedFilterObj, tab,refreshValue, initialValue, subFilter, filters?) {
+        let haveBackup = {}
+        
+          if (tab === 'backlog') {
+              if (this.sharedService.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.sharedService.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(tab) && this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab].hasOwnProperty(kpiId)) {
+                  haveBackup = this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab][kpiId];
+              }
+          } else {
+            if (this.sharedService.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.sharedService.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(tab) && this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab].hasOwnProperty(subFilter) ) {
+                haveBackup = this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab][subFilter][kpiId];
+            }
+          }
+        
         kpiSelectedFilterObj[kpiId] = refreshValue;
         if (haveBackup && Object.keys(haveBackup).length) {
           if (filters) {
@@ -605,7 +620,7 @@ export class HelperService {
             kpiSelectedFilterObj[kpiId] = { 'filter1': initialValue }
           }
         }
-        this.createBackupOfFiltersSelection(kpiSelectedFilterObj);
+        this.createBackupOfFiltersSelection(kpiSelectedFilterObj,tab,subFilter);
         this.sharedService.setKpiSubFilterObj(kpiSelectedFilterObj);
         return kpiSelectedFilterObj;
       }

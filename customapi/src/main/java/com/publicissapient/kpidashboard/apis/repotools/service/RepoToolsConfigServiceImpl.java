@@ -101,7 +101,13 @@ public class RepoToolsConfigServiceImpl {
 	public static final String SCM = "scm";
 	public static final String REPO_NAME = "repoName";
 	public static final String REPO_BRANCH = "defaultBranch";
-	public static final String VALID_REPO = ".git";
+	public static final String BITBUCKET = "bitbucket";
+	public static final String BITBUCKET_CLOUD_IDENTIFIER = "bitbucket.org";
+	public static final String PROJECT = "/projects/";
+	public static final String REPOS = "/repos/";
+
+
+
 
 	private RepoToolsClient repoToolsClient;
 
@@ -120,9 +126,6 @@ public class RepoToolsConfigServiceImpl {
 	public int configureRepoToolProject(ProjectToolConfig projectToolConfig, Connection connection,
 			List<String> branchNames) {
 		int httpStatus;
-		if (!connection.getHttpUrl().contains(projectToolConfig.getRepositoryName() + VALID_REPO)) {
-			return HttpStatus.INTERNAL_SERVER_ERROR.value();
-		}
 		try {
 			// create scanning account
 			ToolCredential toolCredential = new ToolCredential(connection.getUsername(),
@@ -131,14 +134,22 @@ public class RepoToolsConfigServiceImpl {
 			LocalDateTime fistScan = LocalDateTime.now().minusMonths(6);
 			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
 					.findByToolName(connection.getRepoToolProvider().toLowerCase());
-
+			String[] split = projectToolConfig.getGitFullUrl().split("/");
+			String name = split[split.length - 1];
+			if (name.contains("."))
+				name = name.split(".git")[0];
+			projectToolConfig.setRepositoryName(name);
+			String apiEndPoint = null;
+			if (repoToolsProvider.getToolName().equalsIgnoreCase(BITBUCKET)
+					&& !projectToolConfig.getGitFullUrl().contains(BITBUCKET_CLOUD_IDENTIFIER)) {
+				apiEndPoint = connection.getApiEndPoint() + PROJECT + split[split.length - 2] + REPOS + name;
+			}
 			// create configuration details for repo tool
-			RepoToolConfig repoToolConfig = new RepoToolConfig(projectToolConfig.getRepositoryName(),
-					projectToolConfig.getIsNew(), projectToolConfig.getBasicProjectConfigId().toString(),
-					connection.getHttpUrl(), repoToolsProvider.getRepoToolProvider(), connection.getHttpUrl(),
-					projectToolConfig.getDefaultBranch(),
+			RepoToolConfig repoToolConfig = new RepoToolConfig(name, projectToolConfig.getIsNew(),
+					projectToolConfig.getBasicProjectConfigId().toString(), projectToolConfig.getGitFullUrl(),
+					apiEndPoint, repoToolsProvider.getRepoToolProvider(), "", projectToolConfig.getDefaultBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
-					fistScan.toString().replace("T", " "), toolCredential, branchNames, connection.getIsCloneable());
+					fistScan.toString().replace("T", " "), toolCredential, branchNames, false);
 
 			repoToolsClient = createRepoToolsClient();
 			// api call to enroll the project
