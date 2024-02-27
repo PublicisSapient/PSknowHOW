@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -186,9 +187,12 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService
 
 			List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 			if (CollectionUtils.isNotEmpty(allIssues)) {
-				log.info("Backlog items ready for development -> request id : {} total jira Issues : {}", requestTrackerId,
-						allIssues.size());
+				log.info("Backlog items ready for development -> request id : {} total jira Issues : {}",
+						requestTrackerId, allIssues.size());
 				List<JiraIssueCustomHistory> historyForIssues = (List<JiraIssueCustomHistory>) resultMap.get(HISTORY);
+				Map<String, JiraIssueCustomHistory> jiraIssueCustomHistoryMap = historyForIssues.stream()
+						.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID,
+								jiraIssueCustomHistory -> jiraIssueCustomHistory, (e1, e2) -> e1));
 				Map<String, Map<String, List<JiraIssue>>> typeAndPriorityWiseIssues = allIssues.stream().collect(
 						Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getPriority)));
 
@@ -209,7 +213,10 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService
 							long cycleTime = 0;
 							List<IterationKpiModalValue> modalValues = new ArrayList<>();
 							for (JiraIssue jiraIssue : issues) {
-								populateBackLogData(overAllmodalValues, modalValues, jiraIssue);
+								KPIExcelUtility.populateBackLogData(overAllmodalValues, modalValues, jiraIssue,
+										jiraIssueCustomHistoryMap.getOrDefault(jiraIssue.getNumber(),
+												new JiraIssueCustomHistory()),
+										fieldMapping.getReadyForDevelopmentStatusKPI138());
 								issueCount = issueCount + 1;
 								overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 								AtomicLong difference = getActivityCycleTimeForAnIssue(
@@ -247,8 +254,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService
 						null);
 				log.debug("Overall  the cycle time is : {} ", overAllCycleTime.get());
 				IterationKpiData averageOverAllCycleTime = new IterationKpiData(READINESS_CYCLE_TIME,
-						(double) Math.round(overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0))), null, null,
-						DAYS, null);
+						(double) Math.round(overAllCycleTime.get() / Double.valueOf(overAllIssueCount.get(0))), null,
+						null, DAYS, null);
 				data.add(overAllIssues);
 				data.add(backLogStrength);
 				data.add(averageOverAllCycleTime);

@@ -31,13 +31,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.DSRValidationData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import org.apache.commons.collections4.CollectionUtils;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,6 +60,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
+import org.testng.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KPIExcelUtilityTest {
@@ -286,7 +291,7 @@ public class KPIExcelUtilityTest {
 		Map<String, String> defectIdDetails = excelData.getDefectId();
 		assertEquals(1, defectIdDetails.size());
 		// Depending on your kpiId logic, assert the corresponding fields
-//		assertEquals(Constant.EXCEL_YES, excelData.getEscapedDefect());
+		// assertEquals(Constant.EXCEL_YES, excelData.getEscapedDefect());
 	}
 
 	@Test
@@ -384,13 +389,13 @@ public class KPIExcelUtilityTest {
 		// Create a mock of KanbanJiraIssue
 		KanbanJiraIssue openIssue = mock(KanbanJiraIssue.class);
 		when(openIssue.getNumber()).thenReturn("OPEN-1");
-//		when(openIssue.getTypeName()).thenReturn("Bug");
-//		when(openIssue.getPriority()).thenReturn("High");
+		// when(openIssue.getTypeName()).thenReturn("Bug");
+		// when(openIssue.getPriority()).thenReturn("High");
 
 		KanbanIssueCustomHistory closedIssue = mock(KanbanIssueCustomHistory.class);
 		when(closedIssue.getStoryID()).thenReturn("CLOSED-1");
-//		when(closedIssue.getStoryType()).thenReturn("Story");
-//		when(closedIssue.getPriority()).thenReturn("Low");
+		// when(closedIssue.getStoryType()).thenReturn("Story");
+		// when(closedIssue.getPriority()).thenReturn("Low");
 
 		// Mock data
 		List<KanbanJiraIssue> openIssues = Arrays.asList(openIssue);
@@ -781,5 +786,31 @@ public class KPIExcelUtilityTest {
 		// Assert
 		assertEquals(1, kpiExcelData.size());
 		assertEquals("Sprint1", kpiExcelData.get(0).getSprintName());
+	}
+
+	@Test
+	public void testPopulateBackLogData() {
+		JiraIssue jiraIssue = new JiraIssue();
+		jiraIssue.setTypeName("bug");
+		jiraIssue.setUrl("abc");
+		jiraIssue.setNumber("1");
+		jiraIssue.setPriority("5");
+		jiraIssue.setName("Testing");
+		List<String> status = new ArrayList<>();
+		status.add("In Development");
+		List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
+		List<IterationKpiModalValue> modalValues = new ArrayList<>();
+		JiraIssueCustomHistory issueCustomHistory = new JiraIssueCustomHistory();
+		issueCustomHistory.setStoryID("1");
+		issueCustomHistory.setCreatedDate(DateTime.now().now());
+		List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
+		JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
+		jiraHistoryChangeLog.setChangedTo("In Development");
+		jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.now());
+		statusUpdationLog.add(jiraHistoryChangeLog);
+		issueCustomHistory.setStatusUpdationLog(statusUpdationLog);
+		KPIExcelUtility.populateBackLogData(overAllmodalValues, modalValues, jiraIssue, issueCustomHistory, status);
+		Assert.assertNotNull(modalValues);
+		Assert.assertNotNull(overAllmodalValues);
 	}
 }
