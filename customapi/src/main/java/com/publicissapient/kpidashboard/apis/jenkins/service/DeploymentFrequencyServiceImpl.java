@@ -109,8 +109,8 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.DEPLOYMENT_FREQUENCY);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
-		Map<String, List<DataCount>> trendValuesMap = getAggregateTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
-				KPICode.DEPLOYMENT_FREQUENCY);
+		Map<String, List<DataCount>> trendValuesMap = getAggregateTrendValuesMap(kpiRequest, kpiElement,
+				nodeWiseKPIValue, KPICode.DEPLOYMENT_FREQUENCY);
 		Map<String, Map<String, List<DataCount>>> envNameProjectWiseDc = new LinkedHashMap<>();
 		trendValuesMap.forEach((envName, dataCounts) -> {
 			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
@@ -257,10 +257,36 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 				});
 
 				aggDataCountList.addAll(dataCountList);
-				trendValueMap.putIfAbsent(envName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
-				trendValueMap.get(envName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+				trendValue(trendValueMap, trendLineName, envName, deploymentListEnvWise, dataCountList);
+
 			}
 		});
+	}
+
+	/**
+	 * 
+	 * @param trendValueMap
+	 *            trendValueMap
+	 * @param trendLineName
+	 *            trendLineName
+	 * @param envName
+	 *            envName
+	 * @param deploymentListEnvWise
+	 *            deploymentListEnvWise
+	 * @param dataCountList
+	 *            dataCountList
+	 */
+	private static void trendValue(Map<String, List<DataCount>> trendValueMap, String trendLineName, String envName,
+			List<Deployment> deploymentListEnvWise, List<DataCount> dataCountList) {
+		if (StringUtils.isNotEmpty(deploymentListEnvWise.get(0).getPipelineName())) {
+			trendValueMap.putIfAbsent(envName + CommonConstant.ARROW + deploymentListEnvWise.get(0).getPipelineName(),
+					new ArrayList<>());
+			trendValueMap.get(envName + CommonConstant.ARROW + deploymentListEnvWise.get(0).getPipelineName())
+					.addAll(dataCountList);
+		} else {
+			trendValueMap.putIfAbsent(envName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
+			trendValueMap.get(envName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+		}
 	}
 
 	/**
