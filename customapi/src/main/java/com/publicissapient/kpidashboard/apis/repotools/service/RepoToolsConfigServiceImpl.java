@@ -146,7 +146,7 @@ public class RepoToolsConfigServiceImpl {
 			}
 			// create configuration details for repo tool
 			RepoToolConfig repoToolConfig = new RepoToolConfig(name, projectToolConfig.getIsNew(),
-					projectToolConfig.getBasicProjectConfigId().toString(), projectToolConfig.getGitFullUrl(),
+					projectToolConfig.getBasicProjectConfigId().toString().concat(name), projectToolConfig.getGitFullUrl(),
 					apiEndPoint, repoToolsProvider.getRepoToolProvider(), projectToolConfig.getDefaultBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
 					fistScan.toString().replace("T", " "), toolCredential, branchNames, false);
