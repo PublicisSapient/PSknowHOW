@@ -146,8 +146,8 @@ public class RepoToolsConfigServiceImpl {
 			}
 			// create configuration details for repo tool
 			RepoToolConfig repoToolConfig = new RepoToolConfig(name, projectToolConfig.getIsNew(),
-					projectToolConfig.getBasicProjectConfigId().toString(), projectToolConfig.getGitFullUrl(),
-					apiEndPoint, repoToolsProvider.getRepoToolProvider(), "", projectToolConfig.getDefaultBranch(),
+					projectToolConfig.getBasicProjectConfigId().toString().concat(name), projectToolConfig.getGitFullUrl(),
+					apiEndPoint, repoToolsProvider.getRepoToolProvider(), projectToolConfig.getDefaultBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
 					fistScan.toString().replace("T", " "), toolCredential, branchNames, false);
 
@@ -230,20 +230,20 @@ public class RepoToolsConfigServiceImpl {
 			toolList.remove(tool);
 			toolList = toolList.stream().filter(projectToolConfig -> projectToolConfig.getRepositoryName()
 					.equalsIgnoreCase(tool.getRepositoryName())).collect(Collectors.toList());
-			if (toolList.size() > 1) {
-				// delete only the repository
-				String deleteRepoUrl = customApiConfig.getRepoToolURL()
-						+ String.format(customApiConfig.getRepoToolDeleteRepoUrl(),
-								createProjectCode(basicProjectConfigId), tool.getRepositoryName());
-				httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
-						restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
-			} else {
+			if (toolList.size() > 0) {
 				// configure debbie project with
 				List<String> branch = new ArrayList<>();
 				toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
 				Optional<Connection> optConnection = connectionRepository.findById(tool.getConnectionId());
 				toolList.get(0).setIsNew(false);
 				httpStatus = configureRepoToolProject(toolList.get(0), optConnection.get(), branch);
+			} else {
+				// delete only the repository
+				String deleteRepoUrl = customApiConfig.getRepoToolURL()
+						+ String.format(customApiConfig.getRepoToolDeleteRepoUrl(),
+						createProjectCode(basicProjectConfigId), tool.getRepositoryName());
+				httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
+						restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 			}
 		} else {
 			try {
