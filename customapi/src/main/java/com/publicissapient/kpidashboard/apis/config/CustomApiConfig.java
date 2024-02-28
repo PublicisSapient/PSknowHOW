@@ -237,6 +237,16 @@ public class CustomApiConfig {// NOPMD
 	@Value("${x_api_key}")
 	private String xApiKey;
 
+	public String getRepoToolReworkRateUrl() {
+		return repoToolReworkRateUrl;
+	}
+
+	public void setRepoToolReworkRateUrl(String repoToolReworkRateUrl) {
+		this.repoToolReworkRateUrl = repoToolReworkRateUrl;
+	}
+
+	private String repoToolReworkRateUrl;
+
 	public String getxApiKey() {
 		return xApiKey;
 	}

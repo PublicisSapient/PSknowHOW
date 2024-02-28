@@ -40,4 +40,6 @@ public class Branches {
     private double hours;
     @JsonProperty("lines_change")
     private long linesChanged;
+    private double branchReworkRateGrade;
+    private double branchReworkRateScore;
 }

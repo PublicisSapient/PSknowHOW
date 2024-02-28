@@ -32,6 +32,7 @@ public class RepoToolKpiMetricResponse {
     private String projectCode;
     private double projectGrade;
     private long commitCount;
+    private double projectReworkRateGrade;
     private List<RepoToolRepositories> repositories;
     private List<RepoToolRepositories> projectRepositories;
     @JsonProperty("date_label")

@@ -22,6 +22,7 @@
               "name": "master",
               "average": 30176.5,
               "mergeRequests": 5,
+              "branchReworkRateScore": 50,
               "merge_requests": [
                 {
                   "id": "1466332986",
