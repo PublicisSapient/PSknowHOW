@@ -247,7 +247,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	private String getPat(String sUrl, ProcessorToolConnection azurePipelineServer) {
 		String pat = "";
 
-		if (AzurePipelineUtils.isSameServerInfo(sUrl, azurePipelineServer.getUrl())) {
+		if (AzurePipelineUtils.isSameServerInfo(sUrl, AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl()))) {
 
 			if (StringUtils.isNotEmpty(azurePipelineServer.getPat())) {
 				pat = azurePipelineServer.getPat();
