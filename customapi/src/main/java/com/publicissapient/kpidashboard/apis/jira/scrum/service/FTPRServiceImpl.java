@@ -162,21 +162,6 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 		}
 	}
 
-	private static void getRemainingDefects(Map<String, List<String>> projectWisePriority, Set<JiraIssue> defects,
-			List<JiraIssue> remainingDefects) {
-		for (JiraIssue jiraIssue : defects) {
-			if (org.apache.commons.collections4.CollectionUtils
-					.isNotEmpty(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()))) {
-				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId())
-						.contains(jiraIssue.getPriority().toLowerCase()))) {
-					remainingDefects.add(jiraIssue);
-				}
-			} else {
-				remainingDefects.add(jiraIssue);
-			}
-		}
-	}
-
 	private double calculateFTPR(double priorityWiseFTPS, double priorityWiseTotalStory) {
 		return roundingOff((priorityWiseFTPS * 100) / priorityWiseTotalStory);
 	}
@@ -305,7 +290,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			List<JiraIssue> totalStoryList = new ArrayList<>();
 			List<JiraIssue> totalJiraIssues = new ArrayList<>();
-			Map<String, List<String>> projectWisePriority = new HashMap<>();
+			Map<String, Map<String, Integer>> projectWisePriority = new HashMap<>();
 			Map<String, List<String>> configPriority = customApiConfig.getPriority();
 			Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 			Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
@@ -314,7 +299,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			// Total stories from issues completed collection in a sprint
 			totalStoryList = getTotalStoryList(fieldMapping, allIssues, totalStoryList);
 
-			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint,
+			KpiHelperService.addPriorityCountProjectWise(projectWisePriority, configPriority, latestSprint,
 					fieldMapping.getDefectPriorityKPI135());
 			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getIncludeRCAForKPI135());
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
@@ -397,9 +382,9 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 		return storyIds;
 	}
 
-	private void removeStoriesWithDefect(List<JiraIssue> totalJiraIssues, Map<String, List<String>> projectWisePriority,
-			Map<String, Set<String>> projectWiseRCA, List<JiraIssue> totalDeffects,
-			Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject) {
+	private void removeStoriesWithDefect(List<JiraIssue> totalJiraIssues, Map<String, Map<String, Integer>> projectWisePriority,
+										 Map<String, Set<String>> projectWiseRCA, List<JiraIssue> totalDeffects,
+										 Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject) {
 
 		Set<JiraIssue> defects = new HashSet<>();
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
@@ -411,8 +396,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			}
 		}));
 
-		List<JiraIssue> remainingDefects = new ArrayList<>();
-		getRemainingDefects(projectWisePriority, defects, remainingDefects);
+		final List<JiraIssue> remainingDefects = KpiHelperService.excludeDefectByPriorityCount(projectWisePriority, defects);
 
 		List<JiraIssue> notFTPRDefects = new ArrayList<>();
 		getNotFtprDefects(projectWiseRCA, defects, notFTPRDefects);
