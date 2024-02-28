@@ -91,7 +91,7 @@ public class CookieUtil {
 		});
 	}
 
-	public static HttpHeaders getHeaders(String apiKey, boolean usingBasicAuth) {
+	public static HttpHeaders getHeadersForApiKey(String apiKey, boolean usingBasicAuth) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		if (apiKey != null && !apiKey.isEmpty()) {

@@ -22,8 +22,6 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
@@ -47,7 +46,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,6 +73,7 @@ public class UserInfoController {
 
 	@Autowired
 	private AuthProperties authProperties;
+
 	/**
 	 * Fetch only approved user info data.
 	 *
@@ -108,7 +107,6 @@ public class UserInfoController {
 
 	}
 
-
 	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
 	@DeleteMapping(value = "/{userName}")
 	public ResponseEntity<ServiceResponse> deleteUser(@PathVariable String userName) {
@@ -116,7 +114,24 @@ public class UserInfoController {
 		String loggedUserName = authenticationService.getLoggedInUser();
 		UserInfo userInfo = userInfoRepository.findByUsername(userName);
 		if ((!loggedUserName.equals(userName) && !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))) {
-			ServiceResponse response = userInfoService.deleteUser(userName);
+			ServiceResponse response = userInfoService.deleteUser(userName, false);
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} else {
+			log.info("Unauthorized to perform deletion of user " + userName);
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body(new ServiceResponse(false, "Unauthorized to perform deletion of user", "Unauthorized"));
+		}
+
+	}
+
+	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
+	@DeleteMapping(value = "/central/{userName}")
+	public ResponseEntity<ServiceResponse> deleteUserFromCentral(@PathVariable String userName) {
+		log.info("Inside deleteUser() method of UserInfoController ");
+		String loggedUserName = authenticationService.getLoggedInUser();
+		UserInfo userInfo = userInfoRepository.findByUsername(userName);
+		if ((!loggedUserName.equals(userName) && !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))) {
+			ServiceResponse response = userInfoService.deleteUser(userName, true);
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		} else {
 			log.info("Unauthorized to perform deletion of user " + userName);
@@ -144,6 +159,13 @@ public class UserInfoController {
 		}
 	}
 
+	/**
+	 * user verify from central auth service
+	 * 
+	 * @param username
+	 * @param request
+	 * @return
+	 */
 	@GetMapping("/auth/{username}")
 	public ResponseEntity<ServiceResponse> getCentralAuthUserInfo(@PathVariable("username") String username,
 			HttpServletRequest request) {

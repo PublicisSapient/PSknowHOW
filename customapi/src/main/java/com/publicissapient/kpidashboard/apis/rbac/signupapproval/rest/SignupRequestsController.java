@@ -48,7 +48,6 @@ import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupM
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDecision;
 import com.publicissapient.kpidashboard.common.model.rbac.AuthenticationDTO;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,22 +79,25 @@ public class SignupRequestsController {
 	 *
 	 * @return responseEntity with data,message and information
 	 */
+	@GetMapping("/central")
+	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
+	public ResponseEntity<ServiceResponse> getAllUnapprovedRequestsForCentralAuth(HttpServletRequest request) {
+		log.info("Getting all unapproved requests");
+		String centralAuthToken = authProperties.getResourceAPIKey();
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "success_pending_approval",
+				userInfoService.findAllUnapprovedUsers(centralAuthToken)));
+
+	}
+
 	@GetMapping
 	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
 	public ResponseEntity<ServiceResponse> getAllUnapprovedRequests(HttpServletRequest request) {
 		log.info("Getting all unapproved requests");
-		if (customApiConfig.isCentralAuthSwitch()) {
-			String centralAuthToken = authProperties.getResourceAPIKey();
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "success_pending_approval",
-					userInfoService.findAllUnapprovedUsers(centralAuthToken)));
-		} else {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, "Unapproved User details",
 							mapper.map(authenticationService.getAuthenticationByApproved(false),
 									new TypeToken<List<AuthenticationDTO>>() {
 									}.getType())));
-		}
-
 	}
 
 	@GetMapping("/all")

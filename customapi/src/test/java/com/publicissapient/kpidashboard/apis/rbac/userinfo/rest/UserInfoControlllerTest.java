@@ -164,7 +164,7 @@ public class UserInfoControlllerTest {
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
 		when(userInfo.getAuthorities()).thenReturn(authorities);
-		when(userInfoService.deleteUser("testuser"))
+		when(userInfoService.deleteUser("testuser" , false) )
 				.thenReturn(new ServiceResponse(true, "Deleted Successfully", "Ok"));
 		mockMvc.perform(
 				MockMvcRequestBuilders.delete("/userinfo/testuser").contentType(MediaType.APPLICATION_JSON_VALUE))

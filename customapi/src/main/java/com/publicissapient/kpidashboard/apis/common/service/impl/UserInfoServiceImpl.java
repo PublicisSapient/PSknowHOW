@@ -461,13 +461,15 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 *            username
 	 */
 	@Override
-	public ServiceResponse deleteUser(String username) {
+	public ServiceResponse deleteUser(String username , boolean centralAuthService) {
 		try {
 			userInfoRepository.deleteByUsername(username);
 			authenticationService.delete(username);
 			userTokenDeletionService.invalidateSession(username);
 			userBoardConfigService.deleteUser(username);
-			deleteFromCentralAuthUser(username , authProperties.getResourceAPIKey());
+			if (centralAuthService) {
+				deleteFromCentralAuthUser(username, authProperties.getResourceAPIKey());
+			}
 			cleanAllCache();
 		} catch (Exception exception) {
 			log.error("Error in Repository :  {} " + exception);
@@ -514,6 +516,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			return null;
 		}
 		String token = authCookie.getValue();
+		//todo
 		UserTokenData userTokenData = userTokenReopository.findByUserToken(token);
 		UserDetailsResponseDTO userDetailsResponseDTO = new UserDetailsResponseDTO();
 		if (Objects.nonNull(userTokenData)) {
@@ -557,7 +560,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public UserInfo getCentralAuthUserInfo(String username, String token) {
-		HttpHeaders headers = cookieUtil.getHeaders(token, true);
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(token, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchUserDetailsEndPoint(), username);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -582,7 +585,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public CentralUserInfoDTO getCentralAuthUserInfoDetails(String username) {
 		String apiKey = authProperties.getResourceAPIKey();
-		HttpHeaders headers = cookieUtil.getHeaders(apiKey, true);
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchUserDetailsEndPoint(), username);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -611,9 +614,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public boolean getCentralAuthUserDeleteUserToken(String token, String apiKey) {
-		HttpHeaders headers = cookieUtil.getHeaders(apiKey, true);
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
-		uriBuilder.path("/api/userlogout/");
+		uriBuilder.path(authProperties.getUserLogoutEndPoint());
 		uriBuilder.path(token);
 		String fetchUserUrl = uriBuilder.toUriString();
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -636,8 +639,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public List<UserInfoDTO> findAllUnapprovedUsers(String token) {
-		HttpHeaders headers = cookieUtil.getHeaders(token, true);
+	public List<UserInfoDTO> findAllUnapprovedUsers(String apiKey) {
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchPendingUsersApprovalEndPoint(), "");
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -667,7 +670,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public boolean updateUserApprovalStatus(String user, String token) {
-		HttpHeaders headers = cookieUtil.getHeaders(token, true);
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(token, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getUpdateUserApprovalStatus(), user);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -696,17 +699,15 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public boolean deleteFromCentralAuthUser(String user, String token) {
-		HttpHeaders headers = cookieUtil.getHeaders(token, true);
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
-		uriBuilder.path("/api/deleteUser/");
-		uriBuilder.path(user);
-		String fetchUserUrl = uriBuilder.toUriString();
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(token, true);
+		String deleteUserUrl =   CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getDeleteUserEndpoint(), user);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response = null;
 		try {
-			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+			response = restTemplate.exchange(deleteUserUrl, HttpMethod.GET, entity, String.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return true;
