@@ -354,6 +354,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				build.setBasicProjectConfigId(azurePipelineServer.getBasicProjectConfigId());
 				build.setProjectToolConfigId(azurePipelineServer.getId());
 				build.setBuildJob(azurePipelineServer.getJobName());
+				build.setPipelineName(azurePipelineServer.getAzurePipelineName());
 				buildsToSave.add(build);
 				count++;
 			} else {
