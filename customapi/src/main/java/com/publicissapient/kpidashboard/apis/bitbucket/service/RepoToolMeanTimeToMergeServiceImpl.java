@@ -128,9 +128,11 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 	private void aggMeanTimeToMerge(Map<String, Double> aggMRTimeForRepo, Map<String, Double> mrTime) {
 		if (MapUtils.isNotEmpty(mrTime)) {
 			mrTime.forEach((key, value) -> {
-				if (mrTime.containsKey(key)) {
+				if (aggMRTimeForRepo.containsKey(key)) {
 					aggMRTimeForRepo.merge(key, value,
-							(currentValue, newValue) -> (currentValue + newValue) / (mrTime.get(key) + 1));
+							(currentValue, newValue) -> (currentValue + newValue) / 2);
+				} else {
+					aggMRTimeForRepo.put(key, value);
 				}
 			});
 		}
