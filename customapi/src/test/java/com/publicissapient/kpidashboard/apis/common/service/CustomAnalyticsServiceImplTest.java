@@ -86,7 +86,7 @@ public class CustomAnalyticsServiceImplTest {
 		when(userInfoRepository.findByUsername(Mockito.anyString())).thenReturn(user);
 		when(authenticationRepository.findByUsername(Mockito.anyString())).thenReturn(authentication);
 		when(projectAccessManager.getProjectAccessesWithRole(Mockito.anyString())).thenReturn(listRoleWiseProjects);
-		Map<String, Object> json = customAnalyticsServiceImpl.addAnalyticsData(resp, "test");
+		JSONObject json = customAnalyticsServiceImpl.addAnalyticsData(resp, "test");
 		assertEquals("test", json.get("user_name"));
 		assertEquals(json.get("authorities"), user.getAuthorities());
 
