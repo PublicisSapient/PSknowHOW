@@ -165,7 +165,7 @@ public class CreateMetadataImplTest {
 		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any()))
 				.thenReturn(metadataIdentifier);
 
-		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(false), client));
+		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(false), client,"false"));
 	}
 
 	@Test
@@ -174,7 +174,7 @@ public class CreateMetadataImplTest {
 		MetadataIdentifier metadataIdentifier = createMetaDataIdentifier(true);
 		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any()))
 				.thenReturn(metadataIdentifier);
-		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(true), client));
+		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(true), client,"false"));
 	}
 
 	@Test
@@ -183,14 +183,14 @@ public class CreateMetadataImplTest {
 		MetadataIdentifier metadataIdentifier = createMetaDataIdentifier(false);
 		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any()))
 				.thenReturn(metadataIdentifier);
-		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(true), client));
+		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(true), client, "false"));
 	}
 
 	@Test
 	public void collectMetadataWithBoardMetadata() throws Exception {
 		when(boardMetadataRepository.findByProjectBasicConfigId(any()))
 				.thenReturn(new BoardMetadata());
-		createMetadata.collectMetadata(createProjectConfig(true), client);
+		createMetadata.collectMetadata(createProjectConfig(true), client, "true");
 	}
 
 	private MetadataIdentifier createMetaDataIdentifier(boolean flag) {
