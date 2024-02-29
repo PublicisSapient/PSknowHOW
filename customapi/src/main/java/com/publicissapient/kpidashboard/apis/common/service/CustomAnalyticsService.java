@@ -41,7 +41,7 @@ public interface CustomAnalyticsService {
 	 *            user name
 	 * @return JSON of analytics data
 	 */
-	Map<String, Object> addAnalyticsData(HttpServletResponse httpServletResponse, String username);
+	JSONObject addAnalyticsData(HttpServletResponse httpServletResponse, String username);
 
 	/**
 	 * Creates and return JSON object containing analytics data.

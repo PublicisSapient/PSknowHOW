@@ -99,37 +99,37 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map<String, Object> addAnalyticsData(HttpServletResponse httpServletResponse, String username) {
-		Map<String, Object> userMap = new HashMap<>();
+	public JSONObject addAnalyticsData(HttpServletResponse httpServletResponse, String username) {
+		JSONObject json = new JSONObject();
 		httpServletResponse.setContentType("application/json");
 		httpServletResponse.setCharacterEncoding("UTF-8");
 		UserInfo userinfo = userInfoRepository.findByUsername(username);
-		if (Objects.nonNull(userinfo)) {
-			Authentication authentication = authenticationRepository.findByUsername(username);
-			String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
-			userMap.put(USER_NAME, username);
-			userMap.put(USER_EMAIL, email);
-			userMap.put(USER_ID, userinfo.getId().toString());
-			userMap.put(USER_AUTHORITIES, userinfo.getAuthorities());
+		Authentication authentication = authenticationRepository.findByUsername(username);
+		String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
+		json.put(USER_NAME, username);
+		json.put(USER_EMAIL, email);
+		json.put(USER_ID, userinfo.getId().toString());
+		json.put(USER_AUTHORITIES, userinfo.getAuthorities());
+		Gson gson = new Gson();
 
-			userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
+		userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
 
-			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
-			if (CollectionUtils.isNotEmpty(projectAccessesWithRole)) {
-				userMap.put(PROJECTS_ACCESS, projectAccessesWithRole);
-			} else {
-				userMap.put(PROJECTS_ACCESS, new JSONArray());
-			}
+		List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
+
+		if (projectAccessesWithRole != null) {
+			JsonElement element = gson.toJsonTree(projectAccessesWithRole, new TypeToken<List<RoleWiseProjects>>() {
+			}.getType());
+			json.put(PROJECTS_ACCESS, element.getAsJsonArray());
+		} else {
+			json.put(PROJECTS_ACCESS, new JSONArray());
 		}
-		userMap.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
+		json.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
 
 		log.info("Successfully added Google Analytics data to Response.");
-		return userMap;
+		return json;
 
 	}
-	/**
-	 * {@inheritDoc}
-	 */
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Object> addAnalyticsDataAndSaveCentralUser(HttpServletResponse httpServletResponse, String username,

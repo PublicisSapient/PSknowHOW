@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -52,10 +53,11 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 		authenticationResponseService.handle(response, authentication);
 		// sgu106: Google Analytics data population starts
 		String username = authenticationService.getUsername(authentication);
-		Map<String, Object> userMap = customAnalyticsService.addAnalyticsData(response, username);
+
+		JSONObject json = customAnalyticsService.addAnalyticsData(response, username);
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
-		out.print(userMap);
+		out.print(json.toJSONString());
 		// sgu106: Google Analytics data population ends
 
 	}
