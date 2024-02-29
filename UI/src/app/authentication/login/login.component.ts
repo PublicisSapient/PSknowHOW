@@ -30,7 +30,6 @@ import { GoogleAnalyticsService } from 'src/app/services/google-analytics.servic
 })
 export class LoginComponent implements OnInit {
     loginForm: UntypedFormGroup;
-    adLoginForm: UntypedFormGroup;
     loading = false;
     submitted = false;
     returnUrl: string;
@@ -46,8 +45,6 @@ export class LoginComponent implements OnInit {
 
     ngOnInit() {
         this.getLoginConfig();
-        this.adLogin = !localStorage.getItem('loginType') || localStorage.getItem('loginType') === 'AD';
-
 
         /* if token exists for user then redirect to dashboard route(Executive page)*/
         this.submitted = false;
@@ -57,13 +54,6 @@ export class LoginComponent implements OnInit {
 
         /*Set required validation for login elements*/
         this.loginForm = this.formBuilder.group({
-            username: ['', Validators.required],
-            password: ['', Validators.required]
-
-        });
-
-        /*Set required validation for AD login elements*/
-        this.adLoginForm = this.formBuilder.group({
             username: ['', Validators.required],
             password: ['', Validators.required]
 
@@ -88,47 +78,27 @@ export class LoginComponent implements OnInit {
 
     /* convenience getter for easy access to form fields*/
     get f() {
- return this.loginForm.controls;
-}
+        return this.loginForm.controls;
+    }
 
-    /* convenience getter for easy access to form fields*/
-    get adf() {
- return this.adLoginForm.controls;
-}
-
-   
-
-    onSubmit(loginType) {
+    onSubmit() {
         this.submitted = true;
         this.error = '';
         /* stop here if form is invalid*/
-        if (loginType === 'standard') {
-            if (this.loginForm.invalid) {
-                return;
-            }
-        } else if (loginType === 'AD') {
-            if (this.adLoginForm.invalid) {
-                return;
-            }
+        if (this.loginForm.invalid) {
+            return;
         }
+        
         /*start the spinner*/
         this.loading = true;
         /*call login service*/
-        if (loginType === 'standard') {
-            this.httpService.login('', this.f.username.value, this.f.password.value)
-                .pipe(first())
-                .subscribe(
-                    data => {
-                        this.performLogin(data, this.f.username.value, this.f.password.value, 'standard');
-                    });
-        } else if (loginType === 'AD') {
-            this.httpService.login('LDAP', this.adf.username.value, this.adf.password.value)
-                .pipe(first())
-                .subscribe(
-                    data => {
-                        this.performLogin(data, this.adf.username.value, this.adf.password.value, 'AD');
-                    });
-        }
+        this.httpService.login('', this.f.username.value, this.f.password.value)
+            .pipe(first())
+            .subscribe(
+                data => {
+                    this.performLogin(data, this.f.username.value, this.f.password.value);
+                });
+        
     }
 
     redirectToProfile() {
@@ -144,7 +114,7 @@ export class LoginComponent implements OnInit {
 
     }
 
-    performLogin(data, username, password, loginType) {
+    performLogin(data, username, password) {
         /*stop loading of spinner*/
         this.loading = false;
         /*
@@ -159,9 +129,7 @@ export class LoginComponent implements OnInit {
 
         } else if (data['status'] === 200) {
             /*After successfully login redirect form to dashboard router(Executive page)*/
-            localStorage.setItem('loginType', loginType);
-            this.adLogin = loginType;
-            this.ga.setLoginMethod(data.body, loginType);
+            this.ga.setLoginMethod(data.body, 'standard');
             if (this.redirectToProfile()) {
                 this.router.navigate(['./dashboard/Config/Profile']);
             } else {

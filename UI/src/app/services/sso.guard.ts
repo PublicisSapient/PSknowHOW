@@ -17,20 +17,15 @@ export class SSOGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-    if (!environment.SSO_LOGIN) {
-      if (!environment.AUTHENTICATION_SERVICE) {
+      if (!environment.SSO_LOGIN) {
         return true;
       } else {
-        return false;
+        return this.getSSOUserInfo();
       }
-    } else {
-      return this.getSSOUserInfo();
-    }
   }
 
   getSSOUserInfo() {
     return this.httpService.getSSOUserInfo().pipe(map(response => {
-      console.log('response from user info call', response);
       if (response['success']) {
         this.sharedService.setCurrentUserDetails({ user_name: response['data']?.username });
         this.sharedService.setCurrentUserDetails({ projectsAccess: response['data']['projectsAccess'] });
