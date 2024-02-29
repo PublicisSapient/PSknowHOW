@@ -23,7 +23,8 @@
                     incrementButtonClass="p-button-success" incrementButtonIcon="pi pi-plus"
                     decrementButtonIcon="pi pi-minus" (click)="$event.stopPropagation(); $event.preventDefault();"
                     [min]="option.minValue" [max]="option.maxValue"
-                    (onInput)="setCounter($event, option)"></p-inputNumber>
+                    (onInput)="setCounter($event, option)"
+                    (onFocus)="removeFocus($event)"></p-inputNumber>
                 <span class="p-ml-2">Min: {{ option.minValue }} , Max: {{ option.maxValue }}</span>
             </div>
         </div>

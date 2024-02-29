@@ -50,6 +50,10 @@ export class ConditionalInputComponent implements OnInit {
     this.setOutput();
   }
 
+  removeFocus(event) {
+    event.target.blur();
+  }
+
   setOutput() {
     this.conditionalInputChange.emit(this.finalValue);
   }
