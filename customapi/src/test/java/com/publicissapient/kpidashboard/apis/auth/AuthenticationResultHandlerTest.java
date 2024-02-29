@@ -77,7 +77,7 @@ public class AuthenticationResultHandlerTest {
 		map.put("user_id", null);
 		map.put("user_email", "username@gmail.com");
 		map.put("projectsAccess", null);
-		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName" , "token")).thenReturn(map);
+		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName")).thenReturn(map);
 		Mockito.when(response.getWriter()).thenReturn(servletOutputStream);
 //		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
 		when(authenticationService.getUsername(authentication)).thenReturn("userName");
@@ -95,7 +95,7 @@ public class AuthenticationResultHandlerTest {
 		map.put("user_id", null);
 		map.put("user_email", "username@gmail.com");
 		map.put("projectsAccess", null);
-		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName", "token")).thenReturn(map);
+		Mockito.when(customAnalyticsService.addAnalyticsDataAndSaveCentralUser(response, "userName", "token")).thenReturn(map);
 		Mockito.when(response.getWriter()).thenReturn(servletOutputStream);
 //		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
 		when(authenticationService.getUsername(authentication)).thenReturn("userName");

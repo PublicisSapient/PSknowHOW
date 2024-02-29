@@ -28,11 +28,9 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -48,21 +46,13 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 	@Autowired
 	private AuthenticationService authenticationService;
 
-	@Autowired
-	private AuthProperties authProperties;
-
-	@Autowired
-	private CookieUtil cookieUtil;
-
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 		authenticationResponseService.handle(response, authentication);
 		// sgu106: Google Analytics data population starts
 		String username = authenticationService.getUsername(authentication);
-		Cookie authCookie = cookieUtil.getAuthCookie(request);
-		String token = authCookie.getValue();
-		Map<String, Object> userMap = customAnalyticsService.addAnalyticsData(response, username, token);
+		Map<String, Object> userMap = customAnalyticsService.addAnalyticsData(response, username);
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
 		out.print(userMap);
