@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_900;
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_900;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
@@ -6,7 +6,7 @@ import io.mongock.api.annotations.RollbackExecution;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-@ChangeUnit(id = "rework_rate_kpi", order = "9002", author = "kunkambl", systemVersion = "9.0.0")
+@ChangeUnit(id = "r_rework_rate_kpi", order = "09002", author = "kunkambl", systemVersion = "9.0.0")
 public class ReworkRateKpi {
 
 	private final MongoTemplate mongoTemplate;
@@ -17,7 +17,7 @@ public class ReworkRateKpi {
 
 	@Execution
 	public void execution() {
-		insertKpi173();
+		deleteKpiMaster();
 	}
 
 	public void insertKpi173() {
@@ -38,7 +38,7 @@ public class ReworkRateKpi {
 
 	@RollbackExecution
 	public void rollBack() {
-		deleteKpiMaster();
+		insertKpi173();
 	}
 
 	public void deleteKpiMaster() {

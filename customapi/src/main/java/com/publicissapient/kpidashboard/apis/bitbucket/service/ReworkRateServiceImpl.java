@@ -16,6 +16,7 @@ import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.apis.repotools.model.Branches;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -102,8 +103,6 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 		return kpiElement;
 	}
 
-
-
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, Node projectLeafNode,
 			KpiRequest kpiRequest) {
 
@@ -137,40 +136,45 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 			return;
 		}
 
-		List<Map<String, Double>> repoWisePRSizeList = new ArrayList<>();
+		List<Map<String, Double>> repoWiseReworkRateList = new ArrayList<>();
 		List<String> repoList = new ArrayList<>();
 		List<String> branchList = new ArrayList<>();
 		String projectName = projectLeafNode.getProjectFilter().getName();
 		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
-		Map<String, Double> aggPRSizeForRepo = new HashMap<>();
+		Map<String, List<Double>> aggReworkRateForRepo = new HashMap<>();
 		reposList.forEach(repo -> {
 			if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
 					.getId() != null) {
 				Map<String, Double> excelDataLoader = new HashMap<>();
 				String branchName = getBranchSubFilter(repo, projectName);
-				Map<String, Double> dateWisePRSize = new HashMap<>();
+				Map<String, Double> dateWiseReworkRate = new HashMap<>();
 				createDateLabelWiseMap(repoToolKpiMetricResponseList, repo.getRepositoryName(), repo.getBranch(),
-						dateWisePRSize);
-				aggPRSize(aggPRSizeForRepo, dateWisePRSize);
-				setWeekWisePRSize(dateWisePRSize, excelDataLoader, branchName, projectName, aggDataMap, kpiRequest);
-				repoWisePRSizeList.add(excelDataLoader);
+						dateWiseReworkRate);
+				reworkRateForRepo(aggReworkRateForRepo, dateWiseReworkRate);
+				setWeekWiseReworkRate(dateWiseReworkRate, excelDataLoader, branchName, projectName, aggDataMap,
+						kpiRequest);
+				repoWiseReworkRateList.add(excelDataLoader);
 				repoList.add(repo.getUrl());
 				branchList.add(repo.getBranch());
 
 			}
 		});
-		setWeekWisePRSize(aggPRSizeForRepo, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName, aggDataMap,
-				kpiRequest);
+		setWeekWiseReworkRate(aggReworkRateForRepo.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+						e -> e.getValue().stream().mapToDouble(Double::doubleValue).average().orElse(0.0))), new HashMap<>(),
+				Constant.AGGREGATED_VALUE, projectName, aggDataMap, kpiRequest);
 		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
 
-		populateExcelDataObject(requestTrackerId, repoWisePRSizeList, repoList, branchList, excelData, projectLeafNode);
+		populateExcelDataObject(requestTrackerId, repoWiseReworkRateList, repoList, branchList, excelData,
+				projectLeafNode);
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.PR_SIZE.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.REWORK_RATE.getColumns());
 	}
 
-	private void aggPRSize(Map<String, Double> aggPRSizeForRepo, Map<String, Double> prSizeForRepo) {
-		if (MapUtils.isNotEmpty(prSizeForRepo)) {
-			prSizeForRepo.forEach((key, value) -> aggPRSizeForRepo.merge(key, value, Double::sum));
+	private void reworkRateForRepo(Map<String, List<Double>> aggReworkRateForRepo,
+			Map<String, Double> reworkRateForRepo) {
+		if (MapUtils.isNotEmpty(reworkRateForRepo)) {
+			reworkRateForRepo.forEach(
+					(key, value) -> aggReworkRateForRepo.computeIfAbsent(key, k -> new ArrayList<>()).add(value));
 		}
 	}
 
@@ -196,26 +200,26 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	}
 
 	/**
-	 * @param weekWisePRSize
+	 * @param weekWiseReworkRate
 	 * @param excelDataLoader
 	 * @param branchName
 	 * @param projectName
 	 * @param aggDataMap
 	 * @param kpiRequest
 	 */
-	private void setWeekWisePRSize(Map<String, Double> weekWisePRSize, Map<String, Double> excelDataLoader,
+	private void setWeekWiseReworkRate(Map<String, Double> weekWiseReworkRate, Map<String, Double> excelDataLoader,
 			String branchName, String projectName, Map<String, List<DataCount>> aggDataMap, KpiRequest kpiRequest) {
 		LocalDate currentDate = LocalDate.now();
 		Integer dataPoints = kpiRequest.getXAxisDataPoints();
 		String duration = kpiRequest.getDuration();
 		for (int i = 0; i < dataPoints; i++) {
 			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
-			Double prSize = weekWisePRSize.getOrDefault(dateRange.getStartDate().toString(), 0d);
+			Double reworkRate = weekWiseReworkRate.getOrDefault(dateRange.getStartDate().toString(), 0d);
 			String date = getDateRange(dateRange, duration);
 			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
-			DataCount dataCount = setDataCount(projectName, date, prSize);
+			DataCount dataCount = setDataCount(projectName, date, reworkRate);
 			aggDataMap.get(branchName).add(dataCount);
-			excelDataLoader.put(date, prSize);
+			excelDataLoader.put(date, reworkRate);
 			currentDate = getNextRangeDate(duration, currentDate);
 
 		}
@@ -302,6 +306,8 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
 			String projectName = node.getProjectFilter().getName();
+			KPIExcelUtility.populateReworkRateExcelData(projectName, repoWiseMRList, repoList, branchList,
+					validationDataMap);
 
 		}
 	}
