@@ -228,8 +228,6 @@ public class RepoToolsConfigServiceImpl {
 		repoToolsClient = createRepoToolsClient();
 		if (toolList.size() > 1) {
 			toolList.remove(tool);
-			toolList = toolList.stream().filter(projectToolConfig -> projectToolConfig.getRepositoryName()
-					.equalsIgnoreCase(tool.getRepositoryName())).collect(Collectors.toList());
 			if (toolList.size() > 0) {
 				// configure debbie project with
 				List<String> branch = new ArrayList<>();
