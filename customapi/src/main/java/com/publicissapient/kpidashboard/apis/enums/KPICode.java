@@ -492,6 +492,10 @@ public enum KPICode {
      * Cycle Time (Backlog)
      */
     CYCLE_TIME("kpi171", KPISource.JIRA.name()),
+    /**
+     * Rework Rate (Developer)
+     */
+    REWORK_RATE("kpi173", KPISource.JIRA.name()),
 
 
 

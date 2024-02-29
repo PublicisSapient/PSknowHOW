@@ -406,5 +406,8 @@ public class KPIExcelData {
 	@JsonProperty("Escaped defect identifier")
 	private String escapedIdentifier;
 
+	@JsonProperty("Rework Rate")
+	private String reworkRate;
+
 
 }
