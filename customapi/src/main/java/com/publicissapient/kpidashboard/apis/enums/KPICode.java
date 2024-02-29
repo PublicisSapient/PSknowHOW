@@ -495,7 +495,7 @@ public enum KPICode {
     /**
      * Rework Rate (Developer)
      */
-    REWORK_RATE("kpi173", KPISource.JIRA.name()),
+    REWORK_RATE("kpi173", KPISource.BITBUCKET.name()),
 
 
 
