@@ -82,8 +82,7 @@ export class HttpService {
   private getRolesUrl = this.baseUrl + '/api/roles';
   private raiseAccessRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getAccessRequestsUrl = this.baseUrl + '/api/accessrequests/status';
-  private getAccessRequestNotificationsUrl =
-    this.baseUrl + '/api/accessrequests/Pending/notification';
+  private getAccessRequestNotificationsUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/accessrequests/Pending/notification/central' : this.baseUrl + '/api/accessrequests/Pending/notification';
   private updateRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getUserAccessRequestsUrl = this.baseUrl + '/api/accessrequests/user';
   private getScenariosUrl = this.baseUrl + '/api/scenario';
@@ -98,7 +97,8 @@ export class HttpService {
   private changeEmailUrl = this.baseUrl + '/api/users/';
   private getAllProjectsUrl = this.baseUrl + '/api/basicconfigs/all';
   private deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
-  private userInfoUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/userinfo/central' : this.baseUrl + '/api/userinfo';
+  private getAllUsersUrl = this.baseUrl + '/api/userinfo';
+  private updateAccessUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/userinfo/central/' : this.baseUrl + '/api/userinfo/';
   private getKPIConfigMetadataUrl =
     this.baseUrl + '/api/editConfig/jira/editKpi/';
   /** KnowHOW Lite */
@@ -540,12 +540,12 @@ export class HttpService {
 
   /** get all users for RBAC */
   getAllUsers() {
-    return this.http.get<any>(this.userInfoUrl);
+    return this.http.get<any>(this.getAllUsersUrl);
   }
 
   /** Update access (RBAC) */
   updateAccess(requestData, username): Observable<any> {
-    return this.http.post(this.userInfoUrl + username, requestData);
+    return this.http.post(this.updateAccessUrl + username, requestData);
   }
 
   /** get all requests for access (RBAC) */
@@ -574,7 +574,7 @@ export class HttpService {
 
   /** Delete User */
   deleteAccess(username) {
-    return this.http.delete(this.userInfoUrl + username);
+    return this.http.delete(this.updateAccessUrl + username);
   }
 
   /** Accept/Reject access request (RBAC) */
