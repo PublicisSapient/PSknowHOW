@@ -19,7 +19,6 @@
 
 package com.publicissapient.kpidashboard.apis.rbac.signupapproval.rest;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.bson.types.ObjectId;
@@ -90,7 +89,7 @@ public class SignupRequestsControllerTest {
 	 */
 	@Test
 	public void testGetUnApprovedRequests() throws Exception {
-		when(customApiConfig.isCentralAuthSwitch()).thenReturn(false);
+		//when(customApiConfig.isCentralAuthSwitch()).thenReturn(false);
 		mockMvc.perform(MockMvcRequestBuilders.get("/userapprovals").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
