@@ -104,20 +104,22 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		httpServletResponse.setContentType("application/json");
 		httpServletResponse.setCharacterEncoding("UTF-8");
 		UserInfo userinfo = userInfoRepository.findByUsername(username);
-		Authentication authentication = authenticationRepository.findByUsername(username);
-		String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
-		userMap.put(USER_NAME, username);
-		userMap.put(USER_EMAIL, email);
-		userMap.put(USER_ID, userinfo.getId().toString());
-		userMap.put(USER_AUTHORITIES, userinfo.getAuthorities());
+		if (Objects.nonNull(userinfo)) {
+			Authentication authentication = authenticationRepository.findByUsername(username);
+			String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
+			userMap.put(USER_NAME, username);
+			userMap.put(USER_EMAIL, email);
+			userMap.put(USER_ID, userinfo.getId().toString());
+			userMap.put(USER_AUTHORITIES, userinfo.getAuthorities());
 
-		userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
+			userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
 
-		List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
-		if (CollectionUtils.isNotEmpty(projectAccessesWithRole)) {
-			userMap.put(PROJECTS_ACCESS, projectAccessesWithRole);
-		} else {
-			userMap.put(PROJECTS_ACCESS, new JSONArray());
+			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
+			if (CollectionUtils.isNotEmpty(projectAccessesWithRole)) {
+				userMap.put(PROJECTS_ACCESS, projectAccessesWithRole);
+			} else {
+				userMap.put(PROJECTS_ACCESS, new JSONArray());
+			}
 		}
 		userMap.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
 
