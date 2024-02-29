@@ -87,10 +87,6 @@ export class AdvancedSettingsComponent implements OnInit {
         this.getProjects();
       }
         break;
-      case 'Authentication Type': {
-        this.selectedView = 'ad_settings';
-      }
-        break;
     }
   }
 

@@ -97,6 +97,7 @@ public class CookieUtil {
 		if (apiKey != null && !apiKey.isEmpty()) {
 			if (usingBasicAuth) {
 				headers.set("x-api-key", apiKey);
+				headers.set("resouce", apiKey);
 			} else {
 				headers.add("x-api-key", apiKey);
 			}
