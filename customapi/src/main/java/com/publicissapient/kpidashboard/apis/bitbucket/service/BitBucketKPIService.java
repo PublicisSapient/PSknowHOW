@@ -99,5 +99,4 @@ public abstract class BitBucketKPIService<R, S, T> extends ToolsKPIService<R, S>
 		}
 		return subfilter;
 	}
-
 }
