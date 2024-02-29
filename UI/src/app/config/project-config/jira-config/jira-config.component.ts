@@ -2214,7 +2214,7 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
-                label: 'Git Full Url',
+                label: 'Full Git URL',
                 id: 'gitFullUrl',
                 validators: ['required'],
                 containerClass: 'p-sm-6',

@@ -12,3 +12,7 @@
 :host ::ng-deep .count-box {
     margin-left: 20px;
 }
+
+:host ::ng-deep .p-inputnumber-buttons-horizontal .p-inputnumber-input {
+    pointer-events: none;
+}
