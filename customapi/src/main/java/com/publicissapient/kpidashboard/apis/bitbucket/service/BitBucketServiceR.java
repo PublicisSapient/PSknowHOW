@@ -44,8 +44,6 @@ import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 
 import lombok.extern.slf4j.Slf4j;
@@ -112,8 +110,7 @@ public class BitBucketServiceR {
 			List<ParallelBitBucketServices> listOfTask = new ArrayList<>();
 			for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 
-				listOfTask.add(
-						new ParallelBitBucketServices(kpiRequest, responseList, kpiEle, filteredNode));
+				listOfTask.add(new ParallelBitBucketServices(kpiRequest, responseList, kpiEle, filteredNode));
 			}
 
 			ForkJoinTask.invokeAll(listOfTask);
@@ -187,9 +184,8 @@ public class BitBucketServiceR {
 		}
 	}
 
-	public class ParallelBitBucketServices extends RecursiveAction {
+	public static class ParallelBitBucketServices extends RecursiveAction {
 
-		private static final long serialVersionUID = 1L;
 		private final KpiRequest kpiRequest;
 		private final transient List<KpiElement> responseList;
 		private final transient KpiElement kpiEle;
@@ -198,9 +194,13 @@ public class BitBucketServiceR {
 		/**
 		 *
 		 * @param kpiRequest
+		 * 			kpi request
 		 * @param responseList
+		 * 			response list
 		 * @param kpiEle
+		 * 			kpi element
 		 * @param filteredNode
+		 * 			filtered project node
 		 */
 		public ParallelBitBucketServices(KpiRequest kpiRequest, List<KpiElement> responseList, KpiElement kpiEle,
 				Node filteredNode) {
@@ -220,7 +220,7 @@ public class BitBucketServiceR {
 			try {
 				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
 			} catch (Exception e) {
-				log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", e);
+				log.error("[PARALLEL_BITBUCKET_SERVICE].Exception occurred", e);
 			}
 		}
 
@@ -229,7 +229,7 @@ public class BitBucketServiceR {
 		 * method of these KPIs
 		 *
 		 * @param kpiRequest
-		 *            JIRA KPI request
+		 *            Bitbucket KPI request
 		 * @param responseList
 		 *            List of KpiElements having data of each KPI
 		 * @param kpiElement
