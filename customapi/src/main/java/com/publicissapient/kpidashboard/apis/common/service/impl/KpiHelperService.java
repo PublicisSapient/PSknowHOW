@@ -1672,6 +1672,18 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
+	 * convert milliseconds to hours
+	 *
+	 * @param milliseconds
+	 * 			milliseconds
+	 * @return time in hours
+	 */
+	public static long convertMilliSecondsToHours(double milliseconds) {
+		double hoursExact = milliseconds / (3600000);
+		return Math.round(hoursExact);
+	}
+
+	/**
 	 * Create PriorityWise Count map from FieldMapping & configPriority
 	 *
 	 * @param projectWisePriorityCount
