@@ -340,6 +340,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			existingConnection = checkConnDetailsSonar(inputConn, currConn, api);
 			break;
 		case TOOL_BAMBOO:
+		case REPO_TOOLS:
 		case TOOL_TEAMCITY:
 			if (checkConnDetails(inputConn, currConn))
 				existingConnection = currConn;
@@ -365,10 +366,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 			break;
 		case TOOL_ZEPHYR:
 			existingConnection = checkConnDetailsZephyr(inputConn, currConn, api);
-			break;
-		case REPO_TOOLS:
-			if (inputConn.getHttpUrl().equals(currConn.getHttpUrl()))
-				existingConnection = currConn;
 			break;
 		default:
 			existingConnection = new Connection();
@@ -569,8 +566,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 		existingConnection.setJaasUser(connection.getJaasUser());
 		existingConnection.setSamlEndPoint(connection.getSamlEndPoint());
 		existingConnection.setKrb5ConfigFilePath(connection.getKrb5ConfigFilePath());
-		existingConnection.setSshUrl(connection.getSshUrl());
-		existingConnection.setHttpUrl(connection.getHttpUrl());
 		existingConnection.setEmail(connection.getEmail());
 	}
 
