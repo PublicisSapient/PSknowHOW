@@ -153,32 +153,6 @@ describe('LoginComponent', () => {
     expect(component.error).toBe(fakeInvalidLogin.message);
   }));
 
-  it("should come data if response is success",()=>{
-    const fakeRespose = {
-      success : true,
-      data : []
-
-    }
-    spyOn(httpService,'getLoginConfig').and.returnValue(of(fakeRespose));
-    component.getLoginConfig();
-    expect(component.loginConfig).not.toBeNull();
-  })
-
-  it("should adlogin false if response is fail",()=>{
-    const fakeRespose = {
-      success : false,
-      data : []
-    }
-    const failValues = {
-      standardLogin: true,
-      adLogin: false
-  }
-    spyOn(httpService,'getLoginConfig').and.returnValue(of(fakeRespose));
-    component.getLoginConfig();
-    expect(component.loginConfig).toEqual(failValues)
-  })
-
-
   it("should redirect to profile if user email is blank",()=>{
     sharedService.setCurrentUserDetails({user_email:""});
     sharedService.setCurrentUserDetails('projectsAccess',JSON.stringify(["abc"]));

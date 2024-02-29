@@ -44,8 +44,6 @@ export class LoginComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.getLoginConfig();
-
         /* if token exists for user then redirect to dashboard route(Executive page)*/
         this.submitted = false;
         this.route.queryParams.subscribe(params => {
@@ -61,19 +59,6 @@ export class LoginComponent implements OnInit {
 
         /* get return url from route parameters or default to '/' */
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    }
-
-    getLoginConfig() {
-        this.httpService.getLoginConfig().subscribe(response => {
-            if(response.success) {
-               this.loginConfig = response.data;
-            } else {
-                this.loginConfig = {
-                    standardLogin: true,
-                    adLogin: false
-                };
-            }
-        });
     }
 
     /* convenience getter for easy access to form fields*/
