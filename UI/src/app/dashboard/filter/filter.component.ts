@@ -671,6 +671,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       } else {
         selectedTrendValues.push(this.trendLineValueList?.filter((x) => x.nodeId == selectedTrendIds)[0]);
       }
+      if(selectedTrendValues.length === 1){
+        this.getProcessorsTraceLogsForProject(selectedTrendValues[0]['basicProjectConfigId']);
+      }   
 
       this.service.setSelectedLevel(selectedLevel);
       this.service.setSelectedTrends(selectedTrendValues);
@@ -1369,6 +1372,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (response.success) {
         if (this.selectedProjectData && this.selectedProjectData['basicProjectConfigId'] === basicProjectConfigId) {
           this.processorsTracelogs = response.data;
+          this.service.setProcessorLogDetails(this.processorsTracelogs);
         }
         this.showExecutionDate();
       } else {
@@ -1382,7 +1386,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   findTraceLogForTool() {
-    return this.processorsTracelogs.find((ptl) => this.processorName.includes(ptl['processorName'].toLowerCase()));
+    return this.service.getProcessorLogDetails().find((ptl) => this.processorName.includes(ptl['processorName'].toLowerCase()));
   }
 
   showExecutionDate() {
@@ -1587,6 +1591,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
         this.checkIfProjectHasRelease();
         this.filterForm.get('selectedRelease').setValue(this.selectedRelease['nodeId']);
+      }
+      if (this?.selectedProjectData) {
+        this.getProcessorsTraceLogsForProject(this?.selectedProjectData['basicProjectConfigId']);
       }
       this.service.setNoRelease(false);
       this.selectedFilterArray = [];

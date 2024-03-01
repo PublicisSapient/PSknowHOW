@@ -4,6 +4,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-kpi-card',
   templateUrl: './kpi-card.component.html',
@@ -61,6 +62,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
  @Output() getCommentCountByKpi = new EventEmitter();
  userRole : string;
  checkIfViewer : boolean;
+ lastSyncTime : any;
 
   constructor(public service: SharedService,
     private http : HttpService,
@@ -278,6 +280,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
       this.loading = true;
       this.noData = false;
       this.displayConfigModel = true;
+      this.lastSyncTime = this.showExecutionDate(this.kpiData.kpiDetail.combinedSource);
       this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`).subscribe(data => {
         if(data && data['success']){
           this.fieldMappingConfig = data?.data['fieldConfiguration'];
@@ -356,6 +359,16 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
 
   triggerGaEvent(gaObj){
     this.ga.setKpiData(gaObj);
+  }
+
+  showExecutionDate(processorName) {
+    const traceLog = this.findTraceLogForTool(processorName.toLowerCase());
+    return (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) ? 'NA' : new DatePipe('en-US').transform(traceLog.executionEndedAt, 'dd-MMM-yyyy (EEE) - hh:mmaaa');
+  }
+
+  findTraceLogForTool(processorName) {
+    const sourceArray = processorName.split('/');
+    return this.service.getProcessorLogDetails().find(ptl => sourceArray.includes(ptl['processorName'].toLowerCase()));
   }
 
   ngOnDestroy() {
