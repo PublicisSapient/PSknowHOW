@@ -129,3 +129,8 @@
 ::ng-deep .stack-key{
   width: 70px;
 }
+
+#back_icon {
+  margin: 10px;
+  cursor: pointer;
+}

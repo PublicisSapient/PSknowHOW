@@ -2201,7 +2201,7 @@ export class JiraConfigComponent implements OnInit {
             },
             { field: 'username', header: 'User Name', class: 'normal' },
             { field: 'repoToolProvider', header: 'RepoTool Provider', class: 'normal' },
-            { field: 'httpUrl', header: 'Http URL', class: 'long-text' },
+            { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
           ];
           this.configuredToolTableCols = [
             { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
@@ -2214,12 +2214,12 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
-                label: 'Repository Name',
-                id: 'repositoryName',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Repository Name.<br / <i>Impacted : All Repository based KPIs</i>`,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
                 // onFocusOut : this.getGitActionWorkflowName
               },
               {
@@ -2276,14 +2276,14 @@ export class JiraConfigComponent implements OnInit {
         for (const obj in this.selectedToolConfig[0]) {
           if (obj !== 'queryEnabled' && obj !== "team") {
             if (this.toolForm && this.toolForm.controls[obj]) {
-             
+
                 this.toolForm.controls[obj].setValue(
                   this.selectedToolConfig[0][obj],
                 );
-             
+
                 this.toolForm.controls[obj].markAsDirty();
               }
-            
+
           } else if (obj === 'queryEnabled') {
             if (this.urlParam === 'Jira' || this.urlParam === 'Azure') {
               this.queryEnabled = this.selectedToolConfig[0]['queryEnabled'];

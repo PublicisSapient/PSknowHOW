@@ -15,22 +15,26 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.jira.service;
 
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
-/**
- * @author pankumar8
- *
- */
-public interface CreateMetadata {
+package com.publicissapient.kpidashboard.apis.repotools.model;
 
-	/**
-	 * @param projectConfig
-	 *            projectConfig
-	 * @param client
-	 *            client
-	 */
-	void collectMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client, String isScheduler);
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class RepoToolsStatusResponse implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	private String project;
+	private String repository;
+	private String source;
+	private String status;
+	private String timestamp;
+
 }

@@ -59,6 +59,9 @@ public class MetaDataTasklet implements Tasklet {
 	@Value("#{jobParameters['projectId']}")
 	private String projectId;
 
+	@Value("#{jobParameters['isScheduler']}")
+	private String isScheduler;
+
 	/**
 	 * @param sc
 	 *            StepContribution
@@ -76,7 +79,7 @@ public class MetaDataTasklet implements Tasklet {
 		KerberosClient krb5Client = null;
 		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);) {
 			if (jiraProcessorConfig.isFetchMetadata()) {
-				createMetadata.collectMetadata(projConfFieldMapping, client);
+				createMetadata.collectMetadata(projConfFieldMapping, client, isScheduler);
 			}
 		}
 		return RepeatStatus.FINISHED;
