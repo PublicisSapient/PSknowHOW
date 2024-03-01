@@ -103,8 +103,15 @@ public class RepoToolsConfigServiceImpl {
 	public static final String SCM = "scm";
 	public static final String REPO_NAME = "repoName";
 	public static final String REPO_BRANCH = "defaultBranch";
-	public static final String VALID_REPO = ".git";
+	public static final String BITBUCKET = "bitbucket";
+	public static final String BITBUCKET_CLOUD_IDENTIFIER = "bitbucket.org";
+	public static final String PROJECT = "/projects/";
+	public static final String REPOS = "/repos/";
 
+
+	public RepoToolsClient createRepoToolsClient() {
+		return new RepoToolsClient();
+	}
 
 	/**
 	 * enroll a project to the repo tool
@@ -117,9 +124,6 @@ public class RepoToolsConfigServiceImpl {
 	public int configureRepoToolProject(ProjectToolConfig projectToolConfig, Connection connection,
 			List<String> branchNames) {
 		int httpStatus;
-		if (!connection.getHttpUrl().contains(projectToolConfig.getRepositoryName() + VALID_REPO)) {
-			return HttpStatus.INTERNAL_SERVER_ERROR.value();
-		}
 		try {
 			// create scanning account
 			ToolCredential toolCredential = new ToolCredential(connection.getUsername(),
@@ -128,15 +132,24 @@ public class RepoToolsConfigServiceImpl {
 			LocalDateTime fistScan = LocalDateTime.now().minusMonths(6);
 			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
 					.findByToolName(connection.getRepoToolProvider().toLowerCase());
-
+			String[] split = projectToolConfig.getGitFullUrl().split("/");
+			String name = split[split.length - 1];
+			if (name.contains("."))
+				name = name.split(".git")[0];
+			projectToolConfig.setRepositoryName(name);
+			String apiEndPoint = null;
+			if (repoToolsProvider.getToolName().equalsIgnoreCase(BITBUCKET)
+					&& !projectToolConfig.getGitFullUrl().contains(BITBUCKET_CLOUD_IDENTIFIER)) {
+				apiEndPoint = connection.getApiEndPoint() + PROJECT + split[split.length - 2] + REPOS + name;
+			}
 			// create configuration details for repo tool
-			RepoToolConfig repoToolConfig = new RepoToolConfig(projectToolConfig.getRepositoryName(),
-					projectToolConfig.getIsNew(), projectToolConfig.getBasicProjectConfigId().toString(),
-					connection.getHttpUrl(), repoToolsProvider.getRepoToolProvider(), connection.getHttpUrl(),
-					projectToolConfig.getDefaultBranch(),
+			RepoToolConfig repoToolConfig = new RepoToolConfig(name, projectToolConfig.getIsNew(),
+					projectToolConfig.getBasicProjectConfigId().toString().concat(name), projectToolConfig.getGitFullUrl(),
+					apiEndPoint, repoToolsProvider.getRepoToolProvider(), projectToolConfig.getDefaultBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
-					fistScan.toString().replace("T", " "), toolCredential, branchNames, connection.getIsCloneable());
+					fistScan.toString().replace("T", " "), toolCredential, branchNames, false);
 
+			repoToolsClient = createRepoToolsClient();
 			// api call to enroll the project
 			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig,
 					customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolEnrollProjectUrl(),
@@ -209,36 +222,32 @@ public class RepoToolsConfigServiceImpl {
 	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool,
 			String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
-		try {
+		repoToolsClient = createRepoToolsClient();
 			if (toolList.size() > 1) {
 				toolList.remove(tool);
-				toolList = toolList.stream().filter(projectToolConfig -> projectToolConfig.getRepositoryName()
-						.equalsIgnoreCase(tool.getRepositoryName())).collect(Collectors.toList());
-				if (toolList.size() > 1) {
-
+			if (toolList.size() > 0) {
+				// configure debbie project with
+				List<String> branch = new ArrayList<>();
+				toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
+				Optional<Connection> optConnection = connectionRepository.findById(tool.getConnectionId());
+				toolList.get(0).setIsNew(false);
+				httpStatus = configureRepoToolProject(toolList.get(0), optConnection.get(), branch);
+			} else {
 					// delete only the repository
 					String deleteRepoUrl = customApiConfig.getRepoToolURL()
 							+ String.format(customApiConfig.getRepoToolDeleteRepoUrl(),
 									createProjectCode(basicProjectConfigId), tool.getRepositoryName());
 					httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
 							restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+			}
 				} else {
-					// configure debbie project with
-					List<String> branch = new ArrayList<>();
-					toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
-					Optional<Connection> optConnection = connectionRepository.findById(tool.getConnectionId());
-					toolList.get(0).setIsNew(false);
-					if(optConnection.isPresent())
-						httpStatus = configureRepoToolProject(toolList.get(0), optConnection.get(), branch);
-				}
-			} else {
-
+			try {
 				ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
 				// delete the project from repo tool if only one repository is present
 				httpStatus = deleteRepoToolProject(projectBasicConfig, false);
-			}
 		} catch (Exception ex) {
 			log.error("Exception while deleting project {}", ex);
+		}
 		}
 		return httpStatus == HttpStatus.OK.value();
 	}

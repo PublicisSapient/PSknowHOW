@@ -39,10 +39,10 @@ public class RepoToolConfig {
     private String masterSystemId;
     @SerializedName("http_url")
     private String httpUrl;
+    @SerializedName("api_endpoint")
+    private String apiEndPoint;
     @SerializedName("provider")
     private String provider;
-    @SerializedName("ssh_url")
-    private String sshUrl;
     @SerializedName("default_branch")
     private String defaultBranch;
     @SerializedName("project_code")

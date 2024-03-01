@@ -75,9 +75,7 @@ public class ProjectToolConfigRepositoryImpl implements ProjectToolConfigReposit
 			toolObj.setRepositoryName(item.getRepositoryName());
 			toolObj.setProcessorItemList(item.getProcessorItemList());
 			if (CollectionUtils.isNotEmpty(item.getConnection())) {
-				String url = item.getToolName().equals(ProcessorConstants.REPO_TOOLS)
-						? item.getConnection().get(0).getHttpUrl()
-						: item.getConnection().get(0).getBaseUrl();
+				String url = item.getConnection().get(0).getBaseUrl();
 				toolObj.setUrl(url);
 			}
 			tools.add(toolObj);

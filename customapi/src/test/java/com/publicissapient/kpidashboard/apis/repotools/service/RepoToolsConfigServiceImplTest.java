@@ -98,6 +98,7 @@ public class RepoToolsConfigServiceImplTest {
 
     @Mock
     private ProcessorItemRepository processorItemRepository;
+    private RepoToolsProvider repoToolsProvider = new RepoToolsProvider();
 
     @Mock
     private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
@@ -125,14 +126,14 @@ public class RepoToolsConfigServiceImplTest {
         projectToolConfig.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
         projectToolConfig.setBasicProjectConfigId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectToolConfig.setBranch("test1");
-        projectToolConfig.setRepositoryName("testRepo");
+        projectToolConfig.setGitFullUrl("testHttpUrl");
 
         projectToolConfig1.setId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
         projectToolConfig1.setToolName(toolName);
         projectToolConfig1.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
         projectToolConfig1.setBasicProjectConfigId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectToolConfig1.setBranch("test2");
-        projectToolConfig1.setRepositoryName("testRepo");
+        projectToolConfig1.setGitFullUrl("testRepo2");
 
         projectToolConfig2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
         projectToolConfig2.setToolName(toolName);
@@ -145,18 +146,21 @@ public class RepoToolsConfigServiceImplTest {
         connection.setAccessToken("testToken");
         connection.setEmail("testEmail");
         connection.setType(toolName);
-        connection.setSshUrl("testSshUrl");
-        connection.setHttpUrl("testRepo.git");
+        connection.setBaseUrl("testSshUrl");
+        connection.setApiEndPoint("testHttpUrl.git");
         connection.setRepoToolProvider("github");
+
+        repoToolsProvider.setToolName("github");
 
         projectBasicConfig.setId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectBasicConfig.setProjectName("testProj");
 
+        when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(repoToolsProvider);
 
         when(customApiConfig.getRepoToolAPIKey()).thenReturn("repoToolAPIKey");
         when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
         when(restAPIUtils.decryptPassword(anyString())).thenReturn("decryptedApiKey");
-        when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(new RepoToolsProvider());
+        when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(repoToolsProvider);
         when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
                 .thenReturn(projectBasicConfig);
         when(repoToolsProviderRepository.findByToolName(anyString()))
