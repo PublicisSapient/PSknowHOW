@@ -200,11 +200,7 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 				for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
 					String jobName;
 					List<Build> buildList = entry.getValue();
-					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
-						jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + trendLineName;
-					} else {
-						jobName = entry.getKey() + CommonConstant.ARROW + trendLineName;
-					}
+					jobName = getJobName(trendLineName, entry, buildList);
 					aggBuildList.addAll(buildList);
 					prepareInfoForBuild(null, end, buildList, trendLineName, trendValueMap, jobName, aggDataMap);
 				}
@@ -223,6 +219,37 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.BUILD_FREQUENCY.getColumns());
+	}
+
+	/**
+	 * to get the job name
+	 *
+	 * @param trendLineName
+	 *            trendLineName
+	 * @param entry
+	 *            entry
+	 * @param buildList
+	 *            list of builds
+	 * @return returns the job name
+	 */
+	private static String getJobName(String trendLineName, Map.Entry<String, List<Build>> entry,
+			List<Build> buildList) {
+		String jobName;
+		if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
+			if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
+				jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + buildList.get(0).getPipelineName();
+			} else {
+				jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + trendLineName;
+			}
+
+		} else {
+			if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
+				jobName = entry.getKey() + CommonConstant.ARROW + buildList.get(0).getPipelineName();
+			} else {
+				jobName = entry.getKey() + CommonConstant.ARROW + trendLineName;
+			}
+		}
+		return jobName;
 	}
 
 	/**

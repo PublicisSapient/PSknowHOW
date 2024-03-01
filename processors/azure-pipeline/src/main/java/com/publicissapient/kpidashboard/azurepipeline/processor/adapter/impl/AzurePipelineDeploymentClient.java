@@ -137,6 +137,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 				deploymentJob.setNumber(String.valueOf(jsonDeployRelease.get("id")));
 				deploymentJob.setJobId(azurePipelineServer.getJobName());
 				deploymentJob.setJobName(azurePipelineServer.getDeploymentProjectName());
+				deploymentJob.setPipelineName(azurePipelineServer.getAzurePipelineName());
 				setTime(jsonDeploy, deploymentJob);
 
 				if (checkDeploymentConditionsNotNull(deploymentJob)) {

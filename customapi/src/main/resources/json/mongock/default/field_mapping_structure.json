@@ -7,7 +7,8 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "All issue types that are used as/equivalent to Story."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraStoryIdentificationKPI129",
@@ -17,7 +18,8 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "All issue types that are used as/equivalent to Story."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraSprintCapacityIssueTypeKpi46",
@@ -31,7 +33,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI122",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -41,7 +43,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI124",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -51,7 +53,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI138",
-    "fieldLabel": "Iteration Board Issue types",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -61,7 +63,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI131",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -71,7 +73,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI128",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -81,7 +83,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI134",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -91,7 +93,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI145",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -101,7 +103,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKpi72",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -111,7 +113,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKpi5",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -121,7 +123,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI119",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -131,7 +133,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI75",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -141,7 +143,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI123",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -151,7 +153,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI125",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -161,17 +163,7 @@
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI120",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
-    }
-  },
-  {
-    "fieldName": "jiraIterationIssuetypeKPI39",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -207,7 +199,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status from workflow on which issue is delivered. <br> Example: Closed<hr>"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraIssueDeliverdStatusKPI126",
@@ -217,7 +210,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status considered for defect closure (Mention completed status of all types of defects)"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraIssueDeliverdStatusKPI82",
@@ -227,7 +221,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Completion status for all issue types mentioned for calculation of FTPR"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "resolutionTypeForRejectionKPI28",
@@ -245,7 +240,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Resolutions for defects which are to be excluded from 'Defect Rejection Rate' calculation."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "resolutionTypeForRejectionDSR",
@@ -328,7 +324,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "All statuses which are considered for Rejecting defects."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraDefectRejectionStatusDSR",
@@ -428,7 +425,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "All statuses that relate to In development status of a Story"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraStatusForDevelopmentKPI135",
@@ -447,8 +445,9 @@
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status/es that identify that an issue is ready to be taken in the sprint."
-    }
+      "definition": "Status/es that identify that an issue is ready to be taken in the sprint"
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraIssueTypeKPI3",
@@ -457,8 +456,9 @@
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "All issue types that should be included in Lead time calculation."
-    }
+      "definition": "All issue types that should be included in Lead time calculation"
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraKPI82StoryIdentification",
@@ -468,7 +468,8 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "All issue types for which FTPR should be calculated"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraKPI135StoryIdentification",
@@ -478,7 +479,8 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "All issue types for which FTPR should be calculated"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "defectPriorityKPI135",
@@ -718,7 +720,8 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "Issue type that will have defects linked to them."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraDefectCreatedStatusKPI14",
@@ -738,17 +741,19 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status considered for issue closure (Mention completed status of all types of issues)"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraDodQAKPI111",
-    "fieldLabel": "Status considered for defect closure",
+    "fieldLabel": "Status Consider for Issue Closure",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status considered for defect closure (Mention completed status of all types of defects)"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraDodKPI171",
@@ -758,7 +763,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraDodKPI127",
@@ -798,7 +804,8 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "Issue type that will have defects linked to them."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraIssueTypeKPI35",
@@ -808,6 +815,17 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "Issue type that will have defects linked to them."
+    },
+    "mandatory": true
+  },
+  {
+    "fieldName": "jiraIssueTypeKPI37",
+    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue types that are considered as defects in Jira"
     }
   },
   {
@@ -819,7 +837,8 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "All the issue types used by a project in Jira."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraDefectRemovalStatusKPI34",
@@ -862,7 +881,7 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI135",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -872,7 +891,7 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusCustomField",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -882,17 +901,17 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI122",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
+      "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion). The configured value need to be same as defined in \"Custom Completion status/es \" under work remaining "
     }
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI75",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -902,7 +921,7 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI145",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -942,7 +961,7 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKpi72",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -952,7 +971,7 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKpi39",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -962,7 +981,7 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKpi5",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -972,7 +991,7 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI124",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -982,17 +1001,17 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI123",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
+      "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion). The configured value need to be same as defined in\"Status to identify In progress issues\" under work remaining "
     }
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI125",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -1002,7 +1021,7 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI120",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -1012,7 +1031,7 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI128",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -1022,7 +1041,7 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI134",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -1032,7 +1051,7 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI133",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -1042,7 +1061,7 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI119",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -1052,7 +1071,7 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI131",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -1062,17 +1081,18 @@
   },
   {
     "fieldName": "jiraWaitStatusKPI131",
-    "fieldLabel": "Status that signify queue",
+    "fieldLabel": "Status to identify Wait Statuses",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "The statuses wherein no activity takes place and signifies that issue is queued and need to move for work to resume on the issue."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI138",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -1118,7 +1138,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status/es that identify that an issue is LIVE in Production."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraLiveStatusLTK",
@@ -1189,7 +1210,8 @@
     "processorCommon": true,
     "tooltip": {
       "definition": "All the issue types that signify a defect in Jira/Azure"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraStoryPointsCustomField",
@@ -1199,7 +1221,8 @@
     "section": "Custom Fields Mapping",
     "tooltip": {
       "definition": "Field used in Jira for Story points"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "workingHoursDayCPT",
@@ -1219,7 +1242,8 @@
     "section": "Custom Fields Mapping",
     "tooltip": {
       "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Provide value of Cost Of delay field for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "epicRiskReduction",
@@ -1229,7 +1253,8 @@
     "section": "Custom Fields Mapping",
     "tooltip": {
       "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Risk reduction/ Enablement value for Epic that is required to calculated Cost of delay <br> Example: customfield_11111<hr>"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "epicUserBusinessValue",
@@ -1239,7 +1264,8 @@
     "section": "Custom Fields Mapping",
     "tooltip": {
       "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of User-Business Value for Epic that is required to calculated Cost of delay. <br>Example:customfield_11111<hr>"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "epicWsjf",
@@ -1249,7 +1275,8 @@
     "section": "Custom Fields Mapping",
     "tooltip": {
       "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of WSJF value that is required to calculated Cost of delay <br />Example:customfield_11111<hr>"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "epicTimeCriticality",
@@ -1259,7 +1286,8 @@
     "section": "Custom Fields Mapping",
     "tooltip": {
       "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Time Criticality value on Epic that is required to calculated Cost of delay .<br />Example:customfield_11111<hr>"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "epicJobSize",
@@ -1269,7 +1297,8 @@
     "section": "Custom Fields Mapping",
     "tooltip": {
       "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Job size on EPIC that is required to calculated WSJF. <br>Example:customfield_11111<hr>"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "estimationCriteria",
@@ -1301,7 +1330,8 @@
           "definition": "Estimation technique used by teams for e.g. story points, Hours etc."
         }
       }
-    ]
+    ],
+    "mandatory": true
   },
   {
     "fieldName": "jiraIncludeBlockedStatusKPI131",
@@ -1334,7 +1364,9 @@
           "definition": "Provide Status to Identify Blocked Issues."
         }
       }
-    ]
+    ],
+    "processorCommon": true,
+    "mandatory": true
   },
   {
     "fieldName": "jiraBugRaisedByQAIdentification",
@@ -1383,10 +1415,9 @@
   },
   {
     "fieldName": "jiraBugRaisedByIdentification",
-    "fieldLabel": "Escaped defects identification (Processor Run)",
+    "fieldLabel": "Escaped defects identification",
     "fieldType": "radiobutton",
     "section": "Defects Mapping",
-    "processorCommon": true,
     "tooltip": {
       "definition": "This field is used to identify if a defect is raised by third party or client:<br>1. CustomField : If a separate custom field is used<br>2. Labels : If a label is used to identify. Example: TECH_DEBT (This has to be one value).<hr>"
     },
@@ -1425,7 +1456,8 @@
           "definition": "Provide label name to identify UAT or client raised defects.<br /> Example: Clone_by_QA <hr>"
         }
       }
-    ]
+    ],
+    "processorCommon": true
   },
   {
     "fieldName": "additionalFilterConfig",
@@ -1454,7 +1486,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "All statuses that issues have moved from the Created status and also has not been completed"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraStatusForInProgressKPI122",
@@ -1494,7 +1527,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "All statuses that issues have moved from the Created status and also has not been completed"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraStatusForInProgressKPI128",
@@ -1514,7 +1548,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "All statuses that issues have moved from the Created status and also has not been completed"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraDevDoneStatusKPI119",
@@ -1534,7 +1569,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraDevDoneStatusKPI128",
@@ -1554,7 +1590,8 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "Issue types that are considered as defects in Jira."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraDefectCountlIssueTypeKPI36",
@@ -1564,7 +1601,8 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "Issue types that are considered as defects in Jira."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraStatusForQaKPI135",
@@ -1584,7 +1622,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "The status of Defect Issue Type which identifies the 'In-Testing' status in JIRA. <br> Example: Ready For Testing<hr>"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraStatusForQaKPI148",
@@ -1594,7 +1633,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "The status of Defect Issue Type which identifies the 'In-Testing' status in JIRA. <br> Example: Ready For Testing<hr>"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "storyFirstStatusKPI171",
@@ -1604,7 +1644,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "All issue types that identify with a Story."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "storyFirstStatusKPI148",
@@ -1614,7 +1655,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "All issue types that identify with a Story."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraFtprRejectStatusKPI135",
@@ -1644,7 +1686,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "This field should consider all status that are considered Closed in Jira for e.g. Closed, Done etc."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraAcceptedInRefinementKPI139",
@@ -1654,7 +1697,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": " Status that Defines Jira Issue is that is Accepted in Refinement."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraReadyForRefinementKPI139",
@@ -1664,7 +1708,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status that Defines Jira Issue is Ready for Refinement."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraRejectedInRefinementKPI139",
@@ -1674,7 +1719,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status that Defines Jira Issue is Rejected In Refinement."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "readyForDevelopmentStatusKPI138",
@@ -1684,7 +1730,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status to identify Ready for development from the backlog."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraDueDateField",
@@ -1717,40 +1764,8 @@
           "definition": "This field is to track due date of issues tagged in the iteration."
         }
       }
-    ]
-  },
-  {
-    "fieldName": "jiraDevDueDateField",
-    "fieldLabel": "Dev Due Date",
-    "fieldType": "radiobutton",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-      "definition": "This field is to track dev due date of issues tagged in the iteration."
-    },
-    "options": [
-      {
-        "label": "Custom Field",
-        "value": "CustomField"
-      },
-      {
-        "label": "Due Date",
-        "value": "Due Date"
-      }
     ],
-    "nestedFields": [
-      {
-        "fieldName": "jiraDevDueDateCustomField",
-        "fieldLabel": "Dev Due Date Custom Field",
-        "fieldType": "text",
-        "fieldCategory": "fields",
-        "filterGroup": [
-          "CustomField"
-        ],
-        "tooltip": {
-          "definition": "This field is to track dev due date of issues tagged in the iteration."
-        }
-      }
-    ]
+    "mandatory": true
   },
   {
     "fieldName": "jiraIssueEpicType",
@@ -1760,52 +1775,8 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "This field is used to identify Epic Issue type."
-    }
-  },
-  {
-    "fieldName": "rootCauseIdentifier",
-    "fieldLabel": "Root Cause",
-    "fieldType": "radiobutton",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Root Cause is a custom field in JIRA. So User need to provide that custom field which is associated with Root Cause in Users JIRA Installation."
     },
-    "nestedFields": [
-      {
-        "fieldName": "rootCause",
-        "fieldLabel": "Root Cause CustomField",
-        "fieldType": "text",
-        "fieldCategory": "fields",
-        "filterGroup": [
-          "CustomField"
-        ],
-        "tooltip": {
-          "definition": " Provide customfield name to identify Root Cause."
-        }
-      },
-      {
-        "fieldName": "rootCauseValues",
-        "fieldLabel": "Root Cause Defect Values",
-        "fieldType": "chips",
-        "filterGroup": [
-          "Labels"
-        ],
-        "tooltip": {
-          "definition": "Provide label name to identify RootCause."
-        }
-      }
-    ],
-    "options": [
-      {
-        "label": "CustomField",
-        "value": "CustomField"
-      },
-      {
-        "label": "Labels",
-        "value": "Labels"
-      }
-    ]
+    "mandatory": true
   },
   {
     "fieldName": "storyFirstStatus",
@@ -1825,7 +1796,8 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": ""
-    }
+    },
+    "processorCommon": true
   },
   {
     "fieldName": "jiraDefectDroppedStatusKPI127",
@@ -1895,7 +1867,8 @@
           "definition": "Provide label name to identify Production raised defects."
         }
       }
-    ]
+    ],
+    "processorCommon": true
   },
   {
     "fieldName": "ticketCountIssueType",
@@ -1985,7 +1958,8 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "sprintName",
@@ -1995,55 +1969,51 @@
     "section": "Custom Fields Mapping",
     "tooltip": {
       "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
-    }
+    },
+    "mandatory": true
   },
   {
-    "fieldName": "notificationEnabler",
-    "fieldLabel": "Processor Failure Notification",
+    "fieldName": "jiraDevDueDateField",
+    "fieldLabel": "Dev Due Date",
     "fieldType": "radiobutton",
     "section": "Custom Fields Mapping",
     "tooltip": {
-      "definition": "On/Off notification in case processor failure."
+      "definition": "This field is to track dev due date of issues tagged in the iteration."
     },
     "options": [
       {
-        "label": "On",
-        "value": true
+        "label": "Custom Field",
+        "value": "CustomField"
       },
       {
-        "label": "Off",
-        "value": false
+        "label": "Due Date",
+        "value": "Due Date"
       }
-    ]
+    ],
+    "nestedFields": [
+      {
+        "fieldName": "jiraDevDueDateCustomField",
+        "fieldLabel": "Dev Due Date Custom Field",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "filterGroup": [
+          "CustomField"
+        ],
+        "tooltip": {
+          "definition": "This field is to track dev due date of issues tagged in the iteration."
+        }
+      }
+    ],
+    "mandatory": true
   },
   {
-    "fieldName": "epicPlannedValue",
-    "fieldLabel": "Custom field for Epic Planned Value",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-      "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>"
-    }
-  },
-  {
-    "fieldName": "epicAchievedValue",
-    "fieldLabel": "Custom field for Epic Achieved Value",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-      "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>"
-    }
-  },
-  {
-    "fieldName": "jiraIssueEpicTypeKPI153",
-    "fieldLabel": "Epic Issue Type",
+    "fieldName": "jiraIterationIssuetypeKPI39",
+    "fieldLabel": "Issue Types to consider Custom Completion status/es",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "This field is used to identify Epic Issue type."
+      "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
     }
   },
   {
@@ -2057,6 +2027,39 @@
     }
   },
   {
+    "fieldName": "epicPlannedValue",
+    "fieldLabel": "Custom field for Epic Planned Value",
+    "fieldType": "text",
+    "fieldCategory": "fields",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>"
+    },
+    "processorCommon": true
+  },
+  {
+    "fieldName": "epicAchievedValue",
+    "fieldLabel": "Custom field for Epic Achieved Value",
+    "fieldType": "text",
+    "fieldCategory": "fields",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>"
+    },
+    "processorCommon": true
+  },
+  {
+    "fieldName": "jiraIssueEpicTypeKPI153",
+    "fieldLabel": "Issue type to identify epic/feature",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "This field is used to identify Epic Issue type."
+    },
+    "mandatory": true
+  },
+  {
     "fieldName": "epicLink",
     "fieldLabel": "Custom field for Epic Link",
     "fieldType": "text",
@@ -2064,7 +2067,8 @@
     "section": "Custom Fields Mapping",
     "tooltip": {
       "definition": "JIRA applications let you add custom fields in addition to the built-in fields.Provide value of Epic Linkage to the story/defect<br />Example:customfield_11111<hr>"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraSubTaskDefectType",
@@ -2074,7 +2078,30 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
-    }
+    },
+    "mandatory": true
+  },
+  {
+    "fieldName": "uploadDataKPI42",
+    "fieldLabel": "KPI calculation logic",
+    "fieldType": "toggle",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Enabled State (Kpi from data on Upload data screen)"
+    },
+    "toggleLabelRight": "Upload Data"
+  },
+  {
+    "fieldName": "uploadDataKPI16",
+    "fieldLabel": "KPI calculation logic",
+    "fieldType": "toggle",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Enabled State (Kpi from data on Upload data screen)"
+    },
+    "toggleLabelRight": "Upload Data"
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI155",
@@ -2107,50 +2134,18 @@
     }
   },
   {
-    "fieldName": "uploadDataKPI42",
-    "fieldLabel": "KPI calculation logic",
-    "fieldType": "toggle",
-    "toggleLabelRight": "Upload Data",
-    "section": "WorkFlow Status Mapping",
-    "processorCommon": false,
-    "tooltip": {
-      "definition": "Enabled State (Kpi from data on Upload data screen)"
-    }
-  },
-  {
-    "fieldName": "uploadDataKPI16",
-    "fieldLabel": "KPI calculation logic",
-    "fieldType": "toggle",
-    "toggleLabelRight": "Upload Data",
-    "section": "WorkFlow Status Mapping",
-    "processorCommon": false,
-    "tooltip": {
-      "definition": "Enabled State (Kpi from data on Upload data screen)"
-    }
-  },
-  {
     "fieldName": "jiraStoryIdentificationKPI164",
     "fieldLabel": "Issue type to identify Story",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "All issue types that are used as/equivalent to Story."
-    }
+      "definition": "All issue types that are used as/equivalent to Story"
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraIssueTypeNamesKPI161",
-    "fieldLabel": "Issue types to be included",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "processorCommon": false,
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "All the issue types used by a project in Jira."
-    }
-  },
-  {
-    "fieldName": "jiraIssueTypeNamesKPI146",
     "fieldLabel": "Issue types to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -2169,7 +2164,20 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "All the issue types used by a project in Jira."
-    }
+    },
+    "mandatory": true
+  },
+  {
+    "fieldName": "jiraIssueTypeNamesKPI146",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "All the issue types used by a project in Jira."
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraIssueTypeNamesKPI151",
@@ -2192,62 +2200,6 @@
     "tooltip": {
       "definition": "All the issue types used by a project in Jira."
     }
-  },
-  {
-    "fieldName": "leadTimeConfigRepoTool",
-    "fieldLabel": "Lead Time KPI calculation logic",
-    "fieldType": "radiobutton",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-      "definition": "By Default State Calculation is based on Jira Issues and Releases. <br>  1. Jira : Calculation is based on Jira Issues and Releases, <br>  2. Repo : Calculation is based on Repo Data and Releases. <br> Branch Name Must have Jira Issue Key in it."
-    },
-    "options": [
-      {
-        "label": "Jira",
-        "value": "Jira"
-      },
-      {
-        "label": "Repo",
-        "value": "Repo"
-      }
-    ],
-    "nestedFields": [
-      {
-        "fieldName": "jiraIssueTypeKPI156",
-        "fieldLabel": "Issue types to consider ‘Completed status’",
-        "fieldType": "chips",
-        "fieldCategory": "Issue_Type",
-        "filterGroup": [
-          "Jira"
-        ],
-        "tooltip": {
-          "definition": "Only these Issue Types will be considered for Lead Time Calculation. If this Configuration is not provided, all the Issue Types will be considered. <br> Example: Story, Enabler Story, Tech Story, Change request <hr>."
-        }
-      },
-      {
-        "fieldName": "jiraDodKPI156",
-        "fieldLabel": "Status to identify DOD",
-        "fieldType": "chips",
-        "fieldCategory": "workflow",
-        "filterGroup": [
-          "Jira"
-        ],
-        "tooltip": {
-          "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. Difference between the latest date of theses statuses and release end date will be considered as the Lead Time. <br> <br> <b>Note:</b> This configuration will be ignored if Lead Time KPI calculation logic is set to Repo Data. <br> <br> <b>Note:</b> This configuration will be ignored if Issue Type is not provided.br> Example: Closed,Done. <hr> "
-        }
-      },
-      {
-        "fieldName": "toBranchForMRKPI156",
-        "fieldLabel": "Production Branch Name",
-        "fieldType": "text",
-        "filterGroup": [
-          "Repo"
-        ],
-        "tooltip": {
-          "definition": "Production Branch in Which all the Child Branches are Merged <br> eg. master <hr>"
-        }
-      }
-    ]
   },
   {
     "fieldName": "testingPhaseDefectsIdentifier",
@@ -2307,7 +2259,8 @@
           "definition": "Provide label name to identify testing phase defects."
         }
       }
-    ]
+    ],
+    "processorCommon": true
   },
   {
     "fieldName": "jiraDodKPI163",
@@ -2317,16 +2270,84 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
-    }
+    },
+    "mandatory": true
   },
   {
-    "fieldName": "startDateCountKPI150",
-    "fieldLabel": "Count of days from the release start date to calculate closure rate for prediction",
-    "fieldType": "number",
-    "section": "Issue Types Mapping",
+    "fieldName": "leadTimeConfigRepoTool",
+    "fieldLabel": "Lead Time KPI calculation logic",
+    "fieldType": "radiobutton",
+    "section": "Custom Fields Mapping",
     "tooltip": {
-      "definition": "If this field is kept blank, then daily closure rate of issues is calculated based on the number of working days between today and the release start date or date when first issue was added. This configuration allows you to decide from which date the closure rate should be calculated."
-    }
+      "definition": "By Default State Calculation is based on Jira Issues and Releases. <br>  1. Jira : Calculation is based on Jira Issues and Releases, <br>  2. Repo : Calculation is based on Repo Data and Releases. <br> Branch Name Must have Jira Issue Key in it."
+    },
+    "options": [
+      {
+        "label": "Jira",
+        "value": "Jira"
+      },
+      {
+        "label": "Repo",
+        "value": "Repo"
+      }
+    ],
+    "nestedFields": [
+      {
+        "fieldName": "jiraIssueTypeKPI156",
+        "fieldLabel": "Issue type to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "filterGroup": [
+          "Jira"
+        ],
+        "tooltip": {
+          "definition": "Only these Issue Types will be considered for Lead Time Calculation. If this Configuration is not provided, all the Issue Types will be considered. <br> Example: Story, Enabler Story, Tech Story, Change request <hr>."
+        }
+      },
+      {
+        "fieldName": "jiraDodKPI156",
+        "fieldLabel": "Status to identify DOD",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "filterGroup": [
+          "Jira"
+        ],
+        "tooltip": {
+          "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. Difference between the latest date of theses statuses and release end date will be considered as the Lead Time. <br> <br> <b>Note:</b> This configuration will be ignored if Lead Time KPI calculation logic is set to Repo Data. <br> <br> <b>Note:</b> This configuration will be ignored if Issue Type is not provided.br> Example: Closed,Done. <hr> "
+        }
+      },
+      {
+        "fieldName": "toBranchForMRKPI156",
+        "fieldLabel": "Production Branch Name",
+        "fieldType": "text",
+        "filterGroup": [
+          "Repo"
+        ],
+        "tooltip": {
+          "definition": "Production Branch in Which all the Child Branches are Merged <br> eg. master <hr>"
+        }
+      }
+    ]
+  },
+  {
+    "fieldName": "notificationEnabler",
+    "fieldLabel": "Processor Failure Notification",
+    "fieldType": "radiobutton",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "On/Off notification in case processor failure."
+    },
+    "options": [
+      {
+        "label": "On",
+        "value": true
+      },
+      {
+        "label": "Off",
+        "value": false
+      }
+    ],
+    "mandatory": true
   },
   {
     "fieldName": "thresholdValueKPI14",
@@ -2491,15 +2512,6 @@
     }
   },
   {
-    "fieldName": "thresholdValueKPI65",
-    "fieldLabel": "Target KPI Value",
-    "fieldType": "number",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
-    }
-  },
-  {
     "fieldName": "thresholdValueKPI157",
     "fieldLabel": "Target KPI Value",
     "fieldType": "number",
@@ -2545,12 +2557,30 @@
     }
   },
   {
-    "fieldName": "thresholdValueKPI3",
-    "fieldLabel": "Target KPI Value",
+    "fieldName": "startDateCountKPI150",
+    "fieldLabel": "Count of days from the release start date to calculate closure rate for prediction",
     "fieldType": "number",
-    "section": "Custom Fields Mapping",
+    "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+      "definition": "If this field is kept blank, then daily closure rate of issues is calculated based on the number of working days between today and the release start date or date when the first issue was added. This configuration allows you to decide from which date the closure rate should be calculated."
+    }
+  },
+  {
+    "fieldName": "jiraLabelsKPI14",
+    "fieldLabel": "Labels to identify issues to be included",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Calculation should only those issues which have defined labels tagged."
+    }
+  },
+  {
+    "fieldName": "jiraLabelsKPI82",
+    "fieldLabel": "Labels to identify issues to be included",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Calculation should only those issues which have defined labels tagged."
     }
   },
   {
@@ -2619,49 +2649,33 @@
     }
   },
   {
-    "fieldName": "jiraLabelsKPI82",
-    "fieldLabel": "Labels to identify issues to be included",
-    "fieldType": "chips",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "Calculation should only those issues which have defined labels tagged."
-    }
-  },
-  {
-    "fieldName": "jiraLabelsKPI14",
-    "fieldLabel": "Labels to identify issues to be included",
-    "fieldType": "chips",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "Calculation should only those issues which have defined labels tagged."
-    }
-  },
-  {
     "fieldName": "jiraIssueWaitStateKPI170",
-    "fieldLabel": "Status to identify Close Statuses",
-    "fieldCategory": "workflow",
-    "fieldType": "chips",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"
-    }
-  },
-  {
-    "fieldName": "jiraIssueClosedStateKPI170",
     "fieldLabel": "Status to identify Wait Statuses",
     "fieldCategory": "workflow",
     "fieldType": "chips",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "The statuses wherein no activity takes place and signifies that issue is in queue"
-    }
+    },
+    "mandatory": true
+  },
+  {
+    "fieldName": "jiraIssueClosedStateKPI170",
+    "fieldLabel": "Status to identify Close Statuses",
+    "fieldCategory": "workflow",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraStatusStartDevelopmentKPI154",
     "fieldLabel": "Status to identify start of development",
     "fieldType": "chips",
-    "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
+    "fieldCategory": "workflow",
     "tooltip": {
       "definition": "Status from workflow on which issue is started development. <br> Example: In Analysis<hr>"
     }
@@ -2670,8 +2684,8 @@
     "fieldName": "jiraDevDoneStatusKPI154",
     "fieldLabel": "Status to identify Dev completed issues",
     "fieldType": "chips",
-    "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
+    "fieldCategory": "workflow",
     "tooltip": {
       "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing"
     }
@@ -2680,18 +2694,18 @@
     "fieldName": "jiraQADoneStatusKPI154",
     "fieldLabel": "Status to identify QA completed issues",
     "fieldType": "chips",
-    "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
+    "fieldCategory": "workflow",
     "tooltip": {
       "definition": "Status that confirms that the QA work is completed and an issue can be ready for signoff/close"
     }
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI154",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
-    "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
+    "fieldCategory": "workflow",
     "tooltip": {
       "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
     }
@@ -2699,39 +2713,41 @@
   {
     "fieldName": "jiraStatusForInProgressKPI154",
     "fieldLabel": "Status to identify In Progress issues",
-    "section": "WorkFlow Status Mapping",
     "fieldType": "chips",
-    "readOnly": true,
+    "section": "WorkFlow Status Mapping",
+    "fieldCategory": "workflow",
     "tooltip": {
-      "definition": "All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI"
-    }
+      "definition": "All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI)"
+    },
+    "readOnly": true
   },
   {
     "fieldName": "jiraSubTaskIdentification",
     "fieldLabel": "Sub-Task Issue Types",
     "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
+    "fieldCategory": "Issue_Type",
     "tooltip": {
       "definition": "Any issue type mentioned will be considered as sub-task linked with story"
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "storyFirstStatusKPI154",
     "fieldLabel": "Status when 'Story' issue type is created",
     "fieldType": "chips",
-    "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
+    "fieldCategory": "workflow",
     "tooltip": {
-      "definition": "All status that identify open statuses."
+      "definition": "All issue types that identify with a Story."
     }
   },
   {
     "fieldName": "jiraOnHoldStatusKPI154",
     "fieldLabel": "Status when issue type is put on Hold",
     "fieldType": "chips",
-    "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
+    "fieldCategory": "workflow",
     "tooltip": {
       "definition": "All status that identify hold/blocked statuses."
     }
@@ -2741,7 +2757,7 @@
     "fieldLabel": "Prediction logic",
     "fieldType": "toggle",
     "toggleLabelLeft": "Overall Completion",
-    "toggleLabelRight": "Dev Completion*",
+    "toggleLabelRight": "Dev Completion",
     "section": "WorkFlow Status Mapping",
     "processorCommon": false,
     "tooltip": {
@@ -2775,7 +2791,8 @@
     "fieldCategory": "workflow",
     "tooltip": {
       "definition": "All statuses that issues have moved from the Created status and also has not been completed."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraStatusForRefinedKPI161",
@@ -2785,7 +2802,8 @@
     "fieldCategory": "workflow",
     "tooltip": {
       "definition": "All statuses that correspond to refined status of Iteration Readiness."
-    }
+    },
+    "mandatory": true
   },
   {
     "fieldName": "jiraStatusForNotRefinedKPI161",
@@ -2795,16 +2813,16 @@
     "fieldCategory": "workflow",
     "tooltip": {
       "definition": "All statuses that correspond to not refined status of Iteration Readiness."
-    }
+    },
+    "mandatory": true
   },
   {
-    "fieldName": "jiraLiveStatusKPI171",
-    "fieldLabel": "Live Status - Cycle Time",
-    "fieldCategory": "workflow",
-    "fieldType": "chips",
-    "section": "WorkFlow Status Mapping",
+    "fieldName": "thresholdValueKPI3",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
     "tooltip": {
-      "definition": "Status/es that identify that an issue is LIVE in Production"
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
     }
   },
   {
@@ -2816,6 +2834,17 @@
     "tooltip": {
       "definition": "All issue types that should be included in Lead time calculation."
     }
+  },
+  {
+    "fieldName": "jiraLiveStatusKPI171",
+    "fieldLabel": "Live Status - Cycle Time",
+    "fieldCategory": "workflow",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Status/es that identify that an issue is LIVE in Production'"
+    },
+    "mandatory": true
   },
   {
     "fieldName": "thresholdValueKPI126",
@@ -3005,6 +3034,52 @@
     "tooltip": {
       "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
     }
+  },
+  {
+    "fieldName": "rootCauseIdentifier",
+    "fieldLabel": "Root Cause",
+    "fieldType": "radiobutton",
+    "fieldCategory": "fields",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Root Cause is a custom field in JIRA. So User need to provide that custom field which is associated with Root Cause in Users JIRA Installation."
+    },
+    "nestedFields": [
+      {
+        "fieldName": "rootCause",
+        "fieldLabel": "Root Cause CustomField",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "filterGroup": [
+          "CustomField"
+        ],
+        "tooltip": {
+          "definition": " Provide customfield name to identify Root Cause."
+        }
+      },
+      {
+        "fieldName": "rootCauseValues",
+        "fieldLabel": "Root Cause Defect Values",
+        "fieldType": "chips",
+        "filterGroup": [
+          "Labels"
+        ],
+        "tooltip": {
+          "definition": "Provide label name to identify Root Cause."
+        }
+      }
+    ],
+    "options": [
+      {
+        "label": "CustomField",
+        "value": "CustomField"
+      },
+      {
+        "label": "Labels",
+        "value": "Labels"
+      }
+    ],
+    "mandatory": true
   },
   {
     "fieldName": "includeRCAForKPI35",
