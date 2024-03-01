@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -62,6 +61,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -165,7 +165,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService
 
 		Map<String, Object> resultMap = new HashMap<>();
 
-		if (projectNode != null) {
+		if (projectNode != null && projectNode.getProjectFilter() != null) {
 			List<JiraIssue> jiraIssues = getBackLogStory(projectNode.getProjectFilter().getBasicProjectConfigId());
 			resultMap.put(ISSUES, jiraIssues);
 

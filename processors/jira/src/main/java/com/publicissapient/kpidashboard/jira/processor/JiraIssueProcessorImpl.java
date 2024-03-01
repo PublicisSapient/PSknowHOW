@@ -547,19 +547,21 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 	private void setRCA(FieldMapping fieldMapping, Issue issue, JiraIssue jiraIssue, Map<String, IssueField> fields) {
 		List<String> rcaList = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
-				.anyMatch(issue.getIssueType()
-						.getName()::equalsIgnoreCase) && null != fieldMapping.getRootCauseIdentifier()) {
-			if (fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())
+				&& fieldMapping.getJiradefecttype().stream().anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)
+				&& null != fieldMapping.getRootCauseIdentifier()) {
+			if (StringUtils.isNotEmpty(fieldMapping.getRootCauseIdentifier())
+					&& fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
 				List<String> commonLabel = issue.getLabels().stream()
 						.filter(x -> fieldMapping.getRootCauseValues().contains(x)).collect(Collectors.toList());
 				if (CollectionUtils.isNotEmpty(commonLabel)) {
 					rcaList.addAll(commonLabel);
 				}
-			} else if (fieldMapping.getRootCauseIdentifier().trim()
-					.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD) && fields.get(
-					fieldMapping.getRootCause().trim()) != null && fields.get(fieldMapping.getRootCause().trim())
-					.getValue() != null) {
+			} else if (StringUtils.isNotEmpty(fieldMapping.getRootCauseIdentifier())
+					&& fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
+					&& StringUtils.isNotEmpty(fieldMapping.getRootCause())
+					&& fields.get(fieldMapping.getRootCause().trim()) != null
+					&& fields.get(fieldMapping.getRootCause().trim()).getValue() != null) {
 				rcaList.addAll(getRootCauses(fieldMapping, fields));
 			}
 		}
