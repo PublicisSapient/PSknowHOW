@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_900;/*
+/*
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
  *
@@ -14,6 +14,8 @@ package com.publicissapient.kpidashboard.apis.mongock.rollback.release_900;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_900;
+
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
