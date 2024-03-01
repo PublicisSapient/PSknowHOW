@@ -71,9 +71,6 @@ public class UserInfoController {
 	@Autowired
 	private UserInfoRepository userInfoRepository;
 
-	@Autowired
-	private AuthProperties authProperties;
-
 	/**
 	 * Fetch only approved user info data.
 	 *
@@ -170,8 +167,7 @@ public class UserInfoController {
 	public ResponseEntity<ServiceResponse> getCentralAuthUserInfo(@PathVariable("username") String username,
 			HttpServletRequest request) {
 
-		String token = authProperties.getResourceAPIKey();
-		UserInfo userInfo = userInfoService.getCentralAuthUserInfo(username, token);
+		UserInfo userInfo = userInfoService.getCentralAuthUserInfo(username);
 		if (Objects.nonNull(userInfo)) {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, "get successfully user info details ", userInfo));

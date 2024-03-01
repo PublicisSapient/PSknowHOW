@@ -91,15 +91,16 @@ public class CookieUtil {
 		});
 	}
 
-	public static HttpHeaders getHeadersForApiKey(String apiKey, boolean usingBasicAuth) {
+	public HttpHeaders getHeadersForApiKey(String apiKey, boolean usingBasicAuth) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		if (apiKey != null && !apiKey.isEmpty()) {
 			if (usingBasicAuth) {
 				headers.set("x-api-key", apiKey);
-				headers.set("resouce", apiKey);
+				headers.set("resource", authProperties.getResourceName());
 			} else {
 				headers.add("x-api-key", apiKey);
+				headers.add("resource", authProperties.getResourceName());
 			}
 		}
 		return headers;

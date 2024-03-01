@@ -65,8 +65,6 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 
 	@Autowired CustomApiConfig customApiConfig;
 
-	@Autowired AuthProperties authProperties;
-
 	private static final String SUPERADMINROLENAME = "ROLE_SUPERADMIN";
 	/**
 	 * Repeated String used in logging info
@@ -274,8 +272,7 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 			accessRequest = repository.findByStatus(status);
 			NotificationDataDTO userApprovalNotification;
 			if (centralAuthService) {
-				String apiKey =authProperties.getResourceAPIKey();
-				userApprovalNotification = newCentralAuthUserApprovalRequestNotification(apiKey);
+				userApprovalNotification = newCentralAuthUserApprovalRequestNotification();
 			} else {
 				userApprovalNotification = newUserApprovalRequestNotification();
 			}
@@ -323,9 +320,9 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 		return notificationDataDTO;
 	}
 
-	private NotificationDataDTO newCentralAuthUserApprovalRequestNotification(String apiKey) {
+	private NotificationDataDTO newCentralAuthUserApprovalRequestNotification() {
 		List<UserInfoDTO> nonApprovedUserList =
-				userInfoServiceImpl.findAllUnapprovedUsers(apiKey);
+				userInfoServiceImpl.findAllUnapprovedUsersForCentralAuth();
 		NotificationDataDTO notificationDataDTO = new NotificationDataDTO();
 		notificationDataDTO.setType(NotificationEnum.USER_APPROVAL.getValue());
 		if (CollectionUtils.isEmpty(nonApprovedUserList)) {

@@ -111,7 +111,7 @@ public class SignupRequestsControllerTest {
 		userInfoDTO.setAuthType(AuthType.APIKEY);
 		userInfoDTO.setEmailAddress("abc.test@test.com");
 		userInfoDTOS.add(userInfoDTO);
-		Mockito.when(userInfoService.findAllUnapprovedUsers("ResourceAPIKey")).thenReturn(userInfoDTOS);
+		Mockito.when(userInfoService.findAllUnapprovedUsersForCentralAuth()).thenReturn(userInfoDTOS);
 		mockMvc.perform(MockMvcRequestBuilders.get("/userapprovals/central").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}

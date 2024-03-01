@@ -85,16 +85,21 @@ public class UserTokenDeletionControllerApplication {
 		Cookie authCookie = cookieUtil.getAuthCookie(request);
 		String authCookieToken = authCookie.getValue();
 		authCookie.setMaxAge(0);
-		String apiKey = authProperties.getResourceAPIKey();
 		HttpSession session;
 		SecurityContextHolder.clearContext();
 		session = request.getSession(false);
-		if(session != null) {
+		if (session != null) {
 			session.invalidate();
 		}
-		boolean cookieClear = userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken, apiKey);
+		boolean cookieClear = userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken);
 		cookieUtil.deleteCookie(request, response, CookieUtil.AUTH_COOKIE);
-		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Logout Successfully", cookieClear));
+		if (cookieClear) {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Logout Successfully", true));
+		} else {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(false, "Error while Logout from Central Auth", false));
+		}
+
 	}
 
 	/**
