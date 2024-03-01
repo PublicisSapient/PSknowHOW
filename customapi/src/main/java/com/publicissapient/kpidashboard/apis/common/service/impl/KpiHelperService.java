@@ -1382,7 +1382,10 @@ public class KpiHelperService { // NOPMD
 			List<ProjectToolConfig> projectToolConfig = null;
 			if (MapUtils.isNotEmpty(projectToolMap)) {
 				projectToolConfig = projectToolMap.get("Jira");
-				if (CollectionUtils.isEmpty(projectToolConfig)) {
+				if (CollectionUtils.isEmpty(projectToolConfig) && kpiSource.equalsIgnoreCase(
+						Constant.TOOL_BITBUCKET) && projectToolMap.containsKey(Constant.REPO_TOOLS)) {
+					projectToolConfig = projectToolMap.get(Constant.REPO_TOOLS);
+				} else if (CollectionUtils.isEmpty(projectToolConfig)) {
 					projectToolConfig = projectToolMap.get("Azure");
 				}
 			}
@@ -1615,6 +1618,18 @@ public class KpiHelperService { // NOPMD
 	public boolean isWeekEnd(LocalDateTime localDateTime) {
 		int dayOfWeek = localDateTime.getDayOfWeek().getValue();
 		return dayOfWeek == 6 || dayOfWeek == 7;
+	}
+
+	/**
+	 * convert milliseconds to hours
+	 *
+	 * @param milliseconds
+	 * 			milliseconds
+	 * @return time in hours
+	 */
+	public static long convertMilliSecondsToHours(double milliseconds) {
+		double hoursExact = milliseconds / (3600000);
+		return Math.round(hoursExact);
 	}
 
 	/**
