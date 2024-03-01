@@ -22,7 +22,7 @@
 	<groupId>com.publicissapient.kpidashboard</groupId>
 	<artifactId>azure-processor</artifactId>
 	<description>Azure processor fetches data from Azure api</description>
-	<version>8.3.5</version>
+	<version>8.3.5-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -308,6 +308,6 @@
 	</build>
 
 	<scm>
-		<tag>8.3.5</tag>
+		<tag>8.3.3</tag>
 	</scm>
 </project>

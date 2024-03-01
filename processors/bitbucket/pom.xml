@@ -23,7 +23,7 @@
   <description>Bitbucket processor service</description>
   <packaging>jar</packaging>
   <artifactId>bitbucket-processor</artifactId>
-  <version>8.3.5</version>
+  <version>8.3.5-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -247,7 +247,7 @@
 
 
   <scm>
-    <tag>8.3.5</tag>
+    <tag>8.3.3</tag>
   </scm>
 </project>
 
