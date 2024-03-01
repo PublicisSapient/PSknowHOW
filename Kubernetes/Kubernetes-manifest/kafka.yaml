@@ -35,3 +35,17 @@ spec:
         envFrom:
           - configMapRef:
               name: knowhow-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-cluster
+  namespace: uat-knowhow
+spec:
+  selector:
+    app: kafka-cluster
+  ports:
+  - port: 9092
+    targetPort: 9092
+  type: ClusterIP
