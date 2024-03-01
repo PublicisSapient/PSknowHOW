@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -90,12 +93,46 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 
 	final ModelMapper modelMapper = new ModelMapper();
 
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map<String, Object> addAnalyticsData(HttpServletResponse httpServletResponse, String username,
+	public JSONObject addAnalyticsData(HttpServletResponse httpServletResponse, String username) {
+		JSONObject json = new JSONObject();
+		httpServletResponse.setContentType("application/json");
+		httpServletResponse.setCharacterEncoding("UTF-8");
+		UserInfo userinfo = userInfoRepository.findByUsername(username);
+		Authentication authentication = authenticationRepository.findByUsername(username);
+		String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
+		json.put(USER_NAME, username);
+		json.put(USER_EMAIL, email);
+		json.put(USER_ID, userinfo.getId().toString());
+		json.put(USER_AUTHORITIES, userinfo.getAuthorities());
+		Gson gson = new Gson();
+
+		userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
+
+		List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
+
+		if (projectAccessesWithRole != null) {
+			JsonElement element = gson.toJsonTree(projectAccessesWithRole, new TypeToken<List<RoleWiseProjects>>() {
+			}.getType());
+			json.put(PROJECTS_ACCESS, element.getAsJsonArray());
+		} else {
+			json.put(PROJECTS_ACCESS, new JSONArray());
+		}
+		json.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
+
+		log.info("Successfully added Google Analytics data to Response.");
+		return json;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Map<String, Object> addAnalyticsDataAndSaveCentralUser(HttpServletResponse httpServletResponse, String username,
 			String authToken) {
 		Map<String, Object> userMap = new HashMap<>();
 		httpServletResponse.setContentType("application/json");

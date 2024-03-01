@@ -533,7 +533,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(userInfo);
 		when(accessRequestsRepository.findByStatus(testStatus)).thenReturn(null);
 		when(authenticationRepository.findByApproved(approvedStatus)).thenReturn(null);
-		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus , null);
+		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus , false);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(createNotificationDataResponseTest(0, 0), response.getData());
 	}
@@ -555,7 +555,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(userInfo);
 		when(accessRequestsRepository.findByStatus(testStatus)).thenReturn(testListAccessRequestsData);
 		when(authenticationRepository.findByApproved(approvedStatus)).thenReturn(null);
-		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus , null);
+		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus , false);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(createNotificationDataResponseTest(1, 0), response.getData());
 	}
@@ -577,7 +577,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(userInfo);
 		when(accessRequestsRepository.findByStatus(testStatus)).thenReturn(null);
 		when(authenticationRepository.findByApproved(approvedStatus)).thenReturn(testListAuthentication);
-		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus , null);
+		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus , false);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(createNotificationDataResponseTest(0, 1), response.getData());
 	}
@@ -614,7 +614,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(nonSuperadminUserInfo);
 		when(accessRequestsRepository.findByUsernameAndStatus(testUsername, testStatus)).thenReturn(null);
 
-		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus ,null);
+		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus ,false);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(createNotificationDataResponseTest4(0), response.getData());
 	}
@@ -636,7 +636,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(nonSuperadminUserInfo);
 		when(accessRequestsRepository.findByUsernameAndStatus(testUsername, testStatus))
 				.thenReturn(testListAccessRequestsData);
-		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus , null);
+		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus , false);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(createNotificationDataResponseTest4(1), response.getData());
 	}
@@ -699,7 +699,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(accessRequestsRepository.findByStatusAndAccessLevel(anyString(), anyString()))
 				.thenReturn(testListAccessRequestsData);
 		when(accessManager.getProjectBasicOnRoleList(any(), any())).thenReturn(basicconfigList);
-		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus, null);
+		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus, false);
 		assertEquals(Boolean.TRUE, response.getSuccess());
 		assertEquals(createNotificationDataResponseTest4(1), response.getData());
 	}
