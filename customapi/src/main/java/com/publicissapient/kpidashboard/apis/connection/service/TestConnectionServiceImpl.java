@@ -67,7 +67,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private static final String INVALID_MSG = "Invalid Credentials ";
 	private static final String WRONG_JIRA_BEARER = "{\"expand\":\"projects\",\"projects\":[]}";
 	private static final String APPICATION_JSON = "application/json";
-	private static final String CLOUD_BITBUCKET = "bitbucket.org";
+	private static final String CLOUD_BITBUCKET_IDENTIFIER = "bitbucket.org";
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
@@ -157,27 +157,17 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	}
 
 	private String getApiForRepoTool(Connection connection) {
-		RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
-				.findByToolName(connection.getRepoToolProvider());
 		String apiUrl = "";
-		try {
-			URL url = new URL(connection.getHttpUrl());
-			String testApiUrl = url.getProtocol().concat("://").concat(url.getHost());
-			if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITHUB))
-				apiUrl = repoToolsProvider.getTestApiUrl() + connection.getUsername();
-			else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET)) {
-				if (connection.getHttpUrl().contains(CLOUD_BITBUCKET)) {
-					apiUrl = repoToolsProvider.getTestApiUrl();
-				} else {
-					apiUrl = testApiUrl.concat(repoToolsProvider.getTestServerApiUrl());
-				}
-			} else {
-				apiUrl = createApiUrl(testApiUrl, Constant.TOOL_GITLAB);
+		if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITHUB)) {
+			apiUrl = createGitHubTestConnectionUrl(connection);
+		} else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITLAB)) {
+			apiUrl = createApiUrl(connection.getBaseUrl(), Constant.TOOL_GITLAB);
+		} else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET)) {
+			if(connection.getBaseUrl().contains(CLOUD_BITBUCKET_IDENTIFIER))
+				connection.setCloudEnv(true);
+			apiUrl = createBitBucketUrl(connection);
 			}
-		} catch (MalformedURLException ex) {
-			log.error("Invalid URL", ex);
-		}
-		return apiUrl;
+		return apiUrl.trim();
 	}
 
 	private boolean testConnection(Connection connection, String toolName, String apiUrl, String password,
