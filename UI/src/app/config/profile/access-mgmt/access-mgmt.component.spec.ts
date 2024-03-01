@@ -135,7 +135,13 @@ describe('AccessMgmtComponent', () => {
     component.saveAccessChange(fakeServiceInputValid);
     // fixture.detectChanges();
     expect(component.displayDuplicateProject).toBeFalsy();
-    httpMock.expectOne(baseUrl + '/api/userinfo/' + fakeServiceInputValid.username);
+    let url = '';
+    if(environment['AUTHENTICATION_SERVICE']){
+      url = baseUrl + '/api/userinfo/central/';
+    }else{
+      url = baseUrl + '/api/userinfo/';
+    }
+    httpMock.expectOne(url + fakeServiceInputValid.username);
     done();
   });
 

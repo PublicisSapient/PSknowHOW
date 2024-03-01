@@ -1472,7 +1472,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   // logout is clicked  and removing auth token , username
   logout() {
       this.httpService.logout().subscribe((responseData) => {
-        if (!(responseData !== null && responseData[0] === 'error')) {
+        if (responseData?.success) {
         this.helperService.isKanban = false;
         localStorage.clear();
         // Set blank selectedProject after logged out state
