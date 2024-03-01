@@ -47,6 +47,9 @@ public class KPIExcelValidationDataResponse {
 	@JsonProperty("excelData")
 	private List<KPIExcelData> excelData;
 
+	@JsonProperty("markerInfo")
+	private Map<String, String> markerInfo;
+
 	public List<String> getExcelColumns() {
 		return excelColumns;
 	}
@@ -120,4 +123,11 @@ public class KPIExcelValidationDataResponse {
 		this.excelData = excelData;
 	}
 
+	public Map<String, String> getMarkerInfo() {
+		return markerInfo;
+	}
+
+	public void setMarkerInfo(Map<String, String> markerInfo) {
+		this.markerInfo = markerInfo;
+	}
 }

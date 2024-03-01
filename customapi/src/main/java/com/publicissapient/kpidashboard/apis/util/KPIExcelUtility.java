@@ -742,10 +742,13 @@ public class KPIExcelUtility {
 	 */
 
 	public static void populateCommittmentReliability(String sprint, Map<String, JiraIssue> totalStoriesMap,
-			Set<JiraIssue> initialIssueNumber, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+			Set<JiraIssue> initialIssueNumber, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping,
+													 Set<String> addedIssue, Set<String> puntedIssue ) {
+
 		if (MapUtils.isNotEmpty(totalStoriesMap)) {
 
 			totalStoriesMap.forEach((storyId, jiraIssue) -> {
+
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setSprintName(sprint);
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
@@ -756,6 +759,14 @@ public class KPIExcelUtility {
 				excelData.setIssueStatus(jiraIssue.getStatus());
 				if (initialIssueNumber.contains(jiraIssue)) {
 					excelData.setInitialCommited("Y");
+				}
+
+				if (addedIssue.contains(jiraIssue.getNumber())) {
+					excelData.setMarker(Constant.RED);
+				} else if (puntedIssue.contains(jiraIssue.getNumber())) {
+					excelData.setMarker(Constant.AMBER);
+				} else {
+					excelData.setMarker("");
 				}
 
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())

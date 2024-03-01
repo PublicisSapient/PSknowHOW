@@ -406,5 +406,7 @@ public class KPIExcelData {
 	@JsonProperty("Escaped defect identifier")
 	private String escapedIdentifier;
 
+	@JsonProperty("marker")
+	private String marker;
 
 }

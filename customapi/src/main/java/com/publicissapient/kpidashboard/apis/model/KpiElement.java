@@ -118,6 +118,9 @@ public class KpiElement implements Serializable { // NOPMD
 	private transient List<KPIExcelData> excelData;
 	@JsonIgnore
 	private transient List<String> excelColumns;
+
+	@JsonIgnore
+	private Map<String, String> markerInfo;
 	// For Excel column Info
 	private List<KPIExcelColumnInfo> excelColumnInfo;
 	private transient Object filterDuration;
@@ -181,6 +184,14 @@ public class KpiElement implements Serializable { // NOPMD
 
 	public void setExcelColumns(List<String> excelColumns) {
 		this.excelColumns = excelColumns;
+	}
+
+	public Map<String, String> getMarkerInfo() {
+		return markerInfo;
+	}
+
+	public void setMarkerInfo(Map<String, String> markerInfo) {
+		this.markerInfo = markerInfo;
 	}
 
 	public List<KPIExcelColumnInfo> getExcelColumnInfo() {
