@@ -165,8 +165,6 @@ public class AccessRequestsHelperServiceImplTest {
 		testAuthentication.setEmail("testuser@gmail.com");
 		testAuthentication.setUsername("testuser");
 		testAuthentication.setApproved(false);
-
-		customApiConfig.setCentralAuthSwitch(false);
 	}
 
 	@After
