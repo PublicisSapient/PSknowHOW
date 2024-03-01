@@ -51,6 +51,7 @@ public class ProjectToolConfig extends BasicModel {
 	private String projectId;
 	private String projectKey;
 	private String jobName;
+	private String azurePipelineName;
 	private String jobType;
 	private String branch;
 	private String defaultBranch;

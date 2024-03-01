@@ -1043,7 +1043,7 @@ export class ConnectionListComponent implements OnInit {
       this.basicConnectionForm.controls['accessTokenEnabled'].enable();
       this.basicConnectionForm.controls['accessToken'].disable();
     } else if (this.selectedConnectionType.toLowerCase() === 'repotool') {
-      if(!!this.basicConnectionForm.controls['repoToolProvider'] && this.basicConnectionForm.controls['repoToolProvider'].value === 'Bitbucket')
+      if(this.connection && this.connection['repoToolProvider'] === 'bitbucket')
       this.basicConnectionForm.controls['apiEndPoint'].enable();
       else {this.basicConnectionForm.controls['apiEndPoint'].disable()};
     }
