@@ -22,7 +22,7 @@
     <packaging>pom</packaging>
     <groupId>com.publicissapient.kpidashboard</groupId>
     <artifactId>Kpidashboard</artifactId>
-    <version>8.3.4-SNAPSHOT</version>
+    <version>8.3.5</version>
 
     <properties>
         <docker.useConfigFile>false</docker.useConfigFile>
@@ -32,7 +32,7 @@
         <connection>scm:git:https://github.com/PublicisSapient/PSknowHOW.git</connection>
         <developerConnection>scm:git:https://github.com/PublicisSapient/PSknowHOW.git</developerConnection>
         <url>https://github.com/PublicisSapient/PSknowHOW.git</url>
-        <tag>8.3.3</tag>
+        <tag>8.3.5</tag>
     </scm>
 
     <profiles>
