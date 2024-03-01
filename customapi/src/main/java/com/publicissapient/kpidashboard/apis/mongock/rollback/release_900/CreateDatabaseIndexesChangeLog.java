@@ -1,4 +1,4 @@
-/*
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_900;/*
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
  *
@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.publicissapient.kpidashboard.apis.mongock.installation;
-
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -26,9 +24,9 @@ import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
 /**
- * @author bogolesw
+ * @author kanpaw
  */
-@ChangeUnit(id = "ddl2", order = "002", author = "PSKnowHOW")
+@ChangeUnit(id = "r_index_name_changes_document_db", order = "09003", author = "pawkandp", systemVersion = "9.0.0")
 public class CreateDatabaseIndexesChangeLog {
 
 	private final MongoTemplate mongoTemplate;
@@ -165,7 +163,7 @@ public class CreateDatabaseIndexesChangeLog {
 		// Index 4
 		mongoTemplate.getCollection(JIRA_ISSUE_CUSTOM_HISTORY).createIndex(
 				new Document(BASIC_PROJECT_CONFIG_ID, 1).append(CREATED_DATE, -1).append(STORY_TYPE, 1),
-				new IndexOptions().name("projConfId_1_createdDt_-1_storyType_1"));
+				new IndexOptions().name("basicProjectConfigId_1_createdDate_-1_storyType_1"));
 
 		// Index 5
 		mongoTemplate.getCollection(JIRA_ISSUE_CUSTOM_HISTORY).createIndex(
@@ -175,7 +173,7 @@ public class CreateDatabaseIndexesChangeLog {
 		// Index 6
 		mongoTemplate.getCollection(JIRA_ISSUE_CUSTOM_HISTORY).createIndex(
 				new Document(BASIC_PROJECT_CONFIG_ID, 1).append("storySprintDetails.fromStatus", 1),
-				new IndexOptions().name("projConfId_1_stSprintDtls.fromSts_1"));
+				new IndexOptions().name("basicProjectConfigId_1_storySprintDetails.fromStatus_1"));
 	}
 
 	public void clearAndExecuteKanbanJiraIssueIndexes() {
@@ -194,7 +192,7 @@ public class CreateDatabaseIndexesChangeLog {
 		// Index 4
 		mongoTemplate.getCollection(KANBAN_JIRA_ISSUE).createIndex(
 				new Document("processorId", 1).append(BASIC_PROJECT_CONFIG_ID, 1).append("changeDate", -1),
-				new IndexOptions().name("processorId_1_projConfId_1_changeDate_-1"));
+				new IndexOptions().name("processorId_1_basicProjectConfigId_1_changeDate_-1"));
 	}
 
 	public void clearAndExecuteKanbanIssueCustomHistoryIndexes() {
@@ -216,17 +214,17 @@ public class CreateDatabaseIndexesChangeLog {
 		// Index 4
 		mongoTemplate.getCollection(KANBAN_JIRA_ISSUE_CUSTOM_HISTORY).createIndex(
 				new Document(BASIC_PROJECT_CONFIG_ID, 1).append(STATUS, 1).append(TYPE_NAME, 1),
-				new IndexOptions().name("projConfId_1_status_1_typeName_1"));
+				new IndexOptions().name("basicProjectConfigId_1_status_1_typeName_1"));
 
 		// Index 5
 		mongoTemplate.getCollection(KANBAN_JIRA_ISSUE_CUSTOM_HISTORY).createIndex(
 				new Document(BASIC_PROJECT_CONFIG_ID, 1).append(CREATED_DATE, -1),
-				new IndexOptions().name("projConfId_1_createdDate_-1"));
+				new IndexOptions().name("basicProjectConfigId_1_createdDate_-1"));
 
 		// Index 6
 		mongoTemplate.getCollection(KANBAN_JIRA_ISSUE_CUSTOM_HISTORY).createIndex(
 				new Document("processorId", 1).append(BASIC_PROJECT_CONFIG_ID, 1).append("changeDate", -1),
-				new IndexOptions().name("procesorId_1_projConfId_1_chngDt_-1"));
+				new IndexOptions().name("processorId_1_basicProjectConfigId_1_changeDate_-1"));
 	}
 
 	public void clearAndExecuteSprintDetailsIndexes() {
@@ -249,7 +247,7 @@ public class CreateDatabaseIndexesChangeLog {
 		// Index 1
 		mongoTemplate.getCollection(TEST_CASE_DETAILS).createIndex(
 				new Document(BASIC_PROJECT_CONFIG_ID, 1).append("isTestCanBeAutomated", -1).append(TYPE_NAME, 1),
-				new IndexOptions().name("projConfId_1_isTstCanBeAutomated_-1_typName_1"));
+				new IndexOptions().name("basicProjectConfigId_1_isTestCanBeAutomated_-1_typeName_1"));
 
 		// Index 2
 		mongoTemplate.getCollection(TEST_CASE_DETAILS).createIndex(new Document(BASIC_PROJECT_CONFIG_ID, 1),
@@ -263,7 +261,7 @@ public class CreateDatabaseIndexesChangeLog {
 		// Index 4
 		mongoTemplate.getCollection(TEST_CASE_DETAILS).createIndex(
 				new Document(BASIC_PROJECT_CONFIG_ID, 1).append("isTestCanBeAutomated", 1).append(TYPE_NAME, 1),
-				new IndexOptions().name("projConfId_1_isTestCanAutomated_1_typeName_1"));
+				new IndexOptions().name("basicProjectConfigId_1_isTestCanBeAutomated_1_typeName_1"));
 	}
 
 	public void clearAndExecuteTestExecutionIndexes() {
@@ -287,7 +285,7 @@ public class CreateDatabaseIndexesChangeLog {
 		// Index 2
 		mongoTemplate.getCollection(BUILD_DETAILS).createIndex(
 				new Document("buildStatus", 1).append("startTime", 1).append("endTime", 1).append(PROCESSOR_ITEM_ID, 1),
-				new IndexOptions().name("bldStatus_1_stTime_1_endTime_1_processorItemId_1"));
+				new IndexOptions().name("buildStatus_1_startTime_1_endTime_1_processorItemId_1"));
 	}
 
 	public void clearAndExecuteDeploymentsIndexes() {
@@ -300,7 +298,7 @@ public class CreateDatabaseIndexesChangeLog {
 		mongoTemplate.getCollection(DEPLOYMENTS).createIndex(
 				new Document("deploymentStatus", 1).append("startTime", 1).append("endTime", 1)
 						.append("projectToolConfigId", 1),
-				new IndexOptions().name("depStatus_1_stTime_1_endTime_1_projToolConfId_1"));
+				new IndexOptions().name("deploymentStatus_1_startTime_1_endTime_1_projectToolConfigId_1"));
 	}
 
 	public void clearAndExecuteUserInfoIndexes() {
@@ -334,7 +332,7 @@ public class CreateDatabaseIndexesChangeLog {
 				.createIndex(
 						new Document(PROCESSOR_ITEM_ID, 1).append(CREATED_DATE, 1).append("fromBranch", 1)
 								.append("closedDate", 1),
-						new IndexOptions().name("processorItmId_1_creDt_1_fromBranch_1_clsDt_1"));
+						new IndexOptions().name("processorItemId_1_createdDate_1_fromBranch_1_closedDate_1"));
 	}
 
 	public void clearAndExecuteProcessorItemsIndexes() {

@@ -14,21 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.publicissapient.kpidashboard.apis.mongock.installation;
-
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_900;
 
 import com.mongodb.client.model.IndexOptions;
-
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
- * @author bogolesw
+ * @author kanpaw
  */
-@ChangeUnit(id = "ddl2", order = "002", author = "PSKnowHOW")
+@ChangeUnit(id = "index_name_changes_document_db", order = "9003", author = "pawkandp", systemVersion = "9.0.0")
 public class CreateDatabaseIndexesChangeLog {
 
 	private final MongoTemplate mongoTemplate;
@@ -334,7 +332,7 @@ public class CreateDatabaseIndexesChangeLog {
 				.createIndex(
 						new Document(PROCESSOR_ITEM_ID, 1).append(CREATED_DATE, 1).append("fromBranch", 1)
 								.append("closedDate", 1),
-						new IndexOptions().name("processorItmId_1_creDt_1_fromBranch_1_clsDt_1"));
+						new IndexOptions().name("processorItmId_1_creDt_1_fromBranch_1_cloDt_1"));
 	}
 
 	public void clearAndExecuteProcessorItemsIndexes() {
