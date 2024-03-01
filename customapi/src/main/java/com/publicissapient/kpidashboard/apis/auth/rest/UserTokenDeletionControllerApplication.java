@@ -43,6 +43,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
+
 /**
  * Rest controller to handle logout requests.
  * 
@@ -81,7 +83,7 @@ public class UserTokenDeletionControllerApplication {
 	 *            the request
 	 */
 	@RequestMapping(value = "/centralUserlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponse> deleteUserToken(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<ServiceResponse> deleteUserTokenForCentralAuth(HttpServletRequest request, HttpServletResponse response) {
 		Cookie authCookie = cookieUtil.getAuthCookie(request);
 		String authCookieToken = authCookie.getValue();
 		authCookie.setMaxAge(0);
@@ -109,13 +111,19 @@ public class UserTokenDeletionControllerApplication {
 	 *            the request
 	 */
 	@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity deleteUserToken(HttpServletRequest request) {
+	public ResponseEntity<ServiceResponse> deleteUserToken(HttpServletRequest request, HttpServletResponse response) {
 		log.info("UserTokenDeletionController::deleteUserToken start");
 		String token = StringUtils.removeStart(request.getHeader("Authorization"), "Bearer ");
 		userTokenDeletionService.deleteUserDetails(token);
 		ResponseCookie authCookie = cookieUtil.deleteAccessTokenCookie();
 		log.info("UserTokenDeletionController::deleteUserToken end");
-		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, authCookie.toString()).build();
+		cookieUtil.deleteCookie(request, response, CookieUtil.AUTH_COOKIE);
+		if (Objects.nonNull(authCookie)) {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "local auth Logout Successfully", true));
+		} else {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(false, "Error while Logout from local auth", false));
+		}
 	}
 
 }
