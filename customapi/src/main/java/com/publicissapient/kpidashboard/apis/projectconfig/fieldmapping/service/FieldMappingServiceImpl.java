@@ -33,6 +33,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -53,6 +54,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.BaseFieldMappingStructure;
 import com.publicissapient.kpidashboard.common.model.application.ConfigurationHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
@@ -76,6 +78,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	public static final String INVALID_PROJECT_TOOL_CONFIG_ID = "Invalid projectToolConfigId";
 	public static final String JIRA_TECH_DEBT_CUSTOMFIELD = "jiraTechDebtCustomField";
 	public static final String JIRA_TECH_DEBT_VALUE = "jiraTechDebtValue";
+	public static final String HISTORY = "history";
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 
@@ -201,11 +204,14 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				mappingResponse.setFieldName(field);
 				mappingResponse.setOriginalValue(value);
 				List<ConfigurationHistoryChangeLog> changeLogs = (List<ConfigurationHistoryChangeLog>) getFieldMappingField(
-						fieldMapping, fieldMappingClass.getSuperclass(), "history" + field);
+						fieldMapping, fieldMappingClass.getSuperclass(), HISTORY + field);
 				if (CollectionUtils.isNotEmpty(changeLogs)) {
 					mappingResponse.setHistory(changeLogs.stream()
 							.sorted(Comparator.comparing(ConfigurationHistoryChangeLog::getUpdatedOn).reversed())
 							.limit(5).collect(Collectors.toList()));
+				} else if (ObjectUtils.isNotEmpty(value)) {
+					mappingResponse.setHistory(Arrays.asList(new ConfigurationHistoryChangeLog("", value,
+							authenticationService.getLoggedInUser(), LocalDateTime.now().toString())));
 				}
 				fieldMappingResponses.add(mappingResponse);
 			}
@@ -234,7 +240,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 */
 	@Override
 	public void updateSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfig,
-			List<FieldMappingResponse> fieldMappingResponseList) {
+			List<FieldMappingResponse> fieldMappingResponseList) throws NoSuchFieldException, IllegalAccessException {
 		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService
 				.loadFieldMappingStructure();
 		if (projectToolConfig != null && CollectionUtils.isNotEmpty(fieldMappingResponseList)
@@ -256,10 +262,14 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			boolean cleanTraceLog = false;
 			for (FieldMappingResponse fieldMappingResponse : fieldMappingResponseList) {
 				update.set(fieldMappingResponse.getFieldName(), fieldMappingResponse.getOriginalValue());
-				if (!cleanTraceLog) {
-					cleanTraceLog = fieldMappingStructureMap
-							.getOrDefault(fieldMappingResponse.getFieldName(), new FieldMappingStructure())
-							.isProcessorCommon();
+				FieldMappingStructure mappingStructure = fieldMappingStructureMap
+						.get(fieldMappingResponse.getFieldName());
+				if (null != mappingStructure) {
+					generateHistoryForNestedFields(fieldMappingResponseList, projectToolConfigId, fieldMappingResponse,
+							mappingStructure);
+					if (!cleanTraceLog) {
+						cleanTraceLog = mappingStructure.isProcessorCommon();
+					}
 				}
 				azureSprintReportStatusUpdateBasedOnFieldChange(fieldMappingResponse.getFieldName(), projectToolConfig,
 						projectBasicConfig);
@@ -268,7 +278,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				configurationHistoryChangeLog.setChangedFrom(fieldMappingResponse.getPreviousValue());
 				configurationHistoryChangeLog.setChangedBy(loggedInUser);
 				configurationHistoryChangeLog.setUpdatedOn(LocalDateTime.now().toString());
-				update.addToSet("history" + fieldMappingResponse.getFieldName(), configurationHistoryChangeLog);
+				update.addToSet(HISTORY + fieldMappingResponse.getFieldName(), configurationHistoryChangeLog);
 			}
 			operations.updateFirst(query, update, "field_mapping");
 			saveTemplateCode(projectBasicConfig, projectToolConfig);
@@ -276,6 +286,36 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				removeTraceLog(projectBasicConfig.getId());
 			cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 			clearCache();
+		}
+	}
+
+	private void generateHistoryForNestedFields(List<FieldMappingResponse> fieldMappingResponseList,
+			ObjectId projectToolConfigId, FieldMappingResponse fieldMappingResponse,
+			FieldMappingStructure mappingStructure) throws NoSuchFieldException, IllegalAccessException {
+		if (CollectionUtils.isNotEmpty(mappingStructure.getNestedFields())) {
+			FieldMapping fieldMapping = getFieldMapping(projectToolConfigId.toString());
+			StringBuilder originalValue = new StringBuilder(fieldMappingResponse.getOriginalValue() + "-");
+			String previousValue = "";
+
+			for (BaseFieldMappingStructure nestedField : mappingStructure.getNestedFields()) {
+				Optional<FieldMappingResponse> mappingResponse = fieldMappingResponseList.stream()
+						.filter(response -> response.getFieldName().equalsIgnoreCase(nestedField.getFieldName())
+								&& nestedField.getFilterGroup()
+										.contains(fieldMappingResponse.getOriginalValue().toString()))
+						.findFirst();
+				mappingResponse.ifPresent(response -> originalValue.append(response.getOriginalValue()).append(":"));
+			}
+			List<ConfigurationHistoryChangeLog> changeLogs = (List<ConfigurationHistoryChangeLog>) getFieldMappingField(
+					fieldMapping, FieldMapping.class.getSuperclass(), HISTORY + fieldMappingResponse.getFieldName());
+			if (CollectionUtils.isNotEmpty(changeLogs)) {
+				Optional<ConfigurationHistoryChangeLog> maxChangeLog = changeLogs.stream()
+						.max(Comparator.comparing(ConfigurationHistoryChangeLog::getUpdatedOn));
+				if (maxChangeLog.isPresent()) {
+					previousValue = String.valueOf(maxChangeLog.get().getChangedTo());
+				}
+			}
+			fieldMappingResponse.setOriginalValue(originalValue.deleteCharAt(originalValue.length() - 1).toString());
+			fieldMappingResponse.setPreviousValue(previousValue);
 		}
 	}
 

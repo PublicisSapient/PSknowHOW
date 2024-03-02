@@ -41,6 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.BaseFieldMappingStructure;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -125,6 +126,12 @@ public class FieldMappingServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		scrumFieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		ConfigurationHistoryChangeLog configurationHistoryChangeLog= new ConfigurationHistoryChangeLog();
+		configurationHistoryChangeLog.setChangedTo("Customfield");
+		configurationHistoryChangeLog.setChangedFrom("");
+		configurationHistoryChangeLog.setChangedBy("currentUser");
+		configurationHistoryChangeLog.setUpdatedOn(java.time.LocalDateTime.now().toString());
+		scrumFieldMapping.setHistoryrootCauseIdentifier(Arrays.asList(configurationHistoryChangeLog));
 		scrumFieldMapping2 = fieldMappingDataFactory.getFieldMappings().get(0);
 
 	}
@@ -403,7 +410,7 @@ public class FieldMappingServiceImplTest {
 	}
 
 	@Test
-	public void updateKpiField() {
+	public void updateKpiField() throws NoSuchFieldException, IllegalAccessException {
 		when(configHelperService.loadFieldMappingStructure()).thenReturn(Arrays.asList(new FieldMappingStructure()));
 		when(kpiHelperService.getFieldMappingStructure(anyList(), anyList()))
 				.thenReturn(Arrays.asList(new FieldMappingStructure()));
@@ -427,7 +434,7 @@ public class FieldMappingServiceImplTest {
 	}
 
 	@Test
-	public void updateKpiFieldRemoveTraceLog() {
+	public void updateKpiFieldRemoveTraceLog() throws NoSuchFieldException, IllegalAccessException {
 		FieldMappingStructure fieldMappingStructure = new FieldMappingStructure();
 		fieldMappingStructure.setFieldName("resolutionTypeForRejectionRCAKPI36");
 		fieldMappingStructure.setProcessorCommon(true);
@@ -454,7 +461,54 @@ public class FieldMappingServiceImplTest {
 	}
 
 	@Test
-	public void updateKpiFieldAzure() {
+	public void updateKpiCustomField() throws NoSuchFieldException, IllegalAccessException {
+		FieldMappingStructure fieldMappingStructure = new FieldMappingStructure();
+		fieldMappingStructure.setFieldName("rootCauseIdentifier");
+		BaseFieldMappingStructure baseFieldMappingStructure= new BaseFieldMappingStructure();
+		baseFieldMappingStructure.setFieldName("rootCause");
+		baseFieldMappingStructure.setFilterGroup(Arrays.asList("CustomField"));
+		fieldMappingStructure.setNestedFields(Arrays.asList(baseFieldMappingStructure));
+		fieldMappingStructure.setProcessorCommon(true);
+		when(configHelperService.loadFieldMappingStructure()).thenReturn(Arrays.asList(fieldMappingStructure));
+		when(kpiHelperService.getFieldMappingStructure(anyList(), anyList()))
+				.thenReturn(Arrays.asList(fieldMappingStructure));
+
+		Optional<ProjectBasicConfig> projectBasicConfigOpt = createProjectBasicConfig(false,
+				scrumFieldMapping.getBasicProjectConfigId());
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(scrumFieldMapping.getBasicProjectConfigId().toString(), projectBasicConfigOpt.get());
+		when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
+
+		ProjectToolConfig projectToolConfig = createProjectToolConfig(scrumFieldMapping.getBasicProjectConfigId());
+		Set<String> configIds = new HashSet<>();
+		configIds.add(scrumFieldMapping.getBasicProjectConfigId().toString());
+		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
+		when(projectBasicConfigRepository.findById(Mockito.any())).thenReturn(projectBasicConfigOpt);
+		when(tokenAuthenticationService.getUserProjects()).thenReturn(configIds);
+
+		when(fieldMappingRepository.findByProjectToolConfigId(any(ObjectId.class))).thenReturn(this.scrumFieldMapping);
+
+
+		when(authenticationService.getLoggedInUser()).thenReturn("currentUser");
+
+		//ProjectToolConfig projectToolConfig = createProjectToolConfig(scrumFieldMapping.getBasicProjectConfigId());
+		FieldMappingResponse response = new FieldMappingResponse();
+		response.setFieldName("rootCauseIdentifier");
+		response.setOriginalValue("CustomField");
+		response.setPreviousValue("");
+
+		FieldMappingResponse response2 = new FieldMappingResponse();
+		response2.setFieldName("rootCause");
+		response2.setOriginalValue("CustomField_123");
+		response2.setPreviousValue("");
+
+		fieldMappingService.updateSpecificFieldsAndHistory(KPICode.getKPI("kpi0"), projectToolConfig,
+				Arrays.asList(response, response2));
+	}
+
+
+	@Test
+	public void updateKpiFieldAzure() throws NoSuchFieldException, IllegalAccessException {
 		FieldMappingStructure fieldMappingStructure = new FieldMappingStructure();
 		fieldMappingStructure.setFieldName("jiraIterationCompletionStatusCustomField");
 		fieldMappingStructure.setProcessorCommon(true);

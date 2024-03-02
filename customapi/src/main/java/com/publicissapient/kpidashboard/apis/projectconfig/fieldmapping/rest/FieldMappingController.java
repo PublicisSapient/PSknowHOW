@@ -88,7 +88,7 @@ public class FieldMappingController {
 
 		FieldMappingDTO result = modelMapper.map(resultFieldMapping, FieldMappingDTO.class);
 
-		ServiceResponse response = null;
+		ServiceResponse response;
 		if (result == null) {
 			response = new ServiceResponse(false, "failed to add field mappings", result);
 		} else {
@@ -105,11 +105,11 @@ public class FieldMappingController {
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
 		FieldMapping resultFieldMapping = fieldMappingService.getFieldMapping(projectToolConfigId);
 		if (null != resultFieldMapping && null != resultFieldMapping.getId()) {
-			log.info("getFieldMapping resultFieldMapping : {}", resultFieldMapping.toString());
+			log.info("getFieldMapping resultFieldMapping : {}", resultFieldMapping);
 			result = new ModelMapper().map(resultFieldMapping, FieldMappingDTO.class);
 		}
 		log.info("getFieldMapping result : {}", result);
-		ServiceResponse response = null;
+		ServiceResponse response;
 		if (result == null) {
 			response = new ServiceResponse(false, "no field mapping found for " + projectToolConfigId, null);
 		} else {
@@ -146,7 +146,7 @@ public class FieldMappingController {
 
 	@RequestMapping(value = "/tools/saveMapping/{projectToolConfigId}/{kpiId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> saveKpiWiseSpecificFieldmAPPING(@PathVariable String projectToolConfigId,
-			@PathVariable String kpiId, @RequestBody List<FieldMappingResponse> fieldMappingResponse) {
+			@PathVariable String kpiId, @RequestBody List<FieldMappingResponse> fieldMappingResponse) throws NoSuchFieldException, IllegalAccessException {
 
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
 
