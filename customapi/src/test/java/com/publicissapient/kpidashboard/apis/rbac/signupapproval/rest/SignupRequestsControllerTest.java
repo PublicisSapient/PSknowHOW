@@ -105,7 +105,6 @@ public class SignupRequestsControllerTest {
 	 */
 	@Test
 	public void testGetUnApprovedRequests_ForCentralAuth() throws Exception {
-		Mockito.when(authProperties.getResourceAPIKey()).thenReturn("ResourceAPIKey");
 		List<UserInfoDTO> userInfoDTOS =new ArrayList<>();
 		UserInfoDTO userInfoDTO = new UserInfoDTO();
 		userInfoDTO.setAuthType(AuthType.APIKEY);

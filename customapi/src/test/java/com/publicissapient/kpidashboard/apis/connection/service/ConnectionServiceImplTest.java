@@ -864,7 +864,6 @@ public class ConnectionServiceImplTest {
 		c2.setType(ProcessorConstants.REPO_TOOLS);
 		c2.setConnectionName("Test BitBucket");
 		c2.setBaseUrl("https://test.server.com//bitbucket");
-		c2.setHttpUrl("https://test.server.com//bitbucket");
 		c2.setUsername("testUser");
 		c2.setConnectionUsers(connUsers);
 		connList.add(c1);
@@ -887,7 +886,6 @@ public class ConnectionServiceImplTest {
 		c2.setType("Type");
 		c2.setConnectionName("Test BitBucket");
 		c2.setBaseUrl("https://test.server.com//bitbucket");
-		c2.setHttpUrl("https://test.server.com//bitbucket");
 		c2.setUsername("testUser");
 		c2.setConnectionUsers(connUsers);
 		connList.add(c2);
