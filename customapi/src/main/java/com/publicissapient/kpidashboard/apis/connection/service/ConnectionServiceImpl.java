@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.connection.service;
 
 import static com.publicissapient.kpidashboard.apis.constant.Constant.REPO_TOOLS;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_ARGOCD;
 import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZURE;
 import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZUREPIPELINE;
 import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZUREREPO;
@@ -373,6 +374,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		case TOOL_BAMBOO:
 		case REPO_TOOLS:
 		case TOOL_TEAMCITY:
+		case TOOL_ARGOCD:
 			if (checkConnDetails(inputConn, currConn))
 				existingConnection = currConn;
 			break;
@@ -713,6 +715,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		case ProcessorConstants.BAMBOO:
 		case ProcessorConstants.TEAMCITY:
 		case ProcessorConstants.BITBUCKET:
+		case ProcessorConstants.ARGOCD:
 			setEncryptedPasswordFieldForDb(conn);
 			break;
 		case ProcessorConstants.GITLAB:
@@ -761,6 +764,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		case ProcessorConstants.BAMBOO:
 		case ProcessorConstants.TEAMCITY:
 		case ProcessorConstants.BITBUCKET:
+		case ProcessorConstants.ARGOCD:
 			connectionDTO.setPassword("");
 			break;
 		case ProcessorConstants.GITLAB:

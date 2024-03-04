@@ -124,6 +124,9 @@ public class CustomApiConfig {// NOPMD
 	@Value("${testconnection.gitlabApi}")
 	private String gitlabTestConnection;
 
+	@Value("${testconnection.argoCDApi}")
+	private String argoCDTestConnection;
+
 	@Value("${priority.P1}")
 	private String priorityP1;
 
@@ -867,6 +870,15 @@ public class CustomApiConfig {// NOPMD
 	 */
 	public String getBitbucketTestConnection() {
 		return bitbucketTestConnection;
+	}
+
+	/**
+	 * ArgoCD Test Connection API path
+	 *
+	 * @return
+	 */
+	public String getArgoCDTestConnection() {
+		return argoCDTestConnection;
 	}
 
 	/**
