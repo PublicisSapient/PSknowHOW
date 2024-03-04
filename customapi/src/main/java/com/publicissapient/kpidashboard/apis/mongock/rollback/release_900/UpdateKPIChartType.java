@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_830;
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_900;
 
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -27,7 +27,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /***
  * @author rendk
  */
-@ChangeUnit(id = "r_kpi_chartType_update", order = "08354", author = "rendk", systemVersion = "9.1.0")
+@ChangeUnit(id = "r_kpi_chartType_update", order = "09101", author = "rendk", systemVersion = "9.1.0")
 public class UpdateKPIChartType {
 	private final MongoTemplate mongoTemplate;
 

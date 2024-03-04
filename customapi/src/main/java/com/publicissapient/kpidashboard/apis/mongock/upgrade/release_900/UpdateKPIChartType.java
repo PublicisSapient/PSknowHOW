@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_830;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_900;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
@@ -26,7 +26,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 /***
  * @author rendk
  */
-@ChangeUnit(id = "kpi_chartType_update", order = "8354", author = "rendk", systemVersion = "9.1.0")
+@ChangeUnit(id = "kpi_chartType_update", order = "9101", author = "rendk", systemVersion = "9.1.0")
 public class UpdateKPIChartType {
 	private final MongoTemplate mongoTemplate;
 
