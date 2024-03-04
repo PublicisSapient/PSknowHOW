@@ -670,7 +670,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
-				return (List<UserInfoDTO>) new UserInfo();
+				return new ArrayList<>();
 			}
 		} catch (ParseException e) {
 			throw new AuthenticationServiceException("Unable to parse response.", e);
