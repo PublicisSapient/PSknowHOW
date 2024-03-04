@@ -140,7 +140,20 @@
     "defectPriorityKPI135": [],
     "defectPriorityKPI14": [],
     "defectPriorityQAKPI111": [],
-    "defectPriorityKPI82": [],
+    "defectPriorityKPI82": [
+      {
+        "labelValue" : "p1",
+        "countValue" : 2
+      },
+      {
+        "labelValue" : "p2",
+        "countValue" : 1
+      },
+      {
+        "labelValue" : "p3",
+        "countValue" : 2
+      }
+    ],
     "defectPriorityKPI133": [],
     "jiraIssueEpicTypeKPI153" : [ "Epic" ],
     "epicPlannedValue" : "customfield_58102",

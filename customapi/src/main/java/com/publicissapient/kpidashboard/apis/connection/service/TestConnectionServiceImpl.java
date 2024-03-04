@@ -19,12 +19,9 @@
 package com.publicissapient.kpidashboard.apis.connection.service;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.util.Base64;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +44,6 @@ import org.springframework.web.client.RestTemplate;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
 import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -74,7 +70,6 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private RestTemplate restTemplate;
 	@Autowired
 	private RepoToolsProviderRepository repoToolsProviderRepository;
-
 
 	@Override
 	public ServiceResponse validateConnection(Connection connection, String toolName) {
@@ -137,9 +132,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				statusCode = validateTestConn(connection, apiUrl, password, toolName);
 			}
 			break;
-			case Constant.REPO_TOOLS:
-				apiUrl = getApiForRepoTool(connection);
-				statusCode = validateTestConn(connection, apiUrl, password, toolName);
+		case Constant.REPO_TOOLS:
+			apiUrl = getApiForRepoTool(connection);
+			statusCode = validateTestConn(connection, apiUrl, password, toolName);
 			break;
 		default:
 			return new ServiceResponse(false, "Invalid Toolname", HttpStatus.NOT_FOUND);
@@ -163,11 +158,11 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		} else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITLAB)) {
 			apiUrl = createApiUrl(connection.getBaseUrl(), Constant.TOOL_GITLAB);
 		} else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET)) {
-			if(connection.getBaseUrl().contains(CLOUD_BITBUCKET_IDENTIFIER))
+			if (connection.getBaseUrl().contains(CLOUD_BITBUCKET_IDENTIFIER))
 				connection.setCloudEnv(true);
 			apiUrl = createBitBucketUrl(connection);
-			}
-		return apiUrl!= null ? apiUrl.trim() :"";
+		}
+		return apiUrl != null ? apiUrl.trim() : "";
 	}
 
 	private boolean testConnection(Connection connection, String toolName, String apiUrl, String password,
@@ -255,7 +250,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			} else {
 				isValid = testConnection(connection, toolName, apiUrl, password, false);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-      }
+			}
 		}
 		return statusCode;
 	}
@@ -405,7 +400,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 * @return API response
 	 */
 	private HttpStatusCode getApiResponseWithBasicAuth(String username, String password, String apiUrl, String toolName,
-													   boolean isSonarWithAccessToken) {
+			boolean isSonarWithAccessToken) {
 		HttpHeaders httpHeaders;
 		ResponseEntity<?> responseEntity;
 		httpHeaders = createHeadersWithAuthentication(username, password, isSonarWithAccessToken);
@@ -418,8 +413,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		}
 
 		Object responseBody = responseEntity.getBody();
-		if (toolName.equalsIgnoreCase(Constant.TOOL_SONAR)
-				&& (responseBody != null
+		if (toolName.equalsIgnoreCase(Constant.TOOL_SONAR) && (responseBody != null
 				&& (responseBody.toString().contains("false") || responseBody.toString().contains("</html>")))) {
 			return HttpStatus.UNAUTHORIZED;
 		}
@@ -449,7 +443,6 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				&& WRONG_JIRA_BEARER.equalsIgnoreCase(responseBody.toString())) {
 			responseCode = HttpStatus.UNAUTHORIZED;
 		}
-
 
 		return responseCode;
 	}
@@ -557,8 +550,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		if (Constant.TOOL_ZEPHYR.equalsIgnoreCase(toolName) && connection.isBearerToken()) {
 			return connection.getPatOAuthToken();
 		}
-		if (Constant.REPO_TOOLS.equalsIgnoreCase(toolName) &&
-				StringUtils.isNotEmpty(connection.getAccessToken())) {
+		if (Constant.REPO_TOOLS.equalsIgnoreCase(toolName) && StringUtils.isNotEmpty(connection.getAccessToken())) {
 			return connection.getAccessToken();
 		}
 		return connection.getPassword() != null ? connection.getPassword() : connection.getApiKey();
