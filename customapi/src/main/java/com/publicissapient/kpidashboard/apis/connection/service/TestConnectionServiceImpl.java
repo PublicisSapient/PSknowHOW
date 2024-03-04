@@ -167,7 +167,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				connection.setCloudEnv(true);
 			apiUrl = createBitBucketUrl(connection);
 			}
-		return apiUrl.trim();
+		return apiUrl!= null ? apiUrl.trim() :"";
 	}
 
 	private boolean testConnection(Connection connection, String toolName, String apiUrl, String password,

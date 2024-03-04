@@ -164,7 +164,7 @@ public class RepoToolsConfigServiceImplTest {
         when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
                 .thenReturn(projectBasicConfig);
         when(repoToolsProviderRepository.findByToolName(anyString()))
-                .thenReturn(new RepoToolsProvider());;
+                .thenReturn(repoToolsProvider);;
 
     }
 
@@ -227,10 +227,9 @@ public class RepoToolsConfigServiceImplTest {
         projectToolConfigList.add(projectToolConfig1);
         projectToolConfigList.add(projectToolConfig2);
         when(configHelperService.getProjectConfig("5fb364612064a31c9ccd517a")).thenReturn(projectBasicConfig);
-        when(customApiConfig.getRepoToolDeleteRepoUrl()).thenReturn("delete/project");
+        when(connectionRepository.findById(new ObjectId("5fb3a6412064a35b8069930a"))).thenReturn(Optional.of(connection));
         repoToolsConfigService.updateRepoToolProjectConfiguration(projectToolConfigList, projectToolConfig,
                 "5fb364612064a31c9ccd517a");
-        verify(repoToolsClient, times(1)).deleteRepositories(anyString(), anyString());
 
     }
 

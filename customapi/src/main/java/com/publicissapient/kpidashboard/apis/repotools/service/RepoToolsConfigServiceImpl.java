@@ -109,9 +109,6 @@ public class RepoToolsConfigServiceImpl {
 	public static final String REPOS = "/repos/";
 
 
-	public RepoToolsClient createRepoToolsClient() {
-		return new RepoToolsClient();
-	}
 
 	/**
 	 * enroll a project to the repo tool
@@ -149,7 +146,6 @@ public class RepoToolsConfigServiceImpl {
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
 					fistScan.toString().replace("T", " "), toolCredential, branchNames, false);
 
-			repoToolsClient = createRepoToolsClient();
 			// api call to enroll the project
 			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig,
 					customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolEnrollProjectUrl(),
@@ -222,16 +218,16 @@ public class RepoToolsConfigServiceImpl {
 	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool,
 			String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
-		repoToolsClient = createRepoToolsClient();
 			if (toolList.size() > 1) {
 				toolList.remove(tool);
 			if (toolList.size() > 0) {
 				// configure debbie project with
 				List<String> branch = new ArrayList<>();
 				toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
-				Optional<Connection> optConnection = connectionRepository.findById(tool.getConnectionId());
+				Connection connection = connectionRepository.findById(tool.getConnectionId())
+						.orElse(new Connection());
 				toolList.get(0).setIsNew(false);
-				httpStatus = configureRepoToolProject(toolList.get(0), optConnection.get(), branch);
+				httpStatus = configureRepoToolProject(toolList.get(0), connection, branch);
 			} else {
 					// delete only the repository
 					String deleteRepoUrl = customApiConfig.getRepoToolURL()
