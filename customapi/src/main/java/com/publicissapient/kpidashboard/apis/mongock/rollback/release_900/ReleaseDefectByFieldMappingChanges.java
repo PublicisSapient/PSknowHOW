@@ -51,11 +51,11 @@ public class ReleaseDefectByFieldMappingChanges {
 	}
 
 	private void addDODStatusDefectByStatus() {
-		insertFieldMapping("jiraDodKPI142");
+		insertFieldMapping(DOD_STATUS_KPI142);
 	}
 
 	private void addDODStatusDefectByPriority() {
-		insertFieldMapping("jiraDodKPI144");
+		insertFieldMapping(DOD_STATUS_KPI144);
 	}
 
 	public void insertFieldMapping(String currentFieldName) {
