@@ -95,7 +95,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 		try {
 			String minTime = AzurePipelineUtils.getDateFromTimeInMili(lastStartTimeOfBuilds);
 			StringBuilder url = new StringBuilder(
-					AzurePipelineUtils.joinURL(azurePipelineServer.getUrl(), azurePipelineConfig.getApiEndPoint()));
+					AzurePipelineUtils.joinURL(AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl()), azurePipelineConfig.getApiEndPoint()));
 			url = AzurePipelineUtils.addParam(url, "api-version", azurePipelineServer.getApiVersion());
 			url = AzurePipelineUtils.addParam(url, "definitions", azurePipelineServer.getJobName());
 			if (!minTime.equals("1970-01-01T00:00:00.000Z")) {
@@ -150,7 +150,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 			}
 
 		} catch (ParseException e) {
-			log.error(String.format("Parsing jobs details on instance: %s", azurePipelineServer.getUrl()), e);
+			log.error(String.format("Parsing jobs details on instance: %s", AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl())), e);
 		}
 	}
 
@@ -247,7 +247,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	private String getPat(String sUrl, ProcessorToolConnection azurePipelineServer) {
 		String pat = "";
 
-		if (AzurePipelineUtils.isSameServerInfo(sUrl, azurePipelineServer.getUrl())) {
+		if (AzurePipelineUtils.isSameServerInfo(sUrl, AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl()))) {
 
 			if (StringUtils.isNotEmpty(azurePipelineServer.getPat())) {
 				pat = azurePipelineServer.getPat();

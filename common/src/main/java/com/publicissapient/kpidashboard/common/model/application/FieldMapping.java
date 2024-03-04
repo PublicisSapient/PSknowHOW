@@ -330,9 +330,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationCompletionStatusKPI122;
 	private List<String> jiraIterationCompletionStatusKPI75;
 	private List<String> jiraIterationCompletionStatusKPI145;
-	private List<String> jiraIterationCompletionStatusKPI140;
-	private List<String> jiraIterationCompletionStatusKPI132;
-	private List<String> jiraIterationCompletionStatusKPI136;
 	private List<String> jiraIterationCompletionStatusKpi72;
 	private List<String> jiraIterationCompletionStatusKpi39;
 	private List<String> jiraIterationCompletionStatusKpi5;

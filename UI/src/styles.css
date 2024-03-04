@@ -94,17 +94,17 @@
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
 }
- 
+
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #888; 
+  background: #888;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #555;
 }
 a{
   text-decoration: none;
@@ -1590,8 +1590,8 @@ a:hover {
   color: #ffffff;
 }
 
-.dashboard-config-tabs .tab-scrum .p-tabview-nav-link:before, 
-.dashboard-config-tabs .tab-kanban .p-tabview-nav-link:before, 
+.dashboard-config-tabs .tab-scrum .p-tabview-nav-link:before,
+.dashboard-config-tabs .tab-kanban .p-tabview-nav-link:before,
 .dashboard-config-tabs .tab-others .p-tabview-nav-link:before,
 .pi-scrum-button .pi-scrum:before,
 .pi-kanban-button .pi-kanban:before  {
@@ -1867,7 +1867,7 @@ p-dialog .p-button-cancel.p-button-secondary {
 .ng-select .ng-arrow-wrapper{
   bottom: 0;
 }
-.ng-select.ng-select-multiple .ng-select-container.ng-has-value .ng-clear-wrapper, 
+.ng-select.ng-select-multiple .ng-select-container.ng-has-value .ng-clear-wrapper,
 .ng-select.ng-select-multiple .ng-select-container.ng-has-value .ng-arrow-wrapper{
   border-top: 0;
 }
@@ -2033,4 +2033,7 @@ p-dialog .p-button-cancel.p-button-secondary {
   padding-right: 10px;
   text-transform: capitalize;
   font-size: 10px;
+}
+.font-black{
+  color: #000;
 }
