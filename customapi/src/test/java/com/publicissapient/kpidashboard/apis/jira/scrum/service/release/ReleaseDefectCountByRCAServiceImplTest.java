@@ -91,8 +91,6 @@ public class ReleaseDefectCountByRCAServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-		fieldMapping.setJiraDodKPI142(Collections.singletonList("Closed"));
-		fieldMapping.setJiraDodKPI144(Collections.singletonList("Closed"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 	}
 
