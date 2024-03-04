@@ -31,6 +31,8 @@
     "jiraDodKPI171" : [ "Closed" ],
     "jiraDodKPI127" : ["Closed", "Ready for Delivery"],
     "jiraDodKPI37" : ["Closed", "Ready for Delivery"],
+    "jiraDodKPI142" : ["Closed"],
+    "jiraDodKPI144" : ["Closed"],
     "jiraDefectCreatedStatusKPI14" : "Open",
     "jiraDefectRejectionStatusAVR" : "Closed",
     "jiraDefectRejectionStatusKPI28" : "Close",

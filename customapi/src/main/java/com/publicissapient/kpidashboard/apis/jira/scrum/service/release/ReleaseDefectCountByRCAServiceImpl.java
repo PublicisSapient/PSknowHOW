@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -93,13 +94,17 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			List<JiraIssue> totalDefects = (List<JiraIssue>) resultMap.get(TOTAL_DEFECT);
 			if (CollectionUtils.isNotEmpty(totalDefects)) {
-				Set<String> jiraDodKPI142LowerCase = fieldMapping.getJiraDodKPI142().stream()
-						.map(String::toLowerCase)
-						.collect(Collectors.toSet());
+				Set<String> jiraDodKPI142LowerCase = new HashSet<>();
+				if (fieldMapping.getJiraDodKPI142() != null) {
+					jiraDodKPI142LowerCase = fieldMapping.getJiraDodKPI142().stream().map(String::toLowerCase)
+							.collect(Collectors.toSet());
+				}
 
+				Set<String> finalJiraDodKPI142LowerCase = jiraDodKPI142LowerCase;
 				List<JiraIssue> openDefects = totalDefects.stream()
 						.filter(jiraIssue -> fieldMapping.getStoryFirstStatus().contains(jiraIssue.getStatus())
-								&& !jiraDodKPI142LowerCase.contains(jiraIssue.getStatus().toLowerCase()))
+								&& (finalJiraDodKPI142LowerCase.isEmpty()
+										|| !finalJiraDodKPI142LowerCase.contains(jiraIssue.getStatus().toLowerCase())))
 						.collect(Collectors.toList());
 				Map<String, Map<String, List<JiraIssue>>> rcaWiseList = getRCAWiseList(totalDefects, openDefects);
 				List<IterationKpiValue> filterDataList = new ArrayList<>();
