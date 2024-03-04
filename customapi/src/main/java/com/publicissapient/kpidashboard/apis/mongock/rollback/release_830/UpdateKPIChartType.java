@@ -27,7 +27,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /***
  * @author rendk
  */
-@ChangeUnit(id = "r_kpi_chartType_update", order = "08354", author = "rendk", systemVersion = "8.3.5")
+@ChangeUnit(id = "r_kpi_chartType_update", order = "08354", author = "rendk", systemVersion = "9.1.0")
 public class UpdateKPIChartType {
 	private final MongoTemplate mongoTemplate;
 
