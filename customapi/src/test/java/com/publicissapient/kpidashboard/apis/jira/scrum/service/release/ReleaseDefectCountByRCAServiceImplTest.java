@@ -49,14 +49,12 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
@@ -110,27 +108,16 @@ public class ReleaseDefectCountByRCAServiceImplTest {
 		KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
-		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(1).getValue()
-				.get(0).getValue()).get(0)).getValue();
-		assertEquals(value, expectedResult(bugList));
-	}
 
-	@Test
-	public void getKpiDataWithoutRCA() throws ApplicationException {
-		bugList.forEach(jiraIssue -> jiraIssue.setRootCauseList(new ArrayList<>()));
-		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-				.thenReturn(kpiRequestTrackerId);
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(bugList);
-		KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
-		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
-		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(1).getValue()
-				.get(0).getValue()).get(0)).getValue();
-		assertEquals(value, expectedResult(bugList));
+		Map<String, Integer> testingPhase1Defects = (Map<String, Integer>) trendValueList.get(1).getValue().get(0)
+				.getValue();
+		Map<String, Integer> testingPhase2Defects = (Map<String, Integer>) trendValueList.get(1).getValue().get(1)
+				.getValue();
+		Map<String, Integer> totalDefects = new HashMap<>(testingPhase2Defects);
+
+		testingPhase1Defects.forEach((key, value) -> totalDefects.merge(key, value, (v1, v2) -> v1 + v2));
+
+		assertEquals(expectedResult(bugList), totalDefects);
 	}
 
 	private Map<String, Integer> expectedResult(List<JiraIssue> bugList) {

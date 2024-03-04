@@ -2878,7 +2878,7 @@
     "groupId" : 9 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
-    "chartType" : "pieChart" ,
+    "chartType" : "stackedColumnv" ,
     "kpiInfo" : {
       "definition" : "It shows the breakup of all defects tagged to a release based on RCA. The breakup is shown in terms of count & percentage.",
       "details" : [
@@ -2891,8 +2891,8 @@
         }
       ]
     } ,
-    "xaxisLabel" : "" ,
-    "yaxisLabel" : "" ,
+    "xaxisLabel" : "Test Phase" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,

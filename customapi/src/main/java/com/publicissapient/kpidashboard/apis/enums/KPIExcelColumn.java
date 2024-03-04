@@ -244,7 +244,7 @@ public enum KPIExcelColumn {
 			"Issue Status", "Priority","Created Date","Updated Date", "Assignee")),
 
 	DEFECT_COUNT_BY_RCA_RELEASE("kpi142", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
-			"Issue Status", "Root Cause", "Priority", "Assignee")),
+			"Issue Status", "Root Cause", "Priority", "Assignee","Testing Phase")),
 
 	DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143", Arrays.asList("Issue ID", "Issue Description", "Sprint Name",
 			"Issue Type", "Issue Status", "Root Cause", "Priority", "Assignee")),
