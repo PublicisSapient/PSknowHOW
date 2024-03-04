@@ -224,9 +224,10 @@ public class RepoToolsConfigServiceImpl {
 				// configure debbie project with
 				List<String> branch = new ArrayList<>();
 				toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
-				Optional<Connection> optConnection = connectionRepository.findById(tool.getConnectionId());
+				Connection connection = connectionRepository.findById(tool.getConnectionId())
+						.orElse(new Connection());
 				toolList.get(0).setIsNew(false);
-				httpStatus = configureRepoToolProject(toolList.get(0), optConnection.get(), branch);
+				httpStatus = configureRepoToolProject(toolList.get(0), connection, branch);
 			} else {
 					// delete only the repository
 					String deleteRepoUrl = customApiConfig.getRepoToolURL()
