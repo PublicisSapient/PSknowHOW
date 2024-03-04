@@ -22,8 +22,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -90,10 +93,13 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			List<JiraIssue> totalDefects = (List<JiraIssue>) resultMap.get(TOTAL_DEFECT);
 			if (CollectionUtils.isNotEmpty(totalDefects)) {
+				Set<String> jiraDodKPI142LowerCase = fieldMapping.getJiraDodKPI142().stream()
+						.map(String::toLowerCase)
+						.collect(Collectors.toSet());
+
 				List<JiraIssue> openDefects = totalDefects.stream()
 						.filter(jiraIssue -> fieldMapping.getStoryFirstStatus().contains(jiraIssue.getStatus())
-								&& CollectionUtils.isNotEmpty(fieldMapping.getJiraDodKPI142())
-								&& !fieldMapping.getJiraDodKPI142().contains(jiraIssue.getStatus()))
+								&& !jiraDodKPI142LowerCase.contains(jiraIssue.getStatus().toLowerCase()))
 						.collect(Collectors.toList());
 				Map<String, Map<String, List<JiraIssue>>> rcaWiseList = getRCAWiseList(totalDefects, openDefects);
 				List<IterationKpiValue> filterDataList = new ArrayList<>();

@@ -25,7 +25,10 @@ import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
-@ChangeUnit(id = "defectBy_field_mapping_changes", order ="9005" , author = "purgupta2", systemVersion = "9.1.0")
+/**
+ * @author purgupta2
+ */
+@ChangeUnit(id = "defectBy_field_mapping_changes", order ="9005" , author = "purgupta2", systemVersion = "9.0.0")
 public class ReleaseDefectByFieldMappingChanges {
 
 	public static final String FIELD_MAPPING_STRUCTURE = "field_mapping_structure";
