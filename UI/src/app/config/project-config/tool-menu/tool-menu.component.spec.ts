@@ -146,6 +146,10 @@ describe('ToolMenuComponent', () => {
         "id": "64c780f25fec906dbc18f1d7",
         "toolName": "GitHubAction",
       },
+      {
+        "id": "64c780f25fsvr46h46j57n3e",
+        "toolName": "ArgoCD",
+      },
     ]
     component.selectedProject = {
       "Project": "KnowHOW",

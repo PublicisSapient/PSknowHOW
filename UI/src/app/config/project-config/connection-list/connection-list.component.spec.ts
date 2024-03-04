@@ -575,6 +575,28 @@ describe('ConnectionListComponent', () => {
         'connPrivate',
       ],
     },
+    {
+      connectionType: 'ArgoCD',
+      connectionLabel: 'ArgoCD',
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Password',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'password',
+        'connPrivate',
+      ],
+    },
   ];
 
   const fieldsAndLabels = [
@@ -886,6 +908,28 @@ describe('ConnectionListComponent', () => {
         'connPrivate',
       ],
     },
+    {
+      connectionType: 'ArgoCD',
+      connectionLabel: 'ArgoCD',
+      labels: [
+        'Connection Type',
+        'Connection Name',
+        'Base Url',
+        'Username',
+        'Use vault password',
+        'Password',
+        'Is Connection Private',
+      ],
+      inputFields: [
+        'type',
+        'connectionName',
+        'baseUrl',
+        'username',
+        'vault',
+        'password',
+        'connPrivate',
+      ],
+    },
   ];
 
   const connectionList = [
@@ -1060,7 +1104,7 @@ describe('ConnectionListComponent', () => {
   it('Should test 10 connections are loaded', () => {
     sharedService.setGlobalConfigData({repoToolFlag: true});
     let connTobeShown;
-    const totalConnectionList = 13;
+    const totalConnectionList = 14;
     if(component.repoToolsEnabled){
       connTobeShown = totalConnectionList - 4;
     }else{
@@ -2083,7 +2127,42 @@ describe('ConnectionListComponent', () => {
     sharedService.setGlobalConfigData({repoToolFlag: true});
     component.ngOnInit();
     component.filterConnections(component.addEditConnectionFieldsNlabels,'connectionLabel')
-    expect(component.addEditConnectionFieldsNlabels.length).toEqual(8);
+    expect(component.addEditConnectionFieldsNlabels.length).toEqual(9);
+  })
+
+
+  it("should give success response, while testing for ArgoCD",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : "true",
+      data : 200
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'ArgoCD';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testArgoCD').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testArgoCD).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Valid Connection");
+    expect(component.testConnectionValid).toBeTruthy();
+  })
+
+  it("should give unsuccess response while testing for ArgoCD",()=>{
+    component.testingConnection = true;
+    const fakeResponse = {
+      success : false,
+      data : 400
+    }
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.connection['type'] = 'ArgoCD';
+    component.connectionTypeFieldsAssignment();
+    spyOn(testConnectionService,'testArgoCD').and.returnValue(of(fakeResponse));
+    component.testConnection();
+    fixture.detectChanges();
+    expect(testConnectionService.testArgoCD).toHaveBeenCalled();
+    expect(component.testConnectionMsg).toBe("Connection Invalid");
+    expect(component.testConnectionValid).toBeFalsy();
   })
 
   it('should change auth type',()=>{
