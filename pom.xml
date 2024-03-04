@@ -22,7 +22,7 @@
     <packaging>pom</packaging>
     <groupId>com.publicissapient.kpidashboard</groupId>
     <artifactId>Kpidashboard</artifactId>
-    <version>8.3.4-SNAPSHOT</version>
+    <version>8.3.5-SNAPSHOT</version>
 
     <properties>
         <docker.useConfigFile>false</docker.useConfigFile>
