@@ -45,40 +45,51 @@ spec:
             - name: spring.data.mongodb.uri
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
+                  name: {{ .Values.env}}knhdbconnectionstring
                   key: {{ .Values.env}}knhdbconnectionstring
             - name: spring.data.mongodb.host
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
+                  name: {{ .Values.env}}knhdbhost
                   key: {{ .Values.env}}knhdbhost
             
             - name: aesEncryptionKey
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
-                  key: knowhowaesEncryptionKey
+                  name: knowhowaesencryptionkeynew
+                  key: knowhowaesencryptionkeynew
             - name: auth.secret
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
+                  name: knowhow-auth-secret
                   key: knowhow-auth-secret
 
             - name: spring.data.mongodb.username
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
+                  name: {{ .Values.env}}knhdbusername
                   key: {{ .Values.env}}knhdbusername
             - name: spring.data.mongodb.password
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
+                  name: {{ .Values.env}}knhdbpassword
                   key: {{ .Values.env}}knhdbpassword
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
           envFrom:
           - configMapRef:
               name: {{ .Values.configmapname }}
+          volumeMounts:
+            - name: knowhow-secrets-store
+              mountPath: "/mnt/{{ .Values.env}}-secrets-store"
+              readOnly: true
+      volumes:
+        - name: knowhow-secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "{{ .Values.env}}-secretproviderclass"
           livenessProbe:
             tcpSocket:
               port: {{.Values.service.port}}

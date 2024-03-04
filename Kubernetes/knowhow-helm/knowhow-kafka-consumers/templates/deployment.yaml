@@ -52,12 +52,23 @@ spec:
             - name: mail.sendgrid.api-key
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
+                  name: {{ .Values.env}}-sendgrid-apikey
                   key: {{ .Values.env}}-sendgrid-apikey
             - name: spring.kafka.consumer.bootstrap-servers
               value: "crs-kafka-0.kafka-cluster.uat-knowhow.svc.cluster.local:9092"
             - name: spring.kafka.producer.bootstrap-servers
               value: "crs-kafka-0.kafka-cluster.uat-knowhow.svc.cluster.local:9092"
+          volumeMounts:
+            - name: knowhow-secrets-store
+              mountPath: "/mnt/{{ .Values.env}}-secrets-store"
+              readOnly: true
+      volumes:
+        - name: knowhow-secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "{{ .Values.env}}-secretproviderclass"
           # livenessProbe:
           #   tcpSocket:
           #     port: {{.Values.port}}
