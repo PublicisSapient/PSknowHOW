@@ -79,7 +79,7 @@ spec:
               value: "https://{{ .Values.env}}-authnauth.tools.publicis.sapient.com"
           envFrom:
           - configMapRef:
-              name: knowhow-config
+              name: {{ .Values.configmapname }}
           volumeMounts:
             - name: knowhow-secrets-store
               mountPath: "/mnt/{{ .Values.env}}-secrets-store"
