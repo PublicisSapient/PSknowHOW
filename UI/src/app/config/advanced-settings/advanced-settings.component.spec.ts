@@ -492,4 +492,103 @@ describe('AdvancedSettingsComponent', () => {
     component.runProcessor('Sonar');
     expect(spy).toHaveBeenCalled();
   }))
+  it('should delete processor data', (done) => {
+    const processorDetails = {
+      processorName: 'Jira'
+    };
+    const selectedProject = {
+      id: '601bca9569515b0001d68182'
+    };
+    const toolDetails = [
+      {
+        id: '123',
+        // other properties
+      },
+      {
+        id: '456',
+        // other properties
+      }
+    ];
+    spyOn(component, 'getToolDetailsForProcessor').and.returnValue(toolDetails);
+    spyOn(httpService, 'deleteProcessorData').and.returnValues(
+      of({ success: true }),
+      of({ success: true })
+    );
+    spyOn(messageService, 'add');
+    spyOn(component, 'getAllToolConfigs');
+  
+    component.deleteProcessorDataReq(processorDetails, selectedProject);
+  
+    fixture.detectChanges();
+  
+    expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
+    expect(httpService.deleteProcessorData).toHaveBeenCalledTimes(2);
+    expect(httpService.deleteProcessorData).toHaveBeenCalledWith('123', '601bca9569515b0001d68182');
+    expect(httpService.deleteProcessorData).toHaveBeenCalledWith('456', '601bca9569515b0001d68182');
+  
+    setTimeout(() => {
+      expect(messageService.add).toHaveBeenCalledWith({ severity: 'success', summary: 'Data deleted Successfully.', detail: '' });
+      expect(component.getAllToolConfigs).toHaveBeenCalledWith('601bca9569515b0001d68182');
+      done();
+    });
+  });
+  
+  it('should handle error when deleting processor data', (done) => {
+    const processorDetails = {
+      processorName: 'Jira'
+    };
+    const selectedProject = {
+      id: '601bca9569515b0001d68182'
+    };
+    const toolDetails = [
+      {
+        id: '123',
+        // other properties
+      },
+      {
+        id: '456',
+        // other properties
+      }
+    ];
+    spyOn(component, 'getToolDetailsForProcessor').and.returnValue(toolDetails);
+    spyOn(httpService, 'deleteProcessorData').and.returnValues(
+      of({ success: true }),
+      of({ success: false })
+    );
+    spyOn(messageService, 'add');
+    spyOn(component, 'getAllToolConfigs');
+  
+    component.deleteProcessorDataReq(processorDetails, selectedProject);
+  
+    fixture.detectChanges();
+  
+    expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
+    expect(httpService.deleteProcessorData).toHaveBeenCalledTimes(2);
+    expect(httpService.deleteProcessorData).toHaveBeenCalledWith('123', '601bca9569515b0001d68182');
+    expect(httpService.deleteProcessorData).toHaveBeenCalledWith('456', '601bca9569515b0001d68182');
+  
+    setTimeout(() => {
+      expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Error in deleting project data. Please try after some time.' });
+      expect(component.getAllToolConfigs).not.toHaveBeenCalled();
+      done();
+    });
+  });
+  
+  it('should handle error when getting tool details', () => {
+    const processorDetails = {
+      processorName: 'Jira'
+    };
+    const selectedProject = {
+      id: '601bca9569515b0001d68182'
+    };
+    spyOn(component, 'getToolDetailsForProcessor').and.returnValue(null);
+    spyOn(messageService, 'add');
+  
+    component.deleteProcessorDataReq(processorDetails, selectedProject);
+  
+    fixture.detectChanges();
+  
+    expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
+    expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Something went wrong. Please try again after sometime.' });
+  });
 });

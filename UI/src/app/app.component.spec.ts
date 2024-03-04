@@ -54,74 +54,7 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  /*xit('should load GA script if analyticsSwitch is true and not on localhost', () => {
-    spyOn(window.location, 'origin').and.returnValue('example.com');
-    component.ngOnInit();
-    expect(httpService.getAnalyticsFlag).toHaveBeenCalled();
-    expect(gaService.load).toHaveBeenCalledWith('gaTagManager');
-  });
-
-  xit('should not load GA script if analyticsSwitch is false', () => {
-    spyOn(window.location, 'getOwnPropertyDescriptor').and.returnValue('example.com');
-    spyOn(httpService, 'getAnalyticsFlag').and.returnValue(of({ success: true, data: { analyticsSwitch: false } }));
-    component.ngOnInit();
-    expect(httpService.getAnalyticsFlag).toHaveBeenCalled();
-    expect(gaService.load).not.toHaveBeenCalled();
-  });
-
-  xit('should not load GA script if on localhost', () => {
-    spyOn(window.location, 'getOwnPropertyDescriptor').and.returnValue('localhost:4200');
-    component.ngOnInit();
-    expect(httpService.getAnalyticsFlag).toHaveBeenCalled();
-    expect(gaService.load).not.toHaveBeenCalled();
-  });
-
-  xit('should set loadingRouteConfig to true on RouteConfigLoadStart', () => {
-    const event = new RouteConfigLoadStart(null);
-    component.ngOnInit();
-    router.events.next(event);
-    expect(component.loadingRouteConfig).toBeTrue();
-  });
-
-  xit('should set loadingRouteConfig to false on RouteConfigLoadEnd', () => {
-    const event = new RouteConfigLoadEnd(null);
-    component.ngOnInit();
-    router.events.next(event);
-    expect(component.loadingRouteConfig).toBeFalse();
-  });
-
-  xit('should set loadingRouteConfig to false and call ga.setPageLoad on NavigationEnd', () => {
-    const event = new NavigationEnd(0, '', '');
-    component.ngOnInit();
-    router.events.next(event);
-    expect(component.loadingRouteConfig).toBeFalse();
-    expect(component.ga.setPageLoad).toHaveBeenCalled();
-    expect(component.ga.setPageLoad).toHaveBeenCalledWith({
-      url: '/' + (sharedService.getSelectedType() ? sharedService.getSelectedType() : 'Scrum'),
-      userRole: authorization.getRole(),
-      version: httpService.currentVersion
-    });
-  });
-
-  it('should set selectedType to Scrum if sharedService.getSelectedType returns falsy', () => {
-    spyOn(sharedService, 'getSelectedType').and.returnValue(null);
-    component.ngOnInit();
-    expect(sharedService.setSelectedType).toHaveBeenCalledWith('Scrum');
-  });
-
-  it('should set selectedType to sharedService.getSelectedType if it returns truthy', () => {
-    spyOn(sharedService, 'getSelectedType').and.returnValue('Type');
-    component.ngOnInit();
-    expect(sharedService.setSelectedType).toHaveBeenCalledWith('Type');
-  });
-
   it('should set authorized to true on init', () => {
     expect(component.authorized).toBeTrue();
   });
-
-  it('should set authorized to getAuth.checkAuth() on init', () => {
-    spyOn(getAuthService, 'checkAuth').and.returnValue(false);
-    component.ngOnInit();
-    expect(component.authorized).toBeFalse();
-  });*/
 });

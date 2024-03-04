@@ -236,11 +236,11 @@ describe('ToolMenuComponent', () => {
     expect(messageServiceSpy).toHaveBeenCalled();
   });
 
-  // it('should copy token to clipboard', () => {
-  //   component.generatedToken = 'TestToken1';
-  //   component.copyToken();
-  //   expect(component.tokenCopied).toBeTrue();
-  // });
+  it('should copy token to clipboard', () => {
+    component.generatedToken = 'TestToken1';
+    component.copyToken();
+    expect(component.tokenCopied).toBeTrue();
+  });
 
 
   it("should disable assignee switch once assignee switch is on", () => {
@@ -423,4 +423,31 @@ describe('ToolMenuComponent', () => {
     expect(component.isAssigneeSwitchChecked).toBeFalsy();
     expect(component.isAssigneeSwitchDisabled).toBeFalsy();
   });
+
+  it('should filter tools based on repo tool config', () => {
+    component.tools = [
+      {
+        "id": "6361050e3fa9",
+        "toolName": 'jira'
+      }
+    ];
+    component.repoToolsEnabled = true;
+    component.repoTools = ["jira", "bitbucket"];
+    component.ngOnInit();
+    expect(component.tools.length).toEqual(1);
+  })
+
+  it('should filter tools based on repo tool config', () => {
+    component.tools = [
+      {
+        "id": "6361050e3fa9",
+        "toolName": 'jira'
+      }
+    ];
+    component.repoToolsEnabled = true;
+    component.repoTools = ["bitbucket"];
+    component.ngOnInit();
+    expect(component.tools.length).toEqual(1);
+  })
+  
 });

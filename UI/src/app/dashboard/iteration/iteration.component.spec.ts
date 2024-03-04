@@ -19,7 +19,6 @@
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import { IterationComponent } from './iteration.component';
-import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
@@ -36,6 +35,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { DashboardComponent } from '../dashboard.component';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { MessageService } from 'primeng/api';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 describe('IterationComponent', () => {
     let component: IterationComponent;
@@ -44,11 +44,13 @@ describe('IterationComponent', () => {
     let httpService: HttpService;
     let helperService: HelperService;
     let excelService: ExcelService;
-    let messageService:MessageService;
+    let messageService: MessageService;
+    let featureFlagService: FeatureFlagsService;
     let httpMock;
     let reqJira;
     const baseUrl = environment.baseUrl;
     const selectedTab = 'Iteration';
+    let tableComponent: any;
     const filterApplyDataWithNoFilter = {};
     const masterData = require('../../../test/resource/masterData.json');
     const filterData = require('../../../test/resource/filterData.json');
@@ -1917,9 +1919,9 @@ describe('IterationComponent', () => {
             kpiName: 'Release Frequency',
             isEnabled: true,
             order: 1,
-            subCategoryBoard : 'Iteration Review',
+            subCategoryBoard: 'Iteration Review',
             kpiDetail: {
-                subCategoryBoard : 'Iteration Review',
+                subCategoryBoard: 'Iteration Review',
                 id: '63320976b7f239ac93c2686a',
                 kpiId: 'kpi74',
                 kpiName: 'Release Frequency',
@@ -1939,9 +1941,9 @@ describe('IterationComponent', () => {
             kpiName: 'Iteration Progress',
             isEnabled: true,
             order: 1,
-            subCategoryBoard : 'Iteration Progress',
+            subCategoryBoard: 'Iteration Progress',
             kpiDetail: {
-                subCategoryBoard : 'Iteration Progress',
+                subCategoryBoard: 'Iteration Progress',
                 id: '63320976b7f239ac93c2686a',
                 kpiId: 'kpi74',
                 kpiName: 'Iteration Progress',
@@ -1961,10 +1963,10 @@ describe('IterationComponent', () => {
             kpiName: 'Iteration Progress',
             isEnabled: true,
             order: 1,
-            subCategoryBoard : 'Release Frequency',
+            subCategoryBoard: 'Release Frequency',
             kpiDetail: {
-                subCategoryBoard : 'Release Frequency',
-                kpiWidth : 100,
+                subCategoryBoard: 'Release Frequency',
+                kpiWidth: 100,
                 id: '63320976b7f239ac93c2686a',
                 kpiId: 'kpi74',
                 kpiName: 'Iteration Progress',
@@ -1984,10 +1986,10 @@ describe('IterationComponent', () => {
             kpiName: 'Iteration Progress',
             isEnabled: true,
             order: 1,
-            subCategoryBoard : 'Iteration Review',
+            subCategoryBoard: 'Iteration Review',
             kpiDetail: {
-                subCategoryBoard : 'Iteration Review',
-                kpiWidth : 100,
+                subCategoryBoard: 'Iteration Review',
+                kpiWidth: 100,
                 id: '63320976b7f239ac93c2686a',
                 kpiId: 'kpi74',
                 kpiName: 'Iteration Progress',
@@ -2026,13 +2028,13 @@ describe('IterationComponent', () => {
                 RouterTestingModule.withRoutes(routes),
             ],
             declarations: [IterationComponent,
-                MultilineComponent, DashboardComponent,ExportExcelComponent],
+                MultilineComponent, DashboardComponent, ExportExcelComponent],
             providers: [
                 HelperService,
                 { provide: APP_CONFIG, useValue: AppConfig },
                 HttpService,
                 { provide: SharedService, useValue: service }
-                , ExcelService, DatePipe,MessageService
+                , ExcelService, DatePipe, MessageService, FeatureFlagsService
 
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -2043,11 +2045,17 @@ describe('IterationComponent', () => {
         httpService = TestBed.inject(HttpService);
         helperService = TestBed.inject(HelperService);
         excelService = TestBed.inject(ExcelService);
-
+        featureFlagService = TestBed.inject(FeatureFlagsService)
         spyOn(helperService, 'colorAccToMaturity').and.returnValue(('#44739f'));
         httpMock = TestBed.inject(HttpTestingController);
         fixture = TestBed.createComponent(IterationComponent);
         component = fixture.componentInstance;
+        tableComponent = {
+            sortMode: '',
+            multiSortMeta: [],
+            sortMultiple: jasmine.createSpy('sortMultiple'),
+          };
+          component.tableComponent = tableComponent;
         // We set the expectations for the HttpClient mock
         reqJira = httpMock.match((request) => request.url);
         fixture.detectChanges();
@@ -2074,7 +2082,7 @@ describe('IterationComponent', () => {
 
     xit('Scrum with filter applied', (done) => {
         const type = 'Scrum';
-        service.selectedtype=type;
+        service.selectedtype = type;
         // component.selectedtype = 'Scrum';
         console.log('Selected Type ====> ', component.selectedtype);
         service.select(masterData, filterData, filterApplyDataWithScrum, selectedTab);
@@ -2088,7 +2096,7 @@ describe('IterationComponent', () => {
     it('should process kpi config Data', () => {
         component.configGlobalData = configGlobalData;
         component.configGlobalData.push({
-            kpiId:'kpi120',
+            kpiId: 'kpi120',
             isEnabled: false,
             shown: true
 
@@ -2150,7 +2158,7 @@ describe('IterationComponent', () => {
         const spygroupJiraKpi = spyOn(component, 'groupJiraKpi');
         const spycalcBusinessDays = spyOn(component, 'calcBusinessDays');
         spyOn(service, 'getDashConfigData').and.returnValue(userConfigData['data']);
-        spyOn(component,'processKpiConfigData');
+        spyOn(component, 'processKpiConfigData');
         component.receiveSharedData(filterData);
         expect(spycalcBusinessDays).toHaveBeenCalled();
         expect(spygroupJiraKpi).toHaveBeenCalled();
@@ -2265,7 +2273,7 @@ describe('IterationComponent', () => {
         };
         component.jiraKpiData = {};
         component.loaderJiraArray = ['kpi14'];
-        const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(fakeJiraGroupId1));
+        const spy = spyOn(httpService, 'postKpi').and.returnValue(of(fakeJiraGroupId1));
         const spycreateKpiWiseId = spyOn(helperService, 'createKpiWiseId').and.returnValue(jiraKpiData);
         const spycreateAllKpiArray = spyOn(component, 'createAllKpiArray');
         component.postJiraKpi(fakeJiraPayload, 'jira');
@@ -2278,7 +2286,7 @@ describe('IterationComponent', () => {
         component.filterApplyData = [];
         component.filterData = [];
         const spy = spyOn(component.exportExcelComponent, 'downloadExcel');
-        component.downloadExcel('kpi14', 'Lead Time', false,false);
+        component.downloadExcel('kpi14', 'Lead Time', false, false);
         expect(spy).toHaveBeenCalled();
     });
 
@@ -2384,7 +2392,7 @@ describe('IterationComponent', () => {
             },
             selectedTab: 'Iteration'
         };
-        component.globalConfig =userConfigData['data'];
+        component.globalConfig = userConfigData['data'];
         const spy = spyOn(component, 'receiveSharedData');
         service.passDataToDashboard.emit(sharedObject);
         fixture.detectChanges();
@@ -2407,7 +2415,7 @@ describe('IterationComponent', () => {
 
     it('should process config data on getting globalDashConfigData', () => {
 
-        component.sharedObject={};
+        component.sharedObject = {};
         service.globalDashConfigData.emit(userConfigData['data']);
         fixture.detectChanges();
         expect(component.configGlobalData.length).toEqual(1);
@@ -2421,7 +2429,7 @@ describe('IterationComponent', () => {
     });
 
     it('should evalvate Expression while performing aggregation', () => {
-       const val = [
+        const val = [
             {
                 "filter1": "Defect",
                 "filter2": "P2 - Critical",
@@ -2432,7 +2440,7 @@ describe('IterationComponent', () => {
                         "value1": 3,
                         "unit": "",
                         "modalValues": [],
-                        expressions : ""
+                        expressions: ""
                     },
                     {
                         "label": "Story Point",
@@ -2468,8 +2476,7 @@ describe('IterationComponent', () => {
     });
 
     it('should handle selected option', () => {
-        component.filterApplyData = {ids : ['fakeRelease']}
-       const event = {
+        const event = {
             "filter1": [
                 "Tech Story"
             ],
@@ -2488,39 +2495,39 @@ describe('IterationComponent', () => {
         expect(Object.keys(component.kpiSelectedFilterObj['kpi123']).length).toEqual(Object.keys(event).length);
     });
 
-    it('should convert to hours if time', ()=>{
+    it('should convert to hours if time', () => {
         const time = '14880';
         const unit = 'hours';
         const convertedTime = component.convertToHoursIfTime(time, unit);
         expect(convertedTime).toEqual('248h');
     });
 
-    it("should issue details view shown on arrow click",()=>{
+    it("should issue details view shown on arrow click", () => {
         const kpi = {
-          isEnabled: true,
-          kpiDetail: {
-            id: '63c85780f1cc727f444c6f0d',
+            isEnabled: true,
+            kpiDetail: {
+                id: '63c85780f1cc727f444c6f0d',
+                kpiId: 'kpi119',
+                kpiName: 'Work Remaining',
+                isDeleted: 'False',
+                defaultOrder: 3,
+            },
             kpiId: 'kpi119',
             kpiName: 'Work Remaining',
-            isDeleted: 'False',
-            defaultOrder: 3,
-          },
-          kpiId: 'kpi119',
-          kpiName: 'Work Remaining',
-          order: 3,
-          shown: true,
+            order: 3,
+            shown: true,
         };
-        const tableValues =[ {
-          ['Issue Description']:
-            'Playground server is failing with OutOfMemoryError',
-          ['Issue Id']: 'DTS-20225',
-          ['Issue Status']: 'In Investigation',
-          ['Issue Type']: 'Defect',
-          ['Issue URL']: 'http://testabc.com/jira/browse/DTS-20225',
-          ['Logged Work']: '0 hrs',
-          ['Original Estimate']: '0 hrs',
+        const tableValues = [{
+            ['Issue Description']:
+                'Playground server is failing with OutOfMemoryError',
+            ['Issue Id']: 'DTS-20225',
+            ['Issue Status']: 'In Investigation',
+            ['Issue Type']: 'Defect',
+            ['Issue URL']: 'http://testabc.com/jira/browse/DTS-20225',
+            ['Logged Work']: '0 hrs',
+            ['Original Estimate']: '0 hrs',
         }];
-        const response ={
+        const response = {
             "message": "Fetched successfully",
             "success": true,
             "data": {
@@ -2575,55 +2582,55 @@ describe('IterationComponent', () => {
                 "basicProjectConfigId": "64218f1f7b8332581c81169d"
             }
         ];
-        spyOn(httpService,'getkpiColumns').and.returnValue(of(response));
+        spyOn(httpService, 'getkpiColumns').and.returnValue(of(response));
         // spyOn(component,'generateTableColumnsFilterData');
         // spyOn(component,'generateExcludeColumnsFilterList');
-        spyOn(component,'generateTableColumnData');
-        component.tableComponent.clear = ()=>{};
-        component.handleArrowClick(kpi,"Issue Count",tableValues);
+        spyOn(component, 'generateTableColumnData');
+        component.tableComponent.clear = () => { };
+        component.handleArrowClick(kpi, "Issue Count", tableValues);
         expect(component.displayModal).toBeTruthy();
     });
 
-    it('should convert to hours',()=>{
-        let result =component.convertToHoursIfTime(25,'hours');
+    it('should convert to hours', () => {
+        let result = component.convertToHoursIfTime(25, 'hours');
         expect(result).toEqual('25m');
 
-        result = component.convertToHoursIfTime(65,'hours');
+        result = component.convertToHoursIfTime(65, 'hours');
         expect(result).toEqual('1h 5m');
 
-        result = component.convertToHoursIfTime(60,'hours');
+        result = component.convertToHoursIfTime(60, 'hours');
         expect(result).toEqual('1h');
     });
 
-    it('should convert to day',()=>{
-        let result =component.convertToHoursIfTime(25,'day');
+    it('should convert to day', () => {
+        let result = component.convertToHoursIfTime(25, 'day');
         expect(result.trim()).toEqual('25m');
 
-        result = component.convertToHoursIfTime(480,'day');
+        result = component.convertToHoursIfTime(480, 'day');
         expect(result.trim()).toEqual('1d');
 
-        result = component.convertToHoursIfTime(0,'day');
+        result = component.convertToHoursIfTime(0, 'day');
         expect(result.trim()).toEqual('0d');
     });
 
-    it('should generate excel on click of export button',()=>{
-        component.modalDetails ={
+    it('should generate excel on click of export button', () => {
+        component.modalDetails = {
             header: 'Work Remaining / Issue Count/Original Estimate',
             tableHeadings: [
                 "Issue Id",
                 "Issue Description",
                 "Issue Status",
             ],
-            tableValues:[{
+            tableValues: [{
                 'Issue Id': 'DTS-22685',
                 'Issue URL': 'http://testabc.com/jira/browse/DTS-22685',
                 'Issue Description': 'Iteration KPI | Popup window is not wide enough to read details  ',
                 'Issue Status': 'Open',
             }],
-            kpiId:'kpi19'
+            kpiId: 'kpi19'
         };
 
-        const spyGenerateExcel = spyOn(excelService,'generateExcel');
+        const spyGenerateExcel = spyOn(excelService, 'generateExcel');
         component.generateExcel('all');
         expect(spyGenerateExcel).toHaveBeenCalled();
     });
@@ -2634,7 +2641,7 @@ describe('IterationComponent', () => {
             trendValueList: {
                 value: [
                     {
-                        filter1:"Overall",
+                        filter1: "Overall",
                         filter2: "Overall",
                         data: [{
                             "label": "Scope added",
@@ -2693,7 +2700,7 @@ describe('IterationComponent', () => {
         const endDate = new Date('2023-06-01T00:00:00').toISOString().split('T')[0];
         const days = component.calcBusinessDays(today, endDate);
         expect(days).toBe(24);
-      });
+    });
 
     it('should apply aggregation for groupBarchart', () => {
         const data = [
@@ -2733,17 +2740,19 @@ describe('IterationComponent', () => {
         expect(result[0]?.value[0].value).toEqual(21);
     });
 
-    it('should get chart type',()=>{
-        component.updatedConfigGlobalData=[
-            {kpiId:'kpi125',
-        kpiDetail:{
-            chartType: 'GroupBarChart'
-        }}
+    it('should get chart type', () => {
+        component.updatedConfigGlobalData = [
+            {
+                kpiId: 'kpi125',
+                kpiDetail: {
+                    chartType: 'GroupBarChart'
+                }
+            }
         ];
         expect(component.getKpiChartType('kpi125')).toEqual('GroupBarChart');
     });
 
-    it('should evalvate the aggregated expression',()=>{
+    it('should evalvate the aggregated expression', () => {
         let aggregatedArr = [
             {
                 "label": "First Time Pass Stories",
@@ -2769,11 +2778,11 @@ describe('IterationComponent', () => {
                 "modalValues": null
             }
         ];
-        component.evalvateExpression(aggregatedArr[2],aggregatedArr,[]);
+        component.evalvateExpression(aggregatedArr[2], aggregatedArr, []);
         expect(aggregatedArr[2].value).toEqual(88.89);
     })
 
-    it('should evalvate average the aggregated expression',()=>{
+    it('should evalvate average the aggregated expression', () => {
         let aggregatedArr = [
             {
                 "label": "First Time Pass Stories",
@@ -2799,7 +2808,7 @@ describe('IterationComponent', () => {
                 "modalValues": null
             }
         ];
-        component.evalvateExpression(aggregatedArr[2],aggregatedArr,[]);
+        component.evalvateExpression(aggregatedArr[2], aggregatedArr, []);
         expect(aggregatedArr[2].value).not.toBeNull();
     })
 
@@ -2810,7 +2819,7 @@ describe('IterationComponent', () => {
             trendValueList: {
                 value: [
                     {
-                        filter1:"Overall",
+                        filter1: "Overall",
                         data: [{
                             "label": "Scope added",
                             "value": 1,
@@ -2860,7 +2869,7 @@ describe('IterationComponent', () => {
             trendValueList: {
                 value: [
                     {
-                        filter1:"Overall",
+                        filter1: "Overall",
                         data: [{
                             "label": "Scope added",
                             "value": 1,
@@ -2894,7 +2903,7 @@ describe('IterationComponent', () => {
     it('should get chartdata for kpi when trendValueList is an object but there is no data', () => {
         component.allKpiArray = [{
             kpiId: 'kpi124',
-            trendValueList:  {
+            trendValueList: {
                 value: []
             }
         }];
@@ -2938,14 +2947,14 @@ describe('IterationComponent', () => {
                                 "value1": 42,
                                 "unit": "",
                             },
-                            
+
                         ]
                     }
                 ]
-            } 
+            }
         }];
         component.kpiSelectedFilterObj['kpi124'] = {
-            filter1 : ['Defect']
+            filter1: ['Defect']
         }
 
         const spyObj = spyOn(component, 'applyAggregationLogic');
@@ -2958,39 +2967,33 @@ describe('IterationComponent', () => {
     it('should get chartdata for kpi when trendValueList is an Array without filter', () => {
         component.allKpiArray = [{
             kpiId: 'kpi124',
-            trendValueList:  [
-               { label : "l1"}
+            trendValueList: [
+                { label: "l1" }
             ]
         }];
         component.kpiSelectedFilterObj['kpi124'] = {
-            filter1 : ['hold','in progress']
+            filter1: ['hold', 'in progress']
         }
 
         const spyObj = spyOn(component, 'applyAggregationLogic');
-        spyOn(component,'getKpiChartType');
+        spyOn(component, 'getKpiChartType');
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'].length).toBeGreaterThan(0)
     })
 
-    it("should create kpi wise list()",()=>{
-        component.filterApplyData = {
-            ids : ['fakeSprint']
-        }
+    it("should create kpi wise list()", () => {
         const fakeKPi = helperService.createKpiWiseId(fakeKpiResponse.response);
-         component.createAllKpiArray(fakeKPi)
-         expect(component.allKpiArray.length).toBeGreaterThan(0);
-       })
+        component.createAllKpiArray(fakeKPi)
+        expect(component.allKpiArray.length).toBeGreaterThan(0);
+    })
 
-       it("should create kpi array when trendvalueList is object",()=>{
-        component.filterApplyData = {
-            ids : ['fakeSprint']
-        }
+    it("should create kpi array when trendvalueList is object", () => {
         let kpi = [{
             kpiId: "kpi141",
             trendValueList: {
                 value: [
                     {
-                        filter1:"Overall",
+                        filter1: "Overall",
                         data: [{
                             "label": "Scope added",
                             "value": 1,
@@ -3009,14 +3012,14 @@ describe('IterationComponent', () => {
                 ]
 
             },
-            filters : ['f1',"f2"]
+            filters: ['f1', "f2"]
         },]
         const fakeKPi = helperService.createKpiWiseId(kpi);
-         component.createAllKpiArray(fakeKPi)
-         expect(component.allKpiArray.length).toBeGreaterThan(0);
-       })
+        component.createAllKpiArray(fakeKPi)
+        expect(component.allKpiArray.length).toBeGreaterThan(0);
+    })
 
-       it('should filter table columns',()=>{
+    it('should filter table columns', () => {
         service.selectedTrends = [
             {
                 "nodeId": "aCjCgoFkxh_64218f1f7b8332581c81169d",
@@ -3033,7 +3036,7 @@ describe('IterationComponent', () => {
             }
         ];
 
-        component.modalDetails['tableHeadings']=[
+        component.modalDetails['tableHeadings'] = [
             "Issue Id",
             "Issue Description",
             "First Time Pass",
@@ -3041,14 +3044,14 @@ describe('IterationComponent', () => {
             "Defect Priority"
         ];
 
-        component.selectedColumns=[
+        component.selectedColumns = [
             "Issue Id",
             "Issue Description",
             "Linked Defect",
             "Defect Priority"
         ];
 
-        component.tableColumns=[
+        component.tableColumns = [
             {
                 "columnName": "Issue Id",
                 "order": 0,
@@ -3081,7 +3084,7 @@ describe('IterationComponent', () => {
             }
         ];
 
-        const spypostKpiColumnConfig = spyOn(httpService,'postkpiColumnsConfig').and.returnValue(of({}));
+        const spypostKpiColumnConfig = spyOn(httpService, 'postkpiColumnsConfig').and.returnValue(of({}));
         component.applyColumnFilter();
         expect(spypostKpiColumnConfig).toHaveBeenCalled();
     });
@@ -3102,7 +3105,7 @@ describe('IterationComponent', () => {
         const spy = spyOn(component, 'postJiraKpi');
         component.reloadKPI(fakeKPiDetails);
         expect(spy).toBeDefined();
-      })
+    })
 
     it('should noTabAccess false when emp details not available', () => {
         service.setEmptyData('');
@@ -3135,40 +3138,40 @@ describe('IterationComponent', () => {
         component.ngOnInit();
         expect(component.colorObj).toBe(x);
     });
-    
-      it('should not set the global config data when the http request fails', () => {
-        spyOn(httpService,'getConfigDetails').and.returnValue(of(['not error']));
-        component.ngOnInit();
-      });
 
-      it("should setup tabs",()=>{
+    it('should not set the global config data when the http request fails', () => {
+        spyOn(httpService, 'getConfigDetails').and.returnValue(of(['not error']));
+        component.ngOnInit();
+    });
+
+    it("should setup tabs", () => {
         component.upDatedConfigData = configGlobalData;
         const fakeResponce = [{
-            data : [{
-                id : 'fakeId'
+            data: [{
+                id: 'fakeId'
             }]
         }]
         component.selectedProjectId = 'fakeId';
-        spyOn(httpService,'getProjectListData').and.returnValue(of(fakeResponce));
+        spyOn(httpService, 'getProjectListData').and.returnValue(of(fakeResponce));
         component.checkForAssigneeDataAndSetupTabs();
         expect(component.navigationTabs).toBeDefined();
-      })
+    })
 
-      it('should setup tabs whiel processing kpi data',()=>{
+    it('should setup tabs whiel processing kpi data', () => {
         component.navigationTabs = [
             { 'label': 'Iteration Review2', 'count': 0, width: 'half', kpis: [], fullWidthKpis: [] },
             { 'label': 'Iteration Progress2', 'count': 0, width: 'full', kpis: [] },
-          ];
+        ];
         component.configGlobalData = [
             {
                 kpiId: 'kpi74',
                 kpiName: 'Release Frequency',
                 isEnabled: true,
                 order: 1,
-                kpiSubCategory : 'Iteration Review2',
+                kpiSubCategory: 'Iteration Review2',
                 kpiDetail: {
-                    kpiWidth : 100,
-                    kpiSubCategory : 'Iteration Review2',
+                    kpiWidth: 100,
+                    kpiSubCategory: 'Iteration Review2',
                     id: '63320976b7f239ac93c2686a',
                     kpiId: 'kpi74',
                     kpiName: 'Release Frequency',
@@ -3180,9 +3183,9 @@ describe('IterationComponent', () => {
                 kpiName: 'Release Frequency',
                 isEnabled: true,
                 order: 1,
-                kpiSubCategory : 'Iteration Review2',
+                kpiSubCategory: 'Iteration Review2',
                 kpiDetail: {
-                    kpiSubCategory : 'Iteration Review2',
+                    kpiSubCategory: 'Iteration Review2',
                     id: '63320976b7f239ac93c2686a',
                     kpiId: 'kpi74',
                     kpiName: 'Release Frequency',
@@ -3194,9 +3197,9 @@ describe('IterationComponent', () => {
                 kpiName: 'Iteration Progress',
                 isEnabled: true,
                 order: 1,
-                kpiSubCategory : 'Iteration Progress2',
+                kpiSubCategory: 'Iteration Progress2',
                 kpiDetail: {
-                    kpiSubCategory : 'Iteration Progress2',
+                    kpiSubCategory: 'Iteration Progress2',
                     id: '63320976b7f239ac93c2686a',
                     kpiId: 'kpi74',
                     kpiName: 'Iteration Progress2',
@@ -3208,10 +3211,10 @@ describe('IterationComponent', () => {
                 kpiName: 'Iteration Progress2',
                 isEnabled: true,
                 order: 1,
-                kpiSubCategory : 'Release Frequency',
+                kpiSubCategory: 'Release Frequency',
                 kpiDetail: {
-                    kpiSubCategory : 'Release Frequency',
-                    kpiWidth : 100,
+                    kpiSubCategory: 'Release Frequency',
+                    kpiWidth: 100,
                     id: '63320976b7f239ac93c2686a',
                     kpiId: 'kpi74',
                     kpiName: 'Iteration Progress2',
@@ -3219,36 +3222,35 @@ describe('IterationComponent', () => {
                 shown: true
             },
         ];;
-        
+
         const fakeResponce = [{
-            data : [{
-                id : 'fakeId'
+            data: [{
+                id: 'fakeId'
             }]
         }]
         component.selectedProjectId = 'fakeId';
-        spyOn(httpService,'getProjectListData').and.returnValue(of(fakeResponce));
+        spyOn(httpService, 'getProjectListData').and.returnValue(of(fakeResponce));
         component.processKpiConfigData();
-      })
+    })
 
-      it('should sort the array alphabetically', () => {
+    it('should sort the array alphabetically', () => {
         const objArray = [
-          { data: 'c' },
-          { data: 'a' },
-          { data: 'b' },
+            { data: 'c' },
+            { data: 'a' },
+            { data: 'b' },
         ];
         const sortedArray = component.sortAlphabetically(objArray);
         expect(sortedArray).toEqual([
-          { data: 'a' },
-          { data: 'b' },
-          { data: 'c' },
+            { data: 'a' },
+            { data: 'b' },
+            { data: 'c' },
         ]);
-      });
+    });
 
 
-      it("should createapiarry for radiobutton",()=>{
-        component.filterApplyData = {ids : ['release1']}
+    it("should createapiarry for radiobutton", () => {
         const data = {
-            kpi141 : {
+            kpi141: {
                 kpiId: "kpi141",
                 kpiName: "Defect Count by Status",
                 unit: "Count",
@@ -3265,8 +3267,8 @@ describe('IterationComponent', () => {
                 kpiSource: "Jira",
                 trendValueList: [
                     {
-                        filter1 : 'story',
-                        value : [
+                        filter1: 'story',
+                        value: [
                             {
                                 data: "1",
                                 value: [
@@ -3292,7 +3294,7 @@ describe('IterationComponent', () => {
                 isEnabled: true,
                 order: 23,
                 kpiDetail: {
-                    kpiFilter : 'radiobutton'
+                    kpiFilter: 'radiobutton'
                 },
                 shown: true
             }
@@ -3302,20 +3304,19 @@ describe('IterationComponent', () => {
             filter1: ['story']
         }
         component.kpiDropdowns = {
-            kpi141 : {
-                options : ['story']
+            kpi141: {
+                options: ['story']
             }
         }
-        spyOn(component,'getChartData')
-        spyOn(component,'ifKpiExist').and.returnValue(-1)
+        spyOn(component, 'getChartData')
+        spyOn(component, 'ifKpiExist').and.returnValue(-1)
         component.createAllKpiArray(data);
         expect(component.kpiSelectedFilterObj).toBeDefined();
-      })
+    })
 
-      it("should createapiarry for dropdown",()=>{
-        component.filterApplyData = {ids : ['release1']}
+    it("should createapiarry for dropdown", () => {
         const data = {
-            kpi141 : {
+            kpi141: {
                 kpiId: "kpi141",
                 kpiName: "Defect Count by Status",
                 unit: "Count",
@@ -3332,8 +3333,8 @@ describe('IterationComponent', () => {
                 kpiSource: "Jira",
                 trendValueList: [
                     {
-                        filter1 : 'story',
-                        value : [
+                        filter1: 'story',
+                        value: [
                             {
                                 data: "1",
                                 value: [
@@ -3359,7 +3360,7 @@ describe('IterationComponent', () => {
                 isEnabled: true,
                 order: 23,
                 kpiDetail: {
-                    kpiFilter : 'dropdown'
+                    kpiFilter: 'dropdown'
                 },
                 shown: true
             }
@@ -3369,19 +3370,18 @@ describe('IterationComponent', () => {
             filter1: ['story']
         }
         component.kpiDropdowns = {
-            kpi141 : {
-                options : ['story']
+            kpi141: {
+                options: ['story']
             }
         }
-        spyOn(component,'ifKpiExist').and.returnValue(-1)
+        spyOn(component, 'ifKpiExist').and.returnValue(-1)
         component.createAllKpiArray(data);
         expect(component.kpiSelectedFilterObj).toBeDefined();
-      })
+    })
 
-      it("should createapiarry for multi dropdown",()=>{
-        component.filterApplyData = {ids : ['release1']}
+    it("should createapiarry for multi dropdown", () => {
         const data = {
-            kpi141 : {
+            kpi141: {
                 kpiId: "kpi141",
                 kpiName: "Defect Count by Status",
                 unit: "Count",
@@ -3390,9 +3390,9 @@ describe('IterationComponent', () => {
                 kpiInfo: {
                     definition: "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
                 },
-                filters : {
-                    filter1 : {
-                        options : ['story']
+                filters: {
+                    filter1: {
+                        options: ['story']
                     }
                 },
                 id: "64b4ed7acba3c12de164732c",
@@ -3403,8 +3403,8 @@ describe('IterationComponent', () => {
                 kpiSource: "Jira",
                 trendValueList: [
                     {
-                        filter1 : 'story',
-                        value : [
+                        filter1: 'story',
+                        value: [
                             {
                                 data: "1",
                                 value: [
@@ -3430,7 +3430,7 @@ describe('IterationComponent', () => {
                 isEnabled: true,
                 order: 23,
                 kpiDetail: {
-                    kpiFilter : 'multiDropdown'
+                    kpiFilter: 'multiDropdown'
                 },
                 shown: true
             }
@@ -3440,30 +3440,30 @@ describe('IterationComponent', () => {
             filter1: ['story']
         }
         component.kpiDropdowns = {
-            kpi141 : {
-                options : ['story']
+            kpi141: {
+                options: ['story']
             }
         }
-        spyOn(component,'ifKpiExist').and.returnValue(-1)
+        spyOn(component, 'ifKpiExist').and.returnValue(-1)
         component.createAllKpiArray(data);
         expect(component.kpiSelectedFilterObj).toBeDefined();
-      })
+    })
 
-      it('should get dropdown array for multi dropdown filter', () => {
+    it('should get dropdown array for multi dropdown filter', () => {
         spyOn(component, 'ifKpiExist').and.returnValue('0');
         component.allKpiArray = [{
             'kpiId': 'kpi75',
-            trendValueList :[ {
-                filter1 : "overall"
+            trendValueList: [{
+                filter1: "overall"
             }]
         }];
         component.updatedConfigGlobalData = [{
-            kpiId : 'kpi75',
+            kpiId: 'kpi75',
             kpiDetail: {
-                kpiFilter : "multiselectdropdown"
+                kpiFilter: "multiselectdropdown"
             }
         },
-    ]
+        ]
         component.getDropdownArray('kpi75');
         expect(component.kpiDropdowns).toBeDefined();
 
@@ -3473,17 +3473,17 @@ describe('IterationComponent', () => {
         spyOn(component, 'ifKpiExist').and.returnValue('0');
         component.allKpiArray = [{
             'kpiId': 'kpi75',
-            trendValueList :[ {
-                filter1 : "overall"
+            trendValueList: [{
+                filter1: "overall"
             }]
         }];
         component.updatedConfigGlobalData = [{
-            kpiId : 'kpi75',
+            kpiId: 'kpi75',
             kpiDetail: {
-                kpiFilter : "dropdown"
+                kpiFilter: "dropdown"
             }
         },
-    ]
+        ]
         component.getDropdownArray('kpi75');
         expect(component.kpiDropdowns).toBeDefined();
 
@@ -3493,21 +3493,21 @@ describe('IterationComponent', () => {
         const columnName = 'column-1';
         component.onFilterClick(columnName);
         expect(component.filteredColumn).toBe(columnName);
-      });
+    });
 
-      it('should clear the filteredColumn if it matches the provided columnName', () => {
+    it('should clear the filteredColumn if it matches the provided columnName', () => {
         const columnName = 'column-1';
         component.filteredColumn = 'column-1';
         component.onFilterBlur(columnName);
         expect(component.filteredColumn).toBe('');
-      });
-    
-      it('should not clear the filteredColumn if it does not match the provided columnName', () => {
+    });
+
+    it('should not clear the filteredColumn if it does not match the provided columnName', () => {
         const columnName = 'column-1';
         component.filteredColumn = 'column-2';
         component.onFilterBlur(columnName);
         expect(component.filteredColumn).toBe('column-2');
-      });
+    });
 
     it('should group the kpiJira and call postJiraKpi when the index is 2', () => {
         const masterData = {
@@ -3531,14 +3531,14 @@ describe('IterationComponent', () => {
 
     it('should get kpi comments count', fakeAsync(() => {
         component.filterData = [{
-            nodeId : "38998_DEMO_SONAR_63284960fdd20276d60e4df5",
-            parentId : 'pid'
+            nodeId: "38998_DEMO_SONAR_63284960fdd20276d60e4df5",
+            parentId: 'pid'
         }];
         component.filterApplyData = {
             'ids': ["38998_DEMO_SONAR_63284960fdd20276d60e4df5"],
             'selectedMap': {
                 'release': ["38998_DEMO_SONAR_63284960fdd20276d60e4df5"],
-                sprint : ['sp1']
+                sprint: ['sp1']
             },
             'level': 6
         };
@@ -3573,14 +3573,14 @@ describe('IterationComponent', () => {
 
     it('should get kpi comments count if we have kpi id', fakeAsync(() => {
         component.filterData = [{
-            nodeId : "38998_DEMO_SONAR_63284960fdd20276d60e4df5",
-            parentId : 'pid'
+            nodeId: "38998_DEMO_SONAR_63284960fdd20276d60e4df5",
+            parentId: 'pid'
         }];
         component.filterApplyData = {
             'ids': ["38998_DEMO_SONAR_63284960fdd20276d60e4df5"],
             'selectedMap': {
                 'release': ["38998_DEMO_SONAR_63284960fdd20276d60e4df5"],
-                sprint : ['sp1']
+                sprint: ['sp1']
             },
             'level': 6
         };
@@ -3641,15 +3641,83 @@ describe('IterationComponent', () => {
         };
         component.jiraKpiData = {};
         component.loaderJiraArray = ['kpi14'];
-        const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(null));
+        const spy = spyOn(httpService, 'postKpi').and.returnValue(of(null));
         spyOn(helperService, 'createKpiWiseId').and.returnValue(jiraKpiData);
         component.postJiraKpi(fakeJiraPayload, 'jira');
         tick();
         expect(spy).toHaveBeenCalled();
     }));
-      
 
+    it('should generate table column data', () => {
+        // Arrange
+        const colName1 = 'Column1';
+        const colName2 = 'Column2';
+        const colData1 = 'Data1';
+        const colData2 = 'Data2';
+        component.modalDetails = {
+            header: 'Work Remaining / Issue Count/Original Estimate',
+            kpiId: 'kpi1',
+            tableHeadings: [colName1, colName2],
+            tableValues: [
+                { [colName1]: colData1, [colName2]: colData1 },
+                { [colName1]: colData1, [colName2]: colData2 },
+                { [colName1]: colData2, [colName2]: colData1 },
+                { [colName1]: colData2, [colName2]: colData2 },
+            ],
+        };
+        component.tableComponent = tableComponent;
+        component.tableColumnData = {};
+
+        // Act
+        component.generateTableColumnData();
+
+        // Assert
+        expect(component.tableColumnData[colName1]).toEqual([{ name: colData1, value: colData1 }, { name: colData2, value: colData2 }]);
+        expect(component.tableColumnData[colName2]).toEqual([{ name: colData1, value: colData1 }, { name: colData2, value: colData2 }]);
+        expect(component.tableColumnForm[colName1]).toEqual([]);
+        expect(component.tableColumnForm[colName2]).toEqual([]);
+        expect(component.tableComponent.sortMode).toBe('multiple');
+        expect(component.tableComponent.multiSortMeta).toEqual([{ field: 'Assignee', order: 1 }, { field: 'Due Date', order: -1 }]);
+        expect(component.tableComponent.sortMultiple).toHaveBeenCalled();
     });
 
-    
-
+    it('should set up navigation tabs correctly', async () => {
+        // Mock the response from httpService.getProjectListData()
+        const responseList = [
+          {
+            data: [
+              {
+                id: 'project1',
+                saveAssigneeDetails: true
+              },
+              {
+                id: 'project2',
+                saveAssigneeDetails: false
+              }
+            ]
+          }
+        ];
+        component.selectedProjectId = 'project1';
+        component.navigationTabs = []
+        
+        // Mock the response from featureFlagService.isFeatureEnabled()
+        spyOn(featureFlagService, 'isFeatureEnabled').and.returnValue(Promise.resolve(true));
+        
+        // Set up initial values
+        service.setCurrentSelectedSprint({ sprintState: 'Active' });
+        // spyOn(service, 'currentSelectedSprint').and.returnValue({ sprintState: 'Active' });
+        spyOn(httpService, 'getProjectListData').and.returnValue(of(responseList));
+        component.upDatedConfigData = [
+          { subCategoryBoard: 'Board1', kpiDetail: { kpiWidth: 50 } },
+          { subCategoryBoard: 'Board2', kpiDetail: { kpiWidth: 100 } },
+          { subCategoryBoard: 'Board1', kpiDetail: { kpiWidth: 50 } }
+        ];
+        component.commitmentReliabilityKpi = { isEnabled: true };
+      
+        // Call the method
+        await component.checkForAssigneeDataAndSetupTabs();
+      
+        // Assert the navigationTabs
+        expect(component.navigationTabs.length).toEqual(3);
+      });
+});
