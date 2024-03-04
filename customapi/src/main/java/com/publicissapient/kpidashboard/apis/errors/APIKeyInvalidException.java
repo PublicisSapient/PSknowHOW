@@ -18,11 +18,14 @@
 
 package com.publicissapient.kpidashboard.apis.errors;
 
-/**
- * @author anisingh4
- */
-public class ProjectNotFoundException extends RuntimeException {
-	public ProjectNotFoundException(String message) {
-		super(message);
+import org.springframework.security.core.AuthenticationException;
+
+public class APIKeyInvalidException extends AuthenticationException {
+
+	private static final long serialVersionUID = -8596676033265445347L;
+
+	public APIKeyInvalidException(String msg) {
+		super(msg);
 	}
+
 }

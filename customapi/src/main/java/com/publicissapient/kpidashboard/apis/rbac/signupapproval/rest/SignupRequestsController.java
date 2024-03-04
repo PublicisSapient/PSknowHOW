@@ -23,7 +23,6 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;

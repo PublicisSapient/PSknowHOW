@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import com.publicissapient.kpidashboard.apis.errors.APIKeyInvalidException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -576,11 +578,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 				return response.getBody();
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
-				return new UserInfo();
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 			}
 		} catch (HttpClientErrorException e) {
 			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
-			return null;
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 		} catch (RuntimeException e) {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return null;
@@ -606,13 +608,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 				return modelMapper.map(jsonObject.get("data"), CentralUserInfoDTO.class);
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
-				return null;
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 			}
 		} catch (ParseException e) {
 			throw new AuthenticationServiceException("Unable to parse apikey token.", e);
 		} catch (HttpClientErrorException e) {
 			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
-			return null;
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 		} catch (RuntimeException e) {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return null;
@@ -638,11 +640,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 				return true;
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
-				return false;
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 			}
 		} catch (HttpClientErrorException e) {
 			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
-			return false;
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 		} catch (RuntimeException e) {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return false;
@@ -669,14 +671,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 				}.getType());
 
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
-				return new ArrayList<>();
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 			}
 		} catch (ParseException e) {
 			throw new AuthenticationServiceException("Unable to parse response.", e);
 		} catch (HttpClientErrorException e) {
 			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
-			return new ArrayList<>();
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 		} catch (RuntimeException e) {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return new ArrayList<>();
@@ -703,13 +704,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
-				return false;
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 			}
 		} catch (ParseException e) {
 			throw new AuthenticationServiceException("Unable to parse response.", e);
 		} catch (HttpClientErrorException e) {
 			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
-			return false;
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 		} catch (RuntimeException e) {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return false;
@@ -733,11 +734,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 				return true;
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
-				return false;
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 			}
 		} catch (HttpClientErrorException e) {
 			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
-			return false;
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 		} catch (RuntimeException e) {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return false;
