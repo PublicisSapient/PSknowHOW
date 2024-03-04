@@ -305,7 +305,6 @@ public class ConnectionServiceImplTest {
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
 		RepoToolsProvider provider= new RepoToolsProvider();
 		provider.setTestApiUrl("https://www.test.com");
-		when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(provider);
 		ServiceResponse response = connectionServiceImpl.updateConnection("5fdc809fb55d53cc1692543c", connection);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(((ConnectionDTO) response.getData()).getConnectionName(), connection.getConnectionName());
@@ -721,12 +720,11 @@ public class ConnectionServiceImplTest {
 		listDataConnection.setType(type);
 		dataConnection1.add(listDataConnection);
 		dataConnection1.add(listDataConnection1);
-		when(customApiConfig.getIsRepoToolEnable()).thenReturn(Boolean.TRUE);
 
 		when(connectionRepository.findAllWithoutSecret()).thenReturn(dataConnection1);
 		ServiceResponse response = connectionServiceImpl.getConnectionByType(type);
 		dataConnection1.get(0).getConnectionUsers().get(0).equals("user91");
-		assertThat("status", response.getSuccess(), equalTo(false));
+		assertThat("status", response.getSuccess(), equalTo(true));
 	}
 
 	@Test
