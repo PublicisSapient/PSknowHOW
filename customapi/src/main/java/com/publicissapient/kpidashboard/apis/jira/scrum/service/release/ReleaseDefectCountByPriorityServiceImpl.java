@@ -91,7 +91,9 @@ public class ReleaseDefectCountByPriorityServiceImpl extends JiraReleaseKPIServi
 				Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 				List<JiraIssue> openDefects = totalDefects.stream()
-						.filter(jiraIssue -> fieldMapping.getStoryFirstStatus().contains(jiraIssue.getStatus()))
+						.filter(jiraIssue -> fieldMapping.getStoryFirstStatus().contains(jiraIssue.getStatus())
+								&& CollectionUtils.isNotEmpty(fieldMapping.getJiraDodKPI144())
+								&& !fieldMapping.getJiraDodKPI144().contains(jiraIssue.getStatus()))
 						.collect(Collectors.toList());
 				Map<String, Map<String, List<JiraIssue>>> priorityWiseList = getPriorityWiseList(totalDefects,
 						openDefects);

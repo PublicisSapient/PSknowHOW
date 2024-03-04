@@ -91,7 +91,9 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 			List<JiraIssue> totalDefects = (List<JiraIssue>) resultMap.get(TOTAL_DEFECT);
 			if (CollectionUtils.isNotEmpty(totalDefects)) {
 				List<JiraIssue> openDefects = totalDefects.stream()
-						.filter(jiraIssue -> fieldMapping.getStoryFirstStatus().contains(jiraIssue.getStatus()))
+						.filter(jiraIssue -> fieldMapping.getStoryFirstStatus().contains(jiraIssue.getStatus())
+								&& CollectionUtils.isNotEmpty(fieldMapping.getJiraDodKPI142())
+								&& !fieldMapping.getJiraDodKPI142().contains(jiraIssue.getStatus()))
 						.collect(Collectors.toList());
 				Map<String, Map<String, List<JiraIssue>>> rcaWiseList = getRCAWiseList(totalDefects, openDefects);
 				List<IterationKpiValue> filterDataList = new ArrayList<>();
