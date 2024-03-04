@@ -2435,7 +2435,7 @@ export class JiraConfigComponent implements OnInit {
     if (this.urlParam === 'AzurePipeline') {
       submitData['apiVersion'] = this.azurePipelineApiVersion;
       submitData['deploymentProjectName'] = this.tool['azurePipelineName'].value;
-      submitData['azurePipelineName'] = this.azurePipelineList.find(de=>de.code===this.tool['azurePipelineName'].value).name;
+      submitData['azurePipelineName'] = this.azurePipelineList.find(de=>de.code===this.tool['azurePipelineName'].value)?.name;
     }
 
     submitData['toolName'] = this.urlParam;
