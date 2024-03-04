@@ -21,7 +21,7 @@
   } ,
   {
     "fieldName" : "jiraSprintCapacityIssueTypeKpi46" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -31,7 +31,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKPI122" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -41,7 +41,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKPI124" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -61,7 +61,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKPI131" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -71,7 +71,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKPI128" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -81,7 +81,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKPI134" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -91,7 +91,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKPI145" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -101,7 +101,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKpi72" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -111,7 +111,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKpi5" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -121,7 +121,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKPI119" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -131,7 +131,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKPI75" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -141,7 +141,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKPI123" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -151,7 +151,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKPI125" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -161,7 +161,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKPI120" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -171,7 +171,7 @@
   } ,
   {
     "fieldName" : "jiraIterationIssuetypeKPI39" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -452,7 +452,7 @@
   } ,
   {
     "fieldName" : "jiraIssueTypeKPI3" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -462,7 +462,7 @@
   } ,
   {
     "fieldName" : "jiraKPI82StoryIdentification" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -472,7 +472,7 @@
   } ,
   {
     "fieldName" : "jiraKPI135StoryIdentification" ,
-    "fieldLabel" : "Issue type to be included" ,
+    "fieldLabel" : "Issue types to consider ‘Completed status’" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "Issue_Type" ,
     "section" : "Issue Types Mapping" ,
@@ -2180,7 +2180,7 @@
     "nestedFields" : [
       {
         "fieldName" : "jiraIssueTypeKPI156" ,
-        "fieldLabel" : "Issue type to be included" ,
+        "fieldLabel" : "Issue types to consider ‘Completed status’" ,
         "fieldType" : "chips" ,
         "fieldCategory" : "Issue_Type" ,
         "filterGroup" : [
@@ -2770,7 +2770,7 @@
   },
   {
     "fieldName": "jiraIssueTypeKPI171",
-    "fieldLabel": "Issue type to be included",
+    "fieldLabel": "Issue types to consider ‘Completed status’",
     "fieldCategory": "Issue_Type",
     "fieldType": "chips",
     "section": "Issue Types Mapping",

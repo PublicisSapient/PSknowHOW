@@ -88,7 +88,7 @@ public interface AccessRequestsHelperService {
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
-	ServiceResponse getNotificationByStatus(String status , String token);
+	ServiceResponse getNotificationByStatus(String status , boolean centralAuthService);
 
 	/**
 	 * Gets access request which has the project id

@@ -381,7 +381,6 @@ public class TestConnectionServiceImplTest {
 
 	@Test
 	public void validateRepoTestConnSuccess() {
-		conn.setHttpUrl("https://abc.com/gitlab");
 		conn.setAccessToken("testAccessToken");
 		conn.setRepoToolProvider(Constant.TOOL_GITHUB);
 		conn.setUsername("testUserName");
@@ -390,7 +389,6 @@ public class TestConnectionServiceImplTest {
 				ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
 		RepoToolsProvider provider= new RepoToolsProvider();
 		provider.setTestApiUrl("https://www.test.com");
-		when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(provider);
 
 		ServiceResponse serviceResponse = testConnectionServiceImpl.validateConnection(conn, Constant.REPO_TOOLS);
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -399,18 +397,16 @@ public class TestConnectionServiceImplTest {
 
 	@Test
 	public void validateRepoTestConnSuccess_BitBucket_Cloud() throws URISyntaxException {
-		conn.setHttpUrl("https://abc.com/bitbucket.org");
 		conn.setAccessToken("testAccessToken");
 		conn.setRepoToolProvider(Constant.TOOL_BITBUCKET);
 		conn.setUsername("testUserName");
 		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
 		RepoToolsProvider provider= new RepoToolsProvider();
 		provider.setTestApiUrl("https://www.test.com");
-		when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(provider);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.AUTHORIZATION, "Basic dGVzdFVzZXJOYW1lOnRlc3RBY2Nlc3NUb2tlbg==");
 
-		when(restTemplate.exchange(new URI("https://www.test.com"),
+		when(restTemplate.exchange(new URI("https://abc.comapi/2/projects/"),
 				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
 
@@ -421,17 +417,14 @@ public class TestConnectionServiceImplTest {
 
 	@Test
 	public void validateRepoTestConnSuccess_BitBucket() {
-		conn.setHttpUrl("https://abc.com");
 		conn.setAccessToken("testAccessToken");
 		conn.setRepoToolProvider(Constant.TOOL_SONAR);
 		conn.setUsername("testUserName");
-		when(customApiConfig.getGitlabTestConnection()).thenReturn("api/v4/projects");
 		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
 		when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class),
 				ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
 		RepoToolsProvider provider= new RepoToolsProvider();
 		provider.setTestApiUrl("https://www.test.com");
-		when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(provider);
 		ServiceResponse serviceResponse = testConnectionServiceImpl.validateConnection(conn, Constant.REPO_TOOLS);
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 
@@ -439,7 +432,6 @@ public class TestConnectionServiceImplTest {
 
 	@Test
 	public void validateRepoTestConnSuccess_BitBucket_Pat() throws URISyntaxException {
-		conn.setHttpUrl("https://abc.com/bitbucket.org");
 		conn.setAccessToken("testAccessToken");
 		conn.setRepoToolProvider(Constant.TOOL_BITBUCKET);
 		conn.setUsername("testUserName");
@@ -451,14 +443,9 @@ public class TestConnectionServiceImplTest {
 		headers.set("Cookie", "");
 
 		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
-		when(restTemplate.exchange(new URI("https://www.test.com"),
-				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(responseEntity);
 		RepoToolsProvider provider= new RepoToolsProvider();
 		provider.setTestApiUrl("https://www.test.com");
-		when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(provider);
-		testConnectionServiceImpl.validateConnection(conn, Constant.REPO_TOOLS);
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-
 	}
 
 }

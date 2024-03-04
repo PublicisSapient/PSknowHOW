@@ -26,6 +26,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,6 +85,9 @@ public class ProcessorServiceImplTest {
 
 	@Mock
 	private CustomApiConfig customApiConfig;
+
+	@Mock
+	private CacheService cacheService;
 
 	/**
 	 * method includes preprocesses for test cases
@@ -260,5 +266,14 @@ public class ProcessorServiceImplTest {
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request"));
 		ServiceResponse response = processorService.fetchActiveSprint("132_TestSprint");
 		assertFalse(response.getSuccess());
+	}
+
+	@Test
+	public void saveRepoToolTraceLogsTest() {
+
+		processorService.saveRepoToolTraceLogs(new RepoToolsStatusResponse("project", "repo", "src",
+				Constant.SUCCESS, "timestamp"));
+		Mockito.verify(cacheService, Mockito.times(3)).clearCache(Mockito.anyString());
+
 	}
 }

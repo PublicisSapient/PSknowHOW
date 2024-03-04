@@ -52,7 +52,7 @@ export class HttpService {
   private masterDataUrl = this.baseUrl + '/api/masterData';
   private downloadAllKpiReportUrl = this.baseUrl + '/api/v1/kpi';
   private downloadKpiWiseReportUrl = this.baseUrl + '/api/v1/kpi';
-  private logoutUrl = this.baseUrl + '/api/userlogout';
+  private logoutUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/centralUserlogout' : this.baseUrl + '/api/userlogout';
   private configDetailsUrl = this.baseUrl + '/api/configDetails';
   private enginneringMaturityUrl = this.baseUrl + '/api/v1/enggMaturity';
   private enginneringMaturityTableUrl = this.baseUrl + '/api/emm/tableview';
@@ -82,8 +82,7 @@ export class HttpService {
   private getRolesUrl = this.baseUrl + '/api/roles';
   private raiseAccessRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getAccessRequestsUrl = this.baseUrl + '/api/accessrequests/status';
-  private getAccessRequestNotificationsUrl =
-    this.baseUrl + '/api/accessrequests/Pending/notification';
+  private getAccessRequestNotificationsUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/accessrequests/Pending/notification/central' : this.baseUrl + '/api/accessrequests/Pending/notification';
   private updateRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getUserAccessRequestsUrl = this.baseUrl + '/api/accessrequests/user';
   private getScenariosUrl = this.baseUrl + '/api/scenario';
@@ -99,7 +98,7 @@ export class HttpService {
   private getAllProjectsUrl = this.baseUrl + '/api/basicconfigs/all';
   private deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
   private getAllUsersUrl = this.baseUrl + '/api/userinfo';
-  private updateAccessUrl = this.baseUrl + '/api/userinfo/';
+  private updateAccessUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/userinfo/central/' : this.baseUrl + '/api/userinfo/';
   private getKPIConfigMetadataUrl =
     this.baseUrl + '/api/editConfig/jira/editKpi/';
   /** KnowHOW Lite */
@@ -118,8 +117,6 @@ export class HttpService {
   private getPreCalculatedConfigUrl =
     this.baseUrl + '/api/pre-calculated-config';
   private getADConfigUrl = this.baseUrl + '/api/activedirectory';
-  private getAuthConfigUrl = this.baseUrl + '/api/auth-types';
-  private getLoginConfigUrl = this.baseUrl + '/api/auth-types-status';
   private getSuggestionsUrl = this.baseUrl + '/api/suggestions/project';
   private updateSuggestionsUrl = this.baseUrl + '/api/suggestions/account/';
   private getEmm360Url = this.baseUrl + '/api/emm-feed/download';
@@ -133,7 +130,7 @@ export class HttpService {
   private usersCountUrl = this.baseUrl + '/api/landingpage/userscount';
   private autoApproveUrl = this.baseUrl + '/api/autoapprove';
   private saveShowHideKpiUrl = this.baseUrl + '/api/user-board-config/saveAdmin';
-  private newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals';
+  private newUserAccessRequestUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/userapprovals/central' : this.baseUrl + '/api/userapprovals';
   private sonarVersionURL = this.baseUrl + '/api/sonar/version';
   private projectKeyRequestUrl = this.baseUrl + '/api/sonar/project';
   private branchListRequestUrl = this.baseUrl + '/api/sonar/branch';
@@ -773,27 +770,6 @@ export class HttpService {
   /** Get KPI-field mapping relationships */
   getKPIFieldMappingRelationships() {
     return this.http.get<any>(this.getKPIFieldMappingRelationshipsUrl);
-  }
-
-  /** get Active Directory Config */
-  getADConfig() {
-    return this.http.get<any>(this.getADConfigUrl);
-  }
-
-  getAuthConfig() {
-    return this.http.get<any>(this.getAuthConfigUrl);
-  }
-
-  getLoginConfig() {
-    return this.http.get<any>(this.getLoginConfigUrl);
-  }
-
-  setAuthConfig(data) {
-    return this.http.post(this.getAuthConfigUrl, data);
-  }
-
-  setADConfig(postData) {
-    return this.http.post(this.getADConfigUrl, postData);
   }
 
   /** get emm upload history */

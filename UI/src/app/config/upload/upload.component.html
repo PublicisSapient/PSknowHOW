@@ -43,38 +43,6 @@
     </div>
   </div>
 
-
-  <div class="p-col-10" *ngIf="isSuperAdmin && selectedView === 'cert_upload'">
-    <div class="main">
-      <!-- Certificate Upload  -->
-        <div id="cert-upload-form1" class="uploader">
-           <form (ngSubmit)="uploadCertificate()">
-              <label class="float-none" for="cert-upload" id="file-drag">
-                <div class="start">
-                  <span class="fa fa-download" aria-hidden="true"></span>
-                  <div>Select a certificate to upload</div>
-                  <div>File should be *.cer format</div>
-                  <p-fileUpload chooseLabel ="Upload" chooseIcon="pi pi-upload"
-                  id="cert-upload" name="certUpload" accept=".cer"
-                  maxFileSize="20000" [showUploadButton]="false" [showCancelButton]="false"
-                  (onSelect)="validateCertificate($event)" (onRemove)="clear($event)">
-                  <ng-template pTemplate="toolbar"  >
-                    <button type="submit" class="btn btn-primary certupload" [disabled]="isUploadEnabled"
-                      [ngClass]="{'disabled-button': isUploadEnabled}">Apply</button>
-                  </ng-template>
-                 </p-fileUpload>
-
-                  <div *ngIf="error" class="invalid-text p-pt-3">{{error}}</div>
-                  <div *ngIf="warning" class="warning-text p-pt-3">{{warning}}</div>
-                  <div *ngIf="message" class="success p-pt-3">{{message}}</div>
-                </div>
-
-              </label>
-            </form>
-        </div>
-      </div>
-  </div>
-
   <div class="p-col-10 horizontal-tabs" *ngIf="selectedView === 'upload_tep' || selectedView === 'upload_Sprint_Capacity'">
     <div class="main">
       <div class="tabs-container">
