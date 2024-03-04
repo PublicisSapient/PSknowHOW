@@ -65,10 +65,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ReworkRateServiceImplTest {
 
-	private static final String P1 = "p1,P1 - Blocker, blocker, 1, 0, p0, Urgent";
-	private static final String P2 = "p2, critical, P2 - Critical, 2, High";
-	private static final String P3 = "p3, P3 - Major, major, 3, Medium";
-	private static final String P4 = "p4, P4 - Minor, minor, 4, Low";
+	private static final String OVERALL = "Overall";
+
 	private static Tool tool3;
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
@@ -217,10 +215,7 @@ public class ReworkRateServiceImplTest {
 		dataCountList.add(dataCountValue);
 		DataCount dataCount = setDataCountValues("Scrum Project", "3", "4", dataCountList);
 		trendValues.add(dataCount);
-		trendValueMap.put(P1, trendValues);
-		trendValueMap.put(P2, trendValues);
-		trendValueMap.put(P3, trendValues);
-		trendValueMap.put(P4, trendValues);
+		trendValueMap.put(OVERALL, trendValues);
 	}
 
 	private DataCount setDataCountValues(String data, String maturity, Object maturityValue, Object value) {
