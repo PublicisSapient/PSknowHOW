@@ -393,7 +393,15 @@ export class HelperService {
 
     sortAlphabetically(objArray) {
         if (objArray && objArray?.length > 1) {
-            objArray?.sort((a, b) => a.data.localeCompare(b.data));
+            objArray?.sort((a, b) => {
+                if (a.data) {
+                    return a.data.localeCompare(b.data)
+                } else if(a.nodeName){
+                    return a.nodeName.localeCompare(b.nodeName);
+                } else {
+                    return a.localeCompare(b);
+                }
+            });
         }
         return objArray;
     }

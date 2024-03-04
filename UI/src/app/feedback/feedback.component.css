@@ -1,9 +1,8 @@
 .feeback-container {
-    position: absolute;
-    bottom: 42px;
+    position: relative;
 }
 .icon-feedback1 {
-    margin: 0 0 -28px 14px;
+    margin: 0;
 }
 
 .icon-feedback2 {
@@ -15,7 +14,6 @@
     .icon-feedback1 {
         width: 80px;
         height: 25px;
-        margin-bottom: -32px;
     }
 
     .icon-feedback2 {

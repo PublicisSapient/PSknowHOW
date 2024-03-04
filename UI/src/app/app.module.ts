@@ -67,6 +67,7 @@ import { ButtonModule } from 'primeng/button';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SkeletonModule } from 'primeng/skeleton';
+import { SelectButtonModule } from 'primeng/selectbutton';
 
 /******************************************************/
 
@@ -99,7 +100,6 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
 
 import { environment } from 'src/environments/environment';
-import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-failure.component';
 import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
@@ -124,12 +124,30 @@ import { DoraComponent } from './dashboard/dora/dora.component';
 import { DeveloperComponent } from './dashboard/developer/developer.component';
 import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/bar-with-y-axis-group.component';
 import { FeatureFlagsService } from './services/feature-toggle.service';
+import { HeaderComponent } from './dashboardv2/header/header.component';
+import { FilterNewComponent } from './dashboardv2/filter-new/filter-new.component';
+import { ParentFilterComponent } from './dashboardv2/filter-new/parent-filter/parent-filter.component';
+import { PrimaryFilterComponent } from './dashboardv2/filter-new/primary-filter/primary-filter.component';
+import { AdditionalFilterComponent } from './dashboardv2/filter-new/additional-filter/additional-filter.component';
+import { NavNewComponent } from './dashboardv2/nav-new/nav-new.component';
+import { ExecutiveV2Component } from './dashboardv2/executive-v2/executive-v2.component';
+import { RecentCommentsComponent } from './component/recent-comments/recent-comments.component';
+import { DashboardV2Component } from './dashboardv2/dashboard-v2/dashboard-v2.component';
+import { IterationV2Component } from './dashboardv2/iteration-v2/iteration-v2.component';
+import { KpiCardV2Component } from './dashboardv2/kpi-card-v2/kpi-card-v2.component';
+import { MultilineV2Component } from './component/multiline-v2/multiline-v2.component';
+import { TrendIndicatorV2Component } from './dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
+import { GroupedColumnPlusLineChartV2Component } from './component/grouped-column-plus-line-chart-v2/grouped-column-plus-line-chart-v2.component';
+import { MultilineStyleV2Component } from './component/multiline-style-v2/multiline-style-v2.component';
 /******************************************************/
 
 export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService) {
     if (!environment.production) {
         return async () => {
             featureToggleService.config = await featureToggleService.loadConfig();
+            if(!featureToggleService.isFeatureEnabled('UI_SWITCH')) {
+                localStorage.removeItem('newUI');
+            }
         }
     } else {
         return async () => {
@@ -141,6 +159,9 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
 
             await env$.toPromise().then(res => {
                 featureToggleService.config = featureToggleService.loadConfig();
+                if(!featureToggleService.isFeatureEnabled('UI_SWITCH')) {
+                    localStorage.removeItem('newUI');
+                }
             });
         };
     }
@@ -202,7 +223,22 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         DoraComponent,
         FeedbackComponent,
         DeveloperComponent,
-        BarWithYAxisGroupComponent
+        BarWithYAxisGroupComponent,
+        HeaderComponent,
+        FilterNewComponent,
+        ParentFilterComponent,
+        PrimaryFilterComponent,
+        AdditionalFilterComponent,
+        NavNewComponent,
+        RecentCommentsComponent,
+        ExecutiveV2Component,
+        DashboardV2Component,
+        IterationV2Component,
+        KpiCardV2Component,
+        MultilineV2Component,
+        TrendIndicatorV2Component,
+        GroupedColumnPlusLineChartV2Component,
+        MultilineStyleV2Component
     ],
     imports: [
         DropdownModule,
@@ -233,7 +269,8 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         OverlayPanelModule,
         MenuModule,
         SkeletonModule,
-        SharedModuleModule
+        SharedModuleModule,
+        SelectButtonModule
     ],
     providers: [
         ExcelService,

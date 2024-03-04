@@ -95,7 +95,13 @@ export class DashboardComponent implements OnInit, AfterContentInit {
 
   setPageContentWrapperHeight(){
     setTimeout(()=>{
-      this.headerStyle={height: 'calc(100vh - '+this.header.nativeElement.offsetHeight+'px)',top:'calc('+this.header.nativeElement.offsetHeight+'px'+' - '+'0px)'};
+      let uiSwitchFactor = '';
+      if(localStorage.getItem('newUI')) {
+        uiSwitchFactor = '50px';
+      } else {
+        uiSwitchFactor = '';
+      }
+      this.headerStyle={ height: 'calc(100vh - '+this.header.nativeElement.offsetHeight+'px)',top:'calc('+this.header.nativeElement.offsetHeight+'px'+' + '+ uiSwitchFactor +')'};
     },0);
   }
 
