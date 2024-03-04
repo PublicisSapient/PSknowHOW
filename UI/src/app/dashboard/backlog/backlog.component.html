@@ -91,7 +91,7 @@
                                     <ng-container *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0); else noData">
                                       <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                        [unit]="kpi?.kpiDetail?.kpiUnit"
+                                        [unit]="kpi?.kpiDetail?.kpiUnit" [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
                                         [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
@@ -232,7 +232,7 @@
                                     <ng-container *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0); else noData">
                                       <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                        [unit]="kpi?.kpiDetail?.kpiUnit"
+                                        [unit]="kpi?.kpiDetail?.kpiUnit" [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
                                         [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
@@ -372,7 +372,7 @@
                                     <ng-container *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0); else noData">
                                       <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                        [unit]="kpi?.kpiDetail?.kpiUnit"
+                                        [unit]="kpi?.kpiDetail?.kpiUnit" [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
                                         [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
@@ -514,7 +514,7 @@
                                     <ng-container *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0); else noData">
                                       <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                        [unit]="kpi?.kpiDetail?.kpiUnit"
+                                        [unit]="kpi?.kpiDetail?.kpiUnit" [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
                                         [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
@@ -636,14 +636,13 @@
       <ng-template pTemplate="header">
         <tr>
           <th *ngFor="let item of modalDetails['tableHeadings'];let i = index;"
-            [ngStyle]="{'width': i==0 ? '100px' : ''}"
-            id="{{item}}">{{item}}</th>
+            [ngStyle]="{'width': i==0 ? '100px' : ''}">{{item}}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-x>
         <tr>
           <td class="font-small">
-            <a *ngIf="x['Issue URL']" [href]="x['Issue URL']" class="text-blue"  rel="noopener" target="_blank">{{x['Issue Id']}}</a>
+            <a *ngIf="x['Issue URL']" [href]="x['Issue URL']" class="text-blue" target="_blank">{{x['Issue Id']}}</a>
             <span *ngIf="!x['Issue URL']">{{x['Issue Id']}}</span>
           </td>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']; let i = index;">

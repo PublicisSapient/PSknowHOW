@@ -16,22 +16,16 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.auth.ldap;
+package com.publicissapient.kpidashboard.apis.errors;
 
-import org.springframework.security.authentication.AuthenticationDetailsSource;
+import org.springframework.security.core.AuthenticationException;
 
-import com.publicissapient.kpidashboard.common.constant.AuthType;
+public class APIKeyInvalidException extends AuthenticationException {
 
-import jakarta.servlet.http.HttpServletRequest;
+	private static final long serialVersionUID = -8596676033265445347L;
 
-/**
- * The type Ldap authentication details source.
- */
-public class LdapAuthenticationDetailsSource implements AuthenticationDetailsSource<HttpServletRequest, AuthType> {
-
-	@Override
-	public AuthType buildDetails(HttpServletRequest context) {
-		return AuthType.LDAP;
+	public APIKeyInvalidException(String msg) {
+		super(msg);
 	}
 
 }

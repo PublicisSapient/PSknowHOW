@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -59,7 +60,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Component
@@ -116,14 +116,9 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		return kpiElement;
 	}
 
-	private void aggMeanTimeToMerge(Map<String, Double> aggMRTimeForRepo, Map<String, Double> mrTime) {
+	private void aggMeanTimeToMerge(Map<String, List<Double>> aggMRTimeForRepo, Map<String, Double> mrTime) {
 		if (MapUtils.isNotEmpty(mrTime)) {
-			mrTime.forEach((key, value) -> {
-				if (mrTime.containsKey(key)) {
-					aggMRTimeForRepo.merge(key, value,
-							(currentValue, newValue) -> (currentValue + newValue) / (mrTime.get(key) + 1));
-				}
-			});
+			mrTime.forEach((key, value) -> aggMRTimeForRepo.computeIfAbsent(key, k -> new ArrayList<>()).add(value));
 		}
 	}
 
@@ -165,7 +160,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		Map<String, Double> excelDataLoader = new HashMap<>();
 
 		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
-		Map<String, Double> aggMeanTimeToMerge = new HashMap<>();
+		Map<String, List<Double>> aggMeanTimeToMerge = new HashMap<>();
 		reposList.forEach(repo -> {
 			if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
 					&& repo.getProcessorItemList().get(0).getId() != null) {
@@ -182,8 +177,10 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 
 			}
 		});
-		setWeekWiseMeanTimeToMergeForRepoTools(aggMeanTimeToMerge, excelDataLoader, Constant.AGGREGATED_VALUE,
-				projectName, aggDataMap, duration, dataPoints);
+		setWeekWiseMeanTimeToMergeForRepoTools(aggMeanTimeToMerge.entrySet().stream().collect(
+						Collectors.toMap(Map.Entry::getKey,
+								e -> e.getValue().stream().mapToDouble(Double::doubleValue).average().orElse(0.0))),
+				excelDataLoader, Constant.AGGREGATED_VALUE, projectName, aggDataMap, duration, dataPoints);
 
 		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
 		populateExcelDataObject(requestTrackerId, repoWiseMRList, repoList, branchList, excelData, projectLeafNode);
@@ -211,7 +208,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
 			DataCount dataCount = setDataCount(projectName, date, meanTimeToMerge);
 			aggDataMap.get(branchName).add(dataCount);
-			excelDataLoader.put(date, (double) TimeUnit.MILLISECONDS.toHours((long) meanTimeToMerge));
+			excelDataLoader.put(date, (double) KpiHelperService.convertMilliSecondsToHours(meanTimeToMerge));
 			currentDate = getNextRangeDate(duration, currentDate);
 
 		}
@@ -272,11 +269,11 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 	 */
 	private DataCount setDataCount(String projectName, String week, Double value) {
 		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(value == null ? 0L : TimeUnit.MILLISECONDS.toHours(value.longValue())));
+		dataCount.setData(String.valueOf(value == null ? 0L : KpiHelperService.convertMilliSecondsToHours(value)));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(week);
 		dataCount.setHoverValue(new HashMap<>());
-		dataCount.setValue(value == null ? 0.0 : TimeUnit.MILLISECONDS.toHours(value.longValue()));
+		dataCount.setValue(value == null ? 0.0 : KpiHelperService.convertMilliSecondsToHours(value));
 		return dataCount;
 	}
 

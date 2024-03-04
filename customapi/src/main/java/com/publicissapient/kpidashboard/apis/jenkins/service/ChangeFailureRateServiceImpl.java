@@ -38,8 +38,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -118,8 +118,8 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.CHANGE_FAILURE_RATE);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
-		Map<String, List<DataCount>> trendValuesMap = getAggregateTrendValuesMap(kpiRequest, kpiElement,nodeWiseKPIValue,
-				KPICode.CHANGE_FAILURE_RATE);
+		Map<String, List<DataCount>> trendValuesMap = getAggregateTrendValuesMap(kpiRequest, kpiElement,
+				nodeWiseKPIValue, KPICode.CHANGE_FAILURE_RATE);
 		Map<String, Map<String, List<DataCount>>> jobNameKeyProjectWiseDc = new LinkedHashMap<>();
 		trendValuesMap.forEach((issueType, dataCounts) -> {
 			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
@@ -304,9 +304,34 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 			dataCountList.add(dataCount);
 		}
 
-		trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
-		trendValueMap.get(jobName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+		trendValue(buildList, trendLineName, trendValueMap, jobName, dataCountList);
 		dataCountAggList.addAll(dataCountList);
+	}
+
+	/**
+	 *
+	 * @param trendValueMap
+	 *            trendValueMap
+	 * @param trendLineName
+	 *            trendLineName
+	 * @param jobName
+	 *            jobName
+	 * @param buildList
+	 *            buildList
+	 * @param dataCountList
+	 *            dataCountList
+	 */
+	private static void trendValue(List<Build> buildList, String trendLineName,
+			Map<String, List<DataCount>> trendValueMap, String jobName, List<DataCount> dataCountList) {
+		if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
+			trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + buildList.get(0).getPipelineName(),
+					new ArrayList<>());
+			trendValueMap.get(jobName + CommonConstant.ARROW + buildList.get(0).getPipelineName())
+					.addAll(dataCountList);
+		} else {
+			trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
+			trendValueMap.get(jobName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+		}
 	}
 
 	private String getDateFormatted(String weekOrMonth, LocalDate currentDate) {

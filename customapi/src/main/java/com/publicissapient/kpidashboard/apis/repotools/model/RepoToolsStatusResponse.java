@@ -15,37 +15,26 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.apis.activedirectory.service;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
 
-/**
- * @author sansharm13
- *
- */
-public interface ADServerDetailsService {
+package com.publicissapient.kpidashboard.apis.repotools.model;
 
-	/**
-	 * This method will add user.
-	 * 
-	 * @param adServerDetail
-	 * @return ADUserDetail
-	 */
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-	ServiceResponse addUpdateADServerDetails(ADServerDetail adServerDetail);
+import java.io.Serializable;
 
-	/**
-	 * This method give details of active directory user.
-	 * 
-	 * @return ADUserDetail
-	 */
-	ServiceResponse getADServerDetails();
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class RepoToolsStatusResponse implements Serializable {
 
-	/**
-	 * gets Active Director Server configurations from DB
-	 * 
-	 * @return ADserverDetails
-	 */
-	ADServerDetail getADServerConfig();
+	private static final long serialVersionUID = 1L;
+	private String project;
+	private String repository;
+	private String source;
+	private String status;
+	private String timestamp;
+
 }

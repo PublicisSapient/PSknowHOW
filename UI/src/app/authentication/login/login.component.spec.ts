@@ -118,14 +118,14 @@ describe('LoginComponent', () => {
   it('invalid form should not call login', waitForAsync(() => {
     component.loginForm.controls['username'].setValue('');
     component.loginForm.controls['password'].setValue('');
-    component.onSubmit('standard');
+    component.onSubmit();
     expect(component.loginForm.invalid).toBeTruthy();
   }));
 
   xit('valid form with correct username pswd', waitForAsync(() => {
     component.loginForm.controls['username'].setValue('user');
     component.loginForm.controls['password'].setValue('***');
-    component.onSubmit('standard');
+    component.onSubmit();
     httpreq = httpMock.expectOne(baseUrl + '/api/login');
     httpreq.flush(fakeLogin);
     expect(component.loginForm.valid).toBeTruthy();
@@ -136,7 +136,7 @@ describe('LoginComponent', () => {
   it('Internal server error login requests', waitForAsync(() => {
     component.loginForm.controls['username'].setValue('user');
     component.loginForm.controls['password'].setValue('***');
-    component.onSubmit('standard');
+    component.onSubmit();
     httpreq = httpMock.expectOne(baseUrl + '/api/login');
     httpreq.error('');
     expect(component.error).toBe('Internal Server Error');
@@ -147,37 +147,11 @@ describe('LoginComponent', () => {
   it('Unauthorized login requests', waitForAsync(() => {
     component.loginForm.controls['username'].setValue('user');
     component.loginForm.controls['password'].setValue('***');
-    component.onSubmit('standard');
+    component.onSubmit();
     httpreq = httpMock.expectOne(baseUrl + '/api/login');
     httpreq.error(fakeInvalidLogin, fakeInvalidLogin);
     expect(component.error).toBe(fakeInvalidLogin.message);
   }));
-
-  it("should come data if response is success",()=>{
-    const fakeRespose = {
-      success : true,
-      data : []
-
-    }
-    spyOn(httpService,'getLoginConfig').and.returnValue(of(fakeRespose));
-    component.getLoginConfig();
-    expect(component.loginConfig).not.toBeNull();
-  })
-
-  it("should adlogin false if response is fail",()=>{
-    const fakeRespose = {
-      success : false,
-      data : []
-    }
-    const failValues = {
-      standardLogin: true,
-      adLogin: false
-  }
-    spyOn(httpService,'getLoginConfig').and.returnValue(of(fakeRespose));
-    component.getLoginConfig();
-    expect(component.loginConfig).toEqual(failValues)
-  })
-
 
   it("should redirect to profile if user email is blank",()=>{
     sharedService.setCurrentUserDetails({user_email:""});
@@ -236,25 +210,7 @@ describe('LoginComponent', () => {
     sharedService.setCurrentUserDetails({'projectsAccess':[]});
     sharedService.setCurrentUserDetails({authorities: ['ROLE_SUPERADMIN']});
     const isRedirect = spyOn(component, 'redirectToProfile').and.returnValue(false);
-    component.performLogin(data, 'dummy_user', 'dummy_password', 'AD')
+    component.performLogin(data, 'dummy_user', 'dummy_password')
     expect(isRedirect).toHaveBeenCalled();
   })
-
-  it('should handle AD login', waitForAsync(() => {
-    component.submitted = true;
-    component.error = '';
-    component.adLoginForm = new UntypedFormGroup({
-      username: new UntypedFormControl('testuser'),
-      password: new UntypedFormControl('Testuser@123')
-    })
-    component.loading = true;
-    const response = {
-      success: true,
-      data: {}
-    }
-    spyOn(httpService, 'login').and.returnValue(of(response));
-    const spy = spyOn(component, 'performLogin');
-    component.onSubmit('AD');
-    expect(spy).toHaveBeenCalled();
-  }))
 });

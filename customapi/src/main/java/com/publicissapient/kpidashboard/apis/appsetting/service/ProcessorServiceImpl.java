@@ -24,6 +24,10 @@ import java.util.List;
 import javax.ws.rs.core.Context;
 
 import org.apache.commons.lang3.StringUtils;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -38,7 +42,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.publicissapient.kpidashboard.apis.appsetting.config.ProcessorUrlConfig;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
@@ -76,6 +79,8 @@ public class ProcessorServiceImpl implements ProcessorService {
 	
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private CacheService cacheService;
 
 	@Override
 	public ServiceResponse getAllProcessorDetails() {
@@ -197,4 +202,18 @@ public class ProcessorServiceImpl implements ProcessorService {
 
 		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, null);
 	}
+
+	/**
+	 * saves the response statuses for repo tools
+	 *
+	 * @param repoToolsStatusResponse
+	 * 		repo tool response status
+	 */
+	public void saveRepoToolTraceLogs(RepoToolsStatusResponse repoToolsStatusResponse) {
+		repoToolsConfigService.saveRepoToolProjectTraceLog(repoToolsStatusResponse);
+		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
+		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
+		cacheService.clearCache(CommonConstant.BITBUCKET_KPI_CACHE);
+	}
+
 }

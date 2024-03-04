@@ -149,7 +149,7 @@
                             *ngIf="connectionFieldLabels.inputFields[i] === 'repoToolProvider'">
                                 <label for="platformDdwn">Select Platform Type</label>
                                 <p-dropdown [options]="platformDdwn" id="platformDdwn" formControlName="repoToolProvider"
-                                [(ngModel)]="connection[ connectionFieldLabels.inputFields[i] ]" optionValue="key" optionLabel="label">
+                                [(ngModel)]="connection[ connectionFieldLabels.inputFields[i] ]" optionValue="key" optionLabel="label" (onChange)="enableDisableSwitch(connection[ connectionFieldLabels.inputFields[i] ],'apiEndPoint')">
                                 </p-dropdown>
                         </div>
 

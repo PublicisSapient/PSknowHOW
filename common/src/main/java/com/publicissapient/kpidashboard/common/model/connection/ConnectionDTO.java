@@ -76,11 +76,8 @@ public class ConnectionDTO {
 	private String jaasUser;
 	private String userPrincipal;
 	private String samlEndPoint;
-	private String sshUrl;
-	private String httpUrl;
 	private String email;
 	private String repoToolProvider;
-	private Boolean isCloneable;
 
 	public boolean getIsOAuth() {
 		return this.isOAuth;

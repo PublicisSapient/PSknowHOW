@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.azurepipeline.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.json.simple.JSONArray;
@@ -129,5 +130,41 @@ public class AzurePipelineUtilsTest {
 		obj.put("url", "https://test.com/testUser/testProject/_apis/build/builds");
 		obj.put("buildObj", buildObj);
 		assertEquals(buildObj, AzurePipelineUtils.getJsonObject(obj, "buildObj"));
+	}
+
+	@Test
+	public void test_encodeSpaceInUrl_NullOrEmptyUrl() {
+		String url = null;
+		String result = AzurePipelineUtils.encodeSpaceInUrl(url);
+		assertNull(result);
+
+		url = "";
+		result = AzurePipelineUtils.encodeSpaceInUrl(url);
+		assertNull(result);
+	}
+
+	@Test
+	public void test_encodeSpaceInUrl_ReplacesSpacesWithEncodedSpace() {
+		String url = "https://www.example.com/test url";
+		String expectedResult = "https://www.example.com/test%20url";
+
+		String result = AzurePipelineUtils.encodeSpaceInUrl(url);
+
+		assertEquals(expectedResult, result);
+	}
+
+	@Test
+	public void test_return_same_url_if_no_spaces() {
+		String url = "https://example.com/test";
+		String result = AzurePipelineUtils.encodeSpaceInUrl(url);
+		assertEquals(url, result);
+	}
+
+	@Test
+	public void test_encodeSpaceInUrl_ReplacesMultipleConsecutiveSpaces() {
+		String url = "https://example.com/test  url";
+		String expected = "https://example.com/test%20url";
+		String result = AzurePipelineUtils.encodeSpaceInUrl(url);
+		assertEquals(expected, result);
 	}
 }

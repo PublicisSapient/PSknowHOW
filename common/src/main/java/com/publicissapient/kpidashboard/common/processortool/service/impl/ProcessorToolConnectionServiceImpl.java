@@ -122,6 +122,7 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 		processorToolConnection.setRepoSlug(toolConfig.getRepoSlug());
 		processorToolConnection.setBitbucketProjKey(toolConfig.getBitbucketProjKey());
 		processorToolConnection.setApiVersion(toolConfig.getApiVersion());
+		processorToolConnection.setAzurePipelineName(toolConfig.getAzurePipelineName());
 		processorToolConnection.setQueryEnabled(toolConfig.isQueryEnabled());
 		processorToolConnection.setBoardQuery(toolConfig.getBoardQuery());
 		processorToolConnection.setBoards(toolConfig.getBoards());

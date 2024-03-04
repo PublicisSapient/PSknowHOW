@@ -68,6 +68,8 @@ public class JobController {
 	private static final String PROJECT_ID = "projectId";
 	private static final String SPRINT_ID = "sprintId";
 	private static final String CURRENTTIME = "currentTime";
+	private static final String IS_SCHEDULER = "isScheduler";
+	private static final String VALUE = "false";
 	@Autowired
 	JobLauncher jobLauncher;
 	@Qualifier("fetchIssueScrumBoardJob")
@@ -169,6 +171,7 @@ public class JobController {
 			// Add dynamic parameters as needed
 			jobParametersBuilder.addString(PROJECT_ID, configId);
 			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+			jobParametersBuilder.addString(IS_SCHEDULER,VALUE);
 
 			JobParameters params = jobParametersBuilder.toJobParameters();
 			parameterSets.add(params);
@@ -291,6 +294,7 @@ public class JobController {
 			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 			jobParametersBuilder.addString(PROJECT_ID, basicProjectConfigId);
 			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+			jobParametersBuilder.addString(IS_SCHEDULER,VALUE);
 			JobParameters params = jobParametersBuilder.toJobParameters();
 
 			try {

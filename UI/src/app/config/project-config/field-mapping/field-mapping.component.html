@@ -32,6 +32,10 @@
             <span class="p-pl-3">{{uploadedFileName}}</span>
         </div>
     </div>
+    <div class="p-d-flex p-mt-4 p-mb-4" *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0">
+        <b class="p-mr-5"><span>*</span>Mandatory Fields</b>
+        <b><i class="fas fa-sync-alt p-mr-1"></i>Requires processor run</b>
+    </div>
     <app-field-mapping-form #fieldMappingFormComp *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0"
         [disableSave]="disableSave"
         [fieldMappingMetaData]="fieldMappingMetaData"

@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  *    http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,14 +18,16 @@
 
 package com.publicissapient.kpidashboard.apis.rbac.userinfo.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.util.TestUtil;
+import com.publicissapient.kpidashboard.common.model.rbac.Permissions;
+import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -39,15 +41,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
-import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.util.TestUtil;
-import com.publicissapient.kpidashboard.common.model.rbac.Permissions;
-import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author narsingh9
@@ -58,7 +57,6 @@ public class UserInfoControlllerTest {
 
 	private MockMvc mockMvc;
 	private RoleData testRoleData;
-	private String testId;
 	@Mock
 	private UserInfo userInfo;
 
@@ -88,7 +86,6 @@ public class UserInfoControlllerTest {
 	@Before
 	public void before() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(this.userInfoController).build();
-		testId = "5da46000e645ca33dc927b4a";
 		testRoleData = new RoleData();
 		testRoleData.setId(new ObjectId("5da46000e645ca33dc927b4a"));
 		testRoleData.setRoleName("UnitTest");
@@ -164,7 +161,7 @@ public class UserInfoControlllerTest {
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
 		when(userInfo.getAuthorities()).thenReturn(authorities);
-		when(userInfoService.deleteUser("testuser"))
+		when(userInfoService.deleteUser("testuser" , false) )
 				.thenReturn(new ServiceResponse(true, "Deleted Successfully", "Ok"));
 		mockMvc.perform(
 				MockMvcRequestBuilders.delete("/userinfo/testuser").contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -176,14 +173,48 @@ public class UserInfoControlllerTest {
 	 * <p>
 	 * Delete User SuperAdmin
 	 *
-	 * @throws Exception
 	 */
 	@Test
-	public void testdeleteSuperAdminUser() throws Exception {
+	public void testdeleteSuperAdminUser() {
 		when(authenticationService.getLoggedInUser()).thenReturn("testuser");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
 		ServiceResponse response = userInfoController.deleteUser("testuser").getBody();
+		assert response != null;
 		assertEquals(false, response.getSuccess());
+	}
+
+
+	/**
+	 * method to test /userinfo restPoint ;
+	 * <p>
+	 * Delete User SuperAdmin
+	 *
+	 */
+	@Test
+	public void testDelete_UserFromCentral() {
+		when(authenticationService.getLoggedInUser()).thenReturn("testuser");
+		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
+		ServiceResponse response = userInfoController.deleteUserFromCentral("testuser").getBody();
+		assert response != null;
+		assertEquals(false, response.getSuccess());
+	}
+
+	/**
+	 * method to test /userinfo restPoint ;
+	 * <p>
+	 * Delete User SuperAdmin
+	 *
+	 */
+	@Test
+	public void testDelete_UserFromCentralForSuperAdmin() {
+		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
+		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
+		when(userInfoService.deleteUser("testuser" , true) )
+				.thenReturn(new ServiceResponse(true, "Deleted Successfully", "Ok"));
+		when(userInfo.getAuthorities()).thenReturn(authorities);
+		ServiceResponse response = userInfoController.deleteUserFromCentral("testuser").getBody();
+		assert response != null;
+		assertEquals(true, response.getSuccess());
 	}
 
 }
