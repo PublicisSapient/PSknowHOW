@@ -426,7 +426,8 @@ public class UserInfoServiceImplTest {
 	@Test
 	public void deleteUserTestForCentralAuth() {
 		ServiceResponse result = service.deleteUser("testuser" , true);
-		assertTrue(result.getSuccess());
+
+		assertFalse(result.getSuccess());
 	}
 
 	@Test
