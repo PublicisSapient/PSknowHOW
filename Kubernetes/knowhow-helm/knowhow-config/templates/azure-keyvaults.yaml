@@ -30,18 +30,6 @@ spec:
           objectType: secret
           objectVersion: ""
         - |
-          objectName: {{ .Values.env}}rabbitpass
-          objectType: secret
-          objectVersion: ""
-        - |
-          objectName: {{ .Values.env}}debbieuser
-          objectType: secret
-          objectVersion: ""
-        - |
-          objectName: {{ .Values.env}}debbiepassword
-          objectType: secret
-          objectVersion: ""
-        - |
           objectName: {{ .Values.env}}-sendgrid-apikey
           objectType: secret
           objectVersion: ""
@@ -50,35 +38,11 @@ spec:
           objectType: secret
           objectVersion: ""
         - |
-          objectName: {{ .Values.env}}-debbie-secret-key
-          objectType: secret
-          objectVersion: ""
-        - |
-          objectName: {{ .Values.env}}-debbie-internal-key
-          objectType: secret
-          objectVersion: ""
-        - |
-          objectName: {{ .Values.env}}-debbie-db-url
-          objectType: secret
-          objectVersion: ""
-        - |
-          objectName: tenginequerypass
-          objectType: secret
-          objectVersion: ""
-        - |
           objectName: knowhowaesencryptionkeynew
           objectType: secret
           objectVersion: ""
         - |
           objectName: knowhow-auth-secret
-          objectType: secret
-          objectVersion: ""
-        - |
-          objectName: debbietengineauthtoken
-          objectType: secret
-          objectVersion: ""
-        - |
-          objectName: debbiemailhostpass
           objectType: secret
           objectVersion: ""
     tenantId: "d52c9ea1-7c21-47b1-82a3-33a74b1f74b8"                 # The tenant ID of the key vault
@@ -102,22 +66,7 @@ spec:
     type: Opaque
     data:
     - objectName: {{ .Values.env}}knhdbconnectionstring                           # This refers to the name of the secret as it is stored in Azure Key Vault
-      key: {{ .Values.env}}knhdbconnectionstring                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
-  - secretName: {{ .Values.env}}rabbitpass
-    type: Opaque
-    data:
-    - objectName: {{ .Values.env}}rabbitpass
-      key: {{ .Values.env}}rabbitpass
-  - secretName: {{ .Values.env}}debbieuser
-    type: Opaque
-    data:
-    - objectName: {{ .Values.env}}debbieuser
-      key: {{ .Values.env}}debbieuser
-  - secretName: {{ .Values.env}}debbiepassword
-    type: Opaque
-    data:
-    - objectName: {{ .Values.env}}debbiepassword                           # This refers to the name of the secret as it is stored in Azure Key Vault
-      key: {{ .Values.env}}debbiepassword                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+      key: {{ .Values.env}}knhdbconnectionstring                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
   - secretName: {{ .Values.env}}-sendgrid-apikey
     type: Opaque
     data:
@@ -128,26 +77,6 @@ spec:
     data:
     - objectName: {{ .Values.env}}-repo-tool-api-key
       key: {{ .Values.env}}-repo-tool-api-key
-  - secretName: {{ .Values.env}}-debbie-secret-key
-    type: Opaque
-    data:
-    - objectName: {{ .Values.env}}-debbie-secret-key                           # This refers to the name of the secret as it is stored in Azure Key Vault
-      key: {{ .Values.env}}-debbie-secret-key                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
-  - secretName: {{ .Values.env}}-debbie-internal-key
-    type: Opaque
-    data:
-    - objectName: {{ .Values.env}}-debbie-internal-key
-      key: {{ .Values.env}}-debbie-internal-key
-  - secretName: {{ .Values.env}}-debbie-db-url
-    type: Opaque
-    data:
-    - objectName: {{ .Values.env}}-debbie-db-url
-      key: {{ .Values.env}}-debbie-db-url
-  - secretName: tenginequerypass
-    type: Opaque
-    data:
-    - objectName: tenginequerypass
-      key: tenginequerypass
   - secretName: knowhowaesencryptionkeynew
     type: Opaque
     data:
@@ -158,13 +87,3 @@ spec:
     data:
     - objectName: knowhow-auth-secret
       key: knowhow-auth-secret
-  - secretName: debbietengineauthtoken
-    type: Opaque
-    data:
-    - objectName: debbietengineauthtoken
-      key: debbietengineauthtoken
-  - secretName: debbiemailhostpass
-    type: Opaque
-    data:
-    - objectName: debbiemailhostpass
-      key: debbiemailhostpass

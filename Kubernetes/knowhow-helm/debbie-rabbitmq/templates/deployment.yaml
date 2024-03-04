@@ -41,48 +41,59 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secretname}}
+                  name: {{ .Values.env }}debbieuser
                   key: {{ .Values.env }}debbieuser
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secretname}}
+                  name: {{.Values.env}}debbiepassword
                   key: {{.Values.env}}debbiepassword
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secretname}}
-                  key: {{ .Values.env }}-debbie-db-url
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secretname}}
+                  name: {{ .Values.env}}-debbie-secret-key
                   key: {{ .Values.env}}-debbie-secret-key
             - name: RABBITMQ_DEFAULT_PASS
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secretname}}
+                  name: {{ .Values.env }}rabbitpass
                   key: {{ .Values.env }}rabbitpass
             - name: EMAIL_HOST_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secretname}}
+                  name: debbiemailhostpass
                   key: debbiemailhostpass
             - name: TENGINE_QUERY_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secretname}}
+                  name: tenginequerypass
                   key: tenginequerypass
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env }}-debbie-db-url
+                  key: {{ .Values.env }}-debbie-db-url
             - name: TENGINE_AUTH_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secretname}}
+                  name: debbietengineauthtoken
                   key: debbietengineauthtoken
             - name: DEBBIE_INTERNAL_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secretname}}
+                  name: {{ .Values.env}}-debbie-internal-key
                   key: {{ .Values.env}}-debbie-internal-key
+          volumeMounts:
+            - name: knowhow-secrets-store
+              mountPath: "/mnt/{{ .Values.env}}-debbie-secrets-store"
+              readOnly: true
+      volumes:
+        - name: knowhow-secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "{{ .Values.env}}-debbie-secretproviderclass"
           ports:
             {{- range $port := .Values.ports }}
             - containerPort: {{ $port }}
