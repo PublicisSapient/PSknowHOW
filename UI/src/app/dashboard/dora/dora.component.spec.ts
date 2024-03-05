@@ -21342,7 +21342,7 @@ it('should make post call when kpi available for Jira for Scrum', () => {
     component.handleSelectedOption(event, kpi);
 
     // Assert
-    expect(component.kpiSelectedFilterObj[kpi.kpiId]).toEqual(['value1', 'value2', 'value3']);
+    expect(component.kpiSelectedFilterObj[kpi.kpiId]).toEqual('value3');
     expect(component.getChartData).toHaveBeenCalledWith(kpi.kpiId, component.ifKpiExist(kpi.kpiId), kpi.kpiDetail.aggregationCriteria);
     expect(component.kpiSelectedFilterObj['action']).toBe('update');
     expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(component.kpiSelectedFilterObj);
