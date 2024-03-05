@@ -267,9 +267,9 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
-				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
-						fieldMapping.getJiraIterationCompletionStatusKPI119(),
-						fieldMapping.getJiraIterationCompletionStatusKPI119(),
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
+						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI119(),
+						fieldMapping.getJiraIterationCompletionStatusKPI154(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
