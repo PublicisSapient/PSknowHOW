@@ -15,10 +15,12 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
-package com.publicissapient.kpidashboard.common.model.jira;
+package com.publicissapient.kpidashboard.common.model.application;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,10 +35,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class JiraHistoryChangeLog {
+public class FieldMappingResponse {
 
-	private String changedFrom;
-	private String changedTo;
-	private LocalDateTime updatedOn;
+	String fieldName;
+	Object originalValue;
+	Object previousValue;
+	List<ConfigurationHistoryChangeLog> history;
+
 
 }
