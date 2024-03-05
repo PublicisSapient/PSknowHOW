@@ -143,7 +143,7 @@ public class JsonParseUtil {
 	@Nullable
 	public static String getOptionalString(final JSONObject jsonObject, final String attributeName) {
 		final Object res = jsonObject.opt(attributeName);
-		if (res == JSONObject.NULL || res == null) {
+		if (res == JSONObject.EXPLICIT_NULL || res == null) {
 			return null;
 		}
 		return res.toString();
