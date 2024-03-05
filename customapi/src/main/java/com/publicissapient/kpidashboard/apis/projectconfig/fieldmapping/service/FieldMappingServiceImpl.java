@@ -142,11 +142,11 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		if (existingFieldMapping != null) {
 			fieldMapping.setId(existingFieldMapping.getId());
 			updateJiraData(existingFieldMapping.getBasicProjectConfigId(), fieldMapping, existingFieldMapping);
-		}
-		else {
+		} else {
+			// when no fieldmapping is present in the db, all the history should get
+			// maintained
 			updateJiraData(fieldMapping.getBasicProjectConfigId(), fieldMapping, new FieldMapping());
 		}
-
 
 		FieldMapping mapping = fieldMappingRepository.save(fieldMapping);
 		cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
@@ -264,6 +264,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				FieldMappingStructure mappingStructure = fieldMappingStructureMap
 						.get(fieldMappingResponse.getFieldName());
 				if (null != mappingStructure) {
+					// for nested fields
 					generateHistoryForNestedFields(fieldMappingResponseList,
 							projectToolConfig.getBasicProjectConfigId(), fieldMappingResponse, mappingStructure);
 					if (!cleanTraceLog) {
@@ -287,6 +288,22 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 	}
 
+	/**
+	 * the history of all the nested fields should appear on the first identifier.
+	 * 
+	 * @param fieldMappingResponseList
+	 *            fieldMappingResponseList
+	 * @param projectBasicConfigId
+	 *            projectBasicConfigId
+	 * @param fieldMappingResponse
+	 *            fieldMappingResponse
+	 * @param mappingStructure
+	 *            mappingStructure
+	 * @throws NoSuchFieldException
+	 *             NoSuchFieldException
+	 * @throws IllegalAccessException
+	 *             IllegalAccessException
+	 */
 	private void generateHistoryForNestedFields(List<FieldMappingResponse> fieldMappingResponseList,
 			ObjectId projectBasicConfigId, FieldMappingResponse fieldMappingResponse,
 			FieldMappingStructure mappingStructure) throws NoSuchFieldException, IllegalAccessException {
@@ -294,7 +311,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(projectBasicConfigId);
 			StringBuilder originalValue = new StringBuilder(fieldMappingResponse.getOriginalValue() + "-");
 			String previousValue = "";
-
+			// check the fields in nestedfield section of fieldmapping structure and find if
+			// those fields are present in the fieldmapping response
 			for (BaseFieldMappingStructure nestedField : mappingStructure.getNestedFields()) {
 				Optional<FieldMappingResponse> mappingResponse = fieldMappingResponseList.stream()
 						.filter(response -> response.getFieldName().equalsIgnoreCase(nestedField.getFieldName())
@@ -317,6 +335,18 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 	}
 
+	/**
+	 * 
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @param fieldName
+	 *            fieldName
+	 * @return list of history logs
+	 * @throws NoSuchFieldException
+	 *             no field exception
+	 * @throws IllegalAccessException
+	 *             accessibility
+	 */
 	private List<ConfigurationHistoryChangeLog> getAccessibleFieldHistory(FieldMapping fieldMapping, String fieldName)
 			throws NoSuchFieldException, IllegalAccessException {
 		return (List<ConfigurationHistoryChangeLog>) getFieldMappingField(fieldMapping,
@@ -396,7 +426,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	/**
-	 * checking each Field which are changed, and update History too
+	 * checking each Field which are changed, and set the History of each
+	 * fieldmapping
 	 * 
 	 * @param newMapping
 	 *            unsaved FieldMapping
@@ -413,18 +444,19 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				Object newValue = field.get(newMapping);
 				String fieldName = field.getName();
 				String setterName = "setHistory" + fieldName;
-				List<ConfigurationHistoryChangeLog> changeLogs = getAccessibleFieldHistory(oldMapping,
-						field.getName());
+				List<ConfigurationHistoryChangeLog> changeLogs = getAccessibleFieldHistory(oldMapping, field.getName());
 				Method setter = historyClass.getMethod(setterName, List.class);
 				if (isValueUpdated(oldValue, newValue)) {
 					String loggedInUser = authenticationService.getLoggedInUser();
 					String localDateTime = LocalDateTime.now().toString();
 					if (CollectionUtils.isNotEmpty(changeLogs)) {
+						// if change log is already present then we will be adding the new log
 						changeLogs.add(
 								new ConfigurationHistoryChangeLog(changeLogs.get(changeLogs.size() - 1).getChangedTo(),
 										newValue, loggedInUser, localDateTime));
 					} else {
-						changeLogs= new ArrayList<>();
+						// if change log is absent then we will be creating the new log
+						changeLogs = new ArrayList<>();
 						changeLogs.add(new ConfigurationHistoryChangeLog("", newValue, loggedInUser, localDateTime));
 					}
 				}
@@ -520,6 +552,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			projectToolConfig.setAzureIterationStatusFieldUpdate(true);
 			toolConfigRepository.save(projectToolConfig);
 		} else {
+			// update all fields
 			checkAllFieldsForUpdation(fieldMapping, existingFieldMapping);
 		}
 	}
