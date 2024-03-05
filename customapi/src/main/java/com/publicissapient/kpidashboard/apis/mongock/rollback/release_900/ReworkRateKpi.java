@@ -36,6 +36,7 @@ public class ReworkRateKpi {
 	@Execution
 	public void execution() {
 		deleteKpiMaster();
+		fieldMappingStructureDelete();
 	}
 
 	public void insertKpi173() {
@@ -54,12 +55,30 @@ public class ReworkRateKpi {
 		mongoTemplate.getCollection("kpi_master").insertOne(kpiDocument);
 	}
 
+	public void fieldMappingStructureInsert() {
+		Document thresholdValueMapping = new Document("fieldName", "thresholdValueKPI173")
+				.append("fieldLabel", "Target KPI Value").append("fieldType", "number")
+				.append("section", "Custom Fields Mapping").append("tooltip",
+						new Document("definition", "Target KPI value denotes the bare "
+								+ "minimum a project should maintain for a KPI. User should just input the number and"
+								+ " the unit like percentage, hours will automatically be considered."
+								+ " If the threshold is empty, then a common target KPI line will be shown"));
+
+		mongoTemplate.getCollection("field_mapping_structure").insertOne(thresholdValueMapping);
+	}
+
 	@RollbackExecution
 	public void rollBack() {
 		insertKpi173();
+		fieldMappingStructureInsert();
 	}
 
 	public void deleteKpiMaster() {
 		mongoTemplate.getCollection("kpi_master").deleteOne(new Document("kpiId", "kpi173"));
+	}
+
+	public void fieldMappingStructureDelete() {
+		mongoTemplate.getCollection("field_mapping_structure")
+				.deleteOne(new Document("fieldName", "thresholdValueKPI173"));
 	}
 }

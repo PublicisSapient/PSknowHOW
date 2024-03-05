@@ -242,7 +242,8 @@ public enum FieldMappingEnum {
 	KPI8("Code Build Time", KPISource.JENKINS.name(), Collections.singletonList("thresholdValueKPI8")),
 	KPI172("Build FREQUENCY", KPISource.JENKINS.name(), Collections.singletonList("thresholdValueKPI172")),
 	KPI116("Change Failure Rate", KPISource.JENKINS.name(), Collections.singletonList("thresholdValueKPI116")),
-	KPI118("Deployment Frequency", KPISource.JENKINS.name(), Collections.singletonList("thresholdValueKPI118"));
+	KPI118("Deployment Frequency", KPISource.JENKINS.name(), Collections.singletonList("thresholdValueKPI118")),
+	KPI173("Build FREQUENCY", KPISource.BITBUCKET.name(), Collections.singletonList("thresholdValueKPI173")),;
 
 	private List<String> fields;
 	private String kpiName;

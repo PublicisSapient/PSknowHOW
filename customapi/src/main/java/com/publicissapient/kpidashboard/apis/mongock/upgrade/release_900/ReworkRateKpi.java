@@ -38,14 +38,15 @@ public class ReworkRateKpi {
 	@Execution
 	public void execution() {
 		insertKpi173();
+		fieldMappingStructureInsert();
 	}
 
 	public void insertKpi173() {
-		Document kpiDocument = new Document().append("kpiId", "kpi173").append("kpiName", "Rework Rate").append("maxValue", "")
-				.append("kpiUnit", "%").append("isDeleted", false).append("defaultOrder", 5).append("groupId", 2)
-				.append("kpiSource", "BitBucket").append("kanban", false).append("chartType", "line").append("kpiInfo",
-						new Document("definition",
-								"Percentage of code changes in which an engineer rewrites code that they recently updated (within the past three weeks)."))
+		Document kpiDocument = new Document().append("kpiId", "kpi173").append("kpiName", "Rework Rate")
+				.append("maxValue", "").append("kpiUnit", "%").append("isDeleted", false).append("defaultOrder", 5)
+				.append("groupId", 2).append("kpiSource", "BitBucket").append("kanban", false)
+				.append("chartType", "line").append("kpiInfo", new Document("definition",
+						"Percentage of code changes in which an engineer rewrites code that they recently updated (within the past three weeks)."))
 				.append("xAxisLabel", "Weeks").append("yAxisLabel", "Percentage").append("isPositiveTrend", false)
 				.append("showTrend", true).append("kpiFilter", "dropDown").append("aggregationCriteria", "average")
 				.append("isAdditionalFilterSupport", false).append("calculateMaturity", false)
@@ -55,12 +56,30 @@ public class ReworkRateKpi {
 		mongoTemplate.getCollection("kpi_master").insertOne(kpiDocument);
 	}
 
+	public void fieldMappingStructureInsert() {
+		Document thresholdValueMapping = new Document("fieldName", "thresholdValueKPI173")
+				.append("fieldLabel", "Target KPI Value").append("fieldType", "number")
+				.append("section", "Custom Fields Mapping").append("tooltip",
+						new Document("definition", "Target KPI value denotes the bare "
+								+ "minimum a project should maintain for a KPI. User should just input the number and"
+								+ " the unit like percentage, hours will automatically be considered."
+								+ " If the threshold is empty, then a common target KPI line will be shown"));
+
+		mongoTemplate.getCollection("field_mapping_structure").insertOne(thresholdValueMapping);
+	}
+
 	@RollbackExecution
 	public void rollBack() {
 		deleteKpiMaster();
+		fieldMappingStructureDelete();
 	}
 
 	public void deleteKpiMaster() {
 		mongoTemplate.getCollection("kpi_master").deleteOne(new Document("kpiId", "kpi173"));
+	}
+
+	public void fieldMappingStructureDelete() {
+		mongoTemplate.getCollection("field_mapping_structure")
+				.deleteOne(new Document("fieldName", "thresholdValueKPI173"));
 	}
 }

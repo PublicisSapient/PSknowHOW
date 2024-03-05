@@ -244,7 +244,7 @@ public class CustomApiConfig {// NOPMD
 	public void setAesKeyValue(List<Character> aesKeyValue) {
 		this.aesKeyValue = aesKeyValue;
 	}
-	@Value("${x_api_key}")
+	@Value("${exposed_api_key}")
 	private String xApiKey;
 	private String repoToolReworkRateUrl;
 
