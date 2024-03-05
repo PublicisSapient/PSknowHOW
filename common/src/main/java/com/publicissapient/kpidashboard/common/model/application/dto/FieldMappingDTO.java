@@ -88,6 +88,8 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> jiraDodQAKPI111;
     private List<String> jiraDodKPI127;
     private List<String> jiraDodKPI37;
+    private List<String> jiraDodKPI142;
+    private List<String> jiraDodKPI144;
 
     private String jiraDefectCreatedStatus;
     private String jiraDefectCreatedStatusKPI14;
