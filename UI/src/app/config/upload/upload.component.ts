@@ -255,20 +255,7 @@ export class UploadComponent implements OnInit {
             document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
         }
         // this.selectedView = 'cert_upload';
-        if (this.isSuperAdmin) {
-            this.items.push(
-                {
-                    label: 'Upload certificate',
-                    icon: 'pi pi-image',
-                    command: (event) => {
-                        this.switchView(event);
-                    },
-                    expanded: false,
-                    disabled: true
-                }
-            );
-            // this.selectedView = 'cert_upload';
-        } else {
+        if (!this.isSuperAdmin) {
             this.handleTepSelect('upload_tep');
             document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
             document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
@@ -335,12 +322,6 @@ export class UploadComponent implements OnInit {
                 this.message = '';
             }
                 break;
-            // case 'Upload certificate': {
-            //     this.selectedView = 'cert_upload';
-            //     this.error = '';
-            //     this.message = '';
-            // }
-            //     break;
             case 'Test Execution Percentage': {
                 this.handleTepSelect('upload_tep');
                 this.addActiveToTab();
@@ -707,10 +688,10 @@ export class UploadComponent implements OnInit {
         this.reqObj['totalTestCases'] = this.popupForm?.get('totalTestCases').value;
         this.reqObj['executedTestCase'] = this.popupForm?.get('executedTestCase').value;
         this.reqObj['passedTestCase'] = this.popupForm?.get('passedTestCase').value;
-        this.reqObj['automatedTestCases'] = this.popupForm?.get('automatedTestCases').value === -1 ? '' : this.popupForm?.get('automatedTestCases').value;
-        this.reqObj['automatableTestCases'] = this.popupForm?.get('automatableTestCases').value === -1 ? '' : this.popupForm?.get('automatableTestCases').value;
-        this.reqObj['automatedRegressionTestCases'] = this.popupForm?.get('automatedRegressionTestCases').value === -1 ? '' : this.popupForm?.get('automatedRegressionTestCases').value ;
-        this.reqObj['totalRegressionTestCases'] = this.popupForm?.get('totalRegressionTestCases').value === -1 ? '' : this.popupForm?.get('totalRegressionTestCases').value ;
+        this.reqObj['automatedTestCases'] = this.popupForm?.get('automatedTestCases').value === '' ? 0 : this.popupForm?.get('automatedTestCases').value;
+        this.reqObj['automatableTestCases'] = this.popupForm?.get('automatableTestCases').value === '' ? 0 : this.popupForm?.get('automatableTestCases').value;
+        this.reqObj['automatedRegressionTestCases'] = this.popupForm?.get('automatedRegressionTestCases').value === '' ? 0 : this.popupForm?.get('automatedRegressionTestCases').value;
+        this.reqObj['totalRegressionTestCases'] = this.popupForm?.get('totalRegressionTestCases').value === '' ? 0 : this.popupForm?.get('totalRegressionTestCases').value;
         this.http_service.saveTestExecutionPercent(this.reqObj)
             .subscribe(response => {
                 if (response.success) {
@@ -746,33 +727,22 @@ export class UploadComponent implements OnInit {
         }
     }
 
-    validateFirstGroupTextCountField(){
-        if (!(!!this.popupForm?.get('totalTestCases').value)) {
+    validateFirstGroupTextCountField() {
+        if (parseInt(this.popupForm?.get('totalTestCases').value) !== 0 && (this.popupForm?.get('totalTestCases').value === '' || this.popupForm?.get('totalTestCases').value === null)) {
             this.isTestExecutionSaveDisabled = true;
-            if (parseInt(this.popupForm?.get('totalTestCases').value) === 0) {
-                this.testExecutionErrorMessage = 'Total Test Cases should not be 0';
-            } else {
-                this.testExecutionErrorMessage = 'Please enter total test cases, executed test cases and passed test cases';
-            }
+            this.testExecutionErrorMessage = 'Please enter total test cases, executed test cases and passed test cases';
             return;
+        }
 
-        }
-        if (!(!!this.popupForm?.get('executedTestCase').value)) {
+        if (parseInt(this.popupForm?.get('executedTestCase').value) !== 0 && (this.popupForm?.get('executedTestCase').value === '' || this.popupForm?.get('executedTestCase').value === null)) {
             this.isTestExecutionSaveDisabled = true;
-            if (parseInt(this.popupForm?.get('executedTestCase').value) === 0) {
-                this.testExecutionErrorMessage = 'Executed Test Cases should not be 0';
-            } else {
-                this.testExecutionErrorMessage = 'Please enter total test cases, executed test cases and passed test cases';
-            }
+            this.testExecutionErrorMessage = 'Please enter total test cases, executed test cases and passed test cases';
             return;
         }
-        if (!(!!this.popupForm?.get('passedTestCase').value)) {
+
+        if (parseInt(this.popupForm?.get('passedTestCase').value) !== 0 && (this.popupForm?.get('passedTestCase').value === '' || this.popupForm?.get('passedTestCase').value === null)) {
             this.isTestExecutionSaveDisabled = true;
-            if (parseInt(this.popupForm?.get('passedTestCase').value) === 0) {
-                this.testExecutionErrorMessage = 'Passed Test Cases should not be 0';
-            } else {
-                this.testExecutionErrorMessage = 'Please enter total test cases, executed test cases and passed test cases';
-            }
+            this.testExecutionErrorMessage = 'Please enter total test cases, executed test cases and passed test cases';
             return;
         }
         if (parseFloat(this.popupForm?.get('totalTestCases').value) < parseFloat(this.popupForm?.get('executedTestCase').value)) {
@@ -789,16 +759,16 @@ export class UploadComponent implements OnInit {
         this.testExecutionErrorMessage = '';
     }
 
-    validateSecondGroupTextCountField(){
-        if((!!this.popupForm?.get('automatedTestCases').value) && !(!!this.popupForm?.get('automatableTestCases').value) ||
-        !(!!this.popupForm?.get('automatedTestCases').value) && (!!this.popupForm?.get('automatableTestCases').value)){
+    validateSecondGroupTextCountField() {
+        if ((parseInt(this.popupForm?.get('automatedTestCases').value) !== 0 && (this.popupForm?.get('automatedTestCases').value === '' || this.popupForm?.get('automatedTestCases').value === null))
+        || (parseInt(this.popupForm?.get('automatableTestCases').value) !== 0 && (this.popupForm?.get('automatableTestCases').value === '' || this.popupForm?.get('automatableTestCases').value === null)) ) {
             this.isTestExecutionSaveDisabled = true;
             this.testExecutionErrorMessage = 'Please fill Automated Test Case & Automatable Test Case both';
             return;
         }
 
-        if((!!this.popupForm?.get('automatedRegressionTestCases').value) && !(!!this.popupForm?.get('totalRegressionTestCases').value) || 
-        !(!!this.popupForm?.get('automatedRegressionTestCases').value) && (!!this.popupForm?.get('totalRegressionTestCases').value)){
+       if ((parseInt(this.popupForm?.get('automatedRegressionTestCases').value) !== 0 && (this.popupForm?.get('automatedRegressionTestCases').value === '' || this.popupForm?.get('automatedRegressionTestCases').value === null))
+       || (parseInt(this.popupForm?.get('totalRegressionTestCases').value) !== 0 && (this.popupForm?.get('totalRegressionTestCases').value === '' || this.popupForm?.get('totalRegressionTestCases').value === null))) {
             this.isTestExecutionSaveDisabled = true;
             this.testExecutionErrorMessage = 'Please fill Automated Regrassion & Total Regrassion both';
             return;
@@ -977,44 +947,6 @@ export class UploadComponent implements OnInit {
                 this.noData = true;
             }
         });
-    }
-    /* Upload and  validate certificate */
-    validateCertificate(event) {
-        this.error = '';
-        this.message = '';
-        this.selectedFile = event.files[0];
-        const allowedExtensions = ['.cer'];
-        const fileExtension = this.selectedFile.name.substring(this.selectedFile.name.lastIndexOf('.')).toLowerCase();
-        if (allowedExtensions.indexOf(fileExtension) === -1) {
-            return;
-        }
-        const maxFileSize = 2 * 1024 * 1024; // 2 MB
-        if (this.selectedFile.size > maxFileSize) {
-            return;
-        }
-        if (this.selectedFile) {
-            this.isUploadEnabled = false;
-        }
-    }
-    uploadCertificate() {
-        const file = this.selectedFile;
-        this.error = '';
-        this.message = '';
-        this.http_service.uploadCertificate(file).pipe(first())
-            .subscribe(
-                data => {
-                    if (data['status'] && data['status'] === 417) {
-                        this.error = data['message'];
-                    } else {
-                        this.message = data['message'];
-                    }
-                },
-                error => {
-                    this.error = error.error.message;
-                },
-                () => this.clear(null)
-            );
-        this.isUploadEnabled = true;
     }
 
     clear(event) {

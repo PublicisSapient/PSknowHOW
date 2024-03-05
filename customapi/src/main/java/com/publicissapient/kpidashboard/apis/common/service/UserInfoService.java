@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.core.GrantedAuthority;
 
@@ -135,7 +136,7 @@ public interface UserInfoService {
 	 * @param username
 	 *            username
 	 */
-	ServiceResponse deleteUser(String username);
+	ServiceResponse deleteUser(String username , boolean centralAuthService);
 
 	List<UserInfo> getUserInfoByAuthType(String userType);
 
@@ -168,14 +169,12 @@ public interface UserInfoService {
 	 */
 	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
 
-	// ----auth-N-auth----------
-	List<UserInfoDTO> findAllUnapprovedUsers(String token);
+	// ----auth Service Methods started---------
+	List<UserInfoDTO> findAllUnapprovedUsersForCentralAuth();
 
-	boolean updateUserApprovalStatus(String user, String token);
+	boolean updateUserApprovalStatus(String user);
 
-	boolean deleteFromCentralAuthUser(String user, String token);
-
-	// ----auth-N-auth----------
+	boolean deleteFromCentralAuthUser(String user);
 
 	/**
 	 * getUser info from cental auth
@@ -183,10 +182,12 @@ public interface UserInfoService {
 	 * @param username
 	 * @return
 	 */
-	UserInfo getCentralAuthUserInfo(String username, String apiKey);
+	UserInfo getCentralAuthUserInfo(String username);
 
 	CentralUserInfoDTO getCentralAuthUserInfoDetails(String username);
 
-	boolean getCentralAuthUserDeleteUserToken(String token, String apiKey);
+	boolean getCentralAuthUserDeleteUserToken(String authCookieToken);
+
+	// ----auth Service Methods Ended---------
 
 }

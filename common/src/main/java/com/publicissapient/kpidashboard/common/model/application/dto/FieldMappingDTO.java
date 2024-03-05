@@ -24,6 +24,7 @@ import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
+import com.publicissapient.kpidashboard.common.model.application.LabelCount;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.Builder;
@@ -50,11 +51,11 @@ public class FieldMappingDTO extends BasicModel {
 
     // defectPriority
     private List<String> defectPriority;
-    private List<String> defectPriorityKPI135;
+    private List<LabelCount> defectPriorityKPI135;
     private List<String> defectPriorityKPI35;
     private List<String> defectPriorityKPI14;
     private List<String> defectPriorityQAKPI111;
-    private List<String> defectPriorityKPI82;
+    private List<LabelCount> defectPriorityKPI82;
     private List<String> defectPriorityKPI133;
 
     private String[] jiraIssueTypeNames;
@@ -87,6 +88,8 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> jiraDodQAKPI111;
     private List<String> jiraDodKPI127;
     private List<String> jiraDodKPI37;
+    private List<String> jiraDodKPI142;
+    private List<String> jiraDodKPI144;
 
     private String jiraDefectCreatedStatus;
     private String jiraDefectCreatedStatusKPI14;
@@ -331,9 +334,6 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> jiraIterationCompletionStatusKPI122;
     private List<String> jiraIterationCompletionStatusKPI75;
     private List<String> jiraIterationCompletionStatusKPI145;
-    private List<String> jiraIterationCompletionStatusKPI140;
-    private List<String> jiraIterationCompletionStatusKPI132;
-    private List<String> jiraIterationCompletionStatusKPI136;
     private List<String> jiraIterationCompletionStatusKpi72;
     private List<String> jiraIterationCompletionStatusKpi39;
     private List<String> jiraIterationCompletionStatusKpi5;

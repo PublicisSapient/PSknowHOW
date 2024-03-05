@@ -926,7 +926,7 @@ const completeHierarchyData = {
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
     spyOn(sharedService, 'setNoSprints');
     spyOn(component, 'createFilterApplyData');
-    component.handleIterationFilters('project');
+    component.handleIterationFilters('project',true);
     expect(spy).toHaveBeenCalled();
   });
 
@@ -1664,7 +1664,7 @@ const completeHierarchyData = {
   })
 
   it('should filter release when project dropdown value change',()=>{
-    const spyFunct = spyOn(component,'checkIfProjectHasRelease');
+    const spyFunct = spyOn(component,'checkIfProjectHasData');
     spyOn(component,'createFilterApplyData')
     component.additionalFiltersDdn['release'] = releaseList;
     component.trendLineValueList = [
@@ -1682,7 +1682,7 @@ const completeHierarchyData = {
     ]
     component.initializeFilterForm();
     component.filterForm?.get('selectedTrendValue').setValue('DOTC_63b51633f33fd2360e9e72bd')
-    component.handleMilestoneFilter('project');
+    component.handleIterationFilters('project',true);
     expect(spyFunct).toHaveBeenCalled();
   })
 
@@ -2606,5 +2606,35 @@ const completeHierarchyData = {
       const rValue = component.getSprintsWhichWasAlreadySelected();
       expect(rValue).not.toBeNull();
     })
+
+    it('should set not blank kpi filter for release and sprint when changing',()=>{
+      component.selectedTab = 'iteration';
+      const mockObj ={
+        kpiFilters : {
+          iteration : {},
+          release : {},
+        }
+      }
+      spyOn(sharedService,'getAddtionalFilterBackup').and.returnValue(mockObj);
+      spyOn(sharedService, 'setAddtionalFilterBackup')
+      const spyobj =  spyOn(sharedService, 'setKpiSubFilterObj')
+        component.refreshKpiLevelFiltersBackup('sprint',true);
+        expect(spyobj).toHaveBeenCalled();
+      })
+
+      it('should set blank kpi filter for backlog component',()=>{
+        component.selectedTab = 'backlog';
+        const mockObj ={
+          kpiFilters : {
+            backlog : {}
+          }
+        }
+        spyOn(sharedService,'getAddtionalFilterBackup').and.returnValue(mockObj);
+        const spyobj = spyOn(sharedService, 'setAddtionalFilterBackup')
+        spyOn(sharedService, 'setKpiSubFilterObj')
+
+          component.refreshKpiLevelFiltersBackup('project',true);
+          expect(spyobj).toHaveBeenCalled();
+        })
 
 });

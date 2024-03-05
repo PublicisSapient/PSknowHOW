@@ -81,7 +81,6 @@ describe('NavComponent', () => {
       httpService = TestBed.inject(HttpService);
       messageService = TestBed.inject(MessageService);
       shareService = TestBed.inject(SharedService);
-      spyOn(component,'startWorker').and.callFake(()=>{});
       fixture.detectChanges();
       router = TestBed.get(Router);
       // httpMock.expectOne(baseUrl + '/api/file/logo').flush(getLogo);
@@ -154,16 +153,6 @@ describe('NavComponent', () => {
     shareService.changedMainDashboardValueSub.next("updated board name");
     component.closeEditModal();
     expect(component.displayEditModal).toBeFalsy();
-  })
-
-  
-
-  it("should stop worker",()=>{
-    component.worker = {terminate: ()=>{
-      component.worker = undefined;
-    }};
-    component.stopWorker();
-    expect(component.worker).toBe(undefined);
   })
 
   it('should set visible flag',()=>{

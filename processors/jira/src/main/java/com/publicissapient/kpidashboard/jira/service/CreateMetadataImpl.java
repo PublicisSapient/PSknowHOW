@@ -81,9 +81,10 @@ public class CreateMetadataImpl implements CreateMetadata {
 	private JiraProcessorCacheEvictor jiraProcessorCacheEvictor;
 
 	@Override
-	public void collectMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client) {
-		if (null == boardMetadataRepository.findByProjectBasicConfigId(projectConfig.getBasicProjectConfigId())) {
-			log.info("metadata not present for the project : {} so  fetching first time",
+	public void collectMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client, String isScheduler) {
+		if (isScheduler.equalsIgnoreCase("false") || null == boardMetadataRepository.findByProjectBasicConfigId(projectConfig.getBasicProjectConfigId())) {
+			boardMetadataRepository.deleteByProjectBasicConfigId(projectConfig.getBasicProjectConfigId());
+			log.info("creating metadata for the project : {}",
 					projectConfig.getProjectName());
 			boolean isSuccess = processMetadata(projectConfig, client);
 			if (isSuccess) {
@@ -92,7 +93,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 			}
-			log.info("Fetched metadata: {}", isSuccess);
+			log.info("Fetched metadata");
 		} else {
 			log.info("metadata already present for the project : {} so not fetching again ",
 					projectConfig.getProjectName());
@@ -297,6 +298,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.EPICTIMECRITICALITY));
 		fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.EPICUSERBUSINESSVALUE));
 		fieldMapping.setEpicWsjf(customField.get(CommonConstant.EPICWSJF));
+		fieldMapping.setRootCauseIdentifier(JiraConstants.CUSTOM_FIELD);
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping.setJiraStoryPointsCustomField(
 				customField.getOrDefault(CommonConstant.JIRASTORYPOINTSCUSTOMFIELD, StringUtils.EMPTY));
@@ -513,6 +515,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.TIME_CRITICALITY));
 		fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.USER_BUSINESS_VALUE));
 		fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
+		fieldMapping.setRootCauseIdentifier(JiraConstants.CUSTOM_FIELD);
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping
 				.setJiraStoryPointsCustomField(customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));

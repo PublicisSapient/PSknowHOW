@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.repotools.service;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,6 +98,7 @@ public class RepoToolsConfigServiceImplTest {
 
     @Mock
     private ProcessorItemRepository processorItemRepository;
+    private RepoToolsProvider repoToolsProvider = new RepoToolsProvider();
 
     @Mock
     private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
@@ -123,14 +126,14 @@ public class RepoToolsConfigServiceImplTest {
         projectToolConfig.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
         projectToolConfig.setBasicProjectConfigId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectToolConfig.setBranch("test1");
-        projectToolConfig.setRepositoryName("testRepo");
+        projectToolConfig.setGitFullUrl("testHttpUrl");
 
         projectToolConfig1.setId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
         projectToolConfig1.setToolName(toolName);
         projectToolConfig1.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
         projectToolConfig1.setBasicProjectConfigId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectToolConfig1.setBranch("test2");
-        projectToolConfig1.setRepositoryName("testRepo");
+        projectToolConfig1.setGitFullUrl("testRepo2");
 
         projectToolConfig2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
         projectToolConfig2.setToolName(toolName);
@@ -143,22 +146,25 @@ public class RepoToolsConfigServiceImplTest {
         connection.setAccessToken("testToken");
         connection.setEmail("testEmail");
         connection.setType(toolName);
-        connection.setSshUrl("testSshUrl");
-        connection.setHttpUrl("testRepo.git");
+        connection.setBaseUrl("testSshUrl");
+        connection.setApiEndPoint("testHttpUrl.git");
         connection.setRepoToolProvider("github");
+
+        repoToolsProvider.setToolName("github");
 
         projectBasicConfig.setId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectBasicConfig.setProjectName("testProj");
 
+        when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(repoToolsProvider);
 
         when(customApiConfig.getRepoToolAPIKey()).thenReturn("repoToolAPIKey");
         when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
         when(restAPIUtils.decryptPassword(anyString())).thenReturn("decryptedApiKey");
-        when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(new RepoToolsProvider());
+        when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(repoToolsProvider);
         when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
                 .thenReturn(projectBasicConfig);
         when(repoToolsProviderRepository.findByToolName(anyString()))
-                .thenReturn(new RepoToolsProvider());;
+                .thenReturn(repoToolsProvider);;
 
     }
 
@@ -181,9 +187,6 @@ public class RepoToolsConfigServiceImplTest {
         when(processorRepository.findByProcessorName(CommonConstant.REPO_TOOLS)).thenReturn(new Processor());
         when(projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(CommonConstant.REPO_TOOLS,
                 new ObjectId("5fb364612064a31c9ccd517a"))).thenReturn(Arrays.asList(projectToolConfig));
-        when(processorExecutionTraceLogRepository
-                .findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.REPO_TOOLS,
-                        "5fb364612064a31c9ccd517a")).thenReturn(Optional.of(new ProcessorExecutionTraceLog()));
         when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
         when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
                 .thenReturn(projectBasicConfig);
@@ -214,7 +217,7 @@ public class RepoToolsConfigServiceImplTest {
         when(customApiConfig.getRepoToolDeleteProjectUrl()).thenReturn("delete/project");
         repoToolsConfigService.updateRepoToolProjectConfiguration(projectToolConfigList, projectToolConfig,
                 "5fb364612064a31c9ccd517a");
-
+        verify(repoToolsClient, times(1)).deleteProject(anyString(), anyString());
     }
 
     @Test
@@ -224,7 +227,7 @@ public class RepoToolsConfigServiceImplTest {
         projectToolConfigList.add(projectToolConfig1);
         projectToolConfigList.add(projectToolConfig2);
         when(configHelperService.getProjectConfig("5fb364612064a31c9ccd517a")).thenReturn(projectBasicConfig);
-        when(customApiConfig.getRepoToolDeleteRepoUrl()).thenReturn("delete/project");
+        when(connectionRepository.findById(new ObjectId("5fb3a6412064a35b8069930a"))).thenReturn(Optional.of(connection));
         repoToolsConfigService.updateRepoToolProjectConfiguration(projectToolConfigList, projectToolConfig,
                 "5fb364612064a31c9ccd517a");
 
@@ -234,10 +237,24 @@ public class RepoToolsConfigServiceImplTest {
 	public void testGetRepoToolKpiMetrics() {
 		List<String> projectCode = Arrays.asList("code1", "code2", "code3");
         RepoToolKpiBulkMetricResponse repoToolKpiBulkMetricResponse = new RepoToolKpiBulkMetricResponse();
-
 		repoToolsConfigService.getRepoToolKpiMetrics(projectCode, "repoToolKpi", "startDate",
                 "endDate", "frequency");
+        verify(repoToolsClient, times(1)).kpiMetricCall(anyString(), anyString(), any());
 	}
+
+    @Test
+    public void testSaveRepoToolProjectTraceLog() {
+        RepoToolsStatusResponse repoToolsStatusResponse = new RepoToolsStatusResponse();
+        repoToolsStatusResponse.setProject("example_project_123");
+        repoToolsStatusResponse.setStatus("SUCCESS");
+        ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setLastEnableAssigneeToggleState(false);
+        when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(anyString(),
+                anyString())).thenReturn(Optional.of(processorExecutionTraceLog));
+        repoToolsConfigService.saveRepoToolProjectTraceLog(repoToolsStatusResponse);
+
+        verify(processorExecutionTraceLogService, times(1)).save(any(ProcessorExecutionTraceLog.class));
+    }
 
 
 }

@@ -761,7 +761,7 @@ describe('UploadComponent', () => {
     component.ngOnInit();
     fixture.detectChanges();
     if (component.isSuperAdmin) {
-      expect(component.items.length).toBe(3);
+      expect(component.items.length).toBe(2);
     } else {
       expect(component.items.length).toBe(1);
     }
@@ -817,71 +817,6 @@ describe('UploadComponent', () => {
 
   });
 
-
-
-  it('should fail on uploading certificate', fakeAsync(() => {
-    component.selectedFile = new File([""],
-      "lladldap.hk.net.pem",
-      {
-        type: "application/x-x509-ca-cert",
-        lastModified: 1678340841040
-      }
-    )
-    component.error = '';
-    component.message = '';
-    spyOn(httpService, 'uploadCertificate').and.returnValue(throwError({error : {error:{message : 'error'}}}));
-    // spyOn(component, 'uploadCertificate');
-    component.uploadCertificate();
-    tick();
-  }));
-
-
-  it('should succeed on uploading certificate', fakeAsync(() => {
-    const successRes = {
-      "message": "LDAP certificate copied",
-      "success": true,
-      "data": "lladldap.hk.net.cer"
-    };
-    component.selectedFile = new File([""],
-      "lladldap.hk.net.cer",
-      {
-        type: "application/x-x509-ca-cert",
-        lastModified: 1678340841040
-      }
-    );
-    component.error = '';
-    component.message = '';
-    spyOn(httpService, 'uploadCertificate').and.returnValue(of(successRes));
-    // spyOn(component, 'uploadCertificate');
-    component.uploadCertificate();
-    tick();
-    expect(component.message).toEqual(successRes.message);
-  }));
-
-  it('should succeed on uploading certificate and status as 417', fakeAsync(() => {
-    const successRes = {
-      "message": "LDAP certificate copied",
-      "success": true,
-      "data": "lladldap.hk.net.cer",
-      "status" : 417
-    };
-    component.selectedFile = new File([""],
-      "lladldap.hk.net.cer",
-      {
-        type: "application/x-x509-ca-cert",
-        lastModified: 1678340841040
-      }
-    );
-    component.error = '';
-    component.message = '';
-    spyOn(httpService, 'uploadCertificate').and.returnValue(of(successRes));
-    // spyOn(component, 'uploadCertificate');
-    component.uploadCertificate();
-    tick();
-    expect(component.error).toEqual(successRes.message);
-  }));
-
-
   it('should clear file uploaded', () => {
     const event = {
       "originalEvent": {
@@ -893,21 +828,6 @@ describe('UploadComponent', () => {
     component.clear(event);
     expect(component.isUploadEnabled).toBe(true);
   });
-
-  it('should validate certificate successfully', () => {
-    const blob: Blob = new Blob([""], { type: "application/x-x509-ca-cert", });
-    const event = {
-      "originalEvent": {
-        "isTrusted": true
-      },
-      'files': [new File([blob], 'upload.cer', { type: "application/x-x509-ca-cert", })]
-    };
-    component.error = '';
-    component.message = '';
-    component.selectedFile = event.files[0];
-    component.validateCertificate(event);
-    expect(component.isUploadEnabled).toBe(false);
-  })
 
   xit('should switch view for upload certificate tab', () => {
     const event = {

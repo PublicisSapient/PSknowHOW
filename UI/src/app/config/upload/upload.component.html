@@ -43,38 +43,6 @@
     </div>
   </div>
 
-
-  <div class="p-col-10" *ngIf="isSuperAdmin && selectedView === 'cert_upload'">
-    <div class="main">
-      <!-- Certificate Upload  -->
-        <div id="cert-upload-form1" class="uploader">
-           <form (ngSubmit)="uploadCertificate()">
-              <label class="float-none" for="cert-upload" id="file-drag">
-                <div class="start">
-                  <span class="fa fa-download" aria-hidden="true"></span>
-                  <div>Select a certificate to upload</div>
-                  <div>File should be *.cer format</div>
-                  <p-fileUpload chooseLabel ="Upload" chooseIcon="pi pi-upload"
-                  id="cert-upload" name="certUpload" accept=".cer"
-                  maxFileSize="20000" [showUploadButton]="false" [showCancelButton]="false"
-                  (onSelect)="validateCertificate($event)" (onRemove)="clear($event)">
-                  <ng-template pTemplate="toolbar"  >
-                    <button type="submit" class="btn btn-primary certupload" [disabled]="isUploadEnabled"
-                      [ngClass]="{'disabled-button': isUploadEnabled}">Apply</button>
-                  </ng-template>
-                 </p-fileUpload>
-
-                  <div *ngIf="error" class="invalid-text p-pt-3">{{error}}</div>
-                  <div *ngIf="warning" class="warning-text p-pt-3">{{warning}}</div>
-                  <div *ngIf="message" class="success p-pt-3">{{message}}</div>
-                </div>
-
-              </label>
-            </form>
-        </div>
-      </div>
-  </div>
-
   <div class="p-col-10 horizontal-tabs" *ngIf="selectedView === 'upload_tep' || selectedView === 'upload_Sprint_Capacity'">
     <div class="main">
       <div class="tabs-container">
@@ -119,7 +87,7 @@
                           {{item[col.field] | date: 'dd/MMM/yyyy'}}
                         </span>
                         <ng-template #otherFieldsTemp>
-                          {{item[col.field] ? item[col.field] : '- -'}}
+                          {{(item[col.field] || item[col.field] === 0 ) ? item[col.field] : '- -'}}
                         </ng-template>
                   </td>
                   <td [ngClass]="{'upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}"><button pButton type="button" class="p-button-sm btn-active edit-btn"  label="{{(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit' : 'Add'}}"
@@ -154,7 +122,7 @@
                   <ng-template pTemplate="body"  let-item let-columns="columns">
                     <tr class="sprint" [ngClass]="{'tr-active': item?.sprintState?.toLowerCase() === 'active'}">
                       <td *ngFor="let col of columns"  [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number','upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}">
-                          <span>{{item[col.field] ? item[col.field] : '- -'}}</span>
+                          <span>{{(item[col.field] || item[col.field] === 0 ) ? item[col.field] : '- -'}}</span>
                       </td>
                   <td [ngClass]="{'upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}"><button pButton type="button" class="p-button-sm btn-active edit-btn" label="{{(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit' : 'Add'}}"
                       (click)="AddOrUpdateData(item)"></button></td>

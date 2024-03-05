@@ -48,6 +48,8 @@ public class JobScheduler {
 	private static final String NUMBER_OF_PROCESSOR_AVAILABLE_MSG = "Total number of processor available : {} = number or projects run in parallel";
 	private static final String PROJECT_ID = "projectId";
 	private static final String CURRENTTIME = "currentTime";
+	private static final String IS_SCHEDULER = "isScheduler";
+	private static final String VALUE = "true";
 	@Autowired
 	JobLauncher jobLauncher;
 	@Qualifier("fetchIssueScrumBoardJob")
@@ -189,6 +191,7 @@ public class JobScheduler {
 			// Add dynamic parameters as needed
 			jobParametersBuilder.addString(PROJECT_ID, configId);
 			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+			jobParametersBuilder.addString(IS_SCHEDULER,VALUE);
 
 			JobParameters params = jobParametersBuilder.toJobParameters();
 			parameterSets.add(params);

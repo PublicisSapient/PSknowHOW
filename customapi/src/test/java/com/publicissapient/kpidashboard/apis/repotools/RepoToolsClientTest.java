@@ -61,7 +61,7 @@ public class RepoToolsClientTest {
 		Mockito.when(restTemplate.exchange(any(URI.class), Mockito.eq(HttpMethod.POST), any(HttpEntity.class),
 				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 
-		int result = repoToolsClient.enrollProjectCall(repoToolConfig, repoToolsUrl, apiKey);
+		int result =repoToolsClient.enrollProjectCall(repoToolConfig, repoToolsUrl, apiKey);
 
 		assertEquals(HttpStatus.OK.value(), result);
 	}

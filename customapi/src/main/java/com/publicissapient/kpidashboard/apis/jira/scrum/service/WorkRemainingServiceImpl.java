@@ -26,6 +26,7 @@ import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.tran
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -120,7 +121,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 						.collect(Collectors.toSet());
 
 				sprintDetails = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
-						fieldMapping.getJiraIterationCompletionStatusKPI119(),
+						fieldMapping.getJiraIterationIssuetypeKPI119(),
 						fieldMapping.getJiraIterationCompletionStatusKPI119(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
@@ -181,11 +182,11 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> statuses = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
-			List<Integer> overAllIssueCount = List.of(0);
-			List<Double> overAllStoryPoints = List.of(0.0);
-			List<Double> overAllOriginalEstimate = List.of(0.0);
-			List<Integer> overAllRemHours = List.of(0);
-			List<Integer> overallPotentialDelay = List.of(0);
+			List<Integer> overAllIssueCount = Arrays.asList(0);
+			List<Double> overAllStoryPoints = Arrays.asList(0.0);
+			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
+			List<Integer> overAllRemHours = Arrays.asList(0);
+			List<Integer> overallPotentialDelay = Arrays.asList(0);
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 			List<IterationKpiModalValue> finalOverAllmodalValues = overAllmodalValues;
 			// For markerInfo
@@ -247,7 +248,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 						data.add(hours);
 						data.add(potentialDelay);
 						IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, status, data,
-								List.of("marker"), markerInfo);
+								Arrays.asList("marker"), markerInfo);
 						iterationKpiValues.add(iterationKpiValue);
 					}));
 			List<IterationKpiData> data = new ArrayList<>();
@@ -264,7 +265,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 			data.add(overAllHours);
 			data.add(overAllPotentialDelay);
 			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data,
-					List.of("marker"), markerInfo);
+					Arrays.asList("marker"), markerInfo);
 			iterationKpiValues.add(overAllIterationKpiValue);
 
 			// Create kpi level filters

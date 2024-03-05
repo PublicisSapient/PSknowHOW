@@ -398,10 +398,12 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setProjectId(e.getProjectId());
 			projectConfToolDto.setProjectKey(e.getProjectKey());
 			projectConfToolDto.setJobName(e.getJobName());
+			projectConfToolDto.setAzurePipelineName(e.getAzurePipelineName());
 			projectConfToolDto.setJobType(e.getJobType());
 			projectConfToolDto.setEnv(e.getEnv());
 			projectConfToolDto.setRepoSlug(e.getRepoSlug());
 			projectConfToolDto.setRepositoryName(e.getRepositoryName());
+			projectConfToolDto.setGitFullUrl(e.getGitFullUrl());
 			projectConfToolDto.setBitbucketProjKey(e.getBitbucketProjKey());
 			projectConfToolDto.setCreatedAt(e.getCreatedAt());
 			projectConfToolDto.setUpdatedAt(e.getUpdatedAt());

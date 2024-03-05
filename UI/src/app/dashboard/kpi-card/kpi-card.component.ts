@@ -78,9 +78,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
-       /** Refreshing multiselect filter when project/sprint/release are changing from the boards */
-       this.filterOptions = x?.action === 'new' ? {} : {...this.filterOptions};
-      if (Object.keys(x)?.length > 1) {
+     if (Object.keys(x)?.length > 1) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
           if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
@@ -112,7 +110,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
             }
             else {
               this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
-
+              this.filterOptions = Array.isArray(x[this.kpiData?.kpiId]) ? {'filter1' : x[this.kpiData?.kpiId]} : {...x[this.kpiData?.kpiId]};
               if (!this.filterOption) {
                 this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'] ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
               }

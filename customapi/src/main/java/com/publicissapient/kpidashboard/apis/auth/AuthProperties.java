@@ -71,7 +71,8 @@ public class AuthProperties {// NOPMD
 	// --- auth-N-auth changes starts here ----
 	private String centralAuthBaseURL;
 	private String resourceAPIKey;
-	private String resourcePolicyEndPoint;
+	private String userLogoutEndPoint;
+	private String deleteUserEndpoint;
 	private String fetchUserDetailsEndPoint;
 	private String fetchPendingUsersApprovalEndPoint;
 	private String updateUserApprovalStatus;
@@ -484,16 +485,28 @@ public class AuthProperties {// NOPMD
 	}
 
 	/**
-	 * Set resourcePolicyEndPoint
-	 *
-	 * @param resourcePolicyEndPoint
+	 * get user logout end point for central auth
+	 * 
+	 * @return
 	 */
-	public void setResourcePolicyEndPoint(String resourcePolicyEndPoint) {
-		this.resourcePolicyEndPoint = resourcePolicyEndPoint;
+	public String getUserLogoutEndPoint() {
+		return userLogoutEndPoint;
 	}
 
-	public String getResourcePolicyEndPoint() {
-		return resourcePolicyEndPoint;
+	public void setUserLogoutEndPoint(String userLogoutEndPoint) {
+		this.userLogoutEndPoint = userLogoutEndPoint;
+	}
+
+	/**
+	 * delete user for central auth
+	 * @return
+	 */
+	public String getDeleteUserEndpoint() {
+		return deleteUserEndpoint;
+	}
+
+	public void setDeleteUserEndpoint(String deleteUserEndpoint) {
+		this.deleteUserEndpoint = deleteUserEndpoint;
 	}
 
 	/**

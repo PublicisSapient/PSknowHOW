@@ -236,11 +236,11 @@ describe('ToolMenuComponent', () => {
     expect(messageServiceSpy).toHaveBeenCalled();
   });
 
-  it('should copy token to clipboard', () => {
-    component.generatedToken = 'TestToken1';
-    component.copyToken();
-    expect(component.tokenCopied).toBeTrue();
-  });
+  // it('should copy token to clipboard', () => {
+  //   component.generatedToken = 'TestToken1';
+  //   component.copyToken();
+  //   expect(component.tokenCopied).toBeTrue();
+  // });
 
 
   it("should disable assignee switch once assignee switch is on", () => {

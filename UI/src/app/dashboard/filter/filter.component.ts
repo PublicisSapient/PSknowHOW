@@ -648,6 +648,10 @@ export class FilterComponent implements OnInit, OnDestroy {
     if(isChangedFromUI){
       this.emptyIdsFromQueryParam();
     }
+     /** Refreshing kpiFilter backup when project is changing */
+        this.service.setAddtionalFilterBackup({});
+        this.service.setKpiSubFilterObj({});
+
     this.additionalFiltersArr.forEach((additionalFilter) => {
       this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
     });
@@ -1275,6 +1279,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     if(isChangedFromUI){
       this.emptyIdsFromQueryParam();
     }
+     this.refreshKpiLevelFiltersBackup(level, isChangedFromUI) // Refreshing KPi level filters backup
     this.lastSyncData = {};
     this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
@@ -1471,7 +1476,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   // logout is clicked  and removing auth token , username
   logout() {
       this.httpService.logout().subscribe((responseData) => {
-      if (responseData && responseData['success']) {
+        if (responseData?.success) {
         this.helperService.isKanban = false;
         localStorage.clear();
         // Set blank selectedProject after logged out state
@@ -1479,6 +1484,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
         this.service.setAddtionalFilterBackup({});
+        this.service.setKpiSubFilterObj({});
         if(!environment['AUTHENTICATION_SERVICE']){
           this.router.navigate(['./authentication/login']);
         } else{
@@ -1580,6 +1586,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     if(isChangedFromUI){
       this.emptyIdsFromQueryParam();
     }
+      this.refreshKpiLevelFiltersBackup(level, isChangedFromUI) // Refreshing KPi level filters backup
+
     const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
     this.filteredAddFilters['release'] = []
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['release']) {
@@ -1823,7 +1831,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         selectedSprint = { ...selectedSprint, [element['nodeId']]: element['additionalFilters'] }
       }
     });
-    this.service.setAddtionalFilterBackup({ sprint: selectedSprint });
+  this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), sprint: selectedSprint });
   }
 
   /**
@@ -1843,5 +1851,20 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
     return sprintsWhichWasAlreadySelected;
   }
+
+    /************************
+     * Refresh KPI Level Filters when project is changing
+     */
+    refreshKpiLevelFiltersBackup(level, isManually) {
+      if (isManually) {
+        if (level === 'release' || level === 'sprint') {
+          const updatedFilterBackup = { ...this.service.getAddtionalFilterBackup()['kpiFilters'][this.selectedTab.toLowerCase()]= {}}
+          this.service.setKpiSubFilterObj(updatedFilterBackup)
+        } else {
+          this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), kpiFilters: {} });
+          this.service.setKpiSubFilterObj({})
+        }
+      }
+    }
 
 }
