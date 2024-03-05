@@ -16,23 +16,26 @@
  *
  ******************************************************************************/
 
-// This file can be replaced during build by using the `fileReplacements` array.
-// `ng build ---prod` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
+package com.publicissapient.kpidashboard.common.util;
 
-export const environment = {
-   production: false,
-   baseUrl: '//localhost:8080',
-   SSO_LOGIN: false,
-   CENTRAL_LOGIN_URL: 'http://localhost:3000',
-   RESOURCE: 'PSKnowHOW',
-   AUTHENTICATION_SERVICE: true
-};
+import lombok.extern.slf4j.Slf4j;
 
-/*
- * In development mode, to ignore zone related error stack frames such as
- * `zone.run`, `zoneDelegate.invokeTask` for easier debugging, you can
- * import the following file, but please comment it out in production mode
- * because it will have performance impact when throw error
+/**
+ * Provides Common utilities.
+ *
  */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+@Slf4j
+public final class CommonUtils {
+
+	/**
+	 * handle taint value propagation vulnerability
+	 *
+	 * @param value
+	 *            taintedValue
+	 * @return string response
+	 */
+	public static final String AUTH_DETAILS_UPDATED_FLAG = "auth-details-updated";
+	public static String handleCrossScriptingTaintedValue(String value) {
+		return null == value ? null : value.replaceAll("[\\n|\\r\\t]", "");
+	}
+}

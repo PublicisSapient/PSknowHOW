@@ -15,24 +15,39 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package com.publicissapient.kpidashboard.common.model.notification;
 
-// This file can be replaced during build by using the `fileReplacements` array.
-// `ng build ---prod` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
-export const environment = {
-   production: false,
-   baseUrl: '//localhost:8080',
-   SSO_LOGIN: false,
-   CENTRAL_LOGIN_URL: 'http://localhost:3000',
-   RESOURCE: 'PSKnowHOW',
-   AUTHENTICATION_SERVICE: true
-};
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/*
- * In development mode, to ignore zone related error stack frames such as
- * `zone.run`, `zoneDelegate.invokeTask` for easier debugging, you can
- * import the following file, but please comment it out in production mode
- * because it will have performance impact when throw error
+/**
+ * This class is represent kafka message format
+ *
+ * @author Hiren Babariya
  */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class EmailEvent implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1334987659830782650L;
+
+	private String from;
+	private List<String> to;
+	private List<String> cc;
+	private List<String> bcc;
+	private String subject;
+	private String body;
+	private Map<String, String> customData;
+	private String emailHost;
+	private int emailPort;
+
+}
