@@ -829,7 +829,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
               this.kpiChartData[kpiId] = [];
               if (trendValueList &&  trendValueList?.length > 0) {
                 this.kpiChartData[kpiId]?.push(trendValueList?.filter((x) => x['filter'] == 'Overall')[0]);
-              }
+              } 
               else {
                 this.kpiChartData[kpiId]?.push(trendValueList);
               }
