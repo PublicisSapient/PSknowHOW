@@ -154,6 +154,62 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		return mapping;
 	}
 
+	/**
+	 * Checks if fields are updated and then unset changeDate in jira collections.
+	 *
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @param existingFieldMapping
+	 *            existingFieldMapping
+	 */
+	private void updateJiraData(ObjectId basicProjectConfigId, FieldMapping fieldMapping,
+			FieldMapping existingFieldMapping) {
+		Optional<ProjectBasicConfig> projectBasicConfigOpt = projectBasicConfigRepository
+				.findById(basicProjectConfigId);
+		if (projectBasicConfigOpt.isPresent()) {
+			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
+			Optional<ProjectToolConfig> projectToolConfigOpt = toolConfigRepository
+					.findById(fieldMapping.getProjectToolConfigId());
+			updateFields(fieldMapping, existingFieldMapping, projectBasicConfig, projectToolConfigOpt);
+			removeTraceLog(basicProjectConfigId);
+			projectToolConfigOpt
+					.ifPresent(projectToolConfig -> saveTemplateCode(projectBasicConfig, projectToolConfig));
+
+		}
+
+	}
+
+	/**
+	 * if jiraIterationCompletionStatusCustomField field mapping changes then put
+	 * identifier to change in sprint report issues based on status for azure board
+	 *
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @param existingFieldMapping
+	 *            existingFieldMapping
+	 * @param projectBasicConfig
+	 *            projectBasicConfig
+	 * @param projectToolConfigOpt
+	 *            projectToolConfigOpt
+	 */
+	private void updateFields(FieldMapping fieldMapping, FieldMapping existingFieldMapping,
+			ProjectBasicConfig projectBasicConfig, Optional<ProjectToolConfig> projectToolConfigOpt) {
+		// azureSprintReportStatusUpdateBasedOnFieldChange
+		if (projectToolConfigOpt.isPresent()
+				&& projectToolConfigOpt.get().getToolName().equals(ProcessorConstants.AZURE)
+				&& !projectBasicConfig.getIsKanban() && checkFieldsForUpdation(fieldMapping, existingFieldMapping,
+						Collections.singletonList("jiraIterationCompletionStatusCustomField"))) {
+			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
+			projectToolConfig.setAzureIterationStatusFieldUpdate(true);
+			toolConfigRepository.save(projectToolConfig);
+		} else {
+			// update all fields
+			checkAllFieldsForUpdation(fieldMapping, existingFieldMapping);
+		}
+	}
+
 	@Override
 	public boolean hasProjectAccess(String projectToolConfigId) {
 		Optional<ProjectBasicConfig> projectBasicConfig;
@@ -210,7 +266,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				if (CollectionUtils.isNotEmpty(changeLogs)) {
 					mappingResponse.setHistory(changeLogs.stream()
 							.sorted(Comparator.comparing(ConfigurationHistoryChangeLog::getUpdatedOn).reversed())
-							.limit(5).collect(Collectors.toList()));
+							.limit(5).toList());
 				}
 				fieldMappingResponses.add(mappingResponse);
 			}
@@ -324,11 +380,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			List<ConfigurationHistoryChangeLog> changeLogs = getAccessibleFieldHistory(fieldMapping,
 					fieldMappingResponse.getFieldName());
 			if (CollectionUtils.isNotEmpty(changeLogs)) {
-				Optional<ConfigurationHistoryChangeLog> maxChangeLog = changeLogs.stream()
-						.max(Comparator.comparing(ConfigurationHistoryChangeLog::getUpdatedOn));
-				if (maxChangeLog.isPresent()) {
-					previousValue = String.valueOf(maxChangeLog.get().getChangedTo());
-				}
+				ConfigurationHistoryChangeLog configurationHistoryChangeLog = changeLogs.get(changeLogs.size() - 1);
+				previousValue = String.valueOf(configurationHistoryChangeLog.getChangedTo());
+
 			}
 			fieldMappingResponse.setOriginalValue(originalValue.deleteCharAt(originalValue.length() - 1).toString());
 			fieldMappingResponse.setPreviousValue(previousValue);
@@ -435,8 +489,13 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 *            saved FieldMapping
 	 */
 	private void checkAllFieldsForUpdation(FieldMapping newMapping, FieldMapping oldMapping) {
-		Field[] fields = FieldMapping.class.getDeclaredFields();
-		Class<? super FieldMapping> historyClass = FieldMapping.class.getSuperclass();
+		Class<FieldMapping> fieldMappingClass = FieldMapping.class;
+		Field[] fields = fieldMappingClass.getDeclaredFields();
+		Class<? super FieldMapping> historyClass = fieldMappingClass.getSuperclass();
+		Map<String, FieldMappingStructure> fieldMappingStructureMap = ((List<FieldMappingStructure>) configHelperService
+				.loadFieldMappingStructure()).stream()
+						.collect(Collectors.toMap(FieldMappingStructure::getFieldName, Function.identity()));
+
 		for (Field field : fields) {
 			setAccessible(field);
 			try {
@@ -444,9 +503,11 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				Object newValue = field.get(newMapping);
 				String fieldName = field.getName();
 				String setterName = "setHistory" + fieldName;
+				FieldMappingStructure mappingStructure = fieldMappingStructureMap.get(fieldName);
 				List<ConfigurationHistoryChangeLog> changeLogs = getAccessibleFieldHistory(oldMapping, field.getName());
 				Method setter = historyClass.getMethod(setterName, List.class);
 				if (isValueUpdated(oldValue, newValue)) {
+					newValue = getNestedField(newMapping, fieldMappingClass, newValue, mappingStructure);
 					String loggedInUser = authenticationService.getLoggedInUser();
 					String localDateTime = LocalDateTime.now().toString();
 					if (CollectionUtils.isNotEmpty(changeLogs)) {
@@ -466,6 +527,26 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				log.debug("No Such Method Found" + e);
 			}
 		}
+	}
+
+
+	private Object getNestedField(FieldMapping newMapping, Class<FieldMapping> fieldMappingClass, Object newValue,
+			FieldMappingStructure mappingStructure) throws NoSuchFieldException, IllegalAccessException {
+		if (null != mappingStructure && CollectionUtils.isNotEmpty(mappingStructure.getNestedFields())) {
+			StringBuilder originalValue = new StringBuilder(newValue + "-");
+			// for nested fields
+			for (BaseFieldMappingStructure nestedField : mappingStructure.getNestedFields()) {
+				if (nestedField.getFilterGroup().contains(newValue)) {
+					Object fieldMappingField = getFieldMappingField(newMapping, fieldMappingClass,
+							nestedField.getFieldName());
+					if (fieldMappingField != null) {
+						originalValue.append(fieldMappingField).append(":");
+					}
+				}
+			}
+			return originalValue.deleteCharAt(originalValue.length() - 1).toString();
+		}
+		return newValue;
 	}
 
 	private void setAccessible(Field field) {
@@ -498,62 +579,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				return !value1.equals(value);
 
 			}
-		}
-	}
-
-	/**
-	 * Checks if fields are updated and then unset changeDate in jira collections.
-	 *
-	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @param existingFieldMapping
-	 *            existingFieldMapping
-	 */
-	private void updateJiraData(ObjectId basicProjectConfigId, FieldMapping fieldMapping,
-			FieldMapping existingFieldMapping) {
-		Optional<ProjectBasicConfig> projectBasicConfigOpt = projectBasicConfigRepository
-				.findById(basicProjectConfigId);
-		if (projectBasicConfigOpt.isPresent()) {
-			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
-			Optional<ProjectToolConfig> projectToolConfigOpt = toolConfigRepository
-					.findById(fieldMapping.getProjectToolConfigId());
-			updateFields(fieldMapping, existingFieldMapping, projectBasicConfig, projectToolConfigOpt);
-			removeTraceLog(basicProjectConfigId);
-			projectToolConfigOpt
-					.ifPresent(projectToolConfig -> saveTemplateCode(projectBasicConfig, projectToolConfig));
-
-		}
-
-	}
-
-	/**
-	 * if jiraIterationCompletionStatusCustomField field mapping changes then put
-	 * identifier to change in sprint report issues based on status for azure board
-	 *
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @param existingFieldMapping
-	 *            existingFieldMapping
-	 * @param projectBasicConfig
-	 *            projectBasicConfig
-	 * @param projectToolConfigOpt
-	 *            projectToolConfigOpt
-	 */
-	private void updateFields(FieldMapping fieldMapping, FieldMapping existingFieldMapping,
-			ProjectBasicConfig projectBasicConfig, Optional<ProjectToolConfig> projectToolConfigOpt) {
-		// azureSprintReportStatusUpdateBasedOnFieldChange
-		if (projectToolConfigOpt.isPresent()
-				&& projectToolConfigOpt.get().getToolName().equals(ProcessorConstants.AZURE)
-				&& !projectBasicConfig.getIsKanban() && checkFieldsForUpdation(fieldMapping, existingFieldMapping,
-						Collections.singletonList("jiraIterationCompletionStatusCustomField"))) {
-			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
-			projectToolConfig.setAzureIterationStatusFieldUpdate(true);
-			toolConfigRepository.save(projectToolConfig);
-		} else {
-			// update all fields
-			checkAllFieldsForUpdation(fieldMapping, existingFieldMapping);
 		}
 	}
 
