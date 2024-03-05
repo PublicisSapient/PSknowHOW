@@ -19,6 +19,8 @@
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,8 +78,6 @@ import lombok.extern.slf4j.Slf4j;
 public class FieldMappingServiceImpl implements FieldMappingService {
 
 	public static final String INVALID_PROJECT_TOOL_CONFIG_ID = "Invalid projectToolConfigId";
-	public static final String JIRA_TECH_DEBT_CUSTOMFIELD = "jiraTechDebtCustomField";
-	public static final String JIRA_TECH_DEBT_VALUE = "jiraTechDebtValue";
 	public static final String HISTORY = "history";
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
@@ -143,6 +143,10 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			fieldMapping.setId(existingFieldMapping.getId());
 			updateJiraData(existingFieldMapping.getBasicProjectConfigId(), fieldMapping, existingFieldMapping);
 		}
+		else {
+			updateJiraData(fieldMapping.getBasicProjectConfigId(), fieldMapping, new FieldMapping());
+		}
+
 
 		FieldMapping mapping = fieldMappingRepository.save(fieldMapping);
 		cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
@@ -193,7 +197,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			throws NoSuchFieldException, IllegalAccessException {
 		FieldMappingEnum fieldMappingEnum = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase());
 		List<String> fields = fieldMappingEnum.getFields();
-
 		FieldMapping fieldMapping = getFieldMapping(projectToolConfigId);
 		List<FieldMappingResponse> fieldMappingResponses = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(fields)) {
@@ -203,15 +206,11 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				Object value = getFieldMappingField(fieldMapping, fieldMappingClass, field);
 				mappingResponse.setFieldName(field);
 				mappingResponse.setOriginalValue(value);
-				List<ConfigurationHistoryChangeLog> changeLogs = (List<ConfigurationHistoryChangeLog>) getFieldMappingField(
-						fieldMapping, fieldMappingClass.getSuperclass(), HISTORY + field);
+				List<ConfigurationHistoryChangeLog> changeLogs = getAccessibleFieldHistory(fieldMapping, field);
 				if (CollectionUtils.isNotEmpty(changeLogs)) {
 					mappingResponse.setHistory(changeLogs.stream()
 							.sorted(Comparator.comparing(ConfigurationHistoryChangeLog::getUpdatedOn).reversed())
 							.limit(5).collect(Collectors.toList()));
-				} else if (ObjectUtils.isNotEmpty(value)) {
-					mappingResponse.setHistory(Arrays.asList(new ConfigurationHistoryChangeLog("", value,
-							authenticationService.getLoggedInUser(), LocalDateTime.now().toString())));
 				}
 				fieldMappingResponses.add(mappingResponse);
 			}
@@ -265,14 +264,13 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				FieldMappingStructure mappingStructure = fieldMappingStructureMap
 						.get(fieldMappingResponse.getFieldName());
 				if (null != mappingStructure) {
-					generateHistoryForNestedFields(fieldMappingResponseList, projectToolConfigId, fieldMappingResponse,
-							mappingStructure);
+					generateHistoryForNestedFields(fieldMappingResponseList,
+							projectToolConfig.getBasicProjectConfigId(), fieldMappingResponse, mappingStructure);
 					if (!cleanTraceLog) {
 						cleanTraceLog = mappingStructure.isProcessorCommon();
 					}
 				}
-				azureSprintReportStatusUpdateBasedOnFieldChange(fieldMappingResponse.getFieldName(), projectToolConfig,
-						projectBasicConfig);
+				updateFields(fieldMappingResponse.getFieldName(), projectToolConfig, projectBasicConfig);
 				ConfigurationHistoryChangeLog configurationHistoryChangeLog = new ConfigurationHistoryChangeLog();
 				configurationHistoryChangeLog.setChangedTo(fieldMappingResponse.getOriginalValue());
 				configurationHistoryChangeLog.setChangedFrom(fieldMappingResponse.getPreviousValue());
@@ -290,10 +288,10 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	private void generateHistoryForNestedFields(List<FieldMappingResponse> fieldMappingResponseList,
-			ObjectId projectToolConfigId, FieldMappingResponse fieldMappingResponse,
+			ObjectId projectBasicConfigId, FieldMappingResponse fieldMappingResponse,
 			FieldMappingStructure mappingStructure) throws NoSuchFieldException, IllegalAccessException {
 		if (CollectionUtils.isNotEmpty(mappingStructure.getNestedFields())) {
-			FieldMapping fieldMapping = getFieldMapping(projectToolConfigId.toString());
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(projectBasicConfigId);
 			StringBuilder originalValue = new StringBuilder(fieldMappingResponse.getOriginalValue() + "-");
 			String previousValue = "";
 
@@ -305,8 +303,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 						.findFirst();
 				mappingResponse.ifPresent(response -> originalValue.append(response.getOriginalValue()).append(":"));
 			}
-			List<ConfigurationHistoryChangeLog> changeLogs = (List<ConfigurationHistoryChangeLog>) getFieldMappingField(
-					fieldMapping, FieldMapping.class.getSuperclass(), HISTORY + fieldMappingResponse.getFieldName());
+			List<ConfigurationHistoryChangeLog> changeLogs = getAccessibleFieldHistory(fieldMapping,
+					fieldMappingResponse.getFieldName());
 			if (CollectionUtils.isNotEmpty(changeLogs)) {
 				Optional<ConfigurationHistoryChangeLog> maxChangeLog = changeLogs.stream()
 						.max(Comparator.comparing(ConfigurationHistoryChangeLog::getUpdatedOn));
@@ -317,6 +315,12 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			fieldMappingResponse.setOriginalValue(originalValue.deleteCharAt(originalValue.length() - 1).toString());
 			fieldMappingResponse.setPreviousValue(previousValue);
 		}
+	}
+
+	private List<ConfigurationHistoryChangeLog> getAccessibleFieldHistory(FieldMapping fieldMapping, String fieldName)
+			throws NoSuchFieldException, IllegalAccessException {
+		return (List<ConfigurationHistoryChangeLog>) getFieldMappingField(fieldMapping,
+				FieldMapping.class.getSuperclass(), HISTORY + fieldName);
 	}
 
 	/**
@@ -330,7 +334,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 * @param projectBasicConfig
 	 *            projectBasicConfig
 	 */
-	private void azureSprintReportStatusUpdateBasedOnFieldChange(String fieldName, ProjectToolConfig projectToolConfig,
+	private void updateFields(String fieldName, ProjectToolConfig projectToolConfig,
 			ProjectBasicConfig projectBasicConfig) {
 		if (fieldName.equalsIgnoreCase("jiraIterationCompletionStatusCustomField")
 				&& projectToolConfig.getToolName().equals(ProcessorConstants.AZURE)
@@ -343,7 +347,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	private Object getFieldMappingField(FieldMapping fieldMapping, Class<?> fieldMapping1, String field)
 			throws NoSuchFieldException, IllegalAccessException {
 		Field declaredField = fieldMapping1.getDeclaredField(field);
-		declaredField.setAccessible(true); // This is necessary if the field is private
+		setAccessible(declaredField);
 		return declaredField.get(fieldMapping);
 	}
 
@@ -357,48 +361,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	/**
-	 * Checks if fields are updated.
-	 *
-	 * @param unsaved
-	 *            object from request
-	 * @param saved
-	 *            object from database
-	 * @param fieldNameList
-	 *            fieldNameList
-	 * @return true or false
-	 */
-	private boolean isMappingUpdated(FieldMapping unsaved, FieldMapping saved, List<String> fieldNameList) {
-		boolean isUpdated;
-
-		isUpdated = checkFieldsForUpdation(unsaved, saved, fieldNameList);
-
-		if (!isUpdated && CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraBugRaisedByIdentification())) {
-			List<String> uatFieldList = Arrays.asList("jiraBugRaisedByCustomField", "jiraBugRaisedByValue");
-			isUpdated = checkFieldsForUpdation(unsaved, saved, uatFieldList);
-		}
-
-		if (!isUpdated && CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraTechDebtIdentification())) {
-			List<String> tachDebtFieldList = Arrays.asList(JIRA_TECH_DEBT_CUSTOMFIELD, JIRA_TECH_DEBT_VALUE);
-			isUpdated = checkFieldsForUpdation(unsaved, saved, tachDebtFieldList);
-		}
-
-		if (!isUpdated && CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getProductionDefectIdentifier())) {
-			List<String> productionDefectFieldList = Arrays.asList("productionDefectCustomField",
-					"productionDefectValue");
-			isUpdated = checkFieldsForUpdation(unsaved, saved, productionDefectFieldList);
-		}
-
-		if (!isUpdated
-				&& CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraProductionIncidentIdentification())) {
-			List<String> productionIncidentFieldList = Arrays.asList("jiraProdIncidentRaisedByCustomField",
-					"jiraProdIncidentRaisedByValue");
-			isUpdated = checkFieldsForUpdation(unsaved, saved, productionIncidentFieldList);
-		}
-
-		return isUpdated;
-	}
-
-	/**
 	 * @param unsaved
 	 *            new field mapping
 	 * @param saved
@@ -409,22 +371,73 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 */
 	private boolean checkFieldsForUpdation(FieldMapping unsaved, FieldMapping saved, List<String> fieldNameList) {
 		boolean isUpdated = false;
-		for (String fName : fieldNameList) {
-			try {
-				Field field = FieldMapping.class.getDeclaredField(fName);
-				field.setAccessible(true); // NOSONAR
+		if (CollectionUtils.isNotEmpty(fieldNameList)) {
+			for (String fName : fieldNameList) {
+				try {
+					Field field = FieldMapping.class.getDeclaredField(fName);
+					setAccessible(field);
+					isUpdated = isValueUpdated(field.get(unsaved), field.get(saved));
 
-				isUpdated = isValueUpdated(field.get(unsaved), field.get(saved));
+				} catch (NoSuchFieldException | SecurityException | IllegalArgumentException
+						| IllegalAccessException e) {
+					isUpdated = false;
+				}
 
-			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-				isUpdated = false;
+				if (isUpdated) {
+					break;
+				}
 			}
 
-			if (isUpdated) {
-				break;
-			}
+		} else {
+			checkAllFieldsForUpdation(unsaved, saved);
+			isUpdated = true;
 		}
 		return isUpdated;
+	}
+
+	/**
+	 * checking each Field which are changed, and update History too
+	 * 
+	 * @param newMapping
+	 *            unsaved FieldMapping
+	 * @param oldMapping
+	 *            saved FieldMapping
+	 */
+	private void checkAllFieldsForUpdation(FieldMapping newMapping, FieldMapping oldMapping) {
+		Field[] fields = FieldMapping.class.getDeclaredFields();
+		Class<? super FieldMapping> historyClass = FieldMapping.class.getSuperclass();
+		for (Field field : fields) {
+			setAccessible(field);
+			try {
+				Object oldValue = field.get(oldMapping);
+				Object newValue = field.get(newMapping);
+				String fieldName = field.getName();
+				String setterName = "setHistory" + fieldName;
+				List<ConfigurationHistoryChangeLog> changeLogs = getAccessibleFieldHistory(oldMapping,
+						field.getName());
+				Method setter = historyClass.getMethod(setterName, List.class);
+				if (isValueUpdated(oldValue, newValue)) {
+					String loggedInUser = authenticationService.getLoggedInUser();
+					String localDateTime = LocalDateTime.now().toString();
+					if (CollectionUtils.isNotEmpty(changeLogs)) {
+						changeLogs.add(
+								new ConfigurationHistoryChangeLog(changeLogs.get(changeLogs.size() - 1).getChangedTo(),
+										newValue, loggedInUser, localDateTime));
+					} else {
+						changeLogs= new ArrayList<>();
+						changeLogs.add(new ConfigurationHistoryChangeLog("", newValue, loggedInUser, localDateTime));
+					}
+				}
+				setter.invoke(newMapping, changeLogs);
+			} catch (IllegalAccessException | NoSuchFieldException | InvocationTargetException
+					| NoSuchMethodException e) {
+				log.debug("No Such Method Found" + e);
+			}
+		}
+	}
+
+	private void setAccessible(Field field) {
+		field.setAccessible(true); // NOSONAR
 	}
 
 	/**
@@ -438,8 +451,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean isValueUpdated(Object value, Object value1) {
-		if (value == null || value1 == null) {
-			return value1 != null;
+		if (ObjectUtils.isEmpty(value) && ObjectUtils.isEmpty(value1)) {
+			return false;
 
 		} else {
 			if (value instanceof List) {
@@ -450,7 +463,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				return !(value1 instanceof String[] && Arrays.equals((String[]) value, (String[]) value1));
 
 			} else {
-				return value1 == null || !value1.equals(value);
+				return !value1.equals(value);
 
 			}
 		}
@@ -474,8 +487,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
 			Optional<ProjectToolConfig> projectToolConfigOpt = toolConfigRepository
 					.findById(fieldMapping.getProjectToolConfigId());
-			azureSprintReportStatusUpdateBasedOnFieldChange(fieldMapping, existingFieldMapping, projectBasicConfig,
-					projectToolConfigOpt);
+			updateFields(fieldMapping, existingFieldMapping, projectBasicConfig, projectToolConfigOpt);
 			removeTraceLog(basicProjectConfigId);
 			projectToolConfigOpt
 					.ifPresent(projectToolConfig -> saveTemplateCode(projectBasicConfig, projectToolConfig));
@@ -497,18 +509,18 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 * @param projectToolConfigOpt
 	 *            projectToolConfigOpt
 	 */
-	private void azureSprintReportStatusUpdateBasedOnFieldChange(FieldMapping fieldMapping,
-			FieldMapping existingFieldMapping, ProjectBasicConfig projectBasicConfig,
-			Optional<ProjectToolConfig> projectToolConfigOpt) {
-		List<String> azureIterationStatusFieldList = Collections
-				.singletonList("jiraIterationCompletionStatusCustomField");
+	private void updateFields(FieldMapping fieldMapping, FieldMapping existingFieldMapping,
+			ProjectBasicConfig projectBasicConfig, Optional<ProjectToolConfig> projectToolConfigOpt) {
+		// azureSprintReportStatusUpdateBasedOnFieldChange
 		if (projectToolConfigOpt.isPresent()
 				&& projectToolConfigOpt.get().getToolName().equals(ProcessorConstants.AZURE)
-				&& !projectBasicConfig.getIsKanban()
-				&& isMappingUpdated(fieldMapping, existingFieldMapping, azureIterationStatusFieldList)) {
+				&& !projectBasicConfig.getIsKanban() && checkFieldsForUpdation(fieldMapping, existingFieldMapping,
+						Collections.singletonList("jiraIterationCompletionStatusCustomField"))) {
 			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
 			projectToolConfig.setAzureIterationStatusFieldUpdate(true);
 			toolConfigRepository.save(projectToolConfig);
+		} else {
+			checkAllFieldsForUpdation(fieldMapping, existingFieldMapping);
 		}
 	}
 
@@ -518,12 +530,14 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN)) {
 				projectToolConfig.setMetadataTemplateCode(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN);
 				toolConfigRepository.save(projectToolConfig);
+				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			} else if (!projectBasicConfig.getIsKanban() && !projectToolConfig.getMetadataTemplateCode()
 					.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM)) {
 				projectToolConfig.setMetadataTemplateCode(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM);
 				toolConfigRepository.save(projectToolConfig);
+				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			}
-			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+
 		}
 
 	}

@@ -70,7 +70,7 @@ public class FieldMappingController {
 	@Autowired
 	private ConfigHelperService configHelperService;
 
-	// import
+
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> addFieldMapping(@PathVariable String projectToolConfigId,
 			@RequestBody FieldMappingDTO fieldMappingDTO) {
@@ -83,16 +83,12 @@ public class FieldMappingController {
 
 		final ModelMapper modelMapper = new ModelMapper();
 		FieldMapping fieldMapping = modelMapper.map(fieldMappingDTO, FieldMapping.class);
-
-		FieldMapping resultFieldMapping = fieldMappingService.addFieldMapping(projectToolConfigId, fieldMapping);
-
-		FieldMappingDTO result = modelMapper.map(resultFieldMapping, FieldMappingDTO.class);
-
 		ServiceResponse response;
-		if (result == null) {
-			response = new ServiceResponse(false, "failed to add field mappings", result);
-		} else {
-			response = new ServiceResponse(true, "field mappings added successfully", result);
+		try {
+			fieldMappingService.addFieldMapping(projectToolConfigId, fieldMapping);
+			response = new ServiceResponse(true, "field mappings added successfully", null);
+		} catch (Exception ex) {
+			response = new ServiceResponse(false, "failed to add field mappings", null);
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -146,7 +142,8 @@ public class FieldMappingController {
 
 	@RequestMapping(value = "/tools/saveMapping/{projectToolConfigId}/{kpiId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> saveKpiWiseSpecificFieldmAPPING(@PathVariable String projectToolConfigId,
-			@PathVariable String kpiId, @RequestBody List<FieldMappingResponse> fieldMappingResponse) throws NoSuchFieldException, IllegalAccessException {
+			@PathVariable String kpiId, @RequestBody List<FieldMappingResponse> fieldMappingResponse)
+			throws NoSuchFieldException, IllegalAccessException {
 
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
 

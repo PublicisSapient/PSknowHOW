@@ -117,15 +117,19 @@ public class FieldMappingServiceImplTest {
 
 	@Mock
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
-
+	FieldMappingDataFactory fieldMappingDataFactory;
 	private FieldMapping scrumFieldMapping;
 	private FieldMapping scrumFieldMapping2;
+	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 
 	@Before
 	public void setUp() {
-		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+		fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		scrumFieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		List<ConfigurationHistoryChangeLog> configurationHistoryChangeLogList= new ArrayList<>();
+		configurationHistoryChangeLogList.add(new ConfigurationHistoryChangeLog("", "customField","currentUser", LocalDateTime.now().toString()));
+		scrumFieldMapping.setHistorysprintName(configurationHistoryChangeLogList);
 		ConfigurationHistoryChangeLog configurationHistoryChangeLog= new ConfigurationHistoryChangeLog();
 		configurationHistoryChangeLog.setChangedTo("Customfield");
 		configurationHistoryChangeLog.setChangedFrom("");
@@ -133,6 +137,8 @@ public class FieldMappingServiceImplTest {
 		configurationHistoryChangeLog.setUpdatedOn(java.time.LocalDateTime.now().toString());
 		scrumFieldMapping.setHistoryrootCauseIdentifier(Arrays.asList(configurationHistoryChangeLog));
 		scrumFieldMapping2 = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMappingMap.put(scrumFieldMapping.getBasicProjectConfigId(), scrumFieldMapping);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 	}
 
@@ -181,13 +187,16 @@ public class FieldMappingServiceImplTest {
 	@Test
 	public void addFieldMappingSuccess2() {
 		mockRepositoriesForScrum();
-
-		FieldMapping fieldMapping1 = scrumFieldMapping;
-		fieldMapping1.setRootCause("abc");
-		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1);
-
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMappingDataFactory.getFieldMappings().get(1));
 		assertNotNull(result);
+	}
 
+	@Test
+	public void addFieldMappingSuccess_History() {
+		mockRepositoriesForScrum();
+		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(1);
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping);
+		assertNotNull(result);
 	}
 
 	/**
@@ -573,6 +582,7 @@ public class FieldMappingServiceImplTest {
 		when(processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigIdIn(Mockito.any(String.class), any()))
 						.thenReturn(Arrays.asList(createProcessorExecutionTraceLog()));
+		when(authenticationService.getLoggedInUser()).thenReturn("currentUser");
 	}
 
 	private void mockRepositoriesForKanban() {

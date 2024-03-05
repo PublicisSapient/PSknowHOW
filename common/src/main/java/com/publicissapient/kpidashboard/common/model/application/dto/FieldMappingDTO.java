@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingHistory;
 import com.publicissapient.kpidashboard.common.model.application.LabelCount;
 import org.bson.types.ObjectId;
 
@@ -37,7 +38,7 @@ import lombok.Setter;
 @SuppressWarnings("PMD.TooManyFields")
 @Getter
 @Setter
-public class FieldMappingDTO extends BasicModel {
+public class FieldMappingDTO extends FieldMappingHistory {
 
     private ObjectId projectToolConfigId;
     private ObjectId basicProjectConfigId;
