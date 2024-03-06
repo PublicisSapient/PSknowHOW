@@ -122,9 +122,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
       this.noProjects = res;
+       this.fullPageLoader = false;
     }));
   }
   processKpiConfigData() {
+    this.fullPageLoader = true;
     this.navigationTabs = [
       { 'label': 'Backlog Health', 'count': 0, kpis: [], width: 'half' },
       { 'label': 'Flow KPIs', 'count': 0, kpis: [], width: 'half', fullWidthKpis: [] },
