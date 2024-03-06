@@ -698,7 +698,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
               }
             })
             .style('top', d => {
-              return yScale(d.lineValue) - 25 + 'px'
+              return yScale(d.lineValue) + 'px'
             })
             .text(d => d.lineValue+ ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`)
             .transition()
@@ -800,12 +800,16 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
         .style('font-size', 10)
         .text((d) => 'Legend');
 
+      const legendToolTipDiv = d3.select(this.elem).select('#chart').append('div')
+        .attr('class', 'legend-tooltip')
+        .style('display', 'none')
+        .style('opacity', 0);
 
       legendIndicator
         .on('mouseover', () => {
           const topValue = 30;
 
-          div.transition()
+            legendToolTipDiv.transition()
             .duration(200)
             .style('display', 'block')
             .style('opacity', 1)
@@ -815,12 +819,12 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
 
           const htmlString = self.elem.querySelector('#svgLegend').innerHTML;
 
-          div.html(htmlString)
+          legendToolTipDiv.html(htmlString)
             .style('left', 70 + 'px')
             .style('top', y[0] - topValue + 'px');
         })
         .on('mouseout', () => {
-          div.transition()
+          legendToolTipDiv.transition()
             .duration(500)
             .style('display', 'none')
             .style('opacity', 0)
