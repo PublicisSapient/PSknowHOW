@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.azurepipeline.util.AzurePipelineUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
@@ -181,7 +182,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 
 			for (ProcessorToolConnection azurePipelineServer : azurePipelineJobList) {
 
-				String instanceUrl = azurePipelineServer.getUrl();
+				String instanceUrl = AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl());
 				azurePipelineServer.setPat(decryptKey(azurePipelineServer.getPat()));
 				MDC.put(INSTANCE_URL, instanceUrl);
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
@@ -353,6 +354,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				build.setBasicProjectConfigId(azurePipelineServer.getBasicProjectConfigId());
 				build.setProjectToolConfigId(azurePipelineServer.getId());
 				build.setBuildJob(azurePipelineServer.getJobName());
+				build.setPipelineName(azurePipelineServer.getAzurePipelineName());
 				buildsToSave.add(build);
 				count++;
 			} else {

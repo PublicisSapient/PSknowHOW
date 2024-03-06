@@ -4368,6 +4368,33 @@
       "8-10",
       "10-"
     ]
+  },
+  {
+    "kpiId" : "kpi173",
+    "kpiName" : "Rework Rate",
+    "maxValue" : "",
+    "kpiUnit" : "%",
+    "isDeleted" : false,
+    "defaultOrder" : 5,
+    "groupId" : 2,
+    "kpiSource" : "BitBucket",
+    "kanban" : false,
+    "chartType" : "line",
+    "kpiInfo" : {
+      "definition" : "Percentage of code changes in which an engineer rewrites code that they recently updated (within the past three weeks)."
+    },
+    "xAxisLabel" : "Weeks",
+    "yAxisLabel" : "Percentage",
+    "isPositiveTrend" : false,
+    "showTrend" : true,
+    "kpiFilter" : "dropDown",
+    "aggregationCriteria" : "average",
+    "isAdditionalFilterSupport" : false,
+    "calculateMaturity" : false,
+    "hideOverallFilter" : true,
+    "isRepoToolKpi" : true,
+    "kpiCategory" : "Developer",
+    "maturityRange" : [ "-80", "80-50", "50-20", "20-5", "5-" ]
   }
 
 ]

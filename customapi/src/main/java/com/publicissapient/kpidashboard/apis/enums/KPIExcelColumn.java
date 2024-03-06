@@ -302,7 +302,8 @@ public enum KPIExcelColumn {
 			"Wait Time", "Total Time", "Flow Efficiency")),
 
 	CYCLE_TIME("kpi171", Arrays.asList("Issue Id", "Issue Type", "Issue Description","DOR Date", "Intake to DOR",
-			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live"));
+			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live")),
+	REWORK_RATE("kpi173", Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks", "Rework Rate"));
 
 	// @formatter:on
 
