@@ -230,4 +230,25 @@ describe('ConfigComponent', () => {
     component.ngOnInit();
     expect(component.hasAccess).toBe(false);
   })
+
+  it('should call setActiveTabOnClick with the current router url', () => {
+    spyOn(component, 'setActiveTabOnClick');
+    spyOnProperty(router, 'url', 'get').and.returnValue('/dashboard/Config');
+    component.ngOnInit();
+    expect(component.setActiveTabOnClick).toHaveBeenCalledWith(
+      '/dashboard/Config'
+    );
+  });
+
+  it('should subscribe to router events and call setActiveTabOnClick', () => {
+    spyOn(component, 'setActiveTabOnClick');
+    const navigationEndEvent = new NavigationEnd(1, 'url', 'urlAfterRedirects');
+    spyOn(router.events, 'subscribe').and.callFake((callback: any) => {
+      return callback(navigationEndEvent);
+    });
+    component.ngOnInit();
+    expect(component.setActiveTabOnClick).toHaveBeenCalledWith(
+      'urlAfterRedirects'
+    );
+  });
 });

@@ -121,21 +121,21 @@ describe('JiraConfigComponent', () => {
   const fakeTemplateList = [ {
       id: "641cc51bd830154a05d77370",
       tool: "Jira",
-      templateName: "DOJO Studio Template",
+      templateName: "DOJO Studio Template",
       templateCode: "6",
       kanban: false
   },
   {
       id: "641cc51bd830154a05d77371",
       tool: "Jira",
-      templateName: "Standard Template",
+      templateName: "Standard Template",
       templateCode: "7",
       kanban: false
   },
   {
       id: "641cc51bd830154a05d77372",
       tool: "Jira",
-      templateName: "Standard Template",
+      templateName: "Standard Template",
       templateCode: "8",
       kanban: true
   },
@@ -1944,4 +1944,153 @@ describe('JiraConfigComponent', () => {
     component.projectKeyClickHandler('ENGINEERING.KPIDASHBOARD.PROCESSORS');
     expect(spy).toHaveBeenCalled();
   })
+
+  it('should filter teams based on the query', () => {
+    // Arrange
+    const event = { query: 'team' };
+    const teamData = [
+      { name: 'Team 1' },
+      { name: 'Team 2' },
+    ];
+    component.teamData = teamData;
+
+    // Act
+    component.filterTeams(event);
+
+    // Assert
+    expect(component.filteredTeam).toEqual([
+      { name: 'Team 1' },
+      { name: 'Team 2' },
+    ]);
+  });
+
+  it('should handle empty teamData', () => {
+    // Arrange
+    const event = { query: 'team' };
+    component.teamData = [];
+
+    // Act
+    component.filterTeams(event);
+
+    // Assert
+    expect(component.filteredTeam).toEqual([]);
+  });
+
+  it('should handle empty query', () => {
+    // Arrange
+    const event = { query: '' };
+    const teamData = [
+      { name: 'Team 1' },
+      { name: 'Team 2' },
+      { name: 'Another Team' },
+    ];
+    component.teamData = teamData;
+
+    // Act
+    component.filterTeams(event);
+
+    // Assert
+    expect(component.filteredTeam).toEqual(teamData);
+  });
+
+  it('should handle no matching teams', () => {
+    // Arrange
+    const event = { query: 'team' };
+    const teamData = [
+      { name: 'Project 1' },
+      { name: 'Project 2' },
+      { name: 'Another Project' },
+    ];
+    component.teamData = teamData;
+
+    // Act
+    component.filterTeams(event);
+
+    // Assert
+    expect(component.filteredTeam).toEqual([]);
+  });
+  
+  it('should handle error when fetching project key list', fakeAsync(() => {
+    // Arrange
+    const version = '1.0';
+    component.selectedConnection = {id: '1'};
+    component.toolForm = new UntypedFormGroup({
+      organizationKey : new UntypedFormControl('orgKey')
+    })
+    component.projectKeyList = [];
+    component.branchList = [];
+    const response = {
+      success: false,
+      message: 'Error'
+    };
+    spyOn(component, 'showLoadingOnFormElement');
+    spyOn(component, 'hideLoadingOnFormElement');
+    const spy = spyOn(messageService, 'add');
+    spyOn(httpService, 'getProjectKeyList').and.returnValue(of(response));
+  
+    // Act
+    component.apiVersionHandler(version);
+    tick();
+  
+    // Assert
+    // expect(component.http.getProjectKeyList).toHaveBeenCalledWith(selectedConnectionId, organizationKey);
+    expect(component.projectKeyList).toEqual([]);
+    expect(component.branchList).toEqual([]);
+    expect(spy).toHaveBeenCalledWith({ severity: 'error', summary: response.message });
+    expect(component.hideLoadingOnFormElement).toHaveBeenCalledWith('projectKey');
+  }));
+  
+  it('should handle exception and show error message', fakeAsync(() => {
+    // Arrange
+    const version = '1.0';
+    component.selectedConnection = {id: '1'};
+    component.toolForm = new UntypedFormGroup({
+      organizationKey : new UntypedFormControl('orgKey')
+    })
+    component.projectKeyList = [];
+    component.branchList = [];
+    
+    spyOn(component, 'showLoadingOnFormElement');
+    const spy = spyOn(messageService, 'add');
+    const errorMessage = 'Something went wrong, Please try again';
+    spyOn(httpService, 'getProjectKeyList').and.throwError(errorMessage);
+    
+  
+    // Act
+    component.apiVersionHandler(version);
+    tick();
+  
+    // Assert
+    expect(component.projectKeyList).toEqual([]);
+    expect(component.branchList).toEqual([]);
+    expect(spy).toHaveBeenCalledWith({ severity: 'error', summary: errorMessage });
+  }));
+
+  it('should give error on bamboo plan select', fakeAsync(() => {
+    component.urlParam = 'Bamboo';
+    component.selectedConnection = {
+      "id": "63b409e88ec44416b3ce96b3",
+    }
+    // component.initializeFields(component.urlParam);
+    component.bambooProjectDataFromAPI = [{
+      "jobNameKey": "REL-BAM",
+      "projectAndPlanName": "12th oct - bamboo-upgrade"
+    }];
+    component.bambooPlanKeyForSelectedPlan = '';
+    component.toolForm = new UntypedFormGroup({
+      planKey : new UntypedFormControl()
+    })
+    const errorResponse = {
+      success: false,
+      message: 'No plans details found'
+    }
+    component.bambooBranchList = [];
+    spyOn(component, 'showLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(component, 'hideLoadingOnFormElement').and.callFake(() =>{});
+    spyOn(httpService, 'getBranchesForProject').and.returnValue(of(errorResponse));
+    const spy = spyOn(messageService, 'add');
+    component.bambooPlanSelectHandler('12th oct - bamboo-upgrade', 'planName');
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }))
 });
