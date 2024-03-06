@@ -58,7 +58,7 @@ export class BasicConfigComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getFields();
+    this.getHierarchy();
     this.ifSuperUser = this.getAuthorizationService.checkIfSuperUser();
     this.selectedProject = this.sharedService.getSelectedProject();
     this.sharedService.setSelectedFieldMapping(null);
@@ -200,35 +200,23 @@ export class BasicConfigComponent implements OnInit {
     return null;
   }
 
-  // edit() {
-  //   this.submitted = true;
-  //   // return if form is invalid
-  //   if (this.basicConfForm.invalid) {
-  //     return;
-  //   }
+  getHierarchy() {
+    this.http.getHierarchyLevels().subscribe(formFieldData => {
+      formFieldData.forEach(element => {
+        if (element.suggestions && element.suggestions.length) {
+          element.suggestions = element.suggestions.map(suggestion => ({
+              name: suggestion,
+              code: suggestion
+            }));
+        }
+        element.value = '';
+        element.required = true;
+      });
 
-  //   const submitData = {};
-  //   submitData['id'] = this.selectedProject.id;
-  //   for (const obj in this.basicConf) {
-  //     submitData[obj] = this.basicConf[obj].value;
-  //   }
-  //   submitData['isKanban'] = this.selectedType;
-  //   this.http.editBasicConfig(this.selectedProject.id, submitData).subscribe(response => {
-  //     if (response && response.serviceResponse && response.serviceResponse.success) {
-  //       this.selectedProject = response.serviceResponse.data;
-  //       this.sharedService.setSelectedProject(this.selectedProject);
-  //       this.messenger.add({
-  //         severity: 'success',
-  //         summary: 'Basic config updated!!',
-  //         detail: ''
-  //       });
-  //     } else {
-  //       this.messenger.add({
-  //         severity: 'error',
-  //         summary: 'Some error occurred. Please try again later.'
-  //       });
-  //     }
-  //   });
-  // }
+      localStorage.setItem('hierarchyData', JSON.stringify(formFieldData));
+      this.getFields();
+    });
+  }
+
 
 }

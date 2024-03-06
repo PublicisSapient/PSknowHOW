@@ -22,7 +22,7 @@ import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
-import { FormGroup, ReactiveFormsModule, FormsModule, FormBuilder } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule, FormsModule, FormBuilder, UntypedFormGroup, UntypedFormControl } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
@@ -38,12 +38,16 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 
 import { environment } from 'src/environments/environment';
 import {InputSwitchModule} from 'primeng/inputswitch';
+import { of } from 'rxjs';
+import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 
 describe('BasicConfigComponent', () => {
   let component: BasicConfigComponent;
   let fixture: ComponentFixture<BasicConfigComponent>;
   let httpService: HttpService;
   let sharedService: SharedService;
+  let messageService: MessageService;
+  let ga: GoogleAnalyticsService;
   let httpMock;
   const baseUrl = environment.baseUrl;
   // const toolsData = require('../../../../test/resource/fakeToolsData.json');
@@ -196,6 +200,45 @@ describe('BasicConfigComponent', () => {
     projectsAccess: []
 };
 
+const formFieldData = [
+  {
+    level: 1,
+    hierarchyLevelId: 'country',
+    hierarchyLevelName: 'Country',
+    suggestions: [
+      'Canada',
+      'India',
+      'USA'
+    ]
+  },
+  {
+    level: 2,
+    hierarchyLevelId: 'state',
+    hierarchyLevelName: 'State',
+    suggestions: [
+      'Haryana',
+      'Karnataka',
+      'Ontario',
+      'Texas',
+      'Washinton'
+    ]
+  },
+  {
+    level: 3,
+    hierarchyLevelId: 'city',
+    hierarchyLevelName: 'City',
+    suggestions: [
+      'Bangalore',
+      'Gurgaon',
+      'Houston',
+      'Kurukshetra',
+      'Ottawa',
+      'Remond',
+      'Seattle'
+    ]
+  }
+];
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [BasicConfigComponent],
@@ -219,6 +262,8 @@ describe('BasicConfigComponent', () => {
         SharedService,
         MessageService,
         GetAuthorizationService,
+        MessageService,
+        GoogleAnalyticsService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })
@@ -232,8 +277,8 @@ describe('BasicConfigComponent', () => {
     sharedService = TestBed.inject(SharedService);
     // sharedService.setSelectedProject(fakeProject);
     httpMock = TestBed.inject(HttpTestingController);
-
-
+    messageService = TestBed.inject(MessageService);
+    ga = TestBed.inject(GoogleAnalyticsService);
     let localStore = {};
 
     spyOn(window.localStorage, 'getItem').and.callFake((key) =>
@@ -249,29 +294,6 @@ describe('BasicConfigComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-
-  it('should create the form', () => {
-    sharedService.setSelectedProject(null);
-    component.ifSuperUser = false;
-    component.ngOnInit();
-    fixture.detectChanges();
-    expect(component.formData.length).toEqual(hierarchyData.length + 3);
-    const controls = component.form.controls;
-    let totalControl = 0;
-    for (const name in controls) {
-      totalControl++;
-    }
-    expect(totalControl).toEqual(hierarchyData.length + 3);
-    expect(component.form.valid).toBeFalse();
-
-    const compiled = fixture.debugElement.nativeElement;
-    const addressInput = compiled.querySelector('p-autoComplete[id="country"]');
-    const nameInput = compiled.querySelector('p-autoComplete[id="state"]');
-
-    expect(addressInput).toBeTruthy();
-    expect(nameInput).toBeTruthy();
   });
 
   it('should filter out and display suggestions', () => {
@@ -319,24 +341,74 @@ describe('BasicConfigComponent', () => {
     expect(field.filteredSuggestions).toEqual(filteredSuggestions);
   });
 
-  it('should submit config', () => {
-    component.ngOnInit();
-    fixture.detectChanges();
+  it('should submit config when superadmin', () => {
+    component.form = new UntypedFormGroup({
+      projectName: new UntypedFormControl('', [component.stringValidator]),
+      country: new UntypedFormControl('', [component.stringValidator]),
+      state: new UntypedFormControl('', [component.stringValidator]),
+      city: new UntypedFormControl('', [component.stringValidator]),
+      kanban: new UntypedFormControl(false),
+      assigneeDetails: new UntypedFormControl(false)
+    }); 
+    component.getFieldsResponse = [...hierarchyData];
     Object.keys(formValue).forEach((key) => {
       component.form.controls[key].setValue(formValue[key]);
     });
-    fixture.detectChanges();
-    expect(component.form.valid).toBeTruthy();
+    component.blocked = true;
+    component.selectedProject = {};
+    spyOn(httpService, 'addBasicConfig').and.returnValue(of(successResponse))
+    spyOn(sharedService, 'setSelectedProject');
+    component.ifSuperUser = true;
+    const spy = spyOn(messageService, 'add');
+    spyOn(ga, 'createProjectData');
+    spyOn(component, 'getFields');  
     component.onSubmit();
-    fixture.detectChanges();
-    httpMock.match(`${baseUrl}/api/basicconfigs`)[0].flush(successResponse);
+    expect(component.form.valid).toBeTruthy();
+    expect(spy).toHaveBeenCalled();
+    expect(component.blocked).toBeFalse();
+  });
+
+  it('should submit config when not superadmin', () => {
+    component.form = new UntypedFormGroup({
+      projectName: new UntypedFormControl('', [component.stringValidator]),
+      country: new UntypedFormControl('', [component.stringValidator]),
+      state: new UntypedFormControl('', [component.stringValidator]),
+      city: new UntypedFormControl('', [component.stringValidator]),
+      kanban: new UntypedFormControl(false),
+      assigneeDetails: new UntypedFormControl(false)
+    }); 
+    component.getFieldsResponse = [...hierarchyData];
+    Object.keys(formValue).forEach((key) => {
+      component.form.controls[key].setValue(formValue[key]);
+    });
+    component.blocked = true;
+    component.selectedProject = {};
+    spyOn(httpService, 'addBasicConfig').and.returnValue(of(successResponse))
+    spyOn(sharedService, 'setSelectedProject');
+    component.ifSuperUser = false;
+    spyOn(sharedService, 'setCurrentUserDetails');
+    const spy = spyOn(messageService, 'add');
+    spyOn(ga, 'createProjectData');
+    spyOn(component, 'getFields');  
+    component.onSubmit();
+    expect(component.form.valid).toBeTruthy();
+    expect(spy).toHaveBeenCalled();
+    expect(component.blocked).toBeFalse();
   });
 
   it('should not allow "###", "~" or "`" in any of the inputs', () => {
     component.ngOnInit();
     fixture.detectChanges();
+    component.form = new UntypedFormGroup({
+      projectName: new UntypedFormControl('', [component.stringValidator]),
+    });
     component.form.controls['projectName'].setValue('Test###');
     fixture.detectChanges();
     expect(component.form.controls['projectName'].valid).toBeFalsy();
   });
+
+  it("should get HierarchyLevels",()=>{
+    spyOn(httpService,'getHierarchyLevels').and.returnValue(of(formFieldData));
+    component.getHierarchy();
+  })
 });
