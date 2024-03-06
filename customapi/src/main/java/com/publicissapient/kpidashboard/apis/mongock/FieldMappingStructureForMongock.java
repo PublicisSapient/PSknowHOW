@@ -64,5 +64,9 @@ public class FieldMappingStructureForMongock {
 	public static class Options {
 		String label;
 		Object value;
+		String labelValue;
+		String operator;
+		String maxValue;
+		String minValue;
 	}
 }
