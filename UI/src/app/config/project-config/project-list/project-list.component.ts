@@ -64,7 +64,6 @@ export class ProjectListComponent implements OnInit {
   ngOnInit(): void {
     this.getData();
     this.roleAccessAssign();
-    this.getHierarchy();
     this.sharedService.setSelectedToolConfig(null);
     this.helper.getGlobalConfig();
   }
@@ -255,22 +254,5 @@ export class ProjectListComponent implements OnInit {
     this.sharedService.setSelectedProject(newProjectObj);
     this.router.navigate(['/dashboard/Config/ToolMenu']);
 
-  }
-
-  getHierarchy() {
-    this.http.getHierarchyLevels().subscribe(formFieldData => {
-      formFieldData.forEach(element => {
-        if (element.suggestions && element.suggestions.length) {
-          element.suggestions = element.suggestions.map(suggestion => ({
-              name: suggestion,
-              code: suggestion
-            }));
-        }
-        element.value = '';
-        element.required = true;
-      });
-
-      localStorage.setItem('hierarchyData', JSON.stringify(formFieldData));
-    });
   }
 }
