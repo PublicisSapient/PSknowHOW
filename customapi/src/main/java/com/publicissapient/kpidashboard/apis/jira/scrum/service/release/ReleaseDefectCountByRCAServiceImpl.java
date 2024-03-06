@@ -20,25 +20,20 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -50,6 +45,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -63,7 +59,8 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 
 	private static final String TOTAL_DEFECT = "Total Defects";
 	private static final String OPEN_DEFECT = "Open Defects";
-
+	private static final String UNDEFINED = "Undefined";
+	private static final String NONE = "-";
 	@Autowired
 	private ConfigHelperService configHelperService;
 
@@ -88,74 +85,75 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
+		List<IterationKpiValue> overAllIterationKpiValue = new ArrayList<>();
 		if (latestRelease != null) {
 			Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 			Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			List<JiraIssue> totalDefects = (List<JiraIssue>) resultMap.get(TOTAL_DEFECT);
-			if (CollectionUtils.isNotEmpty(totalDefects)) {
-				Set<String> jiraDodKPI142LowerCase = new HashSet<>();
-				if (fieldMapping.getJiraDodKPI142() != null) {
-					jiraDodKPI142LowerCase = fieldMapping.getJiraDodKPI142().stream().map(String::toLowerCase)
-							.collect(Collectors.toSet());
-				}
-
-				Set<String> finalJiraDodKPI142LowerCase = jiraDodKPI142LowerCase;
-				List<JiraIssue> openDefects = totalDefects.stream()
-						.filter(jiraIssue -> fieldMapping.getStoryFirstStatus().contains(jiraIssue.getStatus())
-								&& (finalJiraDodKPI142LowerCase.isEmpty()
-										|| !finalJiraDodKPI142LowerCase.contains(jiraIssue.getStatus().toLowerCase())))
-						.collect(Collectors.toList());
-				Map<String, Map<String, List<JiraIssue>>> rcaWiseList = getRCAWiseList(totalDefects, openDefects);
-				List<IterationKpiValue> filterDataList = new ArrayList<>();
-				log.info("ReleaseDefectCountByRCAServiceImpl -> rcaDataList ->  : {}", rcaWiseList);
-				List<IterationKpiValue> sortedFilterDataList = new ArrayList<>();
-				List<DataCount> dataCountListForAllRCA = new ArrayList<>();
-				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : rcaWiseList.entrySet()) {
-					Map<String, Integer> rcaWiseCountMap = new HashMap<>();
-					Map<String, List<JiraIssue>> rcaData = entry.getValue();
-					getRCAWiseCount(rcaData, rcaWiseCountMap);
-					DataCount rcaDataCount = new DataCount();
-					int rcaCount = rcaData.values().stream().mapToInt(List::size).sum();
-					rcaDataCount.setData(String.valueOf(rcaCount));
-					rcaDataCount.setValue(rcaWiseCountMap);
-					List<DataCount> dataCountList = new ArrayList<>();
-					dataCountList.add(rcaDataCount);
-					dataCountListForAllRCA.add(rcaDataCount);
-
-					List<DataCount> middleTrendValueListForRCA = new ArrayList<>();
-					DataCount middleOverallData = new DataCount();
-					middleOverallData.setData(latestRelease.getProjectFilter().getName());
-					middleOverallData.setValue(dataCountList);
-					middleTrendValueListForRCA.add(middleOverallData);
-
-					IterationKpiValue filterData = new IterationKpiValue(entry.getKey(), middleTrendValueListForRCA);
-					filterDataList.add(filterData);
-				}
-
-				Map<String, Integer> overallRCACountMapAggregate = new HashMap<>();
-				overallRCACountMap(dataCountListForAllRCA, overallRCACountMapAggregate);
-				if (MapUtils.isNotEmpty(overallRCACountMapAggregate)) {
-					populateExcelDataObject(requestTrackerId, excelData, totalDefects, fieldMapping);
-					// filterDataList
-					kpiElement.setSprint(latestRelease.getName());
-					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_RCA_RELEASE.getColumns());
-					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA_RELEASE.getColumns());
-					kpiElement.setExcelData(excelData);
-					sortedFilterDataList.add(filterDataList.stream()
-							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT))
-							.findFirst().orElse(new IterationKpiValue()));
-					filterDataList.removeIf(
-							iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT));
-					sortListByKey(filterDataList);
-					sortedFilterDataList.addAll(filterDataList);
-					kpiElement.setTrendValueList(sortedFilterDataList);
-
-					log.info("ReleaseDefectCountByRCAServiceImpl -> request id : {} total jira Issues : {}",
-							requestTrackerId, filterDataList.get(0));
-				}
+			Set<String> jiraDodKPI142LowerCase = new HashSet<>();
+			if (fieldMapping.getJiraDodKPI142() != null) {
+				jiraDodKPI142LowerCase = fieldMapping.getJiraDodKPI142().stream().map(String::toLowerCase)
+						.collect(Collectors.toSet());
 			}
+
+			Set<String> finalJiraDodKPI142LowerCase = jiraDodKPI142LowerCase;
+			List<JiraIssue> openDefects = totalDefects.stream()
+					.filter(jiraIssue -> fieldMapping.getStoryFirstStatus().contains(jiraIssue.getStatus())
+							&& (finalJiraDodKPI142LowerCase.isEmpty()
+									|| !finalJiraDodKPI142LowerCase.contains(jiraIssue.getStatus().toLowerCase())))
+					.collect(Collectors.toList());
+			IterationKpiValue openDefectsIterationKpiValue = new IterationKpiValue();
+			openDefectsIterationKpiValue.setFilter1(OPEN_DEFECT);
+			openDefectsIterationKpiValue.setValue(getDefectsDataCountList(openDefects, fieldMapping));
+
+			IterationKpiValue totalDefectsIterationKpiValue = new IterationKpiValue();
+			totalDefectsIterationKpiValue.setFilter1(TOTAL_DEFECT);
+			totalDefectsIterationKpiValue.setValue(getDefectsDataCountList(totalDefects, fieldMapping));
+
+			overAllIterationKpiValue.add(openDefectsIterationKpiValue);
+			overAllIterationKpiValue.add(totalDefectsIterationKpiValue);
+			populateExcelDataObject(requestTrackerId, excelData, totalDefects, fieldMapping);
+			kpiElement.setSprint(latestRelease.getName());
+			kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_RCA_RELEASE.getColumns());
+			kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA_RELEASE.getColumns());
+			kpiElement.setExcelData(excelData);
 		}
+		kpiElement.setTrendValueList(overAllIterationKpiValue);
+	}
+
+	private List<DataCount> getDefectsDataCountList(List<JiraIssue> defects, FieldMapping fieldMapping) {
+		List<DataCount> defectsDataCountList = new ArrayList<>();
+		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(defects)) {
+			updateRCAAndTestingPhase(defects);
+			Set<String> testingPhases = findUniqueTestingPhases(defects);
+			Set<String> RCAList = findUniqueRCAList(defects);
+			testingPhases.forEach(testingPhase -> {
+				Map<String, List<JiraIssue>> testingPhaseRCAWiseJiraIssue = getTestingPhaseRCAWiseJiraIssue(defects,
+						testingPhase, RCAList);
+				DataCount defectsDataCount = new DataCount();
+				defectsDataCount.setSSprintName(testingPhase);
+				List<DataCount> dataCountRCA = new ArrayList<>();
+				if (MapUtils.isNotEmpty(testingPhaseRCAWiseJiraIssue)) {
+					testingPhaseRCAWiseJiraIssue.forEach((rca, jiraIssue) -> {
+						filteredJiraIssue.addAll(jiraIssue);
+						DataCount dataCount = new DataCount();
+						dataCount.setSubFilter(rca);
+						dataCount.setValue(jiraIssue.size());
+						dataCount.setSize(KpiDataHelper.calculateStoryPoints(jiraIssue, fieldMapping));
+						dataCountRCA.add(dataCount);
+					});
+					defectsDataCount.setData(String.valueOf(dataCountRCA.stream()
+							.mapToInt(obj -> obj.getValue() != null ? (int) obj.getValue() : 0).sum()));
+				} else {
+					defectsDataCount.setData(String.valueOf(0));
+				}
+				defectsDataCount.setValue(dataCountRCA);
+				defectsDataCountList.add(defectsDataCount);
+			});
+		}
+		return defectsDataCountList;
 	}
 
 	@Override
@@ -176,62 +174,8 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 	}
 
 	/**
-	 * create root cause wise map of total and open defects
-	 *
-	 * @param defectJiraIssueList
-	 * @param openIssues
-	 * @return
-	 */
-	private Map<String, Map<String, List<JiraIssue>>> getRCAWiseList(List<JiraIssue> defectJiraIssueList,
-			List<JiraIssue> openIssues) {
-		Map<String, Map<String, List<JiraIssue>>> scopeWiseDefectsMap = new HashMap<>();
-		Collector<JiraIssue, ?, Map<String, List<JiraIssue>>> groupingByRootCause = Collectors
-				.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0));
-		Predicate<JiraIssue> hasNonEmptyRootCauseList = jiraIssue -> {
-			if (CollectionUtils.isEmpty(jiraIssue.getRootCauseList())) {
-				jiraIssue.setRootCauseList(Arrays.asList("-"));
-			}
-			return true;
-		};
-		scopeWiseDefectsMap.put(TOTAL_DEFECT,
-				defectJiraIssueList.stream().filter(hasNonEmptyRootCauseList).collect(groupingByRootCause));
-		scopeWiseDefectsMap.put(OPEN_DEFECT,
-				openIssues.stream().filter(hasNonEmptyRootCauseList).collect(groupingByRootCause));
-		return scopeWiseDefectsMap;
-	}
-
-	/**
-	 * create rca wise jira issue map
-	 *
-	 * @param rcaData
-	 * @param rcaCountMap
-	 */
-	private static void getRCAWiseCount(Map<String, List<JiraIssue>> rcaData, Map<String, Integer> rcaCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> rcaEntry : rcaData.entrySet()) {
-			String rca = rcaEntry.getKey();
-			List<JiraIssue> issues = rcaEntry.getValue();
-			rcaCountMap.put(rca, issues.size());
-		}
-	}
-
-	/**
-	 * create map of data count by filter
-	 *
-	 * @param dataCountListForAllRCA
-	 * @param overallRCACountMapAggregate
-	 */
-	private static void overallRCACountMap(List<DataCount> dataCountListForAllRCA,
-			Map<String, Integer> overallRCACountMapAggregate) {
-		for (DataCount dataCount : dataCountListForAllRCA) {
-			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
-			statusCountMap.forEach(
-					(rca, rcaCountValue) -> overallRCACountMapAggregate.merge(rca, rcaCountValue, Integer::sum));
-		}
-	}
-
-	/**
 	 * populate excel data
-	 * 
+	 *
 	 * @param requestTrackerId
 	 * @param excelData
 	 * @param jiraIssueList
@@ -245,7 +189,49 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 		}
 	}
 
-	private void sortListByKey(List<IterationKpiValue> list) {
-		list.sort(Comparator.comparing(IterationKpiValue::getFilter1));
+	private Map<String, List<JiraIssue>> getTestingPhaseRCAWiseJiraIssue(List<JiraIssue> totalDefects,
+			String testingPhase, Set<String> RCAList) {
+		Map<String, List<JiraIssue>> rcaWiseJiraIssue = new LinkedHashMap<>();
+		RCAList.forEach(rca -> rcaWiseJiraIssue.put(rca, filterByStatus(testingPhase, totalDefects, rca)));
+		return rcaWiseJiraIssue;
 	}
+
+	private Set<String> findUniqueTestingPhases(List<JiraIssue> totalDefects) {
+		return totalDefects.stream()
+				.collect(
+						Collectors.groupingBy(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup())
+								? jiraIssue.getEscapedDefectGroup().stream().findFirst().orElse(UNDEFINED)
+								: UNDEFINED))
+				.keySet();
+
+	}
+
+	private Set<String> findUniqueRCAList(List<JiraIssue> totalDefects) {
+		return totalDefects.stream()
+				.collect(Collectors.groupingBy(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getRootCauseList())
+						? jiraIssue.getRootCauseList().stream().findFirst().orElse(NONE)
+						: NONE))
+				.keySet();
+	}
+
+	private List<JiraIssue> filterByStatus(String testingPhase, List<JiraIssue> totalDefects, String rca) {
+		return totalDefects.stream()
+				.filter(jiraIssue -> jiraIssue.getEscapedDefectGroup().stream().findFirst().get()
+						.equalsIgnoreCase(testingPhase))
+				.filter(jiraIssue -> jiraIssue.getRootCauseList().stream().findFirst().get().equalsIgnoreCase(rca))
+				.collect(Collectors.toList());
+	}
+
+	private void updateRCAAndTestingPhase(List<JiraIssue> totalDefects) {
+		totalDefects.forEach(jiraIssue -> {
+			if (CollectionUtils.isEmpty(jiraIssue.getEscapedDefectGroup())) {
+				jiraIssue.setEscapedDefectGroup(Arrays.asList(UNDEFINED));
+			}
+			if (CollectionUtils.isEmpty(jiraIssue.getRootCauseList())) {
+				jiraIssue.setEscapedDefectGroup(Arrays.asList(NONE));
+			}
+		});
+
+	}
+
 }

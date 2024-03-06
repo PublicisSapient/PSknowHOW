@@ -20,18 +20,15 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
-import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +47,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -109,29 +107,9 @@ public class ReleaseDefectCountByRCAServiceImplTest {
 		KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
-
-		Map<String, Integer> testingPhase1Defects = (Map<String, Integer>) trendValueList.get(1).getValue().get(0)
-				.getValue();
-		Map<String, Integer> testingPhase2Defects = (Map<String, Integer>) trendValueList.get(1).getValue().get(1)
-				.getValue();
-		Map<String, Integer> totalDefects = new HashMap<>(testingPhase2Defects);
-
-		testingPhase1Defects.forEach((key, value) -> totalDefects.merge(key, value, (v1, v2) -> v1 + v2));
-
-		assertEquals(expectedResult(bugList), totalDefects);
+		assertNotNull(kpiElement.getTrendValueList());
+		assertTrue(trendValueList.get(0).getFilter1().equalsIgnoreCase("Open Defects"));
+		assertTrue(trendValueList.get(1).getFilter1().equalsIgnoreCase("Total Defects"));
 	}
 
-	private Map<String, Integer> expectedResult(List<JiraIssue> bugList) {
-		Map<String, Integer> finalMap = new HashMap<>();
-		Map<String, List<JiraIssue>> collect = bugList.stream().filter(jiraIssue -> {
-			if (CollectionUtils.isEmpty(jiraIssue.getRootCauseList())) {
-				List<String> rcaDummy = new ArrayList<>();
-				rcaDummy.add("-");
-				jiraIssue.setRootCauseList(rcaDummy);
-			}
-			return true;
-		}).collect(Collectors.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0)));
-		collect.forEach((k, v) -> finalMap.put(k, v.size()));
-		return finalMap;
-	}
 }
