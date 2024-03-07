@@ -94,7 +94,7 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 			// GitHub has a API rate limit of 5000 hits per hour
 			boolean includeDelay = false;
 			ResponseEntity<String> respPayload = getResponse(gitHubServer.getUsername(), decryptedApiToken,
-					restUri+PAGE_PARAM+"1");
+					restUri+PAGE_PARAM+"167");
 			if (respPayload != null && respPayload.getBody().length()>=20)
 				includeDelay = true;
 			boolean hasMorePage = true;
