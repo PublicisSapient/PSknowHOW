@@ -36,11 +36,14 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -248,8 +251,8 @@ public class JobController {
 	 * @return ResponseEntity
 	 */
 	@Async
-	@PostMapping("/startfetchsprintjob")
-	public ResponseEntity<String> startFetchSprintJob(@RequestBody String sprintId) {
+	@PostMapping (value= "/startfetchsprintjob", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public CompletableFuture<ResponseEntity<String>> startFetchSprintJob(@RequestBody String sprintId) {
 		log.info("Request coming for fetching sprint job");
 		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 
@@ -262,7 +265,7 @@ public class JobController {
 			log.info("Jira Sprint data fetch failed for SprintId : {}, with exception : {}",
 					params.getString(SPRINT_ID), e);
 		}
-		return ResponseEntity.ok().body("job started for Sprint : " + sprintId);
+		return CompletableFuture.completedFuture(ResponseEntity.ok().body("job started for Sprint : " + sprintId));
 
 	}
 
