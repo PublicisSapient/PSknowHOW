@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -240,10 +241,10 @@ public class JobControllerTest {
 		when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
 
 		// Calling the method with a sprintId
-		ResponseEntity<String> response = jobController.startFetchSprintJob("sprint123");
+		CompletableFuture<ResponseEntity<String>> response = jobController.startFetchSprintJob("sprint123");
 
 		// Verifying the response
-		assertEquals("job started for Sprint : sprint123", response.getBody());
+		assertEquals("job started for Sprint : sprint123", response.get().getBody());
 	}
 
 	@Test
@@ -253,10 +254,10 @@ public class JobControllerTest {
 				.run(eq(fetchIssueSprintJob), any(JobParameters.class));
 
 		// Calling the method with a sprintId
-		ResponseEntity<String> response = jobController.startFetchSprintJob("sprint456");
+		CompletableFuture<ResponseEntity<String>> response = jobController.startFetchSprintJob("sprint456");
 
 		// Verifying the response
-		assertEquals("job started for Sprint : sprint456", response.getBody());
+		assertEquals("job started for Sprint : sprint456", response.get().getBody());
 	}
 
 	@Test
