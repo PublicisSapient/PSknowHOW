@@ -177,7 +177,8 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 				if (includeDelay)
 					Thread.sleep(750);
 			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
+				log.warn("Interrupted!", e);
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
