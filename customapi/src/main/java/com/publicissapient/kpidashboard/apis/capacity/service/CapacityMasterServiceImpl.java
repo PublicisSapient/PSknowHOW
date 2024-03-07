@@ -3,16 +3,11 @@ package com.publicissapient.kpidashboard.apis.capacity.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.*;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,9 +27,6 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.Week;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
-import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.UserRatingData;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
@@ -74,6 +66,9 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	@Autowired
 	private HappinessKpiDataRepository happinessKpiDataRepository;
 
+	@Autowired
+	private AssigneeDetailsRepository assigneeDetailsRepository;
+
 	/**
 	 * This method process the capacity data.
 	 *
@@ -84,7 +79,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	@Override
 	public CapacityMaster processCapacityData(CapacityMaster capacityMaster) {
 		boolean saved;
-
+		saveAssigneEmail(capacityMaster);
 		if (capacityMaster.isKanban()) {
 			saved = processKanbanTeamCapacityData(capacityMaster);
 		} else {
@@ -95,6 +90,29 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			capacityMaster = null;
 		}
 		return capacityMaster;
+	}
+
+	private void saveAssigneEmail(CapacityMaster capacityMaster) {
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(capacityMaster.getBasicProjectConfigId().toString());
+		if(assigneeDetails == null) return ;
+		Set<Assignee> assignee = assigneeDetails.getAssignee();
+		Map<String, Assignee> map = new HashMap<>();
+		if(assignee != null)
+		{
+			assignee.forEach(assignee1 -> map.put(assignee1.getAssigneeId(), assignee1));
+			capacityMaster.getAssigneeCapacity().forEach(capacity -> {
+				Assignee assignee1 = map.get(capacity.getUserId());
+				if(capacity.getEmail() != null)
+					assignee1.setEmail(capacity.getEmail());
+				map.put(assignee1.getAssigneeId(), assignee1);
+			});
+			Set<Assignee> finalAssignee = new HashSet<>();
+			map.forEach((key, value) -> {
+				finalAssignee.add(value);
+			});
+			assigneeDetails.setAssignee(finalAssignee);
+			assigneeDetailsRepository.save(assigneeDetails);
+		}
 	}
 
 	@Override

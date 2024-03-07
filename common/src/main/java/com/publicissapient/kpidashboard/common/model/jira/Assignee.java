@@ -41,6 +41,7 @@ public class Assignee {
 
 	private String assigneeId;
 	private String assigneeName;
+	private String email;
 
 	@Override
 	public boolean equals(Object o) {
