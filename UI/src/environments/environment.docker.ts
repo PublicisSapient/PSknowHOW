@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 export const environment = {
-  production: true,
+  production: false,
   baseUrl: '',
   SSO_LOGIN: false,
   CENTRAL_LOGIN_URL: '',
