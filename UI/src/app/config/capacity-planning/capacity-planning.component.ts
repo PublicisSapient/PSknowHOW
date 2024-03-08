@@ -256,22 +256,6 @@ export class CapacityPlanningComponent implements OnInit {
     objArray?.sort((a, b) => a.nodeName.localeCompare(b.nodeName));
     return objArray;
   }
-  /** Moved on service layer */
-  // makeUniqueArrayList(arr) {
-  //   let uniqueArray = [];
-  //   for (let i = 0; i < arr?.length; i++) {
-  //     const idx = uniqueArray?.findIndex(x => x.nodeId == arr[i]?.nodeId);
-  //     if (idx == -1) {
-  //       uniqueArray = [...uniqueArray, arr[i]];
-  //       uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
-  //       uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
-  //     } else {
-  //       uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-  //       uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
-  //     }
-  //   }
-  //   return uniqueArray;
-  // }
 
   checkDefaultFilterSelection(flag) {
     if (flag) {
@@ -496,6 +480,7 @@ export class CapacityPlanningComponent implements OnInit {
     selectedSprint.assigneeCapacity.forEach(assignee => {
       this.selectedSprintAssigneFormArray.push(
         {
+          emailId: new FormControl(assignee.emailId),
           role: new FormControl(assignee.role),
           plannedCapacity: new FormControl({ value: assignee.plannedCapacity, disabled: !assignee.role }, [Validators.pattern('[0-9]*')]),
           leaves: new FormControl({ value: assignee.leaves, disabled: !(assignee?.role && assignee?.plannedCapacity) }, [Validators.min(0), Validators.max(assignee.plannedCapacity)])
@@ -535,8 +520,8 @@ export class CapacityPlanningComponent implements OnInit {
     }
   }
 
-  validateInput($event) {
-    if ($event.key === 'e' || $event.key === '-') {
+  validateInput($event, field?) {
+    if ($event.key === '-' || (field !== 'emailId' && $event.key === 'e') ) {
       $event.preventDefault();
     }
   }
