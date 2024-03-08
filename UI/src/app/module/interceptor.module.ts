@@ -100,6 +100,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                                 console.log("auth", environment.AUTHENTICATION_SERVICE);
                                 
                                 if(environment.AUTHENTICATION_SERVICE){
+                                    console.log("inside if before redirection");
                                     /** redirect to central login url*/
                                     let redirect_uri = window.location.href;
                                     localStorage.setItem('redirect_uri', window.location.hash);
