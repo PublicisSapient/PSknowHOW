@@ -254,7 +254,7 @@ public enum KPIExcelColumn {
 
 	RELEASE_PROGRESS("kpi147",
 			Arrays.asList("Issue ID", "Issue Type", "Issue Description","Size(story point/hours)", "Priority", "Assignee",
-					"Issue Status")),
+					"Issue Status","To Do","In Progress","Done")),
 
 	HAPPINESS_INDEX_RATE("kpi149",
 							Arrays.asList("Sprint Name", "User Name", "Sprint Rating")),
@@ -290,7 +290,7 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
 					"PR Size (No. of lines)")),
 
-	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status")),
+	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status","To Do","In Progress","Done")),
 
 	BACKLOG_EPIC_PROGRESS("kpi169", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status")),
 

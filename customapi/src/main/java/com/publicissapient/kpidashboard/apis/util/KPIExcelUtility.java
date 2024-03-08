@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -1779,15 +1780,28 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateEpicProgessExcelData(Map<String, String> epicWiseIssueSize,
-			Map<String, JiraIssue> epicIssues, List<KPIExcelData> excelDataList) {
+													Map<String, JiraIssue> epicIssues, List<KPIExcelData> excelDataList, JiraIssueReleaseStatus jiraIssueReleaseStatus,Map<String, List<JiraIssue>> epicWiseJiraIssues) {
 		epicWiseIssueSize.forEach((epicNumber, issue) -> {
 			KPIExcelData excelData = new KPIExcelData();
+
 			JiraIssue jiraIssue = epicIssues.get(epicNumber);
 			if (jiraIssue != null) {
+				// filter by to do category
+				List<JiraIssue> toDoJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(epicWiseJiraIssues.get(epicNumber),
+						jiraIssueReleaseStatus.getToDoList());
+				// filter by inProgress category
+				List<JiraIssue> inProgressJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(epicWiseJiraIssues.get(epicNumber),
+						jiraIssueReleaseStatus.getInProgressList());
+				// filter by done category
+				List<JiraIssue> doneJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(epicWiseJiraIssues.get(epicNumber),
+						jiraIssueReleaseStatus.getClosedList());
 				Map<String, String> storyDetails = new HashMap<>();
 				storyDetails.put(epicNumber, checkEmptyURL(jiraIssue));
 				excelData.setEpicID(storyDetails);
 				excelData.setEpicName(checkEmptyName(jiraIssue));
+				excelData.setToDo(toDoJiraIssue.size());
+				excelData.setInProgress(inProgressJiraIssue.size());
+				excelData.setDone(doneJiraIssue.size());
 				excelData.setEpicStatus(
 						StringUtils.isNotEmpty(jiraIssue.getStatus()) ? jiraIssue.getStatus() : Constant.BLANK);
 				excelData.setStoryPoint(issue);
