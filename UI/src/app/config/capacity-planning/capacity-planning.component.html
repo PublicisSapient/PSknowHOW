@@ -288,11 +288,11 @@
                                             <p-sortIcon field="userName"></p-sortIcon>
                                         </div>
                                     </th>
-                                    <th scope="col" pSortableColumn="emailId" class="expanded-table-header-cell"
+                                    <th scope="col" pSortableColumn="email" class="expanded-table-header-cell"
                                         [style]="{'width':'25%'}">
                                         <div>
-                                            <span [ngClass]="{'editable': projectCapacityEditMode}">Email Id</span>
-                                            <p-sortIcon field="emailId"></p-sortIcon>
+                                            <span [ngClass]="{'editable': projectCapacityEditMode}">Email</span>
+                                            <p-sortIcon field="email"></p-sortIcon>
                                         </div>
                                     </th>
                                     <th scope="col" pSortableColumn="happinessRating" class="expanded-table-header-cell"
@@ -340,14 +340,14 @@
                                     <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName : '-
                                         -'}}</td>
                                     <td class="expanded-table-body-cell">
-                                        <input type="text" min="0" pInputText
-                                            *ngIf="projectCapacityEditMode;else showUserEmailId"
-                                            (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'emailId')"
+                                        <input type="email" min="0" pInputText
+                                            *ngIf="projectCapacityEditMode;else showUserEmail"
+                                            (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email')"
                                             [style]="{'width':'120px'}"
-                                            [formControl]="selectedSprintAssigneFormArray[rowIndex]?.emailId"
-                                            (keypress)="validateInput($event, 'emailId')">
-                                        <ng-template #showUserEmailId>{{assignee?.emailId ?
-                                            assignee?.emailId : '- -'}}</ng-template>
+                                            [formControl]="selectedSprintAssigneFormArray[rowIndex]?.email"
+                                            (keypress)="validateInput($event, 'email')">
+                                        <ng-template #showUserEmail>{{assignee?.email ?
+                                            assignee?.email : '- -'}}</ng-template>
                                     </td>
                                     <td class="expanded-table-body-cell">
                                         <app-rating [editable]="projectCapacityEditMode"
