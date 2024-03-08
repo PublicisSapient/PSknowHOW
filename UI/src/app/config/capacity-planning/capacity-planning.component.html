@@ -291,7 +291,7 @@
                                     <th scope="col" pSortableColumn="email" class="expanded-table-header-cell"
                                         [style]="{'width':'25%'}">
                                         <div>
-                                            <span [ngClass]="{'editable': projectCapacityEditMode}">Email</span>
+                                            <span [ngClass]="{'editable': projectCapacityEditMode}">Email Id</span>
                                             <p-sortIcon field="email"></p-sortIcon>
                                         </div>
                                     </th>
@@ -345,7 +345,8 @@
                                             (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email')"
                                             [style]="{'width':'120px'}"
                                             [formControl]="selectedSprintAssigneFormArray[rowIndex]?.email"
-                                            (keypress)="validateInput($event, 'email')">
+                                            (keypress)="validateInput($event, 'email')"
+                                            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
                                         <ng-template #showUserEmail>{{assignee?.email ?
                                             assignee?.email : '- -'}}</ng-template>
                                     </td>

@@ -480,7 +480,7 @@ export class CapacityPlanningComponent implements OnInit {
     selectedSprint.assigneeCapacity.forEach(assignee => {
       this.selectedSprintAssigneFormArray.push(
         {
-          email: new FormControl(assignee.email),
+          email: new FormControl(assignee.email, [Validators.email]),
           role: new FormControl(assignee.role),
           plannedCapacity: new FormControl({ value: assignee.plannedCapacity, disabled: !assignee.role }, [Validators.pattern('[0-9]*')]),
           leaves: new FormControl({ value: assignee.leaves, disabled: !(assignee?.role && assignee?.plannedCapacity) }, [Validators.min(0), Validators.max(assignee.plannedCapacity)])
