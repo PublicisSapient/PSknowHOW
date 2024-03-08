@@ -26,7 +26,7 @@
                 <span class="p-mr-3 p-ml-3">
                     <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name"
                         styleClass="drp" panelStyleClass="drp-pnl" [filter]="true" filterBy="name"
-                        [showClear]="false" (onChange)="updateProjectSelection($event)">
+                        [showClear]="false" (onChange)="updateProjectSelection($event)" [disabled]="noProjectsForSelectedCategory">
                         <ng-template pTemplate="selectedItem">
                             <div class="fnt-size-16" *ngIf="selectedProject">
                                 <div>{{selectedProject.name}}</div>
@@ -43,7 +43,7 @@
             </div>
         </div>
         <div>
-            <button (click)="save()" class="save-kpi save-icon fnt-size-16"><img src="../../../assets/img/save_icon.svg" alt="save" />Save</button>
+            <button (click)="save()" [disabled]="noProjectsForSelectedCategory" class="save-kpi save-icon fnt-size-16"><img src="../../../assets/img/save_icon.svg" alt="save" />Save</button>
         </div>
     </div>
     <p-tabView (onChange)="handleTabChange($event)" class="dashboard-config-tabs">
@@ -73,6 +73,9 @@
                     </div>
                 </div>
             </form>
+            <div class="p-d-flex p-align-center p-justify-center no-sprint-msg" *ngIf="noProjectsForSelectedCategory">
+                <h2 class="msg">Projects are not availiable for {{selectedTab}} category</h2>
+              </div>
         </p-tabPanel>
     </p-tabView>
     <app-page-loader *ngIf="loader"></app-page-loader>
