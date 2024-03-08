@@ -12,7 +12,7 @@ image:
   repository: speedtools.azurecr.io/knowhow-customapi
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "10.0.0-SNAPSHOT"
+  tag: "10.1.1-SNAPSHOT"
 
 imagePullSecrets: []
 nameOverride: ""
