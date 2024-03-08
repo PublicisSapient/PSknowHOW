@@ -95,8 +95,12 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                     if (err.status === 401) {
                         if (requestArea === 'internal') {
                             this.service.setCurrentUserDetails({});
+                            console.log("sso", environment.SSO_LOGIN)
                             if(!environment.SSO_LOGIN){
+                                console.log("auth", environment.AUTHENTICATION_SERVICE)
                                 if(environment.AUTHENTICATION_SERVICE){
+                                    console.log("inside if");
+                                    
                                     /** redirect to central login url*/
                                     let redirect_uri = window.location.href;
                                     localStorage.setItem('redirect_uri', window.location.hash);
