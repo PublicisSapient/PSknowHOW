@@ -201,17 +201,19 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			Map<String, Double> excelDataLoader, String branchName, String projectName,
 			Map<String, List<DataCount>> aggDataMap, String duration, Integer dataPoints) {
 		LocalDate currentDate = LocalDate.now();
+		List<DataCount> dataCountList = new ArrayList<>();
 		for (int i = 0; i < dataPoints; i++) {
 			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
 			double meanTimeToMerge = mergeReqList.getOrDefault(dateRange.getStartDate().toString(), 0.0d) * 1000;
 			String date = getDateRange(dateRange, duration);
-			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
 			DataCount dataCount = setDataCount(projectName, date, meanTimeToMerge);
-			aggDataMap.get(branchName).add(dataCount);
+			dataCountList.add(dataCount);
 			excelDataLoader.put(date, (double) KpiHelperService.convertMilliSecondsToHours(meanTimeToMerge));
 			currentDate = getNextRangeDate(duration, currentDate);
 
 		}
+		Collections.reverse(dataCountList);
+		aggDataMap.put(branchName, dataCountList);
 
 	}
 

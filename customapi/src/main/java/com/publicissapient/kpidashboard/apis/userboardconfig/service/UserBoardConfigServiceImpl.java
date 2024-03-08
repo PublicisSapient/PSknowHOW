@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -682,31 +683,6 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		log.info(userName + " deleted Successfully from user_board_config");
 	}
 
-	private void updateKpiDetails(List<UserBoardConfig> userBoardConfigs, UserBoardConfig finalBoardConfig) {
-		List<Board> scrum = finalBoardConfig.getScrum();
-		List<Board> kanban = finalBoardConfig.getKanban();
-		List<Board> others = finalBoardConfig.getOthers();
-		Map<String, Boolean> kpiWiseIsShownFlag = new HashMap<>();
-		CollectionUtils.emptyIfNull(scrum).stream().flatMap(boardDTO -> boardDTO.getKpis().stream())
-				.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown()));
-		CollectionUtils.emptyIfNull(kanban).stream().flatMap(boardDTO -> boardDTO.getKpis().stream())
-				.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown()));
-		CollectionUtils.emptyIfNull(others).stream().flatMap(boardDTO -> boardDTO.getKpis().stream())
-				.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown()));
-
-		for (UserBoardConfig boardConfig : userBoardConfigs) {
-			CollectionUtils.emptyIfNull(boardConfig.getScrum()).stream()
-					.flatMap(boardDTO -> boardDTO.getKpis().stream()).forEach(boardKpisDTO -> boardKpisDTO
-							.setShown(kpiWiseIsShownFlag.getOrDefault(boardKpisDTO.getKpiId(), true)));
-			CollectionUtils.emptyIfNull(boardConfig.getKanban()).stream()
-					.flatMap(boardDTO -> boardDTO.getKpis().stream()).forEach(boardKpisDTO -> boardKpisDTO
-							.setShown(kpiWiseIsShownFlag.getOrDefault(boardKpisDTO.getKpiId(), true)));
-			CollectionUtils.emptyIfNull(boardConfig.getOthers()).stream()
-					.flatMap(boardDTO -> boardDTO.getKpis().stream()).forEach(boardKpisDTO -> boardKpisDTO
-							.setShown(kpiWiseIsShownFlag.getOrDefault(boardKpisDTO.getKpiId(), true)));
-		}
-	}
-
 	/**
 	 * Method to mask the isShown=false config of project level to users level
 	 * config
@@ -871,8 +847,18 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			// if "all" is selected, it will change for all the docs
 			if (basicProjectConfigId.equalsIgnoreCase(SUPER_ADMIN_ALL_PROJ_SELECTED)) {
 				List<UserBoardConfig> userBoardConfigs = userBoardConfigRepository.findAll();
-				updateKpiDetails(userBoardConfigs, userBoardConfig);
-				userBoardConfigRepository.saveAll(userBoardConfigs);
+				Map<ObjectId, UserBoardConfig> allUserBoardConfigMap = userBoardConfigs.stream()
+						.collect(Collectors.toMap(UserBoardConfig::getId, Function.identity()));
+				List<UserBoardConfig> boardConfigList = new ArrayList<>();
+				for (Map.Entry<ObjectId, UserBoardConfig> entry : allUserBoardConfigMap.entrySet()) {
+					ObjectId projectConfigID = entry.getKey();
+					UserBoardConfig usersBoardConfig = allUserBoardConfigMap.get(projectConfigID);
+					usersBoardConfig.setScrum(userBoardConfig.getScrum());
+					usersBoardConfig.setKanban(userBoardConfig.getKanban());
+					usersBoardConfig.setOthers(userBoardConfig.getOthers());
+					boardConfigList.add(usersBoardConfig);
+				}
+				userBoardConfigRepository.saveAll(boardConfigList);
 			}
 		}
 		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
