@@ -241,10 +241,10 @@ public class JobControllerTest {
 		when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
 
 		// Calling the method with a sprintId
-		CompletableFuture<ResponseEntity<String>> response = jobController.startFetchSprintJob("sprint123");
+		ResponseEntity<String> response = jobController.startFetchSprintJob("sprint123");
 
 		// Verifying the response
-		assertEquals("job started for Sprint : sprint123", response.get().getBody());
+		assertEquals("job started for Sprint : sprint123", response.getBody());
 	}
 
 	@Test
@@ -254,10 +254,10 @@ public class JobControllerTest {
 				.run(eq(fetchIssueSprintJob), any(JobParameters.class));
 
 		// Calling the method with a sprintId
-		CompletableFuture<ResponseEntity<String>> response = jobController.startFetchSprintJob("sprint456");
+		ResponseEntity<String> response = jobController.startFetchSprintJob("sprint456");
 
 		// Verifying the response
-		assertEquals("job started for Sprint : sprint456", response.get().getBody());
+		assertEquals("job started for Sprint : sprint456", response.getBody());
 	}
 
 	@Test

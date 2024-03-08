@@ -38,12 +38,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -250,23 +247,23 @@ public class JobController {
 	 *            sprintId
 	 * @return ResponseEntity
 	 */
-	@Async
-	@PostMapping (value= "/startfetchsprintjob", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public CompletableFuture<ResponseEntity<String>> startFetchSprintJob(@RequestBody String sprintId) {
+	@PostMapping(value = "/startfetchsprintjob", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> startFetchSprintJob(@RequestBody String sprintId) {
 		log.info("Request coming for fetching sprint job");
-		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+		CompletableFuture.runAsync(() -> {
+			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 
-		jobParametersBuilder.addString(SPRINT_ID, sprintId);
-		jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
-		JobParameters params = jobParametersBuilder.toJobParameters();
-		try {
-			jobLauncher.run(fetchIssueSprintJob, params);
-		} catch (Exception e) {
-			log.info("Jira Sprint data fetch failed for SprintId : {}, with exception : {}",
-					params.getString(SPRINT_ID), e);
-		}
-		return CompletableFuture.completedFuture(ResponseEntity.ok().body("job started for Sprint : " + sprintId));
-
+			jobParametersBuilder.addString(SPRINT_ID, sprintId);
+			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+			JobParameters params = jobParametersBuilder.toJobParameters();
+			try {
+				jobLauncher.run(fetchIssueSprintJob, params);
+			} catch (Exception e) {
+				log.info("Jira Sprint data fetch failed for SprintId : {}, with exception : {}",
+						params.getString(SPRINT_ID), e);
+			}
+		});
+		return ResponseEntity.ok().body("job started for Sprint : " + sprintId);
 	}
 
 	/**
