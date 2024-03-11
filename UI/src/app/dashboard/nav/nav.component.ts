@@ -148,10 +148,15 @@ export class NavComponent implements OnInit {
       Array.isArray(this.kpiListData[this.selectedType])
     ) {
       for (let i = 0; i < this.kpiListData[this.selectedType]?.length; i++) {
-        this.boardNameArr.push({
-          boardName: this.kpiListData[this.selectedType][i].boardName,
-          link: this.kpiListData[this.selectedType][i].boardName.toLowerCase().split(' ').join('-')
+        const boardIdx = this.kpiListData[this.selectedType][i]['kpis']?.find((item) => {
+          return item.shown === false; 
         });
+        if(boardIdx == -1){
+          this.boardNameArr.push({
+            boardName: this.kpiListData[this.selectedType][i].boardName,
+            link: this.kpiListData[this.selectedType][i].boardName.toLowerCase().split(' ').join('-')
+          });
+        }
       }
     }
 
