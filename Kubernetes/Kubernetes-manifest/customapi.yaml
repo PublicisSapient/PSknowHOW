@@ -87,8 +87,8 @@ spec:
             - name: auth.resourceAPIKey
               valueFrom:
                 secretKeyRef:
-                  name: auth-resourceapikey
-                  key: auth-resourceapikey
+                  name: auth-resourceapikeys
+                  key: auth-resourceapikeys
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.upgrade
             - name: mongock.start-system-version

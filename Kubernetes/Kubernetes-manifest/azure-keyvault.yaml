@@ -86,7 +86,7 @@ spec:
           objectType: secret
           objectVersion: ""
         - |
-          objectName: auth-resourceapikey
+          objectName: auth-resourceapikeys
           objectType: secret
           objectVersion: ""
     tenantId: "d52c9ea1-7c21-47b1-82a3-33a74b1f74b8"                 # The tenant ID of the key vault
@@ -181,8 +181,8 @@ spec:
     data:
     - objectName: exposed-api-key
       key: exposed-api-key
-  - secretName: auth-resourceapikey
+  - secretName: auth-resourceapikeys
     type: Opaque
     data:
-    - objectName: auth-resourceapikey
-      key: auth-resourceapikey
+    - objectName: auth-resourceapikeys
+      key: auth-resourceapikeys
