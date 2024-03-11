@@ -4392,6 +4392,8 @@
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel" : "Weeks",
     "yAxisLabel" : "Percentage",
     "isPositiveTrend" : false,
