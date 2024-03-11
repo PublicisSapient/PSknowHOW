@@ -896,4 +896,29 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		return operations.aggregate(aggregation, JiraIssue.class, ReleaseWisePI.class).getMappedResults();
 	}
 
+	@Override
+	public List<JiraIssue> findIssueByNumberWithAdditionalFilter(Set<String> storyNumber,
+			Map<String, Map<String, Object>> uniqueProjectMap) {
+		Criteria criteria = new Criteria();
+
+		// Project level storyType filters
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			projectCriteria.and(CONFIG_ID).is(project);
+			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
+			projectCriteriaList.add(projectCriteria);
+		});
+
+		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+			criteria = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+
+		}
+		criteria = criteria.and(NUMBER).in(storyNumber);
+		Query query = new Query(criteria);
+		return operations.find(query, JiraIssue.class);
+	}
+
 }

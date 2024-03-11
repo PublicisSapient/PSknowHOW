@@ -205,4 +205,6 @@ public interface JiraIssueRepository
 
 	Set<JiraIssue> findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(String configId,
 			Set<String> parentStoryIds, List<String> originalTypes);
+
+	List<JiraIssue> findByProjectIDAndNumberInAndAdditionalFiltersFilterIdInAndAdditionalFiltersFilterValuesValueIdInOrProjectIDAndNumberInAndAdditionalFiltersFilterIdNullAndAdditionalFiltersFilterValuesValueIdNull(String projectId, List<String> issueList, List<String> filterId, List<String> valueIds);
 }

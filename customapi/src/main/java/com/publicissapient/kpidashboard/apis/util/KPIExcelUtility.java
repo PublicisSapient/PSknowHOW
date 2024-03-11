@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -59,6 +58,7 @@ import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.LeadTimeChangeData;
 import com.publicissapient.kpidashboard.apis.model.MeanTimeRecoverData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterValue;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
@@ -66,6 +66,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.ResolutionTimeValidation;
 import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
@@ -1440,6 +1441,19 @@ public class KPIExcelUtility {
 					DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT));
 		else
 			jiraIssueModalObject.setDevDueDate(Constant.DASH);
+
+		if (CollectionUtils.isNotEmpty(fieldMapping.getAdditionalFilterConfig())) {
+			if (CollectionUtils.isNotEmpty(jiraIssue.getAdditionalFilters())) {
+				jiraIssueModalObject
+						.setSquads(jiraIssue
+								.getAdditionalFilters().stream().flatMap(additionalFilter -> additionalFilter
+										.getFilterValues().stream().map(AdditionalFilterValue::getValue))
+								.toList());
+
+			} else {
+				jiraIssueModalObject.setSquads(List.of(Constant.DASH));
+			}
+		}
 
 		if (modalValues != null && overAllModalValues != null) {
 			modalValues.add(jiraIssueModalObject);
