@@ -253,8 +253,7 @@ public enum KPIExcelColumn {
 			"Issue Type", "Issue Status", "Root Cause", "Priority", "Assignee")),
 
 	RELEASE_PROGRESS("kpi147",
-			Arrays.asList("Issue ID", "Issue Type", "Issue Description","Size(story point/hours)", "Priority", "Assignee",
-					"Issue Status","To Do","In Progress","Done")),
+			Arrays.asList("Issue ID", "Issue Type", "Issue Description","Size(story point/hours)", "Priority", "Assignee")),
 
 	HAPPINESS_INDEX_RATE("kpi149",
 							Arrays.asList("Sprint Name", "User Name", "Sprint Rating")),
@@ -290,9 +289,9 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
 					"PR Size (No. of lines)")),
 
-	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status","To Do","In Progress","Done")),
+	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)","To Do","In Progress","Done")),
 
-	BACKLOG_EPIC_PROGRESS("kpi169", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status")),
+	BACKLOG_EPIC_PROGRESS("kpi169", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status","To Do","In Progress","Done")),
 
     MEAN_TIME_TO_RECOVER("kpi166", Arrays.asList("Project Name", "Date", "Story ID", "Issue Type", "Issue Description",
             "Created Date", "Completion Date", "Time to Recover (In Hours)")),
