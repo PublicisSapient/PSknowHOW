@@ -94,6 +94,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 
 	private void saveAssigneEmail(CapacityMaster capacityMaster) {
 		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(capacityMaster.getBasicProjectConfigId().toString());
+		List<CapacityKpiData> capacities = (List<CapacityKpiData>) capacityKpiDataRepository.findAll();
 		if(assigneeDetails == null) return ;
 		Set<Assignee> assignee = assigneeDetails.getAssignee();
 		Map<String, Assignee> map = new HashMap<>();
@@ -112,6 +113,18 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			});
 			assigneeDetails.setAssignee(finalAssignee);
 			assigneeDetailsRepository.save(assigneeDetails);
+
+			capacities.forEach(capacityKpiData1 -> {
+				if(capacityKpiData1.getAssigneeCapacity() != null)
+				{
+					capacityKpiData1.getAssigneeCapacity().forEach(ass -> {
+						Assignee assignee1 = map.get(ass.getUserId());
+						if(assignee1!=null && assignee1.getEmail()!=null)
+						ass.setEmail(assignee1.getEmail());
+					});
+					capacityKpiDataRepository.save(capacityKpiData1);
+				}
+ 			});
 		}
 	}
 
@@ -303,6 +316,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			capacity.setUserId(assignee.getUserId());
 			capacity.setUserName(assignee.getUserName());
 			capacity.setRole(assignee.getRole());
+			capacity.setEmail(assignee.getEmail());
 			capacity.setPlannedCapacity(assignee.getPlannedCapacity());
 			capacity.setLeaves(0.0d);
 			capacity.setHappinessRating(0);
