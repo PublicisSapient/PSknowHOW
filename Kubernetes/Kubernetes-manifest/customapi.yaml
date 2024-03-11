@@ -79,12 +79,31 @@ spec:
                 secretKeyRef:
                   name: uatknhdbpassword
                   key: uatknhdbpassword
+            - name: exposed_api_key
+              valueFrom:
+                secretKeyRef:
+                  name: exposed-api-key
+                  key: exposed-api-key
+            - name: auth.resourceAPIKey
+              valueFrom:
+                secretKeyRef:
+                  name: auth-resourceapikey
+                  key: auth-resourceapikey
             - name: mongock.migration-scan-package
-              value: com.publicissapient.kpidashboard.apis.mongock.installation  
+              value: com.publicissapient.kpidashboard.apis.mongock.upgrade
+            - name: mongock.start-system-version
+              value: 8.1.0
+            - name: mongock.end-system-version
+              value: 9.0.0
             - name: auth.centralAuthBaseURL
               value: "https://stage-authnauth.tools.publicis.sapient.com"
             - name:  notification.switch
-              value: "false"
+              value: "true"
+            - name:  auth.subDomainCookie
+              value: "true"
+            - name:  auth.domain
+              value: tools.publicis.sapient.com
+
           envFrom:
           - configMapRef:
               name: knowhow-config  

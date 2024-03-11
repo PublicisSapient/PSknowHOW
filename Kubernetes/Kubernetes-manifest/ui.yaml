@@ -63,6 +63,8 @@ spec:
             value: "https://stage-assessmentplatform.tools.publicis.sapient.com"
           - name: RETROS_URL
             value: "https://stage-retrospective.tools.publicis.sapient.com"
+          - name: AUTHENTICATION_SERVICE
+            value: "true"
 ---
 apiVersion: v1
 kind: Service

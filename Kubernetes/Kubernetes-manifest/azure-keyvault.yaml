@@ -81,6 +81,14 @@ spec:
           objectName: debbiemailhostpass
           objectType: secret
           objectVersion: ""
+        - |
+          objectName: exposed-api-key
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: auth-resourceapikey
+          objectType: secret
+          objectVersion: ""
     tenantId: "d52c9ea1-7c21-47b1-82a3-33a74b1f74b8"                 # The tenant ID of the key vault
   secretObjects:                                    #https://secrets-store-csi-driver.sigs.k8s.io/topics/sync-as-kubernetes-secret
   - secretName: uatknhdbusername
@@ -168,3 +176,13 @@ spec:
     data:
     - objectName: debbiemailhostpass
       key: debbiemailhostpass
+  - secretName: exposed-api-key
+    type: Opaque
+    data:
+    - objectName: exposed-api-key
+      key: exposed-api-key
+  - secretName: auth-resourceapikey
+    type: Opaque
+    data:
+    - objectName: auth-resourceapikey
+      key: auth-resourceapikey
