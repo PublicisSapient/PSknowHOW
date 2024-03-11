@@ -51,7 +51,7 @@ public class ReworkRateKpi {
 								new Document().append("text", "Detailed Information at").append("link",
 										"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/106528769/Developer+Rework+Rate")))))
 				.append("xAxisLabel", "Weeks").append("yAxisLabel", "Percentage").append("isPositiveTrend", false)
-				.append("upperThresholdBG", "red").append("lowerThresholdBG", "white").append("showTrend", true)
+				.append("upperThresholdBG", "red").append("lowerThresholdBG", "white").append("thresholdValue","50").append("showTrend", true)
 				.append("kpiFilter", "dropDown").append("aggregationCriteria", "average")
 				.append("isAdditionalFilterSupport", false).append("calculateMaturity", false)
 				.append("hideOverallFilter", true).append("isRepoToolKpi", true).append("kpiCategory", "Developer")
