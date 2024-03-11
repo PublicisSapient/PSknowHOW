@@ -152,7 +152,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     private ga: GoogleAnalyticsService,
     private messageService: MessageService,
     private helperService: HelperService,
-    private route: ActivatedRoute
+    public route: ActivatedRoute
   ) { }
 
   ngOnInit() {
@@ -1819,7 +1819,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   /*Sets the selected sprints on the service layer for storage. */
   setSelectedSprintOnServiceLayer() {
     let selectedSprint = {}
-    this.selectedFilterArray.forEach(element => {
+    this.selectedFilterArray?.forEach(element => {
       if (element['additionalFilters'].length) {
         selectedSprint = { ...selectedSprint, [element['nodeId']]: element['additionalFilters'] }
       }

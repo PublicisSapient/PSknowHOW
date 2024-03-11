@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.feedback.service.FeedbackService;
 import com.publicissapient.kpidashboard.apis.model.FeedbackSubmitDTO;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -33,6 +35,9 @@ public class FeedbackController {
 	 */
 	@Autowired
 	private FeedbackService submitFeedbackService;
+
+	@Autowired
+	private AuthenticationService authenticationService;
 
 	/**
 	 * @return feedback categories
@@ -52,17 +57,22 @@ public class FeedbackController {
 	 * @return responseEntity with message and status
 	 */
 	@PostMapping("/submitfeedback")
-	public ResponseEntity<ServiceResponse> submitFeedback(@Valid @RequestBody FeedbackSubmitDTO feedback) {
+	public ResponseEntity<ServiceResponse> submitFeedback(@Valid @RequestBody FeedbackSubmitDTO feedback,
+			HttpServletRequest httpServletRequest) {
 		log.info("creating new request");
-		boolean responseStatus = submitFeedbackService.submitFeedback(feedback);
-		if (responseStatus) {
-			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ServiceResponse(responseStatus, "Your request has been submitted", feedback));
-		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(responseStatus,
-					"Email Not Sent ,check emailId and Subject configuration ", feedback));
+		String loggedUserName = authenticationService.getLoggedInUser();
+		if (loggedUserName != null) {
+			boolean responseStatus = submitFeedbackService.submitFeedback(feedback, loggedUserName);
+			if (responseStatus) {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ServiceResponse(responseStatus, "Your request has been submitted", feedback));
+			} else {
+				return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(responseStatus,
+						"Email Not Sent ,check emailId and Subject configuration ", feedback));
+			}
 		}
-
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ServiceResponse(false, "User is not Valid for feedback", feedback));
 	}
 
 }

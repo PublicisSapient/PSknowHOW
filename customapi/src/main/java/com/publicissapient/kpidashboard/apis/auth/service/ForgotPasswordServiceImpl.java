@@ -61,7 +61,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	/*
 	 * validatePath
 	 */
-	private static final String VALIDATE_PATH = "/validateToken?token="; // NOSONAR
+	private static final String VALIDATE_PATH = "/validateEmailToken?token="; // NOSONAR
 	private static final String REGEX = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})";
 	private static final String FORGOT_PASSWORD_NOTIFICATION_KEY = "Forgot_Password";
 	@Autowired
