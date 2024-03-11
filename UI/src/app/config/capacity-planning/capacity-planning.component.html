@@ -292,7 +292,6 @@
                                         [style]="{'width':'25%'}">
                                         <div>
                                             <span [ngClass]="{'editable': projectCapacityEditMode}">Email Id</span>
-                                            <p-sortIcon field="email"></p-sortIcon>
                                         </div>
                                     </th>
                                     <th scope="col" pSortableColumn="happinessRating" class="expanded-table-header-cell"
@@ -300,7 +299,6 @@
                                         <div>
                                             <span [ngClass]="{'editable': projectCapacityEditMode}">Happiness
                                                 Rating</span>
-                                            <p-sortIcon field="happinessRating"></p-sortIcon>
                                         </div>
                                     </th>
                                     <th scope="col" pSortableColumn="role" class="expanded-table-header-cell"
@@ -339,10 +337,11 @@
                                 <tr class="expanded-table-body-row">
                                     <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName : '-
                                         -'}}</td>
-                                    <td class="expanded-table-body-cell">
+                                    <td class="expanded-table-body-cell" [style]="{'max-width':'120px', 'word-wrap': 'break-word'}">
                                         <input type="email" min="0" pInputText
                                             *ngIf="projectCapacityEditMode;else showUserEmail"
                                             (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email')"
+                                            placeholder="Code repo email ID"
                                             [style]="{'width':'120px'}"
                                             [formControl]="selectedSprintAssigneFormArray[rowIndex]?.email"
                                             (keypress)="validateInput($event, 'email')"
