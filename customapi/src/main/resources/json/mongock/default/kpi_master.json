@@ -4381,7 +4381,16 @@
     "kanban" : false,
     "chartType" : "line",
     "kpiInfo" : {
-      "definition" : "Percentage of code changes in which an engineer rewrites code that they recently updated (within the past three weeks)."
+      "definition" : "Percentage of code changes in which an engineer rewrites code that they recently updated (within the past three weeks).",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/106528769/Developer+Rework+Rate"
+          }
+        }
+      ]
     },
     "xAxisLabel" : "Weeks",
     "yAxisLabel" : "Percentage",

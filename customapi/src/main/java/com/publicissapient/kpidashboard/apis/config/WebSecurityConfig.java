@@ -129,7 +129,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/togglz-console**").permitAll()
                         .requestMatchers("/actuator**").permitAll()
                         .requestMatchers("/forgotPassword").permitAll()
-                        .requestMatchers("/validateToken**").permitAll()
+                        .requestMatchers("/validateEmailToken**").permitAll()
                         .requestMatchers("/resetPassword").permitAll()
                         .requestMatchers("/cache/clearAllCache").permitAll().requestMatchers(HttpMethod.GET, "/cache/clearCache/**")
                         .permitAll().requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

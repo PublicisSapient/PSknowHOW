@@ -290,6 +290,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			dayWiseCommitCount.add(dataCount);
 			currentDate = getNextRangeDate(duration, currentDate);
 		}
+		Collections.reverse(dayWiseCommitCount);
 		return dayWiseCommitCount;
 
 	}
