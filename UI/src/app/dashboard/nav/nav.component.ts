@@ -149,9 +149,9 @@ export class NavComponent implements OnInit {
     ) {
       for (let i = 0; i < this.kpiListData[this.selectedType]?.length; i++) {
         const boardIdx = this.kpiListData[this.selectedType][i]['kpis']?.find((item) => {
-          return item.shown === false; 
+          return item.shown === true; 
         });
-        if(boardIdx == -1){
+        if(boardIdx != -1){
           this.boardNameArr.push({
             boardName: this.kpiListData[this.selectedType][i].boardName,
             link: this.kpiListData[this.selectedType][i].boardName.toLowerCase().split(' ').join('-')
