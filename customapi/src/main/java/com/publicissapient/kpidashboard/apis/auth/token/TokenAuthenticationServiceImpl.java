@@ -101,18 +101,18 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private CookieUtil cookieUtil;
 
 	@Override
-	public UserTokenAuthenticationDTO addAuthentication(HttpServletResponse response, Authentication authentication) {
+	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
 		String jwt = createJwtToken(authentication);
-		UserTokenAuthenticationDTO data = new UserTokenAuthenticationDTO();
+		UserTokenData data = new UserTokenData();
 		data.setUserName(authentication.getName());
-		data.setUserRoles(getRoles(authentication.getAuthorities()).stream().collect(Collectors.toList()));
-		data.setAuthToken(jwt);
+		data.setUserToken(jwt);
+		userTokenReopository.deleteAllByUserName(authentication.getName());
+		userTokenReopository.save(data);
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
 		cookie.setSecure(true);
 		response.addCookie(cookie);
 		cookieUtil.addSameSiteCookieAttribute(response);
-		return data;
 	}
 
 	public String createJwtToken(Authentication authentication) {

@@ -267,7 +267,7 @@ public class JsonParseUtil {
 	public static String getNullableString(final JSONObject jsonObject, final String attributeName)
 			throws JSONException {
 		final Object o = jsonObject.get(attributeName);
-		if (o == JSONObject.NULL) {
+		if (o == JSONObject.EXPLICIT_NULL) {
 			return null;
 		}
 		return o.toString();
@@ -276,7 +276,7 @@ public class JsonParseUtil {
 	@Nullable
 	public static String getOptionalString(final JSONObject jsonObject, final String attributeName) {
 		final Object res = jsonObject.opt(attributeName);
-		if (res == JSONObject.NULL || res == null) {
+		if (res == JSONObject.EXPLICIT_NULL || res == null) {
 			return null;
 		}
 		return res.toString();
@@ -286,7 +286,7 @@ public class JsonParseUtil {
 	public static <T> T getOptionalJsonObject(final JSONObject jsonObject, final String attributeName,
 			final JsonObjectParser<T> jsonParser) throws JSONException {
 		final JSONObject res = jsonObject.optJSONObject(attributeName);
-		if (res == JSONObject.NULL || res == null) {
+		if (res == JSONObject.EXPLICIT_NULL || res == null) {
 			return null;
 		}
 		return jsonParser.parse(res);
@@ -296,7 +296,7 @@ public class JsonParseUtil {
 	@Nullable
 	public static JSONObject getOptionalJsonObject(final JSONObject jsonObject, final String attributeName) {
 		final JSONObject res = jsonObject.optJSONObject(attributeName);
-		if (res == JSONObject.NULL || res == null) {
+		if (res == JSONObject.EXPLICIT_NULL || res == null) {
 			return null;
 		}
 		return res;

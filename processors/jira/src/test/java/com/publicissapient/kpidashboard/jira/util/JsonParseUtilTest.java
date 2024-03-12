@@ -97,7 +97,7 @@ public class JsonParseUtilTest {
     @Test
     public void testGetOptionalStringWithNullValue() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put("attributeName", JSONObject.NULL);
+        json.put("attributeName", JSONObject.EXPLICIT_NULL);
 
         String result = JsonParseUtil.getOptionalString(json, "attributeName");
 

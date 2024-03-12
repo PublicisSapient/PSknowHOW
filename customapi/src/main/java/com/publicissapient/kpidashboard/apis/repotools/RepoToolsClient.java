@@ -100,7 +100,7 @@ public class RepoToolsClient {
 		setHttpHeaders(apiKey);
 		Gson gson = new Gson();
 		String payload = gson.toJson(repoToolKpiRequestBody);
-		log.info("kpi request payload for {} {}", repoToolsUrl, repoToolKpiRequestBody.toString());
+		log.info("kpi request payload for {} {}", repoToolsUrl, payload);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
 		ResponseEntity<RepoToolKpiBulkMetricResponse> response = restTemplate.exchange(URI.create(repoToolsUrl),
 				HttpMethod.POST, entity, RepoToolKpiBulkMetricResponse.class);
@@ -148,7 +148,7 @@ public class RepoToolsClient {
 	 */
 	public void setHttpHeaders(String apiKey) {
 		httpHeaders = new HttpHeaders();
-		httpHeaders.add(X_API_KEY, apiKey);
+		httpHeaders.set(X_API_KEY, apiKey);
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 	}
 
