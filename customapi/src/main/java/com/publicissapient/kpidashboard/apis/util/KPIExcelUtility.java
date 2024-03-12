@@ -1785,7 +1785,6 @@ public class KPIExcelUtility {
 			KPIExcelData excelData = new KPIExcelData();
 			List<JiraIssue> jiraIssueList = epicWiseJiraIssues.get(epicNumber);
 			JiraIssue jiraIssue = epicIssues.get(epicNumber);
-			Integer totalJiraSize = jiraIssueList.size();
 			if (jiraIssue != null) {
 				// filter by to do category
 				List<JiraIssue> toDoJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
@@ -1796,6 +1795,7 @@ public class KPIExcelUtility {
 				// filter by done category
 				List<JiraIssue> doneJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
 						jiraIssueReleaseStatus.getClosedList());
+				Integer totalJiraSize = toDoJiraIssue.size()+inProgressJiraIssue.size()+doneJiraIssue.size();
 				double toDoPercentage = roundingOff((100.0d*toDoJiraIssue.size())/totalJiraSize);
 				double inProgressPercentage = roundingOff((100.0d*inProgressJiraIssue.size())/totalJiraSize);
 				double donePercentage = roundingOff((100.0d*doneJiraIssue.size())/totalJiraSize);
