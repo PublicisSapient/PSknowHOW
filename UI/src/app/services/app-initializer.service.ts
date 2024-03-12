@@ -20,6 +20,7 @@ export class AppInitializerService {
       if (!environment['production']) {
         alert("inside app initializer prod" + environment['production'])
         this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
+        this.validateToken();
       } else {
         const env$ = this.http.get('assets/env.json').pipe(
           tap(env => {
@@ -32,11 +33,15 @@ export class AppInitializerService {
             environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
             environment['MAP_URL'] = env['MAP_URL'] || '';
             environment['RETROS_URL'] = env['RETROS_URL'] || '';
+            this.validateToken();
           }));
         env$.toPromise().then(async res => {
           this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
         });
       }
+
+      
+
       // load google Analytics script on all instances except local and if customAPI property is true
       let addGAScript = this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
       if (addGAScript) {
