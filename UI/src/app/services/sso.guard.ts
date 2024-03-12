@@ -16,11 +16,15 @@ export class SSOGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-
+      console.log(environment.SSO_LOGIN)
+      
       if (!environment.SSO_LOGIN) {
+        console.log("inside if sso guard");
+        
         return true;
       } else {
-        return this.getSSOUserInfo();
+        console.log("inside else sso guard");
+        // return this.getSSOUserInfo();
       }
   }
 

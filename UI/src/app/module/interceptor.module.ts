@@ -107,7 +107,8 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                                     console.log("CENTRAL_LOGIN_URL", environment.CENTRAL_LOGIN_URL);
                                     
                                     if(environment.CENTRAL_LOGIN_URL){
-                                        window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+                                        alert("inside interceptor before redirection")
+                                        //window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
                                     }
                                 }else{
                                     this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
