@@ -2248,7 +2248,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "Hours" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 22 ,
+    "defaultOrder" : 23 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
     "kpiSource" : "Jira" ,
@@ -2283,7 +2283,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 7 ,
+    "defaultOrder" : 8 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
     "kpiSource" : "Jira" ,
@@ -2318,7 +2318,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "Story Point" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 6 ,
+    "defaultOrder" : 7 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
     "kpiSource" : "Jira" ,
@@ -2393,7 +2393,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 21 ,
+    "defaultOrder" : 22 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
     "kpiSource" : "Jira" ,
@@ -2428,7 +2428,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 14 ,
+    "defaultOrder" : 15 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
     "kpiSource" : "Jira" ,
@@ -2463,7 +2463,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 12 ,
+    "defaultOrder" : 13 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
     "kpiSource" : "Jira" ,
@@ -2537,7 +2537,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 8 ,
+    "defaultOrder" : 9 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Progress" ,
     "kpiSource" : "Jira" ,
@@ -2573,7 +2573,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "Hours" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 9 ,
+    "defaultOrder" : 10 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
     "kpiSource" : "Jira" ,
@@ -2619,7 +2619,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "Hours" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 11 ,
+    "defaultOrder" : 12 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
     "kpiSource" : "Jira" ,
@@ -2769,7 +2769,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 13 ,
+    "defaultOrder" : 14 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
     "kpiSource" : "Jira" ,
@@ -2986,7 +2986,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 15 ,
+    "defaultOrder" : 16 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
     "kpiSource" : "Jira" ,
@@ -4407,6 +4407,33 @@
     "isRepoToolKpi" : true,
     "kpiCategory" : "Developer",
     "maturityRange" : [ "-80", "80-50", "50-20", "20-5", "5-" ]
+  },
+  {
+    "kpiId": "kpi176",
+    "kpiName": "Risks And Dependencies",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 6,
+    "kpiCategory": "Iteration",
+    "kpiSubCategory": "Iteration Review",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "definition": "It shows the count of issues which do not have estimates and count of In progress issues without any work logs.",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680674/Estimate+Hygiene"
+          }
+        }
+      ]
+    }
   }
 
 ]

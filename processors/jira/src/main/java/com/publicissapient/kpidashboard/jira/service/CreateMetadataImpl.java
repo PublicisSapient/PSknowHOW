@@ -343,6 +343,10 @@ public class CreateMetadataImpl implements CreateMetadata {
 				issueTypeMap.getOrDefault(CommonConstant.JIRA_STORY_IDENTIFICATION_KPI164, new ArrayList<>()));
 		fieldMapping.setJiraIssueEpicType(
 				issueTypeMap.get(CommonConstant.JIRAISSUEEPICTYPE).stream().collect(Collectors.toList()));
+		fieldMapping.setJiraIssueRiskTypeKPI176(
+				issueTypeMap.get(CommonConstant.JIRAISSUERISKTYPE).stream().collect(Collectors.toList()));
+		fieldMapping.setJiraIssueDependencyTypeKPI176(
+				issueTypeMap.get(CommonConstant.JIRAISSUEDEPENDENCYTYPE).stream().collect(Collectors.toList()));
 		fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.JIRATECHDEBTISSUETYPE));
 		fieldMapping
 				.setJiraIssueTypeKPI3(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPEKPI3, new ArrayList<>()));
@@ -547,6 +551,10 @@ public class CreateMetadataImpl implements CreateMetadata {
 
 			fieldMapping
 					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
+			fieldMapping.setJiraIssueRiskTypeKPI176(
+					issueTypeMap.get(CommonConstant.JIRAISSUERISKTYPE).stream().collect(Collectors.toList()));
+			fieldMapping.setJiraIssueDependencyTypeKPI176(
+					issueTypeMap.get(CommonConstant.JIRAISSUEDEPENDENCYTYPE).stream().collect(Collectors.toList()));
 
 			List<String> firstStatusList = workflowMap.get(CommonConstant.FIRST_STATUS);
 

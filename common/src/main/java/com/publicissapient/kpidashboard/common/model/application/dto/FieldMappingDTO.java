@@ -60,6 +60,8 @@ public class FieldMappingDTO extends BasicModel {
 
     private String[] jiraIssueTypeNames;
     private String[] jiraIssueTypeNamesAVR;
+    private List<String> jiraIssueRiskTypeKPI176;
+    private List<String> jiraIssueDependencyTypeKPI176;
     private String storyFirstStatus;
     private String storyFirstStatusKPI148;
     private String[] linkDefectToStoryField;
@@ -147,6 +149,7 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> jiraIssueDeliverdStatusAVR;
     private List<String> jiraIssueDeliverdStatusKPI126;
     private List<String> jiraIssueDeliverdStatusKPI82;
+    private List<String> jiraIterationCompletionStatusKPI176;
 
     private String readyForDevelopmentStatus;
     private List<String> readyForDevelopmentStatusKPI138;
