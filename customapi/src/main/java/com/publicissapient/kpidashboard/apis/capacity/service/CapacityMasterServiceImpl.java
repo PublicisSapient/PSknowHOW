@@ -119,8 +119,8 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				{
 					capacityKpiData1.getAssigneeCapacity().forEach(ass -> {
 						Assignee assignee1 = map.get(ass.getUserId());
-						if(assignee1!=null && assignee1.getEmail()!=null)
-						ass.setEmail(assignee1.getEmail());
+						if (assignee1 != null && assignee1.getEmail() != null)
+							ass.setEmail(assignee1.getEmail());
 					});
 					capacityKpiDataRepository.save(capacityKpiData1);
 				}
