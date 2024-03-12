@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.apis.auth.token;
 
 import java.io.IOException;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,7 +37,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-@Slf4j
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
 	@Autowired
@@ -58,10 +55,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 		if (request != null) {
 			Cookie authCookie = cookieUtil.getAuthCookie((HttpServletRequest) request);
 
-			if (authCookie == null || StringUtils.isBlank(authCookie.getValue())) {
-				HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-				httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-				log.error("No token found in cookie");
+			if (authCookie == null) {
+				filterChain.doFilter(request, response);
 				return;
 			}
 
