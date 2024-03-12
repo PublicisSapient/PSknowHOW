@@ -1,13 +1,10 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +16,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -81,9 +78,13 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 
 	/**
 	 * @param latestRelease
+	 *            latestRelease data
 	 * @param kpiElement
+	 *            kpiElement
 	 * @param kpiRequest
+	 *            kpiRequest
 	 */
+	@SuppressWarnings("unchecked")
 	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
@@ -127,12 +128,13 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 	 * get list of Jira associated with RCA and Testing Phase
 	 * 
 	 * @param defects
+	 *            defect list
 	 * @param fieldMapping
+	 *            fieldMapping
 	 * @return list of dataCount
 	 */
 	private List<DataCount> getDefectsDataCountList(List<JiraIssue> defects, FieldMapping fieldMapping) {
 		List<DataCount> defectsDataCountList = new ArrayList<>();
-		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(defects)) {
 			Set<String> testingPhases = findUniqueTestingPhases(defects);
 			Set<String> rcaList = findUniqueRCAList(defects);
@@ -144,7 +146,6 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 				List<DataCount> dataCountRCA = new ArrayList<>();
 				if (MapUtils.isNotEmpty(testingPhaseRCAWiseJiraIssue)) {
 					testingPhaseRCAWiseJiraIssue.forEach((rca, jiraIssue) -> {
-						filteredJiraIssue.addAll(jiraIssue);
 						DataCount dataCount = new DataCount();
 						dataCount.setSubFilter(rca);
 						dataCount.setValue(jiraIssue.size());
@@ -184,9 +185,13 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 	 * populate excel data
 	 *
 	 * @param requestTrackerId
+	 *            requestTrackerId
 	 * @param excelData
+	 *            excelData
 	 * @param jiraIssueList
+	 *            jiraIssueList
 	 * @param fieldMapping
+	 *            fieldMapping
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
@@ -223,19 +228,20 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 
 	private List<JiraIssue> filterByStatus(String testingPhase, List<JiraIssue> totalDefects, String rca) {
 		return totalDefects.stream()
-				.filter(jiraIssue -> jiraIssue.getEscapedDefectGroup().stream().findFirst().get()
+				.filter(jiraIssue -> jiraIssue.getEscapedDefectGroup().stream().findFirst().orElse(UNDEFINED)
 						.equalsIgnoreCase(testingPhase))
-				.filter(jiraIssue -> jiraIssue.getRootCauseList().stream().findFirst().get().equalsIgnoreCase(rca))
+				.filter(jiraIssue -> jiraIssue.getRootCauseList().stream().findFirst().orElse(NONE)
+						.equalsIgnoreCase(rca))
 				.toList();
 	}
 
 	private void updateRCAAndTestingPhase(List<JiraIssue> totalDefects) {
 		totalDefects.forEach(jiraIssue -> {
 			if (CollectionUtils.isEmpty(jiraIssue.getEscapedDefectGroup())) {
-				jiraIssue.setEscapedDefectGroup(Arrays.asList(UNDEFINED));
+				jiraIssue.setEscapedDefectGroup(Collections.singletonList(UNDEFINED));
 			}
 			if (CollectionUtils.isEmpty(jiraIssue.getRootCauseList())) {
-				jiraIssue.setEscapedDefectGroup(Arrays.asList(NONE));
+				jiraIssue.setEscapedDefectGroup(Collections.singletonList(NONE));
 			}
 		});
 
