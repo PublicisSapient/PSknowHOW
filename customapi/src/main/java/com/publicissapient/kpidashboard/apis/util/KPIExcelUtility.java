@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.util;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -1798,11 +1799,11 @@ public class KPIExcelUtility {
 				List<JiraIssue> doneJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
 						jiraIssueReleaseStatus.getClosedList());
 				BigDecimal toDoPercentage = new BigDecimal((100.0d*toDoJiraIssue.size())/totalJiraSize);
-				toDoPercentage = toDoPercentage.setScale(2);
+				toDoPercentage = toDoPercentage.setScale(2, RoundingMode.HALF_UP);
 				BigDecimal inProgressPercentage = new BigDecimal((100.0d*inProgressJiraIssue.size())/totalJiraSize);
-				inProgressPercentage = inProgressPercentage.setScale(2);
+				inProgressPercentage = inProgressPercentage.setScale(2,RoundingMode.HALF_UP);
 				BigDecimal donePercentage = new BigDecimal((100.0d*doneJiraIssue.size())/totalJiraSize);
-				donePercentage = donePercentage.setScale(2);
+				donePercentage = donePercentage.setScale(2,RoundingMode.HALF_UP);
 				Map<String, String> storyDetails = new HashMap<>();
 				storyDetails.put(epicNumber, checkEmptyURL(jiraIssue));
 				excelData.setEpicID(storyDetails);
