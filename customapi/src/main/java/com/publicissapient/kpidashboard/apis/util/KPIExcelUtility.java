@@ -69,6 +69,7 @@ import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
@@ -1534,6 +1535,10 @@ public class KPIExcelUtility {
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
 				excelData.setIssueStatus(jiraIssue.getStatus());
 				excelData.setIssueType(jiraIssue.getTypeName());
+				String testingPhase = CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup())
+						? jiraIssue.getEscapedDefectGroup().stream().findFirst().orElse(UNDEFINED)
+						: UNDEFINED;
+				excelData.setTestingPhase(testingPhase);
 				populateAssignee(jiraIssue, excelData);
 				excelData.setRootCause(jiraIssue.getRootCauseList());
 				excelData.setPriority(jiraIssue.getPriority());
@@ -1793,15 +1798,32 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateEpicProgessExcelData(Map<String, String> epicWiseIssueSize,
-			Map<String, JiraIssue> epicIssues, List<KPIExcelData> excelDataList) {
+													Map<String, JiraIssue> epicIssues, List<KPIExcelData> excelDataList, JiraIssueReleaseStatus jiraIssueReleaseStatus,Map<String, List<JiraIssue>> epicWiseJiraIssues) {
 		epicWiseIssueSize.forEach((epicNumber, issue) -> {
 			KPIExcelData excelData = new KPIExcelData();
+			List<JiraIssue> jiraIssueList = epicWiseJiraIssues.get(epicNumber);
 			JiraIssue jiraIssue = epicIssues.get(epicNumber);
 			if (jiraIssue != null) {
+				// filter by to do category
+				List<JiraIssue> toDoJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
+						jiraIssueReleaseStatus.getToDoList());
+				// filter by inProgress category
+				List<JiraIssue> inProgressJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
+						jiraIssueReleaseStatus.getInProgressList());
+				// filter by done category
+				List<JiraIssue> doneJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
+						jiraIssueReleaseStatus.getClosedList());
+				Integer totalJiraSize = toDoJiraIssue.size()+inProgressJiraIssue.size()+doneJiraIssue.size();
+				double toDoPercentage = roundingOff((100.0d*toDoJiraIssue.size())/totalJiraSize);
+				double inProgressPercentage = roundingOff((100.0d*inProgressJiraIssue.size())/totalJiraSize);
+				double donePercentage = roundingOff((100.0d*doneJiraIssue.size())/totalJiraSize);
 				Map<String, String> storyDetails = new HashMap<>();
 				storyDetails.put(epicNumber, checkEmptyURL(jiraIssue));
 				excelData.setEpicID(storyDetails);
 				excelData.setEpicName(checkEmptyName(jiraIssue));
+				excelData.setToDo(new StringBuilder().append(toDoJiraIssue.size()).append("/").append(toDoPercentage).toString());
+				excelData.setInProgress(new StringBuilder().append(inProgressJiraIssue.size()).append("/").append(inProgressPercentage).toString());
+				excelData.setDone(new StringBuilder().append(doneJiraIssue.size()).append("/").append(donePercentage).toString());
 				excelData.setEpicStatus(
 						StringUtils.isNotEmpty(jiraIssue.getStatus()) ? jiraIssue.getStatus() : Constant.BLANK);
 				excelData.setStoryPoint(issue);
@@ -1943,4 +1965,5 @@ public class KPIExcelUtility {
 		overAllmodalValues.add(iterationKpiModalValue);
 		modalValues.add(iterationKpiModalValue);
 	}
+
 }

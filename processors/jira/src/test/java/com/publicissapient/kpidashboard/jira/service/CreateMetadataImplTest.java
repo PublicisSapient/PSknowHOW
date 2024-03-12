@@ -211,7 +211,9 @@ public class CreateMetadataImplTest {
 		Identifier issue10 = createIdentifier("ticketReopenIssue", Arrays.asList("Change Request"));
 		Identifier issue11 = createIdentifier("kanbanTechDebtIssueType", Arrays.asList("Change Request"));
 		Identifier issue12 = createIdentifier("ticketCountIssueType", Arrays.asList("Change Request"));
-		List<Identifier> issuesIdentifier = Arrays.asList(issue1, issue2, issue3, issue4, issue5,issue6,issue7,issue8,issue9,issue10,issue11,issue12);
+		Identifier issue13 = createIdentifier("jiraIssueRiskTypeKPI176", Arrays.asList("Risk"));
+		Identifier issue14 = createIdentifier("jiraIssueDependencyTypeKPI176", Arrays.asList("Dependency"));
+		List<Identifier> issuesIdentifier = Arrays.asList(issue1, issue2, issue3, issue4, issue5,issue6,issue7,issue8,issue9,issue10,issue11,issue12,issue13,issue14);
 
 		Identifier customField1 = createIdentifier("storypoint", Arrays.asList("storypoint"));
 		Identifier customField2 = createIdentifier("sprint", Arrays.asList("Sprint"));

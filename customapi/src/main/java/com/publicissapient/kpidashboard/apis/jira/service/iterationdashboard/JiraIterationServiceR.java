@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -123,7 +124,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 			} else {
 				log.error("label name for selected hierarchy not found");
 			}
-			List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest);
+			List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest, groupName);
 
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList,
@@ -215,24 +216,50 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		return filteredNode;
 	}
 
-	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest) {
+	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest, String groupName) {
 		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
 				.cacheAccountHierarchyData();
+		HashSet<String> sprintStateList = new HashSet<>(kpiRequest.getSprintIncluded());
 
-		return accountDataListAll.stream().filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId()
-				.equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).get(0))).toList();
+		Set<String> nsprintStateList = sprintStateList.stream().map(String::toLowerCase).collect(Collectors.toSet());
+
+		List<AccountHierarchyData> hierarchyData = new ArrayList<>();
+
+		accountDataListAll.forEach(data -> {
+			// add all which donot have sprint level
+			if (data.getNode().stream()
+					.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+							&& node.getAccountHierarchy().getSprintState() != null
+							&& nsprintStateList
+							.contains(node.getAccountHierarchy().getSprintState().toLowerCase()))) {
+				hierarchyData.add(data);
+			}
+		});
+
+		Set<String> str = new HashSet<>(kpiRequest.getSelectedMap().getOrDefault(groupName, new ArrayList<>()));
+		List<AccountHierarchyData> filteredDataSetNew = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(str)) {
+			hierarchyData.forEach(data -> {
+				if (data.getNode().stream()
+						.anyMatch(d -> d.getGroupName().equalsIgnoreCase(groupName) && str.contains(d.getId()))) {
+					filteredDataSetNew.add(data);
+				}
+			});
+		}
+
+		return filteredDataSetNew;
 	}
 
 	private void updateJiraIssueList(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
-		fetchSprintDetails(kpiRequest.getIds());
+		fetchSprintDetails(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT));
 		String basicConfigId = filteredAccountDataList.get(0).getBasicProjectConfigId().toString();
 		List<String> sprintIssuesList = createIssuesList(basicConfigId);
 		fetchJiraIssues(kpiRequest, basicConfigId, sprintIssuesList);
 		fetchJiraIssuesCustomHistory(basicConfigId);
 	}
 
-	public void fetchSprintDetails(String[] sprintId) {
-		sprintDetails = sprintRepository.findBySprintIDIn(Arrays.stream(sprintId).toList());
+	public void fetchSprintDetails(List<String> sprintId) {
+		sprintDetails = sprintRepository.findBySprintIDIn(sprintId);
 	}
 
 	public SprintDetails getCurrentSprintDetails() {
