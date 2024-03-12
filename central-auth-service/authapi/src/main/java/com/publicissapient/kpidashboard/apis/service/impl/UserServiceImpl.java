@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.service.impl;
 
+import java.io.StringReader;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,8 +33,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.transaction.Transactional;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensaml.core.xml.XMLObject;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.Unmarshaller;
+import org.opensaml.core.xml.io.UnmarshallerFactory;
+import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.Attribute;
+import org.opensaml.saml.saml2.core.AttributeStatement;
+import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.core.Status;
+import org.opensaml.saml.saml2.core.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -42,7 +55,11 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.saml.spi.DefaultSamlAuthentication;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
 import com.publicissapient.kpidashboard.apis.config.AuthProperties;
 import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
@@ -206,78 +223,89 @@ public class UserServiceImpl implements UserService {
 			String username) {
 		User dbUser = userRepository.findByUsername(username);
 		if (null == dbUser && authType.equalsIgnoreCase(AuthType.SAML.name())) {
-			// todo
-			// dbUser =
-			// userRepository.save(createSamlAuthenticationObject((DefaultSamlAuthentication)
-			// authentication));
+			dbUser = userRepository.save(createSamlAuthenticationObject((DefaultSamlAuthentication) authentication));
 		}
 		return dbUser;
 	}
 
-	// todo
-	/*
-	 * private User createSamlAuthenticationObject(DefaultSamlAuthentication
-	 * authentication) { User newUserObject = null; try { Response res =
-	 * parseSAMLResponse(authentication.getResponseXml()); newUserObject =
-	 * extractUserInfo(res); newUserObject.setApproved(true);
-	 * newUserObject.setUserVerified(true);
-	 * newUserObject.setAuthType(AuthType.SAML.name());
-	 * newUserObject.setCreatedDate(LocalDateTime.now()); } catch (Exception e) {
-	 * throw new RuntimeException(e.getMessage()); } return newUserObject; }
-	 */
+	private User createSamlAuthenticationObject(DefaultSamlAuthentication authentication) {
+		User newUserObject = null;
+		try {
+			Response res = parseSAMLResponse(authentication.getResponseXml());
+			newUserObject = extractUserInfo(res);
+			newUserObject.setApproved(true);
+			newUserObject.setUserVerified(true);
+			newUserObject.setAuthType(AuthType.SAML.name());
+			newUserObject.setCreatedDate(LocalDateTime.now());
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		return newUserObject;
+	}
 
-	/*
-	 * private Response parseSAMLResponse(String samlResponseXML) throws Exception {
-	 * DocumentBuilderFactory documentBuilderFactory =
-	 * DocumentBuilderFactory.newInstance();
-	 * documentBuilderFactory.setNamespaceAware(true); DocumentBuilder docBuilder =
-	 * documentBuilderFactory.newDocumentBuilder();
-	 * 
-	 * // Parse the XML string into a DOM Document Document document =
-	 * docBuilder.parse(new InputSource(new StringReader(samlResponseXML))); Element
-	 * element = document.getDocumentElement();
-	 * 
-	 * // Get an instance of the response unmarshaller UnmarshallerFactory
-	 * unmarshallerFactory =
-	 * XMLObjectProviderRegistrySupport.getUnmarshallerFactory(); Unmarshaller
-	 * unmarshaller = unmarshallerFactory.getUnmarshaller(element);
-	 * 
-	 * // Unmarshall the DOM Element into a SAML Response object XMLObject
-	 * responseXmlObj = unmarshaller.unmarshall(element); if (responseXmlObj
-	 * instanceof Response) { return (Response) responseXmlObj; } else { throw new
-	 * IllegalArgumentException("Invalid SAML response"); } }
-	 * 
-	 * private User extractUserInfo(Response samlResponse) { User newUsersObject =
-	 * null; Status status = samlResponse.getStatus(); StatusCode statusCode =
-	 * status.getStatusCode(); if (StatusCode.SUCCESS.equals(statusCode.getValue()))
-	 * { Assertion assertion = samlResponse.getAssertions().get(0);
-	 * AttributeStatement attrStatement = assertion.getAttributeStatements().get(0);
-	 * newUsersObject = new User(); for (Attribute attribute :
-	 * attrStatement.getAttributes()) { if
-	 * ("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress".equals(
-	 * attribute.getName())) { newUsersObject.setEmail(getAttribute(attribute)); }
-	 * else if ("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name".equals(
-	 * attribute.getName())) { String fullEmail = getAttribute(attribute); if
-	 * (fullEmail != null && fullEmail.contains("@")) { // Extract the substring
-	 * before '@' as the username String userName = fullEmail.substring(0,
-	 * fullEmail.indexOf("@")); newUsersObject.setUsername(userName); }
-	 * newUsersObject.setSamlEmail(getAttribute(attribute)); } else if
-	 * ("http://schemas.microsoft.com/identity/claims/displayname"
-	 * .equalsIgnoreCase(attribute.getName())) {
-	 * newUsersObject.setDisplayName(getAttribute(attribute)); } else if
-	 * ("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname"
-	 * .equalsIgnoreCase(attribute.getName())) {
-	 * newUsersObject.setFirstName(getAttribute(attribute)); } else if
-	 * ("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"
-	 * .equalsIgnoreCase(attribute.getName())) {
-	 * newUsersObject.setLastName(getAttribute(attribute)); } } } else {
-	 * log.error("Authentication failed: " + statusCode.getValue()); } return
-	 * newUsersObject; }
-	 * 
-	 * private String getAttribute(Attribute attribute) { String value =
-	 * attribute.getAttributeValues().get(0).getDOM().getTextContent();
-	 * log.debug("value: {}", value); return value; }
-	 */
+	private Response parseSAMLResponse(String samlResponseXML) throws Exception {
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		documentBuilderFactory.setNamespaceAware(true);
+		DocumentBuilder docBuilder = documentBuilderFactory.newDocumentBuilder();
+
+		// Parse the XML string into a DOM Document
+		Document document = docBuilder.parse(new InputSource(new StringReader(samlResponseXML)));
+		Element element = document.getDocumentElement();
+
+		// Get an instance of the response unmarshaller
+		UnmarshallerFactory unmarshallerFactory = XMLObjectProviderRegistrySupport.getUnmarshallerFactory();
+		Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(element);
+
+		// Unmarshall the DOM Element into a SAML Response object
+		XMLObject responseXmlObj = unmarshaller.unmarshall(element);
+		if (responseXmlObj instanceof Response) {
+			return (Response) responseXmlObj;
+		} else {
+			throw new IllegalArgumentException("Invalid SAML response");
+		}
+	}
+
+	private User extractUserInfo(Response samlResponse) {
+		User newUsersObject = null;
+		Status status = samlResponse.getStatus();
+		StatusCode statusCode = status.getStatusCode();
+		if (StatusCode.SUCCESS.equals(statusCode.getValue())) {
+			Assertion assertion = samlResponse.getAssertions().get(0);
+			AttributeStatement attrStatement = assertion.getAttributeStatements().get(0);
+			newUsersObject = new User();
+			for (Attribute attribute : attrStatement.getAttributes()) {
+				if ("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress".equals(attribute.getName())) {
+					newUsersObject.setEmail(getAttribute(attribute));
+				} else if ("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name".equals(attribute.getName())) {
+					String fullEmail = getAttribute(attribute);
+					if (fullEmail != null && fullEmail.contains("@")) {
+						// Extract the substring before '@' as the username
+						String userName = fullEmail.substring(0, fullEmail.indexOf("@"));
+						newUsersObject.setUsername(userName);
+					}
+					newUsersObject.setSamlEmail(getAttribute(attribute));
+				} else if ("http://schemas.microsoft.com/identity/claims/displayname"
+						.equalsIgnoreCase(attribute.getName())) {
+					newUsersObject.setDisplayName(getAttribute(attribute));
+				} else if ("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname"
+						.equalsIgnoreCase(attribute.getName())) {
+					newUsersObject.setFirstName(getAttribute(attribute));
+				} else if ("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"
+						.equalsIgnoreCase(attribute.getName())) {
+					newUsersObject.setLastName(getAttribute(attribute));
+				}
+			}
+		} else {
+			log.error("Authentication failed: " + statusCode.getValue());
+		}
+		return newUsersObject;
+	}
+
+	private String getAttribute(Attribute attribute) {
+		String value = attribute.getAttributeValues().get(0).getDOM().getTextContent();
+		log.debug("value: {}", value);
+		return value;
+	}
 
 	/**
 	 * Checks if user is locked

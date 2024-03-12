@@ -48,4 +48,12 @@ public class UserTokenDeletionServiceImpl implements UserTokenDeletionService {
 
 	}
 
+	@Override
+	@Transactional
+	public void deleteUserDetailsByToken(String userToken) {
+		userTokenRepository.deleteByToken(userToken);
+		LOGGER.info("UserTokenDeletionServiceImpl::deleteUserDetails end");
+
+	}
+
 }

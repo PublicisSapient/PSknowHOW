@@ -28,8 +28,16 @@ public interface UserTokenDeletionService {
 	/**
 	 * Deletes user's token.
 	 *
-	 * @param userToken
+	 * @param userName
 	 *            the user token
 	 */
-	void invalidateSession(String userToken);
+	void invalidateSession(String userName);
+
+	/**
+	 *
+	 * Deletes user's token by userToken
+	 *
+	 * @param userToken
+	 */
+	void deleteUserDetailsByToken(String userToken);
 }

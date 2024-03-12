@@ -39,7 +39,9 @@ import org.json.simple.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -283,6 +285,27 @@ public class UserController {
 			response = new ServiceResponse(true, messageService.getMessage(SUCCESS_LOGIN), userDTO);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+	/**
+	 * @param httpServletRequest
+	 *            httpServletRequest
+	 * @param httpServletResponse
+	 *            httpServletResponse
+	 * @return ServiceResponse
+	 */
+	@GetMapping("/saml/logout")
+	public RedirectView samlLogout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+		Cookie cookie = cookieUtil.getAuthCookie(httpServletRequest);
+		String token = cookie.getValue();
+		userTokenDeletionService.deleteUserDetailsByToken(token);
+		String subject = tokenAuthenticationService.getSubject(token);
+		String afterLogout = (StringUtils.isNotEmpty(subject))
+				? String.format(authConfigurationProperties.getLogoutCallback(), subject)
+				: authConfigurationProperties.getDefaultRedirectToAfterLogout();
+		ResponseCookie authCookie = cookieUtil.deleteAccessTokenCookie();
+		httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, authCookie.toString());
+		return new RedirectView(afterLogout);
 	}
 
 	/**

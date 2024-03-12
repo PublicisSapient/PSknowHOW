@@ -52,7 +52,9 @@ public class APITokenController {
 	 * @return
 	 */
 	@GetMapping(value = "/generateAPIKey/{resource}") // NOSONAR
-	public ResponseEntity<ServiceResponse> generateAndSaveToken(@PathVariable String resource) {
+	public ResponseEntity<ServiceResponse> generateAndSaveToken(@PathVariable String resource,
+			HttpServletRequest request) {
+		// Cookie authCookie = cookieUtil.getAuthCookie(request);
 		return ResponseEntity.status(HttpStatus.OK).body(tokenAuthenticationService.generateAndSaveToken(resource));
 	}
 }
