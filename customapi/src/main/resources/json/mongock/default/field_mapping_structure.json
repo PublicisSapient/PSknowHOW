@@ -3177,5 +3177,37 @@
     "tooltip": {
       "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
     }
+  },
+  {
+    "fieldName": "jiraIterationCompletionStatusKPI176",
+    "fieldLabel": "Custom Completion status/es",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
+    }
+  },
+  {
+    "fieldName": "jiraIssueRiskTypeKPI176",
+    "fieldLabel": "Issue type to identify risks",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "This field is used to identify Risk Issue type."
+    },
+    "mandatory": true
+  },
+  {
+    "fieldName": "jiraIssueDependencyTypeKPI176",
+    "fieldLabel": "Issue type to identify dependencies",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "This field is used to identify Dependency Issue type."
+    },
+    "mandatory": true
   }
 ]
