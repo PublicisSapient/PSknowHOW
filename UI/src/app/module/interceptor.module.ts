@@ -82,7 +82,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             .pipe(
                 tap(event => {
                     if (event instanceof HttpResponse){
-                        /**Todo: Not autochanging the user role on role change. User will have to manually logout when his/her role is changed. 
+                        /**Todo: Not autochanging the user role on role change. User will have to manually logout when his/her role is changed.
                          * Currently commiting this code as per comment on ticket DTS-30823 */
                         // if(!event?.url?.includes('api/authdetails') &&
                         // ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
@@ -95,22 +95,17 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                     if (err.status === 401) {
                         if (requestArea === 'internal') {
                             this.service.setCurrentUserDetails({});
-                            alert("sso" + environment.SSO_LOGIN)
                             if(!environment.SSO_LOGIN){
-                                alert("auth" + environment.AUTHENTICATION_SERVICE)
                                 if(environment.AUTHENTICATION_SERVICE){
-                                  
+
                                     /** redirect to central login url*/
                                     let redirect_uri = window.location.href;
                                     localStorage.setItem('redirect_uri', window.location.hash);
-                                    alert("inside auth service"+ environment.CENTRAL_LOGIN_URL);
-                                    
+
                                     if(environment.CENTRAL_LOGIN_URL){
-                                        alert("inside interceptor before redirection")
                                         window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
                                     }
                                 }else{
-                                    alert("localauth" + environment.AUTHENTICATION_SERVICE)
                                     this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                                 }
                             }

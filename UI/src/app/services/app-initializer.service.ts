@@ -87,7 +87,7 @@ export class AppInitializerService {
             }
           },
           { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
-    
+
         ],
       },
       { path: 'pageNotFound', component: PageNotFoundComponent },
@@ -97,15 +97,11 @@ export class AppInitializerService {
   checkFeatureFlag() {
     return new Promise<void>((resolve, reject) => {
       if (!environment['production']) {
-        alert("inside app initializer prod" + environment['production'])
         this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
         this.validateToken();
       } else {
         const env$ = this.http.get('assets/env.json').pipe(
           tap(env => {
-            alert("inside app initializer auth " + env['AUTHENTICATION_SERVICE'])
-            alert("inside app initializer central url " + env['CENTRAL_LOGIN_URL'])
-            alert("inside app initializer sso " + env['SSO_LOGIN'])
             environment['baseUrl'] = env['baseUrl'] || '';
             environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
             environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] || false;
@@ -119,7 +115,7 @@ export class AppInitializerService {
         });
       }
 
-      
+
 
       // load google Analytics script on all instances except local and if customAPI property is true
       let addGAScript = this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
@@ -136,8 +132,6 @@ export class AppInitializerService {
 
   validateToken() {
     return new Promise<void>((resolve, reject) => {
-      alert("inside validate token func" + environment['AUTHENTICATION_SERVICE']);
-      // setTimeout(() => {
         if (environment['AUTHENTICATION_SERVICE']) {
           this.router.resetConfig(this.routes);
           let url = window.location.href;
@@ -175,8 +169,7 @@ export class AppInitializerService {
           })
         }
         resolve();
-      // }, 5000)
-      
+
     })
 
   }
