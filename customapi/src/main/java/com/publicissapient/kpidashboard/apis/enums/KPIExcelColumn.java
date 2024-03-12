@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.enums;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -244,7 +243,7 @@ public enum KPIExcelColumn {
 			"Issue Status", "Priority","Created Date","Updated Date", "Assignee")),
 
 	DEFECT_COUNT_BY_RCA_RELEASE("kpi142", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
-			"Issue Status", "Root Cause", "Priority", "Assignee")),
+			"Issue Status", "Root Cause", "Priority", "Assignee", "Testing Phase")),
 
 	DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143", Arrays.asList("Issue ID", "Issue Description", "Sprint Name",
 			"Issue Type", "Issue Status", "Root Cause", "Priority", "Assignee")),
@@ -317,7 +316,7 @@ public enum KPIExcelColumn {
 	KPIExcelColumn(String kpiID, List<Object> columns) {
 		this.kpiId = kpiID;
 		if (columns.get(0) instanceof String) {
-			this.columns = columns.stream().map(Object::toString).collect(Collectors.toList());
+			this.columns = columns.stream().map(Object::toString).toList();
 		} else {
 			ObjectMapper objectMapper = new ObjectMapper();
 			List<KPIExcelColumnInfo> kpiExcelColumnInfoList = new ArrayList<>();

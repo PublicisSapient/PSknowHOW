@@ -1520,6 +1520,10 @@ public class KPIExcelUtility {
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
 				excelData.setIssueStatus(jiraIssue.getStatus());
 				excelData.setIssueType(jiraIssue.getTypeName());
+				String testingPhase = CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup())
+						? jiraIssue.getEscapedDefectGroup().stream().findFirst().orElse(UNDEFINED)
+						: UNDEFINED;
+				excelData.setTestingPhase(testingPhase);
 				populateAssignee(jiraIssue, excelData);
 				excelData.setRootCause(jiraIssue.getRootCauseList());
 				excelData.setPriority(jiraIssue.getPriority());
