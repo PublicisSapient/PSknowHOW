@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @author purgupta2
  */
-@ChangeUnit(id = "risks_and_dependencies", order = "9006", author = "purgupta2", systemVersion = "9.0.1")
+@ChangeUnit(id = "risks_and_dependencies", order = "9006", author = "purgupta2", systemVersion = "9.0.0")
 public class RisksAndDependenciesKPI {
 
 	public static final String FIELD_MAPPING_STRUCTURE = "field_mapping_structure";
