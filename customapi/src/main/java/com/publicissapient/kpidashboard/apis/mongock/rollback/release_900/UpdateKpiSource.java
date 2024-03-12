@@ -27,7 +27,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /***
  * @author rendk
  */
-@ChangeUnit(id = "r_combined_kpi_source_update", order = "09102", author = "rendk", systemVersion = "9.1.0")
+@ChangeUnit(id = "r_combined_kpi_source_update", order = "09101", author = "rendk", systemVersion = "9.1.0")
 public class UpdateKpiSource {
 	private final MongoTemplate mongoTemplate;
 	private static final String KPI_SOURCE = "kpiSource";
