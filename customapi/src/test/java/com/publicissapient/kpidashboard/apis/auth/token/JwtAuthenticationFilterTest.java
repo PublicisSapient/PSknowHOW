@@ -22,9 +22,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationFixture;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
@@ -70,7 +71,8 @@ public class JwtAuthenticationFilterTest {
 	public void testDoFilter() throws Exception {
 		when(authService.validateAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class)))
 				.thenReturn(authentication);
-		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(cookie);
+		Cookie authCookie = new Cookie("authCookie", AuthenticationFixture.getJwtToken("username", "userTokenData", 100L));
+		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(authCookie);
 		filter.doFilter(request, response, filterChain);
 		assertNotNull(SecurityContextHolder.getContext().getAuthentication());
 		assertEquals(authentication, SecurityContextHolder.getContext().getAuthentication());
@@ -81,9 +83,8 @@ public class JwtAuthenticationFilterTest {
 
 	@Test
 	public void testDoFilterTest() throws Exception {
-		ServletResponse response = null;
 		filter.doFilter(request, response, filterChain);
-		verify(filterChain).doFilter(request, response);
+		verifyNoInteractions(filterChain);
 	}
 
 }
