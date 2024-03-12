@@ -26,7 +26,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 /***
  * @author rendk
  */
-@ChangeUnit(id = "kpi_chartType_update", order = "9006", author = "rendk", systemVersion = "9.0.0")
+@ChangeUnit(id = "kpi_chartType_update", order = "9007", author = "rendk", systemVersion = "9.0.0")
 public class UpdateKPIChartType {
 	private final MongoTemplate mongoTemplate;
 
