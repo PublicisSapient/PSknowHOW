@@ -126,13 +126,13 @@ import { AppInitializerService } from './services/app-initializer.service';
 /******************************************************/
 export function initializeApp(initializeService: AppInitializerService) {
     return (): Promise<any> => { 
-        return initializeService.validateToken();
+        return initializeService.checkFeatureFlag();
     }
 }
 
 export function initializeApp2(initializeService: AppInitializerService) {
     return (): Promise<any> => { 
-        return initializeService.checkFeatureFlag();
+        return initializeService.validateToken();
     }
 }
 
