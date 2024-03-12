@@ -107,7 +107,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                                     
                                     if(environment.CENTRAL_LOGIN_URL){
                                         alert("inside interceptor before redirection")
-                                        //window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+                                        window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
                                     }
                                 }else{
                                     alert("localauth" + environment.AUTHENTICATION_SERVICE)

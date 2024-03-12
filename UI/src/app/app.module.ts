@@ -130,12 +130,6 @@ export function initializeApp(initializeService: AppInitializerService) {
     }
 }
 
-export function initializeApp2(initializeService: AppInitializerService) {
-    return (): Promise<any> => { 
-        return initializeService.validateToken();
-    }
-}
-
 @NgModule({
     declarations: [
         AppComponent,
@@ -241,12 +235,6 @@ export function initializeApp2(initializeService: AppInitializerService) {
         {
             provide: APP_INITIALIZER,
             useFactory: initializeApp,
-            deps: [AppInitializerService],
-            multi: true
-        },
-        {
-            provide: APP_INITIALIZER,
-            useFactory: initializeApp2,
             deps: [AppInitializerService],
             multi: true
         }
