@@ -96,7 +96,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                         if (requestArea === 'internal') {
                             this.service.setCurrentUserDetails({});
                             alert("inside interceptor if environment.SSO_LOGIN " + environment.SSO_LOGIN);
-                            if(!environment.SSO_LOGIN){
+                            if(environment?.['SSO_LOGIN'] === false){
                                 alert("inside interceptor environment.AUTHENTICATION_SERVICE " + environment.AUTHENTICATION_SERVICE);
                                 if(environment.AUTHENTICATION_SERVICE){
 
@@ -116,12 +116,12 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                             }
                         }
 
-                        if (environment.SSO_LOGIN) {
+                        if (environment?.['SSO_LOGIN'] === true) {
                             this.router.navigate(['./dashboard/mydashboard']).then(success => {
                                 window.location.reload();
                             });
                         }
-                    } else if(err.status === 403 && environment.SSO_LOGIN){
+                    } else if(err.status === 403 && environment?.['SSO_LOGIN']){
                         this.httpService.unauthorisedAccess =true;
                         this.router.navigate(['/dashboard/unauthorized-access']);
                     } else {
@@ -134,7 +134,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                             if (httpErrorHandler !== 'local') {
                                 if (requestArea === 'internal') {
                                     if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
-                                        if(!environment.SSO_LOGIN || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
+                                        if(environment?.['SSO_LOGIN'] === false || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
                                         this.router.navigate(['./dashboard/Error']);
                                         }
                                         setTimeout(() => {
