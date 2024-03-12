@@ -16,7 +16,7 @@
 	<groupId>com.publicissapient.kpidashboard</groupId>
 	<description>Jenkins Build Processor Microservice</description>
 	<packaging>jar</packaging>
-	<version>10.0.0</version>
+	<version>10.1.1-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

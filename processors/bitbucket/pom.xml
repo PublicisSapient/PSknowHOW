@@ -23,7 +23,7 @@
   <description>Bitbucket processor service</description>
   <packaging>jar</packaging>
   <artifactId>bitbucket-processor</artifactId>
-  <version>10.0.0</version>
+  <version>10.1.1-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
