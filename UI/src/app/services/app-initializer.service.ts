@@ -64,6 +64,7 @@ export class AppInitializerService {
   checkFeatureFlag() {
     return new Promise<void>((resolve, reject) => {
       if (!environment['production']) {
+        alert("inside app initializer prod" + environment['production'])
         this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
       } else {
         const env$ = this.http.get('assets/env.json').pipe(
