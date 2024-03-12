@@ -551,10 +551,6 @@ public class CreateMetadataImpl implements CreateMetadata {
 
 			fieldMapping
 					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
-			fieldMapping.setJiraIssueRiskTypeKPI176(
-					issueTypeMap.get(CommonConstant.JIRAISSUERISKTYPE).stream().collect(Collectors.toList()));
-			fieldMapping.setJiraIssueDependencyTypeKPI176(
-					issueTypeMap.get(CommonConstant.JIRAISSUEDEPENDENCYTYPE).stream().collect(Collectors.toList()));
 
 			List<String> firstStatusList = workflowMap.get(CommonConstant.FIRST_STATUS);
 

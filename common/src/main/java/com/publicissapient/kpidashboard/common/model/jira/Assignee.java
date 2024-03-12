@@ -43,6 +43,11 @@ public class Assignee {
 	private String assigneeName;
 	private String email;
 
+	public Assignee(String assigneeId, String assigneeName) {
+		this.assigneeId = assigneeId;
+		this.assigneeName = assigneeName;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
