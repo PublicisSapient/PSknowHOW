@@ -73,6 +73,8 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	private String jiraAtmProjectId;
 	private String jiraAtmProjectKey;
 	private List<String> jiraIssueEpicType;
+	private List<String> jiraIssueRiskTypeKPI176;
+	private List<String> jiraIssueDependencyTypeKPI176;
 
 	private List<String> jiraStatusForQa;
 	private List<String> jiraStatusForQaKPI135;
@@ -147,6 +149,7 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	private List<String> jiraIssueDeliverdStatusAVR;
 	private List<String> jiraIssueDeliverdStatusKPI126;
 	private List<String> jiraIssueDeliverdStatusKPI82;
+	private List<String> jiraIterationCompletionStatusKPI176;
 
 	private String readyForDevelopmentStatus;
 	private List<String> readyForDevelopmentStatusKPI138;

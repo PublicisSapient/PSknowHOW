@@ -64,6 +64,8 @@ public class FieldMapping extends FieldMappingHistory {
 	private String[] jiraIssueTypeNames;
 	private String[] jiraIssueTypeNamesAVR;
 	private List<String> jiraIssueEpicType;
+	private List<String> jiraIssueRiskTypeKPI176;
+	private List<String> jiraIssueDependencyTypeKPI176;
 	private String storyFirstStatus;
 	private String storyFirstStatusKPI148;
 	private String rootCause;
@@ -152,6 +154,7 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiraIssueDeliverdStatusAVR;
 	private List<String> jiraIssueDeliverdStatusKPI126;
 	private List<String> jiraIssueDeliverdStatusKPI82;
+	private List<String> jiraIterationCompletionStatusKPI176;
 
 	private String readyForDevelopmentStatus;
 	private List<String> readyForDevelopmentStatusKPI138;

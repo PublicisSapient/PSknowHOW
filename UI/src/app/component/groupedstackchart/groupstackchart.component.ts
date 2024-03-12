@@ -356,6 +356,7 @@ export class GroupstackchartComponent implements OnChanges {
 
       svgX.selectAll('rect.serie-rect1')
         .on('click', function (event, d) {
+          if(this.isDrilledDown){
           self.isDrilledDown = true;
           d3.select(self.elem).select('#back_icon').attr('class', 'p-d-block');
           const dataName = event.target.parentElement.getAttribute('data-name');
@@ -379,6 +380,7 @@ export class GroupstackchartComponent implements OnChanges {
                 d3.select(elem).select('#back_icon').attr('class', 'p-d-none');
               });
           }
+         }
         })
         .style('cursor', self.isDrilledDown ? 'default' : 'pointer')
         .transition()
@@ -425,7 +427,12 @@ export class GroupstackchartComponent implements OnChanges {
       element.value.forEach(val => {
         obj['drillDown' + '_' + val['subFilter']] = [];
         obj[val['subFilter']] = this.filter['filter1'][0] === 'Story Points' ? val['size'] : val['value'];
-        obj['drillDown' + '_' + val['subFilter']].push(...val['drillDown']);
+        obj['drillDown' + '_' + val['subFilter']].push(...val['drillDown'] ? val['drillDown'] : []);
+        if (val['drillDown'] && val['drillDown']?.length) {
+          this.isDrilledDown = true;
+        } else {
+          this.isDrilledDown = false;
+        }
       });
       element.value = obj;
     });

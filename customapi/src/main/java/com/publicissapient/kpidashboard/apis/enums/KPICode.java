@@ -299,6 +299,10 @@ public enum KPICode {
      */
     DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140", KPISource.JIRA.name()),
     /**
+     * Risks and Dependencies
+     */
+    RISKS_AND_DEPENDENCIES("kpi176", KPISource.JIRA.name()),
+    /**
      * Defect Count By Status (Release)
      */
     DEFECT_COUNT_BY_STATUS_RELEASE("kpi141", KPISource.JIRA.name()),

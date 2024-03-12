@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.feedback.rest;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,6 +33,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.feedback.service.FeedbackService;
 import com.publicissapient.kpidashboard.apis.model.FeedbackSubmitDTO;
 
@@ -52,6 +52,9 @@ public class FeedbackControllerTest {
 	private FeedbackController feedbackController;
 	@Mock
 	private FeedbackService feedbackService;
+
+	@Mock
+	private AuthenticationService authenticationService;
 
 	/**
 	 * method includes pre-processes for test cases

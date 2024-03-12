@@ -50,6 +50,8 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueTypeNames;
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueTypeNamesAVR;
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueEpicType;
+	private List<ConfigurationHistoryChangeLog> historyjiraIssueRiskTypeKPI176;
+	private List<ConfigurationHistoryChangeLog> historyjiraIssueDependencyTypeKPI176;
 	private List<ConfigurationHistoryChangeLog> historystoryFirstStatus;
 	private List<ConfigurationHistoryChangeLog> historystoryFirstStatusKPI148;
 	private List<ConfigurationHistoryChangeLog> historyrootCause;
@@ -323,6 +325,7 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraIterationCompletionStatusKPI119;
 	private List<ConfigurationHistoryChangeLog> historyjiraIterationCompletionStatusKPI131;
 	private List<ConfigurationHistoryChangeLog> historyjiraIterationCompletionStatusKPI138;
+	private List<ConfigurationHistoryChangeLog> historyjiraIterationCompletionStatusKPI176;
 
 	private List<ConfigurationHistoryChangeLog> historyjiraIterationCompletionTypeCustomField;
 	private List<ConfigurationHistoryChangeLog> historyjiraIterationIssuetypeKPI122;

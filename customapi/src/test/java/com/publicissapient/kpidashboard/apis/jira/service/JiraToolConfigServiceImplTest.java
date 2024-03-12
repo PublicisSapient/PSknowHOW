@@ -181,8 +181,8 @@ public class JiraToolConfigServiceImplTest {
 		assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
 		assigneeDetails.setSource("Jira");
 		Set<Assignee> assigneeSet = new HashSet<>();
-		assigneeSet.add(new Assignee("ankbhard", "Ankita sharma"));
-		assigneeSet.add(new Assignee("llid", "displayName"));
+		assigneeSet.add(new Assignee("ankbhard", "Ankita sharma", ""));
+		assigneeSet.add(new Assignee("llid", "displayName", ""));
 		assigneeDetails.setAssignee(assigneeSet);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 		AssigneeResponseDTO assigneeResponseDTO = jiraToolConfigService.getProjectAssigneeDetails(basicConfigId);

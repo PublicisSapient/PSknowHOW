@@ -176,7 +176,9 @@
     "jiraLabelsKPI14" : ["Java", "UI" ],
     "jiraLabelsKPI82" : ["Java", "UI" ],
     "jiraIssueWaitStateKPI170": [ "Open", "On Hold", "Code Review" ],
-    "jiraIssueClosedStateKPI170": [ "Done", "Closed", "Dropped"]
+    "jiraIssueClosedStateKPI170": [ "Done", "Closed", "Dropped"],
+    "jiraIssueRiskTypeKPI176": ["Risk"],
+    "jiraIssueDependencyTypeKPI176": ["Dependency"]
   },
   {
     "_id":
@@ -355,6 +357,8 @@
     "jiraLabelsKPI14" : ["Java", "UI" ],
     "jiraLabelsKPI82" : ["Java", "UI" ],
     "jiraIssueWaitStateKPI170": [ "Open", "On Hold", "Code Review" ],
-    "jiraIssueClosedStateKPI170": [ "Done", "Closed", "Dropped"]
+    "jiraIssueClosedStateKPI170": [ "Done", "Closed", "Dropped"],
+    "jiraIssueRiskTypeKPI176": ["Risk"],
+    "jiraIssueDependencyTypeKPI176": ["Dependency"]
   }
 ]
