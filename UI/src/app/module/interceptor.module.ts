@@ -95,8 +95,9 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                     if (err.status === 401) {
                         if (requestArea === 'internal') {
                             this.service.setCurrentUserDetails({});
-                            alert("inside interceptor outside environment.SSO_LOGIN " + environment.SSO_LOGIN);
-                            if(environment?.['SSO_LOGIN']){
+                            alert("inside interceptor outside environment['SSO_LOGIN'] " + environment?.['SSO_LOGIN'])
+                            alert("inside interceptor outside environment.SSO_LOGIN " + environment.SSO_LOGIN + " " + typeof environment.SSO_LOGIN);
+                            if(environment?.['SSO_LOGIN'] === true){
                                 alert("inside interceptor if environment.SSO_LOGIN " + environment.SSO_LOGIN)
                             }else{
                                 alert("inside interceptor else environment.SSO_LOGIN " + environment.SSO_LOGIN);
