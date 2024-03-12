@@ -1797,19 +1797,19 @@ public class KPIExcelUtility {
 				// filter by done category
 				List<JiraIssue> doneJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
 						jiraIssueReleaseStatus.getClosedList());
-				BigDecimal toDoPercentage = new BigDecimal((100*toDoJiraIssue.size())/totalJiraSize);
-				toDoPercentage = toDoPercentage.setScale(3);
-				BigDecimal inProgressPercentage = new BigDecimal((100*inProgressJiraIssue.size())/totalJiraSize);
-				inProgressPercentage = inProgressPercentage.setScale(3);
-				BigDecimal donePercentage = new BigDecimal((100*doneJiraIssue.size())/totalJiraSize);
-				donePercentage = donePercentage.setScale(3);
+				BigDecimal toDoPercentage = new BigDecimal((100.0d*toDoJiraIssue.size())/totalJiraSize);
+				toDoPercentage = toDoPercentage.setScale(2);
+				BigDecimal inProgressPercentage = new BigDecimal((100.0d*inProgressJiraIssue.size())/totalJiraSize);
+				inProgressPercentage = inProgressPercentage.setScale(2);
+				BigDecimal donePercentage = new BigDecimal((100.0d*doneJiraIssue.size())/totalJiraSize);
+				donePercentage = donePercentage.setScale(2);
 				Map<String, String> storyDetails = new HashMap<>();
 				storyDetails.put(epicNumber, checkEmptyURL(jiraIssue));
 				excelData.setEpicID(storyDetails);
 				excelData.setEpicName(checkEmptyName(jiraIssue));
-				excelData.setToDo(new StringBuilder().append(toDoJiraIssue.size()).append("/").append(toDoPercentage.doubleValue()).toString());
-				excelData.setInProgress(new StringBuilder().append(inProgressJiraIssue.size()).append("/").append(inProgressPercentage.doubleValue()).toString());
-				excelData.setDone(new StringBuilder().append(doneJiraIssue.size()).append("/").append(donePercentage.doubleValue()).toString());
+				excelData.setToDo(new StringBuilder().append(toDoJiraIssue.size()).append("/").append(toDoPercentage).toString());
+				excelData.setInProgress(new StringBuilder().append(inProgressJiraIssue.size()).append("/").append(inProgressPercentage).toString());
+				excelData.setDone(new StringBuilder().append(doneJiraIssue.size()).append("/").append(donePercentage).toString());
 				excelData.setEpicStatus(
 						StringUtils.isNotEmpty(jiraIssue.getStatus()) ? jiraIssue.getStatus() : Constant.BLANK);
 				excelData.setStoryPoint(issue);
