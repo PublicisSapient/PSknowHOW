@@ -36,6 +36,7 @@ import { MilestoneComponent } from '../dashboard/milestone/milestone.component';
 import { DoraComponent } from '../dashboard/dora/dora.component';
 import { FeatureGuard } from '../services/feature.guard';
 import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
+import { environment } from 'src/environments/environment';
 /**
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
@@ -182,6 +183,8 @@ const routes: Routes = [
 //   { path: 'pageNotFound', component: PageNotFoundComponent },
 //   { path: '**', redirectTo: 'pageNotFound' }
 // ];
+
+alert("inside app-routing environment['AUTHENTICATION_SERVICE']" + environment['AUTHENTICATION_SERVICE'])
 @NgModule({
   imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy'})],
 
