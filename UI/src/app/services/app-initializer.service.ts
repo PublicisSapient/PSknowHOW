@@ -17,8 +17,8 @@ export class AppInitializerService {
 
   validateToken() {
     return new Promise<void>((resolve, reject) => {
-      console.log(environment['AUTHENTICATION_SERVICE']);
-      setTimeout(() => {
+      alert("inside validate token func" + environment['AUTHENTICATION_SERVICE']);
+      // setTimeout(() => {
         if (environment['AUTHENTICATION_SERVICE']) {
           let url = window.location.href;
           let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
@@ -55,7 +55,7 @@ export class AppInitializerService {
           })
         }
         resolve();
-      }, 5000)
+      // }, 5000)
       
     })
 
@@ -69,9 +69,9 @@ export class AppInitializerService {
       } else {
         const env$ = this.http.get('assets/env.json').pipe(
           tap(env => {
-            alert("inside app initializer " + env['AUTHENTICATION_SERVICE'])
-            alert("inside app initializer " + env['CENTRAL_LOGIN_URL'])
-            alert("inside app initializer " + env['SSO_LOGIN'])
+            alert("inside app initializer auth " + env['AUTHENTICATION_SERVICE'])
+            alert("inside app initializer central url " + env['CENTRAL_LOGIN_URL'])
+            alert("inside app initializer sso " + env['SSO_LOGIN'])
             environment['baseUrl'] = env['baseUrl'] || '';
             environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
             environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] || false;
