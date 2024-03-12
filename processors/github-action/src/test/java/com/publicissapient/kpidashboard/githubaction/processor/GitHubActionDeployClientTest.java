@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.githubaction.processor;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -73,6 +74,29 @@ public class GitHubActionDeployClientTest {
 
 	@Test
 	public void getBuildJobsFromServerTest() throws Exception {
+		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(
+				ArgumentMatchers.eq("https://test.com/repos/username/reponame/deployments/603769314/statuses"), ArgumentMatchers.eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(
+				ArgumentMatchers.eq("https://test.com/repos/username/reponame/deployments/603772744/statuses"), ArgumentMatchers.eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(
+				ArgumentMatchers.eq(restURI), ArgumentMatchers.eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+		Map<Deployment, Set<Deployment>> deploymentsByJob = gitHubActionDeployClient
+				.getDeployJobsFromServer(getToolConnection(), new ProjectBasicConfig());
+
+		Assert.assertEquals(2, deploymentsByJob.size());
+	}
+
+	@Test
+	public void getBuildJobsFromServerTest2() throws Exception {
+		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(
+				ArgumentMatchers.eq("https://test.com/repos/username/reponame/deployments/603769314/statuses"), ArgumentMatchers.eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(
+				ArgumentMatchers.eq("https://test.com/repos/username/reponame/deployments/603772744/statuses"), ArgumentMatchers.eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(
 				ArgumentMatchers.eq(restURI), ArgumentMatchers.eq(HttpMethod.GET),
 				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));

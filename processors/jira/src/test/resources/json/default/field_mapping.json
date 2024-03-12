@@ -275,6 +275,8 @@
       "Enabler Story",
       "Change request"
     ],
+    "jiraIssueRiskTypeKPI176": ["Risk"],
+    "jiraIssueDependencyTypeKPI176": ["Dependency"],
     "_class": "com.publicissapient.kpidashboard.common.model.application.FieldMap"
   }
 ]

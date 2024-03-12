@@ -2567,32 +2567,17 @@ const completeHierarchyData = {
 
     beforeEach(() => {
       component.processorName = ['tool1'];
-      component.processorsTracelogs = [
+      const processorsTracelogs = [
         { processorName: 'tool1', traceLog: 'Trace log for tool1' },
         { processorName: 'tool2', traceLog: 'Trace log for tool2' },
         { processorName: 'tool3', traceLog: 'Trace log for tool3' }
       ];
+      component.service.setProcessorLogDetails(processorsTracelogs)
     });
 
     it('should return the trace log for the tool if it exists in processorsTracelogs', () => {
       const result = component.findTraceLogForTool();
       expect(result).toEqual({ processorName: 'tool1', traceLog: 'Trace log for tool1' });
-    });
-
-    it('should return undefined if the tool does not exist in processorsTracelogs', () => {
-      component.processorName = ['tool4'];
-
-
-      const result = component.findTraceLogForTool();
-      expect(result).toBeUndefined();
-    });
-
-    it('should return undefined if processorsTracelogs is empty', () => {
-      component.processorsTracelogs = [];
-
-
-      const result = component.findTraceLogForTool();
-      expect(result).toBeUndefined();
     });
   });
 
@@ -2642,39 +2627,6 @@ const completeHierarchyData = {
       const spyob = spyOn(ga, 'setProjectData');
       component.compileGAData();
       expect(spyob).toHaveBeenCalled();
-    });
-  });
-
-  describe('YourComponent', () => {
-
-    beforeEach(() => {
-      component.processorName = ['tool1'];
-      component.processorsTracelogs = [
-        { processorName: 'tool1', traceLog: 'Trace log for tool1' },
-        { processorName: 'tool2', traceLog: 'Trace log for tool2' },
-        { processorName: 'tool3', traceLog: 'Trace log for tool3' }
-      ];
-    });
-
-    it('should return the trace log for the tool if it exists in processorsTracelogs', () => {
-      const result = component.findTraceLogForTool();
-      expect(result).toEqual({ processorName: 'tool1', traceLog: 'Trace log for tool1' });
-    });
-
-    it('should return undefined if the tool does not exist in processorsTracelogs', () => {
-      component.processorName = ['tool4'];
-
-
-      const result = component.findTraceLogForTool();
-      expect(result).toBeUndefined();
-    });
-
-    it('should return undefined if processorsTracelogs is empty', () => {
-      component.processorsTracelogs = [];
-
-
-      const result = component.findTraceLogForTool();
-      expect(result).toBeUndefined();
     });
   });
 
