@@ -15,6 +15,41 @@ export class AppInitializerService {
   constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService) {
   }
 
+  checkFeatureFlag() {
+    return new Promise<void>((resolve, reject) => {
+      if (!environment['production']) {
+        alert("inside app initializer prod" + environment['production'])
+        this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
+      } else {
+        const env$ = this.http.get('assets/env.json').pipe(
+          tap(env => {
+            alert("inside app initializer auth " + env['AUTHENTICATION_SERVICE'])
+            alert("inside app initializer central url " + env['CENTRAL_LOGIN_URL'])
+            alert("inside app initializer sso " + env['SSO_LOGIN'])
+            environment['baseUrl'] = env['baseUrl'] || '';
+            environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
+            environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] || false;
+            environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
+            environment['MAP_URL'] = env['MAP_URL'] || '';
+            environment['RETROS_URL'] = env['RETROS_URL'] || '';
+          }));
+        env$.toPromise().then(async res => {
+          this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
+        });
+      }
+      // load google Analytics script on all instances except local and if customAPI property is true
+      let addGAScript = this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
+      if (addGAScript) {
+        if (window.location.origin.indexOf('localhost') === -1) {
+          this.ga.load('gaTagManager').then(data => {
+            console.log('script loaded ', data);
+          })
+        }
+      }
+      resolve();
+    })
+  }
+
   validateToken() {
     return new Promise<void>((resolve, reject) => {
       alert("inside validate token func" + environment['AUTHENTICATION_SERVICE']);
@@ -59,41 +94,6 @@ export class AppInitializerService {
       
     })
 
-  }
-
-  checkFeatureFlag() {
-    return new Promise<void>((resolve, reject) => {
-      if (!environment['production']) {
-        alert("inside app initializer prod" + environment['production'])
-        this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
-      } else {
-        const env$ = this.http.get('assets/env.json').pipe(
-          tap(env => {
-            alert("inside app initializer auth " + env['AUTHENTICATION_SERVICE'])
-            alert("inside app initializer central url " + env['CENTRAL_LOGIN_URL'])
-            alert("inside app initializer sso " + env['SSO_LOGIN'])
-            environment['baseUrl'] = env['baseUrl'] || '';
-            environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
-            environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] || false;
-            environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
-            environment['MAP_URL'] = env['MAP_URL'] || '';
-            environment['RETROS_URL'] = env['RETROS_URL'] || '';
-          }));
-        env$.toPromise().then(async res => {
-          this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
-        });
-      }
-      // load google Analytics script on all instances except local and if customAPI property is true
-      let addGAScript = this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
-      if (addGAScript) {
-        if (window.location.origin.indexOf('localhost') === -1) {
-          this.ga.load('gaTagManager').then(data => {
-            console.log('script loaded ', data);
-          })
-        }
-      }
-      resolve();
-    })
   }
 }
 
