@@ -278,7 +278,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
       this.loading = true;
       this.noData = false;
       this.displayConfigModel = true;
-      this.lastSyncTime = this.showExecutionDate(this.kpiData.kpiDetail.combinedSource);
+      this.lastSyncTime = this.showExecutionDate(this.kpiData.kpiDetail.combinedKpiSource || this.kpiData.kpiDetail.kpiSource);
       this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`).subscribe(data => {
         if(data && data['success']){
           this.fieldMappingConfig = data?.data['fieldConfiguration'];
@@ -365,7 +365,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   }
 
   findTraceLogForTool(processorName) {
-    const sourceArray = processorName.split('/');
+    const sourceArray = (processorName.includes('/')) ? processorName.split('/') : [processorName];
     return this.service.getProcessorLogDetails().find(ptl => sourceArray.includes(ptl['processorName'].toLowerCase()));
   }
 
