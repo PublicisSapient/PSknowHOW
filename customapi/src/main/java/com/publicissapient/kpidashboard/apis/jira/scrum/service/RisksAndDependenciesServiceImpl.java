@@ -187,6 +187,14 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 						.contains(jiraIssue.getTypeName().toLowerCase());
 	}
 
+	/**
+	 * Creates a list of IterationKpiValue objects based on the provided counts and modal values.
+	 *
+	 * @param counts               The counts of different types of issues.
+	 * @param riskModalValues      The list containing modal values for risks.
+	 * @param dependencyModalValues The list containing modal values for dependencies.
+	 * @return A list of IterationKpiValue objects.
+	 */
 	private List<IterationKpiValue> createIterationKpiValues(int[] counts, List<IterationKpiModalValue> riskModalValues,
 			List<IterationKpiModalValue> dependencyModalValues) {
 		List<IterationKpiValue> iterationKpiValueList = new ArrayList<>();
@@ -210,12 +218,12 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 	}
 
 	/**
-	 * Creates a list of IterationKpiValue objects based on the provided counts and modal values.
+	 * Sets KPI element values using the provided trend value, KPI element, iteration KPI values, and latest sprint.
 	 *
-	 * @param counts               The counts of different types of issues.
-	 * @param riskModalValues      The list containing modal values for risks.
-	 * @param dependencyModalValues The list containing modal values for dependencies.
-	 * @return A list of IterationKpiValue objects.
+	 * @param trendValue         The trend value containing iteration KPI values.
+	 * @param kpiElement         The KPI element to set values for.
+	 * @param iterationKpiValues The list of iteration KPI values.
+	 * @param latestSprint       The latest sprint node.
 	 */
 	private void setKpiElementValues(DataCount trendValue, KpiElement kpiElement,
 			List<IterationKpiValue> iterationKpiValues, Node latestSprint) {
