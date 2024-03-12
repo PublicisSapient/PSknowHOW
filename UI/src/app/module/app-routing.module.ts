@@ -182,7 +182,6 @@ const routes: Routes = [
 //   { path: 'pageNotFound', component: PageNotFoundComponent },
 //   { path: '**', redirectTo: 'pageNotFound' }
 // ];
-// alert("inside app routing" + environment['AUTHENTICATION_SERVICE'])
 @NgModule({
   imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy'})],
 
