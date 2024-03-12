@@ -58,10 +58,10 @@ export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor 
   ngOnInit(): void {
   }
 
-  setValue() {
+  setValue(isAddtional?) {
     if (typeof this.value === 'string' || this.value instanceof String) {
       this.onChange(this.value.trim());
-    } else if (Array.isArray(this.value)) {
+    } else if (Array.isArray(this.value) && (isAddtional != true)) {
       this.value = this.value.map((val) => val.trim());
       this.onChange(this.value);
     }
@@ -88,7 +88,7 @@ export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor 
 
   setAdditionalFilterValue(value) {
     this.value = value;
-    this.setValue();
+    this.setValue(true);
   }
 
   showDialogToAddValue(isSingle, fieldName, type) {
