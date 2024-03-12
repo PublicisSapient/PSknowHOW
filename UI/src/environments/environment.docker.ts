@@ -17,12 +17,12 @@
  ******************************************************************************/
 
 export const environment = {
-  production: true,
-  baseUrl: '',
+  production: false,
+  baseUrl: 'https://dev-knowhow.tools.publicis.sapient.com',
   SSO_LOGIN: false,
-  CENTRAL_LOGIN_URL: '',
+  CENTRAL_LOGIN_URL: 'https://dev-authnauth.tools.publicis.sapient.com',
   RESOURCE: 'PSKnowHOW',
-  AUTHENTICATION_SERVICE: false,
-  MAP_URL:'',
-  RETROS_URL: ''
+  AUTHENTICATION_SERVICE: true,
+  MAP_URL:'https://dev-map.tools.publicis.sapient.com',
+  RETROS_URL: 'https://dev-rnr.tools.publicis.sapient.com'
 };

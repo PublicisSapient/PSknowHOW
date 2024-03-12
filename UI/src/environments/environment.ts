@@ -22,11 +22,11 @@
 
 export const environment = {
    production: false,
-   baseUrl: '//customapi:8080',
+   baseUrl: 'https://dev-knowhow.tools.publicis.sapient.com',
    SSO_LOGIN: false,
-   CENTRAL_LOGIN_URL: '',
+   CENTRAL_LOGIN_URL: 'https://dev-authnauth.tools.publicis.sapient.com',
    RESOURCE: 'PSKnowHOW',
-   AUTHENTICATION_SERVICE: false
+   AUTHENTICATION_SERVICE: true
 };
 
 /*
