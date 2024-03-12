@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,8 +38,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -69,8 +65,10 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.ResolutionTimeValidation;
 import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
@@ -1798,12 +1796,9 @@ public class KPIExcelUtility {
 				// filter by done category
 				List<JiraIssue> doneJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
 						jiraIssueReleaseStatus.getClosedList());
-				BigDecimal toDoPercentage = new BigDecimal((100.0d*toDoJiraIssue.size())/totalJiraSize);
-				toDoPercentage = toDoPercentage.setScale(2, RoundingMode.HALF_UP);
-				BigDecimal inProgressPercentage = new BigDecimal((100.0d*inProgressJiraIssue.size())/totalJiraSize);
-				inProgressPercentage = inProgressPercentage.setScale(2,RoundingMode.HALF_UP);
-				BigDecimal donePercentage = new BigDecimal((100.0d*doneJiraIssue.size())/totalJiraSize);
-				donePercentage = donePercentage.setScale(2,RoundingMode.HALF_UP);
+				double toDoPercentage = roundingOff((100.0d*toDoJiraIssue.size())/totalJiraSize);
+				double inProgressPercentage = roundingOff((100.0d*inProgressJiraIssue.size())/totalJiraSize);
+				double donePercentage = roundingOff((100.0d*doneJiraIssue.size())/totalJiraSize);
 				Map<String, String> storyDetails = new HashMap<>();
 				storyDetails.put(epicNumber, checkEmptyURL(jiraIssue));
 				excelData.setEpicID(storyDetails);
@@ -1952,4 +1947,5 @@ public class KPIExcelUtility {
 		overAllmodalValues.add(iterationKpiModalValue);
 		modalValues.add(iterationKpiModalValue);
 	}
+
 }
