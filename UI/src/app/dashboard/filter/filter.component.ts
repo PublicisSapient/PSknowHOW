@@ -676,6 +676,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         selectedTrendValues.push(this.trendLineValueList?.filter((x) => x.nodeId == selectedTrendIds)[0]);
       }
       if(selectedTrendValues.length === 1){
+        this.selectedProjectData = selectedTrendValues[0];
         this.getProcessorsTraceLogsForProject(selectedTrendValues[0]['basicProjectConfigId']);
       }   
 
