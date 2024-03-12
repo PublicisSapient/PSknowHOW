@@ -68,6 +68,7 @@ export class MilestoneComponent implements OnInit {
   navigationTabs:Array<object>;
   activeIndex = 0;
   kpiThresholdObj = {};
+  chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
 
     /** When filter dropdown change */

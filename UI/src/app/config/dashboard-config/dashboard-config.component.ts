@@ -43,6 +43,7 @@
     userProjects : Array<any>;
     selectedProject : object;
     backupUserProjects : Array<any> = [];
+    noProjectsForSelectedCategory : boolean = false;
      constructor(private httpService: HttpService, private service: SharedService, private messageService: MessageService,
      private getAuthorizationService : GetAuthorizationService) {
      }
@@ -118,10 +119,12 @@
           this.userProjects = this.backupUserProjects.filter(project=> (project.type === 'scrum') || (project.type === 'common'))
         }
         if(this.userProjects != null && this.userProjects.length > 0) {
+          this.noProjectsForSelectedCategory = false;
           this.selectedProject = this.userProjects[0];
           this.loader = true;
           this.getKpisData(this.selectedProject['id']);
         }else{
+          this.noProjectsForSelectedCategory = true;
           this.selectedProject = {}
         }
         this.setFormControlData();
@@ -246,6 +249,7 @@ return item.kpiId;
   // used to fetch projects
   getProjects() {
     const that = this;
+    this.noProjectsForSelectedCategory = false;
     this.httpService.getUserProjects()
       .subscribe(response => {
         if (response[0] !== 'error' && !response.error) {
@@ -262,7 +266,9 @@ return item.kpiId;
                 id: filteredProj.id,
                 type : filteredProj.kanban ? 'kanban' : 'scrum'
               }));
-              that.userProjects.unshift(all);
+              if(this.userProjects && that.userProjects.length){
+                that.userProjects.unshift(all);
+              }
           } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
             that.userProjects = [];
             that.userProjects = response.data.filter(proj => !this.getAuthorizationService.checkIfViewer(proj))
@@ -283,7 +289,11 @@ return item.kpiId;
           this.backupUserProjects = this.userProjects;
           this.userProjects = this.backupUserProjects.filter(project=> (project.type === this.selectedTab) || (project.type === 'common'))
           that.selectedProject = that.userProjects[0];
-          this.getKpisData(that.selectedProject['id']);
+          this.getKpisData(that.selectedProject?.['id']);
+          if(!this.userProjects || this.userProjects?.length == 0){
+            this.noProjectsForSelectedCategory = true
+            this.loader = false;
+          }
         }
       });
   }

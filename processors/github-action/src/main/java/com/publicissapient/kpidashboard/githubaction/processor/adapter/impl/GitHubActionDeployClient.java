@@ -71,6 +71,8 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 	private GitHubActionConfig gitHubActionConfig;
 	@Autowired
 	private RestTemplate restTemplate;
+	int p=1;
+
 
 	@Override
 	public Set<Build> getBuildJobsFromServer(ProcessorToolConnection gitHubServer, ProjectBasicConfig proBasicConfig)
@@ -89,16 +91,22 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 			String restUrl = new GitHubActionURIBuilder(gitHubServer).deployGithub();
 			restUri = URLDecoder.decode(restUrl, "UTF-8");
 			log.debug("REST URL {}", restUri);
+			// GitHub has a API rate limit of 5000 hits per hour
+			boolean includeDelay = false;
+			ResponseEntity<String> respPayload = getResponse(gitHubServer.getUsername(), decryptedApiToken,
+					restUri+PAGE_PARAM+"167");
+			if (respPayload != null && respPayload.getBody().length()>=20)
+				includeDelay = true;
 			boolean hasMorePage = true;
 			int nextPage = 1;
 			while (hasMorePage) {
 
-				ResponseEntity<String> respPayload = getResponse(gitHubServer.getUsername(), decryptedApiToken,
+				respPayload = getResponse(gitHubServer.getUsername(), decryptedApiToken,
 						restUri);
 				if (respPayload == null)
 					break;
 				JSONArray responseJson = getJSONFromResponse(respPayload.getBody());
-				initializeDeployments(deploys, responseJson, gitHubServer, decryptedApiToken);
+				initializeDeployments(deploys, responseJson, gitHubServer, decryptedApiToken, includeDelay);
 				nextPage++;
 				if (StringUtils.containsIgnoreCase(restUri, PAGE_PARAM)) {
 					restUri = restUri.replace(PAGE_PARAM + (nextPage - 1), PAGE_PARAM + nextPage);
@@ -119,7 +127,7 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 	}
 
 	private void initializeDeployments(Map<Deployment, Set<Deployment>> result, JSONArray jsonArray,
-			ProcessorToolConnection gitHubServer, String decryptedApiToken) throws ParseException {
+									   ProcessorToolConnection gitHubServer, String decryptedApiToken, boolean includeDelay) throws ParseException {
 
 		for (Object jsonObj : jsonArray) {
 			JSONObject deploymentObject = (JSONObject) jsonObj;
@@ -142,14 +150,14 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 			String statusesURL = ProcessorUtils.getString(deploymentObject, Constants.STATUSES_URL);
 			ResponseEntity<String> respPayload = getResponse(gitHubServer.getUsername(), decryptedApiToken,
 					statusesURL);
-			if (respPayload != null) {
-				JSONArray responseJson = getJSONFromResponse(respPayload.getBody());
+			JSONArray responseJson = getJSONFromResponse(respPayload.getBody());
+			if (respPayload != null && !responseJson.isEmpty()) {
 				JSONObject statusObject = (JSONObject) responseJson.get(0);
 				deployment.setDeploymentStatus(getDeploymentStatus(statusObject));
+				log.info("Total Development Fetched : "+ (p++));
 			}
 
 			if (StringUtils.isNotEmpty(startDate)) {
-
 				deployment.setStartTime(DateUtil.dateTimeConverter(startDate, DATETIME_FORMAT, TIME_FORMAT));
 				deployment.setEndTime(DateUtil.dateTimeConverter(endDate, DATETIME_FORMAT, TIME_FORMAT));
 				deployment.setDuration(updatedDate - createdDate);
@@ -165,7 +173,13 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 					result.put(deployment, deploymentSet);
 				}
 			}
-
+			try {
+				if (includeDelay)
+					Thread.sleep(750);
+			} catch (InterruptedException e) {
+				log.warn("Interrupted!", e);
+				Thread.currentThread().interrupt();
+			}
 		}
 	}
 

@@ -41,6 +41,12 @@ public class Assignee {
 
 	private String assigneeId;
 	private String assigneeName;
+	private String email;
+
+	public Assignee(String assigneeId, String assigneeName) {
+		this.assigneeId = assigneeId;
+		this.assigneeName = assigneeName;
+	}
 
 	@Override
 	public boolean equals(Object o) {
