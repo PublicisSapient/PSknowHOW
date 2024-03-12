@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -61,8 +60,11 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 	private static final String OPEN_DEFECT = "Open Defects";
 	private static final String UNDEFINED = "Undefined";
 	private static final String NONE = "-";
-	@Autowired
-	private ConfigHelperService configHelperService;
+	private final ConfigHelperService configHelperService;
+
+	public ReleaseDefectCountByRCAServiceImpl(ConfigHelperService configHelperService) {
+		this.configHelperService = configHelperService;
+	}
 
 	@Override
 	public String getQualifierType() {
@@ -91,18 +93,17 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 			Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			List<JiraIssue> totalDefects = (List<JiraIssue>) resultMap.get(TOTAL_DEFECT);
+			updateRCAAndTestingPhase(totalDefects);
 			Set<String> jiraDodKPI142LowerCase = new HashSet<>();
-			if (fieldMapping.getJiraDodKPI142() != null) {
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraDodKPI142())) {
 				jiraDodKPI142LowerCase = fieldMapping.getJiraDodKPI142().stream().map(String::toLowerCase)
 						.collect(Collectors.toSet());
 			}
-
 			Set<String> finalJiraDodKPI142LowerCase = jiraDodKPI142LowerCase;
 			List<JiraIssue> openDefects = totalDefects.stream()
 					.filter(jiraIssue -> fieldMapping.getStoryFirstStatus().contains(jiraIssue.getStatus())
-							&& (finalJiraDodKPI142LowerCase.isEmpty()
-									|| !finalJiraDodKPI142LowerCase.contains(jiraIssue.getStatus().toLowerCase())))
-					.collect(Collectors.toList());
+							&& !finalJiraDodKPI142LowerCase.contains(jiraIssue.getStatus().toLowerCase()))
+					.toList();
 			IterationKpiValue openDefectsIterationKpiValue = new IterationKpiValue();
 			openDefectsIterationKpiValue.setFilter1(OPEN_DEFECT);
 			openDefectsIterationKpiValue.setValue(getDefectsDataCountList(openDefects, fieldMapping));
@@ -122,16 +123,22 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 		kpiElement.setTrendValueList(overAllIterationKpiValue);
 	}
 
+	/**
+	 * get list of Jira associated with RCA and Testing Phase
+	 * 
+	 * @param defects
+	 * @param fieldMapping
+	 * @return list of dataCount
+	 */
 	private List<DataCount> getDefectsDataCountList(List<JiraIssue> defects, FieldMapping fieldMapping) {
 		List<DataCount> defectsDataCountList = new ArrayList<>();
 		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(defects)) {
-			updateRCAAndTestingPhase(defects);
 			Set<String> testingPhases = findUniqueTestingPhases(defects);
-			Set<String> RCAList = findUniqueRCAList(defects);
+			Set<String> rcaList = findUniqueRCAList(defects);
 			testingPhases.forEach(testingPhase -> {
 				Map<String, List<JiraIssue>> testingPhaseRCAWiseJiraIssue = getTestingPhaseRCAWiseJiraIssue(defects,
-						testingPhase, RCAList);
+						testingPhase, rcaList);
 				DataCount defectsDataCount = new DataCount();
 				defectsDataCount.setSSprintName(testingPhase);
 				List<DataCount> dataCountRCA = new ArrayList<>();
@@ -190,9 +197,9 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 	}
 
 	private Map<String, List<JiraIssue>> getTestingPhaseRCAWiseJiraIssue(List<JiraIssue> totalDefects,
-			String testingPhase, Set<String> RCAList) {
+			String testingPhase, Set<String> rcaList) {
 		Map<String, List<JiraIssue>> rcaWiseJiraIssue = new LinkedHashMap<>();
-		RCAList.forEach(rca -> rcaWiseJiraIssue.put(rca, filterByStatus(testingPhase, totalDefects, rca)));
+		rcaList.forEach(rca -> rcaWiseJiraIssue.put(rca, filterByStatus(testingPhase, totalDefects, rca)));
 		return rcaWiseJiraIssue;
 	}
 
@@ -219,7 +226,7 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 				.filter(jiraIssue -> jiraIssue.getEscapedDefectGroup().stream().findFirst().get()
 						.equalsIgnoreCase(testingPhase))
 				.filter(jiraIssue -> jiraIssue.getRootCauseList().stream().findFirst().get().equalsIgnoreCase(rca))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private void updateRCAAndTestingPhase(List<JiraIssue> totalDefects) {
