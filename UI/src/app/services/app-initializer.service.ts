@@ -70,6 +70,7 @@ export class AppInitializerService {
           tap(env => {
             alert("inside app initializer " + env['AUTHENTICATION_SERVICE'])
             alert("inside app initializer " + env['CENTRAL_LOGIN_URL'])
+            alert("inside app initializer " + env['SSO_LOGIN'])
             environment['baseUrl'] = env['baseUrl'] || '';
             environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
             environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] || false;
