@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -57,11 +58,8 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 	private static final String OPEN_DEFECT = "Open Defects";
 	private static final String UNDEFINED = "Undefined";
 	private static final String NONE = "-";
-	private final ConfigHelperService configHelperService;
-
-	public ReleaseDefectCountByRCAServiceImpl(ConfigHelperService configHelperService) {
-		this.configHelperService = configHelperService;
-	}
+	@Autowired
+	private ConfigHelperService configHelperService;
 
 	@Override
 	public String getQualifierType() {
