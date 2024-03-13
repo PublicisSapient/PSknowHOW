@@ -63,6 +63,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
  userRole : string;
  checkIfViewer : boolean;
  lastSyncTime : any;
+ isSyncPassedOrFailed;
 
   constructor(public service: SharedService,
     private http : HttpService,
@@ -361,6 +362,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
 
   showExecutionDate(processorName) {
     const traceLog = this.findTraceLogForTool(processorName.toLowerCase());
+    this.isSyncPassedOrFailed = traceLog?.executionSuccess === true ? true : false;
     return (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) ? 'NA' : new DatePipe('en-US').transform(traceLog.executionEndedAt, 'dd-MMM-yyyy (EEE) - hh:mmaaa');
   }
 

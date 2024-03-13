@@ -40,6 +40,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -62,6 +65,8 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 /**
  * This class provides various methods related to operations on Connections
@@ -96,6 +101,12 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	@Autowired
 	private AuthenticationService authenticationService;
+	
+	@Autowired
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
+
+	@Autowired
+	private RestAPIUtils restAPIUtils;
 
 	/**
 	 * Fetch all connection data.
@@ -567,7 +578,13 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	private void saveConnection(Connection conn) {
 		if (conn != null) {
-			connectionRepository.save(conn);
+			if (conn.getType().equalsIgnoreCase(REPO_TOOLS)) {
+				int httpStatus = repoToolsConfigService.updateRepoToolConnection(conn);
+				if (httpStatus == HttpStatus.OK.value())
+					connectionRepository.save(conn);
+			} else {
+				connectionRepository.save(conn);
+			}
 		}
 	}
 

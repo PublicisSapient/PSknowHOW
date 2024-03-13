@@ -1,13 +1,10 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,11 +24,19 @@ import io.mongock.api.annotations.RollbackExecution;
 /***
  * @author rendk
  */
-@ChangeUnit(id = "combined_kpi_source_update", order = "9101", author = "rendk", systemVersion = "9.1.0")
+@ChangeUnit(id = "combined_kpi_source_update", order = "9008", author = "rendk", systemVersion = "9.0.0")
 public class UpdateKpiSource {
 	private final MongoTemplate mongoTemplate;
 
 	private static final String KPI_SOURCE = "kpiSource";
+
+	private static final String UNSET = "$unset";
+
+	private static final String SET = "$set";
+
+	private static final String COMBINED_KPI_SOURCE = "combinedKpiSource";
+
+	private static final String KPI_MASTER = "kpi_master";
 
 	public UpdateKpiSource(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
@@ -39,28 +44,28 @@ public class UpdateKpiSource {
 
 	private void updateCombinedKpiSourceForJira() {
 		Document condition = new Document(KPI_SOURCE, "Jira");
-		Document update = new Document("$set", new Document("combinedKpiSource", "Jira/Azure"));
-		mongoTemplate.getCollection("kpi_master").updateMany(condition, update);
+		Document update = new Document(SET, new Document(COMBINED_KPI_SOURCE, "Jira/Azure"));
+		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
 
 	private void updateCombinedKpiSourceForJenkins() {
 		Document condition = new Document(KPI_SOURCE, "Jenkins");
-		Document update = new Document("$set",
-				new Document("combinedKpiSource", "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"));
-		mongoTemplate.getCollection("kpi_master").updateMany(condition, update);
+		Document update = new Document(SET,
+				new Document(COMBINED_KPI_SOURCE, "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"));
+		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
 
 	private void updateCombinedKpiSourceForBitBucket() {
 		Document condition = new Document(KPI_SOURCE, "Bitbucket");
-		Document update = new Document("$set",
-				new Document("combinedKpiSource", "Bitbucket/AzureRepository/GitHub/GitLab/RepoTool"));
-		mongoTemplate.getCollection("kpi_master").updateMany(condition, update);
+		Document update = new Document(SET,
+				new Document(COMBINED_KPI_SOURCE, "Bitbucket/AzureRepository/GitHub/GitLab/RepoTool"));
+		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
 
 	private void updateCombinedKpiSourceForZypher() {
 		Document condition = new Document(KPI_SOURCE, "Zypher");
-		Document update = new Document("$set", new Document("combinedKpiSource", "Zypher/JiraTest"));
-		mongoTemplate.getCollection("kpi_master").updateMany(condition, update);
+		Document update = new Document(SET, new Document(COMBINED_KPI_SOURCE, "Zypher/JiraTest"));
+		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
 
 	@Execution
@@ -73,26 +78,26 @@ public class UpdateKpiSource {
 
 	private void rollbackCombinedKpiSourceForJira() {
 		Document condition = new Document(KPI_SOURCE, "Jira");
-		Document update = new Document("$unset", new Document("combinedKpiSource", ""));
-		mongoTemplate.getCollection("kpi_master").updateMany(condition, update);
+		Document update = new Document(UNSET, new Document(COMBINED_KPI_SOURCE, ""));
+		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
 
 	private void rollbackCombinedKpiSourceForJenkins() {
 		Document condition = new Document(KPI_SOURCE, "Jenkins");
-		Document update = new Document("$unset", new Document("combinedKpiSource", ""));
-		mongoTemplate.getCollection("kpi_master").updateMany(condition, update);
+		Document update = new Document(UNSET, new Document(COMBINED_KPI_SOURCE, ""));
+		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
 
 	private void rollbackCombinedKpiSourceForBitBucket() {
 		Document condition = new Document(KPI_SOURCE, "Bitbucket");
-		Document update = new Document("$unset", new Document("combinedKpiSource", ""));
-		mongoTemplate.getCollection("kpi_master").updateMany(condition, update);
+		Document update = new Document(UNSET, new Document(COMBINED_KPI_SOURCE, ""));
+		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
 
 	private void rollbackCombinedKpiSourceForZypher() {
 		Document condition = new Document(KPI_SOURCE, "Zypher");
-		Document update = new Document("$unset", new Document("combinedKpiSource", ""));
-		mongoTemplate.getCollection("kpi_master").updateMany(condition, update);
+		Document update = new Document(UNSET, new Document(COMBINED_KPI_SOURCE, ""));
+		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
 
 	@RollbackExecution

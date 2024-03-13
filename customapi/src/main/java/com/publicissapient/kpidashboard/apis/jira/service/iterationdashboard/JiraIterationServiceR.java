@@ -18,10 +18,13 @@ package com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -116,7 +119,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 			} else {
 				log.error("label name for selected hierarchy not found");
 			}
-			List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest);
+			List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest, groupName);
 
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList, referFromProjectCache);
@@ -207,12 +210,22 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		return filteredNode;
 	}
 
-	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest) {
+	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest, String groupName) {
 		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
 				.cacheAccountHierarchyData();
 
-		return accountDataListAll.stream().filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId()
-				.equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).get(0))).toList();
+		Set<String> nsprintStateList = new HashSet<>(kpiRequest.getSprintIncluded()).stream().map(String::toLowerCase).collect(Collectors.toSet());
+
+		return accountDataListAll.stream()
+				.filter(data -> data.getNode().stream()
+						.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+								&& node.getAccountHierarchy().getSprintState() != null
+								&& nsprintStateList.contains(node.getAccountHierarchy().getSprintState().toLowerCase())))
+				.filter(data -> kpiRequest.getSelectedMap().getOrDefault(groupName, Collections.emptyList()).stream()
+						.anyMatch(id -> data.getNode().stream()
+								.anyMatch(d -> d.getGroupName().equalsIgnoreCase(groupName) && id.equals(d.getId()))))
+				.toList();
+
 	}
 
 	private void updateJiraIssueList(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {

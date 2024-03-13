@@ -648,7 +648,7 @@
   } ,
   {
     "kpiId" : "kpi27" ,
-    "kpiName" : "Sonar Tech Debt" ,
+    "kpiName" : "Tech Debt - Sonar Maintainability" ,
     "maxValue" : "90" ,
     "kpiUnit" : "Days" ,
     "isDeleted" : "False" ,
@@ -4525,6 +4525,66 @@
         }
       ]
     }
+  },
+  {
+    "kpiId": "kpi174",
+    "kpiName": "Tech Debt Sonar Security",
+    "maxValue": "100",
+    "kpiUnit": "%",
+    "isDeleted": "False",
+    "defaultOrder": 15,
+    "kpiSource": "Sonar",
+    "groupId": 1,
+    "thresholdValue": "50",
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Measures the evolution of effort required to fix all Vulnerabilities detected with Sonar in the code.",
+      "formula": [
+        {
+          "lhs": "Remediation Effort Change",
+          "operator": "division",
+          "operands": [
+            "Sec%|TimeIntervalEnd",
+            "Sec%|TimeIntervalStart"
+          ]
+        },
+        {
+          "lhs": "Sec%",
+          "operator": "division",
+          "operands": [
+            "Σsecurity_remediation_effort",
+            "Σncloc × (Average minutes per line of code, default 30)"
+          ]
+        }
+      ],
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/111411201/Tech+Debt+-+Sonar+Security"
+          }
+        }
+      ]
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Percentage",
+    "isPositiveTrend": false,
+    "showTrend": true,
+    "kpiFilter": "dropDown",
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": false,
+    "maturityRange": [
+      "-120",
+      "120-100",
+      "100-50",
+      "50-0",
+      "0-"
+    ],
+    "lowerThresholdBG": "white",
+    "upperThresholdBG": "red"
   }
-
 ]
