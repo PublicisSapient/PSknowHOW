@@ -88,17 +88,6 @@ public interface UserInfoService {
 	UserInfo demoteFromAdmin(String username, AuthType authType);
 
 	/**
-	 * Is user valid boolean.
-	 *
-	 * @param userId
-	 *            the user id
-	 * @param authType
-	 *            the auth type
-	 * @return the boolean
-	 */
-	boolean isUserValid(String userId, AuthType authType);
-
-	/**
 	 * update user info if already present
 	 * 
 	 * @param userInfo
@@ -116,7 +105,7 @@ public interface UserInfoService {
 	ServiceResponse updateUserRole(String username, UserInfo userInfo);
 
 	/**
-	 * Return userinfo along with email in case of ldap or standardlogin
+	 * Return userinfo along with email in case of standardlogin
 	 * 
 	 * @param username
 	 *            username
