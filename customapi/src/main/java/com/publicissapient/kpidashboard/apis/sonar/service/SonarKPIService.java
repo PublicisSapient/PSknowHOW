@@ -26,9 +26,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,12 +47,16 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.sonar.utiils.SonarQualityMetric;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
+import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
 import com.publicissapient.kpidashboard.common.repository.sonar.SonarDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 /**
  * @param <R>
@@ -298,4 +305,213 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 		}
 		return null;
 	}
+
+	/**
+	 * Prepares a map pairing each job key from the given SonarHistory list with a
+	 * Pair of SonarHistory, representing the earliest and latest records within the
+	 * specified time range.
+	 *
+	 * @param sonarHistoryList
+	 *            List of SonarHistory.
+	 * @param start
+	 *            Start timestamp of the time range (exclusive).
+	 * @param end
+	 *            End timestamp of the time range (exclusive).
+	 * @return Map<String, Pair<SonarHistory, SonarHistory>>
+	 */
+	public Map<String, Pair<SonarHistory, SonarHistory>> prepareJobWiseHistoryMapPair(
+			List<SonarHistory> sonarHistoryList, Long start, Long end) {
+
+		Map<String, Pair<SonarHistory, SonarHistory>> map = new HashMap<>();
+
+		for (SonarHistory sonarHistory : sonarHistoryList) {
+			if (sonarHistory.getTimestamp().compareTo(start) > 0 && sonarHistory.getTimestamp().compareTo(end) < 0) {
+
+				map.merge(sonarHistory.getKey(), Pair.of(sonarHistory, sonarHistory), (existingPair, newPair) -> {
+					// Update the left if it is null or has a greater timestamp.
+					if (existingPair.getLeft() == null
+							|| existingPair.getLeft().getTimestamp().compareTo(newPair.getLeft().getTimestamp()) > 0) {
+						existingPair = Pair.of(newPair.getLeft(), existingPair.getRight());
+					}
+					// Update the right if it is null or has a lesser timestamp.
+					if (existingPair.getRight() == null || existingPair.getRight().getTimestamp()
+							.compareTo(newPair.getRight().getTimestamp()) < 0) {
+						existingPair = Pair.of(existingPair.getLeft(), newPair.getRight());
+					}
+					return existingPair;
+				});
+			}
+		}
+
+		return map;
+	}
+
+	/**
+	 * prepare dummy data for empty responses
+	 *
+	 * @param sonarHistoryList
+	 *            sonarHistoryList
+	 * @param end
+	 *            endDate
+	 * @return map
+	 */
+	public Map<String, Pair<SonarHistory, SonarHistory>> prepareEmptyJobWiseHistoryMapPair(
+			List<SonarHistory> sonarHistoryList, List<String> metricNames, Long end) {
+		Map<String, Pair<SonarHistory, SonarHistory>> historyMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(sonarHistoryList)) {
+			SonarHistory refHistory = sonarHistoryList.get(0);
+
+			List<SonarMetric> metricsList = new ArrayList<>(
+					metricNames.stream().map(metric -> new SonarMetric(metric, 0)).toList());
+
+			List<String> uniqueKeys = sonarHistoryList.stream().map(SonarHistory::getKey).distinct().toList();
+			uniqueKeys.forEach(keys -> {
+				SonarHistory sonarHistory = SonarHistory.builder().processorItemId(refHistory.getProcessorItemId())
+						.date(end).timestamp(end).key(keys).name(keys).branch(refHistory.getBranch())
+						.metrics(metricsList).build();
+				historyMap.put(keys, Pair.of(sonarHistory, sonarHistory));
+			});
+		}
+
+		return historyMap;
+	}
+
+	/**
+	 * Used to calculate the Quality Metric
+	 * 
+	 * @param sonarDetailPair
+	 *            Pair of sonar history
+	 * @param fieldMapping
+	 *            fieldMapping for costPerLine
+	 * @param projOverallMetric
+	 *            projOverallMetric
+	 * @param numKeyName
+	 *            key name of num
+	 * @param demKeyName
+	 *            key name of den
+	 * @return Quality Metrics
+	 *
+	 * @link <a href=
+	 *       "https://publicissapient.atlassian.net/wiki/spaces/SPDS/pages/79822877/KnowHOW+TEngine+KPIs+on+KnowHOW">Refer
+	 *       Docs.</a>
+	 */
+	public double calculateQualityMetric(Pair<SonarHistory, SonarHistory> sonarDetailPair, FieldMapping fieldMapping,
+										 SonarQualityMetric projOverallMetric, String numKeyName, String demKeyName) {
+		Map<String, Object> leftMetricMap = extractMetricMap(sonarDetailPair.getLeft());
+		Map<String, Object> rightMetricMap = extractMetricMap(sonarDetailPair.getRight());
+
+		int costPerLine = Optional.ofNullable(fieldMapping.getCostPerLineKPI174()).orElse(30);
+
+		final long numLeft = getParsedValue(leftMetricMap.get(numKeyName));
+		final long demLeft = getParsedValue(leftMetricMap.get(demKeyName));
+
+		double ratioLeft = safeDivisionDouble(numLeft, (demLeft * costPerLine));
+
+		final long numRight = getParsedValue(rightMetricMap.get(numKeyName));
+		final long demRight = getParsedValue(rightMetricMap.get(demKeyName));
+
+		double ratioRight = safeDivisionDouble(numRight, (demRight * costPerLine));
+
+		final double qualityMetrics = roundingOff(safeDivisionDouble(ratioRight, ratioLeft) * 100);
+
+		projOverallMetric.addQualityMetrics(numLeft, demLeft, numRight, demRight, costPerLine);
+
+		return qualityMetrics;
+	}
+
+	/**
+	 * Create the x-axis Date for sonar kpi's
+	 * 
+	 * @param monthStartDate
+	 *            monthStartDate
+	 * @param monthEndDate
+	 *            monthEndDate
+	 * @return Formatted Date string.
+	 */
+	public static String getFormattedDate(LocalDate monthStartDate, LocalDate monthEndDate) {
+		return DateUtil.dateTimeConverter(monthStartDate.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT)
+				+ " to " + DateUtil.dateTimeConverter(monthEndDate.toString(), DateUtil.DATE_FORMAT,
+						DateUtil.DISPLAY_DATE_FORMAT);
+	}
+
+	/**
+	 * Generate the metric map with Map<metricName,MetricValue>
+	 * 
+	 * @param sonarHistory
+	 *            sonarHistory
+	 * @return Map<metricName,MetricValue>
+	 */
+	private Map<String, Object> extractMetricMap(SonarHistory sonarHistory) {
+		return sonarHistory.getMetrics().stream().filter(metric -> metric.getMetricValue() != null)
+				.collect(Collectors.toMap(SonarMetric::getMetricName, SonarMetric::getMetricValue));
+	}
+
+	/**
+	 * Used to parse the Map value w.r.t instance
+	 * 
+	 * @param valueToParse
+	 *            valueToParse
+	 * @return Value
+	 */
+	public Long getParsedValue(Object valueToParse) {
+		long value = 0L;
+		if (valueToParse != null) {
+			if (valueToParse instanceof Double) {
+				value = ((Double) valueToParse).longValue();
+			} else if (valueToParse instanceof String) {
+				value = Double.valueOf(valueToParse.toString()).longValue();
+			} else if (valueToParse instanceof Integer) {
+				value = ((Integer) valueToParse).longValue();
+			} else {
+				value = (Long) valueToParse;
+			}
+		}
+		return value;
+	}
+
+	/**
+	 * create sonar kpis data count obj
+	 *
+	 * @param value
+	 *            value
+	 * @param projectName
+	 *            projectName
+	 * @param date
+	 *            date
+	 * @return dataCount
+	 */
+	public DataCount getDataCount(Double value, String projectName, String date) {
+		DataCount dataCount = new DataCount();
+		dataCount.setData(String.valueOf(value));
+		dataCount.setSProjectName(projectName);
+		dataCount.setDate(date);
+		dataCount.setValue(value);
+		dataCount.setHoverValue(new HashMap<>());
+		return dataCount;
+	}
+
+	/**
+	 * Used for division
+	 * 
+	 * @param numerator
+	 *            numerator
+	 * @param denominator
+	 *            denominator
+	 * @return 0d if dem is zero, else num/den
+	 */
+	public double safeDivisionDouble(double numerator, double denominator) {
+		return denominator != 0.0 ? numerator / denominator : 0.0;
+	}
+
+	/**
+	 * to maintain values up to 2 places of decimal
+	 * 
+	 * @param value
+	 *            value
+	 * @return value up to 2 decimal
+	 */
+	public double roundingOff(double value) {
+		return (double) Math.round(value * 100) / 100;
+	}
+
 }

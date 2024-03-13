@@ -33,7 +33,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -107,6 +109,7 @@ public class JiraIterationServiceRTest {
 	private List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
 	private KpiElement ibKpiElement;
 	private Map<String, JiraIterationKPIService> jiraServiceCache = new HashMap<>();
+	private Map<String, AdditionalFilterCategory> additonalFilterMap;
 	@Mock
 	private JiraNonTrendKPIServiceFactory jiraKPIServiceFactory;
 	@Mock
@@ -147,6 +150,14 @@ public class JiraIterationServiceRTest {
 		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
 		List<SprintDetails> sprintDetails = sprintDetailsDataFactory.getSprintDetails();
 		when(sprintRepository.findBySprintIDIn(anyList())).thenReturn(sprintDetails);
+
+		AdditionalFilterCategoryFactory additionalFilterCategoryFactory = AdditionalFilterCategoryFactory.newInstance();
+		List<AdditionalFilterCategory> additionalFilterCategoryList = additionalFilterCategoryFactory
+				.getAdditionalFilterCategoryList();
+		additonalFilterMap = additionalFilterCategoryList.stream()
+				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
+		when(filterHelperService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
+
 	}
 
 	@After
@@ -173,7 +184,7 @@ public class JiraIterationServiceRTest {
 		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
+		when(cacheService.cacheSprintLevelData()).thenReturn(accountHierarchyDataList);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
 		assertEquals(0, resultList.size());
@@ -201,7 +212,7 @@ public class JiraIterationServiceRTest {
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
-		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
+		when(cacheService.cacheSprintLevelData()).thenReturn(accountHierarchyDataList);
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
 		when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream()
 				.filter(s -> s.getLeafNodeId().equalsIgnoreCase("38296_Scrum Project_6335363749794a18e8a4479b"))
@@ -233,6 +244,9 @@ public class JiraIterationServiceRTest {
 	public void TestProcessWithApplicationException() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(5);
+		Map<String, List<String>> selectMap= new HashMap<>();
+		selectMap.put("sqd", Arrays.asList("38296_Scrum Project_6335363749794a18e8a4479b"));
+		kpiRequest.getSelectedMap().putAll(selectMap);
 
 		@SuppressWarnings("rawtypes")
 		JiraIterationKPIService mcokAbstract = iterationBurnupService;
@@ -251,7 +265,7 @@ public class JiraIterationServiceRTest {
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
-		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
+		when(cacheService.cacheSprintLevelData()).thenReturn(accountHierarchyDataList);
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
 		when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream()
 				.filter(s -> s.getLeafNodeId().equalsIgnoreCase("38296_Scrum Project_6335363749794a18e8a4479b"))
@@ -282,7 +296,7 @@ public class JiraIterationServiceRTest {
 	@Test
 	public void processWithExposedApiToken() throws EntityNotFoundException {
 		KpiRequest kpiRequest = createKpiRequest(5);
-		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
+		when(cacheService.cacheSprintLevelData()).thenReturn(accountHierarchyDataList);
 		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
 				.thenReturn(new ArrayList<KpiElement>());
 		List<KpiElement> resultList = jiraServiceR.processWithExposedApiToken(kpiRequest);
