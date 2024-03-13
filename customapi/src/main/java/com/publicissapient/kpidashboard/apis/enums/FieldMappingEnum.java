@@ -248,7 +248,8 @@ public enum FieldMappingEnum {
 	KPI173("Rework Rate", KPISource.BITBUCKET.name(), Collections.singletonList(
 			"thresholdValueKPI173")),
 	KPI176("Risks and Dependencies", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKPI176",
-			"jiraIssueDependencyTypeKPI176", "jiraIssueRiskTypeKPI176"));
+			"jiraIssueDependencyTypeKPI176", "jiraIssueRiskTypeKPI176")),
+	KPI174("Tech Debt Sonar Security", KPISource.SONAR.name(), Arrays.asList("costPerLineKPI174", "thresholdValueKPI174"));
 
 	private List<String> fields;
 	private String kpiName;
