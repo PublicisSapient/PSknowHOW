@@ -148,8 +148,7 @@ public class RisksAndDependenciesKPI {
 				.append(FIELD_LABEL, "Custom Completion status/es").append(FIELD_TYPE, CHIPS)
 				.append(FIELD_CATEGORY, "workflow").append(SECTION, "WorkFlow Status Mapping")
 				.append(TOOL_TIP, new Document(DEFINITION,
-						"All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"))
-				.append(MANDATORY, true);
+						"All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"));
 
 		Document jiraIssueRiskTypeKPI176 = new Document().append(FIELD_NAME, RISK_ISSUETYPE)
 				.append(FIELD_LABEL, "Issue type to identify risks").append(FIELD_TYPE, CHIPS)
