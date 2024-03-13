@@ -83,6 +83,7 @@
         "name": "KnowHOW|PI_10|ITR_6| 07th Sep_Scrum Project",
         "id": "38296_Scrum Project_6335363749794a18e8a4479b",
         "value": 0,
+        "sprintState": "active",
         "accountHierarchy": {
           "nodeName": "KnowHOW|PI_10|ITR_6| 07th Sep_Scrum Project",
           "path": "Scrum Project_6335363749794a18e8a4479b###Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
@@ -92,6 +93,7 @@
           "endDate": "2022-09-27T22:30:00.0000000",
           "labelName": "sprint",
           "createdDat": "2022-09-29T23:54:08.070",
+          "sprintState": "active",
           "nodeId": "38296_Scrum Project_6335363749794a18e8a4479b"
         },
         "parentId": "Scrum Project_6335363749794a18e8a4479b"

@@ -38,6 +38,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -48,6 +49,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -112,6 +114,8 @@ public class ConnectionServiceImplTest {
 	@Mock
 	private RepoToolsProviderRepository repoToolsProviderRepository;
 
+	@Mock
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
 	/**
 	 * method includes preprocesses for test cases
 	 */
@@ -305,6 +309,7 @@ public class ConnectionServiceImplTest {
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
 		RepoToolsProvider provider= new RepoToolsProvider();
 		provider.setTestApiUrl("https://www.test.com");
+		when(repoToolsConfigService.updateRepoToolConnection(connection)).thenReturn(HttpStatus.OK.value());
 		ServiceResponse response = connectionServiceImpl.updateConnection("5fdc809fb55d53cc1692543c", connection);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(((ConnectionDTO) response.getData()).getConnectionName(), connection.getConnectionName());
