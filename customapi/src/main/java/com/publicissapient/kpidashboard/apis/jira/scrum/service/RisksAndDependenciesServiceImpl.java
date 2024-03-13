@@ -51,6 +51,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.publicissapient.kpidashboard.common.constant.CommonConstant.NOT_COMPLETED_ISSUES;
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.OVERALL;
 
 /**
@@ -102,6 +103,7 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 		String requestTrackerId = getRequestTrackerId();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprint, null, null, kpiRequest);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
+		List<String> notcompletedIssues = (List<String>) resultMap.get(NOT_COMPLETED_ISSUES);
 
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			log.info("Risks And Dependencies -> request id : {} total jira Issues : {}", requestTrackerId,
@@ -112,7 +114,7 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 			List<IterationKpiModalValue> riskModalValues = new ArrayList<>();
 			List<IterationKpiModalValue> dependencyModalValues = new ArrayList<>();
 
-			int[] counts = processIssues(allIssues, fieldMapping, modalObjectMap, riskModalValues,
+			int[] counts = processIssues(allIssues,notcompletedIssues, fieldMapping, modalObjectMap, riskModalValues,
 					dependencyModalValues);
 
 			List<IterationKpiValue> iterationKpiValues = createIterationKpiValues(counts, riskModalValues,
@@ -144,7 +146,7 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 	 * @param dependencyModalValues The list containing modal values for dependencies.
 	 * @return An array containing counts of different types of issues.
 	 */
-	private int[] processIssues(List<JiraIssue> allIssues, FieldMapping fieldMapping,
+	private int[] processIssues(List<JiraIssue> allIssues, List<String> notcompletedIssues, FieldMapping fieldMapping,
 			Map<String, IterationKpiModalValue> modalObjectMap, List<IterationKpiModalValue> riskModalValues,
 			List<IterationKpiModalValue> dependencyModalValues) {
 		int riskIssue = 0;
@@ -162,7 +164,7 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 				KPIExcelUtility.populateIterationKPI(dependencyModalValues, new ArrayList<>(), jiraIssue, fieldMapping,
 						modalObjectMap);
 			}
-			if (jiraIssue.getStatus() == null || !jiraIssue.getStatus().equalsIgnoreCase("Closed")) {
+			if (jiraIssue.getNumber() == null || notcompletedIssues.contains(jiraIssue.getNumber())) {
 				if (isRiskOrDependency(fieldMapping.getJiraIssueRiskTypeKPI176(), jiraIssue)) {
 					openRiskIssue++;
 				} else if (isRiskOrDependency(fieldMapping.getJiraIssueDependencyTypeKPI176(), jiraIssue)) {
@@ -256,21 +258,16 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
+				List<String> notcompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+						NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
 					List<JiraIssue> jiraIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues,
 							totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), jiraIssueList);
-					if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())) {
-						List<String> defectType = new ArrayList<>();
-						defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
-						defectType.addAll(fieldMapping.getJiradefecttype());
-						filtersIssuesList = filtersIssuesList.stream()
-								.filter(jiraIssue -> !defectType.contains(jiraIssue.getTypeName()))
-								.collect(Collectors.toSet());
-					}
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
+					resultListMap.put(NOT_COMPLETED_ISSUES,notcompletedIssues);
 				}
 			}
 		}
