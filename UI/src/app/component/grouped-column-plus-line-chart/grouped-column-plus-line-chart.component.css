@@ -99,7 +99,7 @@
 :host::ng-deep.legend-tooltip{
   position: absolute;
   text-align: center;
-  max-width: 220px;
+  max-width: inherit;
   padding: 5px;
   font-size: 10px;
   background: rgba(255, 255, 255, 0.95);

@@ -4692,5 +4692,32 @@
       "8-10",
       "10-"
     ]
+  },
+  {
+    "kpiId": "kpi176",
+    "kpiName": "Risks And Dependencies",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 6,
+    "kpiCategory": "Iteration",
+    "kpiSubCategory": "Iteration Review",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "definition": "It shows the count of issues which do not have estimates and count of In progress issues without any work logs.",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680674/Estimate+Hygiene"
+          }
+        }
+      ]
+    }
   }
 ]

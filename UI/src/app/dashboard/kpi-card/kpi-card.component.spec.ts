@@ -249,6 +249,14 @@ describe('KpiCardComponent', () => {
   })
 
   it('should get Mapping configuration',()=>{
+    component.kpiData = {
+      kpiId: 'kpi3',
+      kpiDetail: {
+        kpiId: 'kpi3',
+        kpiSource: 'Jira',
+        combinedKpiSource :'Jira/Azure'
+      }
+    };
     spyOn(sharedService,'getSelectedTab').and.returnValue('My Dashboard');
     spyOn(sharedService,'getSelectedType').and.returnValue('scrum');
     spyOn(sharedService,'getSelectedTrends').and.returnValue([{basicProjectConfigId : '123'}]);
@@ -428,6 +436,20 @@ describe('KpiCardComponent', () => {
   });
 
   it('should set loading to false and noData to true when fieldMappingConfig length is 0', () => {
+    component.kpiData = {
+      kpiId: 'kpi3',
+      kpiName: 'Lead Time',
+      isEnabled: true,
+      order: 25,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff0',
+        kpiId: 'kpi3',
+        kpiName: 'Lead Time',
+        kpiSource: 'Jira',
+        combinedKpiSource : 'Jira/Azure'
+      },
+      shown: true
+    };
     // Arrange
     const selectedTab = 'release';
     const selectedType = 'scrum';
@@ -448,6 +470,17 @@ describe('KpiCardComponent', () => {
 
   it('should handle no data for KPI field mapping config', fakeAsync(() => {
     // Arrange
+    component.kpiData = {
+     kpiId: 'kpi3',
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff0',
+        kpiId: 'kpi3',
+        kpiName: 'Lead Time',
+        kpiSource: 'Jira',
+        combinedKpiSource : 'Jira/Azure'
+      },
+      shown: true
+    };
     const selectedTab = 'my dashboard';
     const selectedType = 'scrum';
     const selectedTrend = [{ basicProjectConfigId: '123' }];
@@ -482,7 +515,12 @@ describe('KpiCardComponent', () => {
       }
     };
     component.kpiData = {
-      kpiId: 'kpiId'
+      kpiId: 'kpiId',
+      kpiDetail : {
+        combinedKpiSource : 'Jira/Azure',
+        kpiSource : 'Jira'
+      }
+      
     }
     component.selectedToolConfig = [];
     component.selectedConfig = {};
@@ -561,4 +599,6 @@ describe('KpiCardComponent', () => {
     expect(component.userRole).toBe('projectAdmin');
     expect(component.checkIfViewer).toBe(true);
   });
+
+  
 });

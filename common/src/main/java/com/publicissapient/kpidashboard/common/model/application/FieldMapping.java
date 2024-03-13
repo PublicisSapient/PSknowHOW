@@ -64,6 +64,8 @@ public class FieldMapping extends BasicModel {
 	private String[] jiraIssueTypeNames;
 	private String[] jiraIssueTypeNamesAVR;
 	private List<String> jiraIssueEpicType;
+	private List<String> jiraIssueRiskTypeKPI176;
+	private List<String> jiraIssueDependencyTypeKPI176;
 	private String storyFirstStatus;
 	private String storyFirstStatusKPI148;
 	private String rootCause;
@@ -152,6 +154,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueDeliverdStatusAVR;
 	private List<String> jiraIssueDeliverdStatusKPI126;
 	private List<String> jiraIssueDeliverdStatusKPI82;
+	private List<String> jiraIterationCompletionStatusKPI176;
 
 	private String readyForDevelopmentStatus;
 	private List<String> readyForDevelopmentStatusKPI138;
@@ -487,6 +490,9 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDorKPI171;
 	private List<String> jiraLiveStatusKPI171;
 	private String storyFirstStatusKPI171;
+
+	private String thresholdValueKPI174;
+	private Integer costPerLineKPI174;
 
 	/**
 	 * Get jira issue type names string [ ].
