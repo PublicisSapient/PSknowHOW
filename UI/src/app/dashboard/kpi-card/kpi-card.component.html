@@ -176,7 +176,15 @@
     <ng-template pTemplate="header">
         <div class="inline-flex align-items-center justify-content-center gap-2">
             <p class="font-bold white-space-nowrap">{{kpiData?.kpiName}}</p>
-            <span class="font-bold white-space-nowrap">Last Sync: {{lastSyncTime}}</span>
+            <span class="font-bold white-space-nowrap" [ngClass]="{'green': isSyncPassedOrFailed === true, 'red' : ((isSyncPassedOrFailed === false)&& (lastSyncTime !== 'NA'))}">Last Sync: {{lastSyncTime}}
+                <span *ngIf="lastSyncTime !== 'NA'">
+                    <img *ngIf="isSyncPassedOrFailed === true" src="../../../assets/img/icon-success.svg"
+                        alt="Success" class="p-mr-1" />
+                    <img *ngIf="isSyncPassedOrFailed === false" src="../../../assets/img/icon-failure.svg"
+                        alt="Failure" class="p-mr-1" />
+                </span>
+            </span>
+            
         </div>
     </ng-template>
     <hr>
