@@ -274,8 +274,10 @@ export class HttpService {
 
   /**  logout from the server */
   logout(): Observable<any> {
+    console.log(environment?.['AUTHENTICATION_SERVICE']);
     if(environment?.['AUTHENTICATION_SERVICE'] === true){
       this.logoutUrl = this.baseUrl + '/api/centralUserlogout';
+      alert("auth flag 4: " + environment?.['AUTHENTICATION_SERVICE'] + " " + this.logoutUrl)
     }
     return this.http.get(this.logoutUrl);
   }
@@ -549,9 +551,10 @@ export class HttpService {
 
   /** Update access (RBAC) */
   updateAccess(requestData, username): Observable<any> {
-    alert("auth flag 2: " + environment?.['AUTHENTICATION_SERVICE'] + " " + this.updateAccessUrl);
+    console.log("updateAccess", environment?.['AUTHENTICATION_SERVICE']);
     if(environment?.['AUTHENTICATION_SERVICE'] === true){
       this.updateAccessUrl = this.baseUrl + '/api/userinfo/central/'
+      alert("auth flag 2: " + environment?.['AUTHENTICATION_SERVICE'] + " " + this.updateAccessUrl);
     }
     return this.http.post(this.updateAccessUrl + username, requestData);
   }
@@ -565,9 +568,11 @@ export class HttpService {
 
   /** get pending request notifications */
   getAccessRequestsNotifications() {
-  alert("auth flag 3: " + environment?.['AUTHENTICATION_SERVICE'] + " " + this.getAccessRequestNotificationsUrl);
-  if(environment?.['AUTHENTICATION_SERVICE'] === true){
-    this.getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification/central';
+    console.log("getAccessRequestsNotifications", environment?.['AUTHENTICATION_SERVICE']);
+    
+    if(environment?.['AUTHENTICATION_SERVICE'] === true){
+      this.getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification/central';
+      alert("auth flag 3: " + environment?.['AUTHENTICATION_SERVICE'] + " " + this.getAccessRequestNotificationsUrl);
   }  
   return this.http
       .get<NotificationResponseDTO>(this.getAccessRequestNotificationsUrl)
@@ -953,6 +958,7 @@ export class HttpService {
   }
 
   getNewUserAccessRequestFromAPI() {
+    console.log("getNewUserAccessRequestFromAPI", environment?.['AUTHENTICATION_SERVICE']);
     if(environment?.['AUTHENTICATION_SERVICE'] === true){
       this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
     }
