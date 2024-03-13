@@ -9,7 +9,7 @@ ARG GID=1000
 RUN yum install -y shadow-utils \
     && ln -sf /bin/bash /bin/sh \ 
     && groupadd -g $GID $USER \
-    && useradd -u $UID -g $GID -m -s /bin/bash $USER
+    && useradd -u $UID -g $GID -m -s /bin/bash $USER 
 
 # Set the environment variables
 ENV CONFIG_LOCATION="/app/properties/customapi.properties" \
@@ -29,7 +29,8 @@ COPY src/main/resources/application.properties /app/properties/customapi.propert
 COPY start_combined_collector.sh /app/start_combined_collector.sh
 
 # Change ownership to the non-root user
-RUN chown -R $USER:$USER /app
+RUN chmod 666 $keystorefile \
+    && chown -R $USER:$USER /app
 
 # Give execute permissions to the script
 RUN chmod +x /app/start_combined_collector.sh
