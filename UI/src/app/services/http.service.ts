@@ -130,7 +130,7 @@ export class HttpService {
   private usersCountUrl = this.baseUrl + '/api/landingpage/userscount';
   private autoApproveUrl = this.baseUrl + '/api/autoapprove';
   private saveShowHideKpiUrl = this.baseUrl + '/api/user-board-config/saveAdmin';
-  private newUserAccessRequestUrl = environment?.['AUTHENTICATION_SERVICE'] === true ? this.baseUrl + '/api/userapprovals/central' : this.baseUrl + '/api/userapprovals';
+  private newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals';
   private sonarVersionURL = this.baseUrl + '/api/sonar/version';
   private projectKeyRequestUrl = this.baseUrl + '/api/sonar/project';
   private branchListRequestUrl = this.baseUrl + '/api/sonar/branch';
@@ -953,12 +953,18 @@ export class HttpService {
   }
 
   getNewUserAccessRequestFromAPI() {
+    if(environment?.['AUTHENTICATION_SERVICE'] === true){
+      this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
+    }
     return this.http.get<UserAccessApprovalResponseDTO>(
       this.newUserAccessRequestUrl,
     );
   }
 
   updateNewUserAccessRequest(reqBody: UserAccessReqPayload, username: string) {
+    if(environment?.['AUTHENTICATION_SERVICE'] === true){
+      this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
+    }
     return this.http.put<any>(
       `${this.newUserAccessRequestUrl}/${username}`,
       reqBody,
