@@ -83,7 +83,8 @@ public class RisksAndDependenciesKPI {
 	}
 
 	public void updateMetaDataIdentifier() {
-		Document filterQuery = new Document("templateCode", "7");
+		List<String> templateCodes = Arrays.asList("7", "6", "5", "4");
+		Document filterQuery = new Document("templateCode", new Document("$in", templateCodes));
 
 		Document metaDataIdentifierRisk = new Document("type", RISK_ISSUETYPE).append("value", List.of("Risk"));
 		Document metaDataIdentifierDependency = new Document("type", DEPENPENCY_ISSUETYPE).append("value", List.of("Dependency"));
@@ -92,8 +93,8 @@ public class RisksAndDependenciesKPI {
 		Document updateOperation1 = new Document("$push", new Document(ISSUES, metaDataIdentifierDependency));
 
 		MongoCollection<Document> metadataIdentifierCollection = mongoTemplate.getCollection("metadata_identifier");
-		metadataIdentifierCollection.updateOne(filterQuery, updateOperation);
-		metadataIdentifierCollection.updateOne(filterQuery, updateOperation1);
+		metadataIdentifierCollection.updateMany(filterQuery, updateOperation);
+		metadataIdentifierCollection.updateMany(filterQuery, updateOperation1);
 	}
 
 	public void addToKpiMaster() {
@@ -198,7 +199,8 @@ public class RisksAndDependenciesKPI {
 	}
 
 	public void deleteMetadataEntries() {
-		Document filterQuery = new Document("templateCode", "7");
+		List<String> templateCodes = Arrays.asList("7", "6", "5", "4");
+		Document filterQuery = new Document("templateCode", new Document("$in", templateCodes));
 
 		Document metaDataIdentifierRisk = new Document("type", RISK_ISSUETYPE);
 		Document metaDataIdentifierDependency = new Document("type", DEPENPENCY_ISSUETYPE);
@@ -207,8 +209,8 @@ public class RisksAndDependenciesKPI {
 		Document updateOperation1 = new Document("$pull", new Document(ISSUES, metaDataIdentifierDependency));
 
 		MongoCollection<Document> metadataIdentifierCollection = mongoTemplate.getCollection("metadata_identifier");
-		metadataIdentifierCollection.updateOne(filterQuery, updateOperation);
-		metadataIdentifierCollection.updateOne(filterQuery, updateOperation1);
+		metadataIdentifierCollection.updateMany(filterQuery, updateOperation);
+		metadataIdentifierCollection.updateMany(filterQuery, updateOperation1);
 	}
 
 }
