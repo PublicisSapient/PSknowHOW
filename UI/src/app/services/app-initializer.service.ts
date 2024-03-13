@@ -98,7 +98,6 @@ export class AppInitializerService {
     return new Promise<void>((resolve, reject) => {
       if (!environment['production']) {
         this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
-        alert("inside app initializer when prod is false " + environment['production'])
         this.validateToken();
       } else {
         const env$ = this.http.get('assets/env.json').pipe(
@@ -109,9 +108,6 @@ export class AppInitializerService {
             environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
             environment['MAP_URL'] = env['MAP_URL'] || '';
             environment['RETROS_URL'] = env['RETROS_URL'] || '';
-            alert("app initializer when prod is true AUTHENTICATION_SERVICE " + environment['AUTHENTICATION_SERVICE']);
-            alert("app initializer when prod is true CENTRAL_LOGIN_URL " + environment['CENTRAL_LOGIN_URL'])
-            alert("app initializer when prod is true SSO_LOGIN " + environment['SSO_LOGIN'])
             this.validateToken();
           }));
         env$.toPromise().then(async res => {
@@ -136,7 +132,6 @@ export class AppInitializerService {
 
   validateToken() {
     return new Promise<void>((resolve, reject) => {
-      alert("inside validate token func " + environment['AUTHENTICATION_SERVICE'])
         if (environment['AUTHENTICATION_SERVICE']) {
           this.router.resetConfig(this.routes);
           let url = window.location.href;

@@ -95,21 +95,14 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                     if (err.status === 401) {
                         if (requestArea === 'internal') {
                             this.service.setCurrentUserDetails({});
-                            alert("inside interceptor outside environment['SSO_LOGIN'] " + environment?.['SSO_LOGIN'])
-                            alert("inside interceptor outside environment.SSO_LOGIN " + environment.SSO_LOGIN + " " + typeof environment.SSO_LOGIN);
                             if(environment?.['SSO_LOGIN'] === true){
-                                alert("inside interceptor if environment.SSO_LOGIN " + environment.SSO_LOGIN)
+                                console.log('SSO_LOGIN', true)
                             }else{
-                                alert("inside interceptor else environment.SSO_LOGIN " + environment.SSO_LOGIN);
-                                alert("inside interceptor environment.AUTHENTICATION_SERVICE " + environment.AUTHENTICATION_SERVICE);
                                 if(environment.AUTHENTICATION_SERVICE){
-
                                     /** redirect to central login url*/
                                     let redirect_uri = window.location.href;
                                     localStorage.setItem('redirect_uri', window.location.hash);
-                                    alert("inside interceptor environment.CENTRAL_LOGIN_URL " + environment.CENTRAL_LOGIN_URL);
                                     if(environment.CENTRAL_LOGIN_URL){
-                                        alert("Just before redirection")
                                         window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
                                     }
                                 }else{
