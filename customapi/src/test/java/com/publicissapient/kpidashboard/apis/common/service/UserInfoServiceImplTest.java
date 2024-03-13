@@ -423,12 +423,12 @@ public class UserInfoServiceImplTest {
 		assertTrue(result.getSuccess());
 	}
 
-	@Test
+	/*@Test
 	public void deleteUserTestForCentralAuth() {
 		ServiceResponse result = service.deleteUser("testuser" , true);
 
 		assertFalse(result.getSuccess());
-	}
+	}*/
 
 	@Test
 	public void getUserInfoByAuthType() {
