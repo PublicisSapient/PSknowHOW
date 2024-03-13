@@ -52,7 +52,7 @@ export class HttpService {
   private masterDataUrl = this.baseUrl + '/api/masterData';
   private downloadAllKpiReportUrl = this.baseUrl + '/api/v1/kpi';
   private downloadKpiWiseReportUrl = this.baseUrl + '/api/v1/kpi';
-  private logoutUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/centralUserlogout' : this.baseUrl + '/api/userlogout';
+  private logoutUrl = environment['AUTHENTICATION_SERVICE'] === true ? this.baseUrl + '/api/centralUserlogout' : this.baseUrl + '/api/userlogout';
   private configDetailsUrl = this.baseUrl + '/api/configDetails';
   private enginneringMaturityUrl = this.baseUrl + '/api/v1/enggMaturity';
   private enginneringMaturityTableUrl = this.baseUrl + '/api/emm/tableview';
@@ -82,8 +82,7 @@ export class HttpService {
   private getRolesUrl = this.baseUrl + '/api/roles';
   private raiseAccessRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getAccessRequestsUrl = this.baseUrl + '/api/accessrequests/status';
-  alert("auth http flag 1 : " + environment['AUTHENTICATION_SERVICE']);
-  private getAccessRequestNotificationsUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/accessrequests/Pending/notification/central' : this.baseUrl + '/api/accessrequests/Pending/notification';
+  private getAccessRequestNotificationsUrl = environment['AUTHENTICATION_SERVICE'] === true ? this.baseUrl + '/api/accessrequests/Pending/notification/central' : this.baseUrl + '/api/accessrequests/Pending/notification';
   private updateRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getUserAccessRequestsUrl = this.baseUrl + '/api/accessrequests/user';
   private getScenariosUrl = this.baseUrl + '/api/scenario';
@@ -99,7 +98,7 @@ export class HttpService {
   private getAllProjectsUrl = this.baseUrl + '/api/basicconfigs/all';
   private deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
   private getAllUsersUrl = this.baseUrl + '/api/userinfo';
-  private updateAccessUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/userinfo/central/' : this.baseUrl + '/api/userinfo/';
+  private updateAccessUrl = environment['AUTHENTICATION_SERVICE'] === true ? this.baseUrl + '/api/userinfo/central/' : this.baseUrl + '/api/userinfo/';
   private getKPIConfigMetadataUrl =
     this.baseUrl + '/api/editConfig/jira/editKpi/';
   /** KnowHOW Lite */
@@ -131,7 +130,7 @@ export class HttpService {
   private usersCountUrl = this.baseUrl + '/api/landingpage/userscount';
   private autoApproveUrl = this.baseUrl + '/api/autoapprove';
   private saveShowHideKpiUrl = this.baseUrl + '/api/user-board-config/saveAdmin';
-  private newUserAccessRequestUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/userapprovals/central' : this.baseUrl + '/api/userapprovals';
+  private newUserAccessRequestUrl = environment['AUTHENTICATION_SERVICE'] === true ? this.baseUrl + '/api/userapprovals/central' : this.baseUrl + '/api/userapprovals';
   private sonarVersionURL = this.baseUrl + '/api/sonar/version';
   private projectKeyRequestUrl = this.baseUrl + '/api/sonar/project';
   private branchListRequestUrl = this.baseUrl + '/api/sonar/branch';
@@ -185,6 +184,7 @@ export class HttpService {
         this.userEmail = details['user_email'];
       }
     });
+    alert("auth http flag 1 : " + environment['AUTHENTICATION_SERVICE']);
   }
 
   /** getFilterData from the server */
