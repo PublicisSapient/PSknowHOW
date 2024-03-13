@@ -65,6 +65,8 @@ spec:
             value: "https://stage-retrospective.tools.publicis.sapient.com"
           - name: AUTHENTICATION_SERVICE
             value: "true"
+          - name: production
+            value: "true"
 ---
 apiVersion: v1
 kind: Service
