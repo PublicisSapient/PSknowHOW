@@ -3106,5 +3106,76 @@
       "isShown": true,
       "isDefault": false
     }]
+  },
+
+  {
+    "basicProjectConfigId": null,
+    "kpiId": "kpi176",
+    "kpiColumnDetails": [{
+      "columnName": "Issue Id",
+      "order": 0,
+      "isShown": true,
+      "isDefault": true
+    }, {
+      "columnName": "Issue Type",
+      "order": 1,
+      "isShown": true,
+      "isDefault": true
+    }, {
+      "columnName": "Issue Description",
+      "order": 2,
+      "isShown": true,
+      "isDefault": true
+    }, {
+      "columnName": "Issue Status",
+      "order": 3,
+      "isShown": true,
+      "isDefault": true
+    }, {
+      "columnName": "Priority",
+      "order": 4,
+      "isShown": true,
+      "isDefault": true
+    }, {
+      "columnName": "Created Date",
+      "order": 5,
+      "isShown": true,
+      "isDefault": true
+    }, {
+      "columnName": "Assignee",
+      "order": 6,
+      "isShown": true,
+      "isDefault": false
+    }]
+  },
+  {
+    "basicProjectConfigId": null,
+    "kpiId": "kpi174",
+    "kpiColumnDetails": [
+      {
+        "columnName": "Project",
+        "order": 0,
+        "isShown": true,
+        "isDefault": false
+      },
+      {
+        "columnName": "Job Name",
+        "order": 1,
+        "isShown": true,
+        "isDefault": false
+      },
+      {
+        "columnName": "Remediation Effort",
+        "order": 2,
+        "isShown": true,
+        "isDefault": false
+      },
+      {
+        "columnName": "Weeks",
+        "order": 3,
+        "isShown": true,
+        "isDefault": false
+      }
+    ]
   }
 ]

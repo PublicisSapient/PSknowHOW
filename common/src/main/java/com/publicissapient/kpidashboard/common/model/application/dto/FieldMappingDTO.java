@@ -60,6 +60,8 @@ public class FieldMappingDTO extends BasicModel {
 
     private String[] jiraIssueTypeNames;
     private String[] jiraIssueTypeNamesAVR;
+    private List<String> jiraIssueRiskTypeKPI176;
+    private List<String> jiraIssueDependencyTypeKPI176;
     private String storyFirstStatus;
     private String storyFirstStatusKPI148;
     private String[] linkDefectToStoryField;
@@ -147,6 +149,7 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> jiraIssueDeliverdStatusAVR;
     private List<String> jiraIssueDeliverdStatusKPI126;
     private List<String> jiraIssueDeliverdStatusKPI82;
+    private List<String> jiraIterationCompletionStatusKPI176;
 
     private String readyForDevelopmentStatus;
     private List<String> readyForDevelopmentStatusKPI138;
@@ -454,6 +457,7 @@ public class FieldMappingDTO extends BasicModel {
     private String thresholdValueKPI170;
     private String thresholdValueKPI139;
     private String thresholdValueKPI166;
+    private String thresholdValueKPI173;
 
     private String jiraProductionIncidentIdentification;
     private String jiraProdIncidentRaisedByCustomField;
@@ -486,6 +490,9 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> jiraDorKPI171;
     private List<String> jiraLiveStatusKPI171;
     private String storyFirstStatusKPI171;
+
+    private String thresholdValueKPI174;
+    private Integer costPerLineKPI174;
 
     /**
      * Get jira issue type names string [ ].

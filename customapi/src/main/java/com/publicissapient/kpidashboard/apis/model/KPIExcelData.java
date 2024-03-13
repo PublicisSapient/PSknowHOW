@@ -406,5 +406,20 @@ public class KPIExcelData {
 	@JsonProperty("Escaped defect identifier")
 	private String escapedIdentifier;
 
+	@JsonProperty("Rework Rate")
+	private Double reworkRate;
+
+	@JsonProperty("To Do")
+	private String toDo;
+
+	@JsonProperty("In Progress")
+	private String inProgress;
+
+	@JsonProperty("Done")
+	private String done;
+
+	@JsonProperty("Remediation Effort")
+	private String remediationEffort;
+
 
 }

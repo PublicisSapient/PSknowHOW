@@ -244,7 +244,12 @@ public enum FieldMappingEnum {
 	KPI116("Change Failure Rate", KPISource.JENKINS.name(), Collections.singletonList("thresholdValueKPI116")),
 	KPI118("Deployment Frequency", KPISource.JENKINS.name(), Collections.singletonList("thresholdValueKPI118")),
 	KPI144("Defect Count By Priority",  KPISource.JIRA.name(), Collections.singletonList("jiraDodKPI144")),
-	KPI142("Defect Count By RCA",  KPISource.JIRA.name(), Collections.singletonList("jiraDodKPI142"));
+	KPI142("Defect Count By RCA",  KPISource.JIRA.name(), Collections.singletonList("jiraDodKPI142")),
+	KPI173("Rework Rate", KPISource.BITBUCKET.name(), Collections.singletonList(
+			"thresholdValueKPI173")),
+	KPI176("Risks and Dependencies", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKPI176",
+			"jiraIssueDependencyTypeKPI176", "jiraIssueRiskTypeKPI176")),
+	KPI174("Tech Debt Sonar Security", KPISource.SONAR.name(), Arrays.asList("costPerLineKPI174", "thresholdValueKPI174"));
 
 	private List<String> fields;
 	private String kpiName;

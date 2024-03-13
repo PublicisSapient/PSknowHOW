@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { ToastModule } from 'primeng/toast';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { FormsModule } from '@angular/forms';
@@ -31,6 +31,7 @@ import { environment } from 'src/environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RequestStatusComponent } from './request-status.component';
 import { TableModule } from 'primeng/table';
+import { of } from 'rxjs';
 
 describe('RequestStatusComponent', () => {
   let component: RequestStatusComponent;
@@ -39,6 +40,7 @@ describe('RequestStatusComponent', () => {
   let httpMock;
   let messageService;
   let sharedService;
+  let confirmationService;
   const baseUrl = environment.baseUrl;
 
   const fakeRequestsData = {
@@ -111,6 +113,7 @@ describe('RequestStatusComponent', () => {
     httpMock = TestBed.get(HttpTestingController);
     messageService = TestBed.get(MessageService);
     sharedService= TestBed.inject(SharedService);
+    confirmationService = TestBed.inject(ConfirmationService);
     fixture.detectChanges();
   });
 
@@ -131,16 +134,30 @@ describe('RequestStatusComponent', () => {
     httpMock.match(baseUrl + '/api/accessrequests/user/' + component.userName)[0].flush(fakeRequestsData);
     if (component.requestStatusData['success']) {
       expect(Object.keys(component.requestStatusList).length).toEqual(Object.keys(fakeRequestsData.data).length);
-    } else {
-      // component.messageService.add({ severity: 'error', summary: 'Error in fetching roles. Please try after some time.' });
     }
   });
+
+  it('should give error on getting pending requests', () => {
+    component.dataLoading = true;
+    component.userName = 'testUser';
+    const errorResponse = {
+      message: 'Error in fetching requests. Please try after some time.',
+      success: false,
+      data: []
+    }
+    component.requestStatusList = [];
+    spyOn(httpService, 'getUserAccessRequests').and.returnValue(of(errorResponse))
+    const spy = spyOn(messageService, 'add');
+    component.getRequests();
+    expect(Object.keys(component.requestStatusList).length).toEqual(0);
+    expect(spy).toHaveBeenCalled();
+  });  
 
   it('should delete request', () => {
     const requestId = '6063052eab1d4700013e5aff';
     const fakeEvent = { isTrusted: true };
     const recallResponse = { message: 'Sucessfully deleted.', success: true, data: '6063052eab1d4700013e5aff' };
-    const confirmationService = TestBed.inject(ConfirmationService);
+    
     spyOn<any>(confirmationService, 'confirm').and.callFake((params: any) => {
       params.accept();
       httpMock.expectOne(baseUrl + '/api/accessrequests/6063052eab1d4700013e5aff').flush(recallResponse);
@@ -148,4 +165,19 @@ describe('RequestStatusComponent', () => {
     component.recallRequest(requestId, fakeEvent);
     fixture.detectChanges();
   });
+
+  it('should give error on deleting request', fakeAsync(() => {
+    component.dataLoading = true;
+    const requestId = '6063052eab1d4700013e5aff';
+    const fakeEvent = { isTrusted: true };
+    const recallResponse = { message: 'Error in recalling request. Please try after some time.', success: false };
+    const spy = spyOn(messageService, 'add');
+    spyOn<any>(confirmationService, 'confirm').and.callFake((params: any) => {
+      params.accept();
+      httpMock.expectOne(baseUrl + '/api/accessrequests/6063052eab1d4700013e5aff').flush(recallResponse);
+    });
+    component.recallRequest(requestId, fakeEvent);
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }))
 });

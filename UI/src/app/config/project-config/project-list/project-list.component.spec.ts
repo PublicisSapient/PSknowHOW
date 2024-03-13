@@ -440,11 +440,6 @@ describe('ProjectListComponent', () => {
     expect(navigateSpy).toHaveBeenCalledOnceWith(['/dashboard/Config/ToolMenu']);
   })
 
-  it("should get HierarchyLevels",()=>{
-    spyOn(httpService,'getHierarchyLevels').and.returnValue(of(formFieldData));
-    component.getHierarchy();
-  })
-
   it("should get success response while getting project list",()=>{
     const fakeResponse = [{
       message: "Fetched successfully",

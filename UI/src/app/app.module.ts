@@ -125,10 +125,15 @@ import { AppInitializerService } from './services/app-initializer.service';
 
 /******************************************************/
 export function initializeApp(initializeService: AppInitializerService) {
-    return () => {
-        // initializeService.validateToken();
+    return (): Promise<any> => { 
+        return initializeService.validateToken();
+    }
+}
+
+export function initializeApp2(initializeService: AppInitializerService) {
+    return (): Promise<any> => { 
         return initializeService.checkFeatureFlag();
-    };
+    }
 }
 
 @NgModule({
@@ -236,7 +241,14 @@ export function initializeApp(initializeService: AppInitializerService) {
         {
             provide: APP_INITIALIZER,
             useFactory: initializeApp,
-            deps: [AppInitializerService]
+            deps: [AppInitializerService],
+            multi: true
+        },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: initializeApp2,
+            deps: [AppInitializerService],
+            multi: true
         }
     ],
     bootstrap: [AppComponent]

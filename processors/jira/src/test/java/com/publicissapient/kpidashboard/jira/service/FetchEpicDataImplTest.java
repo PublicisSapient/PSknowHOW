@@ -129,7 +129,7 @@ public class FetchEpicDataImplTest {
 		when(jiraCommonService.getDataFromClient(any(), any(), any())).thenReturn(epicResponse);
 		when(jiraProcessorConfig.getSubsequentApiCallDelayInMilli()).thenReturn(1000l);
 		when(jiraProcessorConfig.getPageSize()).thenReturn(30);
-		when(client.getSearchClient()).thenReturn(searchRestClient);
+		when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
 		when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), any())).thenReturn(promise);
 
 		when(promise.claim()).thenReturn(searchResult);

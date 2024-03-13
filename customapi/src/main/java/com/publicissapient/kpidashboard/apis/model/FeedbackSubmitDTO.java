@@ -16,8 +16,6 @@ import lombok.NoArgsConstructor;
 public class FeedbackSubmitDTO {
 	private String username;
 	private String feedback;
-	private String category;
-	private String feedbackType;
 
 	@Override
 	public String toString() {
