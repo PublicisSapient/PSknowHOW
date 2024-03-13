@@ -3165,7 +3165,7 @@
         "isDefault": false
       },
       {
-        "columnName": "Remediation Effort Change",
+        "columnName": "Remediation Effort",
         "order": 2,
         "isShown": true,
         "isDefault": false

@@ -308,7 +308,7 @@ public enum KPIExcelColumn {
 
 	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee")),
 
-	TECH_DEBT_SONAR_SECURITY("kpi174", Arrays.asList("Project", "Job Name", "Remediation Effort Change", "Weeks"));
+	TECH_DEBT_SONAR_SECURITY("kpi174", Arrays.asList("Project", "Job Name", "Remediation Effort", "Weeks"));
 
 	// @formatter:on
 

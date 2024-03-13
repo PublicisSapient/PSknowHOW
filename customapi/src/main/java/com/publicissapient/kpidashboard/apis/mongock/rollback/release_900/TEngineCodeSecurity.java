@@ -135,7 +135,7 @@ public class TEngineCodeSecurity {
 										.append(IS_DEFAULT, false),
 								new Document(COLUMN_NAME, "Job Name").append(ORDER, 1).append(IS_SHOWN, true)
 										.append(IS_DEFAULT, false),
-								new Document(COLUMN_NAME, "Remediation Effort Change").append(ORDER, 2)
+								new Document(COLUMN_NAME, "Remediation Effort").append(ORDER, 2)
 										.append(IS_SHOWN, true).append(IS_DEFAULT, false),
 								new Document(COLUMN_NAME, "Weeks").append(ORDER, 3).append(IS_SHOWN, true)
 										.append(IS_DEFAULT, false)));

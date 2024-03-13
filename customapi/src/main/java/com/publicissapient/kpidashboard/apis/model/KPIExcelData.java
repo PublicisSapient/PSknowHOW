@@ -418,7 +418,7 @@ public class KPIExcelData {
 	@JsonProperty("Done")
 	private String done;
 
-	@JsonProperty("Remediation Effort Change")
+	@JsonProperty("Remediation Effort")
 	private String remediationEffort;
 
 
