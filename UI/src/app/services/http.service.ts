@@ -82,6 +82,7 @@ export class HttpService {
   private getRolesUrl = this.baseUrl + '/api/roles';
   private raiseAccessRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getAccessRequestsUrl = this.baseUrl + '/api/accessrequests/status';
+  alert("auth http flag 1 : " + environment['AUTHENTICATION_SERVICE']);
   private getAccessRequestNotificationsUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/accessrequests/Pending/notification/central' : this.baseUrl + '/api/accessrequests/Pending/notification';
   private updateRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getUserAccessRequestsUrl = this.baseUrl + '/api/accessrequests/user';
@@ -545,7 +546,7 @@ export class HttpService {
 
   /** Update access (RBAC) */
   updateAccess(requestData, username): Observable<any> {
-  alert("auth flag" + environment['AUTHENTICATION_SERVICE']);
+  alert("auth flag 2: " + environment['AUTHENTICATION_SERVICE']);
     return this.http.post(this.updateAccessUrl + username, requestData);
   }
 
@@ -558,7 +559,7 @@ export class HttpService {
 
   /** get pending request notifications */
   getAccessRequestsNotifications() {
-  alert("auth flag" + environment['AUTHENTICATION_SERVICE']);
+  alert("auth flag 3: " + environment['AUTHENTICATION_SERVICE']);
     return this.http
       .get<NotificationResponseDTO>(this.getAccessRequestNotificationsUrl)
       .pipe(map((requests) => requests));
