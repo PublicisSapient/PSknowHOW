@@ -588,10 +588,8 @@ export class HelperService {
             const hiddenkpis = configGlobalData.filter(item => !item.shown);
             hiddenkpis.map((kpi, index) => kpi.order = upDatedConfigData.length + disabledKpis.length + index + 3);
             if(extraKpis){
-                console.log(extraKpis)
                 this.sharedService.kpiListNewOrder.next([extraKpis,...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
             }else{
-                console.log('without extra container')
                 this.sharedService.kpiListNewOrder.next([...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
             }
             
