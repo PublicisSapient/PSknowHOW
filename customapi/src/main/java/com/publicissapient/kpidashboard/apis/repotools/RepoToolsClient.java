@@ -21,7 +21,8 @@ package com.publicissapient.kpidashboard.apis.repotools;
 import java.net.URI;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.model.RepoToolConnectionDetail;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnectionDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -71,15 +72,15 @@ public class RepoToolsClient {
 		return response.getStatusCode().value();
 	}
 
-	public void updateConnection(List<RepoToolConnectionDetail> repoToolConnectionDetails, String connectionUpdateURL, String apiKey)
-	{
+	public void updateConnection(RepoToolConnModel repoToolConnectionDetails, String connectionUpdateURL,
+			String apiKey) {
 		setHttpHeaders(apiKey);
 		Gson gson = new Gson();
 		String payload = gson.toJson(repoToolConnectionDetails);
 		log.info("updating connection request for {} ", repoToolConnectionDetails);
 		URI url = URI.create(connectionUpdateURL);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 		log.debug(response.getBody());
 	}
 

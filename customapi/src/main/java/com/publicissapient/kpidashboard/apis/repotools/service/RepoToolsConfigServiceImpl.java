@@ -25,7 +25,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.model.RepoToolConnectionDetail;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnectionDetail;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -361,9 +362,10 @@ public class RepoToolsConfigServiceImpl {
 			repoToolConnectionDetail.setUsername(conn.getUsername());
 			repoToolConnectionDetail.setProvider(conn.getRepoToolProvider());
 			repoToolConnectionDetails.add(repoToolConnectionDetail);
+			RepoToolConnModel repoToolConnModel = new RepoToolConnModel(repoToolConnectionDetails);
 
 			// api call to update the detail
-			repoToolsClient.updateConnection(repoToolConnectionDetails,
+			repoToolsClient.updateConnection(repoToolConnModel,
 					customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolUpdateConnectionUrl(),
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 			return HttpStatus.OK.value();

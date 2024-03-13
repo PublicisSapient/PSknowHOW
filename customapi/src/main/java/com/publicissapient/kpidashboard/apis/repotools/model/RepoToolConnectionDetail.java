@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.model;
+package com.publicissapient.kpidashboard.apis.repotools.model;
 
 import lombok.Getter;
 import lombok.Setter;
