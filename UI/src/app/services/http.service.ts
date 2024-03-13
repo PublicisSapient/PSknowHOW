@@ -184,7 +184,7 @@ export class HttpService {
         this.userEmail = details['user_email'];
       }
     });
-    alert("auth http flag 1 : " + environment['AUTHENTICATION_SERVICE']);
+    alert("auth http flag 1 : " + environment['AUTHENTICATION_SERVICE'] + " " + this.updateAccessUrl);
   }
 
   /** getFilterData from the server */
@@ -546,7 +546,7 @@ export class HttpService {
 
   /** Update access (RBAC) */
   updateAccess(requestData, username): Observable<any> {
-  alert("auth flag 2: " + environment['AUTHENTICATION_SERVICE']);
+  alert("auth flag 2: " + environment['AUTHENTICATION_SERVICE'] + " " + this.updateAccessUrl);
     return this.http.post(this.updateAccessUrl + username, requestData);
   }
 
@@ -559,7 +559,7 @@ export class HttpService {
 
   /** get pending request notifications */
   getAccessRequestsNotifications() {
-  alert("auth flag 3: " + environment['AUTHENTICATION_SERVICE']);
+  alert("auth flag 3: " + environment['AUTHENTICATION_SERVICE'] + " " + this.updateAccessUrl);
     return this.http
       .get<NotificationResponseDTO>(this.getAccessRequestNotificationsUrl)
       .pipe(map((requests) => requests));
