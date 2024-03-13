@@ -16,7 +16,7 @@ ENV CONFIG_LOCATION="/app/properties/customapi.properties" \
     certhostpath="/app/certs/" \
     keytoolalias="myknowhow" \
     JAVA_OPTS="" \
-    keystorefile="/usr/lib/jvm/java-1.8.0-amazon-corretto/jre/lib/security/cacerts"
+    keystorefile="/app/cacerts"
 
 # Set the working directory
 WORKDIR /app
@@ -29,8 +29,7 @@ COPY src/main/resources/application.properties /app/properties/customapi.propert
 COPY start_combined_collector.sh /app/start_combined_collector.sh
 
 # Change ownership to the non-root user
-RUN chmod 666 $keystorefile \
-    && chown -R $USER:$USER /app
+RUN chown -R $USER:$USER /app
 
 # Give execute permissions to the script
 RUN chmod +x /app/start_combined_collector.sh
