@@ -3147,5 +3147,35 @@
       "isShown": true,
       "isDefault": false
     }]
+  },
+  {
+    "basicProjectConfigId": null,
+    "kpiId": "kpi174",
+    "kpiColumnDetails": [
+      {
+        "columnName": "Project",
+        "order": 0,
+        "isShown": true,
+        "isDefault": false
+      },
+      {
+        "columnName": "Job Name",
+        "order": 1,
+        "isShown": true,
+        "isDefault": false
+      },
+      {
+        "columnName": "Remediation Effort Change",
+        "order": 2,
+        "isShown": true,
+        "isDefault": false
+      },
+      {
+        "columnName": "Weeks",
+        "order": 3,
+        "isShown": true,
+        "isDefault": false
+      }
+    ]
   }
 ]
