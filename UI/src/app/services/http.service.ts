@@ -52,7 +52,7 @@ export class HttpService {
   private masterDataUrl = this.baseUrl + '/api/masterData';
   private downloadAllKpiReportUrl = this.baseUrl + '/api/v1/kpi';
   private downloadKpiWiseReportUrl = this.baseUrl + '/api/v1/kpi';
-  private logoutUrl = environment?.['AUTHENTICATION_SERVICE'] === true ? this.baseUrl + '/api/centralUserlogout' : this.baseUrl + '/api/userlogout';
+  private logoutUrl = this.baseUrl + '/api/userlogout';
   private configDetailsUrl = this.baseUrl + '/api/configDetails';
   private enginneringMaturityUrl = this.baseUrl + '/api/v1/enggMaturity';
   private enginneringMaturityTableUrl = this.baseUrl + '/api/emm/tableview';
@@ -82,7 +82,7 @@ export class HttpService {
   private getRolesUrl = this.baseUrl + '/api/roles';
   private raiseAccessRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getAccessRequestsUrl = this.baseUrl + '/api/accessrequests/status';
-  private getAccessRequestNotificationsUrl = environment?.['AUTHENTICATION_SERVICE'] === true ? this.baseUrl + '/api/accessrequests/Pending/notification/central' : this.baseUrl + '/api/accessrequests/Pending/notification';
+  private getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification';
   private updateRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getUserAccessRequestsUrl = this.baseUrl + '/api/accessrequests/user';
   private getScenariosUrl = this.baseUrl + '/api/scenario';
@@ -98,7 +98,7 @@ export class HttpService {
   private getAllProjectsUrl = this.baseUrl + '/api/basicconfigs/all';
   private deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
   private getAllUsersUrl = this.baseUrl + '/api/userinfo';
-  private updateAccessUrl = environment?.['AUTHENTICATION_SERVICE'] === true ? this.baseUrl + '/api/userinfo/central/' : this.baseUrl + '/api/userinfo/';
+  private updateAccessUrl = this.baseUrl + '/api/userinfo/';
   private getKPIConfigMetadataUrl =
     this.baseUrl + '/api/editConfig/jira/editKpi/';
   /** KnowHOW Lite */
@@ -274,6 +274,9 @@ export class HttpService {
 
   /**  logout from the server */
   logout(): Observable<any> {
+    if(environment?.['AUTHENTICATION_SERVICE'] === true){
+      this.logoutUrl = this.baseUrl + '/api/centralUserlogout';
+    }
     return this.http.get(this.logoutUrl);
   }
 
@@ -546,7 +549,10 @@ export class HttpService {
 
   /** Update access (RBAC) */
   updateAccess(requestData, username): Observable<any> {
-  alert("auth flag 2: " + environment?.['AUTHENTICATION_SERVICE'] + " " + this.updateAccessUrl);
+    alert("auth flag 2: " + environment?.['AUTHENTICATION_SERVICE'] + " " + this.updateAccessUrl);
+    if(environment?.['AUTHENTICATION_SERVICE'] === true){
+      this.updateAccessUrl = this.baseUrl + '/api/userinfo/central/'
+    }
     return this.http.post(this.updateAccessUrl + username, requestData);
   }
 
@@ -560,7 +566,10 @@ export class HttpService {
   /** get pending request notifications */
   getAccessRequestsNotifications() {
   alert("auth flag 3: " + environment?.['AUTHENTICATION_SERVICE'] + " " + this.getAccessRequestNotificationsUrl);
-    return this.http
+  if(environment?.['AUTHENTICATION_SERVICE'] === true){
+    this.getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification/central';
+  }  
+  return this.http
       .get<NotificationResponseDTO>(this.getAccessRequestNotificationsUrl)
       .pipe(map((requests) => requests));
   }
