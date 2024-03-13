@@ -222,6 +222,16 @@ public class CustomApiConfig {// NOPMD
 	private Integer repoXAxisCountForCheckInsAndMergeRequests;
 	private String repoToolAPIKey;
 	private String repoToolURL;
+
+	public String getRepoToolUpdateConnectionUrl() {
+		return repoToolUpdateConnectionUrl;
+	}
+
+	public void setRepoToolUpdateConnectionUrl(String repoToolUpdateConnectionUrl) {
+		this.repoToolUpdateConnectionUrl = repoToolUpdateConnectionUrl;
+	}
+
+	private String repoToolUpdateConnectionUrl;
 	private Boolean isRepoToolEnable;
 	private String repoToolCodeCommmitsUrl;
 	private String repoToolDeleteProjectUrl;
