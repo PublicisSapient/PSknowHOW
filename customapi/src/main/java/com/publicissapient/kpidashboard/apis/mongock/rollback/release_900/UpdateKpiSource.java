@@ -54,7 +54,7 @@ public class UpdateKpiSource {
 	}
 
 	private void updateCombinedKpiSourceForBitBucket() {
-		Document condition = new Document(KPI_SOURCE, "Bitbucket");
+		Document condition = new Document(KPI_SOURCE, "BitBucket");
 		Document update = new Document(UNSET, new Document(COMBINED_KPI_SOURCE, ""));
 		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
@@ -87,7 +87,7 @@ public class UpdateKpiSource {
 	}
 
 	private void rollbackCombinedKpiSourceForBitBucket() {
-		Document condition = new Document(KPI_SOURCE, "Bitbucket");
+		Document condition = new Document(KPI_SOURCE, "BitBucket");
 		Document update = new Document(SET,
 				new Document(COMBINED_KPI_SOURCE, "Bitbucket/AzureRepository/GitHub/GitLab/RepoTool"));
 		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
