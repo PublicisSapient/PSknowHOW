@@ -95,7 +95,7 @@ public class UpdateKpiSource {
 
 	private void rollbackCombinedKpiSourceForZypher() {
 		Document condition = new Document(KPI_SOURCE, "Zypher");
-		Document update = new Document(SET, new Document(COMBINED_KPI_SOURCE, "Zypher/JiraTest"));
+		Document update = new Document(SET, new Document(COMBINED_KPI_SOURCE, "Zephyr/Zypher/JiraTest"));
 		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
 
