@@ -44,6 +44,8 @@ import { AdditionalFilterFieldComponent } from './additional-filter-field/additi
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { CarouselModule } from 'primeng/carousel';
 import { FeatureFlagDirective } from './custom-directives/feature-flag.directive';
+import { ConditionalInputComponent } from './conditional-input/conditional-input.component';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @NgModule({
   imports: [
@@ -65,7 +67,8 @@ import { FeatureFlagDirective } from './custom-directives/feature-flag.directive
     ChipsModule,
     RadioButtonModule,
     InputSwitchModule,
-    CarouselModule
+    CarouselModule,
+    InputNumberModule
   ],
   exports: [
     NgSelectModule,
@@ -77,7 +80,8 @@ import { FeatureFlagDirective } from './custom-directives/feature-flag.directive
     KpiFilterComponent,
     FieldMappingFormComponent,
     FeatureFlagDirective,
-    CarouselModule
+    CarouselModule,
+    ConditionalInputComponent
   ],
   declarations: [
     ProjectFilterComponent,
@@ -88,7 +92,8 @@ import { FeatureFlagDirective } from './custom-directives/feature-flag.directive
     FieldMappingFormComponent,
     FieldMappingFieldComponent,
     AdditionalFilterFieldComponent,
-    FeatureFlagDirective
+    FeatureFlagDirective,
+    ConditionalInputComponent
   ],
   providers: [ConfirmationService]
 })

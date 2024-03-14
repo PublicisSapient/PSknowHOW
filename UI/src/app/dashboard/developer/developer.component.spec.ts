@@ -855,7 +855,7 @@ describe('DeveloperComponent', () => {
     };
     component.handleSelectedOption(event, kpi);
     fixture.detectChanges();
-    expect(component.kpiSelectedFilterObj['kpi11']).toEqual(["debbie_integration -> PSKnowHOW -> KnowHOW"]);
+    expect(component.kpiSelectedFilterObj['kpi11']).toEqual("debbie_integration -> PSKnowHOW -> KnowHOW");
     done();
   });
 

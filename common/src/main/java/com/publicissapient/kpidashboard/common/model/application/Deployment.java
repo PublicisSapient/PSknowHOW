@@ -35,6 +35,7 @@ public class Deployment extends BasicModel {
 	private String jobId;
 	private String jobName;
 	private String jobFolderName;
+	private String pipelineName;
 	private String deployedBy;
 	private String number;
 	private String createdAt;

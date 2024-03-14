@@ -20,8 +20,14 @@
     <p-accordion [multiple]="true" [style]="{'width':'100%'}" #accordion [activeIndex]="[0,1,2,3,4,5,6]">
         <p-accordionTab *ngFor="let section of fieldMappingSectionList" [header]="section">
             <div class="p-p-0">
+
                 <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of formConfig[section]">
-                    <label class="field-title">{{field['fieldLabel']}}&nbsp;<span class="fa fa-info-circle"
+
+                  <div><span *ngIf="field?.processorCommon"><i class="fas fa-sync-alt p-mr-2"></i></span>
+                    <label class="field-title">
+                        {{field['fieldLabel']}}
+                        <span class="font-black p-mr-1" *ngIf="field?.mandatory">*</span>
+                        <span class="fa fa-info-circle"
                             aria-hidden="true" pTooltip="<span>
                                             Definition:
                                             {{field.tooltip.definition}} <br>
@@ -30,6 +36,7 @@
                                             </span>" tooltipPosition="top" tooltipEvent="hover"
                             tooltipStyleClass="tooltiptext" [escape]="false"></span>
                     </label>
+                  </div>
                     <ng-container *ngIf="!field?.nestedFields else nestedFieldContainer">
                         <div class="w-60vw">
                             <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="field"
@@ -70,8 +77,6 @@
 <div class="save-container p-mt-5 p-mb-1">
     <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-mr-3" icon="pi pi-save"
         iconPos="left" label="Save" (click)="save()" [disabled]="disableSave || form.invalid"></button>
-    <!-- <button pButton pRipple type="button" class="p-button-lg p-button-primary p-mr-3" icon="pi pi-download"
-        iconPos="left" label="Export" (click)="export()" [disabled]="form.invalid"></button> -->
 </div>
 
 <!-- Search Dialog -->

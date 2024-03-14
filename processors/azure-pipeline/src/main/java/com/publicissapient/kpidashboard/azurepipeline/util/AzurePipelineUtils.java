@@ -42,6 +42,8 @@ public final class AzurePipelineUtils {
 
 	private static final String DUMMY_USER = "dummyUser";
 
+	private static final String ENCODED_SPACE = "%20";
+
 	private AzurePipelineUtils() {
 	}
 
@@ -222,5 +224,13 @@ public final class AzurePipelineUtils {
 		}
 
 		return false;
+	}
+	public static String encodeSpaceInUrl(String url) {
+		String resultUrl = null;
+		if (StringUtils.isNotEmpty(url)) {
+			resultUrl = url.replaceAll("\\s+", ENCODED_SPACE);
+		}
+
+		return resultUrl;
 	}
 }

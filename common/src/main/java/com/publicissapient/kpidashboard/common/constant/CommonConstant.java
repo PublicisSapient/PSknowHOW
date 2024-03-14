@@ -269,9 +269,6 @@ public final class CommonConstant {
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI122="jiraIterationCompletionStatusKPI122";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI75="jiraIterationCompletionStatusKPI75";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI145="jiraIterationCompletionStatusKPI145";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI140="jiraIterationCompletionStatusKPI140";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI132="jiraIterationCompletionStatusKPI132";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI136="jiraIterationCompletionStatusKPI136";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI72="jiraIterationCompletionStatusKpi72";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI39="jiraIterationCompletionStatusKpi39";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI5="jiraIterationCompletionStatusKpi5";

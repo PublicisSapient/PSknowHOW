@@ -2083,7 +2083,7 @@ describe('ConnectionListComponent', () => {
     sharedService.setGlobalConfigData({repoToolFlag: true});
     component.ngOnInit();
     component.filterConnections(component.addEditConnectionFieldsNlabels,'connectionLabel')
-    expect(component.addEditConnectionFieldsNlabels.length).toEqual(8);
+    expect(component.addEditConnectionFieldsNlabels.length).toEqual(9);
   })
 
 });

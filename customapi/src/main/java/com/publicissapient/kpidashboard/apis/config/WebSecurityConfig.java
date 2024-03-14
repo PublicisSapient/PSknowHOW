@@ -49,7 +49,9 @@ import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHan
 import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenAuthenticationProvider;
 import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.ldap.CustomUserDetailsContextMapper;
+import com.publicissapient.kpidashboard.apis.auth.ldap.LdapLoginRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.token.JwtAuthenticationFilter;
 import com.publicissapient.kpidashboard.apis.errors.CustomAuthenticationEntryPoint;
 import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
@@ -124,6 +126,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 				.antMatchers("/auth-types-status").permitAll().antMatchers("/getversionmetadata").permitAll()
 				// push API calls
 				.antMatchers("/pushData/*").permitAll()
+				.antMatchers("/kpiIntegrationValues").permitAll()
+				.antMatchers("/processor/saveRepoToolsStatus").permitAll()
+				.antMatchers("/v1/kpi/{kpiID}").permitAll()
 				// management metrics
 				.antMatchers("/info").permitAll().antMatchers("/health").permitAll().antMatchers("/env").permitAll()
 				.antMatchers("/metrics").permitAll()

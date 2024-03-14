@@ -242,9 +242,9 @@ public class KPIExcelDataServiceTest {
 
 		acceptedFilterList.add(Filters.PROJECT.name());
 		KPIExcelValidationDataResponse kPIExcelValidationDataResponse = (KPIExcelValidationDataResponse) kpiExcelDataService
-				.process("kpi52", level, idList, acceptedFilterList, null, true);
+				.process("kpi52", level, idList, acceptedFilterList, null, true, false);
 
-		Assert.assertNotNull(kpiExcelDataService.process("kpi52", level, idList, acceptedFilterList, null, true));
+		Assert.assertNotNull(kpiExcelDataService.process("kpi52", level, idList, acceptedFilterList, null, true, false));
 
 	}
 
@@ -260,7 +260,7 @@ public class KPIExcelDataServiceTest {
 		when(jiraServiceR.process(Mockito.any())).thenReturn(validationKpiElementList);
 		KpiRequest kpiRequest = createKpiRequest("kpi14", "");
 		KPIExcelValidationDataResponse kpiExcelValidationDataResponse = (KPIExcelValidationDataResponse) kpiExcelDataService
-				.process("kpi14", level, idList, null, kpiRequest, null);
+				.process("kpi14", level, idList, null, kpiRequest, null, false);
 
 		assertThat("Excel Validation Process Data: ", kpiExcelValidationDataResponse.getMapOfSprintAndData()
 				.get("Alpha_Project1_Sprint1_name").getDefectKeyList().size(), equalTo(1));

@@ -27,11 +27,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +79,7 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String HISTORY = "history";
 	private static final String OVERALL = "Overall";
+	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 
 	@Autowired
 	ConfigHelperService configHelperService;
@@ -156,12 +162,13 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
+		Set<String> issueTypesSet = new LinkedHashSet<>();
 		List<String> rangeList = customApiConfig.getFlowEfficiencyXAxisRange();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		FieldMapping fieldMapping = leafNode != null
 				? configHelperService.getFieldMappingMap().get(leafNode.getProjectFilter().getBasicProjectConfigId())
 				: new FieldMapping();
-
+		issueTypesSet.add(CommonConstant.OVERALL);
 		String startDate = LocalDate.now().minusMonths(6).toString();
 		String endDate = LocalDate.now().toString();
 
@@ -175,13 +182,18 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 		filterDataBasedOnXAxisRangeWise(rangeList, allIssueHistory, rangeAndStatusWiseJiraIssueMap, flowEfficiencyMap,
 				waitTimeList, totalTimeList, fieldMapping);
 		LinkedHashMap<String, List<DataCount>> dataCountMap = setDataCountMap(rangeAndStatusWiseJiraIssueMap,
-				flowEfficiencyMap, leafNode);
+				flowEfficiencyMap, leafNode, issueTypesSet);
 		populateExcelDataObject(requestTrackerId, excelData, flowEfficiencyMap, waitTimeList, totalTimeList);
 		if (leafNode != null)
 			mapTmp.get(leafNode.getId()).setValue(dataCountMap);
-		
+
+		// Create kpi level filters
+		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypesSet);
+		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
+
 		List<String> xAxisRange = new ArrayList<>(rangeList);
 		Collections.reverse(xAxisRange);
+		kpiElement.setFilters(iterationKpiFilters);
 		kpiElement.setxAxisValues(xAxisRange);
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.FLOW_EFFICIENCY.getColumns());
@@ -355,13 +367,14 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	 */
 	private LinkedHashMap<String, List<DataCount>> setDataCountMap(
 			Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeAndStatusWiseJiraIssueMap,
-			LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiencyMap, Node leafNode) {
+			LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiencyMap, Node leafNode, Set<String> issueTypesSet) {
 		LinkedHashMap<String, List<DataCount>> dataCountMap = new LinkedHashMap<>();
 		List<String> totalIssueTypeString = rangeAndStatusWiseJiraIssueMap.values().stream()
 				.flatMap(innerMap -> innerMap.values().stream().flatMap(List::stream))
 				.map(JiraIssueCustomHistory::getStoryType).distinct().collect(Collectors.toList());
 		rangeAndStatusWiseJiraIssueMap.forEach((dateRange, statusWiseJiraIssues) -> {
 			totalIssueTypeString.forEach(issueType -> {
+				issueTypesSet.add(issueType);
 				List<JiraIssueCustomHistory> typeWiseIssues = statusWiseJiraIssues.getOrDefault(issueType,
 						new ArrayList<>());
 				double average = calculateAverage(typeWiseIssues, flowEfficiencyMap);

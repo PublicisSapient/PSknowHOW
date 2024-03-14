@@ -50,10 +50,12 @@ public class ProjectToolConfigDTO {
 	private String projectId;
 	private String projectKey;
 	private String jobName;
+	private String azurePipelineName;
 	private String jobType;
 	private String branch;
 	private String defaultBranch;
 	private String env;
+	private String gitFullUrl;
 	private String repositoryName;
 	private String repoSlug;
 	private String bitbucketProjKey;

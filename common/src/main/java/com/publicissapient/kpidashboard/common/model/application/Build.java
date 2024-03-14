@@ -43,6 +43,7 @@ public class Build extends BasicModel {
 	private ObjectId projectToolConfigId;
 	private long timestamp;
 	private String buildJob;
+	private String pipelineName;
 	private String jobFolder;
 	private String number;
 	private String buildUrl;

@@ -266,7 +266,7 @@ const completeHierarchyData = {
     TestBed.configureTestingModule({
       declarations: [FilterComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      imports: [FormsModule, HttpClientTestingModule, ReactiveFormsModule, NgSelectModule, FormsModule, RouterTestingModule 
+      imports: [FormsModule, HttpClientTestingModule, ReactiveFormsModule, NgSelectModule, FormsModule, RouterTestingModule
       ],
       providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService,
         { provide: APP_CONFIG, useValue: AppConfig }]
@@ -1680,7 +1680,7 @@ const completeHierarchyData = {
     ]
     component.initializeFilterForm();
     component.filterForm?.get('selectedTrendValue').setValue('DOTC_63b51633f33fd2360e9e72bd')
-    component.handleMilestoneFilter('project');
+    component.handleMilestoneFilter('project',true);
     expect(spyFunct).toHaveBeenCalled();
   })
 
@@ -2119,365 +2119,63 @@ const completeHierarchyData = {
     expect(value1).toBe("Demo Portfolio");
   })
 
-  it('should toggle filter', () => {
-    const mockTargetElement = document.createElement('div');
-    component.toggleDropdown = {
-      'showHide': false,
-      'commentSummary':  false
-    };
-    component.toggleDropdownObj = {
-      "sprint": false,
-      "release": false,
-      "sqd": false
-    }
-    const spy = spyOn(sharedService, 'getClickedItem').and.returnValue(of(mockTargetElement));
-    component.toggleFilter();
-    expect(spy).toHaveBeenCalled();
-  });
-
-  xit('should navigate to home page', () => {
-    (router as any).url = '/somepath/Config';
-    component.kanban = true;
-    component.selectedTab = 'maturity';
-    component.projectIndex = 1;
-    spyOn(sharedService, 'setEmptyFilter');
-    spyOn(sharedService, 'setSelectedType');
-    const spy = spyOn(router, 'navigateByUrl');
-    component.navigateToHomePage();
-    expect(spy).toHaveBeenCalledWith(`/dashboard/iteration`);
-  });
-
-  it('should get kpi order list on project level', () => {
-    component.kpiListDataProjectLevel = [];
-    component.kpiListData = [];
-    component.masterData = fakeMasterData;
-    component.filterData = fakeFilterData;
-    component.filterApplyData = filterApplyData;
-    component.selectedTab = 'backlog';
-    const obj = [{
-      "nodeId": "Scrum Project_6335363749794a18e8a4479b",
-      "nodeName": "Scrum Project",
-      "path": "Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
-      "labelName": "project",
-      "parentId": "Sample Three_hierarchyLevelThree",
-      "level": 4,
-      "basicProjectConfigId": "6335363749794a18e8a4479b"
+  it('should set sprint list in service layer',()=>{
+    component.selectedFilterArray = [{
+      nodeId : 'a123',
+      additionalFilters : [{
+        nodeiId : 'sp123'
+      }]
     }]
-    const mockData = configGlobalData;
-    spyOn(helperService, 'makeSyncShownProjectLevelAndUserLevelKpis');
-    spyOn(sharedService, 'getSelectedLevel').and.returnValue({ hierarchyLevelId: 'project' });
-    spyOn(sharedService, 'getSelectedTrends').and.returnValue(obj);
-    spyOn(sharedService, 'setDashConfigData');
-    const spy = spyOn(sharedService, 'select');
-    spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(of(mockData));
-    spyOn(component, 'processKpiList');
-    spyOn(component, 'navigateToSelectedTab');
-    component.getKpiOrderListProjectLevel();
-    expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab)
+    const spyObj = spyOn(sharedService,'setAddtionalFilterBackup');
+    component.setSelectedSprintOnServiceLayer();
+    expect(spyObj).toHaveBeenCalled();
   })
 
-  it('should get kpi order list on project level', () => {
-    component.selectedTab = 'backlog';
-    const obj = [{
-      "nodeId": "Scrum Project_6335363749794a18e8a4479b",
-      "nodeName": "Scrum Project",
-      "path": "Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
-      "labelName": "project",
-      "parentId": "Sample Three_hierarchyLevelThree",
-      "level": 4,
-      "basicProjectConfigId": "6335363749794a18e8a4479b"
-    }]
-    spyOn(helperService, 'makeSyncShownProjectLevelAndUserLevelKpis');
-    spyOn(sharedService, 'getSelectedLevel').and.returnValue({ hierarchyLevelId: 'project' });
-    spyOn(sharedService, 'getSelectedTrends').and.returnValue(obj);
-    spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(throwError('Something went wrong'));
-    const spy = spyOn(messageService, 'add');
-    component.getKpiOrderListProjectLevel();
-    expect(spy).toHaveBeenCalled()
-  })
-
-  it('should handle kpi change if all kpis are enabled', () => {
-    const event = {
-      "originalEvent": {
-          "isTrusted": true
-      },
-      "checked": true
-    }
-    const kpiObj = {
-      kpi75: new UntypedFormControl(true)
-    }
-    component.kpiForm = new UntypedFormGroup({
-      enableAllKpis: new UntypedFormControl(false),
-      kpis: new UntypedFormGroup(kpiObj),
-    });
-    component.handleKpiChange(event);
-    expect(component.kpiFormValue['enableAllKpis'].value).toBeTruthy;
-  });
-
-  it('should handle kpi change- if atleast one kpi is disabled', () => {
-    const event = {
-      "originalEvent": {
-          "isTrusted": true
-      },
-      "checked": true
-    }
-    const kpiObj = {
-      kpi75: new UntypedFormControl(true),
-      kpi39: new UntypedFormControl(false)
-    }
-    component.kpiForm = new UntypedFormGroup({
-      enableAllKpis: new UntypedFormControl(false),
-      kpis: new UntypedFormGroup(kpiObj),
-    });
-    component.handleKpiChange(event);
-    expect(component.kpiFormValue['enableAllKpis'].value).toBeFalsy;
-  });
-
-  it('should set trend value filter when allowMultipleSelection is true', () => {
-    component.allowMultipleSelection = true;
-    component.filterForm = new UntypedFormGroup({
-      selectedTrendValue: new UntypedFormControl(''),
-      date: new UntypedFormControl(''),
-      selectedLevel: new UntypedFormControl(),
-      selectedSprintValue: new UntypedFormControl(),
-      selectedRelease: new UntypedFormControl(),
-    });
-    const nodeId = 'AAA_8327462874264dsd34';
-    component.trendLineValueList = [
-      {
-        'nodeId': nodeId
+  it('should get backup sprints',()=>{
+    component.selectedTab = 'speed';
+    sharedService.setAddtionalFilterBackup({
+      sprint : {
+        'p1' : [
+          {nodeId : 'sp1',}
+        ]
       }
-    ]
-    component.setTrendValueFilter();
-    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual([nodeId])
+    })
+    spyOn(sharedService,'getSelectedTrends').and.returnValue([{nodeId : 'p1'}])
+    const rValue = component.getSprintsWhichWasAlreadySelected();
+    expect(rValue).not.toBeNull();
   })
 
-  it('should set trend value filter when allowMultipleSelection is false', () => {
-    component.allowMultipleSelection = false;
-    component.filterForm = new UntypedFormGroup({
-      selectedTrendValue: new UntypedFormControl(''),
-      date: new UntypedFormControl(''),
-      selectedLevel: new UntypedFormControl(),
-      selectedSprintValue: new UntypedFormControl(),
-      selectedRelease: new UntypedFormControl(),
-    });
-    const nodeId = 'AAA_8327462874264dsd34';
-    component.trendLineValueList = [
-      {
-        'nodeId': nodeId
-      }
-    ]
-    component.setTrendValueFilter();
-    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual(nodeId)
-  })
-
-  it('should find project which has data when selectedTab is release', () => {
-    component.defaultFilterSelection = true;
-    component.trendLineValueList = [];
-    component.filterForm = new UntypedFormGroup({
-      selectedTrendValue: new UntypedFormControl(''),
-      date: new UntypedFormControl(''),
-      selectedLevel: new UntypedFormControl('project'),
-      selectedSprintValue: new UntypedFormControl(),
-      selectedRelease: new UntypedFormControl(),
-    });
-    component.filterData = fakeFilterData.data;
-    component.selectedTab = 'release';
-    component.hierarchyLevels = hierarchyLevels;
-    spyOn(component, 'sortAlphabetically').and.callThrough();
-    // spyOn(helperService, 'makeUniqueArrayList').and.callThrough();
-    spyOn(component, 'checkIfProjectHasRelease');
-    const len = component.trendLineValueList.length;
-    spyOn(sharedService, 'setSelectedLevel');
-    spyOn(sharedService, 'setSelectedTrends')
-    component.findProjectWhichHasData();
-    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual(component.trendLineValueList[len]?.nodeId);
-  });
-
-  it('should find project which has data when selectedTab is not release', () => {
-    component.defaultFilterSelection = true;
-    component.trendLineValueList = [];
-    component.filterForm = new UntypedFormGroup({
-      selectedTrendValue: new UntypedFormControl(''),
-      date: new UntypedFormControl(''),
-      selectedLevel: new UntypedFormControl('project'),
-      selectedSprintValue: new UntypedFormControl(),
-      selectedRelease: new UntypedFormControl(),
-    });
-    component.filterData = fakeFilterData.data;
-    component.hierarchyLevels = hierarchyLevels;
-    component.selectedTab = 'backlog';
-    spyOn(component, 'sortAlphabetically').and.callThrough();
-    // spyOn(helperService, 'makeUniqueArrayList').and.callThrough();
-    spyOn(component, 'checkIfProjectHasData');
-    const len = component.trendLineValueList.length;
-    spyOn(sharedService, 'setSelectedLevel');
-    spyOn(sharedService, 'setSelectedTrends')
-    component.findProjectWhichHasData();
-    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual(component.trendLineValueList[len]?.nodeId);
-  });
-
-  it('should get logo image', () => {
-    const logoImage = {
-      image: 'logo.png'
+  it('should set not blank kpi filter for release and sprint when changing',()=>{
+  component.selectedTab = 'iteration';
+  const mockObj ={
+    kpiFilters : {
+      iteration : {},
+      release : {},
     }
-    spyOn(httpService, 'getUploadedImage').and.returnValue(of(logoImage));
-    component.getLogoImage();
-    expect(component.logoImage).toBe("data:image/png;base64," + logoImage.image);
+  }
+  spyOn(sharedService,'getAddtionalFilterBackup').and.returnValue(mockObj);
+  spyOn(sharedService, 'setAddtionalFilterBackup')
+  const spyobj =  spyOn(sharedService, 'setKpiSubFilterObj')
+    component.refreshKpiLevelFiltersBackup('sprint',true);
+    expect(spyobj).toHaveBeenCalled();
   })
 
-  it('should not get logo image', () => {
-    spyOn(httpService, 'getUploadedImage').and.returnValue(of({}));
-    component.getLogoImage();
-    expect(component.logoImage).toBe(undefined);
-  })
+  it('should set blank kpi filter for backlog component',()=>{
+    component.selectedTab = 'backlog';
+    const mockObj ={
+      kpiFilters : {
+        backlog : {}
+      }
+    }
+    spyOn(sharedService,'getAddtionalFilterBackup').and.returnValue(mockObj);
+    const spyobj = spyOn(sharedService, 'setAddtionalFilterBackup')
+    spyOn(sharedService, 'setKpiSubFilterObj')
 
-  it('should navigate to Capacity Planning page', () => {
-    const spy = spyOn(router, 'navigateByUrl');
-
-    // Act
-    component.redirectToCapacityPlanning();
-
-    // Assert
-    expect(spy).toBeDefined();
-  });
-
-  it('should get user name form current user details',()=>{
-    component.ngOnInit();
-    sharedService.setCurrentUserDetails({user_name : "test user"})
-     expect(component.username).toBe("test user");
-  })
-
-  it('should initialitze info',()=>{
-    spyOn(sharedService,'getCurrentUserDetails').and.returnValue(['ROLE_GUEST'])
-    component.initializeUserInfo();
-    expect(component.isGuest).toBeTruthy();
-  })
-
-  it('should unsubscribe filterKpiRequest', () => {
-    spyOn(sharedService, 'getFilterData').and.returnValue(fakeFilterData);
-    spyOn(httpService,'getFilterData').and.returnValue(of(fakeFilterData));
-    component.previousType = false;
-    component.kanban = false;
-    component.selectedTab = '';
-    const filterKpiRequest = jasmine.createSpyObj('Subscription', ['unsubscribe']);
-    component.filterKpiRequest = filterKpiRequest
-    component.initFlag = false;
-    const spy = spyOn(component, 'processFilterData');
-    component.getFilterDataOnLoad();
-    fixture.detectChanges();
-    expect(spy).toHaveBeenCalled();
-  });
-
-  it('should return the latest passed release', () => {
-    const releaseList = [
-      { releaseEndDate: '2021-08-01T00:00:00.000Z' },
-      { releaseEndDate: '2021-07-01T00:00:00.000Z' },
-      { releaseEndDate: '2021-09-01T00:00:00.000Z' },
-    ];
-    const result = component.findLatestPassedRelease(releaseList);
-    expect(result.length).toEqual(3);
-  });
-
-  it('should return null if releaseList is empty', () => {
-    const releaseList = [];
-    const result = component.findLatestPassedRelease(releaseList);
-    expect(result).toBeNull();
-  });
-
-  describe('YourComponent', () => {
-    beforeEach(() => {
-      component.trendLineValueList = [
-        { nodeId: 1, nodeName: 'Node1' },
-        { nodeId: 2, nodeName: 'Node2' },
-        { nodeId: 3, nodeName: 'Node3' },
-      ];
-    });
-
-    it('should return the node name for the given nodeId', () => {
-      const nodeId = 2;
-      const result = component.getNodeName(nodeId);
-      expect(result).toEqual('Node2');
-    });
-
-    it('should return undefined if the nodeId is not found', () => {
-      const nodeId = 4;
-      const result = component.getNodeName(nodeId);
-      expect(result).toBeUndefined();
-    });
-  });
-
-  describe('YourComponent', () => {
-
-    beforeEach(() => {
-      component.selectedFilterArray = [
-        {
-          additionalFilters: [
-            {
-              path: ['1###2###3'],
-              nodeName: 'Node3',
-              nodeId: '3',
-              labelName: 'Label3'
-            }
-          ],
-          path: [],
-          nodeId: '1',
-          nodeName: 'Node1',
-          labelName: 'Label1'
-        },
-        {
-          additionalFilters: [],
-          path: ['4###5###6'],
-          nodeId: '4',
-          nodeName: 'Node4',
-          labelName: 'Label4'
-        }
-      ];
-      component.filterData = [
-        { nodeId: '1', nodeName: 'Node1' },
-        { nodeId: '2', nodeName: 'Node2' },
-        { nodeId: '3', nodeName: 'Node3' },
-        { nodeId: '4', nodeName: 'Node4' },
-        { nodeId: '5', nodeName: 'Node5' },
-        { nodeId: '6', nodeName: 'Node6' }
-      ];
-    });
-
-    it('should compile GA data with additional filters', () => {
-      const spyob = spyOn(ga, 'setProjectData');
-      component.compileGAData();
-      expect(spyob).toHaveBeenCalled();
-    });
-
-    it('should compile GA data without additional filters', () => {
-      const spyob = spyOn(ga, 'setProjectData');
-      component.compileGAData();
-      expect(spyob).toHaveBeenCalled();
-    });
-  });
-
-  describe('YourComponent', () => {
-
-    beforeEach(() => {
-      component.processorName = ['tool1'];
-      component.processorsTracelogs = [
-        { processorName: 'tool1', traceLog: 'Trace log for tool1' },
-        { processorName: 'tool2', traceLog: 'Trace log for tool2' },
-        { processorName: 'tool3', traceLog: 'Trace log for tool3' }
-      ];
-    });
-
-    it('should return the trace log for the tool if it exists in processorsTracelogs', () => {
-      const result = component.findTraceLogForTool();
-      expect(result).toEqual({ processorName: 'tool1', traceLog: 'Trace log for tool1' });
-    });
-
-    it('should return undefined if the tool does not exist in processorsTracelogs', () => {
-      component.processorName = ['tool4'];
+      component.refreshKpiLevelFiltersBackup('project',true);
+      expect(spyobj).toHaveBeenCalled();
+    })
 
 
-      const result = component.findTraceLogForTool();
-      expect(result).toBeUndefined();
     });
 
     it('should return undefined if processorsTracelogs is empty', () => {

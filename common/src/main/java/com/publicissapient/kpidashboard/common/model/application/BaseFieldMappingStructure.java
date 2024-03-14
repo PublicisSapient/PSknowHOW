@@ -49,6 +49,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	private String toggleLabelRight;
 	private String section;
 	private boolean processorCommon;
+	private boolean mandatory;
 	private MappingToolTip tooltip;
 	private List<Options> options;
 	private List<String> filterGroup;
@@ -69,6 +70,10 @@ public class BaseFieldMappingStructure extends BasicModel {
 	class Options {
 		String label;
 		Object value;
+		String labelValue;
+		String operator;
+		String maxValue;
+		String minValue;
 	}
 
 }

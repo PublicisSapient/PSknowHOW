@@ -243,11 +243,12 @@ export class TestConnectionService {
     );
   }
 
-  testRepoTool(httpUrl, repoToolProvider, username, accessToken, email): Observable<any> {
+  testRepoTool(baseUrl,apiEndPoint, repoToolProvider, username, accessToken, email): Observable<any> {
     let postData = {};
 
     postData = {
-      httpUrl,
+      baseUrl,
+      apiEndPoint,
       repoToolProvider,
       username,
       accessToken,

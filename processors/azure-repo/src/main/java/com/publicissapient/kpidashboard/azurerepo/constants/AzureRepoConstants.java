@@ -90,6 +90,8 @@ public final class AzureRepoConstants {
 	public static final String RESP_PROJ = "project";
 	public static final String RESP_CREATED_BY = "createdBy";
 
+	public static final String MERGED_ID = "mergeId";
+
 	/**
 	 * Instantiates a new bit bucket constants .
 	 */

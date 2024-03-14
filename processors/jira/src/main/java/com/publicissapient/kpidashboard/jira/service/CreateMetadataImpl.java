@@ -297,6 +297,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.EPICTIMECRITICALITY));
 		fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.EPICUSERBUSINESSVALUE));
 		fieldMapping.setEpicWsjf(customField.get(CommonConstant.EPICWSJF));
+		fieldMapping.setRootCauseIdentifier(JiraConstants.CUSTOM_FIELD);
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping.setJiraStoryPointsCustomField(
 				customField.getOrDefault(CommonConstant.JIRASTORYPOINTSCUSTOMFIELD, StringUtils.EMPTY));
@@ -513,6 +514,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.TIME_CRITICALITY));
 		fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.USER_BUSINESS_VALUE));
 		fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
+		fieldMapping.setRootCauseIdentifier(JiraConstants.CUSTOM_FIELD);
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping
 				.setJiraStoryPointsCustomField(customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));
@@ -752,14 +754,10 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setJiraIterationCompletionStatusKPI123(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraIterationCompletionStatusKPI131(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraIterationCompletionStatusKPI133(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI132(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraIterationCompletionStatusKPI135(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraIterationCompletionStatusKPI122(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraIterationCompletionStatusKPI75(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraIterationCompletionStatusKPI145(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI140(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI132(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI136(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraIterationCompletionStatusKpi72(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraIterationCompletionStatusKpi39(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraIterationCompletionStatusKpi5(workflowMap.get(CommonConstant.DOD));

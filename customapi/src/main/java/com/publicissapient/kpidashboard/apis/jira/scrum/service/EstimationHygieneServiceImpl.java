@@ -52,6 +52,7 @@ import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -128,6 +129,14 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), jiraIssueList);
+					if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())) {
+						List<String> defectType = new ArrayList<>();
+						defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
+						defectType.addAll(fieldMapping.getJiradefecttype());
+						filtersIssuesList = filtersIssuesList.stream()
+								.filter(jiraIssue -> !defectType.contains(jiraIssue.getTypeName()))
+								.collect(Collectors.toSet());
+					}
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 			}
@@ -157,6 +166,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
+
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			log.info("Estimation Hygiene -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());

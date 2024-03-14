@@ -207,7 +207,7 @@ public class DailyStandupServiceImplTest {
 					.getTrendValueList();
 			List<DailyStandupServiceImpl.UserWiseCardDetail> unassigned = trendValueList.stream()
 					.filter(issue -> issue.getRole().equalsIgnoreCase("Unassigned")).collect(Collectors.toList());
-			Assert.assertEquals(unassigned.size(), 6);
+			Assert.assertEquals(unassigned.size(), 5);
 
 		} catch (ApplicationException enfe) {
 

@@ -119,7 +119,7 @@
                           {{item[col.field] | date: 'dd/MMM/yyyy'}}
                         </span>
                         <ng-template #otherFieldsTemp>
-                          {{item[col.field] ? item[col.field] : '- -'}}
+                          {{(item[col.field] || item[col.field] === 0 ) ? item[col.field] : '- -'}}
                         </ng-template>
                   </td>
                   <td [ngClass]="{'upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}"><button pButton type="button" class="p-button-sm btn-active edit-btn"  label="{{(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit' : 'Add'}}"
@@ -154,7 +154,7 @@
                   <ng-template pTemplate="body"  let-item let-columns="columns">
                     <tr class="sprint" [ngClass]="{'tr-active': item?.sprintState?.toLowerCase() === 'active'}">
                       <td *ngFor="let col of columns"  [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number','upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}">
-                          <span>{{item[col.field] ? item[col.field] : '- -'}}</span>
+                          <span>{{(item[col.field] || item[col.field] === 0 ) ? item[col.field] : '- -'}}</span>
                       </td>
                   <td [ngClass]="{'upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}"><button pButton type="button" class="p-button-sm btn-active edit-btn" label="{{(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit' : 'Add'}}"
                       (click)="AddOrUpdateData(item)"></button></td>
