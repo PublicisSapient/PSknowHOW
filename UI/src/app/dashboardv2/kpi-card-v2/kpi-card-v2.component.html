@@ -8,9 +8,9 @@
                     (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(false)"
                     [style]="{'position': 'relative'}">
                     <img alt="info" class="" src="../../../assets/img/Info.svg" />
-                    <app-tooltip *ngIf="isTooltip" class="p-mt-3 p-ml-1" [data]="kpiData?.kpiDetail?.kpiInfo"
+                    <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3 p-ml-1" [data]="kpiData?.kpiDetail?.kpiInfo"
                         (mouseleave)="showTooltip(false)" [showChartView]="showChartView"
-                        [kpiName]="kpiData?.kpiName"></app-tooltip>
+                        [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
                 </span>
                 <span *ngIf="sprintsOverlayVisible"
                     (click)="prepareData(); (trendValueList?.length) > 0 ? op.toggle($event,kpiHeader) : '' ;"

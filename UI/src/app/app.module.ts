@@ -139,6 +139,7 @@ import { MultilineV2Component } from './component/multiline-v2/multiline-v2.comp
 import { TrendIndicatorV2Component } from './dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
 import { GroupedColumnPlusLineChartV2Component } from './component/grouped-column-plus-line-chart-v2/grouped-column-plus-line-chart-v2.component';
 import { MultilineStyleV2Component } from './component/multiline-style-v2/multiline-style-v2.component';
+import { TooltipV2Component } from './component/tooltip-v2/tooltip-v2.component';
 /*********************DASHBOARDV2 End*********************************/
 
 /******************************************************/
@@ -226,7 +227,8 @@ export function initializeApp2(initializeService: AppInitializerService) {
         MultilineV2Component,
         TrendIndicatorV2Component,
         GroupedColumnPlusLineChartV2Component,
-        MultilineStyleV2Component
+        MultilineStyleV2Component,
+        TooltipV2Component
     ],
     imports: [
         DropdownModule,
