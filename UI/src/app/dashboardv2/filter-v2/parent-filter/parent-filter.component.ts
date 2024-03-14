@@ -53,7 +53,7 @@ export class ParentFilterComponent implements OnChanges {
 
   handleSelectedLevelChange() {
     if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
-      this.onSelectedLevelChange.emit(this.selectedLevel);
+      this.onSelectedLevelChange.emit(this.selectedLevel.toLowerCase());
     } else {
       setTimeout(() => {
         let selectedNodeId = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()].filter((filter) => filter.nodeName === this.selectedLevel)[0].nodeId;

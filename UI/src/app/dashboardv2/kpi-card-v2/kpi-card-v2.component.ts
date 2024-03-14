@@ -108,13 +108,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.loader = true;
-    // changes['dropdownArr']?.currentValue ? true : this.dropdownArr = [];
-    if(changes['loader']) {
-      setTimeout(()=> {
-        this.loader = changes['loader'].currentValue;
-      }, 1000);
-    }
+    // this.loader = true;
+    // // changes['dropdownArr']?.currentValue ? true : this.dropdownArr = [];
+    // if(changes['loader']) {
+    //   setTimeout(()=> {
+    //     this.loader = false;
+    //   }, 1000);
+    // }
     this.userRole = this.authService.getRole();
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
   }

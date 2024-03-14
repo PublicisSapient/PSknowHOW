@@ -428,7 +428,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   // calls after receiving response from sonar
-  afterSonarKpiResponseReceived(getData) {
+  afterSonarKpiResponseReceived(getData, postData) {
     this.loaderSonar = false;
     this.sonarFilterData.length = 0;
     if (getData !== null && getData[0] !== 'error' && !getData['error']) {
@@ -460,6 +460,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     } else {
       this.sonarKpiData = getData;
+      postData.kpiList.forEach(element => {
+        this.kpiLoader.splice(this.kpiLoader.indexOf(element.kpiId), 1);
+      });
+
     }
     // this.kpiLoader.length = 0;
   }
@@ -505,7 +509,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     this.sonarKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
-        this.afterSonarKpiResponseReceived(getData);
+        this.afterSonarKpiResponseReceived(getData, postData);
       });
   }
   // calling post request of sonar of Kanban and storing in sonarKpiData id wise
@@ -516,7 +520,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     this.sonarKpiRequest = this.httpService.postKpiKanban(postData, source)
       .subscribe(getData => {
-        this.afterSonarKpiResponseReceived(getData);
+        this.afterSonarKpiResponseReceived(getData, postData);
       });
   }
 
