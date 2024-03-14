@@ -6458,7 +6458,7 @@
             },
             {
                 "boardId": 14,
-                "boardName": "Dora",
+                "boardName": "DORA",
                 "boardSlug": "dora",
                 "kpis": [
                     {
@@ -7373,7 +7373,7 @@
             },
             {
                 "boardId": 16,
-                "boardName": "Kpi Maturity",
+                "boardName": "KPI Maturity",
                 "boardSlug": "kpi-maturity",
                 "kpis": [
                     {
