@@ -1568,13 +1568,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  handleMilestoneFilter(level, isChangedFromUI?) {
-    /** adding the below check to determine dropdown option change event from */
-    if(isChangedFromUI){
-      this.emptyIdsFromQueryParam();
-    }
-    });
-  }
+  
 
   handleMilestoneFilter(level, isManually?) {
 
