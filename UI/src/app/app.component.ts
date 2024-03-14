@@ -45,7 +45,7 @@ export class AppComponent implements OnInit {
   constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
     public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private feature: FeatureFlagsService) {
     this.authorized = this.getAuth.checkAuth();
-    localStorage.setItem('newUI', 'true');
+    // localStorage.setItem('newUI', 'true');
   }
 
   ngOnInit() {
