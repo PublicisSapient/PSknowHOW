@@ -4468,7 +4468,7 @@
     "isDeleted" : false,
     "defaultOrder" : 5,
     "groupId" : 2,
-    "kpiSource" : "Bitbucket",
+    "kpiSource" : "BitBucket",
     "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab/RepoTool",
     "kanban" : false,
     "chartType" : "line",
