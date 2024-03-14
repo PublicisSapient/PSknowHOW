@@ -1481,6 +1481,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setVisibleSideBar(false);
         this.service.setAddtionalFilterBackup({});
         this.service.setKpiSubFilterObj({});
+        localStorage.removeItem('currentUserDetails');
         if(!environment['AUTHENTICATION_SERVICE']){
           this.router.navigate(['./authentication/login']);
         } else{

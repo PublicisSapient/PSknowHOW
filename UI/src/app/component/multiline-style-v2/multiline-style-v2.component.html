@@ -14,15 +14,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<ng-container *featureFlag="'UI_SWITCH'">
-  <div class="ui-switch-container"
-    *ngIf="router.url.indexOf('authentication') === -1 && router.url.indexOf('config') === -1">
-    <span class="p-mr-6"> New experience (ON) | Legacy view (OFF)</span>
-    <p-inputSwitch [(ngModel)]="newUI" (onChange)="uiSwitch($event)"></p-inputSwitch>
-  </div>
-</ng-container>
-<router-outlet></router-outlet>
-<ng-container *ngIf="loadingRouteConfig">
-  <app-page-loader></app-page-loader>
-</ng-container>
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~--> 
+  <div id="multiLine">
+    <div id="graphContainer"  style="width:100%;" [ngStyle]="{'height': height + 'px'}">
+        <div id="verticalSVG" [ngStyle]="{'height': height + 'px'}">
+        </div>
+        <div id="horizontalSVG" [ngStyle]="{'height': height - 25 + 'px'}">
+        </div>
+    </div>
+    <div id="xCaptionContainer" style="height: 30px; overflow:hidden;">
+    </div>
+</div>

@@ -123,10 +123,27 @@ import { FeatureFlagsService } from './services/feature-toggle.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AppInitializerService } from './services/app-initializer.service';
 
+/*********************DASHBOARDV2 Start*********************************/
+import { HeaderComponent } from './dashboardv2/header-v2/header.component';
+import { FilterNewComponent } from './dashboardv2/filter-v2/filter-new.component';
+import { ParentFilterComponent } from './dashboardv2/filter-v2/parent-filter/parent-filter.component';
+import { PrimaryFilterComponent } from './dashboardv2/filter-v2/primary-filter/primary-filter.component';
+import { AdditionalFilterComponent } from './dashboardv2/filter-v2/additional-filter/additional-filter.component';
+import { NavNewComponent } from './dashboardv2/nav-v2/nav-new.component';
+import { ExecutiveV2Component } from './dashboardv2/executive-v2/executive-v2.component';
+import { RecentCommentsComponent } from './component/recent-comments/recent-comments.component';
+import { DashboardV2Component } from './dashboardv2/dashboard-v2/dashboard-v2.component';
+import { IterationV2Component } from './dashboardv2/iteration-v2/iteration-v2.component';
+import { KpiCardV2Component } from './dashboardv2/kpi-card-v2/kpi-card-v2.component';
+import { MultilineV2Component } from './component/multiline-v2/multiline-v2.component';
+import { TrendIndicatorV2Component } from './dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
+import { GroupedColumnPlusLineChartV2Component } from './component/grouped-column-plus-line-chart-v2/grouped-column-plus-line-chart-v2.component';
+import { MultilineStyleV2Component } from './component/multiline-style-v2/multiline-style-v2.component';
+/*********************DASHBOARDV2 End*********************************/
+
 /******************************************************/
 export function initializeApp(initializeService: AppInitializerService) {
     return () => {
-        // initializeService.validateToken();
         return initializeService.checkFeatureFlag();
     };
 }
@@ -188,7 +205,22 @@ export function initializeApp(initializeService: AppInitializerService) {
         DeveloperComponent,
         BarWithYAxisGroupComponent,
         DeveloperComponent,
-        PageNotFoundComponent
+        PageNotFoundComponent,
+        HeaderComponent,
+        FilterNewComponent,
+        ParentFilterComponent,
+        PrimaryFilterComponent,
+        AdditionalFilterComponent,
+        NavNewComponent,
+        RecentCommentsComponent,
+        ExecutiveV2Component,
+        DashboardV2Component,
+        IterationV2Component,
+        KpiCardV2Component,
+        MultilineV2Component,
+        TrendIndicatorV2Component,
+        GroupedColumnPlusLineChartV2Component,
+        MultilineStyleV2Component
     ],
     imports: [
         DropdownModule,

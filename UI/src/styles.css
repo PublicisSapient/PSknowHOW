@@ -72,6 +72,16 @@
   --font-medium: 'FuturaNext_Medium', sans-serif;
 }
 
+@font-face {
+  font-family: 'Poppins_Medium';
+  src:url('assets/fonts/Poppins/Poppins-Medium.ttf');
+}
+
+@font-face {
+  font-family: 'Poppins_Regular';
+  src:url('assets/fonts/Poppins/Poppins-Regular.ttf');
+}
+
 
 @font-face {
   font-family: 'FuturaNext_Book';
@@ -147,7 +157,7 @@ a{
 
 body {
   background-color: #dedede;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
 }
 
 html {

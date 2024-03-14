@@ -1,0 +1,14 @@
+:host {
+    font-family: 'Poppins_Regular', sans-serif;
+}
+
+:host .main-container {
+    background-color: #F5F9FF;
+    font-family: 'Poppins_Regular', sans-serif;
+}
+
+.nav-filter-container {
+    position: sticky;
+    top: 0;
+    z-index: 900;
+}

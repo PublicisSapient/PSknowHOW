@@ -102,6 +102,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                                     localStorage.setItem('redirect_uri', window.location.hash);
                                     window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
                                 }else{
+                                    localStorage.removeItem('currentUserDetails');
                                     this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                                 }
                             }

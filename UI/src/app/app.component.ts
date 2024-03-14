@@ -24,6 +24,8 @@ import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
+import { FeatureFlagsService } from './services/feature-toggle.service';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -38,12 +40,21 @@ export class AppComponent implements OnInit {
 
   authorized = <boolean>true;
 
+  newUI: boolean = true;
+
   constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
-    public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute) {
+    public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private feature: FeatureFlagsService) {
     this.authorized = this.getAuth.checkAuth();
   }
 
   ngOnInit() {
+    if(!this.feature.isFeatureEnabled('UI_SWITCH')) {
+      localStorage.removeItem('newUI');
+    }
+
+    this.newUI = localStorage.getItem('newUI') ? true : false;
+
+
     /** Fetch projectId and sprintId from query param and save it to global object */
     this.route.queryParams
     .subscribe(params => {
@@ -79,5 +90,15 @@ export class AppComponent implements OnInit {
       }
 
     });
+  }
+
+  uiSwitch(event) {
+    let isChecked = event.checked;
+    if(isChecked) {
+      localStorage.setItem('newUI', 'true');
+    } else {
+      localStorage.removeItem('newUI');
+    }
+    window.location.reload();
   }
 }

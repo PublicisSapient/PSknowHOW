@@ -37,6 +37,14 @@ import { DoraComponent } from '../dashboard/dora/dora.component';
 import { FeatureGuard } from '../services/feature.guard';
 import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
 import { environment } from 'src/environments/environment';
+
+/***************************NEW UI Start*************************************** */
+
+import { ExecutiveV2Component } from '../dashboardv2/executive-v2/executive-v2.component';
+import { DashboardV2Component } from '../dashboardv2/dashboard-v2/dashboard-v2.component';
+import { IterationV2Component } from '../dashboardv2/iteration-v2/iteration-v2.component';
+
+/***************************NEW UI End**************************************** */
 /**
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
@@ -54,18 +62,18 @@ const routes: Routes = [
     canActivate: [SSOGuard]
   },
   {
-    path: 'dashboard', component: DashboardComponent,
+    path: 'dashboard', component: !localStorage.getItem('newUI') ? DashboardComponent : DashboardV2Component,
     canActivateChild : [FeatureGuard],
     children: [
       { path: '', redirectTo: 'iteration', pathMatch: 'full' },
       {
-        path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+        path: 'mydashboard', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "My Dashboard"
         }
       },
       {
-        path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+        path: 'iteration', component: !localStorage.getItem('newUI') ? IterationComponent : IterationV2Component, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "Iteration"
         }
@@ -109,7 +117,7 @@ const routes: Routes = [
           feature: "Config"
         }
       },
-      { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+      { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full' },
 
     ], canActivate: [AuthGuard]
   },
@@ -121,18 +129,18 @@ const routes: Routes = [
 const routes2: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   {
-    path: 'dashboard', component: DashboardComponent,
+    path: 'dashboard', component:  !localStorage.getItem('newUI') ? DashboardComponent : DashboardV2Component,
     canActivateChild : [FeatureGuard],
     children: [
       { path: '', redirectTo: 'iteration', pathMatch: 'full' },
       {
-        path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+        path: 'mydashboard', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "My Dashboard"
         }
       },
       {
-        path: 'iteration', component: IterationComponent, pathMatch: 'full',
+        path: 'iteration', component: !localStorage.getItem('newUI') ? IterationComponent : IterationV2Component, pathMatch: 'full',
         data: {
           feature: "Iteration"
         }
@@ -176,7 +184,7 @@ const routes2: Routes = [
           feature: "Config"
         }
       },
-      { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+      { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full' },
 
     ],
   },
