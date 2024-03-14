@@ -289,11 +289,11 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
 					"PR Size (No. of lines)")),
 
-	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status", "To Do",
-			"In Progress", "Done")),
+	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status",
+			"To Do(Value/Percentage)", "In Progress(Value/Percentage)", "Done(Value/Percentage)")),
 
 	BACKLOG_EPIC_PROGRESS("kpi169", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status",
-			"To Do", "In Progress", "Done")),
+			"To Do(Value/Percentage)", "In Progress(Value/Percentage)", "Done(Value/Percentage)")),
 
     MEAN_TIME_TO_RECOVER("kpi166", Arrays.asList("Project Name", "Date", "Story ID", "Issue Type", "Issue Description",
             "Created Date", "Completion Date", "Time to Recover (In Hours)")),

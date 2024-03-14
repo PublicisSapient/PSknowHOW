@@ -56,6 +56,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
 import com.publicissapient.kpidashboard.common.model.application.BaseFieldMappingStructure;
 import com.publicissapient.kpidashboard.common.model.application.ConfigurationHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -321,8 +322,13 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 						.get(fieldMappingResponse.getFieldName());
 				if (null != mappingStructure) {
 					// for nested fields
-					generateHistoryForNestedFields(fieldMappingResponseList,
-							projectToolConfig.getBasicProjectConfigId(), fieldMappingResponse, mappingStructure);
+					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+							.get(projectToolConfig.getBasicProjectConfigId());
+					generateHistoryForNestedFields(fieldMappingResponseList, fieldMappingResponse, mappingStructure,
+							fieldMapping);
+					// for additionalfilters
+					setMappingResponseWithGeneratedField(fieldMappingResponse, fieldMapping);
+
 					if (!cleanTraceLog) {
 						cleanTraceLog = mappingStructure.isProcessorCommon();
 					}
@@ -349,24 +355,23 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 * 
 	 * @param fieldMappingResponseList
 	 *            fieldMappingResponseList
-	 * @param projectBasicConfigId
-	 *            projectBasicConfigId
 	 * @param fieldMappingResponse
 	 *            fieldMappingResponse
 	 * @param mappingStructure
 	 *            mappingStructure
+	 * @param fieldMapping
+	 *            fieldMapping
 	 * @throws NoSuchFieldException
 	 *             NoSuchFieldException
 	 * @throws IllegalAccessException
 	 *             IllegalAccessException
 	 */
 	private void generateHistoryForNestedFields(List<FieldMappingResponse> fieldMappingResponseList,
-			ObjectId projectBasicConfigId, FieldMappingResponse fieldMappingResponse,
-			FieldMappingStructure mappingStructure) throws NoSuchFieldException, IllegalAccessException {
+			FieldMappingResponse fieldMappingResponse, FieldMappingStructure mappingStructure,
+			FieldMapping fieldMapping) throws NoSuchFieldException, IllegalAccessException {
 		if (CollectionUtils.isNotEmpty(mappingStructure.getNestedFields())) {
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(projectBasicConfigId);
+
 			StringBuilder originalValue = new StringBuilder(fieldMappingResponse.getOriginalValue() + "-");
-			String previousValue = "";
 			// check the fields in nestedfield section of fieldmapping structure and find if
 			// those fields are present in the fieldmapping response
 			for (BaseFieldMappingStructure nestedField : mappingStructure.getNestedFields()) {
@@ -377,16 +382,68 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 						.findFirst();
 				mappingResponse.ifPresent(response -> originalValue.append(response.getOriginalValue()).append(":"));
 			}
-			List<ConfigurationHistoryChangeLog> changeLogs = getAccessibleFieldHistory(fieldMapping,
-					fieldMappingResponse.getFieldName());
-			if (CollectionUtils.isNotEmpty(changeLogs)) {
-				ConfigurationHistoryChangeLog configurationHistoryChangeLog = changeLogs.get(changeLogs.size() - 1);
-				previousValue = String.valueOf(configurationHistoryChangeLog.getChangedTo());
-
-			}
-			fieldMappingResponse.setOriginalValue(originalValue.deleteCharAt(originalValue.length() - 1).toString());
-			fieldMappingResponse.setPreviousValue(previousValue);
+			setFieldMappingResponse(fieldMappingResponse, fieldMapping, originalValue);
 		}
+
+	}
+
+	private Object getNestedField(FieldMapping newMapping, Class<FieldMapping> fieldMappingClass, Object newValue,
+			FieldMappingStructure mappingStructure) throws NoSuchFieldException, IllegalAccessException {
+		if (null != mappingStructure && CollectionUtils.isNotEmpty(mappingStructure.getNestedFields())) {
+			StringBuilder originalValue = new StringBuilder(newValue + "-");
+			// for nested fields
+			for (BaseFieldMappingStructure nestedField : mappingStructure.getNestedFields()) {
+				if (nestedField.getFilterGroup().contains(newValue)) {
+					Object fieldMappingField = getFieldMappingField(newMapping, fieldMappingClass,
+							nestedField.getFieldName());
+					if (fieldMappingField != null) {
+						originalValue.append(fieldMappingField).append(":");
+					}
+				}
+			}
+			return originalValue.deleteCharAt(originalValue.length() - 1).toString();
+		}
+		return newValue;
+	}
+
+	private void setFieldMappingResponse(FieldMappingResponse fieldMappingResponse, FieldMapping fieldMapping,
+			StringBuilder originalValue) throws NoSuchFieldException, IllegalAccessException {
+		List<ConfigurationHistoryChangeLog> changeLogs = getAccessibleFieldHistory(fieldMapping,
+				fieldMappingResponse.getFieldName());
+		String previousValue = "";
+		if (CollectionUtils.isNotEmpty(changeLogs)) {
+			ConfigurationHistoryChangeLog configurationHistoryChangeLog = changeLogs.get(changeLogs.size() - 1);
+			previousValue = String.valueOf(configurationHistoryChangeLog.getChangedTo());
+
+		}
+		fieldMappingResponse.setOriginalValue(originalValue.deleteCharAt(originalValue.length() - 1).toString());
+		fieldMappingResponse.setPreviousValue(previousValue);
+	}
+
+	private Object generateAdditionalFilters(Object newValue, String fieldName) {
+		if (fieldName.equalsIgnoreCase("additionalFilterConfig")) {
+			List<AdditionalFilterConfig> additonalValue = (List<AdditionalFilterConfig>) newValue;
+			StringBuilder originalValue = new StringBuilder();
+			for (AdditionalFilterConfig value : additonalValue) {
+				String identificationButton = value.getIdentifyFrom();
+				String identificationValue;
+				if (identificationButton.equalsIgnoreCase("customfield")) {
+					identificationValue = value.getIdentificationField();
+				} else {
+					identificationValue = value.getValues().toString();
+				}
+				originalValue.append(value.getFilterId()).append("-").append(identificationButton).append(":").append(identificationValue).append(" ,");
+			}
+			return originalValue;
+		}
+		return newValue;
+	}
+
+	private void setMappingResponseWithGeneratedField(FieldMappingResponse fieldMappingResponse,
+			FieldMapping fieldMapping) throws NoSuchFieldException, IllegalAccessException {
+		StringBuilder originalValue = (StringBuilder) generateAdditionalFilters(fieldMappingResponse.getOriginalValue(),
+				fieldMappingResponse.getFieldName());
+		setFieldMappingResponse(fieldMappingResponse, fieldMapping, originalValue);
 	}
 
 	/**
@@ -508,6 +565,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				Method setter = historyClass.getMethod(setterName, List.class);
 				if (isValueUpdated(oldValue, newValue)) {
 					newValue = getNestedField(newMapping, fieldMappingClass, newValue, mappingStructure);
+					newValue = generateAdditionalFilters(newValue, fieldName);
 					String loggedInUser = authenticationService.getLoggedInUser();
 					String localDateTime = LocalDateTime.now().toString();
 					if (CollectionUtils.isNotEmpty(changeLogs)) {
@@ -527,26 +585,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				log.debug("No Such Method Found" + e);
 			}
 		}
-	}
-
-
-	private Object getNestedField(FieldMapping newMapping, Class<FieldMapping> fieldMappingClass, Object newValue,
-			FieldMappingStructure mappingStructure) throws NoSuchFieldException, IllegalAccessException {
-		if (null != mappingStructure && CollectionUtils.isNotEmpty(mappingStructure.getNestedFields())) {
-			StringBuilder originalValue = new StringBuilder(newValue + "-");
-			// for nested fields
-			for (BaseFieldMappingStructure nestedField : mappingStructure.getNestedFields()) {
-				if (nestedField.getFilterGroup().contains(newValue)) {
-					Object fieldMappingField = getFieldMappingField(newMapping, fieldMappingClass,
-							nestedField.getFieldName());
-					if (fieldMappingField != null) {
-						originalValue.append(fieldMappingField).append(":");
-					}
-				}
-			}
-			return originalValue.deleteCharAt(originalValue.length() - 1).toString();
-		}
-		return newValue;
 	}
 
 	private void setAccessible(Field field) {

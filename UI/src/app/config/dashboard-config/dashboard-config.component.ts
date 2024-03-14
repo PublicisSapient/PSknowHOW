@@ -218,6 +218,9 @@ return item.kpiId;
      handleKpiCategoryChange(event, boardData) { 
        const modifiedObj = {...boardData};
        const targetSelector = event.originalEvent?.target?.closest('.kpi-category-header')?.querySelector('.kpis-list');
+       if(modifiedObj.boardName?.toLowerCase() === 'iteration'){
+        modifiedObj.kpis = [...modifiedObj.kpis, ...this.kpiToBeHidden];
+       }
        if (event.checked) {
         if(targetSelector?.classList.contains('hide-kpisList')) {
           targetSelector?.classList.remove('hide-kpisList');
@@ -229,7 +232,7 @@ return item.kpiId;
           return item;
         });
        } else {
-        targetSelector?.classList.add('hide-kpisList');
+        targetSelector?.classList.add('hide-kpisList');     
         modifiedObj.kpis.forEach((item) => {
           item.shown = false;
           this.kpiFormValue.kpis['controls'][item.kpiId].setValue(false);

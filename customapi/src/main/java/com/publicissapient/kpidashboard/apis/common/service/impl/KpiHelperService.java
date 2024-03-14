@@ -201,8 +201,7 @@ public class KpiHelperService { // NOPMD
 	 * @return
 	 */
 	public static List<JiraIssue> excludePriorityAndIncludeRCA(List<JiraIssue> allDefects,
-															   Map<String, List<String>> projectWisePriority,
-															   Map<String, Set<String>> projectWiseRCA) {
+			Map<String, List<String>> projectWisePriority, Map<String, Set<String>> projectWiseRCA) {
 		Set<JiraIssue> defects = new HashSet<>(allDefects);
 		List<JiraIssue> remainingDefects = new ArrayList<>();
 
@@ -211,8 +210,8 @@ public class KpiHelperService { // NOPMD
 			List<String> priorities = projectWisePriority.getOrDefault(projectId, Collections.emptyList());
 			Set<String> rcas = projectWiseRCA.getOrDefault(projectId, Collections.emptySet());
 
-			if (!priorities.contains(jiraIssue.getPriority().toLowerCase()) || rcas.isEmpty() || rcas.stream()
-					.anyMatch(rca -> jiraIssue.getRootCauseList().contains(rca.toLowerCase()))) {
+			if ((priorities.isEmpty() || !priorities.contains(jiraIssue.getPriority().toLowerCase())) && (rcas.isEmpty()
+					|| rcas.stream().anyMatch(rca -> jiraIssue.getRootCauseList().contains(rca.toLowerCase())))) {
 				remainingDefects.add(jiraIssue);
 			}
 		}
@@ -1383,8 +1382,8 @@ public class KpiHelperService { // NOPMD
 			List<ProjectToolConfig> projectToolConfig = null;
 			if (MapUtils.isNotEmpty(projectToolMap)) {
 				projectToolConfig = projectToolMap.get("Jira");
-				if (CollectionUtils.isEmpty(projectToolConfig) && kpiSource.equalsIgnoreCase(
-						Constant.TOOL_BITBUCKET) && projectToolMap.containsKey(Constant.REPO_TOOLS)) {
+				if (CollectionUtils.isEmpty(projectToolConfig) && kpiSource.equalsIgnoreCase(Constant.TOOL_BITBUCKET)
+						&& projectToolMap.containsKey(Constant.REPO_TOOLS)) {
 					projectToolConfig = projectToolMap.get(Constant.REPO_TOOLS);
 				} else if (CollectionUtils.isEmpty(projectToolConfig)) {
 					projectToolConfig = projectToolMap.get("Azure");
@@ -1631,7 +1630,7 @@ public class KpiHelperService { // NOPMD
 	 * convert milliseconds to hours
 	 *
 	 * @param milliseconds
-	 * 			milliseconds
+	 *            milliseconds
 	 * @return time in hours
 	 */
 	public static long convertMilliSecondsToHours(double milliseconds) {
@@ -1662,7 +1661,8 @@ public class KpiHelperService { // NOPMD
 	 * @param filteredAccountDataList
 	 *            filteredAccountDataList
 	 */
-	public String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList, boolean referFromProjectCache) {
+	public String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList,
+			boolean referFromProjectCache) {
 		String[] projectKeyCache;
 		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
 			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
