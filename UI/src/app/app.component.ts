@@ -94,7 +94,6 @@ export class AppComponent implements OnInit {
   }
 
   uiSwitch(event, userChange = false) {
-    event.preventDefault();
     let isChecked = event.checked;
     if (isChecked) {
       localStorage.setItem('newUI', 'true');
