@@ -40,15 +40,16 @@ export class AppComponent implements OnInit {
 
   authorized = <boolean>true;
 
-  newUI: boolean = true;
+  newUI: boolean = false;
 
   constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
     public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private feature: FeatureFlagsService) {
     this.authorized = this.getAuth.checkAuth();
+    localStorage.setItem('newUI', 'true');
   }
 
   ngOnInit() {
-    if(!this.feature.isFeatureEnabled('UI_SWITCH')) {
+    if (!this.feature.isFeatureEnabled('UI_SWITCH')) {
       localStorage.removeItem('newUI');
     }
 
@@ -57,17 +58,17 @@ export class AppComponent implements OnInit {
 
     /** Fetch projectId and sprintId from query param and save it to global object */
     this.route.queryParams
-    .subscribe(params => {
+      .subscribe(params => {
         let nodeId = params.projectId;
         let sprintId = params.sprintId;
-        if(nodeId){
+        if (nodeId) {
           this.service.setProjectQueryParamInFilters(nodeId)
         }
-        if(sprintId){
+        if (sprintId) {
           this.service.setSprintQueryParamInFilters(sprintId)
         }
       }
-    );
+      );
 
     this.primengConfig.ripple = true;
     this.authorized = this.getAuth.checkAuth();
@@ -92,13 +93,16 @@ export class AppComponent implements OnInit {
     });
   }
 
-  uiSwitch(event) {
+  uiSwitch(event, userChange = false) {
+    event.preventDefault();
     let isChecked = event.checked;
-    if(isChecked) {
+    if (isChecked) {
       localStorage.setItem('newUI', 'true');
     } else {
       localStorage.removeItem('newUI');
     }
-    window.location.reload();
+    if (userChange) {
+        window.location.reload();
+    }
   }
 }

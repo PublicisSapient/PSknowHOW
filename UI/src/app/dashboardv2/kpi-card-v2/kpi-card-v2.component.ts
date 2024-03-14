@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
@@ -9,7 +9,7 @@ import { GoogleAnalyticsService } from 'src/app/services/google-analytics.servic
   templateUrl: './kpi-card-v2.component.html',
   styleUrls: ['./kpi-card-v2.component.css']
 })
-export class KpiCardV2Component implements OnInit {
+export class KpiCardV2Component implements OnInit, OnChanges {
   isTooltip = false;
   @Input() kpiData: any;
   @Input() showChartView = 'chart';
@@ -108,7 +108,13 @@ export class KpiCardV2Component implements OnInit {
     }
 
   ngOnChanges(changes: SimpleChanges) {
+    this.loader = true;
     // changes['dropdownArr']?.currentValue ? true : this.dropdownArr = [];
+    if(changes['loader']) {
+      setTimeout(()=> {
+        this.loader = changes['loader'].currentValue;
+      }, 1000);
+    }
     this.userRole = this.authService.getRole();
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
   }

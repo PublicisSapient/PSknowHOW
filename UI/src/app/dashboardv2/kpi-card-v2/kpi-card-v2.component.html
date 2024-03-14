@@ -70,9 +70,9 @@
     <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': !(showChartView === 'table') ? '220px' : '150px',
     'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
         <!--place for chart to be rendered-->
-        <ng-content *ngIf="trendValueList && trendValueList.length > 0; else noData"></ng-content>
+        <ng-content *ngIf="trendValueList && trendValueList.length > 0 && !loader; else noData"></ng-content>
         <ng-template #noData>
-            <div class="min-ht" *ngIf="loader === false && (!trendValueList || trendValueList.length === 0)">
+            <div class="min-ht" *ngIf="!loader">
                 <div class="p-w-100  p-d-flex p-justify-center">
                     <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
                 </div>
