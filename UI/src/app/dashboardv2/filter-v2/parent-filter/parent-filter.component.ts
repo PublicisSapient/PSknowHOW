@@ -24,18 +24,20 @@ export class ParentFilterComponent implements OnChanges {
       if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
         this.filterLevels = Object.keys(this.filterData);
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level));
+        this.filterLevels = this.filterLevels.map(level => level.toUpperCase());
 
         setTimeout(() => {
           if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel || (changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
             this.selectedLevel = this.filterLevels[this.filterLevels.length - 1];
           }
-          this.onSelectedLevelChange.emit(this.selectedLevel);
+          this.onSelectedLevelChange.emit(this.selectedLevel.toLowerCase());
         }, 0);
 
       } else if (this['parentFilterConfig']['labelName'] !== 'Organization Level') {
         if (this.filterData && Object.keys(this.filterData).length) {
           this.filterLevels = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()].map((item) => item.nodeName);
           this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
+          
 
           setTimeout(() => {
             if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel || (changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {

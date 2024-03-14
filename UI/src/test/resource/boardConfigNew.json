@@ -7,7 +7,7 @@
         "scrum": [
             {
                 "boardId": 1,
-                "boardName": "My KnowHow",
+                "boardName": "My KnowHOW",
                 "boardSlug": "mydashboard",
                 "kpis": [
                     {
@@ -4055,7 +4055,7 @@
         "kanban": [
             {
                 "boardId": 7,
-                "boardName": "My KnowHow",
+                "boardName": "My KnowHOW",
                 "boardSlug": "mydashboard",
                 "kpis": [
                     {
