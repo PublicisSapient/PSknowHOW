@@ -811,8 +811,24 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (!boardDetails && this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.length > 0) {
         boardDetails = this.kpiListData['scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === 'iteration');
       }
+      this.changeSelectedTab();
       this.selectedTab = boardDetails?.boardName;
       this.router.navigate([`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`], {queryParamsHandling: 'merge'});
+    }
+  }
+
+  changeSelectedTab(){
+    let boardDetails = this.kpiListData['scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === 'iteration');
+    let kpisShownCount = 0;
+    boardDetails?.kpis?.forEach((item) => {
+      if(item.shown){
+        kpisShownCount++
+      }
+    })
+    if(kpisShownCount > 0){
+      this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName.split(' ').join('-').toLowerCase();
+    }else{
+      this.selectedTab = 'iteration';
     }
   }
 
@@ -820,11 +836,15 @@ export class FilterComponent implements OnInit, OnDestroy {
     const previousSelectedTab = this.router.url.split('/')[2];
     if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
       this.kanban = false;
-      this.selectedTab = 'iteration';
+      this.projectIndex = 0;
       this.service.setEmptyFilter();
       this.service.setSelectedType('scrum');
-      this.projectIndex = 0;
-      this.router.navigateByUrl(`/dashboard/iteration`);
+      this.changeSelectedTab();
+      if(this.selectedTab === 'iteration'){
+        this.router.navigateByUrl(`/dashboard/iteration`);
+      }else{
+        this.router.navigateByUrl(`/dashboard/${this.selectedTab}`);
+      }
     }
   }
 
