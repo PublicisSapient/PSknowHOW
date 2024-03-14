@@ -49,9 +49,7 @@ import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHan
 import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenAuthenticationProvider;
 import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.ldap.CustomUserDetailsContextMapper;
-import com.publicissapient.kpidashboard.apis.auth.ldap.LdapLoginRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
-import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.token.JwtAuthenticationFilter;
 import com.publicissapient.kpidashboard.apis.errors.CustomAuthenticationEntryPoint;
 import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
