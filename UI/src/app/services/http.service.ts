@@ -950,7 +950,6 @@ export class HttpService {
   }
 
   getNewUserAccessRequestFromAPI() {
-    console.log("getNewUserAccessRequestFromAPI", environment?.['AUTHENTICATION_SERVICE']);
     if(environment?.['AUTHENTICATION_SERVICE']){
       this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
     }
