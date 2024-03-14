@@ -59,65 +59,75 @@ public class FetchEpicDataImpl implements FetchEpicData {
 	private JiraProcessorConfig jiraProcessorConfig;
 
 	@Override
-	public List<Issue> fetchEpic(ProjectConfFieldMapping projectConfig, String boardId,
-			ProcessorJiraRestClient client, KerberosClient krb5Client)
-			throws InterruptedException, RestClientException, IOException {
+	public List<Issue> fetchEpic(ProjectConfFieldMapping projectConfig, String boardId, ProcessorJiraRestClient client,
+			KerberosClient krb5Client) throws InterruptedException, IOException {
 
 		List<String> epicList = new ArrayList<>();
+		try {
+			JiraToolConfig jiraToolConfig = projectConfig.getJira();
+			if (null != jiraToolConfig) {
+				boolean isLast = false;
+				int startIndex = 0;
+				do {
+					URL url = getEpicUrl(projectConfig, boardId, startIndex);
+					String jsonResponse = jiraCommonService.getDataFromClient(projectConfig, url, krb5Client);
+					isLast = populateData(jsonResponse, epicList);
+					startIndex = epicList.size();
+					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+				} while (!isLast);
 
-		JiraToolConfig jiraToolConfig = projectConfig.getJira();
-		if (null != jiraToolConfig) {
-			boolean isLast = false;
-			int startIndex = 0;
-			do {
-				URL url = getEpicUrl(projectConfig, boardId, startIndex);
-				String jsonResponse = jiraCommonService.getDataFromClient(projectConfig, url, krb5Client);
-				isLast = populateData(jsonResponse, epicList);
-				startIndex = epicList.size();
-				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-			} while (!isLast);
-
+			}
+		} catch (RestClientException rce) {
+			log.error("Client exception when loading epic data", rce);
+			throw rce;
+		} catch (MalformedURLException mfe) {
+			log.error("Malformed url for loading epic data", mfe);
+			throw mfe;
 		}
-		List<Issue> epicIssue = getEpicIssuesQuery(epicList,client);
-		return epicIssue;
+
+		return getEpicIssuesQuery(epicList, client);
 	}
 
-	private List<Issue> getEpicIssuesQuery(List<String> epicKeyList, ProcessorJiraRestClient client) throws InterruptedException, RestClientException {
+	private List<Issue> getEpicIssuesQuery(List<String> epicKeyList, ProcessorJiraRestClient client)
+			throws InterruptedException {
 
 		List<Issue> issueList = new ArrayList<>();
 		SearchResult searchResult = null;
-
-		if (CollectionUtils.isNotEmpty(epicKeyList)) {
-			String query = "key in (" + String.join(",", epicKeyList) + ")";
-			int pageStart = 0;
-			int totalEpic = 0;
-			int fetchedEpic = 0;
-			boolean continueFlag = true;
-			do {
-				Promise<SearchResult> promise = client.getSearchClient().searchJql(query,
-						jiraProcessorConfig.getPageSize(), pageStart, null);
-				searchResult = promise.claim();
-				if (null != searchResult && null != searchResult.getIssues()) {
-					if (totalEpic == 0) {
-						totalEpic = searchResult.getTotal();
+		try {
+			if (CollectionUtils.isNotEmpty(epicKeyList)) {
+				String query = "key in (" + String.join(",", epicKeyList) + ")";
+				int pageStart = 0;
+				int totalEpic = 0;
+				int fetchedEpic = 0;
+				boolean continueFlag = true;
+				do {
+					Promise<SearchResult> promise = client.getProcessorSearchClient().searchJql(query,
+							jiraProcessorConfig.getPageSize(), pageStart, null);
+					searchResult = promise.claim();
+					if (null != searchResult && null != searchResult.getIssues()) {
+						if (totalEpic == 0) {
+							totalEpic = searchResult.getTotal();
+						}
+						int issueCount = 0;
+						for (Issue issue : searchResult.getIssues()) {
+							issueList.add(issue);
+							issueCount++;
+						}
+						fetchedEpic += issueCount;
+						pageStart += issueCount;
+						if (totalEpic <= fetchedEpic) {
+							fetchedEpic = totalEpic;
+							continueFlag = false;
+						}
+					} else {
+						break;
 					}
-					int issueCount = 0;
-					for (Issue issue : searchResult.getIssues()) {
-						issueList.add(issue);
-						issueCount++;
-					}
-					fetchedEpic += issueCount;
-					pageStart += issueCount;
-					if (totalEpic <= fetchedEpic) {
-						fetchedEpic = totalEpic;
-						continueFlag = false;
-					}
-				} else {
-					break;
-				}
-				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-			} while (totalEpic < fetchedEpic || continueFlag);
-
+					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+				} while (totalEpic < fetchedEpic || continueFlag);
+			}
+		} catch (RestClientException e) {
+			log.error("Error while fetching issues", e.getCause());
+			throw e;
 		}
 		return issueList;
 	}

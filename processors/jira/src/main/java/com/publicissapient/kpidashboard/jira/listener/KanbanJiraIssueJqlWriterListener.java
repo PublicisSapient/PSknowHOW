@@ -111,8 +111,6 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 	private void setTraceLog(ProcessorExecutionTraceLog processorExecutionTraceLog, String basicProjectConfigId,
 			String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave) {
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
-		processorExecutionTraceLog.setExecutionSuccess(true);
-		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(changeDate,
 				JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);

@@ -18,14 +18,14 @@
 package com.publicissapient.kpidashboard.jira.tasklet;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -50,13 +50,13 @@ public class SprintScrumBoardTasklet implements Tasklet {
     FetchProjectConfiguration fetchProjectConfiguration;
 
     @Autowired
-    JiraClient jiraClient;
-
-    @Autowired
     private FetchSprintReport fetchSprintReport;
 
     @Autowired
     private SprintRepository sprintRepository;
+
+    @Autowired
+    JiraClientService jiraClientService;
 
     private String projectId;
 
@@ -77,17 +77,17 @@ public class SprintScrumBoardTasklet implements Tasklet {
         log.info("**** Sprint report for Scrum Board started * * *");
         ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
         log.info("Fetching spring reports for the project : {}", projConfFieldMapping.getProjectName());
-        KerberosClient krb5Client = null;
-        try(ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client)) {
+        KerberosClient krb5Client = jiraClientService.getKerberosClient();
+        List<BoardDetails> boardDetailsList = projConfFieldMapping.getProjectToolConfig().getBoards();
+        for (BoardDetails boardDetails : boardDetailsList) {
             List<SprintDetails> sprintDetailsList = fetchSprintReport
-                    .createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client);
+                    .createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client, boardDetails);
             sprintRepository.saveAll(sprintDetailsList);
-        } catch (Exception e) {
-            log.error("Exception while fetching sprint data for scrum project and board setup", e);
-            throw e;
         }
+
         log.info("**** Sprint report for Scrum Board ended * * *");
         return RepeatStatus.FINISHED;
     }
+
 
 }

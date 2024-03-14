@@ -62,8 +62,8 @@ public class KerberosClient {
 
 	private String jaasConfigFilePath;
 	private String krb5ConfigFilePath;
-	private HttpClient loginHttpClient;
-	private HttpClient httpClient;
+	private CloseableHttpClient loginHttpClient;
+	private CloseableHttpClient httpClient;
 	private BasicCookieStore cookieStore;
 	private String JaasUser;
 	private String samlEndPoint;
@@ -118,7 +118,7 @@ public class KerberosClient {
 	 * 
 	 * @return http client
 	 */
-	private HttpClient buildLoginHttpClient() {
+	private CloseableHttpClient buildLoginHttpClient() {
 		HttpClientBuilder builder = HttpClientBuilder.create();
 		Lookup<AuthSchemeProvider> authSchemeRegistry = RegistryBuilder.<AuthSchemeProvider>create()
 				.register("negotiate", new SPNegoSchemeFactory(true)).build();
@@ -137,7 +137,7 @@ public class KerberosClient {
 	 * 
 	 * @return http client
 	 */
-	private HttpClient buildHttpClient() {
+	private CloseableHttpClient buildHttpClient() {
 		RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
 		return HttpClientBuilder.create().setDefaultCookieStore(cookieStore).setDefaultRequestConfig(requestConfig)
 				.build();
@@ -307,6 +307,17 @@ public class KerberosClient {
 		this.getCookieStore().getCookies().forEach(cookie -> cookieHeaderBuilder.append(cookie.getName()).append("=")
 				.append(cookie.getValue()).append(";"));
 		return cookieHeaderBuilder.toString();
+	}
+
+	public void close() throws IOException {
+		try {
+			if (loginHttpClient != null && httpClient != null) {
+				httpClient.close();
+				loginHttpClient.close();
+			}
+		} catch (Exception var2) {
+			throw var2 instanceof IOException ? (IOException)var2 : new IOException(var2);
+		}
 	}
 
 	/**

@@ -62,7 +62,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Slf4j
 @Service
@@ -98,7 +97,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			KerberosClient krb5Client, boolean isSprintFetch) {
+			KerberosClient krb5Client, boolean isSprintFetch) throws IOException {
 		Set<SprintDetails> sprintToSave = new HashSet<>();
 		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
@@ -159,7 +158,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	}
 
 	private void getSprintReport(SprintDetails sprint, ProjectConfFieldMapping projectConfig, String boardId,
-			SprintDetails dbSprintDetails, KerberosClient krb5Client) {
+			SprintDetails dbSprintDetails, KerberosClient krb5Client) throws IOException {
 		if (sprint.getOriginalSprintId() != null && sprint.getOriginBoardId() != null
 				&& sprint.getOriginBoardId().stream().anyMatch(id -> id != null && !id.isEmpty())) {
 			// If there's at least one non-null and non-empty string in the list, the
@@ -169,7 +168,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	}
 
 	private void getSprintReport(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
-			SprintDetails sprint, SprintDetails dbSprintDetails, KerberosClient krb5Client) {
+			SprintDetails sprint, SprintDetails dbSprintDetails, KerberosClient krb5Client) throws IOException {
 		try {
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
 			if (null != jiraToolConfig) {
@@ -183,8 +182,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			throw rce;
 		} catch (MalformedURLException mfe) {
 			log.error("Malformed url for loading sprint report for sprint :{} ", sprintId, mfe);
-		} catch (IOException ioe) {
-			log.error("IOException", ioe);
+			throw mfe;
 		}
 	}
 
@@ -469,15 +467,12 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig,
-			KerberosClient krb5Client) {
-		List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
+			KerberosClient krb5Client, BoardDetails boardDetails) throws IOException {
 		List<SprintDetails> sprintDetailsBasedOnBoard = new ArrayList<>();
-		for (BoardDetails boardDetails : boardDetailsList) {
-			List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId(), krb5Client);
-			if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
-				Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
-				sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client, false));
-			}
+		List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId(), krb5Client);
+		if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
+			Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
+			sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client, false));
 		}
 		return sprintDetailsBasedOnBoard;
 	}
@@ -495,7 +490,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId,
-			KerberosClient krb5Client) {
+			KerberosClient krb5Client) throws IOException {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		try {
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
@@ -516,8 +511,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			throw rce;
 		} catch (MalformedURLException mfe) {
 			log.error("Malformed url for loading sprint sprints for board", mfe);
-		} catch (IOException ioe) {
-			log.error("IOException", ioe);
+			throw mfe;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new RuntimeException(e);

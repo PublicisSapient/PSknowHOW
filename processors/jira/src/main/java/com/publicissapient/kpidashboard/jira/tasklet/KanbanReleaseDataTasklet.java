@@ -19,10 +19,10 @@ package com.publicissapient.kpidashboard.jira.tasklet;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.jira.client.JiraClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.FetchKanbanReleaseData;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -44,7 +44,7 @@ public class KanbanReleaseDataTasklet implements Tasklet {
     FetchKanbanReleaseData fetchKanbanReleaseData;
 
     @Autowired
-    JiraClient jiraClient;
+    JiraClientService jiraClientService;
 
     private String projectId;
 
@@ -63,13 +63,8 @@ public class KanbanReleaseDataTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
         log.info("**** ReleaseData fetch started ****");
         ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-        KerberosClient krb5Client = null;
-        try(ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);) {
-            fetchKanbanReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
-        } catch (Exception e) {
-            log.error("Exception while fetching ReleaseData", e);
-            throw e;
-        }
+        KerberosClient krb5Client = jiraClientService.getKerberosClient();
+        fetchKanbanReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
         log.info("**** ReleaseData fetch ended ****");
         return RepeatStatus.FINISHED;
     }

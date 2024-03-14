@@ -18,12 +18,12 @@
 package com.publicissapient.kpidashboard.jira.tasklet;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -46,13 +46,13 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
     FetchProjectConfiguration fetchProjectConfiguration;
 
     @Autowired
-    JiraClient jiraClient;
-
-    @Autowired
     CreateJiraIssueReleaseStatus createJiraIssueReleaseStatus;
 
     @Autowired
     JiraProcessorConfig jiraProcessorConfig;
+
+    @Autowired
+    JiraClientService jiraClientService;
 
     private String projectId;
 
@@ -71,14 +71,9 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
         ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
         KerberosClient krb5Client = null;
-        try(ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client)) {
-            log.info("Fetching release statuses for the project : {}", projConfFieldMapping.getProjectName());
-            createJiraIssueReleaseStatus.processAndSaveProjectStatusCategory(client, projectId);
-        } catch (Exception e) {
-            log.error("Exception while fetching release statuses for the project : {}",
-                    projConfFieldMapping.getProjectName(), e);
-            throw e;
-        }
+        ProcessorJiraRestClient client = jiraClientService.getRestClient();
+        log.info("Fetching release statuses for the project : {}", projConfFieldMapping.getProjectName());
+        createJiraIssueReleaseStatus.processAndSaveProjectStatusCategory(client, projectId);
         return RepeatStatus.FINISHED;
     }
 

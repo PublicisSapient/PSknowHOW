@@ -17,19 +17,16 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.reader;
 
-import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.helper.ReaderRetryHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.service.FetchIssueSprint;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -54,7 +51,7 @@ public class IssueSprintReader implements ItemReader<ReadData> {
     FetchProjectConfiguration fetchProjectConfiguration;
 
     @Autowired
-    JiraClient jiraClient;
+    JiraClientService jiraClientService;
 
     @Autowired
     JiraProcessorConfig jiraProcessorConfig;
@@ -91,76 +88,57 @@ public class IssueSprintReader implements ItemReader<ReadData> {
         }
         ReadData readData = null;
         if (null != projectConfFieldMapping) {
-            KerberosClient krb5Client = null;
-            try(ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
-                if (null == issueIterator) {
-                    pageNumber = 0;
-                    fetchIssues(client);
-                }
+            ProcessorJiraRestClient client = jiraClientService.getRestClient();
+            if (null == issueIterator) {
+                pageNumber = 0;
+                fetchIssues(client);
+            }
 
-                if (null != issueIterator && !issueIterator.hasNext()) {
-                    fetchIssues(client);
-                }
+            if (null != issueIterator && !issueIterator.hasNext()) {
+                fetchIssues(client);
+            }
 
-                if (null != issueIterator && issueIterator.hasNext()) {
-                    Issue issue = issueIterator.next();
-                    readData = new ReadData();
-                    readData.setIssue(issue);
-                    readData.setProjectConfFieldMapping(projectConfFieldMapping);
-                    readData.setSprintFetch(true);
-                }
+            if (null != issueIterator && issueIterator.hasNext()) {
+                Issue issue = issueIterator.next();
+                readData = new ReadData();
+                readData.setIssue(issue);
+                readData.setProjectConfFieldMapping(projectConfFieldMapping);
+                readData.setSprintFetch(true);
+            }
 
-                if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
-                    log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
-                    readData = null;
-                }
-            } catch (Exception e) {
-                log.error("Exception while fetching data for the project {}", projectConfFieldMapping.getProjectName(),
-                        e);
-                throw e;
+            if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
+                log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
+                readData = null;
             }
         }
+
         return readData;
-
     }
 
-    @TrackExecutionTime
-    private void fetchIssues(ProcessorJiraRestClient client) {
-        ReaderRetryHelper.RetryableOperation<Void> retryableOperation = () -> {
+	@TrackExecutionTime
+	private void fetchIssues(ProcessorJiraRestClient client) throws Exception {
+		ReaderRetryHelper.RetryableOperation<Void> retryableOperation = () -> {
 
-            try {
-                log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
-                        pageNumber / pageSize);
-                issues = fetchIssueSprint.fetchIssuesSprintBasedOnJql(projectConfFieldMapping, client, pageNumber,
-                        sprintId);
-                issueSize = issues.size();
-                pageNumber += pageSize;
-                if (CollectionUtils.isNotEmpty(issues)) {
-                    issueIterator = issues.iterator();
-                }
-            } catch (RestClientException e) {
-                if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-                    log.error(JiraConstants.ERROR_MSG_401);
-                } else {
-                    log.error(JiraConstants.ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
-                }
-                throw e;
-            } catch (InterruptedException e) {
-                log.error("Interrupted exception thrown.", e);
-                throw e;
-            } catch (Exception e) {
-                log.error("Exception while fetching issues for project: {} page No: {}",
-                        projectConfFieldMapping.getProjectName(), pageNumber / pageSize, e);
-                throw e;
-            }
-            return null;
-        };
+			log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
+					pageNumber / pageSize);
+			issues = fetchIssueSprint.fetchIssuesSprintBasedOnJql(projectConfFieldMapping, client, pageNumber,
+					sprintId);
+			issueSize = issues.size();
+			pageNumber += pageSize;
+			if (CollectionUtils.isNotEmpty(issues)) {
+				issueIterator = issues.iterator();
+			}
+			return null;
+		};
 
-        try {
-            retryHelper.executeWithRetry(retryableOperation);
-        } catch (Exception e) {
-            log.error("All retry attempts failed while fetching issues.");
-        }
-    }
+		try {
+			retryHelper.executeWithRetry(retryableOperation);
+		} catch (Exception e) {
+			log.error("Exception while fetching issues for project: {}, page No: {}",
+					projectConfFieldMapping.getProjectName(), pageNumber / pageSize);
+			log.error("All retries attempts are failed");
+			throw e;
+		}
+	}
 
 }

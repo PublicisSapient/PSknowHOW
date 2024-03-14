@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.processor;
 
+import java.io.IOException;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -108,7 +109,7 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 				readData.getProjectConfFieldMapping(), jiraIssue);
 	}
 
-	private Set<SprintDetails> processSprintData(ReadData readData) {
+	private Set<SprintDetails> processSprintData(ReadData readData) throws IOException {
 		return sprintDataProcessor.processSprintData(readData.getIssue(), readData.getProjectConfFieldMapping(),
 				readData.getBoardId());
 	}

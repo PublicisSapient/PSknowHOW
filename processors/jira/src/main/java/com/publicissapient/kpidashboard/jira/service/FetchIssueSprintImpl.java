@@ -17,6 +17,9 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
+import static com.publicissapient.kpidashboard.jira.constant.JiraConstants.ERROR_MSG_401;
+import static com.publicissapient.kpidashboard.jira.constant.JiraConstants.ERROR_MSG_NO_RESULT_WAS_AVAILABLE;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,10 +35,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
@@ -113,25 +118,37 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 			int pageStart, List<String> issueKeys) throws InterruptedException {
 		SearchResult searchResult = null;
 
-		if (client == null) {
-			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
-		} else if (org.apache.commons.lang3.StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey())) {
+		if (org.apache.commons.lang3.StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey())) {
 			log.info("Project key is empty {}", projectConfig.getProjectToolConfig().getProjectKey());
 		} else {
-			StringBuilder query = new StringBuilder("project in (")
-					.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") AND ");
+			try {
+				StringBuilder query = new StringBuilder("project in (")
+						.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") AND ");
 
-			query.append(JiraProcessorUtil.processJqlForSprintFetch(issueKeys));
-			log.info("jql query :{}", query);
-			Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
-					jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
-			searchResult = promisedRs.claim();
-			if (searchResult != null) {
-				log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
-						Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
-						searchResult.getTotal()));
+				query.append(JiraProcessorUtil.processJqlForSprintFetch(issueKeys));
+				if (StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getBoardQuery())) {
+					query.append(" and (").append(
+							projectConfig.getJira().getBoardQuery().toLowerCase().split(JiraConstants.ORDERBY)[0])
+							.append(")");
+				}
+				log.info("jql query :{}", query);
+				Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
+						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
+				searchResult = promisedRs.claim();
+				if (searchResult != null) {
+					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
+							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
+							searchResult.getTotal()));
+				}
+				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+			} catch (RestClientException e) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+					log.error(ERROR_MSG_401);
+				} else {
+					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e);
+				}
+				throw e;
 			}
-			TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 
 		}
 

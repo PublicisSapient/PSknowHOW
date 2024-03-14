@@ -17,14 +17,11 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.reader;
 
-import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -32,6 +29,7 @@ import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.helper.ReaderRetryHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.util.StringUtils;
@@ -66,10 +64,10 @@ public class IssueJqlReader implements ItemReader<ReadData> {
     FetchProjectConfiguration fetchProjectConfiguration;
 
     @Autowired
-    JiraClient jiraClient;
+    JiraCommonService jiraCommonService;
 
     @Autowired
-    JiraCommonService jiraCommonService;
+    JiraClientService jiraClientService;
 
     @Autowired
     JiraProcessorConfig jiraProcessorConfig;
@@ -78,6 +76,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
     List<Issue> issues = new ArrayList<>();
     Map<String, String> projectWiseDeltaDate;
     int issueSize = 0;
+    Boolean fetchLastIssue = false;
     @Autowired
     private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
     private Iterator<Issue> issueIterator;
@@ -111,80 +110,55 @@ public class IssueJqlReader implements ItemReader<ReadData> {
             initializeReader(projectId);
         }
         ReadData readData = null;
-        if (null != projectConfFieldMapping) {
-            KerberosClient krb5Client = null;
-            try(ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
-                if (null == issueIterator) {
-                    pageNumber = 0;
-                    fetchIssues(client);
-                }
-
-                if (null != issueIterator && !issueIterator.hasNext()) {
-                    fetchIssues(client);
-                }
-
-                if (null != issueIterator && issueIterator.hasNext()) {
-                    Issue issue = issueIterator.next();
-                    readData = new ReadData();
-                    readData.setIssue(issue);
-                    readData.setProjectConfFieldMapping(projectConfFieldMapping);
-                    readData.setSprintFetch(false);
-                }
-
-                if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
-                    log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
-                    readData = null;
-                }
-            } catch (Exception e) {
-                log.error("Exception while fetching data for the project {}", projectConfFieldMapping.getProjectName(),
-                        e);
-                throw e;
-            }
-        }
-        return readData;
-
-    }
-
-    @TrackExecutionTime
-    private void fetchIssues(ProcessorJiraRestClient client) {
-
-        ReaderRetryHelper.RetryableOperation<Void> retryableOperation = () -> {
-
-            try {
-                log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
-                        pageNumber / pageSize);
-                String deltaDate = getDeltaDateFromTraceLog();
-                issues = jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, pageNumber,
-                        deltaDate);
-                issueSize = issues.size();
-                pageNumber += pageSize;
-                if (CollectionUtils.isNotEmpty(issues)) {
+        if (null != projectConfFieldMapping && !fetchLastIssue) {
+            ProcessorJiraRestClient client = jiraClientService.getRestClient();
+            if (issueIterator == null || !issueIterator.hasNext()) {
+                fetchIssues(client);
+                if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(issues)) {
                     issueIterator = issues.iterator();
                 }
-            } catch (RestClientException e) {
-                if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-                    log.error(JiraConstants.ERROR_MSG_401);
-                } else {
-                    log.error(JiraConstants.ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
-                }
-                throw e;
-            } catch (InterruptedException e) {
-                log.error("Interrupted exception thrown.", e);
-                throw e;
-            } catch (Exception e) {
-                log.error("Exception while fetching issues for project: {} page No: {}",
-                        projectConfFieldMapping.getProjectName(), pageNumber / pageSize, e);
-                throw e;
             }
-            return null;
-        };
 
-        try {
-            retryHelper.executeWithRetry(retryableOperation);
-        } catch (Exception e) {
-            log.error("All retry attempts failed while fetching issues.");
+            if (null != issueIterator && issueIterator.hasNext()) {
+                Issue issue = issueIterator.next();
+                readData = new ReadData();
+                readData.setIssue(issue);
+                readData.setProjectConfFieldMapping(projectConfFieldMapping);
+                readData.setSprintFetch(false);
+            }
+
+            if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
+                log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
+                fetchLastIssue = true;
+                return readData;
+            }
         }
+
+        return readData;
     }
+
+	@TrackExecutionTime
+	private void fetchIssues(ProcessorJiraRestClient client) throws Exception {
+
+		ReaderRetryHelper.RetryableOperation<Void> retryableOperation = () -> {
+			log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
+					pageNumber / pageSize);
+			String deltaDate = getDeltaDateFromTraceLog();
+			issues = jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, pageNumber, deltaDate);
+			issueSize = issues.size();
+			pageNumber += pageSize;
+			return null;
+		};
+
+		try {
+			retryHelper.executeWithRetry(retryableOperation);
+		} catch (Exception e) {
+			log.error("Exception while fetching issues for project: {}, page No: {}",
+					projectConfFieldMapping.getProjectName(), pageNumber / pageSize);
+			log.error("All retries attempts are failed");
+			throw e;
+		}
+	}
 
     private String getDeltaDateFromTraceLog() {
         String deltaDate = DateUtil.dateTimeFormatter(
@@ -198,20 +172,19 @@ public class IssueJqlReader implements ItemReader<ReadData> {
                     .findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA,
                             Arrays.asList(projectConfFieldMapping.getBasicProjectConfigId().toString()));
             if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
-                String lastSuccessfulRun = null;
+                String lastSuccessfulRun = deltaDate;
                 for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
                     lastSuccessfulRun = processorExecutionTraceLog.getLastSuccessfulRun();
                 }
-                if (!StringUtils.isBlank(lastSuccessfulRun)) {
-                    log.info("project: {}  found in trace log. Data will be fetched from one day before {}",
+               log.info("project: {}  found in trace log. Data will be fetched from one day before {}",
                             projectConfFieldMapping.getProjectName(), lastSuccessfulRun);
-                    deltaDate = lastSuccessfulRun;
-                }
                 projectWiseDeltaDate = new HashMap<>();
-                projectWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(), deltaDate);
+                projectWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(), lastSuccessfulRun);
             } else {
                 log.info("project: {} not found in trace log so data will be fetched from beginning",
                         projectConfFieldMapping.getProjectName());
+                projectWiseDeltaDate = new HashMap<>();
+                projectWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(), deltaDate);
             }
         }
         if (MapUtils.isNotEmpty(projectWiseDeltaDate) && !StringUtils

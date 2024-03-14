@@ -17,16 +17,17 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 /**
  * @author pankumar8
- *
  */
 public interface FetchSprintReport {
 
@@ -40,18 +41,25 @@ public interface FetchSprintReport {
 	 * @param isSprintFetch
 	 *            isSprintFetch
 	 * @return Set of SprintDetails
+	 * @throws IOException
+	 *             throws IOException
 	 */
 	Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			KerberosClient krb5Client, boolean isSprintFetch);
+			KerberosClient krb5Client, boolean isSprintFetch) throws IOException;
 
 	/**
 	 * @param projectConfig
 	 *            projectConfig
 	 * @param krb5Client
 	 *            krb5Client
+	 * @param boardDetails
+	 *            boardDetails
 	 * @return List of SprintDetails
+	 * @throws IOException
+	 *             throws IOException
 	 */
-	List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client);
+	List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client,
+			BoardDetails boardDetails) throws IOException;
 
 	/**
 	 * @param projectConfig
@@ -61,6 +69,10 @@ public interface FetchSprintReport {
 	 * @param krb5Client
 	 *            krb5Client
 	 * @return List of SprintDetails
+	 *
+	 * @throws IOException
+	 *             throws IOException
 	 */
-	List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId, KerberosClient krb5Client);
+	List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId, KerberosClient krb5Client)
+			throws IOException;
 }

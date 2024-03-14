@@ -24,6 +24,7 @@ import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.StepContribution;
@@ -56,6 +57,9 @@ public class SprintReportTasklet implements Tasklet {
     @Autowired
     private SprintRepository sprintRepository;
 
+    @Autowired
+    JiraClientService jiraClientService;
+
     private String sprintId;
 
     @Autowired
@@ -73,27 +77,22 @@ public class SprintReportTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
         log.info("Sprint report job started for the sprint : {}", sprintId);
-        try {
-            ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration
-                    .fetchConfigurationBasedOnSprintId(sprintId);
-            KerberosClient krb5Client = null;
-            SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
-            List<String> originalBoardIds = sprintDetails.getOriginBoardId();
-            for (String boardId : originalBoardIds) {
-                List<SprintDetails> sprintDetailsList = fetchSprintReport.getSprints(projConfFieldMapping, boardId,
-                        krb5Client);
-                if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
-                    // filtering the sprint need to update
-                    Set<SprintDetails> sprintDetailSet = sprintDetailsList.stream()
-                            .filter(s -> s.getSprintID().equalsIgnoreCase(sprintId)).collect(Collectors.toSet());
-                    Set<SprintDetails> setOfSprintDetails = fetchSprintReport.fetchSprints(projConfFieldMapping,
-                            sprintDetailSet, krb5Client, true);
-                    sprintRepository.saveAll(setOfSprintDetails);
-                }
+        ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration
+                .fetchConfigurationBasedOnSprintId(sprintId);
+        KerberosClient krb5Client = jiraClientService.getKerberosClient();
+        SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+        List<String> originalBoardIds = sprintDetails.getOriginBoardId();
+        for (String boardId : originalBoardIds) {
+            List<SprintDetails> sprintDetailsList = fetchSprintReport.getSprints(projConfFieldMapping, boardId,
+                    krb5Client);
+            if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
+                // filtering the sprint need to update
+                Set<SprintDetails> sprintDetailSet = sprintDetailsList.stream()
+                        .filter(s -> s.getSprintID().equalsIgnoreCase(sprintId)).collect(Collectors.toSet());
+                Set<SprintDetails> setOfSprintDetails = fetchSprintReport.fetchSprints(projConfFieldMapping,
+                        sprintDetailSet, krb5Client, true);
+                sprintRepository.saveAll(setOfSprintDetails);
             }
-        } catch (Exception e) {
-            log.error("Exception while fetching sprint data for the sprint : {}", sprintId, e);
-            throw e;
         }
         return RepeatStatus.FINISHED;
     }
