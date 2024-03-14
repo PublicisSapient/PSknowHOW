@@ -148,19 +148,35 @@ export class NavComponent implements OnInit {
       Array.isArray(this.kpiListData[this.selectedType])
     ) {
       for (let i = 0; i < this.kpiListData[this.selectedType]?.length; i++) {
-        this.boardNameArr.push({
-          boardName: this.kpiListData[this.selectedType][i].boardName,
-          link: this.kpiListData[this.selectedType][i].boardName.toLowerCase().split(' ').join('-')
+        let kpiShownCount = 0;
+        this.kpiListData[this.selectedType][i]['kpis']?.forEach((item) => {
+          if(item.shown){
+            kpiShownCount++;
+          }
         });
+        if(kpiShownCount > 0){
+          this.boardNameArr.push({
+            boardName: this.kpiListData[this.selectedType][i].boardName,
+            link: this.kpiListData[this.selectedType][i].boardName.toLowerCase().split(' ').join('-')
+          });
+        }
       }
     }
 
     for (let i = 0; i < this.kpiListData['others']?.length; i++) {
-      this.boardNameArr.push({
-        boardName: this.kpiListData['others'][i].boardName,
-        link:
-          this.kpiListData['others'][i].boardName.toLowerCase()
+      let kpiShownCount = 0;
+      this.kpiListData['others'][i]['kpis']?.forEach((item) => {
+      if(item.shown){
+          kpiShownCount++;
+        }
       });
+      if(kpiShownCount > 0){
+        this.boardNameArr.push({
+          boardName: this.kpiListData['others'][i].boardName,
+          link:
+            this.kpiListData['others'][i].boardName.toLowerCase()
+        });
+      }
     }
     
     // renamed tab name was not updating when navigating on iteration/backlog, issue fixed

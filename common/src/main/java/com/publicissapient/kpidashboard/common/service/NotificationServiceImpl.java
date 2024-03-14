@@ -125,6 +125,7 @@ public class NotificationServiceImpl implements NotificationService  {
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.ssl.trust", "*");
         props.put("mail.debug", "true");
+        props.put("mail.smtp.ssl.checkserveridentity", "false");
         return mailSender;
     }
 }

@@ -98,6 +98,7 @@ export class SharedService {
   projectQueryParamObs = this.projectQueryParamSubject.asObservable();
   sprintQueryParamSubject = new BehaviorSubject<any>('');
   sprintQueryParamObs = this.sprintQueryParamSubject.asObservable();
+  processorTraceLogs = [];
 
   public currentIssue = new BehaviorSubject({});
   public currentData = this.currentIssue.asObservable();
@@ -423,6 +424,13 @@ export class SharedService {
 
   getAddtionalFilterBackup() {
     return this.addtionalFilterBackup;
+  }
+  setProcessorLogDetails(data) {
+    this.processorTraceLogs = data;
+  }
+
+  getProcessorLogDetails() {
+    return this.processorTraceLogs
   }
 }
 

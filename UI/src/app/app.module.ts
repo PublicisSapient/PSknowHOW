@@ -143,9 +143,15 @@ import { MultilineStyleV2Component } from './component/multiline-style-v2/multil
 
 /******************************************************/
 export function initializeApp(initializeService: AppInitializerService) {
-    return () => {
+    return (): Promise<any> => { 
+        return initializeService.validateToken();
+    }
+}
+
+export function initializeApp2(initializeService: AppInitializerService) {
+    return (): Promise<any> => { 
         return initializeService.checkFeatureFlag();
-    };
+    }
 }
 
 @NgModule({
@@ -268,7 +274,14 @@ export function initializeApp(initializeService: AppInitializerService) {
         {
             provide: APP_INITIALIZER,
             useFactory: initializeApp,
-            deps: [AppInitializerService]
+            deps: [AppInitializerService],
+            multi: true
+        },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: initializeApp2,
+            deps: [AppInitializerService],
+            multi: true
         }
     ],
     bootstrap: [AppComponent]

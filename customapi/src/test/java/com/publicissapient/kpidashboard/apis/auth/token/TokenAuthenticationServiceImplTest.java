@@ -152,7 +152,6 @@ public class TokenAuthenticationServiceImplTest {
 
 	@Test
 	public void testGetAuthenticationWhenValidTokenProvided() {
-		when(userTokenAuthenticationDTO.getAuthToken()).thenReturn(AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L));
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
 		Authentication authentication = service.getAuthentication(userTokenAuthenticationDTO,request,response);
 		Assert.assertNotNull(authentication);
@@ -237,11 +236,6 @@ public class TokenAuthenticationServiceImplTest {
 		verify(userTokenReopository, times(1)).deleteByUserNameIn(users);
 	}
 
-	/*@Test
-	public void setUpdateAuthFlagForExpDateNull() {
-		UserTokenData userTokenData = new UserTokenData(USERNAME, "userTokenData", null);
-		assertEquals(service.setUpdateAuthFlag(new ArrayList<>()), Boolean.toString(false));
-	}*/
 
 	@Test
 	public void getOrSaveUserByToken() {

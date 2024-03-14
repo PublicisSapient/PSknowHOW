@@ -339,7 +339,7 @@ public class SonarClientCommonUtils {
 	public static SonarMetric getSonarMetric(JSONObject metricJson) {
 		SonarMetric metric = new SonarMetric(SonarProcessorUtils.convertToString(metricJson, PROJECT_METRIC));
 		metric.setMetricValue(metricJson.get(PROJECT_MSR_VALUE));
-		if (metric.getMetricName().equals("sqale_index")) {
+		if (metric.getMetricName().matches("sqale_index|security_remediation_effort|reliability_remediation_effort")) {
 			metric.setFormattedValue(SonarProcessorUtils
 					.dateFormatter(SonarProcessorUtils.convertToString(metricJson, PROJECT_MSR_VALUE)));
 		} else if (SonarProcessorUtils.convertToStringSafe(metricJson, PROJECT_MSR_VALUE).contains(DOT)) {

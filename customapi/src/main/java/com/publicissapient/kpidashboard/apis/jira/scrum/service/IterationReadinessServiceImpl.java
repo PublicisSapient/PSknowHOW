@@ -22,13 +22,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -40,7 +38,6 @@ import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -107,7 +104,7 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 						.filter(jiraIssue -> filterByIssueTypeKPI161.contains(jiraIssue.getTypeName().toLowerCase()))
 						.collect(Collectors.toList());
 			}
-			List<String> totalSprint = jiraService.getFutureSprintsList();
+			List<String> totalSprint = new ArrayList<>(jiraService.getFutureSprintsList());
 			totalSprint.add(CommonConstant.BLANK);
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 			resultListMap.put(SPRINT_LIST, totalSprint);

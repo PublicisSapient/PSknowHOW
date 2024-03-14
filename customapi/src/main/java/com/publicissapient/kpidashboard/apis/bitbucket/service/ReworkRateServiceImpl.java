@@ -159,7 +159,7 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = getRepoToolsKpiMetricResponse(localEndDate,
-				projectLeafNode, dataPoints, duration);
+				toolMap, projectLeafNode, dataPoints, duration);
 
 		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
@@ -360,10 +360,17 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	 * 				time duration
 	 * @return lis of RepoToolKpiMetricResponse object
 	 */
-	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate, Node node,
-			Integer dataPoint, String duration) {
+	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
+			Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node, Integer dataPoint, String duration) {
 
-		List<String> projectCodeList = Arrays.asList(node.getId());
+		List<String> projectCodeList = new ArrayList<>();
+		ProjectFilter accountHierarchyData = node.getProjectFilter();
+		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(REPO_TOOLS,
+				Collections.emptyList());
+		if (!CollectionUtils.isEmpty(tools)) {
+			projectCodeList.add(node.getId());
+		}
 
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 
