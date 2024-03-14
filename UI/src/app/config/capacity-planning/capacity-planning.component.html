@@ -341,6 +341,7 @@
                                         <input type="email" min="0" pInputText
                                             *ngIf="projectCapacityEditMode;else showUserEmail"
                                             placeholder="Repo EmailId"
+                                            (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email')"
                                             [style]="{'width':'120px'}"
                                             [formControl]="selectedSprintAssigneFormArray[rowIndex]?.email"
                                             (keypress)="validateInput($event, 'email')"
