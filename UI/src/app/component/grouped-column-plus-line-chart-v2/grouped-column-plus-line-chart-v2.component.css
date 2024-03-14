@@ -35,16 +35,16 @@
     display: none;
 }
 
-::ng-deep div.tooltip {
+:host ::ng-deep div.tooltip {
     position: absolute;
     text-align: center;
     max-width: 220px;
     padding: 5px;
     font-size: 10px;
-    background: rgba(255, 255, 255, 0.95);
-    color: var(--color-gray-34);
+    background: #202429;
+    color: #F5F9FF;
     border-radius: 5px;
-    box-shadow: 0px 0px 6px #b9b9bb;
+    /* box-shadow: 0px 0px 6px #b9b9bb; */
     z-index: 1;
 }
 
@@ -78,7 +78,7 @@
     padding: 2px;
     position: absolute;
     border-radius: 2px;
-    box-shadow: 0px 0px 6px #b9b9bb;
+    /* box-shadow: 0px 0px 6px #b9b9bb; */
     opacity: 0.5;
     pointer-events: none;
     width: max-content;
