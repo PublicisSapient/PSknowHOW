@@ -18,7 +18,7 @@ RUN yum install -y shadow-utils \
 #     JAVA_OPTS="" \
 #     keystorefile="/app/cacerts"
 
-ENV CONFIG_LOCATION="/app/properties/customapi.properties"\
+ENV CONFIG_LOCATION="/app/properties/customapi.properties" \
     certhostpath="/app/certs/" \
     keytoolalias="myknowhow" \
     JAVA_OPTS="" \ 
