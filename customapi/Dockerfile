@@ -2,21 +2,28 @@
 FROM amazoncorretto:17
 
 # Set a non-root user
-ARG USER=knowhowuser
-ARG UID=1000
-ARG GID=1000
+# ARG USER=knowhowuser
+# ARG UID=1000
+# ARG GID=1000
 
 RUN yum install -y shadow-utils \
-    && ln -sf /bin/bash /bin/sh \ 
-    && groupadd -g $GID $USER \
-    && useradd -u $UID -g $GID -m -s /bin/bash $USER 
+    && ln -sf /bin/bash /bin/sh 
+    # && groupadd -g $GID $USER \
+    # && useradd -u $UID -g $GID -m -s /bin/bash $USER 
 
 # Set the environment variables
-ENV CONFIG_LOCATION="/app/properties/customapi.properties" \
+# ENV CONFIG_LOCATION="/app/properties/customapi.properties" \
+#     certhostpath="/app/certs/" \
+#     keytoolalias="myknowhow" \
+#     JAVA_OPTS="" \
+#     keystorefile="/app/cacerts"
+
+ENV CONFIG_LOCATION="/app/properties/customapi.properties"\
     certhostpath="/app/certs/" \
     keytoolalias="myknowhow" \
-    JAVA_OPTS="" \
-    keystorefile="/app/cacerts"
+    JAVA_OPTS="" \ 
+    keystorefile="/usr/lib/jvm/java-17-amazon-corretto/lib/security/cacerts"
+
 
 # Set the working directory
 WORKDIR /app
@@ -29,7 +36,7 @@ COPY src/main/resources/application.properties /app/properties/customapi.propert
 COPY start_combined_collector.sh /app/start_combined_collector.sh
 
 # Change ownership to the non-root user
-RUN chown -R $USER:$USER /app
+# RUN chown -R $USER:$USER /app
 
 # Give execute permissions to the script
 RUN chmod +x /app/start_combined_collector.sh
@@ -38,7 +45,7 @@ RUN chmod +x /app/start_combined_collector.sh
 EXPOSE 8080
 
 # Switch to the non-root user
-USER $USER:$GID
+# USER $USER:$GID
 
 # Specify the command to run your application
 CMD ["sh", "start_combined_collector.sh"]
