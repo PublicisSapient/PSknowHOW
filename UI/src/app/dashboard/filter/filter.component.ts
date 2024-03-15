@@ -1605,14 +1605,14 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.service.setVisibleSideBar(false);
       this.kpiListDataProjectLevel = response.data;
       let userLevelData = this.service.getDashConfigData();
-      if(!userLevelData){
-        this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(boardResponse => {
-          userLevelData = boardResponse.data;
-          this.handleRedirection(userLevelData)
-        })
-      }else{
+      // if(!userLevelData){
+      //   this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(boardResponse => {
+      //     userLevelData = boardResponse.data;
+      //     this.handleRedirection(userLevelData)
+      //   })
+      // }else{
         this.handleRedirection(userLevelData);
-      }
+      // }
     });
   }
 
