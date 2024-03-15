@@ -60,10 +60,10 @@ spec:
                   key: stage-knhdbpassword
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "0.5"
+        # resources:
+        #   requests:
+        #     memory: "1Gi"
+        #     cpu: "0.5"
         ports:
           - containerPort: 50017
         readinessProbe:

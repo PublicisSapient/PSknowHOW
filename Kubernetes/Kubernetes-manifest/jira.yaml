@@ -71,10 +71,10 @@ spec:
 
         ports:
         - containerPort: 50008
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "0.5"
+        # resources:
+        #   requests:
+        #     memory: "1Gi"
+        #     cpu: "0.5"
         # readinessProbe:
         #   tcpSocket:
         #     port: 50008

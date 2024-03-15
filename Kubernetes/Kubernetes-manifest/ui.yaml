@@ -32,10 +32,10 @@ spec:
         ports:
         - containerPort: 80
         # - containerPort: 443
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "0.5"
+        # resources:
+        #   requests:
+        #     memory: "1Gi"
+        #     cpu: "0.5"
         # readinessProbe:
         #   httpGet:
         #     path: /
@@ -50,23 +50,9 @@ spec:
         #     scheme: HTTPS
         #   initialDelaySeconds: 15
         #   periodSeconds: 10
-        env:
-          - name: API_HOST
-            value: customapi
-          - name: API_PORT
-            value: "8080"
-          - name: ENVIRONMENT
-            value: "prod"
-          - name: CENTRAL_LOGIN_URL
-            value: "https://stage-authnauth.tools.publicis.sapient.com"
-          - name: MAP_URL
-            value: "https://stage-assessmentplatform.tools.publicis.sapient.com"
-          - name: RETROS_URL
-            value: "https://stage-retrospective.tools.publicis.sapient.com"
-          - name: AUTHENTICATION_SERVICE
-            value: "true"
-          - name: production
-            value: "true"
+        envFrom:
+          - configMapRef:
+              name: knowhow-config
 ---
 apiVersion: v1
 kind: Service

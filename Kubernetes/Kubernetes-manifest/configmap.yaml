@@ -10,5 +10,24 @@ data:
   keystorefile: "/usr/lib/jvm/java-1.8.0-amazon-corretto/jre/lib/security/cacerts"
   spring.data.mongodb.database: "kpidashboard"
   flag.mailWithoutKafka: "false"
-  sendGridEnabled: "true"
-  
+  notification.switch: "true"
+  sendGridEnabled: "false"
+  spring.kafka.consumer.bootstrap-servers: crs-kafka-0.kafka-cluster.stage-knowhow.svc.cluster.local:9092
+  spring.kafka.producer.bootstrap-servers: crs-kafka-0.kafka-cluster.stage-knowhow.svc.cluster.local:9092
+  KAFKA_CFG_ZOOKEEPER_CONNECT: >-
+    crs-zookeeper-0.zookeeper-cluster.uat-knowhow.svc.cluster.local:2181,crs-zookeeper-1.zookeeper-cluster.uat-knowhow.svc.cluster.local:2181,crs-zookeeper-2.zookeeper-cluster.uat-knowhow.svc.cluster.local:2181
+  ZOO_SERVERS: >-
+    crs-zookeeper-0.zookeeper-cluster.uat-knowhow.svc.cluster.local:2888:3888,crs-zookeeper-1.zookeeper-cluster.uat-knowhow.svc.cluster.local:2888:3888,crs-zookeeper-2.zookeeper-cluster.uat-knowhow.svc.cluster.local:2888:3888
+
+  # customapi Config
+  auth.centralAuthBaseURL: "https://stage-authnauth.tools.publicis.sapient.com"
+  auth.subDomainCookie: "true"
+  auth.domain: "tools.publicis.sapient.com"
+
+  # UI Config
+  API_HOST: "customapi"
+  API_PORT: "8080"
+  CENTRAL_LOGIN_URL: "https://stage-authnauth.tools.publicis.sapient.com"
+  MAP_URL: "https://stage-assessmentplatform.tools.publicis.sapient.com"
+  RETROS_URL: "https://stage-retrospective.tools.publicis.sapient.com"
+  AUTHENTICATION_SERVICE: "true"
