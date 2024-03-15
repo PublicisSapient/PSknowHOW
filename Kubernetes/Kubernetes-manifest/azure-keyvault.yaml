@@ -9,8 +9,8 @@ spec:
   parameters:
     usePodIdentity: "false"
     useVMManagedIdentity:   "true"                                                         # Set to true for  using managed identity
-    userAssignedIdentityID: "19ae5e85-a9ef-4e1a-bb4f-a8dd2bd0d55c"  # Set the   clientID of the user-assigned managed identity to use, from the previous step
-    keyvaultName:   speedtoolskeyvault                                                                  # Set to the name of your key vault
+    userAssignedIdentityID: "0965f8b5-4cfa-4fcb-8a4a-b34cd4dd0211"  # Set the   clientID of the user-assigned managed identity to use, from the previous step
+    keyvaultName: msgsseunspdkv                                                                  # Set to the name of your key vault
     objects:  |
       array:
         - |
