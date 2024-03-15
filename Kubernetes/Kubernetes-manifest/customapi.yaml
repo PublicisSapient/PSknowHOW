@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: customapi
-  namespace: uat-knowhow
+  namespace: stage-knowhow
   labels:
     app: customapi
 spec:
@@ -47,18 +47,18 @@ spec:
             - name: spring.data.mongodb.uri
               valueFrom:
                 secretKeyRef:
-                  name: uatknhdbconnectionstring
-                  key: uatknhdbconnectionstring
+                  name: stage-knhdbconnectionstring
+                  key: stage-knhdbconnectionstring
             # - name: spring.data.mongodb.host
             #   valueFrom:
             #     secretKeyRef:
-            #       name: uat-secretproviderclass
-            #       key: uatknhdbhost
+            #       name: stage-secretproviderclass
+            #       key: stage-knhdbhost
             - name: repoToolAPIKey
               valueFrom:
                 secretKeyRef:
-                  name: uat-repo-tool-api-key
-                  key: uat-repo-tool-api-key
+                  name: stage-repo-tool-api-key
+                  key: stage-repo-tool-api-key
             - name: aesEncryptionKey
               valueFrom:
                 secretKeyRef:
@@ -72,13 +72,13 @@ spec:
             - name: spring.data.mongodb.username
               valueFrom:
                 secretKeyRef:
-                  name: uatknhdbusername
-                  key: uatknhdbusername
+                  name: stage-knhdbusername
+                  key: stage-knhdbusername
             - name: spring.data.mongodb.password
               valueFrom:
                 secretKeyRef:
-                  name: uatknhdbpassword
-                  key: uatknhdbpassword
+                  name: stage-knhdbpassword
+                  key: stage-knhdbpassword
             - name: exposed_api_key
               valueFrom:
                 secretKeyRef:
@@ -109,7 +109,7 @@ spec:
               name: knowhow-config  
           volumeMounts:
             - name: knowhow-secrets-store
-              mountPath: "/mnt/uat-secrets-store"
+              mountPath: "/mnt/stage-secrets-store"
               readOnly: true
       volumes:
         - name: knowhow-secrets-store
@@ -117,13 +117,13 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: "uat-secretproviderclass"
+              secretProviderClass: "stage-secretproviderclass"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: customapi
-  namespace: uat-knowhow
+  namespace: stage-knowhow
 spec:
   selector:
     app: customapi

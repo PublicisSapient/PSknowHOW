@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kafka-consumers
-  namespace: uat-knowhow
+  namespace: stage-knowhow
   labels:
     app: kafka-consumers
 spec:
@@ -33,12 +33,12 @@ spec:
         #       valueFrom:
         #         secretKeyRef:
         #           name: knowhow-config-credentials
-        #           key: uatknhdbconnectionstring
+        #           key: stage-knhdbconnectionstring
         #     - name: spring.data.mongodb.host
         #       valueFrom:
         #         secretKeyRef:
         #           name: knowhow-config-credentials
-        #           key: uatknhdbhost
+        #           key: stage-knhdbhost
             
         #     - name: aesEncryptionKey
         #       valueFrom:
@@ -55,12 +55,12 @@ spec:
         #       valueFrom:
         #         secretKeyRef:
         #           name: knowhow-config-credentials
-        #           key: uatknhdbusername
+        #           key: stage-knhdbusername
         #     - name: spring.data.mongodb.password
         #       valueFrom:
         #         secretKeyRef:
         #           name: knowhow-config-credentials
-        #           key: uatknhdbpassword
+        #           key: stage-knhdbpassword
         #     - name: mongock.migration-scan-package
         #       value: com.publicissapient.kpidashboard.apis.mongock.installation
         # envFrom:
@@ -89,7 +89,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kafka-consumers
-  namespace: uat-knowhow
+  namespace: stage-knowhow
 spec:
   selector:
     app: kafka-consumers

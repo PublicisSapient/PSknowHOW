@@ -2,8 +2,8 @@
 apiVersion: secrets-store.csi.x-k8s.io/v1
 kind: SecretProviderClass
 metadata:
-  name: uat-secretproviderclass
-  namespace: uat-knowhow
+  name: stage-secretproviderclass
+  namespace: stage-knowhow
 spec:
   provider: azure
   parameters:
@@ -14,51 +14,51 @@ spec:
     objects:  |
       array:
         - |
-          objectName: uatknhdbusername
+          objectName: stage-knhdbusername
           objectType: secret
           objectVersion: ""
         - |
-          objectName: uatknhdbpassword
+          objectName: stage-knhdbpassword
           objectType: secret
           objectVersion: ""
         - |
-          objectName: uatknhdbhost
+          objectName: stage-knhdbhost
           objectType: secret
           objectVersion: ""
         - |
-          objectName: uatknhdbconnectionstring
+          objectName: stage-knhdbconnectionstring
           objectType: secret
           objectVersion: ""
         - |
-          objectName: uatrabbitpass
+          objectName: stage-rabbitpass
           objectType: secret
           objectVersion: ""
         - |
-          objectName: uatdebbieuser
+          objectName: stage-debbieuser
           objectType: secret
           objectVersion: ""
         - |
-          objectName: uatdebbiepassword
+          objectName: stage-debbiepassword
           objectType: secret
           objectVersion: ""
         - |
-          objectName: uat-sendgrid-apikey
+          objectName: stage-sendgrid-apikey
           objectType: secret
           objectVersion: ""
         - |
-          objectName: uat-repo-tool-api-key
+          objectName: stage-repo-tool-api-key
           objectType: secret
           objectVersion: ""
         - |
-          objectName: uat-debbie-secret-key
+          objectName: stage-debbie-secret-key
           objectType: secret
           objectVersion: ""
         - |
-          objectName: uat-debbie-internal-key
+          objectName: stage-debbie-internal-key
           objectType: secret
           objectVersion: ""
         - |
-          objectName: uat-debbie-db-url
+          objectName: stage-debbie-db-url
           objectType: secret
           objectVersion: ""
         - |
@@ -91,66 +91,66 @@ spec:
           objectVersion: ""
     tenantId: "d52c9ea1-7c21-47b1-82a3-33a74b1f74b8"                 # The tenant ID of the key vault
   secretObjects:                                    #https://secrets-store-csi-driver.sigs.k8s.io/topics/sync-as-kubernetes-secret
-  - secretName: uatknhdbusername
+  - secretName: stage-knhdbusername
     type: Opaque
     data:
-    - objectName: uatknhdbusername                           # This refers to the name of the secret as it is stored in Azure Key Vault
-      key: uatknhdbusername                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
-  - secretName: uatknhdbpassword
+    - objectName: stage-knhdbusername                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: stage-knhdbusername                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: stage-knhdbpassword
     type: Opaque
     data:
-    - objectName: uatknhdbpassword
-      key: uatknhdbpassword
-  - secretName: uatknhdbhost
+    - objectName: stage-knhdbpassword
+      key: stage-knhdbpassword
+  - secretName: stage-knhdbhost
     type: Opaque
     data:
-    - objectName: uatknhdbhost
-      key: uatknhdbhost
-  - secretName: uatknhdbconnectionstring
+    - objectName: stage-knhdbhost
+      key: stage-knhdbhost
+  - secretName: stage-knhdbconnectionstring
     type: Opaque
     data:
-    - objectName: uatknhdbconnectionstring                           # This refers to the name of the secret as it is stored in Azure Key Vault
-      key: uatknhdbconnectionstring                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
-  - secretName: uatrabbitpass
+    - objectName: stage-knhdbconnectionstring                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: stage-knhdbconnectionstring                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: stage-rabbitpass
     type: Opaque
     data:
-    - objectName: uatrabbitpass
-      key: uatrabbitpass
-  - secretName: uatdebbieuser
+    - objectName: stage-rabbitpass
+      key: stage-rabbitpass
+  - secretName: stage-debbieuser
     type: Opaque
     data:
-    - objectName: uatdebbieuser
-      key: uatdebbieuser
-  - secretName: uatdebbiepassword
+    - objectName: stage-debbieuser
+      key: stage-debbieuser
+  - secretName: stage-debbiepassword
     type: Opaque
     data:
-    - objectName: uatdebbiepassword                           # This refers to the name of the secret as it is stored in Azure Key Vault
-      key: uatdebbiepassword                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
-  - secretName: uat-sendgrid-apikey
+    - objectName: stage-debbiepassword                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: stage-debbiepassword                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: stage-sendgrid-apikey
     type: Opaque
     data:
-    - objectName: uat-sendgrid-apikey
-      key: uat-sendgrid-apikey
-  - secretName: uat-repo-tool-api-key
+    - objectName: stage-sendgrid-apikey
+      key: stage-sendgrid-apikey
+  - secretName: stage-repo-tool-api-key
     type: Opaque
     data:
-    - objectName: uat-repo-tool-api-key
-      key: uat-repo-tool-api-key
-  - secretName: uat-debbie-secret-key
+    - objectName: stage-repo-tool-api-key
+      key: stage-repo-tool-api-key
+  - secretName: stage-debbie-secret-key
     type: Opaque
     data:
-    - objectName: uat-debbie-secret-key                           # This refers to the name of the secret as it is stored in Azure Key Vault
-      key: uat-debbie-secret-key                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
-  - secretName: uat-debbie-internal-key
+    - objectName: stage-debbie-secret-key                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: stage-debbie-secret-key                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: stage-debbie-internal-key
     type: Opaque
     data:
-    - objectName: uat-debbie-internal-key
-      key: uat-debbie-internal-key
-  - secretName: uat-debbie-db-url
+    - objectName: stage-debbie-internal-key
+      key: stage-debbie-internal-key
+  - secretName: stage-debbie-db-url
     type: Opaque
     data:
-    - objectName: uat-debbie-db-url
-      key: uat-debbie-db-url
+    - objectName: stage-debbie-db-url
+      key: stage-debbie-db-url
   - secretName: tenginequerypass
     type: Opaque
     data:

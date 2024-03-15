@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: azure-pipeline-repo
-  namespace: uat-knowhow
+  namespace: stage-knowhow
   labels:
     app: azure-pipeline-repo
 spec:
@@ -30,13 +30,13 @@ spec:
             - name: spring.data.mongodb.uri
               valueFrom:
                 secretKeyRef:
-                  name: uatknhdbconnectionstring
-                  key: uatknhdbconnectionstring
+                  name: stage-knhdbconnectionstring
+                  key: stage-knhdbconnectionstring
             - name: spring.data.mongodb.host
               valueFrom:
                 secretKeyRef:
-                  name: uatknhdbhost
-                  key: uatknhdbhost
+                  name: stage-knhdbhost
+                  key: stage-knhdbhost
             
             - name: aesEncryptionKey
               valueFrom:
@@ -51,13 +51,13 @@ spec:
             - name: spring.data.mongodb.username
               valueFrom:
                 secretKeyRef:
-                  name: uatknhdbusername
-                  key: uatknhdbusername
+                  name: stage-knhdbusername
+                  key: stage-knhdbusername
             - name: spring.data.mongodb.password
               valueFrom:
                 secretKeyRef:
-                  name: uatknhdbpassword
-                  key: uatknhdbpassword
+                  name: stage-knhdbpassword
+                  key: stage-knhdbpassword
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
         resources:
@@ -73,7 +73,7 @@ spec:
 
         volumeMounts:
             - name: knowhow-secrets-store
-              mountPath: "/mnt/uat-secrets-store"
+              mountPath: "/mnt/stage-secrets-store"
               readOnly: true
       volumes:
         - name: knowhow-secrets-store
@@ -81,7 +81,7 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: "uat-secretproviderclass"
+              secretProviderClass: "stage-secretproviderclass"
 
         
 
@@ -90,7 +90,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: azure-pipeline-repo
-  namespace: uat-knowhow
+  namespace: stage-knowhow
 spec:
   selector:
     app: azure-pipeline-repo

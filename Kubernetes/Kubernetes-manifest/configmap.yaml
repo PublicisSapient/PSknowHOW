@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: knowhow-config
-  namespace: uat-knowhow
+  namespace: stage-knowhow
 data:
   forgotPassword.uiHost: "stage-psknowhow.tools.publicis.sapient.com"
   corsFilterValidOrigin: "stage-psknowhow.tools.publicis.sapient.com"
