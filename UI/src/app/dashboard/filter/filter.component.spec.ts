@@ -2693,5 +2693,69 @@ const completeHierarchyData = {
           } 
           component.closeAllDropdowns();
         })
-
+        it('should set selectedTab to the first boardName if no kpis are shown', () => {
+          // Arrange
+          const boardDetails = {
+            boardName: 'Board 1',
+            kpis: [
+              { shown: false },
+              { shown: false },
+              { shown: false }
+            ]
+          };
+          component.kpiListData = {
+            kanban: [boardDetails],
+            scrum: [],
+            others: []
+          };
+          component.kanban = true;
+    
+          // Act
+          component.changeSelectedTab();
+    
+          // Assert
+          expect(component.selectedTab).toBe('Board 1');
+        });
+    
+        it('should not change selectedTab if at least one kpi is shown', () => {
+          // Arrange
+          const boardDetails = {
+            boardName: 'Board 1',
+            kpis: [
+              { shown: false },
+              { shown: true },
+              { shown: false }
+            ]
+          };
+          component.kpiListData = {
+            kanban: [boardDetails],
+            scrum: [],
+            others: []
+          };
+          component.kanban = true;
+          component.selectedTab = 'Board 1';
+    
+          // Act
+          component.changeSelectedTab();
+    
+          // Assert
+          expect(component.selectedTab).toBe('Board 1');
+        });
+    
+        it('should set selectedTab to the first boardName if selectedTab does not exist in kanban or scrum', () => {
+          // Arrange
+          component.kpiListData = {
+            kanban: [{ boardName: 'Board 1', kpis: [] }],
+            scrum: [],
+            others: []
+          };
+          component.kanban = true;
+          component.selectedTab = 'Non-existent Board';
+    
+          // Act
+          component.changeSelectedTab();
+    
+          // Assert
+          expect(component.selectedTab).toBe('Board 1');
+        });
 });

@@ -812,7 +812,29 @@ export class FilterComponent implements OnInit, OnDestroy {
         boardDetails = this.kpiListData['scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === 'iteration');
       }
       this.selectedTab = boardDetails?.boardName;
-      this.router.navigate([`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`], {queryParamsHandling: 'merge'});
+      this.changeSelectedTab();
+      this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`], {queryParamsHandling: 'merge'});
+    }
+  }
+
+  changeSelectedTab(){
+    let boardDetails = this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase()) 
+    || this.kpiListData['others'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase());
+    let kpisShownCount = 0;
+    if(boardDetails?.boardName?.toLowerCase() === 'iteration'){
+      boardDetails['kpis'] = boardDetails?.kpis?.filter((item) => item.kpiId != 'kpi121');
+    }
+    boardDetails?.kpis?.forEach((item) => {
+      if(item.shown){
+        kpisShownCount++
+      }
+    })
+    if(kpisShownCount <= 0){
+      this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
+      this.service.setSelectedTab(this.selectedTab);
+      const selectedTab = this.selectedTab;
+      const selectedType = this.kanban ? 'kanban' : 'scrum';
+      this.service.onTypeOrTabRefresh.next({ selectedTab, selectedType });
     }
   }
 
@@ -820,11 +842,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     const previousSelectedTab = this.router.url.split('/')[2];
     if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
       this.kanban = false;
-      this.selectedTab = 'iteration';
+      this.projectIndex = 0;
       this.service.setEmptyFilter();
       this.service.setSelectedType('scrum');
-      this.projectIndex = 0;
-      this.router.navigateByUrl(`/dashboard/iteration`);
+      this.changeSelectedTab();
+      this.router.navigateByUrl(`/dashboard/${this.selectedTab}`);
     }
   }
 
@@ -1539,17 +1561,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** when user clicks on Back to dashboard or logo*/
-  navigateToDashboard() {
-    let projectList = [];
-    if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
-      projectList = this.service.getSelectedTrends().map(data => data.nodeId);
-    }
-    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
-      this.service.setSideNav(false);
-      this.service.setVisibleSideBar(false);
-      this.kpiListDataProjectLevel = response.data;
-      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, this.service.getDashConfigData())
+  handleRedirection(userLevelData){
+    this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, userLevelData)
       this.service.setDashConfigData(this.kpiListData);
       this.getNotification();
       this.selectedFilterData.kanban = this.kanban;
@@ -1579,6 +1592,27 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.service.setSelectedDateFilter(this.selectedDayType);
       this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
       this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
+  }
+
+  /** when user clicks on Back to dashboard or logo*/
+  navigateToDashboard() {
+    let projectList = [];
+    if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
+      projectList = this.service.getSelectedTrends().map(data => data.nodeId);
+    }
+    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
+      this.service.setSideNav(false);
+      this.service.setVisibleSideBar(false);
+      this.kpiListDataProjectLevel = response.data;
+      let userLevelData = this.service.getDashConfigData();
+      // if(!userLevelData){
+      //   this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(boardResponse => {
+      //     userLevelData = boardResponse.data;
+      //     this.handleRedirection(userLevelData)
+      //   })
+      // }else{
+        this.handleRedirection(userLevelData);
+      // }
     });
   }
 
