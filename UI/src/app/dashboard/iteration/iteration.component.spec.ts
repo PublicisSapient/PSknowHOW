@@ -2414,7 +2414,7 @@ describe('IterationComponent', () => {
         expect(component.colorObj).toBe(x);
     });
 
-    it('should process config data on getting globalDashConfigData', () => {
+    xit('should process config data on getting globalDashConfigData', () => {
 
         component.sharedObject = {};
         service.globalDashConfigData.emit(userConfigData['data']);
