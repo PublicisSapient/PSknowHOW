@@ -15,9 +15,9 @@ data:
   spring.kafka.consumer.bootstrap-servers: crs-kafka-0.kafka-cluster.stage-knowhow.svc.cluster.local:9092
   spring.kafka.producer.bootstrap-servers: crs-kafka-0.kafka-cluster.stage-knowhow.svc.cluster.local:9092
   KAFKA_CFG_ZOOKEEPER_CONNECT: >-
-    crs-zookeeper-0.zookeeper-cluster.uat-knowhow.svc.cluster.local:2181,crs-zookeeper-1.zookeeper-cluster.uat-knowhow.svc.cluster.local:2181,crs-zookeeper-2.zookeeper-cluster.uat-knowhow.svc.cluster.local:2181
+    crs-zookeeper-0.zookeeper-cluster.stage-knowhow.svc.cluster.local:2181,crs-zookeeper-1.zookeeper-cluster.stage-knowhow.svc.cluster.local:2181,crs-zookeeper-2.zookeeper-cluster.stage-knowhow.svc.cluster.local:2181
   ZOO_SERVERS: >-
-    crs-zookeeper-0.zookeeper-cluster.uat-knowhow.svc.cluster.local:2888:3888,crs-zookeeper-1.zookeeper-cluster.uat-knowhow.svc.cluster.local:2888:3888,crs-zookeeper-2.zookeeper-cluster.uat-knowhow.svc.cluster.local:2888:3888
+    crs-zookeeper-0.zookeeper-cluster.stage-knowhow.svc.cluster.local:2888:3888,crs-zookeeper-1.zookeeper-cluster.stage-knowhow.svc.cluster.local:2888:3888,crs-zookeeper-2.zookeeper-cluster.stage-knowhow.svc.cluster.local:2888:3888
 
   # customapi Config
   auth.centralAuthBaseURL: "https://stage-authnauth.tools.publicis.sapient.com"
