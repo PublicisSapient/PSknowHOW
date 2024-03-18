@@ -4,7 +4,7 @@ metadata:
   name: crs-zookeeper
   namespace: stage-knowhow
 spec:
-  replicas: 3
+  replicas: 1
   serviceName: zookeeper-cluster
   selector:
     matchLabels:
