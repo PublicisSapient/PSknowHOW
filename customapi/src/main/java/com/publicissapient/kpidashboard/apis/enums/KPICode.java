@@ -501,7 +501,7 @@ public enum KPICode {
      */
     REWORK_RATE("kpi173", KPISource.BITBUCKET.name()),
     /**
-     * Tech Debt - Sonar Security
+     * Tech Debt Sonar Security
      */
     TECH_DEBT_SONAR_SECURITY("kpi174", KPISource.SONAR.name()),
 

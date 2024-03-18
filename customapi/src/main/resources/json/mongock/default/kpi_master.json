@@ -4529,7 +4529,7 @@
   },
   {
     "kpiId": "kpi174",
-    "kpiName": "Tech Debt - Sonar Security",
+    "kpiName": "Tech Debt Sonar Security",
     "maxValue": "100",
     "kpiUnit": "%",
     "isDeleted": "False",
