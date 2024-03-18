@@ -31,3 +31,4 @@ data:
   MAP_URL: "https://stage-assessmentplatform.tools.publicis.sapient.com"
   RETROS_URL: "https://stage-retrospective.tools.publicis.sapient.com"
   AUTHENTICATION_SERVICE: "true"
+  ENVIRONMENT: "prod"
