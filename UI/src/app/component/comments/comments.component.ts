@@ -61,7 +61,7 @@ export class CommentsComponent implements OnInit {
   submitComment(filterData=this.selectedFilters[this.selectedTabIndex]){
     this.showSpinner = true;
     const reqObj = {
-      node: (this.selectedTab !== 'iteration' && this.selectedTab !== 'release') ? filterData.nodeId : filterData.parentId[0],
+      nodes: (this.selectedTab !== 'iteration' && this.selectedTab !== 'release') ? [...filterData.nodeId] : filterData.parentId[0],
       level: filterData.level,
       nodeChildId: (this.selectedTab === 'iteration' || this.selectedTab === 'release') ? filterData.nodeId : '',
       kpiId: this.kpiId,
@@ -85,7 +85,7 @@ export class CommentsComponent implements OnInit {
 
   getComments(){
     const postData = {
-      node: (this.selectedTab !== 'iteration' && this.selectedTab !== 'release') ? this.selectedFilters[this.selectedTabIndex]?.nodeId : this.selectedFilters[this.selectedTabIndex]?.parentId[0],
+      nodes: (this.selectedTab !== 'iteration' && this.selectedTab !== 'release') ? [...this.selectedFilters[this.selectedTabIndex]?.nodeId] : this.selectedFilters[this.selectedTabIndex]?.parentId[0],
       nodeChildId: (this.selectedTab === 'iteration' || this.selectedTab === 'release') ? this.selectedFilters[this.selectedTabIndex].nodeId : '',
       kpiId: this.kpiId,
       level: this.selectedFilters[this.selectedTabIndex]?.level

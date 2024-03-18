@@ -3914,7 +3914,7 @@
                         "type": "singleSelect",
                         "defaultLevel": {
                             "labelName": "sprint",
-                            "sortBy": "status"
+                            "sortBy": "sprintState"
                         }
                     },
                     "parentFilter": {
@@ -6447,7 +6447,7 @@
                         "type": "singleSelect",
                         "defaultLevel": {
                             "labelName": "release",
-                            "sortBy": null
+                            "sortBy": "releaseState"
                         }
                     },
                     "parentFilter": {

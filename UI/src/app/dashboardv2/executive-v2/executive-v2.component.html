@@ -27,7 +27,7 @@
                             <div *ngFor="let kpi of updatedConfigGlobalData; let i = index;"
                                 [ngClass]="{'p-sm-6':!(showChart==='large'),'p-sm-12':showChart==='large'}">
                                 <app-kpi-card-v2 [selectedTab]="selectedTab" [trendBoxColorObj]="trendBoxColorObj"
-                                    [kpiData]="kpi" [loader]="kpiLoader.includes(kpi?.kpiId)"
+                                    [kpiData]="kpi" [loader]="kpiLoader.has(kpi?.kpiId)"
                                     [trendData]="kpiTrendsObj[kpi?.kpiId]"
                                     [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders"
                                     [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
@@ -44,7 +44,7 @@
                                     (reloadKPITab)="reloadKPI($event)">
                                     <ng-container *ngIf="!noTabAccess else noDataAccess">
                                         <div [ngSwitch]="kpi?.kpiDetail?.chartType">
-                                            <ng-container *ngIf="!kpiLoader.includes(kpi?.kpiId) && kpiChartData[kpi?.kpiId] && kpiChartData[kpi?.kpiId].length">
+                                            <ng-container *ngIf="!kpiLoader.has(kpi?.kpiId) && kpiChartData[kpi?.kpiId] && kpiChartData[kpi?.kpiId].length">
                                                 <ng-container *ngIf="!(showChart === 'table')">
                                                     <app-groupstackchart *ngSwitchCase="'stackedColumn'"
                                                         [legendType]="'tooltip'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"

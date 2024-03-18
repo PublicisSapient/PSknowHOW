@@ -60,7 +60,7 @@ export class RecentCommentsComponent {
     });
     
     if (this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'release') {
-      reqObj['nodes'] = [filterData.filter(x => x.nodeId == filterApplyData?.['ids'][0])[0]?.parentId];
+      reqObj['nodes'] = [...filterData.filter(x => x.nodeId == filterApplyData?.['ids'][0])[0]?.parentId];
       this.nodeChildName = filterData.filter(x => x.nodeId == reqObj.nodeChildId)[0]?.nodeName;
     } else {
       reqObj['nodes'] = [...filterApplyData?.['selectedMap']['project']];

@@ -2,13 +2,31 @@
     font-family: 'Poppins_Regular', sans-serif;
 }
 
-:host .main-container {
+:host .main-container,
+:host ::ng-deep .main-container label {
     background-color: #F5F9FF;
     font-family: 'Poppins_Regular', sans-serif;
 }
+
+:host ::ng-deep .main-container .p-tabview-title,
+:host ::ng-deep .main-container .navigation li a,
+:host ::ng-deep .main-container .text-data,
+:host ::ng-deep .main-container .col-head,
+:host ::ng-deep .main-container .p-tabmenu-nav a,
+:host ::ng-deep .main-container .p-datatable .p-datatable-thead > tr > th {
+    font-family: 'Poppins_Medium', sans-serif;
+}
+
 
 .nav-filter-container {
     position: sticky;
     top: 0;
     z-index: 900;
+}
+
+:host ::ng-deep .main-container .kpi-card-container,
+:host ::ng-deep .main-container .kpi-summary {
+    box-shadow: none;
+    border: 1px solid #D5DBE1;
+    border-radius: 10px;
 }

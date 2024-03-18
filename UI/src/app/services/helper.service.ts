@@ -394,7 +394,7 @@ export class HelperService {
 
     sortAlphabetically(objArray) {
         if (objArray && objArray?.length > 1) {
-            objArray?.sort((a, b) => a?.data?.localeCompare(b?.data));
+            objArray?.sort((a, b) => a.nodeName ? a.nodeName.localeCompare(b.nodeName) : a?.data?.localeCompare(b?.data));
         }
         return objArray;
     }

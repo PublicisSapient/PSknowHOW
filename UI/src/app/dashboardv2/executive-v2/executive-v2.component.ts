@@ -53,11 +53,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   loaderJenkins = false;
   faList = faList;
   faChartPie = faChartPie;
-  loaderJiraArray = [];
-  loaderJiraKanbanArray = [];
-  loaderSonar = false;
-  loaderZypher = false;
-  loaderBitBucket = false;
   subscriptions: any[] = [];
   noOfFilterSelected = 0;
   jiraKpiRequest;
@@ -90,7 +85,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   enableByUser = false;
   updatedConfigGlobalData;
   kpiConfigData = {};
-  kpiLoader = [];
+  kpiLoader = new Set();
   noTabAccess = false;
   trendBoxColorObj: any;
   iSAdditionalFilterSelected = false;
@@ -123,10 +118,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
 
     this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
-      this.loaderSonar = false;
-      this.loaderZypher = false;
-      this.loaderBitBucket = false;
-      this.loaderJenkins = false;
+      this.kpiLoader = new Set();
       this.processedKPI11Value = {};
       this.selectedBranchFilter = 'Select';
       this.serviceObject = {};
@@ -168,7 +160,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.handleMaturityTableLoader();
       } else {
         this.noTabAccess = true;
-        // this.kpiLoader.length = 0;
       }
     }));
   }
@@ -244,6 +235,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.kpiDropdowns = {};
         this.kpiTrendsObj = {};
         this.kpiTableDataObj = {};
+        this.kpiLoader = new Set();
         for (const key in this.colorObj) {
           const idx = key.lastIndexOf('_');
           const nodeName = key.slice(0, idx);
@@ -303,7 +295,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   groupSonarKpi(kpiIdsForCurrentBoard) {
     this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', '');
     if (this.kpiListSonar?.kpiList?.length > 0) {
-      this.kpiLoader.push(...this.kpiListSonar.kpiList.map((kpi) => kpi.kpiId));
+      let kpiArr = this.kpiListSonar.kpiList.map((kpi: { kpiId: any; }) => kpi.kpiId);
+      kpiArr.forEach(element => this.kpiLoader.add(element));
       this.postSonarKpi(this.kpiListSonar, 'sonar');
     }
   }
@@ -312,7 +305,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   groupJenkinsKpi(kpiIdsForCurrentBoard) {
     this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', '');
     if (this.kpiJenkins?.kpiList?.length > 0) {
-      this.kpiLoader.push(...this.kpiJenkins.kpiList.map((kpi) => kpi.kpiId));
+      let kpiArr = this.kpiJenkins.kpiList.map((kpi: { kpiId: any; }) => kpi.kpiId);
+      kpiArr.forEach(element => this.kpiLoader.add(element));
       this.postJenkinsKpi(this.kpiJenkins, 'jenkins');
     }
   }
@@ -331,7 +325,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (groupId) {
         this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, '',);
         if (this.kpiZypher?.kpiList?.length > 0) {
-          this.kpiLoader.push(...this.kpiZypher.kpiList.map((kpi) => kpi.kpiId));
+          let kpiArr = this.kpiZypher.kpiList.map((kpi: { kpiId: any; }) => kpi.kpiId);
+          kpiArr.forEach(element => this.kpiLoader.add(element));
           this.postZypherKpi(this.kpiZypher, 'zypher');
         }
       }
@@ -354,7 +349,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (groupId) {
         this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, '');
         if (this.kpiJira?.kpiList?.length > 0) {
-          this.kpiLoader.push(...this.kpiJira.kpiList.map((kpi) => kpi.kpiId));
+          let kpiArr = this.kpiJira.kpiList.map((kpi: { kpiId: any; }) => kpi.kpiId);
+          kpiArr.forEach(element => this.kpiLoader.add(element));
           this.postJiraKpi(this.kpiJira, 'jira');
         }
       }
@@ -378,7 +374,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (groupId) {
         this.kpiJira = this.helperService.groupKpiFromMaster('Jira', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, '');
         if (this.kpiJira?.kpiList?.length > 0) {
-          this.kpiLoader.push(...this.kpiJira.kpiList.map((kpi) => kpi.kpiId));
+          let kpiArr = this.kpiJira.kpiList.map((kpi: { kpiId: any; }) => kpi.kpiId);
+          kpiArr.forEach(element => this.kpiLoader.add(element));
           this.postJiraKanbanKpi(this.kpiJira, 'jira');
         }
       }
@@ -388,7 +385,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   groupSonarKanbanKpi(kpiIdsForCurrentBoard) {
     this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', '');
     if (this.kpiListSonar?.kpiList?.length > 0) {
-      this.kpiLoader.push(...this.kpiListSonar.kpiList.map((kpi) => kpi.kpiId));
+      let kpiArr = this.kpiListSonar.kpiList.map((kpi: { kpiId: any; }) => kpi.kpiId);
+      kpiArr.forEach(element => this.kpiLoader.add(element));
       this.postSonarKanbanKpi(this.kpiListSonar, 'sonar');
     }
   }
@@ -397,7 +395,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   groupJenkinsKanbanKpi(kpiIdsForCurrentBoard) {
     this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', '');
     if (this.kpiJenkins?.kpiList?.length > 0) {
-      this.kpiLoader.push(...this.kpiJenkins.kpiList.map((kpi) => kpi.kpiId));
+      let kpiArr = this.kpiJenkins.kpiList.map((kpi: { kpiId: any; }) => kpi.kpiId);
+      kpiArr.forEach(element => this.kpiLoader.add(element));
       this.postJenkinsKanbanKpi(this.kpiJenkins, 'jenkins');
     }
   }
@@ -406,7 +405,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   groupZypherKanbanKpi(kpiIdsForCurrentBoard) {
     this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', '');
     if (this.kpiZypher?.kpiList?.length > 0) {
-      this.kpiLoader.push(...this.kpiZypher.kpiList.map((kpi) => kpi.kpiId));
+      let kpiArr = this.kpiZypher.kpiList.map((kpi: { kpiId: any; }) => kpi.kpiId);
+      kpiArr.forEach(element => this.kpiLoader.add(element));
       this.postZypherKanbanKpi(this.kpiZypher, 'zypher');
     }
   }
@@ -429,7 +429,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // calls after receiving response from sonar
   afterSonarKpiResponseReceived(getData, postData) {
-    this.loaderSonar = false;
     this.sonarFilterData.length = 0;
     if (getData !== null && getData[0] !== 'error' && !getData['error']) {
       // creating array into object where key is kpi id
@@ -455,24 +454,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.sonarKpiData['kpi17']?.trendValueList.push(overallObj);
       }
       this.createAllKpiArray(this.sonarKpiData);
-      for (const kpi in this.sonarKpiData) {
-        this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
-      }
+      this.removeLoaderFromKPIs(this.sonarKpiData);
     } else {
       this.sonarKpiData = getData;
       postData.kpiList.forEach(element => {
-        this.kpiLoader.splice(this.kpiLoader.indexOf(element.kpiId), 1);
+        this.kpiLoader.delete(element.kpiId);
       });
 
     }
-    // this.kpiLoader.length = 0;
   }
 
   // calls after receiving response from zypher
   afterZypherKpiResponseReceived(getData, postData) {
     this.testExecutionFilterData.length = 0;
     this.selectedTestExecutionFilterData = {};
-    this.loaderZypher = false;
     if (getData !== null && getData[0] !== 'error' && !getData['error']) {
       // creating array into object where key is kpi id
       this.zypherKpiData = this.helperService.createKpiWiseId(getData);
@@ -487,25 +482,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.testExecutionFilterData = calculatedObj['testExecutionFilterData'];
 
       this.createAllKpiArray(this.zypherKpiData);
-      for (const kpi in this.zypherKpiData) {
-        this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
-      }
-
-
+      this.removeLoaderFromKPIs(this.zypherKpiData);
     } else {
       this.zypherKpiData = getData;
       postData.kpiList.forEach(element => {
-        this.kpiLoader.splice(this.kpiLoader.indexOf(element.kpiId), 1);
+        this.kpiLoader.delete(element.kpiId);
       });
     }
-    // this.kpiLoader.length = 0;
   }
 
   // calling post request of sonar of scrum and storing in sonarKpiData id wise
   postSonarKpi(postData, source): void {
-    this.loaderSonar = true;
     if (this.sonarKpiRequest && this.sonarKpiRequest !== '') {
       this.sonarKpiRequest.unsubscribe();
+      // postData.kpiList.forEach(element => {
+      //   this.kpiLoader.delete(element.kpiId);
+      // });
     }
     this.sonarKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
@@ -514,9 +506,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
   // calling post request of sonar of Kanban and storing in sonarKpiData id wise
   postSonarKanbanKpi(postData, source): void {
-    this.loaderSonar = true;
     if (this.sonarKpiRequest && this.sonarKpiRequest !== '') {
       this.sonarKpiRequest.unsubscribe();
+      // postData.kpiList.forEach(element => {
+      //   this.kpiLoader.delete(element.kpiId);
+      // });
     }
     this.sonarKpiRequest = this.httpService.postKpiKanban(postData, source)
       .subscribe(getData => {
@@ -529,6 +523,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.loaderJenkins = true;
     if (this.jenkinsKpiRequest && this.jenkinsKpiRequest !== '') {
       this.jenkinsKpiRequest.unsubscribe();
+      // postData.kpiList.forEach(element => {
+      //   this.kpiLoader.delete(element.kpiId);
+      // });
     }
     this.jenkinsKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
@@ -536,15 +533,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (getData !== null) {
           this.jenkinsKpiData = getData;
           this.createAllKpiArray(this.jenkinsKpiData);
-          for (const kpi in this.jenkinsKpiData) {
-            this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
-          }
+          this.removeLoaderFromKPIs(this.jenkinsKpiData);
         } else {
           postData.kpiList.forEach(element => {
-            this.kpiLoader.splice(this.kpiLoader.indexOf(element.kpiId), 1);
+            this.kpiLoader.delete(element.kpiId);
           });
         }
-        // this.kpiLoader.length = 0;
       });
   }
 
@@ -556,6 +550,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.loaderJenkins = true;
     if (this.jenkinsKpiRequest && this.jenkinsKpiRequest !== '') {
       this.jenkinsKpiRequest.unsubscribe();
+      // postData.kpiList.forEach(element => {
+      //   this.kpiLoader.delete(element.kpiId);
+      // });
     }
     this.jenkinsKpiRequest = this.httpService.postKpiKanban(postData, source)
       .subscribe(getData => {
@@ -564,13 +561,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (getData !== null) { // && getData[0] !== 'error') {
           this.jenkinsKpiData = getData;
           this.createAllKpiArray(this.jenkinsKpiData);
-          for (const kpi in this.jenkinsKpiData) {
-            this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
-          }
-
+          this.removeLoaderFromKPIs(this.jenkinsKpiData);
         } else {
           postData.kpiList.forEach(element => {
-            this.kpiLoader.splice(this.kpiLoader.indexOf(element.kpiId), 1);
+            this.kpiLoader.delete(element.kpiId);
           });
         }
       });
@@ -578,7 +572,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // calling post request of Zypher(scrum)
   postZypherKpi(postData, source): void {
-    this.loaderZypher = true;
     this.zypherKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
         this.afterZypherKpiResponseReceived(getData, postData);
@@ -586,9 +579,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
   // calling post request of Zypher(kanban)
   postZypherKanbanKpi(postData, source): void {
-    this.loaderZypher = true;
     if (this.zypherKpiRequest && this.zypherKpiRequest !== '') {
       this.zypherKpiRequest.unsubscribe();
+      postData.kpiList.forEach(element => {
+        this.kpiLoader.delete(element.kpiId);
+      });
     }
     this.zypherKpiRequest = this.httpService.postKpiKanban(postData, source)
       .subscribe(getData => {
@@ -610,16 +605,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(localVariable);
-          // setTimeout(()=> {
-          for (const kpi in localVariable) {
-            this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
-          }
-          // }, 500);
+          this.removeLoaderFromKPIs(localVariable);
 
         } else {
           this.jiraKpiData = getData;
           postData.kpiList.forEach(element => {
-            this.kpiLoader.splice(this.kpiLoader.indexOf(element.kpiId), 1);
+            this.kpiLoader.delete(element.kpiId);
           });
         }
 
@@ -627,53 +618,49 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
   // post request of BitBucket(scrum)
   postBitBucketKpi(postData, source): void {
-    this.loaderBitBucket = true;
     if (this.bitBucketKpiRequest && this.bitBucketKpiRequest !== '') {
       this.bitBucketKpiRequest.unsubscribe();
+      postData.kpiList.forEach(element => {
+        this.kpiLoader.delete(element.kpiId);
+      });
     }
     this.bitBucketKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
-        this.loaderBitBucket = false;
-        // getData = require('../../../test/resource/fakeKPI11.json');
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
-          // for (const kpi in this.bitBucketKpiData) {
-          //   this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
-          // }
           this.createAllKpiArray(this.bitBucketKpiData);
-          getData.kpiList.forEach(element => {
-            this.kpiLoader.splice(this.kpiLoader.indexOf(element.kpiId), 1);
-          });
+          this.removeLoaderFromKPIs(this.bitBucketKpiData);
 
         } else {
           this.bitBucketKpiData = getData;
+          postData.kpiList.forEach(element => {
+            this.kpiLoader.delete(element.kpiId);
+          });
         }
       });
   }
 
   // post request of BitBucket(scrum)
   postBitBucketKanbanKpi(postData, source): void {
-    this.loaderBitBucket = true;
     if (this.bitBucketKpiRequest && this.bitBucketKpiRequest !== '') {
       this.bitBucketKpiRequest.unsubscribe();
+      postData.kpiList.forEach(element => {
+        this.kpiLoader.delete(element.kpiId);
+      });
     }
     this.bitBucketKpiRequest = this.httpService.postKpiKanban(postData, source)
       .subscribe(getData => {
-        this.loaderBitBucket = false;
-        // getData = require('../../../test/resource/fakeKPI65.json');
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
 
           this.createAllKpiArray(this.bitBucketKpiData);
-          for (const kpi in this.bitBucketKpiData) {
-            this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
-          }
+          this.removeLoaderFromKPIs(this.bitBucketKpiData);
         } else {
           this.bitBucketKpiData = getData;
           postData.kpiList.forEach(element => {
-            this.kpiLoader.splice(this.kpiLoader.indexOf(element.kpiId), 1);
+            this.kpiLoader.delete(element.kpiId);
           });
         }
       });
@@ -704,18 +691,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(localVariable);
-
-          for (const kpi in localVariable) {
-            this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
-          }
-
+          this.removeLoaderFromKPIs(localVariable);
         } else {
           this.jiraKpiData = getData;
           postData.kpiList.forEach(element => {
-            this.kpiLoader.splice(this.kpiLoader.indexOf(element.kpiId), 1);
+            this.kpiLoader.delete(element.kpiId);
           });
         }
       });
+  }
+
+  removeLoaderFromKPIs(data) {
+    if (Array.isArray(data)) {
+      let kpis = data.map(kpi => kpi.kpiId);
+      kpis.forEach((kpi) => this.kpiLoader.delete(kpi));
+    } else {
+      for (const kpi in data) {
+        this.kpiLoader.delete(kpi);
+      }
+    }
   }
 
 

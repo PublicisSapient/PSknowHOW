@@ -23,7 +23,7 @@ import { HttpService } from '../../services/http.service';
 import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
-import { CdkDragDrop} from '@angular/cdk/drag-drop';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 
 declare let require: any;
@@ -65,7 +65,7 @@ export class MilestoneComponent implements OnInit {
   globalConfig;
   sharedObject;
   kpiCommentsCountObj: object = {};
-  navigationTabs:Array<object>;
+  navigationTabs: Array<object>;
   activeIndex = 0;
   kpiThresholdObj = {};
   chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
@@ -109,21 +109,21 @@ export class MilestoneComponent implements OnInit {
 
   processKpiConfigData() {
     this.navigationTabs = [
-      {'label':'Speed', 'count': 0,kpis : [],width : 'half', fullWidthKpis : []},
-      {'label':'Quality', 'count': 0,kpis : [],width :'half'},
-      {'label':'Value', 'count': 0,kpis : [],width :'full'},
+      { 'label': 'Speed', 'count': 0, kpis: [], width: 'half', fullWidthKpis: [] },
+      { 'label': 'Quality', 'count': 0, kpis: [], width: 'half' },
+      { 'label': 'Value', 'count': 0, kpis: [], width: 'full' },
     ];
     const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
-     /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
+    /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
     this.enableByUser = disabledKpis?.length ? true : false;
     /** noKpis - if true, all kpis are not shown to the user (not showing kpis to the user) **/
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
 
-    for(let i = 0; i<this.upDatedConfigData?.length; i++){
+    for (let i = 0; i < this.upDatedConfigData?.length; i++) {
       let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
       let idx = this.navigationTabs?.findIndex(x => (x['label'] == board));
-      if(idx != -1) {
+      if (idx != -1) {
         this.navigationTabs[idx]['count']++;
         this.navigationTabs[idx]['kpis'].push(this.upDatedConfigData[i]);
       }
@@ -145,15 +145,15 @@ export class MilestoneComponent implements OnInit {
     });
   }
 
-  formatNavigationTabs(){
+  formatNavigationTabs() {
     this.navigationTabs.forEach(tabDetails => {
-      if(tabDetails['width'] === 'half'){
+      if (tabDetails['width'] === 'half') {
         let fullWidthKPis = [];
         let halfWithKpis = []
-        tabDetails['kpis'].forEach(kpiDetails=>{
-          if(kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100){
+        tabDetails['kpis'].forEach(kpiDetails => {
+          if (kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100) {
             fullWidthKPis = fullWidthKPis.concat(kpiDetails);
-          }else{
+          } else {
             halfWithKpis = halfWithKpis.concat(kpiDetails);
           }
         })
@@ -176,7 +176,7 @@ export class MilestoneComponent implements OnInit {
     click apply and call kpi
    **/
   receiveSharedData($event) {
-    if(this.service.getDashConfigData()){
+    if (this.service.getDashConfigData()) {
       this.configGlobalData = this.service.getDashConfigData()['others']?.filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
       this.processKpiConfigData();
       this.masterData = $event.masterData;
@@ -189,17 +189,20 @@ export class MilestoneComponent implements OnInit {
           if (this.selectedtype !== 'Kanban') {
             const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
             const selectedRelease = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['release'][0] && x.labelName.toLowerCase() === 'release')[0];
-            const today = new Date().toISOString().split('T')[0];
-            const endDate = new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0];
-            this.timeRemaining = this.calcBusinessDays(today, endDate);
-            this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
-            this.groupJiraKpi(kpiIdsForCurrentBoard);
-            this.getKpiCommentsCount();
+            if (selectedRelease) {
+              const today = new Date().toISOString().split('T')[0];
+              const endDate = new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0];
+              this.timeRemaining = this.calcBusinessDays(today, endDate);
+              if (this.timeRemaining) {
+                this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
+                this.groupJiraKpi(kpiIdsForCurrentBoard);
+                this.getKpiCommentsCount();
+              }
+            }
           }
         }
       }
     }
-
   }
 
   /**  Used for grouping all Sonar kpi from master data and calling Sonar kpi.(only for scrum) */
@@ -242,7 +245,7 @@ export class MilestoneComponent implements OnInit {
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
-    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj,'release',this.filterApplyData['ids'][0]);
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj, 'release', this.filterApplyData['ids'][0]);
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
 
   }
@@ -348,21 +351,21 @@ export class MilestoneComponent implements OnInit {
       const trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
       if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList) && filters && Object.keys(filters)?.length > 0) {
-        this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'],filters)
+        this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
       }
       else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},[this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] )
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]])
         }
         else if (formType?.toLowerCase() == 'dropdown') {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'] )
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
         }
         else if (filters && Object.keys(filters)?.length > 0) {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'],filters)
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
         } else {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'] )
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
         }
       } else if (!trendValueList || trendValueList?.length == 0) {
         this.getDropdownArray(data[key]?.kpiId);
@@ -372,7 +375,7 @@ export class MilestoneComponent implements OnInit {
   }
 
   setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters?) {
-    this.kpiSelectedFilterObj  = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId,this.kpiSelectedFilterObj,'release', refreshValue, initialValue,this.filterApplyData['ids'][0],filters)
+    this.kpiSelectedFilterObj = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId, this.kpiSelectedFilterObj, 'release', refreshValue, initialValue, this.filterApplyData['ids'][0], filters)
     this.getDropdownArray(kpiId);
   }
 
@@ -444,7 +447,7 @@ export class MilestoneComponent implements OnInit {
         let filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
         let preAggregatedValues = [];
         // for single select dropdown filters
-        if(!Array.isArray(filters)) {
+        if (!Array.isArray(filters)) {
           filters = [filters];
         }
         for (let i = 0; i < filters?.length; i++) {
@@ -457,9 +460,9 @@ export class MilestoneComponent implements OnInit {
             this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
           }
         } else {
-          if(preAggregatedValues[0]?.hasOwnProperty('value')){
+          if (preAggregatedValues[0]?.hasOwnProperty('value')) {
             this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
-          }else{
+          } else {
             this.kpiChartData[kpiId] = [...preAggregatedValues];
           }
         }
@@ -614,8 +617,8 @@ export class MilestoneComponent implements OnInit {
     }
   }
 
-  drop(event: CdkDragDrop<string[]>,updatedContainer) {
-    this.helperService.drop(event,updatedContainer,this.navigationTabs,this.upDatedConfigData,this.configGlobalData);
+  drop(event: CdkDragDrop<string[]>, updatedContainer) {
+    this.helperService.drop(event, updatedContainer, this.navigationTabs, this.upDatedConfigData, this.configGlobalData);
   }
 
   getKpiCommentsCount(kpiId?) {
@@ -637,35 +640,35 @@ export class MilestoneComponent implements OnInit {
     //   });
     // }
 
-    const nodes = this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId;
+    const nodes = [this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId];
     const level = this.filterApplyData?.level;
     const nodeChildId = this.filterApplyData['selectedMap']?.release[0];
-    this.kpiCommentsCountObj = this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
-  
+    this.kpiCommentsCountObj = this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj, nodes, level, nodeChildId, this.updatedConfigGlobalData, kpiId)
+
 
   }
 
-   /** Reload KPI once field mappoing updated */
-   reloadKPI(event){
+  /** Reload KPI once field mappoing updated */
+  reloadKPI(event) {
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
-    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId,'Release');
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Release');
     if (currentKPIGroup?.kpiList?.length > 0) {
-        this.postJiraKpi(this.kpiJira, 'jira');
+      this.postJiraKpi(this.kpiJira, 'jira');
     }
   }
 
-  handleTabChange(event){
+  handleTabChange(event) {
     this.activeIndex = event.index;
   }
 
   checkIfDataPresent(data) {
     let dataCount = 0;
-    if(data[0] && !isNaN(parseInt(data[0].data))) {
+    if (data[0] && !isNaN(parseInt(data[0].data))) {
       dataCount = data[0].data;
-    } else if(data[0] && data[0].value && !isNaN(parseInt(data[0].value[0].data))) {
+    } else if (data[0] && data[0].value && !isNaN(parseInt(data[0].value[0].data))) {
       dataCount = data[0].value[0].data;
     }
-    if(parseInt(dataCount + '') > 0) {
+    if (parseInt(dataCount + '') > 0) {
       return true;
     }
     return false;
