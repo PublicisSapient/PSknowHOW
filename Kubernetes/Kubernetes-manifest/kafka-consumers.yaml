@@ -84,6 +84,10 @@ spec:
         #   initialDelaySeconds: 15
         #   periodSeconds: 20
 
+        envFrom:
+          - configMapRef:
+              name: knowhow-config
+
 ---
 apiVersion: v1
 kind: Service

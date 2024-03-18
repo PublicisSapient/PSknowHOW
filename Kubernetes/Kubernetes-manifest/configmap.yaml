@@ -4,25 +4,20 @@ metadata:
   name: knowhow-config
   namespace: stage-knowhow
 data:
-  forgotPassword.uiHost: "stage-psknowhow.tools.publicis.sapient.com"
-  corsFilterValidOrigin: "stage-psknowhow.tools.publicis.sapient.com"
-  isRepoToolEnable: "true"
+  #Common-Config for all application
   keystorefile: "/usr/lib/jvm/java-1.8.0-amazon-corretto/jre/lib/security/cacerts"
   spring.data.mongodb.database: "kpidashboard"
   flag.mailWithoutKafka: "false"
   notification.switch: "true"
   sendGridEnabled: "false"
-  spring.kafka.consumer.bootstrap-servers: kafka-0.kafka-cluster.stage-knowhow.svc.cluster.local:9092
-  spring.kafka.producer.bootstrap-servers: kafka-0.kafka-cluster.stage-knowhow.svc.cluster.local:9092
-  KAFKA_CFG_ZOOKEEPER_CONNECT: >-
-    zookeeper-0.zookeeper-cluster.stage-knowhow.svc.cluster.local:2181
-  ZOO_SERVERS: >-
-    zookeeper-0.zookeeper-cluster.stage-knowhow.svc.cluster.local:2888:3888
 
   # customapi Config
   auth.centralAuthBaseURL: "https://stage-authnauth.tools.publicis.sapient.com"
   auth.subDomainCookie: "true"
   auth.domain: "tools.publicis.sapient.com"
+  forgotPassword.uiHost: "stage-psknowhow.tools.publicis.sapient.com"
+  corsFilterValidOrigin: "stage-psknowhow.tools.publicis.sapient.com"
+  isRepoToolEnable: "true"
 
   # UI Config
   API_HOST: "customapi"
@@ -32,3 +27,13 @@ data:
   RETROS_URL: "https://stage-retrospective.tools.publicis.sapient.com"
   AUTHENTICATION_SERVICE: "true"
   ENVIRONMENT: "prod"
+
+  #kafka-consumer-config
+  spring.kafka.consumer.bootstrap-servers: kafka-0.kafka-cluster.stage-knowhow.svc.cluster.local:9092
+  spring.kafka.producer.bootstrap-servers: kafka-0.kafka-cluster.stage-knowhow.svc.cluster.local:9092
+
+  #Zookeeper & Kafka
+  KAFKA_CFG_ZOOKEEPER_CONNECT: >-
+    zookeeper-0.zookeeper-cluster.stage-knowhow.svc.cluster.local:2181
+  ZOO_SERVERS: >-
+    zookeeper-0.zookeeper-cluster.stage-knowhow.svc.cluster.local:2888:3888
