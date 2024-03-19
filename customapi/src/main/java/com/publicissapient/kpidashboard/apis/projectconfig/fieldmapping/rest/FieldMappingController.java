@@ -47,6 +47,7 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingMeta;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
@@ -129,11 +130,20 @@ public class FieldMappingController {
 			}
 		}
 		log.info("getFieldMapping result : {}", kpiSpecificFieldsAndHistory);
-		ServiceResponse response;
+		ServiceResponse response = null;
 		if (CollectionUtils.isEmpty(kpiSpecificFieldsAndHistory)) {
 			response = new ServiceResponse(false, "no field mapping found for " + projectToolConfigId, null);
 		} else {
-			response = new ServiceResponse(true, "field mappings", kpiSpecificFieldsAndHistory);
+			Optional<ProjectToolConfig> projectToolConfigOptional = getProjectToolConfig(projectToolConfigId);
+			if (projectToolConfigOptional.isPresent()) {
+				ProjectToolConfig projectToolConfig = projectToolConfigOptional.get();
+				if (checkTool(projectToolConfig)) {
+					FieldMappingMeta fieldMappingMeta = new FieldMappingMeta(kpiSpecificFieldsAndHistory,
+							projectToolConfig.getMetadataTemplateCode());
+					response = new ServiceResponse(true, "field mappings", fieldMappingMeta);
+				}
+			}
+
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -146,11 +156,7 @@ public class FieldMappingController {
 
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
 
-		List<ProjectToolConfig> projectToolConfigs = (List<ProjectToolConfig>) configHelperService
-				.loadAllProjectToolConfig();
-		String finalProjectToolConfigId = projectToolConfigId;
-		Optional<ProjectToolConfig> projectToolConfigOptional = projectToolConfigs.stream()
-				.filter(t -> t.getId().toString().equals(finalProjectToolConfigId)).findFirst();
+		Optional<ProjectToolConfig> projectToolConfigOptional = getProjectToolConfig(projectToolConfigId);
 
 		if (projectToolConfigOptional.isPresent()) {
 			// checking the permission to update the fieldmapping
@@ -165,12 +171,7 @@ public class FieldMappingController {
 			if (!Objects.equals(kpi.getKpiId(), KPICode.INVALID.getKpiId())) {
 				fieldMappingService.updateSpecificFieldsAndHistory(kpi, projectToolConfig, fieldMappingResponse);
 				ServiceResponse response;
-				if ((projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)
-						|| projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE))
-						&& (projectToolConfig.getMetadataTemplateCode()
-								.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM)
-								|| projectToolConfig.getMetadataTemplateCode()
-										.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN))) {
+				if (checkTool(projectToolConfig) && checkCustomTemplateCode(projectToolConfig)) {
 					response = new ServiceResponse(true, "changes are made in customize mappings", false);
 				} else {
 					response = new ServiceResponse(true, "mappings are not same as already maintained mapping", true);
@@ -182,6 +183,26 @@ public class FieldMappingController {
 			throw new IllegalArgumentException(INVALID_PROJECT_TOOL_CONFIG_ID);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "", ""));
+	}
+
+	private boolean checkTool(ProjectToolConfig projectToolConfig) {
+		return (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)
+				|| projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE))
+				&& checkCustomTemplateCode(projectToolConfig);
+	}
+
+	private boolean checkCustomTemplateCode(ProjectToolConfig projectToolConfig) {
+		return projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM)
+				|| projectToolConfig.getMetadataTemplateCode()
+						.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN);
+	}
+
+	private Optional<ProjectToolConfig> getProjectToolConfig(String projectToolConfigId) {
+		List<ProjectToolConfig> projectToolConfigs = (List<ProjectToolConfig>) configHelperService
+				.loadAllProjectToolConfig();
+		String finalProjectToolConfigId = projectToolConfigId;
+		return projectToolConfigs.stream().filter(t -> t.getId().toString().equals(finalProjectToolConfigId))
+				.findFirst();
 	}
 
 }
