@@ -79,7 +79,7 @@ const routes: Routes = [
         }
       },
       {
-        path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
+        path: 'developer', component: !localStorage.getItem('newUI') ? DeveloperComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "Developer"
         }
@@ -97,7 +97,7 @@ const routes: Routes = [
         }
       },
       {
-        path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
+        path: 'release', component: !localStorage.getItem('newUI') ? MilestoneComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "Release"
         }
@@ -146,7 +146,7 @@ const routes2: Routes = [
         }
       },
       {
-        path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
+        path: 'developer', component: !localStorage.getItem('newUI') ? DeveloperComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "Developer"
         }
@@ -164,7 +164,7 @@ const routes2: Routes = [
         }
       },
       {
-        path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
+        path: 'release', component: !localStorage.getItem('newUI') ? MilestoneComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "Release"
         }

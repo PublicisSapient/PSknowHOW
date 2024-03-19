@@ -265,6 +265,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.groupSonarKpi(kpiIdsForCurrentBoard);
             this.groupJenkinsKpi(kpiIdsForCurrentBoard);
             this.groupZypherKpi(kpiIdsForCurrentBoard);
+            this.groupBitBucketKpi(kpiIdsForCurrentBoard)
           }
           this.createKpiTableHeads(this.selectedtype.toLowerCase());
 
@@ -347,7 +348,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, '');
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, this.selectedTab);
         if (this.kpiJira?.kpiList?.length > 0) {
           let kpiArr = this.kpiJira.kpiList.map((kpi: { kpiId: any; }) => kpi.kpiId);
           kpiArr.forEach(element => this.kpiLoader.add(element));
@@ -413,16 +414,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // Used for grouping all BitBucket kpi of kanban from master data and calling BitBucket kpi.
   groupBitBucketKanbanKpi(kpiIdsForCurrentBoard) {
-    this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', '');
+    this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
     if (this.kpiBitBucket?.kpiList?.length > 0) {
+      let kpiArr = this.kpiBitBucket.kpiList.map((kpi: { kpiId: any; }) => kpi.kpiId);
+      kpiArr.forEach(element => this.kpiLoader.add(element));
       this.postBitBucketKanbanKpi(this.kpiBitBucket, 'bitbucket');
     }
   }
 
   // Used for grouping all BitBucket kpi of scrum from master data and calling BitBucket kpi.
   groupBitBucketKpi(kpiIdsForCurrentBoard) {
-    this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', '');
+    this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
     if (this.kpiBitBucket?.kpiList?.length > 0) {
+      let kpiArr = this.kpiBitBucket.kpiList.map((kpi: { kpiId: any; }) => kpi.kpiId);
+      kpiArr.forEach(element => this.kpiLoader.add(element));
       this.postBitBucketKpi(this.kpiBitBucket, 'bitbucket');
     }
   }
@@ -593,7 +598,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // post request of Jira(scrum)
   postJiraKpi(postData, source): void {
-    this.jiraKpiRequest = this.httpService.postKpi(postData, source)
+    this.httpService.postKpi(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
@@ -620,9 +625,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postBitBucketKpi(postData, source): void {
     if (this.bitBucketKpiRequest && this.bitBucketKpiRequest !== '') {
       this.bitBucketKpiRequest.unsubscribe();
-      postData.kpiList.forEach(element => {
-        this.kpiLoader.delete(element.kpiId);
-      });
+      // postData.kpiList.forEach(element => {
+      //   this.kpiLoader.delete(element.kpiId);
+      // });
     }
     this.bitBucketKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
@@ -645,9 +650,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postBitBucketKanbanKpi(postData, source): void {
     if (this.bitBucketKpiRequest && this.bitBucketKpiRequest !== '') {
       this.bitBucketKpiRequest.unsubscribe();
-      postData.kpiList.forEach(element => {
-        this.kpiLoader.delete(element.kpiId);
-      });
+      // postData.kpiList.forEach(element => {
+      //   this.kpiLoader.delete(element.kpiId);
+      // });
     }
     this.bitBucketKpiRequest = this.httpService.postKpiKanban(postData, source)
       .subscribe(getData => {
@@ -669,7 +674,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // post request of Jira(Kanban)
   postJiraKanbanKpi(postData, source): void {
-    this.jiraKpiRequest = this.httpService.postKpiKanban(postData, source)
+    this.httpService.postKpiKanban(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
@@ -936,13 +941,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             selectedIdx = 0;
           }
         }
-        if (selectedIdx != -1) {
+        if (selectedIdx != -1 && trendValueList[selectedIdx]?.value) {
           iterativeEle = JSON.parse(JSON.stringify(trendValueList[selectedIdx]?.value));
         }
       }
       let filtersApplied = Object.keys(this.colorObj);
 
-      filtersApplied = filtersApplied.map((x) => x.split('_')[0]);
+      
+      filtersApplied = filtersApplied.map((x) => x.split(' _')[0]);
+      
 
       filtersApplied.forEach((hierarchyName) => {
         let obj = {
@@ -980,7 +987,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (kpiIndex > -1) {
           this.kpiTableDataObj[hierarchyName]?.splice(kpiIndex, 1);
         }
-        if (enabledKpi?.isEnabled && enabledKpi?.shown) {
+        if (enabledKpi?.isEnabled && enabledKpi?.shown && this.kpiTableDataObj[hierarchyName] && Object.keys(this.kpiTableDataObj[hierarchyName]).length) {
           this.kpiTableDataObj[hierarchyName] = [...this.kpiTableDataObj[hierarchyName], obj];
         }
         this.sortingRowsInTable(hierarchyName);

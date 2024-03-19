@@ -25,7 +25,7 @@
                         <ng-container
                             *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
                             <div *ngFor="let kpi of updatedConfigGlobalData; let i = index;"
-                                [ngClass]="{'p-sm-6':!(showChart==='large'),'p-sm-12':showChart==='large'}">
+                                class="{{ kpi.kpiDetail.kpiSize ? ( 'p-col-'+ kpi.kpiDetail.kpiSize ) : 'p-col-6'  }}">
                                 <app-kpi-card-v2 [selectedTab]="selectedTab" [trendBoxColorObj]="trendBoxColorObj"
                                     [kpiData]="kpi" [loader]="kpiLoader.has(kpi?.kpiId)"
                                     [trendData]="kpiTrendsObj[kpi?.kpiId]"
@@ -44,7 +44,8 @@
                                     (reloadKPITab)="reloadKPI($event)">
                                     <ng-container *ngIf="!noTabAccess else noDataAccess">
                                         <div [ngSwitch]="kpi?.kpiDetail?.chartType">
-                                            <ng-container *ngIf="!kpiLoader.has(kpi?.kpiId) && kpiChartData[kpi?.kpiId] && kpiChartData[kpi?.kpiId].length">
+                                            <ng-container
+                                                *ngIf="!kpiLoader.has(kpi?.kpiId) && kpiChartData[kpi?.kpiId] && kpiChartData[kpi?.kpiId].length">
                                                 <ng-container *ngIf="!(showChart === 'table')">
                                                     <app-groupstackchart *ngSwitchCase="'stackedColumn'"
                                                         [legendType]="'tooltip'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
@@ -109,6 +110,15 @@
                                                         [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG"
                                                         [yAxisOrder]="kpi?.kpiDetail?.yaxisOrder">
                                                     </app-bar-with-y-axis-group>
+                                                    <app-group-bar-chart *ngSwitchCase="'CumulativeMultilineChart'"
+                                                        [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                                        [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                                        [unit]="kpi?.kpiDetail?.kpiUnit"
+                                                        [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                                                        [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
+                                                        [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId"
+                                                        [legendType]="'normal'">
+                                                    </app-group-bar-chart>
                                                 </ng-container>
                                             </ng-container>
                                         </div>

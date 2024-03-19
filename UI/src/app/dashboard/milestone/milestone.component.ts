@@ -640,7 +640,7 @@ export class MilestoneComponent implements OnInit {
     //   });
     // }
 
-    const nodes = [this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId];
+    const nodes = this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId;
     const level = this.filterApplyData?.level;
     const nodeChildId = this.filterApplyData['selectedMap']?.release[0];
     this.kpiCommentsCountObj = this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj, nodes, level, nodeChildId, this.updatedConfigGlobalData, kpiId)
