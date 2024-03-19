@@ -18,20 +18,14 @@
 
 package com.publicissapient.kpidashboard.argocd.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 
-/**
- * Security configuration
- *
- */
-@SuppressWarnings("deprecation")
 @Configuration
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/processor/run").antMatchers("/togglz-console/*");
+public class WebSecurityConfig {
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		return web -> web.ignoring().requestMatchers("/processor/run", "/togglz-console/*");
 	}
 }

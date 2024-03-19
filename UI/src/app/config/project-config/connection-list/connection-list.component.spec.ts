@@ -2127,7 +2127,7 @@ describe('ConnectionListComponent', () => {
     sharedService.setGlobalConfigData({repoToolFlag: true});
     component.ngOnInit();
     component.filterConnections(component.addEditConnectionFieldsNlabels,'connectionLabel')
-    expect(component.addEditConnectionFieldsNlabels.length).toEqual(9);
+    expect(component.addEditConnectionFieldsNlabels.length).toEqual(10);
   })
 
   it("should give success response, while testing for ArgoCD",()=>{

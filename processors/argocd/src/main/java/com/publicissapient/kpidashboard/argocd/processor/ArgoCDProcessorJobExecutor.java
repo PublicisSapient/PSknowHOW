@@ -254,7 +254,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 		}
 		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
 				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private void clearSelectedBasicProjectConfigIds() {
