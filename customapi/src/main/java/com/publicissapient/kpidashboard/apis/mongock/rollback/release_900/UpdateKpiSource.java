@@ -36,6 +36,8 @@ public class UpdateKpiSource {
 	private static final String COMBINED_KPI_SOURCE = "combinedKpiSource";
 
 	private static final String KPI_MASTER = "kpi_master";
+	private static final String IS_REPO_TOOL_KPI = "isRepoToolKpi";
+	private static final String BITBUCKET = "BitBucket";
 
 	public UpdateKpiSource(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
@@ -53,8 +55,14 @@ public class UpdateKpiSource {
 		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
 
-	private void updateCombinedKpiSourceForBitBucket() {
-		Document condition = new Document(KPI_SOURCE, "BitBucket");
+	private void updateCombinedKpiSourceForBitBucketWhenIsRepoToolKpiFalse() {
+		Document condition = new Document(KPI_SOURCE, BITBUCKET).append(IS_REPO_TOOL_KPI, false);
+		Document update = new Document(UNSET, new Document(COMBINED_KPI_SOURCE, ""));
+		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
+	}
+
+	private void updateCombinedKpiSourceForBitBucketWhenIsRepoToolKpiTrue() {
+		Document condition = new Document(KPI_SOURCE, BITBUCKET).append(IS_REPO_TOOL_KPI, true);
 		Document update = new Document(UNSET, new Document(COMBINED_KPI_SOURCE, ""));
 		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
@@ -69,7 +77,8 @@ public class UpdateKpiSource {
 	public void execution() {
 		updateCombinedKpiSourceForJira();
 		updateCombinedKpiSourceForJenkins();
-		updateCombinedKpiSourceForBitBucket();
+		updateCombinedKpiSourceForBitBucketWhenIsRepoToolKpiFalse();
+		updateCombinedKpiSourceForBitBucketWhenIsRepoToolKpiTrue();
 		updateCombinedKpiSourceForZypher();
 	}
 
@@ -86,10 +95,16 @@ public class UpdateKpiSource {
 		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
 
-	private void rollbackCombinedKpiSourceForBitBucket() {
-		Document condition = new Document(KPI_SOURCE, "BitBucket");
+	private void rollbackCombinedKpiSourceForBitBucketWhenIsRepoToolKpiFalse() {
+		Document condition = new Document(KPI_SOURCE, BITBUCKET).append(IS_REPO_TOOL_KPI, false);
 		Document update = new Document(SET,
-				new Document(COMBINED_KPI_SOURCE, "Bitbucket/AzureRepository/GitHub/GitLab/RepoTool"));
+				new Document(COMBINED_KPI_SOURCE, "Bitbucket/AzureRepository/GitHub/GitLab"));
+		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
+	}
+
+	private void rollbackCombinedKpiSourceForBitBucketWhenIsRepoToolKpiTrue() {
+		Document condition = new Document(KPI_SOURCE, BITBUCKET).append(IS_REPO_TOOL_KPI, true);
+		Document update = new Document(SET, new Document(COMBINED_KPI_SOURCE, "RepoTool"));
 		mongoTemplate.getCollection(KPI_MASTER).updateMany(condition, update);
 	}
 
@@ -103,7 +118,8 @@ public class UpdateKpiSource {
 	public void rollBack() {
 		rollbackCombinedKpiSourceForJira();
 		rollbackCombinedKpiSourceForJenkins();
-		rollbackCombinedKpiSourceForBitBucket();
+		rollbackCombinedKpiSourceForBitBucketWhenIsRepoToolKpiFalse();
+		rollbackCombinedKpiSourceForBitBucketWhenIsRepoToolKpiTrue();
 		rollbackCombinedKpiSourceForZypher();
 	}
 }

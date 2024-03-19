@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.rest;
 
+import static com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingServiceImpl.INVALID_PROJECT_TOOL_CONFIG_ID;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -51,8 +53,6 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectToolConf
 import com.publicissapient.kpidashboard.common.model.application.dto.FieldMappingDTO;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingServiceImpl.INVALID_PROJECT_TOOL_CONFIG_ID;
 
 /**
  * @author anisingh4
@@ -165,12 +165,12 @@ public class FieldMappingController {
 			if (!Objects.equals(kpi.getKpiId(), KPICode.INVALID.getKpiId())) {
 				fieldMappingService.updateSpecificFieldsAndHistory(kpi, projectToolConfig, fieldMappingResponse);
 				ServiceResponse response;
-				if ((projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)) && (projectToolConfig
-						.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM)
-						|| projectToolConfig.getMetadataTemplateCode()
-								.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN))) {
-					response = new ServiceResponse(true, "changes are made in customize mappings", false);
-				} else if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE)) {
+				if ((projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)
+						|| projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE))
+						&& (projectToolConfig.getMetadataTemplateCode()
+								.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM)
+								|| projectToolConfig.getMetadataTemplateCode()
+										.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN))) {
 					response = new ServiceResponse(true, "changes are made in customize mappings", false);
 				} else {
 					response = new ServiceResponse(true, "mappings are not same as already maintained mapping", true);

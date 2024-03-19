@@ -436,14 +436,16 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			}
 			return originalValue;
 		}
-		return newValue;
+		return null;
 	}
 
 	private void setMappingResponseWithGeneratedField(FieldMappingResponse fieldMappingResponse,
 			FieldMapping fieldMapping) throws NoSuchFieldException, IllegalAccessException {
-		StringBuilder originalValue = (StringBuilder) generateAdditionalFilters(fieldMappingResponse.getOriginalValue(),
+		Object additonalFilter = generateAdditionalFilters(fieldMappingResponse.getOriginalValue(),
 				fieldMappingResponse.getFieldName());
-		setFieldMappingResponse(fieldMappingResponse, fieldMapping, originalValue);
+		if (additonalFilter != null) {
+			setFieldMappingResponse(fieldMappingResponse, fieldMapping, (StringBuilder) additonalFilter);
+		}
 	}
 
 	/**
@@ -621,7 +623,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	private void saveTemplateCode(ProjectBasicConfig projectBasicConfig, ProjectToolConfig projectToolConfig) {
-		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)) {
+		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)|| projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE)) {
 			if (projectBasicConfig.getIsKanban() && !projectToolConfig.getMetadataTemplateCode()
 					.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN)) {
 				projectToolConfig.setMetadataTemplateCode(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN);
@@ -634,6 +636,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			}
 
+		}
+		else if(projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE)){
+			projectToolConfig.setMetadataTemplateCode(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM);
 		}
 
 	}

@@ -87,7 +87,7 @@ public class TEngineCodeSecurity {
 	}
 
 	public void addTechDebtSonarSecurityKpi() {
-		Document kpiDocument = new Document().append(KPI_ID, KPI_174).append("kpiName", "Tech Debt - Sonar Security")
+		Document kpiDocument = new Document().append(KPI_ID, KPI_174).append("kpiName", "Tech Debt Sonar Security")
 				.append("maxValue", "100").append("kpiUnit", "%").append("isDeleted", "False")
 				.append("defaultOrder", 15.0).append("kpiSource", "Sonar").append("groupId", 1.0)
 				.append("thresholdValue", "50").append("kanban", false).append("chartType", "line")

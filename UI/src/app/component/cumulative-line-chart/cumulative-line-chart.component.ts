@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
@@ -14,27 +14,29 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
   currentDayIndex;
   VisibleXAxisLbl = [];
   graphData;
+  elem;
 
-  constructor() { }
+  constructor(private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    this.elem = this.viewContainerRef.element.nativeElement;
     this.graphData = this.data[0]['dataGroup'].map(d => ({ ...d }));
     this.draw();
   }
 
   draw() {
-    const chart = d3.select('#chart');
-    chart.select('svg').remove();
+    const elem = this.elem;
+    d3.select(elem).select("#chart").select('svg').remove();
     d3.select('.yaxis-container').select('svg').remove();
     const margin = { top: 30, right: 22, bottom: 20, left: 10 };
     let width = window.innerWidth - 340 - margin.left - margin.right;
     const height = 220 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
-    const svg = chart
+    const svg = d3.select(elem).select("#chart")
       .append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
@@ -106,7 +108,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       .domain([0, Math.ceil(Math.max(...maxYValue) / 5) * 5])
       .range([height, 0]);
 
-    const svgY = d3.select('.yaxis-container')
+    const svgY = d3.select(elem).select('.yaxis-container')
       .append('svg')
       .attr('width', width + 50)
       .attr('height', height + margin.top + margin.bottom)
@@ -155,7 +157,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
       .domain(categories)
       .range(['#5AA5A2', '#4472C4', '#D99748', '#CDBA38', '#D8725F']);
 
-    const tooltipContainer = d3.select('#chart').select('.tooltip-container');
+    const tooltipContainer = d3.select(elem).select('.tooltip-container');
 
     const showTooltip = (linedata) => {
       tooltipContainer
@@ -242,19 +244,19 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
         });
     }
     //Add xCaption
-    d3.select('#container')
+    d3.select(elem).select('#container')
       .select('.x-caption')
       .append('span')
       .text(this.xCaption);
 
     //Add YCaption
-    d3.select('.yaxis-container')
+    d3.select(elem).select('.yaxis-container')
       .append('div')
       .attr('class', 'y-caption')
       .append('span')
       .text(this.yCaption);
 
-    const legendDiv = d3.select('#legendContainer')
+    const legendDiv = d3.select(elem).select('#legendContainer')
       .style('margin-left', 60 + 'px');
 
     legendDiv.transition()
