@@ -6442,7 +6442,7 @@
                     }
                 ],
                 "filters": {
-                    "kanbanRequired": true,
+                    "kanbanRequired": false,
                     "primaryFilter": {
                         "type": "singleSelect",
                         "defaultLevel": {
@@ -6797,7 +6797,7 @@
                     }
                 ],
                 "filters": {
-                    "kanbanRequired": true,
+                    "kanbanRequired": false,
                     "primaryFilter": {
                         "type": "singleSelect",
                         "defaultLevel": {
@@ -7360,7 +7360,7 @@
                     }
                 ],
                 "filters": {
-                    "kanbanRequired": true,
+                    "kanbanRequired": false,
                     "primaryFilter": {
                         "type": "singleSelect",
                         "defaultLevel": {

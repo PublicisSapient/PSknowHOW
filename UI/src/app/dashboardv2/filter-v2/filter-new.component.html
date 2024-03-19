@@ -1,6 +1,6 @@
 <div class="filter-container p-d-flex p-justify-between p-p-2">
     <div class="p-d-flex">
-        <div class="tabs">
+        <div class="tabs" *ngIf="kanbanRequired">
             <div class="tab" (click)="setSelectedType('Scrum')" [ngClass]="{ 'active': selectedType === 'scrum' }">Scrum
             </div>
             <div class="tab" (click)="setSelectedType('Kanban')"
