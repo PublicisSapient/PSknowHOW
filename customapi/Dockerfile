@@ -39,9 +39,9 @@ COPY start_combined_collector.sh /app/start_combined_collector.sh
 # RUN 
 
 # Give execute permissions to the script
-RUN chmod +x /app/start_combined_collector.sh \
-    && chmod 766 $keystorefile \
-    && chown -R $USER:$USER /app
+RUN chown -R $USER:$USER /app \
+    && chmod +x /app/start_combined_collector.sh \
+    && chmod 766 $keystorefile
 
 # Expose the port
 EXPOSE 8080
