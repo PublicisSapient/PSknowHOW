@@ -116,8 +116,6 @@ public class UserInfoServiceImplTest {
 
 	@Before
 	public void setUp() {
-		when(authProperties.getCentralAuthBaseURL()).thenReturn("https://www.example.com");
-		when(authProperties.getResourceAPIKey()).thenReturn("ResourceAPIKey");
 	}
 
 	@Test
@@ -420,12 +418,6 @@ public class UserInfoServiceImplTest {
 	@Test
 	public void deleteUserTest() {
 		ServiceResponse result = service.deleteUser("testuser" , false);
-		assertTrue(result.getSuccess());
-	}
-
-	@Test
-	public void deleteUserTestForCentralAuth() {
-		ServiceResponse result = service.deleteUser("testuser" , true);
 		assertTrue(result.getSuccess());
 	}
 

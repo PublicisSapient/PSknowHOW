@@ -45,7 +45,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.apis.model.SprintFilter;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -116,7 +115,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 			} else {
 				log.error("label name for selected hierarchy not found");
 			}
-			List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest);
+			List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest, groupName);
 
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList, referFromProjectCache);
@@ -207,12 +206,15 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		return filteredNode;
 	}
 
-	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest) {
+	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest, String groupName) {
 		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
-				.cacheAccountHierarchyData();
+				.cacheSprintLevelData();
 
-		return accountDataListAll.stream().filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId()
-				.equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).get(0))).toList();
+		List<String> selectedValue = kpiRequest.getSelectedMap().getOrDefault(groupName, Collections.emptyList());
+		return accountDataListAll.stream()
+				.filter(data -> data.getNode().stream().anyMatch(
+						d -> d.getGroupName().equalsIgnoreCase(groupName) && selectedValue.contains(d.getId())))
+				.toList();
 	}
 
 	private void updateJiraIssueList(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {

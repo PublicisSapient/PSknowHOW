@@ -19,10 +19,10 @@
 package com.publicissapient.kpidashboard.apis.rbac.signupapproval.rest;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.validation.Valid;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +85,7 @@ public class SignupRequestsController {
 	public ResponseEntity<ServiceResponse> getAllUnapprovedRequestsForCentralAuth() {
 		log.info("Getting all unapproved requests for central auth");
 		List<UserInfoDTO> unapprovedUsersList = userInfoService.findAllUnapprovedUsersForCentralAuth();
-		if (CollectionUtils.isNotEmpty(unapprovedUsersList)) {
+		if (Objects.nonNull(unapprovedUsersList)) {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, "Unapproved User details", unapprovedUsersList));
 		} else {

@@ -36,8 +36,8 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -247,23 +247,23 @@ public class JobController {
 	 *            sprintId
 	 * @return ResponseEntity
 	 */
-	@Async
-	@PostMapping("/startfetchsprintjob")
+	@PostMapping(value = "/startfetchsprintjob", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> startFetchSprintJob(@RequestBody String sprintId) {
 		log.info("Request coming for fetching sprint job");
-		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+		CompletableFuture.runAsync(() -> {
+			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 
-		jobParametersBuilder.addString(SPRINT_ID, sprintId);
-		jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
-		JobParameters params = jobParametersBuilder.toJobParameters();
-		try {
-			jobLauncher.run(fetchIssueSprintJob, params);
-		} catch (Exception e) {
-			log.info("Jira Sprint data fetch failed for SprintId : {}, with exception : {}",
-					params.getString(SPRINT_ID), e);
-		}
+			jobParametersBuilder.addString(SPRINT_ID, sprintId);
+			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+			JobParameters params = jobParametersBuilder.toJobParameters();
+			try {
+				jobLauncher.run(fetchIssueSprintJob, params);
+			} catch (Exception e) {
+				log.info("Jira Sprint data fetch failed for SprintId : {}, with exception : {}",
+						params.getString(SPRINT_ID), e);
+			}
+		});
 		return ResponseEntity.ok().body("job started for Sprint : " + sprintId);
-
 	}
 
 	/**

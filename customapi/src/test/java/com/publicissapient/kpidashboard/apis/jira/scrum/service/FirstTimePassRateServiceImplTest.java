@@ -74,6 +74,7 @@ import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.LabelCount;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -111,7 +112,7 @@ public class FirstTimePassRateServiceImplTest {
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
-	private List<String> defectPriority = new ArrayList<>();
+	private List<LabelCount> defectPriority = new ArrayList<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 
@@ -146,8 +147,7 @@ public class FirstTimePassRateServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-		defectPriority = fieldMapping.getDefectPriorityKPI82().stream().filter(a -> !a.equals("")).map(String::toUpperCase)
-				.collect(Collectors.toList());
+		defectPriority = fieldMapping.getDefectPriorityKPI82();
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
@@ -191,8 +191,7 @@ public class FirstTimePassRateServiceImplTest {
 				"P2 - Critical", "2", "high").collect(Collectors.toList());
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(customApiSetting.getPriority()).thenReturn(priorityMap);
-		List<String> priorValue = new ArrayList<>();
-		defectPriority.forEach(prior -> priorValue.addAll(priorityMap.get(prior)));
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(jiraIssueRepository.findIssuesGroupBySprint(anyMap(), anyMap(), anyString(), anyString()))
 				.thenReturn(storyData);
 		when(jiraIssueRepository.findIssuesBySprintAndType(anyMap(), anyMap())).thenReturn(issues);
@@ -205,7 +204,7 @@ public class FirstTimePassRateServiceImplTest {
 		when(jiraIssueRepository.findByTypeNameAndDefectStoryIDIn(anyString(), anyList())).thenReturn(defects);
 
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-				.thenReturn(kpiRequest.getRequestTrackerId());
+				.thenReturn(kpiRequestTrackerId);
 		try {
 			KpiElement kpiElement = firstTimePassRateService.getKpiData(this.kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

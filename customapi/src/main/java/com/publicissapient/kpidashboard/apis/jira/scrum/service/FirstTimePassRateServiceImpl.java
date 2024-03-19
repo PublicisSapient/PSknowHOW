@@ -196,7 +196,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					Set<JiraIssue> jiraIssues = projectWiseStories
 							.get(node.getProjectFilter().getBasicProjectConfigId().toString());
 					Map<String, JiraIssue> issueMapping = new HashMap<>();
-					jiraIssues.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));
+					Optional.ofNullable(jiraIssues).ifPresent(jIssue -> jIssue.forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue)));
 					KPIExcelUtility.populateFTPRExcelData(node.getSprintFilter().getName(), totalStoryIdList,
 							ftpStoriesList, excelData, issueMapping);
 				}
@@ -257,7 +257,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 
 		Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject = new HashMap<>();
-		Map<String, List<String>> projectWisePriority = new HashMap<>();
+		Map<String, Map<String, Integer>> projectWisePriorityCount = new HashMap<>();
 		Map<String, List<String>> configPriority = customApiConfig.getPriority();
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
@@ -269,7 +269,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					Pair.of(leaf.getSprintFilter().getStartDate(), leaf.getSprintFilter().getEndDate()));
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf,
+			KpiHelperService.addPriorityCountProjectWise(projectWisePriorityCount, configPriority, leaf,
 					fieldMapping.getDefectPriorityKPI82());
 			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForKPI82());
 
@@ -311,7 +311,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 		KpiHelperService.removeRejectedStoriesFromSprint(sprintWiseStories, defectListWoDrop);
 
-		removeStoriesWithDefect(defectListWoDrop, projectWisePriority, projectWiseRCA,
+		removeStoriesWithDefect(defectListWoDrop, projectWisePriorityCount, projectWiseRCA,
 				statusConfigsOfRejectedStoriesByProject);
 
 		List<String> storyIds = getIssueIds(defectListWoDrop);
@@ -345,8 +345,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	 * @param projectWiseRCA
 	 */
 	private void removeStoriesWithDefect(List<JiraIssue> issuesBySprintAndType,
-			Map<String, List<String>> projectWisePriority, Map<String, Set<String>> projectWiseRCA,
-			Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject) {
+										 Map<String, Map<String, Integer>> projectWisePriority, Map<String, Set<String>> projectWiseRCA,
+										 Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject) {
 		List<JiraIssue> allDefects = jiraIssueRepository.findByTypeNameAndDefectStoryIDIn(
 				NormalizedJira.DEFECT_TYPE.getValue(), getIssueIds(issuesBySprintAndType));
 		Set<JiraIssue> defects = new HashSet<>();
@@ -358,17 +358,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		}));
 		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, new ArrayList<>(defects), defectListWoDrop);
 
-		List<JiraIssue> remainingDefects = new ArrayList<>();
-		for (JiraIssue jiraIssue : defects) {
-			if (CollectionUtils.isNotEmpty(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()))) {
-				if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId())
-						.contains(jiraIssue.getPriority().toLowerCase()))) {
-					remainingDefects.add(jiraIssue);
-				}
-			} else {
-				remainingDefects.add(jiraIssue);
-			}
-		}
+		final List<JiraIssue> remainingDefects = KpiHelperService.excludeDefectByPriorityCount(projectWisePriority, defects);
 
 		List<JiraIssue> notFTPRDefects = new ArrayList<>();
 		for (JiraIssue jiraIssue : defects) {

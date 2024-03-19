@@ -485,7 +485,7 @@ export class ConnectionListComponent implements OnInit {
     'jiraAuthType': ''
   }
   jiraConnectionDialog: boolean;
-  repoConnections = ['Bitbucket','GitLab','GitHub','Azure Repository'];
+  repoConnections = ['Bitbucket','GitLab','Azure Repository'];
   repoToolsEnabled : boolean;
 
   constructor(private httpService: HttpService, private formBuilder: UntypedFormBuilder, private confirmationService: ConfirmationService, private testConnectionService: TestConnectionService
@@ -1588,6 +1588,12 @@ export class ConnectionListComponent implements OnInit {
         return details[label] !== 'RepoTool';
       }
     })
+    if(this.repoToolsEnabled){
+      const githubIndex = filteredList.findIndex(de=>de[label].toLowerCase() === 'github');
+      if(githubIndex !== -1){
+        filteredList[githubIndex][label] = 'GitHub Action'
+      }
+    }
     return filteredList;
   }
 }

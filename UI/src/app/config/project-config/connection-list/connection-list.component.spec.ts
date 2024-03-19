@@ -2130,7 +2130,6 @@ describe('ConnectionListComponent', () => {
     expect(component.addEditConnectionFieldsNlabels.length).toEqual(9);
   })
 
-
   it("should give success response, while testing for ArgoCD",()=>{
     component.testingConnection = true;
     const fakeResponse = {

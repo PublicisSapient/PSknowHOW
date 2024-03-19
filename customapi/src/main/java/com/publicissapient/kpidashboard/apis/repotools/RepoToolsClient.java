@@ -19,7 +19,10 @@
 package com.publicissapient.kpidashboard.apis.repotools;
 
 import java.net.URI;
+import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnectionDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -69,6 +72,18 @@ public class RepoToolsClient {
 		return response.getStatusCode().value();
 	}
 
+	public void updateConnection(RepoToolConnModel repoToolConnectionDetails, String connectionUpdateURL,
+			String apiKey) {
+		setHttpHeaders(apiKey);
+		Gson gson = new Gson();
+		String payload = gson.toJson(repoToolConnectionDetails);
+		log.info("updating connection request for {} ", repoToolConnectionDetails);
+		URI url = URI.create(connectionUpdateURL);
+		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+		log.debug(response.getBody());
+	}
+
 	/**
 	 * scann a project
 	 * 
@@ -100,7 +115,7 @@ public class RepoToolsClient {
 		setHttpHeaders(apiKey);
 		Gson gson = new Gson();
 		String payload = gson.toJson(repoToolKpiRequestBody);
-		log.info("kpi request payload for {} {}", repoToolsUrl, repoToolKpiRequestBody.toString());
+		log.info("kpi request payload for {} {}", repoToolsUrl, payload);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
 		ResponseEntity<RepoToolKpiBulkMetricResponse> response = restTemplate.exchange(URI.create(repoToolsUrl),
 				HttpMethod.POST, entity, RepoToolKpiBulkMetricResponse.class);
@@ -148,7 +163,7 @@ public class RepoToolsClient {
 	 */
 	public void setHttpHeaders(String apiKey) {
 		httpHeaders = new HttpHeaders();
-		httpHeaders.add(X_API_KEY, apiKey);
+		httpHeaders.set(X_API_KEY, apiKey);
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 	}
 

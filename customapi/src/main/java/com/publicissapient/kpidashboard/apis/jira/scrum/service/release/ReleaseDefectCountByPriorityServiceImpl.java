@@ -21,8 +21,10 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -90,8 +92,17 @@ public class ReleaseDefectCountByPriorityServiceImpl extends JiraReleaseKPIServi
 			if (CollectionUtils.isNotEmpty(totalDefects)) {
 				Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+				Set<String> jiraDodKPI144LowerCase = new HashSet<>();
+				if (fieldMapping.getJiraDodKPI144() != null) {
+					jiraDodKPI144LowerCase = fieldMapping.getJiraDodKPI144().stream().map(String::toLowerCase)
+							.collect(Collectors.toSet());
+				}
+
+				Set<String> finalJiraDodKPI144LowerCase = jiraDodKPI144LowerCase;
 				List<JiraIssue> openDefects = totalDefects.stream()
-						.filter(jiraIssue -> fieldMapping.getStoryFirstStatus().contains(jiraIssue.getStatus()))
+						.filter(jiraIssue -> StringUtils.isNotEmpty(jiraIssue.getStatus())
+								&& !finalJiraDodKPI144LowerCase.isEmpty()
+								&& !finalJiraDodKPI144LowerCase.contains(jiraIssue.getStatus().toLowerCase()))
 						.collect(Collectors.toList());
 				Map<String, Map<String, List<JiraIssue>>> priorityWiseList = getPriorityWiseList(totalDefects,
 						openDefects);

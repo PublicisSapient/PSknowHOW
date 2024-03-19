@@ -144,7 +144,11 @@ public final class Constant {
 	public static final String REPO_TOOLS = "RepoTool";
 	public static final String SUCCESS = "SUCCESS";
 	public static final String TOKEN_KEY = "X-Api-Key";
-
+	public static final String SQALE_RATING = "sqale_rating";
+	public static final String SECURITY_REMEDIATION = "security_remediation_effort";
+	public static final String RELIABILITY_REMEDIATION = "reliability_remediation_effort";
+	public static final String DUPLICATED_LINES = "duplicated_lines";
+	public static final String N_CLOC = "ncloc";
 	private Constant() {
 	}
 

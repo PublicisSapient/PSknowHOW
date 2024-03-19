@@ -186,6 +186,18 @@
           "Tech Story",
           "Change request"
         ]
+      },
+      {
+        "type": "jiraIssueRiskTypeKPI176",
+        "value": [
+          "Risk"
+        ]
+      },
+      {
+        "type": "jiraIssueDependencyTypeKPI176",
+        "value": [
+          "Dependency"
+        ]
       }
     ],
     "customfield": [

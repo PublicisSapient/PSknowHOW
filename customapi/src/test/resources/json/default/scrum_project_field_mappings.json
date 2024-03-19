@@ -31,6 +31,8 @@
     "jiraDodKPI171" : [ "Closed" ],
     "jiraDodKPI127" : ["Closed", "Ready for Delivery"],
     "jiraDodKPI37" : ["Closed", "Ready for Delivery"],
+    "jiraDodKPI142" : ["Closed"],
+    "jiraDodKPI144" : ["Closed"],
     "jiraDefectCreatedStatusKPI14" : "Open",
     "jiraDefectRejectionStatusAVR" : "Closed",
     "jiraDefectRejectionStatusKPI28" : "Close",
@@ -138,7 +140,20 @@
     "defectPriorityKPI135": [],
     "defectPriorityKPI14": [],
     "defectPriorityQAKPI111": [],
-    "defectPriorityKPI82": [],
+    "defectPriorityKPI82": [
+      {
+        "labelValue" : "p1",
+        "countValue" : 2
+      },
+      {
+        "labelValue" : "p2",
+        "countValue" : 1
+      },
+      {
+        "labelValue" : "p3",
+        "countValue" : 2
+      }
+    ],
     "defectPriorityKPI133": [],
     "jiraIssueEpicTypeKPI153" : [ "Epic" ],
     "epicPlannedValue" : "customfield_58102",
@@ -161,6 +176,8 @@
     "jiraLabelsKPI14" : ["Java", "UI" ],
     "jiraLabelsKPI82" : ["Java", "UI" ],
     "jiraIssueWaitStateKPI170": [ "Open", "On Hold", "Code Review" ],
-    "jiraIssueClosedStateKPI170": [ "Done", "Closed", "Dropped"]
+    "jiraIssueClosedStateKPI170": [ "Done", "Closed", "Dropped"],
+    "jiraIssueRiskTypeKPI176": ["Risk"],
+    "jiraIssueDependencyTypeKPI176": ["Dependency"]
   }
 ]

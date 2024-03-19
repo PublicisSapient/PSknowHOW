@@ -33,19 +33,18 @@ import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_SONAR
 import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_TEAMCITY;
 import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_ZEPHYR;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -56,8 +55,6 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
-import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -69,6 +66,8 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 /**
  * This class provides various methods related to operations on Connections
@@ -103,9 +102,12 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	@Autowired
 	private AuthenticationService authenticationService;
+	
+	@Autowired
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
 	@Autowired
-	private RepoToolsProviderRepository repoToolsProviderRepository;
+	private RestAPIUtils restAPIUtils;
 
 	/**
 	 * Fetch all connection data.
@@ -211,8 +213,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 		if (null == type) {
 			return new ServiceResponse(false, "No type in this collection", type);
 		}
-
-		List<Connection> typeList = getConnectionList(type);
+		List<Connection> typeList = connectionRepository.findAllWithoutSecret().stream()
+				.filter(connection -> StringUtils.isNotEmpty(connection.getType()) && connection.getType()
+						.equalsIgnoreCase(type)).collect(Collectors.toList());
 		typeList.forEach(original -> {
 			original.setCreatedBy(maskStrings(original.getCreatedBy()));
 			original.setUsername(maskStrings(original.getUsername()));
@@ -245,19 +248,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 		log.info("Successfully found type@{}", type);
 
 		return new ServiceResponse(true, "Found type@" + type, typeList);
-	}
-
-	// To do - Handle scenario once github action screen is developed
-	private List<Connection> getConnectionList(String type) {
-		List<Connection> allWithoutSecret = connectionRepository.findAllWithoutSecret().stream().filter(connection -> StringUtils.isNotEmpty(connection.getType())).collect(Collectors.toList());
-		if (Boolean.TRUE.equals(customApiConfig.getIsRepoToolEnable()) && type.equalsIgnoreCase(TOOL_GITHUB)) {
-			return allWithoutSecret.stream()
-					.filter(connection -> connection.getType().equalsIgnoreCase(REPO_TOOLS)
-							&& connection.getRepoToolProvider().equalsIgnoreCase(TOOL_GITHUB))
-					.collect(Collectors.toList());
-		}
-		return allWithoutSecret.stream().filter(connection -> connection.getType().equalsIgnoreCase(type))
-				.collect(Collectors.toList());
 	}
 
 	/**
@@ -300,9 +290,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 			} else {
 
 				List<String> connectionUser = new ArrayList<>();
-				if (conn.getType().equals(REPO_TOOLS)) {
-					setBaseUrlForRepoTool(conn);
-				}
 				connectionUser.add(username);
 				encryptSecureFields(conn);
 				conn.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
@@ -324,17 +311,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 				null);
 	}
 
-	private void setBaseUrlForRepoTool(Connection conn) {
-		if (conn.getRepoToolProvider().equalsIgnoreCase(TOOL_GITHUB)) {
-			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository.findByToolName(TOOL_GITHUB.toLowerCase());
-			try {
-				URL url = new URL(repoToolsProvider.getTestApiUrl());
-				conn.setBaseUrl(url.getProtocol().concat("://").concat(url.getHost()));
-			} catch (MalformedURLException e) {
-				log.error("Invalid URL", e);
-			}
-		}
-	}
 
 	/*
 	 *
@@ -563,10 +539,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			existingConnection.setApiKey(connection.getApiKey());
 		}
 		existingConnection.setApiKeyFieldName(connection.getApiKeyFieldName());
-		if (connection.getType().equals(REPO_TOOLS))
-			setBaseUrlForRepoTool(existingConnection);
-		else
-			existingConnection.setBaseUrl(connection.getBaseUrl());
+		existingConnection.setBaseUrl(connection.getBaseUrl());
 		if (StringUtils.isNotEmpty(connection.getClientId())) {
 			existingConnection.setClientId(connection.getClientId());
 		}
@@ -607,7 +580,13 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	private void saveConnection(Connection conn) {
 		if (conn != null) {
-			connectionRepository.save(conn);
+			if (conn.getType().equalsIgnoreCase(REPO_TOOLS)) {
+				int httpStatus = repoToolsConfigService.updateRepoToolConnection(conn);
+				if (httpStatus == HttpStatus.OK.value())
+					connectionRepository.save(conn);
+			} else {
+				connectionRepository.save(conn);
+			}
 		}
 	}
 

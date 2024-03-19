@@ -16,8 +16,7 @@
             "allowedCommonJsDependencies": [
               "rxjs/internal/observable/timer",
               "exceljs",
-              "file-saver",
-              "crypto-js"
+              "file-saver"
             ],
             "outputPath": "dist/dashboard",
             "index": "src/index.html",

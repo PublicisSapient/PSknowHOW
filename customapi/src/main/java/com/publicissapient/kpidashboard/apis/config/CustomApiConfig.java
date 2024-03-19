@@ -225,6 +225,16 @@ public class CustomApiConfig {// NOPMD
 	private Integer repoXAxisCountForCheckInsAndMergeRequests;
 	private String repoToolAPIKey;
 	private String repoToolURL;
+
+	public String getRepoToolUpdateConnectionUrl() {
+		return repoToolUpdateConnectionUrl;
+	}
+
+	public void setRepoToolUpdateConnectionUrl(String repoToolUpdateConnectionUrl) {
+		this.repoToolUpdateConnectionUrl = repoToolUpdateConnectionUrl;
+	}
+
+	private String repoToolUpdateConnectionUrl;
 	private Boolean isRepoToolEnable;
 	private String repoToolCodeCommmitsUrl;
 	private String repoToolDeleteProjectUrl;
@@ -247,8 +257,17 @@ public class CustomApiConfig {// NOPMD
 	public void setAesKeyValue(List<Character> aesKeyValue) {
 		this.aesKeyValue = aesKeyValue;
 	}
-	@Value("${x_api_key}")
+	@Value("${exposed_api_key}")
 	private String xApiKey;
+	private String repoToolReworkRateUrl;
+
+	public String getRepoToolReworkRateUrl() {
+		return repoToolReworkRateUrl;
+	}
+
+	public void setRepoToolReworkRateUrl(String repoToolReworkRateUrl) {
+		this.repoToolReworkRateUrl = repoToolReworkRateUrl;
+	}
 
 	public String getxApiKey() {
 		return xApiKey;
