@@ -36,11 +36,12 @@ COPY src/main/resources/application.properties /app/properties/customapi.propert
 COPY start_combined_collector.sh /app/start_combined_collector.sh
 
 # Change ownership to the non-root user
-# RUN chown -R $USER:$USER /app
+# RUN 
 
 # Give execute permissions to the script
 RUN chmod +x /app/start_combined_collector.sh \
-    && chmod 766 $keystorefile
+    && chmod 766 $keystorefile \
+    && chown -R $USER:$USER /app
 
 # Expose the port
 EXPOSE 8080
