@@ -98,7 +98,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 		if(assigneeDetails == null) return ;
 		Set<Assignee> assignee = assigneeDetails.getAssignee();
 		Map<String, Assignee> map = new HashMap<>();
-		if(assignee != null)
+		if(assignee != null && capacityMaster != null && capacityMaster.getAssigneeCapacity()!=null)
 		{
 			assignee.forEach(assignee1 -> map.put(assignee1.getAssigneeId(), assignee1));
 			capacityMaster.getAssigneeCapacity().forEach(capacity -> {

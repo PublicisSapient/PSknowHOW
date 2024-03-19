@@ -3209,25 +3209,5 @@
       "definition": "This field is used to identify Dependency Issue type."
     },
     "mandatory": true
-  },
-  {
-    "fieldName": "thresholdValueKPI174",
-    "fieldLabel": "Target KPI Value",
-    "section": "Custom Fields Mapping",
-    "fieldType": "number",
-    "fieldCategory": null,
-    "tooltip": {
-      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
-    }
-  },
-  {
-    "fieldName": "costPerLineKPI174",
-    "fieldLabel": "Time (min) required to write 1 Line of code (LOC)",
-    "section": "Issue Types Mapping",
-    "fieldType": "number",
-    "fieldCategory": null,
-    "tooltip": {
-      "definition": "Effort invested in writing number of LOC (Default 30 min taken for each LOC)"
-    }
   }
 ]

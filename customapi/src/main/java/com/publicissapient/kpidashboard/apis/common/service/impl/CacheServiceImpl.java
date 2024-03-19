@@ -38,6 +38,7 @@ import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceImpl;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceKanbanImpl;
+import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
@@ -95,6 +96,16 @@ public class CacheServiceImpl implements CacheService {
 
 	}
 
+	@Cacheable(CommonConstant.CACHE_SPRINT_HIERARCHY)
+	@Override
+	public Object cacheSprintLevelData() {
+		return ((List<AccountHierarchyData>) cacheAccountHierarchyData()).stream()
+				.filter(data -> data.getNode().stream()
+						.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+								&& node.getAccountHierarchy().getSprintState() != null)).toList();
+
+	}
+
 	@Cacheable(CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN)
 	@Override
 	public Object cacheAccountHierarchyKanbanData() {
@@ -119,6 +130,7 @@ public class CacheServiceImpl implements CacheService {
 		return configHelperService.getConfigMapData(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 
 	}
+	
 
 	@Cacheable(CommonConstant.CACHE_TOOL_CONFIG_MAP)
 	@Override

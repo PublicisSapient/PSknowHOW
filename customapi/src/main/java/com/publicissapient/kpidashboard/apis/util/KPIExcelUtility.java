@@ -410,8 +410,6 @@ public class KPIExcelUtility {
 					excelData.setSonarViolation(kpiSpecificDataList.get(i));
 				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
 					excelData.setCodeQuality(kpiSpecificDataList.get(i));
-				} else if (kpiId.equalsIgnoreCase(KPICode.TECH_DEBT_SONAR_SECURITY.getKpiId())) {
-					excelData.setRemediationEffort(kpiSpecificDataList.get(i));
 				}
 				setSonarKpiWeekDayMonthColumn(versionDate.get(i), excelData, kpiId);
 				kpiExcelData.add(excelData);
@@ -422,8 +420,7 @@ public class KPIExcelUtility {
 	private static void setSonarKpiWeekDayMonthColumn(String versionDate, KPIExcelData excelData, String kpiId) {
 		if (kpiId.equalsIgnoreCase(KPICode.UNIT_TEST_COVERAGE.getKpiId())
 				|| kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
-				|| kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS.getKpiId())
-				|| kpiId.equalsIgnoreCase(KPICode.TECH_DEBT_SONAR_SECURITY.getKpiId())) {
+				|| kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS.getKpiId())) {
 			excelData.setWeeks(versionDate);
 		} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
 			excelData.setMonth(versionDate);
@@ -1810,9 +1807,9 @@ public class KPIExcelUtility {
 				storyDetails.put(epicNumber, checkEmptyURL(jiraIssue));
 				excelData.setEpicID(storyDetails);
 				excelData.setEpicName(checkEmptyName(jiraIssue));
-				excelData.setToDo(new StringBuilder().append(toDoJiraIssue.size()).append("/").append(toDoPercentage).toString());
-				excelData.setInProgress(new StringBuilder().append(inProgressJiraIssue.size()).append("/").append(inProgressPercentage).toString());
-				excelData.setDone(new StringBuilder().append(doneJiraIssue.size()).append("/").append(donePercentage).toString());
+				excelData.setToDo(new StringBuilder().append(toDoJiraIssue.size()).append("/").append(toDoPercentage).append("%").toString());
+				excelData.setInProgress(new StringBuilder().append(inProgressJiraIssue.size()).append("/").append(inProgressPercentage).append("%").toString());
+				excelData.setDone(new StringBuilder().append(doneJiraIssue.size()).append("/").append(donePercentage).append("%").toString());
 				excelData.setEpicStatus(
 						StringUtils.isNotEmpty(jiraIssue.getStatus()) ? jiraIssue.getStatus() : Constant.BLANK);
 				excelData.setStoryPoint(issue);

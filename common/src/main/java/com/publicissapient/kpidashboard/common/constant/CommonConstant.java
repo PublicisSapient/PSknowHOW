@@ -33,6 +33,7 @@ public final class CommonConstant {
 	public static final String TESTING_KPI_CACHE = "testingKpiCache";
 	public static final String JIRAKANBAN_KPI_CACHE = "jiraKanbanKpiCache";
 	public static final String CACHE_ACCOUNT_HIERARCHY = "accountHierarchy";
+	public static final String CACHE_SPRINT_HIERARCHY = "sprintHierarchy";
 	public static final String CACHE_ACCOUNT_HIERARCHY_KANBAN = "accountHierarchyKanban";
 	public static final String CACHE_TOOL_CONFIG_MAP = "toolItemMap";
 	public static final String CACHE_FIELD_MAPPING_MAP = "fieldMappingMap";
