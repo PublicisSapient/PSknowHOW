@@ -14,7 +14,7 @@ metadata:
 spec:
   ingressClassName: azure-application-gateway
   rules:
-  - host: stage-prometheus.tools.publicis.sapient.com
+  - host: stage-grafana.tools.publicis.sapient.com
     http:
       paths:
       - backend:
