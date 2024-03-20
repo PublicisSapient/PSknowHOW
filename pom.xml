@@ -59,8 +59,8 @@
                 <module>processors/azure-repo</module>
                 <module>processors/azure-boards</module>
                 <module>kafka-consumers/notification-consumer</module>
-                <module>central-auth-service/authcommon</module>
-                <module>central-auth-service/authapi</module>
+                <!-- <module>central-auth-service/authcommon</module>
+                <module>central-auth-service/authapi</module> -->
             </modules>
             <build>
                 <plugins>
