@@ -27,7 +27,7 @@ spec:
       #   command: ['sh', '-c', "until nslookup ui-knowhow.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for ui-knowhow; sleep 2; done"]
       containers:
       - name: kafka-consumers
-        image: speedtools.azurecr.io/knowhow-kafka-consumers:10.0.0-SNAPSHOT
+        image: speedtools.azurecr.io/knowhow-kafka-consumers:9.5.0-SNAPSHOT
         # env:
         #     - name: spring.data.mongodb.uri
         #       valueFrom:
