@@ -4,12 +4,6 @@
 
 replicaCount: 1
 
-namespace: stage-knowhow
-
-configmapname: debbie-config
-
-secretname: stage-debbie-secrets
-
 env: stage
 
 image:
