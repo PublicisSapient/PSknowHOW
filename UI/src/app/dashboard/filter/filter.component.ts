@@ -832,8 +832,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     if(kpisShownCount <= 0){
       this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
       this.service.setSelectedTab(this.selectedTab);
-      const selectedTab = this.selectedTab;
-      const selectedType = this.kanban ? 'kanban' : 'scrum';
+      // const selectedTab = this.selectedTab;
+      // const selectedType = this.kanban ? 'kanban' : 'scrum';
       this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
       // this.service.onTypeOrTabRefresh.next({ selectedTab, selectedType });
     }
