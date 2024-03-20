@@ -2,7 +2,7 @@
 FROM amazoncorretto:17
 
 # Create a non-root user
-ARG USER=myuser
+ARG USER=knowhowuser
 ARG UID=1000
 ARG GID=1000
 
