@@ -36,6 +36,7 @@ import java.net.URISyntaxException;
 
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
 import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -186,6 +187,12 @@ public class TestConnectionServiceImplTest {
 
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_SONAR);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
+	}
+
+	@Test
+	public void validateConnectionArgoCD() {
+		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_ARGOCD);
+		Assert.assertThat("status: ", response.getSuccess(), equalTo(false));
 	}
 
 	@Test
