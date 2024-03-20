@@ -12,18 +12,11 @@ RUN yum install -y shadow-utils \
     && useradd -u $UID -g $GID -m -s /bin/bash $USER 
 
 # Set the environment variables
-# ENV CONFIG_LOCATION="/app/properties/customapi.properties" \
-#     certhostpath="/app/certs/" \
-#     keytoolalias="myknowhow" \
-#     JAVA_OPTS="" \
-#     keystorefile="/app/cacerts"
-
 ENV CONFIG_LOCATION="/app/properties/customapi.properties" \
     certhostpath="/app/certs/" \
     keytoolalias="myknowhow" \
     JAVA_OPTS="" \ 
     keystorefile="/usr/lib/jvm/java-17-amazon-corretto/lib/security/cacerts"
-
 
 # Set the working directory
 WORKDIR /app
@@ -34,9 +27,6 @@ ADD ${JAR_FILE} /app/customapi.jar
 
 COPY src/main/resources/application.properties /app/properties/customapi.properties
 COPY start_combined_collector.sh /app/start_combined_collector.sh
-
-# Change ownership to the non-root user
-# RUN 
 
 # Give execute permissions to the script
 RUN chown -R $USER:$USER /app \

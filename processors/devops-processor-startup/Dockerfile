@@ -2,20 +2,20 @@
 FROM amazoncorretto:17
 
 # Change bash as default and install necessary packages
-RUN ln -sf /bin/bash /bin/sh \
-    && yum install -y shadow-utils
+RUN 
 
 # Create a non-root user
 ARG USER=myuser
 ARG UID=1000
 ARG GID=1000
 
-RUN groupadd -g $GID $USER \
+RUN ln -sf /bin/bash /bin/sh \
+    && yum install -y shadow-utils \
+    && groupadd -g $GID $USER \
     && useradd -u $UID -g $GID -m -s /bin/bash $USER
 
 # Set environment variables for volumes
-ENV TMP_DIR="/tmp" \
-    APP_DIR="/app" \
+ENV APP_DIR="/app" \
     PROPERTIES_DIR="/app/properties" \
     keytoolalias="myknowhow" \
     certhostpath="/app/certs/" \
@@ -26,8 +26,6 @@ ENV TMP_DIR="/tmp" \
 WORKDIR $APP_DIR
 
 # Create the volumes
-VOLUME $TMP_DIR
-VOLUME $APP_DIR
 VOLUME $PROPERTIES_DIR
 
 # Set the JAR file variables
