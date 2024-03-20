@@ -40,13 +40,13 @@ spec:
               protocol: TCP
           envFrom:
           - configMapRef:
-              name: {{ .Values.configmapname }}
+              name: {{ .Values.env}}-debbie-config
           env:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.env }}debbieuser
-                  key: {{ .Values.env }}debbieuser
+                  name: {{ .Values.env }}-debbieuser
+                  key: {{ .Values.env }}-debbieuser
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -55,8 +55,8 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{.Values.env}}debbiepassword
-                  key: {{.Values.env}}debbiepassword
+                  name: {{.Values.env}}-debbiepassword
+                  key: {{.Values.env}}-debbiepassword
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
@@ -65,8 +65,8 @@ spec:
             - name: RABBITMQ_DEFAULT_PASS
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.env }}rabbitpass
-                  key: {{ .Values.env }}rabbitpass
+                  name: {{ .Values.env }}-rabbitpass
+                  key: {{ .Values.env }}-rabbitpass
             - name: EMAIL_HOST_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -82,22 +82,27 @@ spec:
                 secretKeyRef:
                   name: debbietengineauthtoken
                   key: debbietengineauthtoken
+            - name: SCAN_STATUS_APIS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: scan-status-apis-token-debbie
+                  key: scan-status-apis-token-debbie
             - name: DEBBIE_INTERNAL_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.env}}-debbie-internal-key
                   key: {{ .Values.env}}-debbie-internal-key
           volumeMounts:
-            - name: knowhow-secrets-store
+            - name: debbie-secrets-store
               mountPath: "/mnt/{{ .Values.env}}-debbie-secrets-store"
               readOnly: true
       volumes:
-        - name: knowhow-secrets-store
+        - name: debbie-secrets-store
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: "{{ .Values.env}}-debbie-secretproviderclass"
+              secretProviderClass: "{{ .Values.env}}-secretproviderclass"
           livenessProbe:
             tcpSocket:
               port: {{ .Values.service.port }}

@@ -89,6 +89,10 @@ spec:
           objectName: auth-resourceapikeys
           objectType: secret
           objectVersion: ""
+        - |
+          objectName: scan-status-apis-token-debbie
+          objectType: secret
+          objectVersion: ""
     tenantId: "d52c9ea1-7c21-47b1-82a3-33a74b1f74b8"                 # The tenant ID of the key vault
   secretObjects:                                    #https://secrets-store-csi-driver.sigs.k8s.io/topics/sync-as-kubernetes-secret
   - secretName: stage-knhdbusername
@@ -186,3 +190,8 @@ spec:
     data:
     - objectName: auth-resourceapikeys
       key: auth-resourceapikeys
+  - secretName: scan-status-apis-token-debbie
+    type: Opaque
+    data:
+    - objectName: scan-status-apis-token-debbie
+      key: scan-status-apis-token-debbie

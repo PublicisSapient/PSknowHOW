@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: debbie-config
+  name: {{ .Values.env}}-debbie-config
   namespace: {{ .Values.env}}-knowhow
 data:
   # property-like keys; each key maps to a simple value
@@ -29,3 +29,5 @@ data:
   TENGINE_QUERY_USERNAME: "xyz"
   BASE_HOST_URL: "https://4bdf-89-136-52-54.ngrok-free.app"
   FE_CLEAR_CACHE_APIS: "http://customapi:8080/api/cache/clearCache/toolItemMap,http://customapi:8080/api/cache/clearCache/bitbucketKpiCache"
+  SCAN_STATUS_APIS: "http://customapi:8080/api/processor/saveRepoToolsStatus"
+
