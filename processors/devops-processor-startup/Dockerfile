@@ -1,9 +1,6 @@
 # Use a base image
 FROM amazoncorretto:17
 
-# Change bash as default and install necessary packages
-RUN 
-
 # Create a non-root user
 ARG USER=myuser
 ARG UID=1000
