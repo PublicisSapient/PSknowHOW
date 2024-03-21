@@ -70,6 +70,13 @@ export class NavComponent implements OnInit {
     this.service.onTypeOrTabRefresh.subscribe(data => {
       this.selectedTab = data?.selectedTab;
     })
+
+    this.service.boardNamesListSubject.subscribe((data) => {
+      this.boardNameArr = data;
+    })
+
+    // this.selectedTab = this.service.getSelectedTab();
+    
   }
 
   ngOnInit() {
@@ -146,46 +153,7 @@ export class NavComponent implements OnInit {
 
   processKPIListData() {
     this.configOthersData = this.kpiListData['others'].find(boardDetails => boardDetails.boardName === 'Kpi Maturity')?.kpis;
-    this.boardNameArr = [];
-    if (
-      this.kpiListData[this.selectedType] &&
-      Array.isArray(this.kpiListData[this.selectedType])
-    ) {
-      for (let i = 0; i < this.kpiListData[this.selectedType]?.length; i++) {
-        let kpiShownCount = 0;
-        let board = this.kpiListData[this.selectedType][i];
-        if(board?.boardName?.toLowerCase() === 'iteration'){
-          board['kpis'] = board?.['kpis']?.filter((item) => item.kpiId != 'kpi121');
-        }
-        board['kpis']?.forEach((item) => {
-          if(item.shown){
-            kpiShownCount++;
-          }
-        });
-        if(kpiShownCount > 0){
-          this.boardNameArr.push({
-            boardName: board?.boardName,
-            link: board?.boardName.toLowerCase().split(' ').join('-')
-          });
-        }
-      }
-    }
-
-    for (let i = 0; i < this.kpiListData['others']?.length; i++) {
-      let kpiShownCount = 0;
-      this.kpiListData['others'][i]['kpis']?.forEach((item) => {
-      if(item.shown){
-          kpiShownCount++;
-        }
-      });
-      if(kpiShownCount > 0){
-        this.boardNameArr.push({
-          boardName: this.kpiListData['others'][i].boardName,
-          link:
-            this.kpiListData['others'][i].boardName.toLowerCase()
-        });
-      }
-    }
+    this.service.setUpdatedBoardList(this.kpiListData, this.selectedType);
     
     // renamed tab name was not updating when navigating on iteration/backlog, issue fixed
     if (this.changedBoardName) {

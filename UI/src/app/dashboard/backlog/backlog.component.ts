@@ -126,7 +126,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }));
   }
   processKpiConfigData() {
-    this.fullPageLoader = true;
     this.navigationTabs = [
       { 'label': 'Backlog Health', 'count': 0, kpis: [], width: 'half' },
       { 'label': 'Flow KPIs', 'count': 0, kpis: [], width: 'half', fullWidthKpis: [] },
