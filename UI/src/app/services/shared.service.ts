@@ -438,6 +438,8 @@ export class SharedService {
         let kpiList;
         if (board?.boardName?.toLowerCase() === 'iteration') {
           kpiList = board?.['kpis']?.filter((item) => item.kpiId != 'kpi121');
+        }else{
+          kpiList = board?.['kpis'];
         }
         kpiList?.forEach((item) => {
           if (item.shown) {
