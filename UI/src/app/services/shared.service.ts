@@ -435,10 +435,11 @@ export class SharedService {
       for (let i = 0; i < kpiListData[selectedType]?.length; i++) {
         let kpiShownCount = 0;
         let board = kpiListData[selectedType][i];
+        let kpiList;
         if (board?.boardName?.toLowerCase() === 'iteration') {
-          board['kpis'] = board?.['kpis']?.filter((item) => item.kpiId != 'kpi121');
+          kpiList = board?.['kpis']?.filter((item) => item.kpiId != 'kpi121');
         }
-        board['kpis']?.forEach((item) => {
+        kpiList?.forEach((item) => {
           if (item.shown) {
             kpiShownCount++;
           }
