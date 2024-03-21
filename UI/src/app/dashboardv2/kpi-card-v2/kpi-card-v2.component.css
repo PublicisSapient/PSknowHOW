@@ -246,6 +246,7 @@
     height: 30px;
     border: 2px solid #EAEDF0;
     border-radius: 8px !important;
+    transition: none;
 }
 
 :host ::ng-deep .p-selectbutton.p-buttonset.p-component {
