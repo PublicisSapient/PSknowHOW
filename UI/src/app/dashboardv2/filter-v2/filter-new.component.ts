@@ -217,6 +217,10 @@ export class FilterNewComponent implements OnInit {
         this.filterApplyData['selectedMap']['sqd'] = [];
       }
 
+      if(this.selectedTab?.toLowerCase() === 'backlog'){
+        this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de=>de.nodeId));
+      }
+
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
 
       if (this.selectedLevel) {

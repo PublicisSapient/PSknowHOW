@@ -24,7 +24,6 @@
     z-index: 900;
 }
 
-:host ::ng-deep .main-container .kpi-card-container,
 :host ::ng-deep .main-container .kpi-summary {
     box-shadow: none;
     border: 1px solid #D5DBE1;

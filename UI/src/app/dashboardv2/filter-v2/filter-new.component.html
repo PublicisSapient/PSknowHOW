@@ -1,6 +1,6 @@
 <div class="filter-container p-d-flex p-justify-between p-p-2">
     <div class="p-d-flex">
-        <div class="tabs" *ngIf="kanbanRequired">
+        <div class="tabs" [hidden]="!kanbanRequired">
             <div class="tab" (click)="setSelectedType('Scrum')" [ngClass]="{ 'active': selectedType === 'scrum' }">Scrum
             </div>
             <div class="tab" (click)="setSelectedType('Kanban')"
@@ -8,12 +8,13 @@
                 Kanban</div>
         </div>
     </div>
-    <div class="p-d-flex" *ngIf="filterDataArr[selectedType]">
-        <app-parent-filter *ngIf="getObjectKeys(parentFilterConfig).length" class="p-mr-2" [filterData]="filterDataArr[selectedType]"
+    <div class="p-d-flex" *ngIf="filterDataArr[selectedType]" [ngStyle]="{'padding-left': getObjectKeys(parentFilterConfig).length ? '10%' : '15%'}">
+        <app-parent-filter *ngIf="getObjectKeys(parentFilterConfig).length" class="p-mr-2" 
+            [filterData]="filterDataArr[selectedType]" [selectedTab]="selectedTab"
             (onSelectedLevelChange)="handleParentFilterChange($event)" [selectedType]="selectedType" [selectedTab]="selectedTab"
             [parentFilterConfig]="parentFilterConfig"></app-parent-filter>
         <app-primary-filter [filterData]="filterDataArr[selectedType]" [selectedLevel]="selectedLevel" [selectedType]="selectedType"
-            [primaryFilterConfig]="primaryFilterConfig"
+            [primaryFilterConfig]="primaryFilterConfig" [selectedTab]="selectedTab"
             (onPrimaryFilterChange)="handlePrimaryFilterChange($event)"></app-primary-filter>
     </div>
     <div>

@@ -66,6 +66,7 @@ import { ButtonModule } from 'primeng/button';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SkeletonModule } from 'primeng/skeleton';
+import { SelectButtonModule } from 'primeng/selectbutton';
 
 /******************************************************/
 
@@ -140,17 +141,18 @@ import { TrendIndicatorV2Component } from './dashboardv2/trend-indicator-v2/tren
 import { GroupedColumnPlusLineChartV2Component } from './component/grouped-column-plus-line-chart-v2/grouped-column-plus-line-chart-v2.component';
 import { MultilineStyleV2Component } from './component/multiline-style-v2/multiline-style-v2.component';
 import { TooltipV2Component } from './component/tooltip-v2/tooltip-v2.component';
+import { HorizontalPercentBarChartv2Component } from './component/horizontal-percent-bar-chartv2/horizontal-percent-bar-chartv2.component';
 /*********************DASHBOARDV2 End*********************************/
 
 /******************************************************/
 export function initializeApp(initializeService: AppInitializerService) {
-    return (): Promise<any> => { 
+    return (): Promise<any> => {
         return initializeService.validateToken();
     }
 }
 
 export function initializeApp2(initializeService: AppInitializerService) {
-    return (): Promise<any> => { 
+    return (): Promise<any> => {
         return initializeService.checkFeatureFlag();
     }
 }
@@ -228,7 +230,8 @@ export function initializeApp2(initializeService: AppInitializerService) {
         TrendIndicatorV2Component,
         GroupedColumnPlusLineChartV2Component,
         MultilineStyleV2Component,
-        TooltipV2Component
+        TooltipV2Component,
+        HorizontalPercentBarChartv2Component
     ],
     imports: [
         DropdownModule,
@@ -259,6 +262,7 @@ export function initializeApp2(initializeService: AppInitializerService) {
         OverlayPanelModule,
         MenuModule,
         SkeletonModule,
+        SelectButtonModule,
         SharedModuleModule
     ],
     providers: [

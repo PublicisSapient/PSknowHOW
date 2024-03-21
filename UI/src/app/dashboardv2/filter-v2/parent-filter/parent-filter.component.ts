@@ -25,7 +25,6 @@ export class ParentFilterComponent implements OnChanges {
         this.filterLevels = Object.keys(this.filterData);
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level));
         this.filterLevels = this.filterLevels.map(level => level.toUpperCase());
-        this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
 
         setTimeout(() => {
           if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel || (changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {

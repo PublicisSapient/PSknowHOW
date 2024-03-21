@@ -1582,7 +1582,7 @@
                     {
                         "kpiId": "kpi39",
                         "kpiName": "Sprint Velocity",
-                        "isEnabled": true,
+                        "isEnabled": false,
                         "order": 2,
                         "kpiDetail": {
                             "id": "64b4ed7acba3c12de16472ff",
@@ -1652,7 +1652,7 @@
                     {
                         "kpiId": "kpi72",
                         "kpiName": "Commitment Reliability",
-                        "isEnabled": true,
+                        "isEnabled": false,
                         "order": 3,
                         "kpiDetail": {
                             "id": "64b4ed7acba3c12de16472fd",
@@ -1714,7 +1714,7 @@
                     {
                         "kpiId": "kpi5",
                         "kpiName": "Sprint Predictability",
-                        "isEnabled": true,
+                        "isEnabled": false,
                         "order": 4,
                         "kpiDetail": {
                             "id": "64b4ed7acba3c12de16472fe",
@@ -1776,7 +1776,7 @@
                     {
                         "kpiId": "kpi46",
                         "kpiName": "Sprint Capacity Utilization",
-                        "isEnabled": true,
+                        "isEnabled": false,
                         "order": 5,
                         "kpiDetail": {
                             "id": "64b4ed7acba3c12de1647300",
@@ -1834,7 +1834,7 @@
                     {
                         "kpiId": "kpi8",
                         "kpiName": "Code Build Time",
-                        "isEnabled": true,
+                        "isEnabled": false,
                         "order": 8,
                         "kpiDetail": {
                             "id": "64b4ed7acba3c12de1647303",
@@ -1892,7 +1892,7 @@
                     {
                         "kpiId": "kpi164",
                         "kpiName": "Scope Churn",
-                        "isEnabled": true,
+                        "isEnabled": false,
                         "order": 9,
                         "kpiDetail": {
                             "id": "650bc420797db1ee82d622bf",
@@ -6394,6 +6394,7 @@
                             "maxValue": "",
                             "kanban": false,
                             "groupId": 9,
+                            "kpiSize": 12,
                             "kpiInfo": {
                                 "definition": "It depicts the progress of each epic in a release in terms of total count and %age completion."
                             },

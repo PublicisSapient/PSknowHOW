@@ -13,8 +13,9 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   @Input() selectedLevel: any = '';
   @Input() primaryFilterConfig: {};
   @Input() selectedType: string = '';
+  @Input() selectedTab: string = '';
   filters: any[];
-  selectedFilters: any[] = [];
+  selectedFilters: any;
   subscriptions: any[] = [];
   @Output() onPrimaryFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
@@ -24,52 +25,55 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.filterData && Object.keys(this.filterData).length) {
-      this.populateDefaultFilters();
-      if (this.filters && this.filters.length && (changes['selectedLevel'] || changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
+      // if (changes['selectedTab'] || changes['selectedLevel'] || (changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
+      if (changes['selectedLevel'] || changes['selectedTab']) {
         setTimeout(() => {
           this.selectedFilters = [];
-          this.populateDefaultFilters();
-          // this.filters = this.helperService.sortAlphabetically(this.filters);
-          this.selectedFilters.push(this.filters[0]);
-          this.onPrimaryFilterChange.emit(this.selectedFilters);
-        }, 0);
-      } else {
-        this.onPrimaryFilterChange.emit(this.selectedFilters);
+          this.filters = [];
+          this.populateFilters();
+          if (this.filters.length) {
+            this.selectedFilters.push(this.filters[0]);
+            this.onPrimaryFilterChange.emit(this.selectedFilters);
+          }
+        }, 100);
       }
     }
   }
 
   ngOnInit() {
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((val) => {
-      if (this.selectedFilters.length && this.selectedFilters[0]) {
+      if (this.selectedFilters?.length && this.selectedFilters[0]) {
         this.selectedFilters = this.selectedFilters.filter((filter) => Object.keys(val).includes(filter.nodeId));
       }
     }));
   }
 
-  populateDefaultFilters() {
+  populateFilters() {
     if (this.selectedLevel && typeof this.selectedLevel === 'string' && this.selectedLevel.length) {
       this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
+      if (this.primaryFilterConfig['defaultLevel'].sortBy) {
+        this.filters = this.sortByField(this.filterData[this.selectedLevel], this.primaryFilterConfig['defaultLevel'].sortBy);
+      } else {
+        this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
+      }
     } else if (this.selectedLevel && Object.keys(this.selectedLevel).length) {
-      this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()]);
-
       // check for iterations and releases
-      if (this.selectedLevel.nodeType.toLowerCase() === 'project') {
+      if (this.selectedLevel.emittedLevel.toLowerCase() === 'project') {
         if (this.primaryFilterConfig['defaultLevel'].sortBy) {
-          this.filters = this.sortByField(this.filters.filter((filter) => filter.parentId === this.selectedLevel.nodeId), this.primaryFilterConfig['defaultLevel'].sortBy);
+          this.filters = this.sortByField(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId), this.primaryFilterConfig['defaultLevel'].sortBy);
         } else {
-          this.filters = this.helperService.sortAlphabetically(this.filters.filter((filter) => filter.parentId === this.selectedLevel.nodeId));
+          this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId));
         }
       } else {
         if (this.primaryFilterConfig['defaultLevel'].sortBy) {
-          this.filters = this.sortByField(this.filters.filter((filter) => filter.nodeId === this.selectedLevel.nodeId), this.primaryFilterConfig['defaultLevel'].sortBy);
+          this.filters = this.sortByField(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId), this.primaryFilterConfig['defaultLevel'].sortBy);
         } else {
-          this.filters = this.helperService.sortAlphabetically(this.filters.filter((filter) => filter.nodeId === this.selectedLevel.nodeId));
+          this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId));
         }
       }
     } else {
       this.selectedLevel = 'project';
-      this.filters = this.filterData[this.selectedLevel];
+      this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.toLowerCase()]);
     }
   }
 

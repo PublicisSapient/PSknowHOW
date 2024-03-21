@@ -60,7 +60,7 @@
             </ng-container>
         </div>
         <ng-container *ngSwitchCase="'radiobutton'">
-            <ng-container *ngIf="dropdownArr?.length>0">
+            <ng-container *ngIf="dropdownArr && dropdownArr.length && dropdownArr[0]?.options?.length">
                 <p-selectButton [options]="dropdownArr[0]?.options" [(ngModel)]="radioOption"
                     (onChange)="handleChange('radio', $event)"></p-selectButton>
             </ng-container>

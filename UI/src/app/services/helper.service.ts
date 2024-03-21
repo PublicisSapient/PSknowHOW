@@ -32,7 +32,7 @@ export class HelperService {
     grossMaturityObj = {};
     public passMaturityToFilter;
 
-    constructor(private httpService: HttpService, private excelService: ExcelService,private sharedService : SharedService) {
+    constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService) {
         this.passMaturityToFilter = new EventEmitter();
     }
 
@@ -88,7 +88,9 @@ export class HelperService {
                 if (obj.videoLink) {
                     delete obj.videoLink;
                 }
-                kpiRequestObject.kpiList.push(obj);
+                if (obj.isEnabled && obj.shown) {
+                    kpiRequestObject.kpiList.push(obj);
+                }
             }
         }
 
@@ -394,7 +396,7 @@ export class HelperService {
 
     sortAlphabetically(objArray) {
         if (objArray && objArray?.length > 1) {
-            objArray?.sort((a, b) => a.nodeName ? a.nodeName.localeCompare(b.nodeName) : a?.data?.localeCompare(b?.data));
+            objArray?.sort((a, b) => a.nodeName ? a.nodeName.localeCompare(b.nodeName) : a.data ? a?.data?.localeCompare(b?.data) : a.localeCompare(b));
         }
         return objArray;
     }
@@ -541,109 +543,109 @@ export class HelperService {
     /** sync shown property of project level and user level */
     makeSyncShownProjectLevelAndUserLevelKpis(projectLevelKpi, userLevelKpi) {
         Object.keys(userLevelKpi).forEach(boards => {
-          if (Array.isArray(userLevelKpi[boards])) {
-            userLevelKpi[boards].forEach(boardA => {
-              const boardB = projectLevelKpi[boards]?.find(b => b.boardId === boardA.boardId);
-              if (boardB) {
-                boardA.kpis.forEach(kpiA => {
-                  const kpiB = boardB.kpis.find(b => b.kpiId === kpiA.kpiId);
-                  if (kpiB) {
-                    kpiA.shown = kpiB.shown;
-                  }
+            if (Array.isArray(userLevelKpi[boards])) {
+                userLevelKpi[boards].forEach(boardA => {
+                    const boardB = projectLevelKpi[boards]?.find(b => b.boardId === boardA.boardId);
+                    if (boardB) {
+                        boardA.kpis.forEach(kpiA => {
+                            const kpiB = boardB.kpis.find(b => b.kpiId === kpiA.kpiId);
+                            if (kpiB) {
+                                kpiA.shown = kpiB.shown;
+                            }
+                        });
+                    }
                 });
-              }
-            });
-          }
+            }
         });
         return userLevelKpi
-      }
+    }
 
-    getGlobalConfig(){
-        this.httpService.getConfigDetails().subscribe(res=>{
-          if(res && res['success']){
-            this.sharedService.setGlobalConfigData(res['data']);
-          }
+    getGlobalConfig() {
+        this.httpService.getConfigDetails().subscribe(res => {
+            if (res && res['success']) {
+                this.sharedService.setGlobalConfigData(res['data']);
+            }
         })
-      }
+    }
 
-    windowReload(){
+    windowReload() {
         window.location.reload();
     }
 
-   
-    drop(event: CdkDragDrop<string[]>,updatedContainer,navigationTabs,upDatedConfigData,configGlobalData,extraKpis?) {
+
+    drop(event: CdkDragDrop<string[]>, updatedContainer, navigationTabs, upDatedConfigData, configGlobalData, extraKpis?) {
         if (event?.previousIndex !== event.currentIndex) {
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-            if(updatedContainer.width === 'half'){
-            const updatedTabsDetails = navigationTabs.find(tabs=>tabs['label'].toLowerCase() === updatedContainer['label'].toLowerCase());
-            updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2'],...updatedTabsDetails['fullWidthKpis']];
+            if (updatedContainer.width === 'half') {
+                const updatedTabsDetails = navigationTabs.find(tabs => tabs['label'].toLowerCase() === updatedContainer['label'].toLowerCase());
+                updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'], ...updatedTabsDetails['kpiPart2'], ...updatedTabsDetails['fullWidthKpis']];
             }
             upDatedConfigData = [];
-            navigationTabs.forEach(tabs=>{
-            upDatedConfigData  = upDatedConfigData.concat(tabs['kpis']);
+            navigationTabs.forEach(tabs => {
+                upDatedConfigData = upDatedConfigData.concat(tabs['kpis']);
             })
             upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
             const disabledKpis = configGlobalData.filter(item => item.shown && !item.isEnabled);
             disabledKpis.map((kpi, index) => kpi.order = upDatedConfigData.length + index + 3);
             const hiddenkpis = configGlobalData.filter(item => !item.shown);
             hiddenkpis.map((kpi, index) => kpi.order = upDatedConfigData.length + disabledKpis.length + index + 3);
-            if(extraKpis){
+            if (extraKpis) {
                 console.log(extraKpis)
-                this.sharedService.kpiListNewOrder.next([extraKpis,...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
-            }else{
+                this.sharedService.kpiListNewOrder.next([extraKpis, ...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
+            } else {
                 console.log('without extra container')
                 this.sharedService.kpiListNewOrder.next([...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
             }
-            
-        }
-     }
 
-     createCombinations(arr1, arr2) {
+        }
+    }
+
+    createCombinations(arr1, arr2) {
         let arr = [];
         for (let i = 0; i < arr1?.length; i++) {
-          for (let j = 0; j < arr2?.length; j++) {
-            arr.push({ filter1: arr1[i], filter2: arr2[j] });
-          }
+            for (let j = 0; j < arr2?.length; j++) {
+                arr.push({ filter1: arr1[i], filter2: arr2[j] });
+            }
         }
         return arr;
-      }
+    }
 
-      makeUniqueArrayList(arr) {
+    makeUniqueArrayList(arr) {
         let uniqueArray = [];
         for (let i = 0; i < arr?.length; i++) {
-          const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
-          if (idx == -1) {
-            uniqueArray = [...uniqueArray, arr[i]];
-            uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
-            uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
-          } else {
-            uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-            uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
-          }
+            const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
+            if (idx == -1) {
+                uniqueArray = [...uniqueArray, arr[i]];
+                uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
+                uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
+            } else {
+                uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
+                uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
+            }
         }
         return uniqueArray;
-      }
+    }
 
-      getKpiCommentsCount(kpiCommentsCountObj,nodes,level,nodeChildId,updatedConfigGlobalData,kpiId) {
+    getKpiCommentsCount(kpiCommentsCountObj, nodes, level, nodeChildId, updatedConfigGlobalData, kpiId) {
         let requestObj = {
-          "nodes": nodes,
-          "level": level,
-          "nodeChildId": nodeChildId,
-          'kpiIds': []
+            "nodes": nodes,
+            "level": level,
+            "nodeChildId": nodeChildId,
+            'kpiIds': []
         };
         if (kpiId) {
-          requestObj['kpiIds'] = [kpiId];
-          this.getKpiCommentsHttp(requestObj).then((res: object) => {
-            kpiCommentsCountObj[kpiId] = res[kpiId];
-          });
+            requestObj['kpiIds'] = [kpiId];
+            this.getKpiCommentsHttp(requestObj).then((res: object) => {
+                kpiCommentsCountObj[kpiId] = res[kpiId];
+            });
         } else {
-          requestObj['kpiIds'] = (updatedConfigGlobalData?.map((item) => item.kpiId));
-          this.getKpiCommentsHttp(requestObj).then((res: object) => {
-            kpiCommentsCountObj = res;
-          });
+            requestObj['kpiIds'] = (updatedConfigGlobalData?.map((item) => item.kpiId));
+            this.getKpiCommentsHttp(requestObj).then((res: object) => {
+                kpiCommentsCountObj = res;
+            });
         }
         return kpiCommentsCountObj
-      }
+    }
 
     createBackupOfFiltersSelection(filterbackup, tab, subFilter) {
         let savedDetails = this.sharedService.getAddtionalFilterBackup();

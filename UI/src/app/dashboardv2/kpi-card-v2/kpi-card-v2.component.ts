@@ -101,7 +101,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
       }));
       /** assign 1st value to radio button by default */
-      if(this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length > 0){
+      if(this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length){
         this.radioOption = this.dropdownArr[0]?.options[0];
         console.log(this.dropdownArr[0]?.options);
       }
