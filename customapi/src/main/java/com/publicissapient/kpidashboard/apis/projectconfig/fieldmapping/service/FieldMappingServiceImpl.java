@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -256,7 +257,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		List<String> fields = fieldMappingEnum.getFields();
 		FieldMapping fieldMapping = getFieldMapping(projectToolConfigId);
 		List<FieldMappingResponse> fieldMappingResponses = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(fields)) {
+		if (CollectionUtils.isNotEmpty(fields) && fieldMapping != null) {
 			Class<FieldMapping> fieldMappingClass = FieldMapping.class;
 			for (String field : fields) {
 				FieldMappingResponse mappingResponse = new FieldMappingResponse();
@@ -422,17 +423,18 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	private Object generateAdditionalFilters(Object newValue, String fieldName) {
 		if (fieldName.equalsIgnoreCase("additionalFilterConfig")) {
-			List<AdditionalFilterConfig> additonalValue = (List<AdditionalFilterConfig>) newValue;
+			List<LinkedHashMap<String,Object>> additonalValue = (List<LinkedHashMap<String, Object>>) newValue;
 			StringBuilder originalValue = new StringBuilder();
-			for (AdditionalFilterConfig value : additonalValue) {
-				String identificationButton = value.getIdentifyFrom();
+			for (Map<String, Object> value : additonalValue) {
+
+				String identificationButton = (String) value.get("identifyFrom");
 				String identificationValue;
 				if (identificationButton.equalsIgnoreCase("customfield")) {
-					identificationValue = value.getIdentificationField();
+					identificationValue = (String) value.get("identificationField");
 				} else {
-					identificationValue = value.getValues().toString();
+					identificationValue = value.get("values").toString();
 				}
-				originalValue.append(value.getFilterId()).append("-").append(identificationButton).append(":").append(identificationValue).append(" ,");
+				originalValue.append(value.get("filterId")).append("-").append(identificationButton).append(":").append(identificationValue).append(" ,");
 			}
 			return originalValue;
 		}

@@ -29,6 +29,10 @@ public enum KPICode {
      */
     JIRA_PROCESSOR("kpi0", KPISource.JIRA.name()),
     /**
+     * JIRA_PROCESSOR_KANBAN
+     */
+    JIRA_PROCESSOR_KANBAN("kpi1", KPISource.JIRAKANBAN.name()),
+    /**
      * The Dor to dod.
      */
     LEAD_TIME("kpi3", KPISource.JIRA.name()),
