@@ -98,16 +98,16 @@ spec:
             {{- range $port := .Values.ports }}
             - containerPort: {{ $port }}
             {{- end }}
-          readinessProbe:
-            tcpSocket:
-              port: 5672
-            initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-            periodSeconds: 5          # Check every 5 seconds
-          livenessProbe:
-            tcpSocket:
-              port: 5672
-            initialDelaySeconds: 15
-            periodSeconds: 20
+          # readinessProbe:
+          #   tcpSocket:
+          #     port: 5672
+          #   initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
+          #   periodSeconds: 5          # Check every 5 seconds
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: 5672
+          #   initialDelaySeconds: 15
+          #   periodSeconds: 20
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
