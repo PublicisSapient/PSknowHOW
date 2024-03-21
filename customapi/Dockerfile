@@ -7,7 +7,6 @@ ARG UID=1000
 ARG GID=1000
 
 RUN yum install -y shadow-utils \
-    && yum update -y \
     && yum install -y curl \
     && yum install -y iputils \
     && ln -sf /bin/bash /bin/sh \
@@ -34,14 +33,14 @@ COPY start_combined_collector.sh /app/start_combined_collector.sh
 # Give execute permissions to the script
 RUN chown -R $USER:$USER /app \
     && chmod +x /app/start_combined_collector.sh \
-    && chmod 766 $keystorefile \
-    && chmod -R 766 /etc
+    && chmod 777 $keystorefile \
+    && chmod -R 777 /etc
 
 # Expose the port
 EXPOSE 8080
 
 # Switch to the non-root user
-USER $USER:$GID
+# USER $USER:$GID
 
 # Specify the command to run your application
 CMD ["sh", "start_combined_collector.sh"]
