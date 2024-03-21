@@ -26,7 +26,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.filterData && Object.keys(this.filterData).length) {
       // if (changes['selectedTab'] || changes['selectedLevel'] || (changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
-      if (changes['selectedLevel'] || changes['selectedTab']) {
+      if (changes['selectedLevel'] || changes['selectedTab'] || changes['selectedType']) {
         setTimeout(() => {
           this.selectedFilters = [];
           this.filters = [];

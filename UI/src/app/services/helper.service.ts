@@ -88,7 +88,11 @@ export class HelperService {
                 if (obj.videoLink) {
                     delete obj.videoLink;
                 }
-                if (obj.isEnabled && obj.shown) {
+                if (obj.hasOwnProperty('isEnabled') && obj.hasOwnProperty('shown')) {
+                    if (obj.isEnabled && obj.shown) {
+                        kpiRequestObject.kpiList.push(obj);
+                    }
+                } else {
                     kpiRequestObject.kpiList.push(obj);
                 }
             }
