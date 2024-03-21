@@ -71,9 +71,9 @@ export class AdditionalFilterFieldComponent implements OnInit {
 
   generateAdditionalFilterMappings() {
     this.addAdditionalFilterOptions();
-    this.selectedFieldMapping = this.sharedService.getSelectedFieldMapping();
-    if (this.selectedFieldMapping) {
-      const additionalFilterMappings = this.selectedFieldMapping.additionalFilterConfig;
+    this.selectedFieldMapping = this.sharedService.getSelectedFieldMapping().fieldMappingResponses.find(ele=>ele.fieldName === 'additionalFilterConfig');
+    if (this.selectedFieldMapping && Object.keys(this.selectedFieldMapping).length) {
+      const additionalFilterMappings = this.selectedFieldMapping.originalValue;
       this.additionalFiltersArray = [];
 
       const additionalFilters = this.filterHierarchy?.filter((filter) => filter.level > this.filterHierarchy?.filter(f => f.hierarchyLevelId === 'sprint')[0].level);

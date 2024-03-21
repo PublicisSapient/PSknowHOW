@@ -759,10 +759,17 @@ export class HttpService {
     );
   }
 
+    /** Get all Field Mappings with history */
+    getFieldMappingsWithHistory(toolId,kpiId) {
+      return this.http.get(
+        this.fieldMappingsUrl + '/fieldMapping/' + toolId + '/'+ kpiId,
+      );
+    }
+
   /** Save all Field Mappings */
-  setFieldMappings(toolId, mappingConfig) {
+  setFieldMappings(toolId, mappingConfig,kpiid) {
     return this.http.post(
-      this.fieldMappingsUrl + '/' + toolId + '/fieldMapping',
+      this.fieldMappingsUrl + '/saveMapping/' + toolId + '/' + kpiid,
       mappingConfig,
     );
   }

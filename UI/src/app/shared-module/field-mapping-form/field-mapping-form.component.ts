@@ -50,6 +50,13 @@ export class FieldMappingFormComponent implements OnInit {
   form: FormGroup;
   fieldMappingSectionList = [];
   formConfig: any;
+  isFormDirty : boolean = false;
+  historyList = [];
+  showSpinner: boolean = false;
+  isHistoryPopup : any = {};
+  @Input() kpiId : string;
+  individualFieldHistory = [];
+  @Input() metaDataTemplateCode : any;
 
 private setting = {
   element: {
@@ -66,6 +73,9 @@ private setting = {
     this.filterHierarchy = JSON.parse(localStorage.getItem('completeHierarchyData')).scrum;
     this.initializeForm();
     this.generateFieldMappingConfiguration();
+    this.form.valueChanges.subscribe(()=>{
+     this.isFormDirty = true;
+    })
   }
 
   generateFieldMappingConfiguration(){
@@ -87,9 +97,11 @@ private setting = {
   initializeForm(){
     const formObj ={};
     for (const field of this.fieldMappingConfig) {
+      this.isHistoryPopup[field.fieldName] = false;
       formObj[field.fieldName] = this.generateFromControlBasedOnFieldType(field)
       if (field.hasOwnProperty('nestedFields')) {
         for (const nField of field.nestedFields) {
+          this.isHistoryPopup[nField.fieldName] = false;
           formObj[nField.fieldName] = this.generateFromControlBasedOnFieldType(nField)
         }
       }
@@ -99,8 +111,16 @@ private setting = {
 
   /** This method is taking config as parameter, creating form control and assigning initial value based on fieldtype */
   generateFromControlBasedOnFieldType(config){
-    if(this.formData?.hasOwnProperty(config.fieldName)){
-      return new FormControl(this.formData[config.fieldName]);
+
+    const fieldMapping = this.formData.find(data=>data.fieldName === config.fieldName)
+    if(fieldMapping?.history && fieldMapping?.history?.length){
+      this.historyList.push({
+       fieldName : fieldMapping.fieldName,
+       history : fieldMapping.history
+      })
+ }
+    if(fieldMapping && fieldMapping?.originalValue){
+      return new FormControl(fieldMapping.originalValue);
     }else{
       switch(config.fieldType){
         case 'text':
@@ -256,10 +276,21 @@ private setting = {
     const submitData = {...this.formData,...this.form.value};
     submitData['basicProjectConfigId'] = this.selectedConfig.id;
     delete submitData.id;
-    if(this.selectedToolConfig[0].toolName.toLowerCase() === 'jira'){
-      this.http.getMappingTemplateFlag(this.selectedToolConfig[0].id, submitData).subscribe(response => {
-        if (response && response['success']) {
-          if (response['data']) {
+    const finalList = [];
+
+    this.formData.forEach(element => {
+      const formValue = this.form.value[element.fieldName];
+      
+      const isChangedFromPreviousOne = this.compareValues(element?.originalValue,formValue);
+
+      if(!isChangedFromPreviousOne){
+      finalList.push({fieldName : element.fieldName,originalValue : formValue,previousValue :element.originalValue})
+      }
+
+    });
+
+     if(this.selectedToolConfig[0].toolName.toLowerCase() === 'jira'){
+          if (!(this.metaDataTemplateCode && this.metaDataTemplateCode === '9' || this.metaDataTemplateCode === '10' )) {
             this.confirmationService.confirm({
               message: `Please note that change in mappings is a deviation from initially configured template.
               If you continue with the change in mappings then these changes will be mapped to a
@@ -267,30 +298,22 @@ private setting = {
               header: 'Template Change Info',
               key: 'templateInfoDialog',
               accept: () => {
-                this.saveFieldMapping(submitData);
+                this.saveFieldMapping(finalList);
               },
               reject: () => {}
             });
           } else {
-          this.saveFieldMapping(submitData);
+          this.saveFieldMapping(finalList);
           }
-        }else{
-          this.messenger.add({
-            severity: 'error',
-            summary: 'Some error occurred. Please try again later.'
-          });
-        }
-
-      });
     }else{
-      this.saveFieldMapping(submitData);
+      this.saveFieldMapping(finalList);
     }
 
   }
 
   /** Responsible for handle save */
   saveFieldMapping(mappingData) {
-    this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingData).subscribe(response => {
+    this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingData,this.kpiId).subscribe(response => {
       if (response && response['success']) {
         this.messenger.add({
           severity: 'success',
@@ -324,5 +347,63 @@ private setting = {
 
     const event = new MouseEvent('click');
     element.dispatchEvent(event);
+  }
+
+
+compareValues(originalValue: any, previousValue: any): boolean {
+  if (typeof originalValue !== typeof previousValue) {
+      return false; // Different types, not equal
+  }
+
+  if (Array.isArray(originalValue)) {
+      if (!Array.isArray(previousValue) || originalValue.length !== previousValue.length) {
+          return false; // Arrays are of different lengths
+      }
+
+      // Compare array elements recursively
+      for (let i = 0; i < originalValue.length; i++) {
+          if (!this.compareValues(originalValue[i], previousValue[i])) {
+              return false; // Arrays contain different values
+          }
+      }
+      return true; // Arrays are equal
+  } else if (typeof originalValue === 'object' && originalValue !== null) {
+      // Compare objects recursively
+      const keys1 = Object.keys(originalValue);
+      const keys2 = Object.keys(previousValue);
+      if (keys1.length !== keys2.length) {
+          return false; // Objects have different number of keys
+      }
+
+      for (const key of keys1) {
+          if (!this.compareValues(originalValue[key], previousValue[key])) {
+              return false; // Objects have different values for same keys
+          }
+      }
+      return true; // Objects are equal
+  } else {
+      // For strings, numbers, and other primitive types, use simple comparison
+      return originalValue === previousValue;
+  }
+}
+
+  handleBtnClick(fieldName) {
+    this.individualFieldHistory = []
+    Object.keys(this.isHistoryPopup).forEach(key => {
+      if (key !== fieldName) {
+        this.isHistoryPopup[key] = false;
+      }
+    });
+    this.isHistoryPopup[fieldName] = !this.isHistoryPopup[fieldName];
+
+
+    this.showSpinner = true;
+    if (this.isHistoryPopup[fieldName]) {
+      const fieldHistory = this.historyList.find(ele => ele.fieldName === fieldName);
+      if (fieldHistory) {
+        this.individualFieldHistory = fieldHistory.history;
+      }
+    }
+    this.showSpinner = false;
   }
 }
