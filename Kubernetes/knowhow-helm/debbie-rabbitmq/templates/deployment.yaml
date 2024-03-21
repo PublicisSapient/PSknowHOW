@@ -36,18 +36,18 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
           - configMapRef:
-              name: {{ .Values.configmapname }}
+              name: {{ .Values.env}}-debbie-config
           env:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.env }}debbieuser
-                  key: {{ .Values.env }}debbieuser
+                  name: {{ .Values.env }}-debbieuser
+                  key: {{ .Values.env }}-debbieuser
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{.Values.env}}debbiepassword
-                  key: {{.Values.env}}debbiepassword
+                  name: {{.Values.env}}-debbiepassword
+                  key: {{.Values.env}}-debbiepassword
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
@@ -56,8 +56,8 @@ spec:
             - name: RABBITMQ_DEFAULT_PASS
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.env }}rabbitpass
-                  key: {{ .Values.env }}rabbitpass
+                  name: {{ .Values.env }}-rabbitpass
+                  key: {{ .Values.env }}-rabbitpass
             - name: EMAIL_HOST_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -84,16 +84,16 @@ spec:
                   name: {{ .Values.env}}-debbie-internal-key
                   key: {{ .Values.env}}-debbie-internal-key
           volumeMounts:
-            - name: knowhow-secrets-store
+            - name: debbie-secrets-store
               mountPath: "/mnt/{{ .Values.env}}-debbie-secrets-store"
               readOnly: true
       volumes:
-        - name: knowhow-secrets-store
+        - name: debbie-secrets-store
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: "{{ .Values.env}}-debbie-secretproviderclass"
+              secretProviderClass: "{{ .Values.env}}-secretproviderclass"
           ports:
             {{- range $port := .Values.ports }}
             - containerPort: {{ $port }}
