@@ -19,6 +19,7 @@ data:
   forgotPassword.uiHost: "stage-psknowhow.tools.publicis.sapient.com"
   corsFilterValidOrigin: "stage-psknowhow.tools.publicis.sapient.com"
   isRepoToolEnable: "true"
+  versionnumber: "9.0.0-SNAPSHOT"
 
   # UI Config
   API_HOST: "customapi"
