@@ -7,7 +7,7 @@ replicaCount: 1
 env: stage
 
 image:
-  repository: speedtools.azurecr.io/debbie-knowhow
+  repository: speedtools.azurecr.io/knowhow-repotool
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
