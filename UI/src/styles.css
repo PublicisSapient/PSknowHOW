@@ -160,15 +160,16 @@ body {
   /* overflow-x: hidden; */
 }
 
-html {
+/* html {
   overflow-x: hidden;
-}
+} */
 
 html, body{
   margin:0;
   height: 100%;
   font-size: 14px !important;
   font-family: var(--font-regular);
+  max-width: 100vw;
 }
 h1, h2, h3, h4, h5, h6{
   font-weight: 500;

@@ -1,6 +1,11 @@
 .filter-container {
     background-color: #F5F9FF;
     font-size: 0.75rem;
+    display: flex;
+}
+
+:host ::ng-deep .p-float-label {
+    max-width: 300px;
 }
 
 :host ::ng-deep .p-float-label .p-inputwrapper-filled ~ label {
