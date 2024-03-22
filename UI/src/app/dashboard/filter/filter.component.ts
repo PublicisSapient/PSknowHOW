@@ -169,7 +169,8 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.appList = [
           {
               label: 'KnowHOW',
-              icon: ''
+              icon: '',
+              styleClass: 'p-menuitem-link-active'
           },
           {
               label: 'Assessments',

@@ -1187,3 +1187,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   width: auto;
   top: 100% !important;
 }
+::ng-deep .p-menuitem-link-active a, ::ng-deep .p-menuitem-link-active .p-menuitem-text{
+  color: var(--color-cyan-blue) !important;
+  background: rgba(0, 0, 0, 0.04);;
+}
