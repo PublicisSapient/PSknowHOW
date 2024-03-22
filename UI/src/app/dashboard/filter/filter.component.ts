@@ -156,14 +156,15 @@ export class FilterComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.items.push({
+      label: 'Logout',
+      icon: 'fas fa-sign-out-alt',
+      command: () => {
+        this.logout();
+      },
+    });
     if (!this.ssoLogin) {
-      this.items.push({
-        label: 'Logout',
-        icon: 'fas fa-sign-out-alt',
-        command: () => {
-          this.logout();
-        },
-      });
+      
 
       this.appList = [
           {

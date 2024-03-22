@@ -183,9 +183,8 @@ const routes2: Routes = [
   { path: 'pageNotFound', component: PageNotFoundComponent },
   { path: '**', redirectTo: 'pageNotFound' }
 ];
-
 @NgModule({
-  imports: [RouterModule.forRoot(environment['AUTHENTICATION_SERVICE'] ? routes2 : routes, { useHash: true, relativeLinkResolution: 'legacy'})],
+  imports: [RouterModule.forRoot(environment['AUTHENTICATION_SERVICE'] === true ? routes2 : routes, { useHash: true, relativeLinkResolution: 'legacy'})],
 
   exports: [RouterModule],
   providers: [

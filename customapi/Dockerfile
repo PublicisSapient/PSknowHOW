@@ -7,16 +7,16 @@ ARG UID=1000
 ARG GID=1000
 
 RUN yum install -y shadow-utils \
-    && ln -sf /bin/bash /bin/sh \ 
+    && ln -sf /bin/bash /bin/sh \
     && groupadd -g $GID $USER \
-    && useradd -u $UID -g $GID -m -s /bin/bash $USER
+    && useradd -u $UID -g $GID -m -s /bin/bash $USER 
 
 # Set the environment variables
 ENV CONFIG_LOCATION="/app/properties/customapi.properties" \
     certhostpath="/app/certs/" \
     keytoolalias="myknowhow" \
-    JAVA_OPTS="" \
-    keystorefile="/usr/lib/jvm/java-1.8.0-amazon-corretto/jre/lib/security/cacerts"
+    JAVA_OPTS="" \ 
+    keystorefile="/usr/lib/jvm/java-17-amazon-corretto/lib/security/cacerts"
 
 # Set the working directory
 WORKDIR /app
@@ -28,11 +28,10 @@ ADD ${JAR_FILE} /app/customapi.jar
 COPY src/main/resources/application.properties /app/properties/customapi.properties
 COPY start_combined_collector.sh /app/start_combined_collector.sh
 
-# Change ownership to the non-root user
-RUN chown -R $USER:$USER /app
-
 # Give execute permissions to the script
-RUN chmod +x /app/start_combined_collector.sh
+RUN chown -R $USER:$USER /app \
+    && chmod +x /app/start_combined_collector.sh \
+    && chmod 766 $keystorefile
 
 # Expose the port
 EXPOSE 8080
