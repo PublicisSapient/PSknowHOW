@@ -7,19 +7,6 @@ import { FeatureFlagsService } from './feature-toggle.service';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { GoogleAnalyticsService } from './google-analytics.service';
-// import { ExecutiveComponent } from '../dashboard/executive/executive.component';
-// import { MaturityComponent } from '../dashboard/maturity/maturity.component';
-// import { ErrorComponent } from '../dashboard/error/error.component';
-// import { IterationComponent } from '../dashboard/iteration/iteration.component';
-// import { DeveloperComponent } from '../dashboard/developer/developer.component';
-// import { DashboardComponent } from '../dashboard/dashboard.component';
-// import { AccessGuard } from '../services/access.guard';
-// import { BacklogComponent } from '../dashboard/backlog/backlog.component';
-// import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/unauthorised-access.component';
-// import { MilestoneComponent } from '../dashboard/milestone/milestone.component';
-// import { DoraComponent } from '../dashboard/dora/dora.component';
-// import { FeatureGuard } from '../services/feature.guard';
-// import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
 @Injectable({
   providedIn: 'root'
 })
@@ -83,20 +70,21 @@ export class AppInitializerService {
               this.sharedService.setCurrentUserDetails(response?.['data']);
               localStorage.setItem("user_name", response?.['data']?.user_name);
               localStorage.setItem("user_email", response?.['data']?.user_email);
-              const redirect_uri = localStorage.getItem('redirect_uri');
+              // const redirect_uri = localStorage.getItem('redirect_uri');
               if (authToken) {
                 this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
               }
-              if (redirect_uri) {
-                if (redirect_uri.startsWith('#')) {
-                  this.router.navigate([redirect_uri.split('#')[1]])
-                } else {
-                  this.router.navigate([redirect_uri]);
-                }
-                localStorage.removeItem('redirect_uri');
-              } else {
-                this.router.navigate(['/dashboard/iteration'], { queryParamsHandling: 'merge' });
-              }
+              // if (redirect_uri) {
+              //   if (redirect_uri.startsWith('#')) {
+              //     this.router.navigate([redirect_uri.split('#')[1]])
+              //   } else {
+              //     this.router.navigate([redirect_uri]);
+              //   }
+              //   localStorage.removeItem('redirect_uri');
+              // } 
+              // else {
+              //   this.router.navigateByUrl(url);
+              // }
             }
           }, error => {
             console.log(error);

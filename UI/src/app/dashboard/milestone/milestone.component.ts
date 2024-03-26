@@ -618,29 +618,11 @@ export class MilestoneComponent implements OnInit {
     this.helperService.drop(event,updatedContainer,this.navigationTabs,this.upDatedConfigData,this.configGlobalData);
   }
 
-  getKpiCommentsCount(kpiId?) {
-    // let requestObj = {
-    //   "nodes": this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId,
-    //   "level": this.filterApplyData?.level,
-    //   "nodeChildId": this.filterApplyData['selectedMap']?.release[0],
-    //   'kpiIds': []
-    // };
-    // if (kpiId) {
-    //   requestObj['kpiIds'] = [kpiId];
-    //   this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-    //     this.kpiCommentsCountObj[kpiId] = res[kpiId];
-    //   });
-    // } else {
-    //   requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
-    //   this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-    //     this.kpiCommentsCountObj = res;
-    //   });
-    // }
-
+  async getKpiCommentsCount(kpiId?) {
     const nodes = this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId;
     const level = this.filterApplyData?.level;
     const nodeChildId = this.filterApplyData['selectedMap']?.release[0];
-    this.kpiCommentsCountObj = this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
+    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
   
 
   }

@@ -3575,7 +3575,7 @@ describe('IterationComponent', () => {
                 shown: true
             }
         ];
-        spyOn(helperService, 'getKpiCommentsCount').and.returnValue({})
+        spyOn(helperService, 'getKpiCommentsCount').and.returnValue(Promise.resolve({}))
         component.getKpiCommentsCount();
         tick();
         expect(component.kpiCommentsCountObj).toBeDefined();
@@ -3618,7 +3618,7 @@ describe('IterationComponent', () => {
                 shown: true
             }
         ];
-        spyOn(helperService, 'getKpiCommentsCount').and.returnValue({})
+        spyOn(helperService, 'getKpiCommentsCount').and.returnValue(Promise.resolve({}))
         component.getKpiCommentsCount("kpi1");
         tick();
         expect(component.kpiCommentsCountObj).toBeDefined();
