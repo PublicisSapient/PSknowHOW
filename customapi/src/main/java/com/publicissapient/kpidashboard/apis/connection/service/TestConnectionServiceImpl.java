@@ -23,6 +23,7 @@ import java.net.URI;
 import java.util.Base64;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.argocd.model.UserCredentialsDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -34,6 +35,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -123,6 +125,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		case Constant.TOOL_TEAMCITY:
 		case Constant.TOOL_BAMBOO:
 		case Constant.TOOL_JENKINS:
+		case Constant.TOOL_ARGOCD:
 			apiUrl = createApiUrl(connection.getBaseUrl(), toolName);
 			statusCode = testConnectionDetails(connection, apiUrl, password, toolName);
 			break;
@@ -240,7 +243,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				isValid = testConnection(connection, toolName, apiUrl, password, false);
 			}
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-		} else {
+		} else if (toolName.equalsIgnoreCase(Constant.TOOL_ARGOCD)) {
+			isValid = testConnectionForArgoCD(apiUrl, connection.getUsername(), password);
+			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();} else {
 			if (connection.isBearerToken()) {
 				isValid = testConnectionWithBearerToken(apiUrl, password);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
@@ -278,6 +283,22 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 					&& Integer.valueOf(rateLimits.get(0)) > GITHUB_RATE_LIMIT_PER_HOUR;
 		} else {
 			return false;
+		}
+
+	}
+
+	private boolean testConnectionForArgoCD(String apiUrl, String username, String password) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+		HttpEntity<?> requestEntity = new HttpEntity<>(new UserCredentialsDTO(username, password), headers);
+		try {
+			ResponseEntity<String> result = restTemplate.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity,
+					String.class);
+			return result.getStatusCode().is2xxSuccessful();
+		} catch (HttpClientErrorException e) {
+			log.error(INVALID_MSG);
+			return e.getStatusCode().is5xxServerError();
 		}
 
 	}
@@ -512,6 +533,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			return customApiConfig.getBitbucketTestConnection();
 		case Constant.TOOL_ZEPHYR:
 			return customApiConfig.getZephyrTestConnection();
+		case Constant.TOOL_ARGOCD:
+			return customApiConfig.getArgoCDTestConnection();
 		default:
 			return null;
 		}

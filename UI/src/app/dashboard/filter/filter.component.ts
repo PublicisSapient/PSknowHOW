@@ -156,19 +156,21 @@ export class FilterComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.items.push({
+      label: 'Logout',
+      icon: 'fas fa-sign-out-alt',
+      command: () => {
+        this.logout();
+      },
+    });
     if (!this.ssoLogin) {
-      this.items.push({
-        label: 'Logout',
-        icon: 'fas fa-sign-out-alt',
-        command: () => {
-          this.logout();
-        },
-      });
+      
 
       this.appList = [
           {
               label: 'KnowHOW',
-              icon: ''
+              icon: '',
+              styleClass: 'p-menuitem-link-active'
           },
           {
               label: 'Assessments',
@@ -818,11 +820,11 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   changeSelectedTab(){
-    let boardDetails = this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase()) 
-    || this.kpiListData['others'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase());
+    let boardDetails = JSON.parse(JSON.stringify(this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase()) 
+    || this.kpiListData['others'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase())));
     let kpisShownCount = 0;
     if(boardDetails?.boardName?.toLowerCase() === 'iteration'){
-      boardDetails['kpis'] = boardDetails?.kpis?.filter((item) => item.kpiId != 'kpi121');
+      boardDetails['kpis'] = [...boardDetails?.kpis?.filter((item) => item.kpiId != 'kpi121')];
     }
     boardDetails?.kpis?.forEach((item) => {
       if(item.shown){
@@ -832,9 +834,10 @@ export class FilterComponent implements OnInit, OnDestroy {
     if(kpisShownCount <= 0){
       this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
       this.service.setSelectedTab(this.selectedTab);
-      const selectedTab = this.selectedTab;
-      const selectedType = this.kanban ? 'kanban' : 'scrum';
-      this.service.onTypeOrTabRefresh.next({ selectedTab, selectedType });
+      // const selectedTab = this.selectedTab;
+      // const selectedType = this.kanban ? 'kanban' : 'scrum';
+      this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
+      // this.service.onTypeOrTabRefresh.next({ selectedTab, selectedType });
     }
   }
 
@@ -846,7 +849,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.service.setEmptyFilter();
       this.service.setSelectedType('scrum');
       this.changeSelectedTab();
-      this.router.navigateByUrl(`/dashboard/${this.selectedTab}`);
+    this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
     }
   }
 
@@ -888,6 +891,8 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.kpiListDataProjectLevel = response.data;
           this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, this.kpiListData)
           this.service.setDashConfigData(this.kpiListData);
+          const selectedType = this.kanban ? 'kanban' : 'scrum';
+          this.service.setUpdatedBoardList(this.kpiListData, selectedType);
           this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
           this.processKpiList();
           this.navigateToSelectedTab();
@@ -1605,14 +1610,14 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.service.setVisibleSideBar(false);
       this.kpiListDataProjectLevel = response.data;
       let userLevelData = this.service.getDashConfigData();
-      // if(!userLevelData){
-      //   this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(boardResponse => {
-      //     userLevelData = boardResponse.data;
-      //     this.handleRedirection(userLevelData)
-      //   })
-      // }else{
+      if(!userLevelData){
+        this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(boardResponse => {
+          userLevelData = boardResponse.data;
+          this.handleRedirection(userLevelData)
+        })
+      }else{
         this.handleRedirection(userLevelData);
-      // }
+      }
     });
   }
 

@@ -238,8 +238,16 @@ export class ToolMenuComponent implements OnInit {
             routerLink: '/dashboard/Config/JiraConfig',
             queryParams1: 'RepoTool',
             index: 12
+          },
+          {
+            toolName: 'ArgoCD',
+            category: 'ABC',
+            description: '-',
+            icon: '',
+            routerLink: '/dashboard/Config/JiraConfig',
+            queryParams1: 'ArgoCD',
+            index: 13
           }
-
 
         ];
       }

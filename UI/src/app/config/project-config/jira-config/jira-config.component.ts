@@ -2250,6 +2250,46 @@ export class JiraConfigComponent implements OnInit {
           };
         }
         break;
+        case 'ArgoCD':
+        {
+          this.formTitle = 'ArgoCD';
+          this.connectionTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
+            { field: 'username', header: 'User Name', class: 'long-text' },
+          ];
+
+          this.configuredToolTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'jobName', header: 'Job Name', class: 'long-text' },
+          ];
+
+          this.formTemplate = {
+            group: 'ArgoCD',
+            elements: [
+              {
+                type: 'text',
+                label: 'Job Name',
+                id: 'jobName',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Job name to access ArgoCD data.<br />
+              <i>
+                Impacted : All ArgoCD based KPIs</i>`,
+              },
+            ],
+          };
+        }
+        break;
     }
 
     const group = {};

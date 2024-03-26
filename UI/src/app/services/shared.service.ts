@@ -103,6 +103,9 @@ export class SharedService {
   public currentIssue = new BehaviorSubject({});
   public currentData = this.currentIssue.asObservable();
 
+  boardNamesListSubject = new BehaviorSubject<any>([]);
+  boardNamesListObs = this.boardNamesListSubject.asObservable();
+
   constructor() {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
@@ -421,6 +424,55 @@ export class SharedService {
 
   getProcessorLogDetails(){
     return this.processorTraceLogs
+  }
+
+  setUpdatedBoardList(kpiListData, selectedType) {
+    const boardNameArr = [];
+    if (
+      kpiListData[selectedType] &&
+      Array.isArray(kpiListData[selectedType])
+    ) {
+      for (let i = 0; i < kpiListData[selectedType]?.length; i++) {
+        let kpiShownCount = 0;
+        let board = kpiListData[selectedType][i];
+        let kpiList;
+        if (board?.boardName?.toLowerCase() === 'iteration') {
+          kpiList = board?.['kpis']?.filter((item) => item.kpiId != 'kpi121');
+        }else{
+          kpiList = board?.['kpis'];
+        }
+        kpiList?.forEach((item) => {
+          if (item.shown) {
+            kpiShownCount++;
+          }
+        });
+        if (kpiShownCount > 0) {
+          boardNameArr.push({
+            boardName: board?.boardName,
+            link: board?.boardName.toLowerCase().split(' ').join('-')
+          });
+        }
+      }
+
+    }
+
+    for (let i = 0; i < kpiListData['others']?.length; i++) {
+      let kpiShownCount = 0;
+      kpiListData['others'][i]['kpis']?.forEach((item) => {
+        if (item.shown) {
+          kpiShownCount++;
+        }
+      });
+      if (kpiShownCount > 0) {
+        boardNameArr.push({
+          boardName: kpiListData['others'][i].boardName,
+          link:
+            kpiListData['others'][i].boardName.toLowerCase()
+        });
+      }
+    }
+    console.log("boardNameArr", boardNameArr);
+    this.boardNamesListSubject.next(boardNameArr);
   }
 }
 
