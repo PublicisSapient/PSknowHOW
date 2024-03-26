@@ -17,6 +17,12 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
+import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
+import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.configuration.annotation.JobScope;
@@ -25,12 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
-import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
-import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
-
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
 
 @Component
 @Slf4j
@@ -42,6 +43,9 @@ public class JiraIssueSprintJobListener extends JobExecutionListenerSupport {
 
 	@Autowired
 	JiraProcessorCacheEvictor processorCacheEvictor;
+
+	@Autowired
+	JiraClientService jiraClientService;
 
 	private String sprintId;
 
@@ -81,6 +85,12 @@ public class JiraIssueSprintJobListener extends JobExecutionListenerSupport {
 		}
 		log.info("Saving sprint Trace Log for sprintId: {}", sprintId);
 		sprintTraceLogRepository.save(fetchDetails);
+		try {
+			jiraClientService.getRestClient().close();
+			jiraClientService.getKerberosClient().close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 
 	}
 }

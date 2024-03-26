@@ -18,9 +18,12 @@
 package com.publicissapient.kpidashboard.jira.tasklet;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
+import com.publicissapient.kpidashboard.jira.client.JiraClient;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
@@ -37,6 +40,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -60,6 +64,9 @@ public class SprintReportTasklet implements Tasklet {
     @Autowired
     JiraClientService jiraClientService;
 
+    @Autowired
+    JiraClient jiraClient;
+
     private String sprintId;
 
     @Autowired
@@ -79,7 +86,16 @@ public class SprintReportTasklet implements Tasklet {
         log.info("Sprint report job started for the sprint : {}", sprintId);
         ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration
                 .fetchConfigurationBasedOnSprintId(sprintId);
-        KerberosClient krb5Client = jiraClientService.getKerberosClient();
+        Optional<Connection> connectionOptional = projConfFieldMapping.getJira().getConnection();
+        KerberosClient krb5Client = null;
+        if (connectionOptional.isPresent()) {
+            Connection connection = connectionOptional.get();
+            krb5Client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
+                    connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
+        }
+        ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
+        jiraClientService.setRestClient(client);
+        jiraClientService.setKerberosClient(krb5Client);
         SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
         List<String> originalBoardIds = sprintDetails.getOriginBoardId();
         for (String boardId : originalBoardIds) {
