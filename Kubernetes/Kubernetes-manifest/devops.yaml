@@ -61,8 +61,8 @@ spec:
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
             # Adding cron expressions
-            - name: sonarprocessor.cron
-              value: "0 */15 * * * *"
+            # - name: sonarprocessor.cron
+            #   value: "0 */15 * * * *"
         envFrom:
         - configMapRef:
             name: knowhow-config
