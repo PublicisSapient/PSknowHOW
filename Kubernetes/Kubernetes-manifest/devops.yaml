@@ -125,7 +125,7 @@ spec:
       name: jenkins
     - protocol: TCP
       port: 50011
-      targetPort: 5001
+      targetPort: 50011
       name: sonar
     - protocol: TCP
       port: 50012
