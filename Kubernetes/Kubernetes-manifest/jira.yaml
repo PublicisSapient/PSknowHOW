@@ -66,14 +66,14 @@ spec:
             - name:  notification.switch
               value: "false"
             # Adding cron expressions
-            - name: jira.scrumBoardCron
-              value: "0 */30 * * * *"
-            - name: jira.scrumJqlCron
-              value: "0 */30 * * * *"
-            - name: jira.kanbanBoardCron
-              value: "0 */30 * * * *"
-            - name: jira.kanbanJqlCron
-              value: "0 */30 * * * *"
+            # - name: jira.scrumBoardCron
+            #   value: "0 */30 * * * *"
+            # - name: jira.scrumJqlCron
+            #   value: "0 */30 * * * *"
+            # - name: jira.kanbanBoardCron
+            #   value: "0 */30 * * * *"
+            # - name: jira.kanbanJqlCron
+            #   value: "0 */30 * * * *"
         envFrom:
         - configMapRef:
             name: knowhow-config
