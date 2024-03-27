@@ -1,4 +1,4 @@
-<div class="filter-container p-d-flex p-justify-between p-p-2">
+<div class="filter-container p-justify-between p-p-2">
     <div class="p-d-flex">
         <div class="tabs" [hidden]="!kanbanRequired">
             <div class="tab" (click)="setSelectedType('Scrum')" [ngClass]="{ 'active': selectedType === 'scrum' }">Scrum
@@ -8,7 +8,7 @@
                 Kanban</div>
         </div>
     </div>
-    <div class="p-d-flex" *ngIf="filterDataArr[selectedType]" [ngStyle]="{'padding-left': getObjectKeys(parentFilterConfig).length ? '10%' : '15%'}">
+    <div class="p-d-flex" *ngIf="filterDataArr[selectedType]">
         <app-parent-filter *ngIf="getObjectKeys(parentFilterConfig).length" class="p-mr-2" 
             [filterData]="filterDataArr[selectedType]" [selectedTab]="selectedTab"
             (onSelectedLevelChange)="handleParentFilterChange($event)" [selectedType]="selectedType" [selectedTab]="selectedTab"

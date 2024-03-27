@@ -21,16 +21,14 @@
     <ng-container *ngIf="!noProjects else noProjectsTemplate">
       <ng-container *ngIf="!noSprints else noSprintsTemplate">
         <div class="{{selectedtype}}" id="{{selectedtype}}">
-          <div class="clearfix">
-            <div class="right-container col">
               <p-tabView class="iteration-tabs" [(activeIndex)]="activeIndex" (onChange)="handleTabChange($event)">
                 <p-tabPanel *ngFor="let board of navigationTabs" [header]="board.label" [disabled]="board.count == 0">
                   <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined && activeIndex!==2">
-                    <div class="p-grid p-pr-2 p-pl-2 iteration-dashboard">
+                    <div class="p-grid iteration-dashboard p-p-0 p-m-0">
                       <ng-container *ngIf="board.width === 'half'">
   
                         <!-- full width kpi render start -->
-                        <div class="subKPi p-sm-12" cdkDropList (cdkDropListDropped)="drop($event,board)" [cdkDropListData]="board.fullWidthKpis">
+                        <div class="subKPi p-sm-12 p-p-0" cdkDropList (cdkDropListDropped)="drop($event,board)" [cdkDropListData]="board.fullWidthKpis">
                           <ng-container *ngFor="let kpi of board.fullWidthKpis">
                             <div class="card-type-1 p-pl-0" *ngIf="kpi?.kpiDetail?.boxType !== 'chart' ;else chart">
                               <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
@@ -491,8 +489,6 @@
                   </ng-container>
                 </p-tabPanel>
               </p-tabView>
-            </div>
-          </div>
         </div>
   
       </ng-container>

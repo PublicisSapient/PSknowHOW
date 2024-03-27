@@ -2,6 +2,10 @@
     font-family: 'Poppins_Regular', sans-serif;
 }
 
+:host .main-container {
+    max-width: 100vw;
+}
+
 :host .main-container,
 :host ::ng-deep .main-container label {
     background-color: #F5F9FF;

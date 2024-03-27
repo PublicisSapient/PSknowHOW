@@ -243,7 +243,12 @@ padding: 0.75rem !important;
     text-align: center !important;
 }
 
-:host::ng-deep.iteration-tabs .p-tabview-nav-link{
+:host ::ng-deep .iteration-tabs {
+    padding: 10px;
+    max-width: 100vw;
+}
+
+:host ::ng-deep .iteration-tabs .p-tabview-nav-link{
     border: 1px solid #707070 !important;
     border-radius: 5px !important;
     padding: 10px !important;
@@ -296,4 +301,9 @@ padding: 0.75rem !important;
 .subKPi{
     display: flex;
     flex-direction: column;
+}
+
+:host ::ng-deep .iteration-dashboard {
+    max-width: 100vw !important;
+    overflow: auto;
 }

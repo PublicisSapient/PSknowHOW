@@ -158,6 +158,8 @@ a{
 body {
   background-color: #dedede;
   /* overflow-x: hidden; */
+  
+  overflow: auto;
 }
 
 /* html {
@@ -171,6 +173,7 @@ html, body{
   font-family: var(--font-regular);
   max-width: 100vw;
 }
+
 h1, h2, h3, h4, h5, h6{
   font-weight: 500;
   font-family: var(--font-medium);

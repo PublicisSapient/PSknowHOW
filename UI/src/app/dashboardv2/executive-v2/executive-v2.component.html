@@ -27,7 +27,7 @@
                             {{ tab }}
                         </div>
                     </div>
-                    <div class="p-grid justify-content-start p-pt-2 p-pl-2 p-pr-2 kpi-card-container">
+                    <div class="p-grid justify-content-start p-pt-2 p-pl-2 p-pr-2 p-m-0 kpi-card-container">
                         <ng-container
                             *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
                             <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
