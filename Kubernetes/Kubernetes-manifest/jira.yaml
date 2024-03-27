@@ -65,6 +65,15 @@ spec:
               value: com.publicissapient.kpidashboard.apis.mongock.installation
             - name:  notification.switch
               value: "false"
+            # Adding cron expressions
+            - name: jira.scrumBoardCron
+              value: "0 */5 * * * *"
+            - name: jira.scrumJqlCron
+              value: "0 */5 * * * *"
+            - name: jira.kanbanBoardCron
+              value: "0 */5 * * * *"
+            - name: jira.kanbanJqlCron
+              value: "0 */5 * * * *"
         envFrom:
         - configMapRef:
             name: knowhow-config
