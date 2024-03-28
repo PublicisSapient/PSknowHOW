@@ -112,8 +112,8 @@ export class AppInitializerService {
             environment['RETROS_URL'] = env['RETROS_URL'] || '';
             if(environment['AUTHENTICATION_SERVICE'] === true){
               this.router.resetConfig([...this.routes]);
+              this.validateToken();
             }
-            this.validateToken();
           }));
         env$.toPromise().then(async res => {
           this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
