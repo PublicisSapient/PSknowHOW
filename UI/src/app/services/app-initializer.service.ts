@@ -164,6 +164,7 @@ export class AppInitializerService {
               //   localStorage.removeItem('redirect_uri');
               // } 
               // else {
+              console.log("url", url);
               this.router.navigateByUrl(url);
               // }
             }
