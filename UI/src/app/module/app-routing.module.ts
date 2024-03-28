@@ -46,7 +46,10 @@ import { environment } from 'src/environments/environment';
 let routes: Routes = [];
 console.log("env ---->", environment)
 /**Routes when AUTHENTICATION_SERVICE is false */
+console.log("environment['AUTHENTICATION_SERVICE']", environment['AUTHENTICATION_SERVICE'])
 if(environment['AUTHENTICATION_SERVICE'] == false){
+  console.log("inside if");
+  
   routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     {
@@ -120,6 +123,7 @@ if(environment['AUTHENTICATION_SERVICE'] == false){
   ];
 
 }else{
+  console.log("inside else");
   /**Routes when AUTHENTICATION_SERVICE is true */
   routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
