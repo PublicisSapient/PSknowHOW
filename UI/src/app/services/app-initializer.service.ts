@@ -98,7 +98,7 @@ export class AppInitializerService {
     return new Promise<void>((resolve, reject) => {
       if (!environment['production']) {
         this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
-        // this.validateToken();
+        this.validateToken();
       } else {
         const env$ = this.http.get('assets/env.json').pipe(
           tap(env => {
@@ -113,7 +113,7 @@ export class AppInitializerService {
             if(environment['AUTHENTICATION_SERVICE'] === true){
               this.router.resetConfig([...this.routes]);
             }
-            // this.validateToken();
+            this.validateToken();
           }));
         env$.toPromise().then(async res => {
           this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
@@ -137,7 +137,46 @@ export class AppInitializerService {
 
   validateToken() {
     return new Promise<void>((resolve, reject) => {
-        
+        if (environment['AUTHENTICATION_SERVICE']) {
+          
+          let url = window.location.href;
+          let redirect_uri = url.split("?")?.[0]
+          let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
+          if (authToken) {
+            this.sharedService.setAuthToken(authToken);
+          }
+          let obj = {
+            'resource': environment.RESOURCE,
+            'authToken': authToken
+          };
+          console.log("redirect_uri", redirect_uri);
+          this.router.navigateByUrl(redirect_uri);
+          // Make API call or initialization logic here...
+          this.httpService.getUserValidation(obj).subscribe((response) => {
+            if (response?.['success']) {
+              this.sharedService.setCurrentUserDetails(response?.['data']);
+              localStorage.setItem("user_name", response?.['data']?.user_name);
+              localStorage.setItem("user_email", response?.['data']?.user_email);
+              // const redirect_uri = localStorage.getItem('redirect_uri');
+              if (authToken) {
+                this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
+              }
+              // if (redirect_uri) {
+              //   if (redirect_uri.startsWith('#')) {
+              //     this.router.navigate([redirect_uri.split('#')[1]])
+              //   } else {
+              //     this.router.navigate([redirect_uri]);
+              //   }
+              //   localStorage.removeItem('redirect_uri');
+              // } 
+              // else {
+              
+              // }
+            }
+          }, error => {
+            console.log(error);
+          })
+        }
         resolve();
 
     })
