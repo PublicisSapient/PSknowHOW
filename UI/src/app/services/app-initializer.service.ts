@@ -135,7 +135,7 @@ export class AppInitializerService {
   validateToken() {
     return new Promise<void>((resolve, reject) => {
         if (environment['AUTHENTICATION_SERVICE']) {
-          // this.router.resetConfig(this.routes);
+          this.router.resetConfig([...this.routes]);
           let url = window.location.href;
           let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
           if (authToken) {
