@@ -137,6 +137,7 @@ export class AppInitializerService {
         if (environment['AUTHENTICATION_SERVICE']) {
           this.router.resetConfig([...this.routes]);
           let url = window.location.href;
+          // let redirect_uri = url.split("?")?.[0]
           let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
           if (authToken) {
             this.sharedService.setAuthToken(authToken);
@@ -146,6 +147,8 @@ export class AppInitializerService {
             'authToken': authToken
           };
           // Make API call or initialization logic here...
+          // console.log("redirect_uri", redirect_uri);
+          // this.router.navigateByUrl(redirect_uri);
           this.httpService.getUserValidation(obj).subscribe((response) => {
             if (response?.['success']) {
               this.sharedService.setCurrentUserDetails(response?.['data']);
@@ -164,8 +167,7 @@ export class AppInitializerService {
               //   localStorage.removeItem('redirect_uri');
               // } 
               // else {
-              console.log("url", url);
-              this.router.navigateByUrl(url);
+              
               // }
             }
           }, error => {
