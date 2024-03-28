@@ -44,6 +44,7 @@ import { environment } from 'src/environments/environment';
  * Logged/Authguard is used for authentication guard, check token everytime while routing
  */
 let routes: Routes = [];
+console.log("env ---->", environment)
 /**Routes when AUTHENTICATION_SERVICE is false */
 if(environment['AUTHENTICATION_SERVICE'] == false){
   routes = [
@@ -188,7 +189,7 @@ if(environment['AUTHENTICATION_SERVICE'] == false){
 }
 console.log("routes --------------->", routes)
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy', enableTracing: true})],
+  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy'})],
 
   exports: [RouterModule],
   providers: [
