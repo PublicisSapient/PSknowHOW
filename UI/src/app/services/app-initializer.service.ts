@@ -7,6 +7,19 @@ import { FeatureFlagsService } from './feature-toggle.service';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { GoogleAnalyticsService } from './google-analytics.service';
+import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
+import { ExecutiveComponent } from '../dashboard/executive/executive.component';
+import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/unauthorised-access.component';
+import { ErrorComponent } from '../dashboard/error/error.component';
+import { AccessGuard } from './access.guard';
+import { DoraComponent } from '../dashboard/dora/dora.component';
+import { MilestoneComponent } from '../dashboard/milestone/milestone.component';
+import { BacklogComponent } from '../dashboard/backlog/backlog.component';
+import { MaturityComponent } from '../dashboard/maturity/maturity.component';
+import { DeveloperComponent } from '../dashboard/developer/developer.component';
+import { IterationComponent } from '../dashboard/iteration/iteration.component';
+import { FeatureGuard } from './feature.guard';
+import { DashboardComponent } from '../dashboard/dashboard.component';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,6 +27,72 @@ export class AppInitializerService {
 
   constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService) {
   }
+
+ routes: Routes = [
+    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    {
+      path: 'dashboard', component: DashboardComponent,
+      canActivateChild : [FeatureGuard],
+      children: [
+        { path: '', redirectTo: 'iteration', pathMatch: 'full' },
+        {
+          path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+          data: {
+            feature: "My Dashboard"
+          }
+        },
+        {
+          path: 'iteration', component: IterationComponent, pathMatch: 'full',
+          data: {
+            feature: "Iteration"
+          }
+        },
+        {
+          path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
+          data: {
+            feature: "Developer"
+          }
+        },
+        {
+          path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
+          data: {
+            feature: "Maturity"
+          }
+        },
+        {
+          path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
+          data: {
+            feature: "Backlog"
+          }
+        },
+        {
+          path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
+          data: {
+            feature: "Release"
+          }
+        },
+        {
+          path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
+          data: {
+            feature: "Dora"
+          }
+        },
+        { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
+        { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
+        {
+          path: 'Config',
+          loadChildren: () => import('../config/config.module').then(m => m.ConfigModule), canLoad: [FeatureGuard],
+          data: {
+            feature: "Config"
+          }
+        },
+        { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+  
+      ],
+    },
+    { path: 'pageNotFound', component: PageNotFoundComponent },
+    { path: '**', redirectTo: 'pageNotFound' }
+  ];
 
   checkFeatureFlag() {
     return new Promise<void>((resolve, reject) => {
@@ -23,6 +102,8 @@ export class AppInitializerService {
       } else {
         const env$ = this.http.get('assets/env.json').pipe(
           tap(env => {
+            console.log("env inside app initializer", env['AUTHENTICATION_SERVICE']);
+            
             environment['baseUrl'] = env['baseUrl'] || '';
             environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
             environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] || false;
