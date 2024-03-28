@@ -193,7 +193,7 @@ if(environment['AUTHENTICATION_SERVICE'] === false){
 }
 console.log("routes --------------->", routes)
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy'})],
+  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy', enableTracing: true})],
 
   exports: [RouterModule],
   providers: [

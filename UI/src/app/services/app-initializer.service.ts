@@ -141,7 +141,7 @@ export class AppInitializerService {
           if (authToken) {
             this.sharedService.setAuthToken(authToken);
           }
-          let obj = {
+          let   obj = {
             'resource': environment.RESOURCE,
             'authToken': authToken
           };
@@ -164,7 +164,7 @@ export class AppInitializerService {
               //   localStorage.removeItem('redirect_uri');
               // } 
               // else {
-              //   this.router.navigateByUrl(url);
+              this.router.navigateByUrl(url);
               // }
             }
           }, error => {
