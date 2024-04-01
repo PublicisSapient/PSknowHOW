@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
+import com.publicissapient.kpidashboard.apis.model.Node;
 import org.apache.commons.collections4.CollectionUtils;
-import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -38,6 +38,7 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraKPIServiceFactory;
+import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -116,9 +117,11 @@ public class JiraServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
 					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList,referFromProjectCache);
+				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList,
+						referFromProjectCache);
 
-				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest, filteredAccountDataList,referFromProjectCache);
+				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest,
+						filteredAccountDataList, referFromProjectCache);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
@@ -192,7 +195,7 @@ public class JiraServiceR {
 		 * @param treeAggregatorDetail
 		 */
 		public ParallelJiraServices(KpiRequest kpiRequest, List<KpiElement> responseList, KpiElement kpiEle,
-				TreeAggregatorDetail treeAggregatorDetail) {
+									TreeAggregatorDetail treeAggregatorDetail) {
 			super();
 			this.kpiRequest = kpiRequest;
 			this.responseList = responseList;
@@ -206,69 +209,76 @@ public class JiraServiceR {
 		@SuppressWarnings("PMD.AvoidCatchingGenericException")
 		@Override
 		public void compute() {
-			try {
-				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
-			} catch (Exception e) {
-				log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", e);
-			}
+			responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, treeAggregatorDetail));
 		}
 
 		/**
 		 * This method call by multiple thread, take object of specific KPI and call
 		 * method of these KPIs
 		 *
-		 * @param kpiRequest
-		 *            JIRA KPI request
-		 * @param responseList
-		 *            List of KpiElements having data of each KPI
-		 * @param kpiElement
-		 *            kpiElement object
-		 * @param treeAggregatorDetail
-		 *            filter tree object
-		 * @throws ApplicationException
-		 *             ApplicationException
+		 * @param kpiRequest           JIRA KPI request
+		 * @param kpiElement           kpiElement object
+		 * @param treeAggregatorDetail filter tree object
+		 * @return KpiElement kpiElement
 		 */
-		private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-				KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+		@SuppressWarnings("PMD.AvoidCatchingGenericException")
+		private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
+															TreeAggregatorDetail treeAggregatorDetail) {
 
 			JiraKPIService<?, ?, ?> jiraKPIService = null;
 
 			KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+			try {
+				jiraKPIService = JiraKPIServiceFactory.getJiraKPIService(kpi.name());
+				long startTime = System.currentTimeMillis();
 
-			jiraKPIService = JiraKPIServiceFactory.getJiraKPIService(kpi.name());
+				if (KPICode.THROUGHPUT.equals(kpi)) {
+					log.info("No need to fetch Throughput KPI data");
+				} else {
+					TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
+							.clone(treeAggregatorDetail);
+					List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes().get(CommonConstant.PROJECT.toLowerCase());
 
-			long startTime = System.currentTimeMillis();
-
-			if (KPICode.THROUGHPUT.equals(kpi)) {
-				log.info("No need to fetch Throughput KPI data");
-			} else {
-				TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-						.clone(treeAggregatorDetail);
-				responseList.add(jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
-
-				long processTime = System.currentTimeMillis() - startTime;
-				log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-						processTime);
+					if (!projectNodes.isEmpty() && (projectNodes.size() > 1 || kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi,projectNodes.get(0))))
+					{
+						kpiElement = jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
+						kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
+					}
+					else if(!kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi,projectNodes.get(0))) {
+						// mandatory fields not found
+						kpiElement.setResponseCode(CommonConstant.MANDATORY_FIELD_MAPPING);
+					}
+					long processTime = System.currentTimeMillis() - startTime;
+					log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+							processTime);
+				}
+			} catch (ApplicationException exception) {
+				log.error("Kpi not found", exception);
+			} catch (Exception exception) {
+				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+				log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", exception);
+				return kpiElement;
 			}
+			return kpiElement;
+		}
+	}
+
+		/**
+		 * This method is called when the request for kpi is done from exposed API
+		 *
+		 * @param kpiRequest
+		 *            JIRA KPI request true if flow for precalculated, false for direct
+		 *            flow.
+		 * @return List of KPI data
+		 * @throws EntityNotFoundException
+		 *             EntityNotFoundException
+		 */
+		public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
+			referFromProjectCache = false;
+			List<KpiElement> kpiElementList = process(kpiRequest);
+			referFromProjectCache = true;
+			return kpiElementList;
 		}
 
-	}
-
-	/**
-	 * This method is called when the request for kpi is done from exposed API
-	 *
-	 * @param kpiRequest
-	 *            JIRA KPI request true if flow for precalculated, false for direct
-	 *            flow.
-	 * @return List of KPI data
-	 * @throws EntityNotFoundException
-	 *             EntityNotFoundException
-	 */
-	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
-		referFromProjectCache = false;
-		List<KpiElement> kpiElementList = process(kpiRequest);
-		referFromProjectCache = true;
-		return kpiElementList;
-	}
 
 }

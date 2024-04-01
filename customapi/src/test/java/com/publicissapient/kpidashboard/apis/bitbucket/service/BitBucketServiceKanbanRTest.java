@@ -172,7 +172,8 @@ public class BitBucketServiceKanbanRTest {
 			switch (kpi) {
 
 			case NUMBER_OF_CHECK_INS:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("Code Commit Time"));
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("NUMBER_OF_CHECK_INS"));
+
 				break;
 
 			default:
