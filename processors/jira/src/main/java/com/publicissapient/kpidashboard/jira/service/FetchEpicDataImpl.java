@@ -101,7 +101,7 @@ public class FetchEpicDataImpl implements FetchEpicData {
 				int fetchedEpic = 0;
 				boolean continueFlag = true;
 				do {
-					Promise<SearchResult> promise = client.getProcessorSearchClient().searchJql(query,
+					Promise<SearchResult> promise = client.getSearchClient().searchJql(query,
 							jiraProcessorConfig.getPageSize(), pageStart, null);
 					searchResult = promise.claim();
 					if (null != searchResult && null != searchResult.getIssues()) {
