@@ -65,7 +65,7 @@ spec:
               value: com.publicissapient.kpidashboard.apis.mongock.installation
             - name:  notification.switch
               value: "false"
-            Adding cron expressions
+            #Adding cron expressions
             - name: jira.scrumBoardCron
               value: "0 0 */12 * * *"
             - name: jira.scrumJqlCron
