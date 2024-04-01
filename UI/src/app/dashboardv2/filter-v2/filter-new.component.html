@@ -1,14 +1,15 @@
-<div class="filter-container p-justify-between p-p-2">
-    <div class="p-d-flex">
-        <div class="tabs" [hidden]="!kanbanRequired">
-            <div class="tab" (click)="setSelectedType('Scrum')" [ngClass]="{ 'active': selectedType === 'scrum' }">Scrum
+<div class="filter-container p-p-2" [ngClass]="kanbanRequired ? 'p-jc-between' : 'p-jc-center'">
+    <div class="p-d-flex" *ngIf="kanbanRequired">
+        <div class="tabs">
+            <div class="tab" (click)="setSelectedType('Scrum')" 
+            [ngClass]="{ 'active': selectedType === 'scrum' }">Scrum
             </div>
             <div class="tab" (click)="setSelectedType('Kanban')"
                 [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': !kanbanRequired }">
                 Kanban</div>
         </div>
     </div>
-    <div class="p-d-flex" *ngIf="filterDataArr[selectedType]">
+    <div class="p-d-flex p-fluid" *ngIf="filterDataArr[selectedType]">
         <app-parent-filter *ngIf="getObjectKeys(parentFilterConfig).length" class="p-mr-2" 
             [filterData]="filterDataArr[selectedType]" [selectedTab]="selectedTab"
             (onSelectedLevelChange)="handleParentFilterChange($event)" [selectedType]="selectedType" [selectedTab]="selectedTab"

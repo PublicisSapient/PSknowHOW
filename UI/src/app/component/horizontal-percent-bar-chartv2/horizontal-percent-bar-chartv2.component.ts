@@ -167,7 +167,7 @@ export class HorizontalPercentBarChartv2Component implements OnChanges {
           // color palette = one color per subgroup
           const color = d3.scaleOrdinal()
             .domain(subgroups)
-            .range(subgroups.length > 3 ? d3.schemePaired : ['#4472C4', '#F4AA46', '#7FBD7F'])
+            .range(subgroups.length > 3 ? d3.schemePaired : ['#6079C5', '#A4F6A5', '#FBCF5F'])
             .unknown("#ccc");
   
           // Normalize the data -> sum of each group must be 100!
@@ -344,7 +344,7 @@ export class HorizontalPercentBarChartv2Component implements OnChanges {
       });
       htmlString += '</div>'
       legendDiv.html(htmlString)
-        .style('bottom','0');
+        .style('bottom','25px');
     }
   
     // Required for dynamic component only; not in use right now

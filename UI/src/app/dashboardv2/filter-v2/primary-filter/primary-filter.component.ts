@@ -25,14 +25,17 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.filterData && Object.keys(this.filterData).length) {
-      // if (changes['selectedTab'] || changes['selectedLevel'] || (changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
       if (changes['selectedLevel'] || changes['selectedTab'] || changes['selectedType']) {
+        this.selectedFilters = [];
+        this.filters = [];
         setTimeout(() => {
-          this.selectedFilters = [];
-          this.filters = [];
           this.populateFilters();
           if (this.filters.length) {
-            this.selectedFilters.push(this.filters[0]);
+            this.selectedFilters = new Set();
+            this.selectedFilters.add(this.filters[0]);
+            this.selectedFilters = Array.from(this.selectedFilters);
+            this.selectedFilters.push(this.selectedTab);
+            this.selectedFilters.push(this.selectedType);
             this.onPrimaryFilterChange.emit(this.selectedFilters);
           }
         }, 100);
@@ -58,18 +61,10 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       }
     } else if (this.selectedLevel && Object.keys(this.selectedLevel).length) {
       // check for iterations and releases
-      if (this.selectedLevel.emittedLevel.toLowerCase() === 'project') {
-        if (this.primaryFilterConfig['defaultLevel'].sortBy) {
-          this.filters = this.sortByField(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId), this.primaryFilterConfig['defaultLevel'].sortBy);
-        } else {
-          this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId));
-        }
+      if (this.primaryFilterConfig['defaultLevel'].sortBy) {
+        this.filters = this.sortByField(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId), this.primaryFilterConfig['defaultLevel'].sortBy);
       } else {
-        if (this.primaryFilterConfig['defaultLevel'].sortBy) {
-          this.filters = this.sortByField(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId), this.primaryFilterConfig['defaultLevel'].sortBy);
-        } else {
-          this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId));
-        }
+        this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId));
       }
     } else {
       this.selectedLevel = 'project';
@@ -81,6 +76,8 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     if (!Array.isArray(this.selectedFilters)) {
       this.selectedFilters = [this.selectedFilters];
     }
+    this.selectedFilters.push(this.selectedTab);
+    this.selectedFilters.push(this.selectedType);
     this.onPrimaryFilterChange.emit(this.selectedFilters);
     if (this.multiSelect?.overlayVisible) {
       this.multiSelect.close(event);
@@ -88,7 +85,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   }
 
   sortByField(objArray, prop) {
-    if (objArray[0] && objArray[0][prop]) {
+    if (objArray?.[0]?.[prop]) {
       return objArray.sort((a, b) => {
         const propA = a[prop].toLowerCase();
         const propB = b[prop].toLowerCase();

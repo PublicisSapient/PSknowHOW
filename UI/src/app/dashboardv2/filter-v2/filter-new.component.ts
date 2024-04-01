@@ -25,6 +25,7 @@ export class FilterNewComponent implements OnInit {
     "basicProjectConfigIds": []
   };
   colorObj: any = {};
+  previousFilterEvent: any = [];
 
   constructor(
     private httpService: HttpService,
@@ -164,8 +165,50 @@ export class FilterNewComponent implements OnInit {
     }
   }
 
+  arraysEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < arr1.length; i++) {
+      if (!this.deepEqual(arr1[i], arr2[i])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  deepEqual(obj1, obj2) {
+    if (obj1 === obj2) {
+      return true;
+    }
+
+    if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
+      return false;
+    }
+
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+
+    for (let key of keys1) {
+      if (!keys2.includes(key) || !this.deepEqual(obj1[key], obj2[key])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   handlePrimaryFilterChange(event) {
-    if (event && event.length && event[0]) {
+    if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
+      this.previousFilterEvent = [].concat(event);
+      // remove the last 2 elements from event
+      event.splice(-2);
       this.setColors(event);
       this.filterApplyData['level'] = event[0].level;
       this.filterApplyData['label'] = event[0].labelName;
@@ -217,8 +260,8 @@ export class FilterNewComponent implements OnInit {
         this.filterApplyData['selectedMap']['sqd'] = [];
       }
 
-      if(this.selectedTab?.toLowerCase() === 'backlog'){
-        this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de=>de.nodeId));
+      if (this.selectedTab?.toLowerCase() === 'backlog') {
+        this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
       }
 
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];

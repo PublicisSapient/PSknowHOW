@@ -24,6 +24,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() trendValueList: any;
   @Input() sprintsOverlayVisible : boolean;
   @Input() showCommentIcon: boolean;
+  @Input() kpiSize;
   loading: boolean = false;
   noData: boolean = false;
   displayConfigModel: boolean = false;
