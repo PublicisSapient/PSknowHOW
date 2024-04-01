@@ -61,8 +61,28 @@ spec:
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
             # Adding cron expressions
-            # - name: sonarprocessor.cron
-            #   value: "0 */15 * * * *"
+            - name: sonarprocessor.cron
+              value: "0 0 */12 * * *"
+            - name: argocd.cron
+              value: "0 0 */12 * * *"
+            - name: bamboo.cron
+              value: "0 0 */12 * * *"
+            - name: bitbucket.cron
+              value: "0 0 */12 * * *"
+            - name: githubaction.cron
+              value: "0 0 */12 * * *"
+            - name: github.cron
+              value: "0 0 */12 * * *"
+            - name: gitlab.cron
+              value: "0 0 */12 * * *"
+            - name: jenkins.cron
+              value: "0 0 */12 * * *"
+            - name: jira.test.cron
+              value: "0 0 */12 * * *"
+            - name: zephyr.cron
+              value: "0 0 */12 * * *"
+            - name: teamcity.cron
+              value: "0 0 */12 * * *"
         envFrom:
         - configMapRef:
             name: knowhow-config

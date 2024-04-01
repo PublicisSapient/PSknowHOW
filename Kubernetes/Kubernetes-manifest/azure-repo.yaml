@@ -60,6 +60,11 @@ spec:
                   key: stage-knhdbpassword
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
+            # Adding cron expressions
+            - name: azurepipeline.cron
+              value: "0 0 */12 * * *"
+            - name: azurerepo.cron
+              value: "0 0 */12 * * *"
         # resources:
         #   requests:
         #     memory: "1Gi"
