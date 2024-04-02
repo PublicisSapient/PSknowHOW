@@ -206,8 +206,8 @@ export function checkFeatureFlag() {
     console.log('Inside CheckFeatureFlag');
     return new Promise<void>((resolve, reject) => {
         if (!environment['production']) {
-            this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
-            this.validateToken();
+            // new FeatureFlagsService.config = this.featureToggleService.loadConfig().then((res) => res);
+            validateToken();
         } else {
             const env$ = this.http.get('assets/env.json').pipe(
                 tap(env => {
@@ -225,21 +225,21 @@ export function checkFeatureFlag() {
                     }
                 }));
             env$.toPromise().then(async res => {
-                this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
+                // this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
             });
         }
 
 
 
         // load google Analytics script on all instances except local and if customAPI property is true
-        let addGAScript = this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
-        if (addGAScript) {
-            if (window.location.origin.indexOf('localhost') === -1) {
-                this.ga.load('gaTagManager').then(data => {
-                    console.log('script loaded ', data);
-                })
-            }
-        }
+        // let addGAScript = this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
+        // if (addGAScript) {
+        //     if (window.location.origin.indexOf('localhost') === -1) {
+        //         this.ga.load('gaTagManager').then(data => {
+        //             console.log('script loaded ', data);
+        //         })
+        //     }
+        // }
         resolve();
     })
 }
