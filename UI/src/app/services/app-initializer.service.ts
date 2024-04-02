@@ -140,7 +140,6 @@ export class AppInitializerService {
         if (environment['AUTHENTICATION_SERVICE']) {
           
           let url = window.location.href;
-          let redirect_uri = url.split("?")?.[0]
           let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
           if (authToken) {
             this.sharedService.setAuthToken(authToken);
@@ -149,29 +148,17 @@ export class AppInitializerService {
             'resource': environment.RESOURCE,
             'authToken': authToken
           };
-          console.log("redirect_uri", redirect_uri);
-          this.router.navigateByUrl(redirect_uri);
+          
+          this.router.navigateByUrl('dashboard');
           // Make API call or initialization logic here...
           this.httpService.getUserValidation(obj).subscribe((response) => {
             if (response?.['success']) {
               this.sharedService.setCurrentUserDetails(response?.['data']);
               localStorage.setItem("user_name", response?.['data']?.user_name);
               localStorage.setItem("user_email", response?.['data']?.user_email);
-              // const redirect_uri = localStorage.getItem('redirect_uri');
               if (authToken) {
                 this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
               }
-              // if (redirect_uri) {
-              //   if (redirect_uri.startsWith('#')) {
-              //     this.router.navigate([redirect_uri.split('#')[1]])
-              //   } else {
-              //     this.router.navigate([redirect_uri]);
-              //   }
-              //   localStorage.removeItem('redirect_uri');
-              // } 
-              // else {
-              
-              // }
             }
           }, error => {
             console.log(error);
