@@ -192,7 +192,7 @@ const   routes = [
         { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
         {
           path: 'Config',
-          loadChildren: () => import('../app/config/config.module').then(m => m.ConfigModule), canLoad: [FeatureGuard],
+          loadChildren: () => import('../app/config/config.module').then(m => m.ConfigModule),
           data: {
             feature: "Config"
           }
