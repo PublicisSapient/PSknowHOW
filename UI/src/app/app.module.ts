@@ -219,7 +219,7 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
     return new Promise<void>((resolve, reject) => {
         if (!environment['production']) {
             // new FeatureFlagsService.config = this.featureToggleService.loadConfig().then((res) => res);
-            validateToken(http, featureToggleService, ga, sharedService);
+            validateToken(http, ga, sharedService);
         } else {
             const env$ = http.http.get('assets/env.json').pipe(
                 tap(env => {
@@ -233,7 +233,7 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
                     environment['RETROS_URL'] = env['RETROS_URL'] || '';
                     if (environment['AUTHENTICATION_SERVICE'] != true) {
                         http.router.resetConfig([...routes]);
-                        validateToken(http, featureToggleService, ga, sharedService);
+                        validateToken(http, ga, sharedService);
                     }
                 }));
             env$.toPromise().then(async res => {
@@ -256,7 +256,7 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
     })
 }
 
-export function validateToken(http, featureToggleService, ga, sharedService) {
+export function validateToken(http, ga, sharedService) {
     return new Promise<void>((resolve, reject) => {
         if (!environment['AUTHENTICATION_SERVICE'] == true) {
             http.router.resetConfig([...routes]);
@@ -271,8 +271,6 @@ export function validateToken(http, featureToggleService, ga, sharedService) {
                 'resource': environment.RESOURCE,
                 'authToken': authToken
             };
-
-            http.router.navigateByUrl('dashboard');
             // Make API call or initialization logic here...
             http.getUserValidation(obj).subscribe((response) => {
                 if (response?.['success']) {
@@ -282,10 +280,13 @@ export function validateToken(http, featureToggleService, ga, sharedService) {
                     if (authToken) {
                         ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
                     }
+                    http.router.navigateByUrl('dashboard');
                 }
             }, error => {
                 console.log(error);
-            })
+            });
+
+            
         }
         resolve();
 
