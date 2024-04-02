@@ -122,9 +122,11 @@ import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/ba
 import { FeatureFlagsService } from './services/feature-toggle.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AppInitializerService } from './services/app-initializer.service';
-import { Routes } from '@angular/router';
+import { Router, Routes } from '@angular/router';
 import { FeatureGuard } from './services/feature.guard';
 import { AccessGuard } from './services/access.guard';
+import { HttpService } from './services/http.service';
+import { GoogleAnalyticsService } from './services/google-analytics.service';
 
 /******************************************************/
 
@@ -196,20 +198,21 @@ const routes: Routes = [
 
 
 
-export function initializeApp(initializeService: AppInitializerService) {
+export function initializeApp(http: HttpService, featureToggleService: FeatureFlagsService,
+    ga: GoogleAnalyticsService, sharedService: SharedService) {
     return (): Promise<any> => {
-        return checkFeatureFlag();
+        return checkFeatureFlag(http, featureToggleService, ga, sharedService);
     }
 }
 
-export function checkFeatureFlag() {
+export function checkFeatureFlag(http, featureToggleService, ga, sharedService) {
     console.log('Inside CheckFeatureFlag');
     return new Promise<void>((resolve, reject) => {
         if (!environment['production']) {
             // new FeatureFlagsService.config = this.featureToggleService.loadConfig().then((res) => res);
-            validateToken();
+            validateToken(http, featureToggleService, ga, sharedService);
         } else {
-            const env$ = this.http.get('assets/env.json').pipe(
+            const env$ = http.get('assets/env.json').pipe(
                 tap(env => {
                     console.log("env inside app initializer", env['AUTHENTICATION_SERVICE']);
 
@@ -221,52 +224,52 @@ export function checkFeatureFlag() {
                     environment['RETROS_URL'] = env['RETROS_URL'] || '';
                     if (environment['AUTHENTICATION_SERVICE'] == true) {
                         this.router.resetConfig([...this.routes]);
-                        this.validateToken();
+                        validateToken(http, featureToggleService, ga, sharedService);
                     }
                 }));
             env$.toPromise().then(async res => {
-                // this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
+                featureToggleService.config = featureToggleService.loadConfig().then((res) => res);
             });
         }
 
 
 
         // load google Analytics script on all instances except local and if customAPI property is true
-        // let addGAScript = this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
-        // if (addGAScript) {
-        //     if (window.location.origin.indexOf('localhost') === -1) {
-        //         this.ga.load('gaTagManager').then(data => {
-        //             console.log('script loaded ', data);
-        //         })
-        //     }
-        // }
+        let addGAScript = featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
+        if (addGAScript) {
+            if (window.location.origin.indexOf('localhost') === -1) {
+                ga.load('gaTagManager').then(data => {
+                    console.log('script loaded ', data);
+                })
+            }
+        }
         resolve();
     })
 }
 
-export function validateToken() {
+export function validateToken(http, featureToggleService, ga, sharedService) {
     return new Promise<void>((resolve, reject) => {
         if (environment['AUTHENTICATION_SERVICE'] == true) {
 
             let url = window.location.href;
             let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
             if (authToken) {
-                this.sharedService.setAuthToken(authToken);
+                sharedService.setAuthToken(authToken);
             }
             let obj = {
                 'resource': environment.RESOURCE,
                 'authToken': authToken
             };
 
-            this.router.navigateByUrl('dashboard');
+            http.router.navigateByUrl('dashboard');
             // Make API call or initialization logic here...
-            this.httpService.getUserValidation(obj).subscribe((response) => {
+            http.getUserValidation(obj).subscribe((response) => {
                 if (response?.['success']) {
-                    this.sharedService.setCurrentUserDetails(response?.['data']);
+                    sharedService.setCurrentUserDetails(response?.['data']);
                     localStorage.setItem("user_name", response?.['data']?.user_name);
                     localStorage.setItem("user_email", response?.['data']?.user_email);
                     if (authToken) {
-                        this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
+                        ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
                     }
                 }
             }, error => {
@@ -384,7 +387,8 @@ export function validateToken() {
         {
             provide: APP_INITIALIZER,
             useFactory: initializeApp,
-            deps: [AppInitializerService],
+            deps: [HttpService, FeatureFlagsService,
+                GoogleAnalyticsService, SharedService],
             multi: true
         }
     ],
