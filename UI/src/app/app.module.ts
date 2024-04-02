@@ -233,8 +233,8 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
                     environment['RETROS_URL'] = env['RETROS_URL'] || '';
                     if (environment['AUTHENTICATION_SERVICE'] != true) {
                         http.router.resetConfig([...routes]);
-                        validateToken(http, ga, sharedService);
                     }
+                    validateToken(http, ga, sharedService);
                 }));
             env$.toPromise().then(async res => {
                 featureToggleService.config = featureToggleService.loadConfig().then((res) => res);
@@ -271,6 +271,7 @@ export function validateToken(http, ga, sharedService) {
                 'resource': environment.RESOURCE,
                 'authToken': authToken
             };
+            console.log('authToken', authToken);
             // Make API call or initialization logic here...
             http.getUserValidation(obj).subscribe((response) => {
                 if (response?.['success']) {
