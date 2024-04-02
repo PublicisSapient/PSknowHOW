@@ -259,7 +259,7 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
 export function validateToken(http, featureToggleService, ga, sharedService) {
     return new Promise<void>((resolve, reject) => {
         if (!environment['AUTHENTICATION_SERVICE'] == true) {
-            http.router.navigateByUrl('dashboard');
+            http.router.navigateByUrl('authentication');
         } else {
             let url = window.location.href;
             let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
