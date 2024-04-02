@@ -223,7 +223,7 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
                     environment['MAP_URL'] = env['MAP_URL'] || '';
                     environment['RETROS_URL'] = env['RETROS_URL'] || '';
                     if (environment['AUTHENTICATION_SERVICE'] == true) {
-                        this.router.resetConfig([...this.routes]);
+                        this.router.resetConfig([...routes]);
                         validateToken(http, featureToggleService, ga, sharedService);
                     }
                 }));
