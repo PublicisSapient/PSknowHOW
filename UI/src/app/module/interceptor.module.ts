@@ -100,7 +100,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                             if(environment?.['SSO_LOGIN'] === true){
                                 console.log('SSO_LOGIN', true)
                             }else{
-                                if(environment.AUTHENTICATION_SERVICE){
+                                if(environment.AUTHENTICATION_SERVICE == true){
                                     /** redirect to central login url*/
                                     if(environment.CENTRAL_LOGIN_URL){
                                         window.location.href = environment.CENTRAL_LOGIN_URL;
