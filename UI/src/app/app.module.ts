@@ -227,7 +227,7 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
 
                     environment['baseUrl'] = env['baseUrl'] || '';
                     environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
-                    environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'];
+                    environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
                     environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
                     environment['MAP_URL'] = env['MAP_URL'] || '';
                     environment['RETROS_URL'] = env['RETROS_URL'] || '';
@@ -258,8 +258,9 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
 
 export function validateToken(http, featureToggleService, ga, sharedService) {
     return new Promise<void>((resolve, reject) => {
-        if (environment['AUTHENTICATION_SERVICE'] == true) {
-
+        if (!environment['AUTHENTICATION_SERVICE'] == true) {
+            http.router.navigateByUrl('dashboard');
+        } else {
             let url = window.location.href;
             let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
             if (authToken) {
@@ -284,8 +285,6 @@ export function validateToken(http, featureToggleService, ga, sharedService) {
             }, error => {
                 console.log(error);
             })
-        } else {
-            http.router.navigateByUrl('dashboard');
         }
         resolve();
 
