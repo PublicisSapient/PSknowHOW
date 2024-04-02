@@ -232,7 +232,7 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
                     environment['MAP_URL'] = env['MAP_URL'] || '';
                     environment['RETROS_URL'] = env['RETROS_URL'] || '';
                     if (environment['AUTHENTICATION_SERVICE'] != true) {
-                        this.router.resetConfig([...routes]);
+                        http.router.resetConfig([...routes]);
                         validateToken(http, featureToggleService, ga, sharedService);
                     }
                 }));
@@ -259,7 +259,8 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
 export function validateToken(http, featureToggleService, ga, sharedService) {
     return new Promise<void>((resolve, reject) => {
         if (!environment['AUTHENTICATION_SERVICE'] == true) {
-            http.router.navigateByUrl('authentication');
+            http.router.resetConfig([...routes]);
+            http.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
         } else {
             let url = window.location.href;
             let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
