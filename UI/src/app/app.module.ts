@@ -212,7 +212,7 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
             // new FeatureFlagsService.config = this.featureToggleService.loadConfig().then((res) => res);
             validateToken(http, featureToggleService, ga, sharedService);
         } else {
-            const env$ = http.get('assets/env.json').pipe(
+            const env$ = http.http.get('assets/env.json').pipe(
                 tap(env => {
                     console.log("env inside app initializer", env['AUTHENTICATION_SERVICE']);
 
