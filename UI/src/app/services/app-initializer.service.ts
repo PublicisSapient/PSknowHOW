@@ -28,11 +28,11 @@ export class AppInitializerService {
   constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService) {
   }
 
- routes: Routes = [
+  routes: Routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     {
       path: 'dashboard', component: DashboardComponent,
-      canActivateChild : [FeatureGuard],
+      canActivateChild: [FeatureGuard],
       children: [
         { path: '', redirectTo: 'iteration', pathMatch: 'full' },
         {
@@ -87,7 +87,7 @@ export class AppInitializerService {
           }
         },
         { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
-  
+
       ],
     },
     { path: 'pageNotFound', component: PageNotFoundComponent },
@@ -103,14 +103,14 @@ export class AppInitializerService {
         const env$ = this.http.get('assets/env.json').pipe(
           tap(env => {
             console.log("env inside app initializer", env['AUTHENTICATION_SERVICE']);
-            
+
             environment['baseUrl'] = env['baseUrl'] || '';
             environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
-            environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] || false;
+            environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'];
             environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
             environment['MAP_URL'] = env['MAP_URL'] || '';
             environment['RETROS_URL'] = env['RETROS_URL'] || '';
-            if(environment['AUTHENTICATION_SERVICE'] === true){
+            if (environment['AUTHENTICATION_SERVICE'] == true) {
               this.router.resetConfig([...this.routes]);
               this.validateToken();
             }
@@ -137,34 +137,34 @@ export class AppInitializerService {
 
   validateToken() {
     return new Promise<void>((resolve, reject) => {
-        if (environment['AUTHENTICATION_SERVICE']) {
-          
-          let url = window.location.href;
-          let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
-          if (authToken) {
-            this.sharedService.setAuthToken(authToken);
-          }
-          let obj = {
-            'resource': environment.RESOURCE,
-            'authToken': authToken
-          };
-          
-          this.router.navigateByUrl('dashboard');
-          // Make API call or initialization logic here...
-          this.httpService.getUserValidation(obj).subscribe((response) => {
-            if (response?.['success']) {
-              this.sharedService.setCurrentUserDetails(response?.['data']);
-              localStorage.setItem("user_name", response?.['data']?.user_name);
-              localStorage.setItem("user_email", response?.['data']?.user_email);
-              if (authToken) {
-                this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
-              }
-            }
-          }, error => {
-            console.log(error);
-          })
+      if (environment['AUTHENTICATION_SERVICE'] == true) {
+
+        let url = window.location.href;
+        let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
+        if (authToken) {
+          this.sharedService.setAuthToken(authToken);
         }
-        resolve();
+        let obj = {
+          'resource': environment.RESOURCE,
+          'authToken': authToken
+        };
+
+        this.router.navigateByUrl('dashboard');
+        // Make API call or initialization logic here...
+        this.httpService.getUserValidation(obj).subscribe((response) => {
+          if (response?.['success']) {
+            this.sharedService.setCurrentUserDetails(response?.['data']);
+            localStorage.setItem("user_name", response?.['data']?.user_name);
+            localStorage.setItem("user_email", response?.['data']?.user_email);
+            if (authToken) {
+              this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
+            }
+          }
+        }, error => {
+          console.log(error);
+        })
+      }
+      resolve();
 
     })
 
