@@ -18,11 +18,14 @@
 package com.publicissapient.kpidashboard.jira.writer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -100,11 +103,27 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 			}
 		}
 
-		if (CollectionUtils.isNotEmpty(jiraIssues)) {
-			writeJiraItem(jiraIssues);
+		// Remove duplicates from jiraIssues based on getNumber and getBasicProjectConfigId
+		List<JiraIssue> uniqueJiraIssues = new ArrayList<>(jiraIssues.stream()
+				.collect(Collectors.toMap(
+						jiraIssue -> Arrays.asList(jiraIssue.getNumber(), jiraIssue.getBasicProjectConfigId()),
+						Function.identity(),
+						(existing, replacement) -> existing,
+						LinkedHashMap::new)).values());
+
+		// Remove duplicates from jiraHistoryItems based on getStoryId and getBasicProjectConfigId
+		List<JiraIssueCustomHistory> uniqueJiraHistoryItems = new ArrayList<>(jiraHistoryItems.stream()
+				.collect(Collectors.toMap(
+						jiraHistoryItem -> Arrays.asList(jiraHistoryItem.getStoryID(), jiraHistoryItem.getBasicProjectConfigId()),
+						Function.identity(),
+						(existing, replacement) -> existing,
+						LinkedHashMap::new)).values());
+
+		if (CollectionUtils.isNotEmpty(uniqueJiraIssues)) {
+			writeJiraItem(uniqueJiraIssues);
 		}
-		if (CollectionUtils.isNotEmpty(jiraHistoryItems)) {
-			writeJiraHistory(jiraHistoryItems);
+		if (CollectionUtils.isNotEmpty(uniqueJiraHistoryItems)) {
+			writeJiraHistory(uniqueJiraHistoryItems);
 		}
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			writeSprintDetail(sprintDetailsSet);
@@ -117,7 +136,7 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 		}
 	}
 
-	private void writeJiraItem(Set<JiraIssue> jiraItems) {
+	private void writeJiraItem(List<JiraIssue> jiraItems) {
 		log.info("Writing issues to Jira_Issue Collection");
 		jiraIssueRepository.saveAll(jiraItems);
 	}
