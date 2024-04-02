@@ -47,7 +47,7 @@ let routes: Routes = [];
 console.log("env ---->", environment)
 /**Routes when AUTHENTICATION_SERVICE is true */
 console.log("environment['AUTHENTICATION_SERVICE']", environment['AUTHENTICATION_SERVICE'])
-if(environment['AUTHENTICATION_SERVICE'] === true){
+if(environment['AUTHENTICATION_SERVICE'] == true){
   console.log("inside if");
   routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
