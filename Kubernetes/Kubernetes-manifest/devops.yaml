@@ -76,7 +76,7 @@ spec:
             - name: gitlab.cron
               value: "0 0 */12 * * *"
             - name: jenkins.cron
-              value: "0 0 */12 * * *"
+              value: "0 */5 * * * *"
             - name: jira.test.cron
               value: "0 0 */12 * * *"
             - name: zephyr.cron
