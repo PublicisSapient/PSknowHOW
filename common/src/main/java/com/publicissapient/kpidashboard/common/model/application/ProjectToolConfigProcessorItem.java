@@ -60,4 +60,5 @@ public class ProjectToolConfigProcessorItem extends BasicModel {
 	private String updatedAt;
 	private boolean queryEnabled;
 	private String boardQuery;
+	private String gitFullUrl;
 }
