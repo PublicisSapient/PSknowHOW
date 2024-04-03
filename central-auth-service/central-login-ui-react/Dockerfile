@@ -13,6 +13,7 @@ RUN apk add openssl --no-cache \
     && adduser -u $UID -G $USER -s /bin/sh -D $USER
 
 ENV CONF_LOC="/etc/nginx" \
+    SCRIPTS_LOC="/var/www/authui/build/" \
     # PID_LOC="/run/nginx" \
     HTML_LOC="/var/lib/nginx/" \
     # UI2_LOC="/var/lib/nginx/ui2" \
@@ -48,11 +49,11 @@ RUN chown -R $USER:$USER ${CONF_LOG} \
     && apk add --no-cache bash
 
 # Copy .env file and shell script to container
-COPY env.sh /var/www/authui/build/
-COPY .env /var/www/authui/build/
+COPY env.sh $SCRIPTS_LOC
+COPY .env $SCRIPTS_LOC
 
 
-WORKDIR /var/www/authui/build
+WORKDIR $SCRIPTS_LOC
 
 # Make our shell script executable
 RUN chmod +x env.sh
