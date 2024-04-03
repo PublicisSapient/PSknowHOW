@@ -27,7 +27,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.Arrays;
 
 @ChangeUnit(id = "rework_rate_kpi", order = "9002", author = "kunkambl", systemVersion = "9.0.0")
-public class ReworkRateKpi {
+class ReworkRateKpi {
 
 	private final MongoTemplate mongoTemplate;
 

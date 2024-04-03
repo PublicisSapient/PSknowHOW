@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.jira;
 
+import java.util.List;
 import java.util.Objects;
 
 import lombok.AllArgsConstructor;

@@ -29,9 +29,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -86,8 +92,8 @@ public class RepoToolCodeCommitServiceImplTest {
 	private KpiElement kpiElement;
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 	private List<DataCount> trendValues = new ArrayList<>();
+	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
 	private List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 
 	@InjectMocks
@@ -103,6 +109,8 @@ public class RepoToolCodeCommitServiceImplTest {
 	CacheService cacheService;
 	@Mock
 	private CommonService commonService;
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	@Before
 	public void setup() {
@@ -135,6 +143,32 @@ public class RepoToolCodeCommitServiceImplTest {
 
 		Mockito.when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn("trackerid");
 
+		setTreadValuesDataCount();
+		AssigneeDetails assigneeDetails = new AssigneeDetails();
+		assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
+		assigneeDetails.setSource("Jira");
+		Set<Assignee> assigneeSet = new HashSet<>();
+		assigneeSet.add(new Assignee("aks", "Akshat Shrivastava", "akshat.shrivastav@publicissapient.com"));
+		assigneeSet.add(new Assignee("llid", "Hiren", "99163630+hirbabar@users.noreply.github.com"));
+		assigneeDetails.setAssignee(assigneeSet);
+		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
+
+	}
+
+	private void setTreadValuesDataCount() {
+		DataCount dataCount = setDataCountValues("KnowHow", "3", "4", new DataCount());
+		trendValues.add(dataCount);
+		trendValueMap.put("OverAll#OverAll", trendValues);
+		trendValueMap.put("BRANCH1 -> PR#Hiren", trendValues);
+	}
+
+	private DataCount setDataCountValues(String data, String maturity, Object maturityValue, Object value) {
+		DataCount dataCount = new DataCount();
+		dataCount.setData(data);
+		dataCount.setMaturity(maturity);
+		dataCount.setMaturityValue(maturityValue);
+		dataCount.setValue(value);
+		return dataCount;
 	}
 
 	private void setToolMap() {

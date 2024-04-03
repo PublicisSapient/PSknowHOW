@@ -28,9 +28,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,10 +72,6 @@ import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 @RunWith(MockitoJUnitRunner.class)
 public class PRSizeServiceImplTest {
 
-    private static final String P1 = "p1,P1 - Blocker, blocker, 1, 0, p0, Urgent";
-    private static final String P2 = "p2, critical, P2 - Critical, 2, High";
-    private static final String P3 = "p3, P3 - Major, major, 3, Medium";
-    private static final String P4 = "p4, P4 - Minor, minor, 4, Low";
     private static Tool tool3;
     public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
     public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
@@ -104,6 +105,8 @@ public class PRSizeServiceImplTest {
     CacheService cacheService;
     @Mock
     private CommonService commonService;
+    @Mock
+    private AssigneeDetailsRepository assigneeDetailsRepository;
 
     @Before
     public void setup() {
@@ -137,6 +140,15 @@ public class PRSizeServiceImplTest {
         configHelperService.setFieldMappingMap(fieldMappingMap);
 
         Mockito.when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn("trackerid");
+
+        AssigneeDetails assigneeDetails = new AssigneeDetails();
+        assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
+        assigneeDetails.setSource("Jira");
+        Set<Assignee> assigneeSet = new HashSet<>();
+        assigneeSet.add(new Assignee("aks", "Akshat Shrivastava", "akshat.shrivastav@publicissapient.com"));
+        assigneeSet.add(new Assignee("llid", "Hiren", "99163630+hirbabar@users.noreply.github.com"));
+        assigneeDetails.setAssignee(assigneeSet);
+        when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 
     }
 
@@ -186,10 +198,8 @@ public class PRSizeServiceImplTest {
         dataCountList.add(dataCountValue);
         DataCount dataCount = setDataCountValues("Scrum Project", "3", "4", dataCountList);
         trendValues.add(dataCount);
-        trendValueMap.put(P1, trendValues);
-        trendValueMap.put(P2, trendValues);
-        trendValueMap.put(P3, trendValues);
-        trendValueMap.put(P4, trendValues);
+        trendValueMap.put("Overall#Overall", trendValues);
+        trendValueMap.put("Overall#Hiren", trendValues);
     }
 
     private DataCount setDataCountValues(String data, String maturity, Object maturityValue, Object value) {

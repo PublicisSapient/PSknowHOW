@@ -23,6 +23,16 @@
               "average": 30176.5,
               "mergeRequests": 5,
               "lines_change": 60710.0,
+              "users": [
+                {
+                  "email": "99163630+hirbabar@users.noreply.github.com",
+                  "average": 454814
+                },
+                {
+                  "email": "akshat.shrivastav@publicissapient.com",
+                  "average": 3086.8333333333335
+                }
+              ],
               "merge_requests": [
                 {
                   "id": "1466332986",

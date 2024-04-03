@@ -41,6 +41,9 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,8 +56,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -99,6 +104,8 @@ public class ReworkRateServiceImplTest {
 	CacheService cacheService;
 	@Mock
 	private CommonService commonService;
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	@Before
 	public void setup() {
@@ -132,6 +139,15 @@ public class ReworkRateServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
 		Mockito.when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn("trackerid");
+
+		AssigneeDetails assigneeDetails = new AssigneeDetails();
+		assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
+		assigneeDetails.setSource("Jira");
+		Set<Assignee> assigneeSet = new HashSet<>();
+		assigneeSet.add(new Assignee("aks", "Akshat Shrivastava", "akshat.shrivastav@publicissapient.com"));
+		assigneeSet.add(new Assignee("llid", "Hiren", "99163630+hirbabar@users.noreply.github.com"));
+		assigneeDetails.setAssignee(assigneeSet);
+		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 
 	}
 	@Test
@@ -215,7 +231,7 @@ public class ReworkRateServiceImplTest {
 		dataCountList.add(dataCountValue);
 		DataCount dataCount = setDataCountValues("Scrum Project", "3", "4", dataCountList);
 		trendValues.add(dataCount);
-		trendValueMap.put(OVERALL, trendValues);
+		trendValueMap.put("Overall#Hiren", trendValues);
 	}
 
 	private DataCount setDataCountValues(String data, String maturity, Object maturityValue, Object value) {

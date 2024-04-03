@@ -31,11 +31,20 @@ public class RepoToolKpiMetricResponse {
     @JsonProperty("project_code")
     private String projectCode;
     private double projectGrade;
+    private  double projectHours;
+    @JsonProperty("commit_count")
     private long commitCount;
+    @JsonProperty("mr_count")
+    private long mrCount;
+    private long mergeRequests;
+    private long prLinesChanged;
+    public double average;
     private double projectReworkRateGrade;
+    private double projectReworkRatePercent;
     private List<RepoToolRepositories> repositories;
     private List<RepoToolRepositories> projectRepositories;
     @JsonProperty("date_label")
     private String dateLabel;
+    private List<RepoToolUserDetails> users;
 
 }
