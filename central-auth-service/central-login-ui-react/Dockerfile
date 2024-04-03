@@ -43,7 +43,6 @@ EXPOSE 80 443
 
 RUN chown -R $USER:$USER ${CONF_LOC} \
     && chown -R $USER:$USER /var/ \
-    && chown -R $USER:$USER /run/nginx.pid \
     && apk add --no-cache libcap \
     && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx \
     && apk add --no-cache bash
