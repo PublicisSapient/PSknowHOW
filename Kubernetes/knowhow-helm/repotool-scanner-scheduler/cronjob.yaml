@@ -97,6 +97,13 @@ spec:
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
             tty: true
+          volumes:
+            - name: debbie-secrets-store
+              csi:
+                driver: secrets-store.csi.k8s.io
+                readOnly: true
+                volumeAttributes:
+                  secretProviderClass: "stage-secretproviderclass"
           dnsConfig: {}
           dnsPolicy: ClusterFirst
           restartPolicy: Never
@@ -106,12 +113,3 @@ spec:
   schedule: "*/5 * * * *"
   successfulJobsHistoryLimit: 3
   suspend: false
-status: {}
-
-volumes:
-  - name: debbie-secrets-store
-    csi:
-      driver: secrets-store.csi.k8s.io
-      readOnly: true
-      volumeAttributes:
-        secretProviderClass: "stage-secretproviderclass"
