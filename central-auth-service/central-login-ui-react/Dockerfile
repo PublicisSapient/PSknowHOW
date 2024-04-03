@@ -41,7 +41,7 @@ EXPOSE 80 443
 
 # granting permission's
 
-RUN chown -R $USER:$USER ${CONF_LOG} \
+RUN chown -R $USER:$USER ${CONF_LOC} \
     && chown -R $USER:$USER /var/ \
     && chown -R $USER:$USER /var/run/nginx.pid \
     && apk add --no-cache libcap \
