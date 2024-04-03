@@ -205,6 +205,72 @@ const routes = [
     { path: '**', redirectTo: 'authentication' }
 ];
 
+const routesAuth = [
+    // { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    {
+        path: 'dashboard', component: DashboardComponent,
+        canActivateChild: [AuthGuard, FeatureGuard],
+        children: [
+            // { path: '', redirectTo: 'iteration', pathMatch: 'full' },
+            {
+                path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "My Dashboard"
+                }
+            },
+            {
+                path: 'iteration', component: IterationComponent, pathMatch: 'full',
+                data: {
+                    feature: "Iteration"
+                }
+            },
+            {
+                path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Developer"
+                }
+            },
+            {
+                path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Maturity"
+                }
+            },
+            {
+                path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Backlog"
+                }
+            },
+            {
+                path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Release"
+                }
+            },
+            {
+                path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Dora"
+                }
+            },
+            { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
+            { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
+            {
+                path: 'Config',
+                loadChildren: () => import('../app/config/config.module').then(m => m.ConfigModule),
+                data: {
+                    feature: "Config"
+                }
+            },
+            { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+
+        ],
+    },
+    { path: 'pageNotFound', component: PageNotFoundComponent },
+    { path: '**', redirectTo: 'pageNotFound' }
+];
+
 
 
 export function initializeApp(http: HttpService, featureToggleService: FeatureFlagsService,
@@ -233,6 +299,8 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
                     environment['RETROS_URL'] = env['RETROS_URL'] || '';
                     if (environment['AUTHENTICATION_SERVICE'] != true) {
                         http.router.resetConfig([...routes]);
+                    } else {
+                        http.router.resetConfig([...routesAuth]);
                     }
                     validateToken(http, ga, sharedService);
                 }));
@@ -262,7 +330,9 @@ export function validateToken(http, ga, sharedService) {
             http.router.resetConfig([...routes]);
             http.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
         } else {
-            let url = window.location.href;
+            // TODO: find right property to avoid string manipulation - Rishabh 3/4/2024
+            let url = window.location.hash.replace('#/', '');
+            
             let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
             if (authToken) {
                 sharedService.setAuthToken(authToken);
@@ -275,19 +345,20 @@ export function validateToken(http, ga, sharedService) {
             // Make API call or initialization logic here...
             http.getUserValidation(obj).subscribe((response) => {
                 if (response?.['success']) {
+                    http.router.resetConfig([...routesAuth]);
                     sharedService.setCurrentUserDetails(response?.['data']);
                     localStorage.setItem("user_name", response?.['data']?.user_name);
                     localStorage.setItem("user_email", response?.['data']?.user_email);
                     if (authToken) {
                         ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
                     }
-                    http.router.navigateByUrl('dashboard');
+                    http.router.navigateByUrl(url? url : 'dashboard');
                 }
             }, error => {
                 console.log(error);
             });
 
-            
+
         }
         resolve();
 
@@ -396,6 +467,7 @@ export function validateToken(http, ga, sharedService) {
         MessageService,
         DatePipe,
         FeatureFlagsService,
+        AuthGuard,
         { provide: APP_CONFIG, useValue: AppConfig },
         {
             provide: APP_INITIALIZER,
