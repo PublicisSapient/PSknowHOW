@@ -12,7 +12,6 @@ spec:
         metadata:
           annotations:
             cattle.io/timestamp: "2020-01-27T10:29:52Z"
-          # creationTimestamp: null
         spec:
           containers:
           - command:
@@ -78,17 +77,10 @@ spec:
                 secretKeyRef:
                   name: stage-debbie-internal-key
                   key: stage-debbie-internal-key
-          volumeMounts:
-            - name: debbie-secrets-store
-              mountPath: "/mnt/stage-debbie-secrets-store"
-              readOnly: true
-      volumes:
-        - name: debbie-secrets-store
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: "stage-secretproviderclass"
+            volumeMounts:
+              - name: debbie-secrets-store
+                mountPath: "/mnt/stage-debbie-secrets-store"
+                readOnly: true
             resources:
               limits:
                 cpu: 2000m
@@ -105,8 +97,6 @@ spec:
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
             tty: true
-          # imagePullSecrets:
-          #   - name: docker-registry-debbie
           dnsConfig: {}
           dnsPolicy: ClusterFirst
           restartPolicy: Never
@@ -117,3 +107,11 @@ spec:
   successfulJobsHistoryLimit: 3
   suspend: false
 status: {}
+
+volumes:
+  - name: debbie-secrets-store
+    csi:
+      driver: secrets-store.csi.k8s.io
+      readOnly: true
+      volumeAttributes:
+        secretProviderClass: "stage-secretproviderclass"
