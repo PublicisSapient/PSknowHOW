@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: devops-processor
-  namespace: {{ .Values.env}}-knowhow
+  namespace: {{ .Values.env}}knowhow
   labels:
     app: devops-processor
 spec:
@@ -76,12 +76,35 @@ spec:
                   key: {{ .Values.env}}knhdbpassword
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
+            # Adding cron expressions
+            - name: sonarprocessor.cron
+              value: "0 0 */12 * * *"
+            - name: argocd.cron
+              value: "0 0 */12 * * *"
+            - name: bamboo.cron
+              value: "0 0 */12 * * *"
+            - name: bitbucket.cron
+              value: "0 0 */12 * * *"
+            - name: githubaction.cron
+              value: "0 0 */12 * * *"
+            - name: github.cron
+              value: "0 0 */12 * * *"
+            - name: gitlab.cron
+              value: "0 0 */12 * * *"
+            - name: jenkins.cron
+              value: "0 0 */12 * * *"
+            - name: jira.test.cron
+              value: "0 0 */12 * * *"
+            - name: zephyr.cron
+              value: "0 0 */12 * * *"
+            - name: teamcity.cron
+              value: "0 0 */12 * * *"
           envFrom:
           - configMapRef:
               name: {{ .Values.configmapname }}
           volumeMounts:
             - name: knowhow-secrets-store
-              mountPath: "/mnt/{{ .Values.env}}-secrets-store"
+              mountPath: "/mnt/{{ .Values.env}}secrets-store"
               readOnly: true
       volumes:
         - name: knowhow-secrets-store
@@ -89,7 +112,7 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: "{{ .Values.env}}-secretproviderclass"
+              secretProviderClass: "{{ .Values.env}}secretproviderclass"
           livenessProbe:
             tcpSocket:
               port: {{ index .Values.ports 0 }}

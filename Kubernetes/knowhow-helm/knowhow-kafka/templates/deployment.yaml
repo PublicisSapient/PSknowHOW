@@ -3,7 +3,7 @@ kind: StatefulSet
 #kind: Deployment
 metadata:
   name: crs-kafka
-  namespace: {{ .Values.env}}-knowhow
+  namespace: {{ .Values.env}}knowhow
 spec:
   replicas: 3
   serviceName: kafka-cluster

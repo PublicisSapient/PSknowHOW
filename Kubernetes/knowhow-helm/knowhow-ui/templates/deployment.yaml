@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: knowhow-ui
-  namespace: {{ .Values.env}}-knowhow
+  namespace: {{ .Values.env}}knowhow
   labels:
     app: knowhow-ui
 spec:

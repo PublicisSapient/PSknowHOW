@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kafka-consumers
-  namespace: {{ .Values.env}}-knowhow
+  namespace: {{ .Values.env}}knowhow
   labels:
     {{- include "knowhow-kafka-consumers.labels" . | nindent 4 }}
 spec:
@@ -49,18 +49,18 @@ spec:
           - configMapRef:
               name: {{ .Values.configmapname }}
           env:
-            - name: mail.sendgrid.api-key
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.env}}-sendgrid-apikey
-                  key: {{ .Values.env}}-sendgrid-apikey
-            - name: spring.kafka.consumer.bootstrap-servers
-              value: "crs-kafka-0.kafka-cluster.uat-knowhow.svc.cluster.local:9092"
-            - name: spring.kafka.producer.bootstrap-servers
-              value: "crs-kafka-0.kafka-cluster.uat-knowhow.svc.cluster.local:9092"
+            # - name: mail.sendgrid.api-key
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: {{ .Values.env}}-sendgrid-apikey
+            #       key: {{ .Values.env}}-sendgrid-apikey
+            # - name: spring.kafka.consumer.bootstrap-servers
+            #   value: "crs-kafka-0.kafka-cluster.uat-knowhow.svc.cluster.local:9092"
+            # - name: spring.kafka.producer.bootstrap-servers
+            #   value: "crs-kafka-0.kafka-cluster.uat-knowhow.svc.cluster.local:9092"
           volumeMounts:
             - name: knowhow-secrets-store
-              mountPath: "/mnt/{{ .Values.env}}-secrets-store"
+              mountPath: "/mnt/{{ .Values.env}}secrets-store"
               readOnly: true
       volumes:
         - name: knowhow-secrets-store
@@ -68,7 +68,7 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: "{{ .Values.env}}-secretproviderclass"
+              secretProviderClass: "{{ .Values.env}}secretproviderclass"
           # livenessProbe:
           #   tcpSocket:
           #     port: {{.Values.port}}

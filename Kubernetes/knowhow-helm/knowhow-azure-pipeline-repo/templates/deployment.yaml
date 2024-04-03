@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: azure-pipeline-repo
-  namespace: {{ .Values.env}}-knowhow
+  namespace: {{ .Values.env}}knowhow
   labels:
     app: azure-pipeline-repo
 spec:
@@ -81,7 +81,7 @@ spec:
               name: {{ .Values.configmapname }}
           volumeMounts:
             - name: knowhow-secrets-store
-              mountPath: "/mnt/{{ .Values.env}}-secrets-store"
+              mountPath: "/mnt/{{ .Values.env}}secrets-store"
               readOnly: true
       volumes:
         - name: knowhow-secrets-store
@@ -89,7 +89,7 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: "{{ .Values.env}}-secretproviderclass"
+              secretProviderClass: "{{ .Values.env}}secretproviderclass"
           livenessProbe:
             tcpSocket:
               port: {{ index .Values.ports 0 }}

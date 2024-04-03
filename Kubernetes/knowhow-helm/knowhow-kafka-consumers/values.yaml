@@ -4,11 +4,11 @@
 
 replicaCount: 1
 
-namespace: uat-knowhow
+namespace: stage-knowhow
 
 configmapname: knowhow-config
 
-env: uat
+env: stage-
 image:
   repository: speedtools.azurecr.io/knowhow-kafka-consumers
   pullPolicy: Always

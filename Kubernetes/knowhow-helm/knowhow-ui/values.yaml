@@ -2,16 +2,16 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-env: uat
+env: stage-
 
-replicaCount: 2
+replicaCount: 1
 
 configmapname: knowhow-config
 image:
   repository: speedtools.azurecr.io/knowhow-ui
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "8.1.1"
+  tag: "9.0.0-SNAPSHOT"
 
 imagePullSecrets: []
 nameOverride: ""
