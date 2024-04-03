@@ -110,163 +110,40 @@ const completeHierarchyData = {
   ]
 };
 
-const fakeSelectedFieldMapping = {
-  "id": "63282cbaf5c740241aff32a1",
-  "projectToolConfigId": "63282ca6487eff1e8b70b1bb",
-  "basicProjectConfigId": "63282c82487eff1e8b70b1b9",
-  "sprintName": "customfield_12700",
-  "jiradefecttype": [
-    "Defect"
-  ],
-  "defectPriority": [],
-  "jiraIssueTypeNames": [
-    "Story",
-    "Enabler Story",
-    "Change request",
-    "Defect",
-    "Epic"
-  ],
-  "storyFirstStatus": "Open",
-  "rootCause": "customfield_19121",
-  "jiraStatusForDevelopment": [
-    "Implementing",
-    "In Development",
-    "In Analysis"
-  ],
-  "jiraIssueEpicType": [
-    "Epic"
-  ],
-  "jiraStatusForQa": [
-    "In Testing"
-  ],
-  "jiraDefectInjectionIssueType": [
-    "Story",
-    "Enabler Story",
-    "Change request"
-  ],
-  "jiraDod": [
-    "Closed",
-    "Ready for Delivery"
-  ],
-  "jiraDefectCreatedStatus": "Open",
-  "jiraTechDebtIssueType": [
-    "Story",
-    "Enabler Story",
-    "Change request"
-  ],
-  "jiraTechDebtIdentification": "",
-  "jiraTechDebtCustomField": "",
-  "jiraTechDebtValue": [],
-  "jiraDefectRejectionStatus": "Closed",
-  "issueStatusExcluMissingWork":  [
-    "Open",
-  ],
-  "jiraBugRaisedByIdentification": "",
-  "jiraBugRaisedByValue": [],
-  "jiraDefectSeepageIssueType": [
-    "Story",
-    "Enabler Story",
-    "Change request"
-  ],
-  "jiraBugRaisedByCustomField": "",
-  "jiraDefectRemovalStatus": [
-    "Closed",
-    "Ready for Delivery"
-  ],
-  "jiraDefectRemovalIssueType": [
-    "Story",
-    "Enabler Story",
-    "Change request"
-  ],
-  "jiraStoryPointsCustomField": "customfield_20803",
-  "jiraTestAutomationIssueType": [
-    "Story",
-    "Enabler Story",
-    "Change request"
-  ],
-  "jiraCanNotAutomatedTestValue": [],
-  "jiraSprintVelocityIssueType": [
-    "Story",
-    "Enabler Story",
-    "Change request"
-  ],
-  "jiraSprintCapacityIssueType": [
-    "Story",
-    "Enabler Story",
-    "Change request"
-  ],
-  "jiraDefectRejectionlIssueType": [
-    "Story",
-    "Enabler Story",
-    "Change request"
-  ],
-  "jiraDefectCountlIssueType": [
-    "Story",
-    "Enabler Story",
-    "Change request"
-  ],
-  "jiraIssueDeliverdStatus": [
-    "Closed",
-    "Resolved"
-  ],
-  "jiraDor": "Ready for Sprint Planning",
-  "jiraIntakeToDorIssueType": [
-    "Story",
-    "Enabler Story",
-    "Change request"
-  ],
-  "jiraStoryIdentification": [
-    "Story",
-    "Enabler Story",
-    "Change request"
-  ],
-  "jiraLiveStatus": "",
-  "regressionAutomationLabels": [],
-  "rootCauseValue": [
-    "Coding"
-  ],
-  "excludeRCAFromFTPR": [],
-  "resolutionTypeForRejection": [
-    "Invalid",
-    "Duplicate",
-    "Unrequired"
-  ],
-  "jiraQADefectDensityIssueType": [
-    "Story",
-    "Enabler Story",
-    "Change request"
-  ],
-  "jiraBugRaisedByQACustomField": "",
-  "jiraBugRaisedByQAIdentification": "",
-  "jiraBugRaisedByQAValue": [],
-  "jiraDefectDroppedStatus": [],
-  "epicCostOfDelay": "customfield_58102",
-  "epicRiskReduction": "customfield_58101",
-  "epicUserBusinessValue": "customfield_58100",
-  "epicWsjf": "customfield_58104",
-  "epicTimeCriticality": "customfield_51002",
-  "epicJobSize": "customfield_61041",
-  "productionDefectCustomField": "",
-  "productionDefectIdentifier": "",
-  "productionDefectValue": [],
-  "productionDefectComponentValue": "",
-  "jiraTestCaseType": [],
-  "testAutomatedIdentification": "",
-  "testAutomationCompletedIdentification": "",
-  "testRegressionIdentification": "",
-  "testAutomated": "",
-  "testAutomationCompletedByCustomField": "",
-  "testRegressionByCustomField": "",
-  "jiraAutomatedTestValue": [],
-  "jiraRegressionTestValue": [],
-  "jiraCanBeAutomatedTestValue": [],
-  "estimationCriteria": "Story Point",
-  "storyPointToHourMapping": 8,
-  "workingHoursDayCPT": 6,
-  "additionalFilterConfig": [
-
-  ]
-};
+const fakeSelectedFieldMapping = [
+  {
+    fieldName : "f1",
+    originalValue : "value1"
+  },
+  {
+    fieldName : "f2",
+    originalValue : ["abc"]
+  },
+  {
+    fieldName : "f2",
+  },
+  {
+    fieldName : "f3",
+    originalValue : ["abcd"],
+    history : [{
+      'Chenge From' : ["abc"]
+    }]
+  },
+  {
+    fieldName : "jiraDefectRejectionStatusDIRtest1",
+    history : [{
+      'Chenge From' : ["abc"]
+    }]
+  },
+  
+  {
+    fieldName : "jiraDefectRejectionStatusDIR23",
+    originalValue : ["abcd"],
+    history : [{
+      'Chenge From' : ["abc"]
+    }]
+  },
+];
 
 const successResponse = {
   message: 'field mappings added successfully',
@@ -387,6 +264,7 @@ describe('FieldMappingFormComponent', () => {
   let sharedService: SharedService;
   let httpService: HttpService;
   let messageService: MessageService;
+  let confirmationService
  
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -405,6 +283,7 @@ describe('FieldMappingFormComponent', () => {
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
     messageService = TestBed.inject(MessageService);
+    confirmationService = TestBed.inject(ConfirmationService);
 
     localStorage.setItem('completeHierarchyData', JSON.stringify(completeHierarchyData));
    });
@@ -598,19 +477,25 @@ describe('FieldMappingFormComponent', () => {
     expect(component.displayDialog).toBeFalsy();
   });
 
-  it('should handle save() when there is no response.data', () => {
-    component.formData = {
-      basicProjectConfigId: "XXXXXXXXXXXXXXXXXXXXXXXX",
-      jiraDefectCreatedStatusKPI14: "Open",
-      jiraDefectDroppedStatusKPI127: ['Dropped', 'Canceled'],
-      jiraDefectInjectionIssueTypeKPI14: ['Story', 'Enabler Story', 'Tech Story', 'Change request']
-    }
+  it('should save data with showing popup', () => {
+    component.formData =[
+      {
+        fieldName : "jiraDefectCreatedStatusKPI14",
+        originalValue : "Open"
+      },
+      {
+        fieldName : "jiraDefectDroppedStatusKPI127",
+        originalValue : ['Dropped', 'Canceled'],
+      },
+      
+    ]
+
     component.selectedConfig = {
       id: 'XXXXXXXXXXXXXXXXXXXXXXXX'
     }
     component.form = new FormGroup({
-      "jiraIterationIssuetypeKPI120": new FormControl([]),
-      "jiraIterationCompletionStatusKPI120": new FormControl([
+      "jiraDefectCreatedStatusKPI14": new FormControl([]),
+      "jiraDefectDroppedStatusKPI127": new FormControl([
           "done"
       ])
     });
@@ -623,26 +508,74 @@ describe('FieldMappingFormComponent', () => {
       success: true,
       data: null,
     }
+    component.metaDataTemplateCode = '1';
     spyOn(httpService, 'getMappingTemplateFlag').and.returnValue(of(response));
     const spy = spyOn(component, 'saveFieldMapping')
     component.save();
-    expect(spy).toHaveBeenCalled();
-  
+   
+    spyOn<any>(confirmationService, 'confirm').and.callFake((params: any) => {
+      params.accept();
+      expect(spy).toHaveBeenCalled();
+    });
   })
 
-  it('should handle save() when there is no response.data', () => {
-    component.formData = {
-      basicProjectConfigId: "XXXXXXXXXXXXXXXXXXXXXXXX",
-      jiraDefectCreatedStatusKPI14: "Open",
-      jiraDefectDroppedStatusKPI127: ['Dropped', 'Canceled'],
-      jiraDefectInjectionIssueTypeKPI14: ['Story', 'Enabler Story', 'Tech Story', 'Change request']
-    }
+  it('should save data for non jira tool', () => {
+    component.formData =[
+      {
+        fieldName : "jiraDefectCreatedStatusKPI14",
+        originalValue : "Open"
+      },
+      {
+        fieldName : "jiraDefectDroppedStatusKPI127",
+        originalValue : ['Dropped', 'Canceled'],
+      },
+      
+    ]
+
     component.selectedConfig = {
       id: 'XXXXXXXXXXXXXXXXXXXXXXXX'
     }
     component.form = new FormGroup({
-      "jiraIterationIssuetypeKPI120": new FormControl([]),
-      "jiraIterationCompletionStatusKPI120": new FormControl([
+      "jiraDefectCreatedStatusKPI14": new FormControl([]),
+      "jiraDefectDroppedStatusKPI127": new FormControl([
+          "done"
+      ])
+    });
+    component.selectedToolConfig = [
+      {
+        toolName: 'nonJira'
+      }
+    ];
+    const response = {
+      success: true,
+      data: null,
+    }
+    component.metaDataTemplateCode = '1';
+    spyOn(httpService, 'getMappingTemplateFlag').and.returnValue(of(response));
+    const spy = spyOn(component, 'saveFieldMapping')
+    component.save();
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should save data without showing popup', () => {
+    component.formData =[
+      {
+        fieldName : "jiraDefectCreatedStatusKPI14",
+        originalValue : "Open"
+      },
+      {
+        fieldName : "jiraDefectDroppedStatusKPI127",
+        originalValue : ['Dropped', 'Canceled'],
+      },
+      
+    ]
+
+    component.selectedConfig = {
+      id: 'XXXXXXXXXXXXXXXXXXXXXXXX'
+    }
+    component.form = new FormGroup({
+      "jiraDefectCreatedStatusKPI14": new FormControl([]),
+      "jiraDefectDroppedStatusKPI127": new FormControl([
           "done"
       ])
     });
@@ -652,42 +585,16 @@ describe('FieldMappingFormComponent', () => {
       }
     ];
     const response = {
-      success: false,
+      success: true,
       data: null,
     }
+    component.metaDataTemplateCode = '9';
     spyOn(httpService, 'getMappingTemplateFlag').and.returnValue(of(response));
-    const spy = spyOn(messageService, 'add')
-    component.save();
-    expect(spy).toHaveBeenCalled();
-  
-  })
-
-  it('should handle save() when there is no response.data', () => {
-    component.formData = {
-      basicProjectConfigId: "XXXXXXXXXXXXXXXXXXXXXXXX",
-      jiraDefectCreatedStatusKPI14: "Open",
-      jiraDefectDroppedStatusKPI127: ['Dropped', 'Canceled'],
-      jiraDefectInjectionIssueTypeKPI14: ['Story', 'Enabler Story', 'Tech Story', 'Change request']
-    }
-    component.selectedConfig = {
-      id: 'XXXXXXXXXXXXXXXXXXXXXXXX'
-    }
-    component.form = new FormGroup({
-      "jiraIterationIssuetypeKPI120": new FormControl([]),
-      "jiraIterationCompletionStatusKPI120": new FormControl([
-          "done"
-      ])
-    });
-    component.selectedToolConfig = [
-      {
-        toolName: 'Bitbucket'
-      }
-    ];
     const spy = spyOn(component, 'saveFieldMapping')
     component.save();
     expect(spy).toHaveBeenCalled();
-  
   })
+
 
   it('should handle error on save field filed mapping api call', () => {
     const mappingData = {
@@ -765,4 +672,39 @@ describe('FieldMappingFormComponent', () => {
     (component as any).dyanmicDownloadByHtmlTag({fileName, text});
     expect(element.getAttribute('download')).toBe(fileName);
   });
+
+  it('should preapare field mapping history',()=>{
+    component.isHistoryPopup = {
+      field1 : false,
+      field2 : false
+    }
+    component.historyList = [{
+      fieldName : "field2",
+      originalValue : ["abcd"],
+      history : [{
+        'change From' : ["abc"]
+      }]
+    }];
+    component.handleBtnClick("field2");
+    expect(component.showSpinner).toBeFalsy();
+
+  })
+
+  it('should refresh history and values one field mapping value saved',()=>{
+    spyOn(component , 'ngOnInit');
+    component.selectedToolConfig = [{id : 'testId'}];
+    component.kpiId = 'dummyId'
+    const spyObj = spyOn(sharedService , 'setSelectedFieldMapping');
+    spyOn(httpService , 'getFieldMappingsWithHistory').and.returnValue(of({
+      success : true,
+      data : {
+        metaTemplateCode : 12,
+        fieldMappingResponses : []
+      }
+    }));
+    component.refreshFieldMapppingValueANDHistory();
+
+    expect(spyObj).toHaveBeenCalled();
+  })
+
 });

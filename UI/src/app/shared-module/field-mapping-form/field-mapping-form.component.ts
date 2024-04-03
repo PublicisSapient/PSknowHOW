@@ -57,6 +57,7 @@ export class FieldMappingFormComponent implements OnInit {
   @Input() kpiId : string;
   individualFieldHistory = [];
   @Input() metaDataTemplateCode : any;
+  @Input() parentComp : string;
 
 private setting = {
   element: {
@@ -110,19 +111,18 @@ private setting = {
   }
 
   /** This method is taking config as parameter, creating form control and assigning initial value based on fieldtype */
-  generateFromControlBasedOnFieldType(config){
-
-    const fieldMapping = this.formData.find(data=>data.fieldName === config.fieldName)
-    if(fieldMapping?.history && fieldMapping?.history?.length){
+  generateFromControlBasedOnFieldType(config) {
+    const fieldMapping = this.formData.find(data => data.fieldName === config.fieldName)
+    if (fieldMapping?.history && fieldMapping?.history?.length) {
       this.historyList.push({
-       fieldName : fieldMapping.fieldName,
-       history : fieldMapping.history
+        fieldName: fieldMapping.fieldName,
+        history: fieldMapping.history
       })
- }
-    if(fieldMapping && fieldMapping?.originalValue){
+    }
+    if (fieldMapping && fieldMapping?.originalValue) {
       return new FormControl(fieldMapping.originalValue);
-    }else{
-      switch(config.fieldType){
+    } else {
+      switch (config.fieldType) {
         case 'text':
           return new FormControl('');
         case 'radiobutton':
@@ -273,9 +273,6 @@ private setting = {
 
   /** Responsible for handle template popup */
   save() {
-    const submitData = {...this.formData,...this.form.value};
-    submitData['basicProjectConfigId'] = this.selectedConfig.id;
-    delete submitData.id;
     const finalList = [];
 
     this.formData.forEach(element => {
@@ -320,7 +317,11 @@ private setting = {
           summary: 'Field Mappings submitted!!',
         });
         this.uploadedFileName = '';
-        this.reloadKPI.emit();
+        if(this.parentComp === 'kpicard'){
+          this.reloadKPI.emit();
+        }else{
+          this.refreshFieldMapppingValueANDHistory();
+        }
       } else {
         this.messenger.add({
           severity: 'error',
@@ -395,8 +396,6 @@ compareValues(originalValue: any, previousValue: any): boolean {
       }
     });
     this.isHistoryPopup[fieldName] = !this.isHistoryPopup[fieldName];
-
-
     this.showSpinner = true;
     if (this.isHistoryPopup[fieldName]) {
       const fieldHistory = this.historyList.find(ele => ele.fieldName === fieldName);
@@ -405,5 +404,16 @@ compareValues(originalValue: any, previousValue: any): boolean {
       }
     }
     this.showSpinner = false;
+  }
+
+  refreshFieldMapppingValueANDHistory(){
+    this.http.getFieldMappingsWithHistory(this.selectedToolConfig[0].id,this.kpiId).subscribe(mappings => {
+      if (mappings && mappings['success']) {
+        this.formData = mappings['data'].fieldMappingResponses;
+        this.metaDataTemplateCode = mappings['data'].metaTemplateCode;
+        this.ngOnInit();
+        this.sharedService.setSelectedFieldMapping(mappings['data']);
+      } 
+    });
   }
 }

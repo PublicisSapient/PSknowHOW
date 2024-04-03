@@ -276,7 +276,13 @@ describe('KpiCardComponent', () => {
 
   it('should get FieldMapping',()=>{
     component.selectedToolConfig = [{id : '123'}];
-    spyOn(httpService,'getFieldMappings').and.returnValue(of({success: true, data: fakeSelectedFieldMapping}));
+    component.kpiData = {
+      kpiId : 'pi123'
+    }
+    spyOn(httpService,'getFieldMappingsWithHistory').and.returnValue(of({success: true, data: {
+      fieldMappingResponses : fakeSelectedFieldMapping,
+      metaTemplateCode : '10'
+    }}));
     component.getFieldMapping();
     expect(Object.keys(component.selectedFieldMapping).length).toBeGreaterThan(0);
   })
@@ -554,8 +560,11 @@ describe('KpiCardComponent', () => {
       success: false,
       error: 'Something went wrong'
     }
+    component.kpiData = {
+      kpiId : 'kpi123'
+    }
     component.loading = true
-    spyOn(httpService, 'getFieldMappings').and.returnValue(of(errResponse));
+    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(of(errResponse));
     component.getFieldMapping();
     expect(component.loading).toBeFalse();
   })
@@ -569,6 +578,9 @@ describe('KpiCardComponent', () => {
     const errResponse = {
       error: "Something went wrong",
       success: false
+    }
+    component.kpiData = {
+      kpiId : 'kpi123'
     }
     component.fieldMappingMetaData = [];
     spyOn(httpService, 'getKPIConfigMetadata').and.returnValue(of(errResponse))

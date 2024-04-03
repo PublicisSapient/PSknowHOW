@@ -86,30 +86,6 @@
                                       <hr *ngIf="nestedField?.tooltip?.kpiImpacted">
                                         </span>' tooltipPosition="top" tooltipEvent="hover"
                                             tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
-                                            <div class="position-relative">
-                                                <div id="comment-summary" class="btn-custom rounded p-p-0 filter-btn">
-                                                    <img #commentSummary class="p-p-2 h-40 cursor-pointer" (click)="handleBtnClick(nestedField.fieldName);"
-                                                        src="../../../assets/img/RequiresSyncIcon.svg" alt="Comments" />
-                                                </div>
-                                                <div #commentSummaryDdn id="comment-popup" class="commentSummaryDdn" *ngIf="isHistoryPopup[nestedField.fieldName]">
-                                                    <div class="comment-inner-section">
-                                                        <i *ngIf="showSpinner" class="fas fa-circle-notch icon-spinner"></i>
-                                                        <ng-container *ngIf="individualFieldHistory?.length > 0 && !showSpinner; else noComments">
-                                                            <h5 class="p-m-0 dateAndName">Changes Log</h5>
-                                                            <div *ngFor="let history of individualFieldHistory">
-                                                                <div class="p-p-2">
-                                                                    <div class="dateAndName">{{history['Changed At'] | date:'MM.dd.yyyy'}} {{history['Changed By']}}</div>
-                                                                    <div class="dateAndName">{{history?.['Changed From'] | json}} <i class="pi pi-arrow-right" style="color: #fff"></i>
-                                                                        <label>{{history?.['Changed To'] | json}}</label> </div>
-                                                                </div>
-                                                            </div>
-                                                        </ng-container>
-                                                    </div>
-                                                    <ng-template #noComments>
-                                                        <h5 class="p-m-0 dateAndName" *ngIf="!showSpinner">No History</h5>
-                                                    </ng-template>
-                                                </div>
-                                            </div>
                                     <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData"
                                         [fieldConfig]="nestedField" [formControlName]="nestedField['fieldName']"
                                         (onSearch)="showDialogToAddValue($event)" [thresholdUnit]="thresholdUnit"></app-field-mapping-field>
