@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,7 +91,7 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 	 * @return
 	 */
 	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping,
-			KanbanAccountHierarchy kanbanAccountHierarchy, ProjectRelease projectRelease, KerberosClient krb5Client) {
+			KanbanAccountHierarchy kanbanAccountHierarchy, ProjectRelease projectRelease, KerberosClient krb5Client) throws IOException, ParseException {
 		List<ProjectVersion> projectVersionList = jiraCommonService.getVersion(confFieldMapping, krb5Client);
 
 		if (CollectionUtils.isNotEmpty(projectVersionList)) {

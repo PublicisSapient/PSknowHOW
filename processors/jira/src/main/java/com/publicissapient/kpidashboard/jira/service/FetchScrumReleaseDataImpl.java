@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +32,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -91,7 +93,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 	 * @param accountHierarchy
 	 */
 	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, AccountHierarchy accountHierarchy,
-			ProjectRelease projectRelease, KerberosClient krb5Client) {
+			ProjectRelease projectRelease, KerberosClient krb5Client) throws IOException, ParseException {
 		List<ProjectVersion> projectVersionList = jiraCommonService.getVersion(confFieldMapping, krb5Client);
 		if (CollectionUtils.isNotEmpty(projectVersionList)) {
 			if (null != accountHierarchy) {
