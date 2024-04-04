@@ -58,6 +58,7 @@ export class FieldMappingFormComponent implements OnInit {
   individualFieldHistory = [];
   @Input() metaDataTemplateCode : any;
   @Input() parentComp : string;
+  nestedFieldANDParent = {}
 
 private setting = {
   element: {
@@ -102,6 +103,7 @@ private setting = {
       formObj[field.fieldName] = this.generateFromControlBasedOnFieldType(field)
       if (field.hasOwnProperty('nestedFields')) {
         for (const nField of field.nestedFields) {
+          this.nestedFieldANDParent[nField.fieldName] = field.fieldName;
           this.isHistoryPopup[nField.fieldName] = false;
           formObj[nField.fieldName] = this.generateFromControlBasedOnFieldType(nField)
         }
@@ -277,16 +279,15 @@ private setting = {
 
     this.formData.forEach(element => {
       const formValue = this.form.value[element.fieldName];
-      
-      const isChangedFromPreviousOne = this.compareValues(element?.originalValue,formValue);
-
-      if(!isChangedFromPreviousOne){
-      finalList.push({fieldName : element.fieldName,originalValue : formValue,previousValue :element.originalValue})
+      const isChangedFromPreviousOne = this.compareValues(element?.originalValue, formValue);
+      if (!isChangedFromPreviousOne) {
+        finalList.push({ fieldName: element.fieldName, originalValue: formValue, previousValue: element.originalValue })
+        /** Adding parent field value if nested field changes */
+        if (this.nestedFieldANDParent.hasOwnProperty(element.fieldName)) {
+          finalList.push({ fieldName: this.nestedFieldANDParent[element.fieldName], originalValue: this.form.value[this.nestedFieldANDParent[element.fieldName]]})
+        }
       }
-
     });
-
-    console.log(finalList);
 
      if(this.selectedToolConfig[0].toolName.toLowerCase() === 'jira'){
           if (!(this.metaDataTemplateCode && this.metaDataTemplateCode === '9' || this.metaDataTemplateCode === '10' )) {
