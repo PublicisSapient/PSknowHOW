@@ -57,7 +57,6 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
 import com.publicissapient.kpidashboard.common.model.application.BaseFieldMappingStructure;
 import com.publicissapient.kpidashboard.common.model.application.ConfigurationHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -292,15 +291,16 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 *            kpiCode
 	 * @param projectToolConfig
 	 *            projectToolConfig
-	 * @param fieldMappingResponseList
-	 *            fieldMappingResponseList
+	 * @param originalFieldMappingResponseList
+	 *            originalFieldMappingResponseList
 	 */
 	@Override
 	public void updateSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfig,
-			List<FieldMappingResponse> fieldMappingResponseList) throws NoSuchFieldException, IllegalAccessException {
+			List<FieldMappingResponse> originalFieldMappingResponseList)
+			throws NoSuchFieldException, IllegalAccessException {
 		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService
 				.loadFieldMappingStructure();
-		if (projectToolConfig != null && CollectionUtils.isNotEmpty(fieldMappingResponseList)
+		if (projectToolConfig != null && CollectionUtils.isNotEmpty(originalFieldMappingResponseList)
 				&& CollectionUtils.isNotEmpty(fieldMappingStructureList)) {
 			FieldMappingEnum fieldMappingEnum = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase());
 			List<String> fieldList = fieldMappingEnum.getFields();
@@ -316,6 +316,17 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			Query query = new Query(Criteria.where("projectToolConfigId").is(projectToolConfigId));
 			Update update = new Update();
 			final String loggedInUser = authenticationService.getLoggedInUser();
+
+			// Map to store fieldName and corresponding object
+			Map<String, FieldMappingResponse> responseHashMap = new HashMap<>();
+			// Iterate over responses
+			for (FieldMappingResponse response : originalFieldMappingResponseList) {
+				responseHashMap.computeIfPresent(response.getFieldName(),
+						(k, existingResponse) -> (existingResponse.getPreviousValue() == null
+								&& response.getPreviousValue() != null) ? response : existingResponse);
+				responseHashMap.putIfAbsent(response.getFieldName(), response);
+			}
+			List<FieldMappingResponse> fieldMappingResponseList = new ArrayList<>(responseHashMap.values());
 			boolean cleanTraceLog = false;
 			for (FieldMappingResponse fieldMappingResponse : fieldMappingResponseList) {
 				update.set(fieldMappingResponse.getFieldName(), fieldMappingResponse.getOriginalValue());
