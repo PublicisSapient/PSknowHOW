@@ -32,6 +32,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+
+/**
+ * maintains the data of fieldmapping history
+ * @author shi6
+ */
 public class ConfigurationHistoryChangeLog {
 
 	@JsonProperty("Changed From")

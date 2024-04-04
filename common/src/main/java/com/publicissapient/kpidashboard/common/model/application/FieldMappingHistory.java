@@ -28,7 +28,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * The type Field mapping. Represents Jira field mapping values
+ * The History of each FieldMapping
+ * 
+ * @author shi6
+ * 
  */
 @SuppressWarnings("PMD.TooManyFields")
 @Getter
