@@ -240,7 +240,7 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 		if (projectConfig.getProjectKey() != null && projectConfig.getProcessorToolConnection() != null) {
 			long storyDataStart = System.currentTimeMillis();
 			MDC.put("storyDataStartTime", String.valueOf(storyDataStart));
-			int count = jiraTestService.processesJiraIssues(projectConfig);
+			int count = jiraTestService.processesJiraIssues(projectConfig,false);
 			testCaseCountTotal.set(count);
 			MDC.put("JiraIssueCount", String.valueOf(count));
 			long end = System.currentTimeMillis();

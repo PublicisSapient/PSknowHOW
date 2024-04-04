@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -24,11 +25,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +57,6 @@ import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
@@ -98,6 +101,12 @@ public class JiraTestServiceImpl implements JiraTestService {
 	private static final String TEST_CAN_BE_AUTOMATED_FLAG = "testCanBeAutomatedFlag";
 	private static final String AUTOMATED_VALUE = "automatedValue";
 	private static final String ERROR_PARSING_TEST_AUTOMATED_FIELD = "JIRA Processor |Error while parsing test automated field";
+
+	public static final String FALSE = "false";
+
+	public static final String PROCESSING_ISSUES_PRINT_LOG = "Processing issues %d - %d out of %d";
+
+	public static final Set<String> ISSUE_FIELD_SET = new HashSet<>();
 	@Autowired
 	private JiraTestProcessorConfig jiraTestProcessorConfig;
 	@Autowired
@@ -133,6 +142,16 @@ public class JiraTestServiceImpl implements JiraTestService {
 	 * @return Count of Jira Issues processed for scrum project
 	 */
 	@Override
+	public int processesJiraIssues(ProjectConfFieldMapping projectConfig, boolean isOffline) {
+		log.info("Start Processing Jira Issues");
+		if (Objects.nonNull(projectConfig.getProcessorToolConnection())
+				&& StringUtils.isNotEmpty(projectConfig.getProcessorToolConnection().getBoardQuery())) {
+			return processesJiraIssuesJQL(projectConfig);
+		} else {
+			processesJiraIssues(projectConfig);
+		}
+		return 0;
+	}
 	public int processesJiraIssues(ProjectConfFieldMapping projectConfig) {
 
 		int savedIsuesCount = 0;
@@ -159,11 +178,9 @@ public class JiraTestServiceImpl implements JiraTestService {
 			});
 			int pageSize = getPageSize();
 
-			boolean hasMore = true;
-
 			String userTimeZone = getUserTimeZone(projectConfig);
 
-			for (int i = 0; hasMore; i += pageSize) {
+			for (int i = 0; true; i += pageSize) {
 				SearchResult searchResult = getIssues(projectConfig, maxChangeDatesByIssueTypeWithAddedTime,
 						userTimeZone, i, dataExist, client);
 				List<Issue> issues = getIssuesFromResult(searchResult);
@@ -922,5 +939,144 @@ public class JiraTestServiceImpl implements JiraTestService {
 				}
 			}
 		}
+	}
+	private int processesJiraIssuesJQL(ProjectConfFieldMapping projectConfig) {
+		int savedIssuesCount = 0;
+		int total = 0;
+		Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
+		setStartDate(jiraTestProcessorConfig);
+		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
+				projectConfig.getBasicProjectConfigId().toHexString());
+		boolean processorFetchingComplete = false;
+		try {
+			boolean dataExist = (testCaseDetailsRepository
+					.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
+			Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(projectConfig);
+			Map<String, LocalDateTime> maxChangeDatesByIssueTypeWithAddedTime = new HashMap<>();
+			maxChangeDatesByIssueType.forEach((k, v) -> {
+				long extraMinutes = jiraTestProcessorConfig.getMinsToReduce();
+				maxChangeDatesByIssueTypeWithAddedTime.put(k, v.minusMinutes(extraMinutes));
+			});
+			int pageSize = getPageSize();
+			String userTimeZone = getUserTimeZone(projectConfig);
+			for (int i = 0; true; i += pageSize) {
+				SearchResult searchResult = getIssues(projectConfig, maxChangeDatesByIssueTypeWithAddedTime,
+						userTimeZone, i, dataExist);
+				List<Issue> issues = getIssuesFromResult(searchResult);
+				if (total == 0) {
+					total = getTotal(searchResult);
+				}
+				// in case of offline method issues size can be greater than
+				// pageSize, increase page size so that same issues not read
+				if (issues.size() >= pageSize) {
+					pageSize = issues.size() + 1;
+				}
+				if (CollectionUtils.isNotEmpty(issues)) {
+					List<TestCaseDetails> testCaseDetailsList = prepareTestCaseDetails(issues, projectConfig);
+					testCaseDetailsRepository.saveAll(testCaseDetailsList);
+					findLastSavedTestCaseDetailsByType(testCaseDetailsList, lastSavedJiraIssueChangedDateByType);
+					savedIssuesCount += issues.size();
+				}
+				MDC.put("JiraTimeZone", String.valueOf(userTimeZone));
+				MDC.put("IssueCount", String.valueOf(issues.size()));
+				// will result in an extra call if number of results == pageSize
+				// but I would rather do that then complicate the jira client
+				// implementation
+				if (issues.size() < pageSize) {
+					break;
+				}
+				TimeUnit.MILLISECONDS.sleep(jiraTestProcessorConfig.getSubsequentApiCallDelayInMilli());
+			}
+			processorFetchingComplete = true;
+		} catch (JSONException e) {
+			log.error("Error while updating Story information in scrum client", e);
+			lastSavedJiraIssueChangedDateByType.clear();
+		} catch (InterruptedException e) {
+			log.error("Interrupted exception thrown.", e);
+			lastSavedJiraIssueChangedDateByType.clear();
+			Thread.currentThread().interrupt();
+		} finally {
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIssuesCount, processorFetchingComplete);
+			if (!isAttemptSuccess) {
+				lastSavedJiraIssueChangedDateByType.clear();
+				processorExecutionTraceLog.setLastSuccessfulRun(null);
+				log.error("Error in Fetching Issues through JQL");
+			} else {
+				processorExecutionTraceLog
+						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), DATE_TIME_FORMAT));
+			}
+			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess);
+		}
+
+		return savedIssuesCount;
+	}
+
+	public void setStartDate(JiraTestProcessorConfig jiraTestProcessorConfig) {
+		LocalDateTime localDateTime = null;
+		if (jiraTestProcessorConfig.isConsiderStartDate()) {
+			try {
+				localDateTime = DateUtil.stringToLocalDateTime(jiraTestProcessorConfig.getStartDate(),
+						JiraConstants.SETTING_TEST_CASE_START_DATE_FORMAT);
+			} catch (DateTimeParseException ex) {
+				log.error("exception while parsing start date provided from property file picking last 12 months data.."
+						+ ex.getMessage());
+				localDateTime = LocalDateTime.now().minusMonths(jiraTestProcessorConfig.getPrevMonthCountToFetchData());
+			}
+		} else {
+			localDateTime = LocalDateTime.now().minusMonths(jiraTestProcessorConfig.getPrevMonthCountToFetchData());
+		}
+		jiraTestProcessorConfig.setStartDate(
+				DateUtil.dateTimeFormatter(localDateTime, JiraConstants.SETTING_TEST_CASE_START_DATE_FORMAT));
+	}
+
+	public SearchResult getIssues(ProjectConfFieldMapping projectConfig,
+			Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart, boolean dataExist)
+			throws InterruptedException {
+		client = getProcessorJiraRestClient(projectConfig);
+		SearchResult searchResult = null;
+		if (client == null) {
+			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
+		} else if (StringUtils.isEmpty(projectConfig.getProcessorToolConnection().getProjectKey())
+				|| StringUtils.isEmpty(projectConfig.getProcessorToolConnection().getBoardQuery())) {
+			log.info("Either Project key is empty or boardQuery not provided. key {} boardquery {}",
+					projectConfig.getProcessorToolConnection().getProjectKey(),
+					projectConfig.getProcessorToolConnection().getBoardQuery());
+		} else {
+			StringBuilder query = new StringBuilder("project in (")
+					.append(projectConfig.getProcessorToolConnection().getProjectKey()).append(") AND ");
+			try {
+				Map<String, String> startDateTimeStrByIssueType = new HashMap<>();
+
+				startDateTimeByIssueType.forEach((type, localDateTime) -> {
+					ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of(userTimeZone));
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+					String dateTimeStr = zonedDateTime.format(formatter);
+					startDateTimeStrByIssueType.put(type, dateTimeStr);
+
+				});
+				query.append(JiraProcessorUtil.processJql(projectConfig.getProcessorToolConnection().getBoardQuery(),
+						startDateTimeStrByIssueType, dataExist, projectConfig));
+				Instant start = Instant.now();
+				Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
+						jiraTestProcessorConfig.getPageSize(), pageStart, ISSUE_FIELD_SET);
+				searchResult = promisedRs.claim();
+				log.debug("jql query processed for JQL");
+				if (searchResult != null) {
+					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
+									Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()));
+				}
+				TimeUnit.MILLISECONDS.sleep(jiraTestProcessorConfig.getSubsequentApiCallDelayInMilli());
+			} catch (RestClientException e) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+					log.error(ERROR_MSG_401);
+				} else {
+					log.info(NO_RESULT_QUERY, query);
+					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
+				}
+			}
+
+		}
+
+		return searchResult;
 	}
 }

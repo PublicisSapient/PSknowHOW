@@ -12,15 +12,6 @@ import com.publicissapient.kpidashboard.jiratest.model.ProjectConfFieldMapping;
 public interface JiraTestService {
 
 	/**
-	 * Explicitly updates queries for the source system, and initiates the update to
-	 * MongoDB from those calls.
-	 *
-	 * @param projectConfig
-	 *            Project Configuration Mapping
-	 */
-	int processesJiraIssues(ProjectConfFieldMapping projectConfig);
-
-	/**
 	 * Purges the issues provided
 	 *
 	 * @param purgeIssuesList
@@ -29,6 +20,15 @@ public interface JiraTestService {
 	 *            Project Configuration Mapping
 	 */
 	void purgeJiraIssues(List<Issue> purgeIssuesList, ProjectConfFieldMapping projectConfig);
+
+	/**
+	 * Explicitly updates queries for the source system, and initiates the update to
+	 * MongoDB from those calls.
+	 *
+	 * @param projectConfig
+	 *            Project Configuration Mapping
+	 */
+	int processesJiraIssues(ProjectConfFieldMapping projectConfig, boolean isOffline);
 
 	/**
 	 * Gets all issues from JIRA

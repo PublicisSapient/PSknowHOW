@@ -1967,6 +1967,15 @@ export class JiraConfigComponent implements OnInit {
             group: 'JiraTest',
             elements: [
               {
+                type: 'textarea',
+                label: 'JQL Query to fetch Test Cases (Optional)',
+                id: 'boardQuery',
+                validators: [],
+                containerClass: 'p-sm-6',
+                disabled: 'queryEnabled',
+                show: true,
+              },
+              {
                 type: 'text',
                 label: 'JIRATEST Project Key',
                 id: 'projectKey',
@@ -2093,7 +2102,7 @@ export class JiraConfigComponent implements OnInit {
                 tooltip: `Select status like "Abandoned", "Deprecated" etc so that these can be excluded from Regression automation coverage, In Sprint automation coverage and Test case without story link KPI`,
                 show: true,
                 isLoading: false,
-              },
+              }
             ],
           };
         }
