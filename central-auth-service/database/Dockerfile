@@ -5,8 +5,7 @@ ARG USER=knowhowuser
 ARG UID=1000
 ARG GID=1000
 
-RUN ln -sf /bin/bash /bin/sh \ 
-    && groupadd -g $GID $USER \
+RUN groupadd -g $GID $USER \
     && useradd -u $UID -g $GID -m -s /bin/bash $USER
 
 ENV POSTGRES_USER="postgres"
