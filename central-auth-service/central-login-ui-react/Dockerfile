@@ -45,6 +45,7 @@ EXPOSE 80 443
 
 RUN tar xvf ${HTML_LOC}${UI2_ASSETS_ARCHIVE} -C /var/www/authui \
     && chown -R $USER:$USER ${CONF_LOC} \
+    && chown -R $USER:$USER /var/log/nginx/ \
     && chown -R $USER:$USER ${CERT_LOC} \
     && chown -R $USER:$USER /var/ \
     && apk add --no-cache libcap \
