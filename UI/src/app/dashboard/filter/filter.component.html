@@ -1,5 +1,5 @@
 <div [ngClass]="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help') ? 'header' : 'header-config' " class="p-p-2">
-   <div class="p-d-flex p-align-center">
+   <div class="p-d-flex p-align-start">
       <div class="position-relative p-mr-2 die-container" *ngIf="auth_service">
          <img src="assets/img/icon-dice.png" class="icon-dice" (click)="appItems.toggle($event)" alt="Switch" width="50"/>
          <div class="down-arrow cursor-pointer" (click)="appItems.toggle($event)"></div>

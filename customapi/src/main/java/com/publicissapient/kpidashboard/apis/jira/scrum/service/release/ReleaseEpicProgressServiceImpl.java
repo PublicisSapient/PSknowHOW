@@ -116,7 +116,7 @@ public class ReleaseEpicProgressServiceImpl extends JiraReleaseKPIService {
 					&& jiraIssueReleaseStatus != null) {
 				Map<String, String> epicWiseIssueSize = createDataCountGroupMap(releaseIssues, jiraIssueReleaseStatus,
 						epicIssues, fieldMapping, filterDataList);
-				populateExcelDataObject(requestTrackerId, excelData, epicWiseIssueSize, epicIssues);
+				populateExcelDataObject(requestTrackerId, excelData, epicWiseIssueSize, epicIssues,jiraIssueReleaseStatus,releaseIssues);
 				kpiElement.setSprint(latestRelease.getName());
 				kpiElement.setModalHeads(KPIExcelColumn.EPIC_PROGRESS.getColumns());
 				kpiElement.setExcelColumns(KPIExcelColumn.EPIC_PROGRESS.getColumns());
@@ -290,12 +290,15 @@ public class ReleaseEpicProgressServiceImpl extends JiraReleaseKPIService {
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			Map<String, String> epicWiseIssueSize, Set<JiraIssue> epicIssues) {
+			Map<String, String> epicWiseIssueSize, Set<JiraIssue> epicIssues,JiraIssueReleaseStatus jiraIssueReleaseStatus, List<JiraIssue> totalIssues) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& MapUtils.isNotEmpty(epicWiseIssueSize)) {
+			Map<String, List<JiraIssue>> epicWiseJiraIssues = totalIssues.stream()
+					.filter(jiraIssue -> jiraIssue.getEpicLinked() != null)
+					.collect(Collectors.groupingBy(JiraIssue::getEpicLinked));
 			Map<String, JiraIssue> epicWiseJiraIssue = epicIssues.stream()
 					.collect(Collectors.toMap(JiraIssue::getNumber, jiraIssue -> jiraIssue));
-			KPIExcelUtility.populateEpicProgessExcelData(epicWiseIssueSize, epicWiseJiraIssue, excelData);
+			KPIExcelUtility.populateEpicProgessExcelData(epicWiseIssueSize, epicWiseJiraIssue, excelData,jiraIssueReleaseStatus,epicWiseJiraIssues);
 		}
 	}
 

@@ -37,12 +37,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -50,6 +48,7 @@ import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.helper.ReaderRetryHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +66,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 	FetchProjectConfiguration fetchProjectConfiguration;
 
 	@Autowired
-	JiraClient jiraClient;
+	JiraClientService jiraClientService;
 
 	@Autowired
 	JiraCommonService jiraCommonService;
@@ -111,32 +110,30 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		if (null != projectConfFieldMapping && !fetchLastIssue) {
-			KerberosClient krb5Client = null;
-			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
-				if (issueIterator == null || !issueIterator.hasNext()) {
-					fetchIssues(client);
-					if (CollectionUtils.isNotEmpty(issues)) {
-						issueIterator = issues.iterator();
-					}
-				}
-
-				if (checkIssueIterator()) {
-					Issue issue = issueIterator.next();
-					readData = new ReadData();
-					readData.setIssue(issue);
-					readData.setProjectConfFieldMapping(projectConfFieldMapping);
-					readData.setSprintFetch(false);
-				}
-
-				if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
-					log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
-					fetchLastIssue = true;
-					return readData;
+			ProcessorJiraRestClient client = jiraClientService.getRestClient();
+			if (issueIterator == null || !issueIterator.hasNext()) {
+				fetchIssues(client);
+				if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(issues)) {
+					issueIterator = issues.iterator();
 				}
 			}
-		}
-		return readData;
 
+			if (checkIssueIterator()) {
+				Issue issue = issueIterator.next();
+				readData = new ReadData();
+				readData.setIssue(issue);
+				readData.setProjectConfFieldMapping(projectConfFieldMapping);
+				readData.setSprintFetch(false);
+			}
+
+			if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
+				log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
+				fetchLastIssue = true;
+				return readData;
+			}
+		}
+
+		return readData;
 	}
 
 	private boolean checkIssueIterator() {

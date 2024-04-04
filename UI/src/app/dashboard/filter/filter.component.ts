@@ -156,19 +156,21 @@ export class FilterComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.items.push({
+      label: 'Logout',
+      icon: 'fas fa-sign-out-alt',
+      command: () => {
+        this.logout();
+      },
+    });
     if (!this.ssoLogin) {
-      this.items.push({
-        label: 'Logout',
-        icon: 'fas fa-sign-out-alt',
-        command: () => {
-          this.logout();
-        },
-      });
+      
 
       this.appList = [
           {
               label: 'KnowHOW',
-              icon: ''
+              icon: '',
+              styleClass: 'p-menuitem-link-active'
           },
           {
               label: 'Assessments',
@@ -675,6 +677,10 @@ export class FilterComponent implements OnInit, OnDestroy {
       } else {
         selectedTrendValues.push(this.trendLineValueList?.filter((x) => x.nodeId == selectedTrendIds)[0]);
       }
+      if(selectedTrendValues.length === 1){
+        this.selectedProjectData = selectedTrendValues[0];
+        this.getProcessorsTraceLogsForProject(selectedTrendValues[0]['basicProjectConfigId']);
+      }   
 
       this.service.setSelectedLevel(selectedLevel);
       this.service.setSelectedTrends(selectedTrendValues);
@@ -808,7 +814,30 @@ export class FilterComponent implements OnInit, OnDestroy {
         boardDetails = this.kpiListData['scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === 'iteration');
       }
       this.selectedTab = boardDetails?.boardName;
-      this.router.navigate([`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`], {queryParamsHandling: 'merge'});
+      this.changeSelectedTab();
+      this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`], {queryParamsHandling: 'merge'});
+    }
+  }
+
+  changeSelectedTab(){
+    let boardDetails = JSON.parse(JSON.stringify(this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase()) 
+    || this.kpiListData['others'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase())));
+    let kpisShownCount = 0;
+    if(boardDetails?.boardName?.toLowerCase() === 'iteration'){
+      boardDetails['kpis'] = [...boardDetails?.kpis?.filter((item) => item.kpiId != 'kpi121')];
+    }
+    boardDetails?.kpis?.forEach((item) => {
+      if(item.shown){
+        kpisShownCount++
+      }
+    })
+    if(kpisShownCount <= 0){
+      this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
+      this.service.setSelectedTab(this.selectedTab);
+      // const selectedTab = this.selectedTab;
+      // const selectedType = this.kanban ? 'kanban' : 'scrum';
+      this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
+      // this.service.onTypeOrTabRefresh.next({ selectedTab, selectedType });
     }
   }
 
@@ -816,11 +845,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     const previousSelectedTab = this.router.url.split('/')[2];
     if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
       this.kanban = false;
-      this.selectedTab = 'iteration';
+      this.projectIndex = 0;
       this.service.setEmptyFilter();
       this.service.setSelectedType('scrum');
-      this.projectIndex = 0;
-      this.router.navigateByUrl(`/dashboard/iteration`);
+      this.changeSelectedTab();
+    this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
     }
   }
 
@@ -862,6 +891,8 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.kpiListDataProjectLevel = response.data;
           this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, this.kpiListData)
           this.service.setDashConfigData(this.kpiListData);
+          const selectedType = this.kanban ? 'kanban' : 'scrum';
+          this.service.setUpdatedBoardList(this.kpiListData, selectedType);
           this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
           this.processKpiList();
           this.navigateToSelectedTab();
@@ -1374,6 +1405,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (response.success) {
         if (this.selectedProjectData && this.selectedProjectData['basicProjectConfigId'] === basicProjectConfigId) {
           this.processorsTracelogs = response.data;
+          this.service.setProcessorLogDetails(this.processorsTracelogs);
         }
         this.showExecutionDate();
       } else {
@@ -1387,7 +1419,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   findTraceLogForTool() {
-    return this.processorsTracelogs.find((ptl) => this.processorName.includes(ptl['processorName'].toLowerCase()));
+    return this.service.getProcessorLogDetails().find((ptl) => this.processorName.includes(ptl['processorName'].toLowerCase()));
   }
 
   showExecutionDate() {
@@ -1534,17 +1566,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** when user clicks on Back to dashboard or logo*/
-  navigateToDashboard() {
-    let projectList = [];
-    if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
-      projectList = this.service.getSelectedTrends().map(data => data.nodeId);
-    }
-    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
-      this.service.setSideNav(false);
-      this.service.setVisibleSideBar(false);
-      this.kpiListDataProjectLevel = response.data;
-      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, this.service.getDashConfigData())
+  handleRedirection(userLevelData){
+    this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, userLevelData)
       this.service.setDashConfigData(this.kpiListData);
       this.getNotification();
       this.selectedFilterData.kanban = this.kanban;
@@ -1574,6 +1597,27 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.service.setSelectedDateFilter(this.selectedDayType);
       this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
       this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
+  }
+
+  /** when user clicks on Back to dashboard or logo*/
+  navigateToDashboard() {
+    let projectList = [];
+    if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
+      projectList = this.service.getSelectedTrends().map(data => data.nodeId);
+    }
+    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
+      this.service.setSideNav(false);
+      this.service.setVisibleSideBar(false);
+      this.kpiListDataProjectLevel = response.data;
+      let userLevelData = this.service.getDashConfigData();
+      if(!userLevelData){
+        this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(boardResponse => {
+          userLevelData = boardResponse.data;
+          this.handleRedirection(userLevelData)
+        })
+      }else{
+        this.handleRedirection(userLevelData);
+      }
     });
   }
 
@@ -1595,6 +1639,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
         this.checkIfProjectHasRelease();
         this.filterForm.get('selectedRelease').setValue(this.selectedRelease['nodeId']);
+      }
+      if (this?.selectedProjectData) {
+        this.getProcessorsTraceLogsForProject(this?.selectedProjectData['basicProjectConfigId']);
       }
       this.service.setNoRelease(false);
       this.selectedFilterArray = [];

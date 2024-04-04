@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
@@ -54,6 +55,9 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 	@Autowired
 	private FetchSprintReport fetchSprintReport;
 
+	@Autowired
+	JiraClientService jiraClientService;
+
 	@Override
 	public Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId)
 			throws IOException {
@@ -80,7 +84,7 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 				log.error("JIRA Processor | Failed to obtain sprint data from {} {}", sValue, e);
 			}
 		}
-		KerberosClient krb5Client = null;
+		KerberosClient krb5Client = jiraClientService.getKerberosClient();
 		if (StringUtils.isEmpty(boardId)) {
 			return fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client, false);
 		}

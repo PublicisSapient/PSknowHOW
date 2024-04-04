@@ -122,18 +122,248 @@ import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/ba
 import { FeatureFlagsService } from './services/feature-toggle.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AppInitializerService } from './services/app-initializer.service';
+import { Router, Routes } from '@angular/router';
+import { FeatureGuard } from './services/feature.guard';
+import { AccessGuard } from './services/access.guard';
+import { HttpService } from './services/http.service';
+import { GoogleAnalyticsService } from './services/google-analytics.service';
+import { AuthGuard } from './services/auth.guard';
+import { Logged } from './services/logged.guard';
+import { SSOGuard } from './services/sso.guard';
 
 /******************************************************/
-export function initializeApp(initializeService: AppInitializerService) {
-    return (): Promise<any> => { 
-        return initializeService.validateToken();
+
+const routes = [
+    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    {
+        path: 'authentication',
+        loadChildren: () => import('../app/authentication/authentication.module').then(m => m.AuthenticationModule),
+        resolve: [Logged],
+        canActivate: [SSOGuard]
+    },
+    {
+        path: 'dashboard', component: DashboardComponent,
+        canActivateChild: [FeatureGuard],
+        children: [
+            { path: '', redirectTo: 'iteration', pathMatch: 'full' },
+            {
+                path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "My Dashboard"
+                }
+            },
+            {
+                path: 'iteration', component: IterationComponent, pathMatch: 'full',
+                data: {
+                    feature: "Iteration"
+                }
+            },
+            {
+                path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Developer"
+                }
+            },
+            {
+                path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Maturity"
+                }
+            },
+            {
+                path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Backlog"
+                }
+            },
+            {
+                path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Release"
+                }
+            },
+            {
+                path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Dora"
+                }
+            },
+            { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
+            { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
+            {
+                path: 'Config',
+                loadChildren: () => import('../app/config/config.module').then(m => m.ConfigModule),
+                data: {
+                    feature: "Config"
+                }
+            },
+            { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+
+        ],
+    },
+    { path: 'authentication-fail', component: SsoAuthFailureComponent },
+    { path: '**', redirectTo: 'authentication' }
+];
+
+const routesAuth = [
+    // { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    {
+        path: 'dashboard', component: DashboardComponent,
+        canActivateChild: [AuthGuard, FeatureGuard],
+        children: [
+            // { path: '', redirectTo: 'iteration', pathMatch: 'full' },
+            {
+                path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "My Dashboard"
+                }
+            },
+            {
+                path: 'iteration', component: IterationComponent, pathMatch: 'full',
+                data: {
+                    feature: "Iteration"
+                }
+            },
+            {
+                path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Developer"
+                }
+            },
+            {
+                path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Maturity"
+                }
+            },
+            {
+                path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Backlog"
+                }
+            },
+            {
+                path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Release"
+                }
+            },
+            {
+                path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                    feature: "Dora"
+                }
+            },
+            { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
+            { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
+            {
+                path: 'Config',
+                loadChildren: () => import('../app/config/config.module').then(m => m.ConfigModule),
+                data: {
+                    feature: "Config"
+                }
+            },
+            { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+
+        ],
+    },
+    { path: 'pageNotFound', component: PageNotFoundComponent },
+    { path: '**', redirectTo: 'pageNotFound' }
+];
+
+
+
+export function initializeApp(http: HttpService, featureToggleService: FeatureFlagsService,
+    ga: GoogleAnalyticsService, sharedService: SharedService) {
+    return (): Promise<any> => {
+        return checkFeatureFlag(http, featureToggleService, ga, sharedService);
     }
 }
 
-export function initializeApp2(initializeService: AppInitializerService) {
-    return (): Promise<any> => { 
-        return initializeService.checkFeatureFlag();
-    }
+export function checkFeatureFlag(http, featureToggleService, ga, sharedService) {
+    console.log('Inside CheckFeatureFlag');
+    return new Promise<void>((resolve, reject) => {
+        if (!environment['production']) {
+            // new FeatureFlagsService.config = this.featureToggleService.loadConfig().then((res) => res);
+            validateToken(http, ga, sharedService);
+        } else {
+            const env$ = http.http.get('assets/env.json').pipe(
+                tap(env => {
+                    console.log("env inside app initializer", env['AUTHENTICATION_SERVICE']);
+
+                    environment['baseUrl'] = env['baseUrl'] || '';
+                    environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
+                    environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
+                    environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
+                    environment['MAP_URL'] = env['MAP_URL'] || '';
+                    environment['RETROS_URL'] = env['RETROS_URL'] || '';
+                    if (environment['AUTHENTICATION_SERVICE'] != true) {
+                        http.router.resetConfig([...routes]);
+                    } else {
+                        http.router.resetConfig([...routesAuth]);
+                    }
+                    validateToken(http, ga, sharedService);
+                }));
+            env$.toPromise().then(async res => {
+                featureToggleService.config = featureToggleService.loadConfig().then((res) => res);
+            });
+        }
+
+
+
+        // load google Analytics script on all instances except local and if customAPI property is true
+        let addGAScript = featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
+        if (addGAScript) {
+            if (window.location.origin.indexOf('localhost') === -1) {
+                ga.load('gaTagManager').then(data => {
+                    console.log('script loaded ', data);
+                })
+            }
+        }
+        resolve();
+    })
+}
+
+export function validateToken(http, ga, sharedService) {
+    return new Promise<void>((resolve, reject) => {
+        if (!environment['AUTHENTICATION_SERVICE'] == true) {
+            http.router.resetConfig([...routes]);
+            http.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
+        } else {
+            // TODO: find right property to avoid string manipulation - Rishabh 3/4/2024
+            let url = window.location.hash.replace('#/', '');
+            
+            let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
+            if (authToken) {
+                sharedService.setAuthToken(authToken);
+            }
+            let obj = {
+                'resource': environment.RESOURCE,
+                'authToken': authToken
+            };
+            console.log('authToken', authToken);
+            // Make API call or initialization logic here...
+            http.getUserValidation(obj).subscribe((response) => {
+                if (response?.['success']) {
+                    http.router.resetConfig([...routesAuth]);
+                    sharedService.setCurrentUserDetails(response?.['data']);
+                    localStorage.setItem("user_name", response?.['data']?.user_name);
+                    localStorage.setItem("user_email", response?.['data']?.user_email);
+                    if (authToken) {
+                        ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
+                    }
+                    http.router.navigateByUrl(url? url : 'dashboard');
+                }
+            }, error => {
+                console.log(error);
+            });
+
+
+        }
+        resolve();
+
+    })
+
 }
 
 @NgModule({
@@ -237,17 +467,13 @@ export function initializeApp2(initializeService: AppInitializerService) {
         MessageService,
         DatePipe,
         FeatureFlagsService,
+        AuthGuard,
         { provide: APP_CONFIG, useValue: AppConfig },
         {
             provide: APP_INITIALIZER,
             useFactory: initializeApp,
-            deps: [AppInitializerService],
-            multi: true
-        },
-        {
-            provide: APP_INITIALIZER,
-            useFactory: initializeApp2,
-            deps: [AppInitializerService],
+            deps: [HttpService, FeatureFlagsService,
+                GoogleAnalyticsService, SharedService],
             multi: true
         }
     ],

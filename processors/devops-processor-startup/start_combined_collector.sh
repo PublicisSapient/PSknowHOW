@@ -18,6 +18,22 @@
 ################################################################################
 
 #start_combined_collector.sh
+counter=1
+
+# Loop through each certificate file and import it to the keystore with an incrementing alias
+for cert_file in $certhostpath/*.cer
+do
+    # Generate the alias for the certificate
+    alias="$keytoolalias$counter"
+    echo -e "\033[32m"
+    # Import the certificate to the keystore
+    keytool -importcert -keystore "$keystorefile" -storepass changeit -alias "$alias" -file "$cert_file" -noprompt -v
+    echo -e "\033[0m"
+    # Increment the counter
+    counter=$((counter+1))
+        echo "Imported $cert_file to $keystorefile as $alias."
+done
+
 java -jar zephyr.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/zephyr.properties &
 java -jar jenkins.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/jenkins.properties &
 java -jar sonar.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/sonar.properties &

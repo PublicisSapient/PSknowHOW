@@ -82,7 +82,8 @@ public class RisksAndDependenciesKPI {
     }
 
     public void updateMetaDataIdentifier() {
-        Document filterQuery = new Document("templateCode", "7");
+        List<String> templateCodes = Arrays.asList("7", "6", "5", "4");
+        Document filterQuery = new Document("templateCode", new Document("$in", templateCodes));
 
         Document metaDataIdentifierRisk = new Document("type", RISK_ISSUETYPE).append("value", List.of("Risk"));
         Document metaDataIdentifierDependency = new Document("type", DEPENPENCY_ISSUETYPE).append("value", List.of("Dependency"));
@@ -146,8 +147,7 @@ public class RisksAndDependenciesKPI {
                 .append(FIELD_LABEL, "Custom Completion status/es").append(FIELD_TYPE, CHIPS)
                 .append(FIELD_CATEGORY, "workflow").append(SECTION, "WorkFlow Status Mapping")
                 .append(TOOL_TIP, new Document(DEFINITION,
-                        "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"))
-                .append(MANDATORY, true);
+                        "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"));
 
         Document jiraIssueRiskTypeKPI176 = new Document().append(FIELD_NAME, RISK_ISSUETYPE)
                 .append(FIELD_LABEL, "Issue type to identify risks").append(FIELD_TYPE, CHIPS)
@@ -198,7 +198,8 @@ public class RisksAndDependenciesKPI {
     }
 
     public void deleteMetadataEntries() {
-        Document filterQuery = new Document("templateCode", "7");
+        List<String> templateCodes = Arrays.asList("7", "6", "5", "4");
+        Document filterQuery = new Document("templateCode", new Document("$in", templateCodes));
 
         Document metaDataIdentifierRisk = new Document("type", RISK_ISSUETYPE);
         Document metaDataIdentifierDependency = new Document("type", DEPENPENCY_ISSUETYPE);

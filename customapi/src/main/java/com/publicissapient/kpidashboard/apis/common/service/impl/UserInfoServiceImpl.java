@@ -248,101 +248,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	/**
-	 * Checks validity of userId when creating a dashboard remotely via api
-	 *
-	 * @param userId
-	 * @param authType
-	 * @return true if valid user
-	 */
-	@Override
-	public boolean isUserValid(String userId, AuthType authType) {
-		if (this.userInfoRepository.findByUsernameAndAuthType(userId, authType) == null) {
-			if (authType == AuthType.LDAP) {
-				try {
-					return searchLdapUser(userId);
-				} catch (NamingException ne) {
-					log.error("Failed to query ldap for: {}", userId, ne);
-					return false;
-				}
-			} else {
-				return false;
-			}
-		} else {
-			return true;
-		}
-	}
-
-	/**
-	 * Search Ldap user.
-	 *
-	 * @param searchId
-	 * @return <code>true</code> if user exists.
-	 * @throws NamingException
-	 */
-	@SuppressWarnings("PMD.AvoidCatchingGenericException")
-	private boolean searchLdapUser(String searchId) throws NamingException {
-		boolean searchResult = false;
-
-		Properties props = new Properties();
-		props.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-		props.put("java.naming.security.protocol", "ssl");
-		props.put(Context.SECURITY_AUTHENTICATION, "simple");
-
-		try {
-			if (StringUtils.isBlank(this.authProperties.getAdUrl())) {
-				props.put(Context.PROVIDER_URL, this.authProperties.getLdapServerUrl());
-				props.put(Context.SECURITY_PRINCIPAL, StringUtils.replace(this.authProperties.getLdapUserDnPattern(),
-						"{0}", this.authProperties.getLdapBindUser()));
-			} else {
-				props.put(Context.PROVIDER_URL, this.authProperties.getAdUrl());
-				props.put(Context.SECURITY_PRINCIPAL,
-						this.authProperties.getLdapBindUser() + "@" + this.authProperties.getAdDomain());
-			}
-			props.put(Context.SECURITY_CREDENTIALS, this.authProperties.getLdapBindPass());
-		} catch (Exception e) {
-			log.error("Failed to retrieve properties for InitialDirContext", e);
-			return false;
-		}
-
-		InitialDirContext context = new InitialDirContext(props);
-
-		try {
-			SearchControls ctrls = new SearchControls();
-			ctrls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-
-			String searchBase = "";
-			String searchFilter = "";
-			if (StringUtils.isBlank(this.authProperties.getAdUrl())) {
-				searchBase = this.authProperties.getLdapUserDnPattern().substring(
-						this.authProperties.getLdapUserDnPattern().indexOf(',') + 1,
-						this.authProperties.getLdapUserDnPattern().length());
-				searchFilter = "(&(objectClass=user)(sAMAccountName=" + searchId + "))";
-			} else {
-				searchBase = this.authProperties.getAdRootDn();
-				searchFilter = "(&(objectClass=user)(userPrincipalName=" + searchId + "@"
-						+ this.authProperties.getAdDomain() + "))";
-			}
-
-			NamingEnumeration<SearchResult> results = context.search(searchBase, searchFilter, ctrls);
-
-			if (!results.hasMore()) {
-				return searchResult;
-			}
-
-			SearchResult result = results.next();
-
-			Attribute memberOf = result.getAttributes().get("memberOf");
-			if (memberOf != null) {
-				searchResult = true;
-			}
-		} finally {
-			context.close();
-		}
-
-		return searchResult;
-	}
-
-	/**
 	 * update userInfo collection
 	 *
 	 * @param username
@@ -398,7 +303,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	/**
-	 * Return userinfo along with email in case of ldap or standardlogin
+	 * Return userinfo along with email in case of standardlogin
 	 *
 	 * @param username
 	 *            username

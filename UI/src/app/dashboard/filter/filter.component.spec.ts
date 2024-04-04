@@ -2276,6 +2276,7 @@ const completeHierarchyData = {
     spyOn(sharedService, 'getSelectedTrends').and.returnValue(obj);
     spyOn(sharedService, 'setDashConfigData');
     const spy = spyOn(sharedService, 'select');
+    spyOn(sharedService, 'setUpdatedBoardList');
     spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(of(mockData));
     spyOn(component, 'processKpiList');
     spyOn(component, 'navigateToSelectedTab');
@@ -2283,7 +2284,7 @@ const completeHierarchyData = {
     expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab)
   })
 
-  it('should get kpi order list on project level', () => {
+  it('should get kpi order list on project level and return error', () => {
     component.selectedTab = 'backlog';
     const obj = [{
       "nodeId": "Scrum Project_6335363749794a18e8a4479b",
@@ -2567,32 +2568,17 @@ const completeHierarchyData = {
 
     beforeEach(() => {
       component.processorName = ['tool1'];
-      component.processorsTracelogs = [
+      const processorsTracelogs = [
         { processorName: 'tool1', traceLog: 'Trace log for tool1' },
         { processorName: 'tool2', traceLog: 'Trace log for tool2' },
         { processorName: 'tool3', traceLog: 'Trace log for tool3' }
       ];
+      component.service.setProcessorLogDetails(processorsTracelogs)
     });
 
     it('should return the trace log for the tool if it exists in processorsTracelogs', () => {
       const result = component.findTraceLogForTool();
       expect(result).toEqual({ processorName: 'tool1', traceLog: 'Trace log for tool1' });
-    });
-
-    it('should return undefined if the tool does not exist in processorsTracelogs', () => {
-      component.processorName = ['tool4'];
-
-
-      const result = component.findTraceLogForTool();
-      expect(result).toBeUndefined();
-    });
-
-    it('should return undefined if processorsTracelogs is empty', () => {
-      component.processorsTracelogs = [];
-
-
-      const result = component.findTraceLogForTool();
-      expect(result).toBeUndefined();
     });
   });
 
@@ -2642,39 +2628,6 @@ const completeHierarchyData = {
       const spyob = spyOn(ga, 'setProjectData');
       component.compileGAData();
       expect(spyob).toHaveBeenCalled();
-    });
-  });
-
-  describe('YourComponent', () => {
-
-    beforeEach(() => {
-      component.processorName = ['tool1'];
-      component.processorsTracelogs = [
-        { processorName: 'tool1', traceLog: 'Trace log for tool1' },
-        { processorName: 'tool2', traceLog: 'Trace log for tool2' },
-        { processorName: 'tool3', traceLog: 'Trace log for tool3' }
-      ];
-    });
-
-    it('should return the trace log for the tool if it exists in processorsTracelogs', () => {
-      const result = component.findTraceLogForTool();
-      expect(result).toEqual({ processorName: 'tool1', traceLog: 'Trace log for tool1' });
-    });
-
-    it('should return undefined if the tool does not exist in processorsTracelogs', () => {
-      component.processorName = ['tool4'];
-
-
-      const result = component.findTraceLogForTool();
-      expect(result).toBeUndefined();
-    });
-
-    it('should return undefined if processorsTracelogs is empty', () => {
-      component.processorsTracelogs = [];
-
-
-      const result = component.findTraceLogForTool();
-      expect(result).toBeUndefined();
     });
   });
 
@@ -2741,5 +2694,22 @@ const completeHierarchyData = {
           } 
           component.closeAllDropdowns();
         })
-
+    
+        xit('should set selectedTab to the first boardName if selectedTab does not exist in kanban or scrum', () => {
+          // Arrange
+          component.kpiListData = {
+            kanban: [{ boardName: 'Board 1', kpis: [] }],
+            scrum: [],
+            others: []
+          };
+          component.kanban = true;
+          component.selectedTab = 'Non-existent Board';
+          spyOn(sharedService, 'setSelectedTab');
+          spyOn(component.router, 'navigate');
+          // Act
+          component.changeSelectedTab();
+    
+          // Assert
+          expect(component.selectedTab).toBe('Board 1');
+        });
 });

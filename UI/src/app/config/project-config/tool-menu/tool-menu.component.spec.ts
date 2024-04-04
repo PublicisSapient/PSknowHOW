@@ -105,11 +105,11 @@ describe('ToolMenuComponent', () => {
     toolsReq.flush(toolsData);
 
     const jiraOrAzure = toolsData['data'].filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
-    expect(component.disableSwitch).toBeTrue();
     if (jiraOrAzure.length) {
       const mappingsReq = httpMock.expectOne(`${baseUrl}/api/tools/${jiraOrAzure[0].id}/fieldMapping`);
       expect(mappingsReq.request.method).toBe('GET');
       mappingsReq.flush(mappingData);
+      expect(component.disableSwitch).toBeTrue();
     }
     if (component.isAssigneeSwitchChecked) {
       expect(component.isAssigneeSwitchDisabled).toBeTruthy();
@@ -145,6 +145,10 @@ describe('ToolMenuComponent', () => {
       {
         "id": "64c780f25fec906dbc18f1d7",
         "toolName": "GitHubAction",
+      },
+      {
+        "id": "64c780f25fsvr46h46j57n3e",
+        "toolName": "ArgoCD",
       },
     ]
     component.selectedProject = {
@@ -449,5 +453,5 @@ describe('ToolMenuComponent', () => {
     component.ngOnInit();
     expect(component.tools.length).toEqual(1);
   })
-  
+
 });

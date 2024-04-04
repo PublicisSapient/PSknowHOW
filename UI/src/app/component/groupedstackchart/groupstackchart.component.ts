@@ -52,6 +52,7 @@ export class GroupstackchartComponent implements OnChanges {
   @Input() activeTab?: number = 0;
   @Input() isAggregationStacks // to determine wheather need to aggrigate stacks 
   isDrilledDown = false;
+  shouldClickable = true;
   elemObserver = new ResizeObserver(() => { this.draw(this.transformedData) });
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
@@ -64,6 +65,7 @@ export class GroupstackchartComponent implements OnChanges {
       if (changes['data']) {
         this.isDrilledDown = false;
         d3.select(this.elem).select('#back_icon').attr('class', 'p-d-none');
+        this.checkIfDrillDownNeedOrNot(this.data)
         this.transformedData = JSON.parse(JSON.stringify(this.transformData(this.data)));
         this.dataPoints = this.transformedData.length;
         this.dataLength = this.dataPoints;
@@ -79,6 +81,7 @@ export class GroupstackchartComponent implements OnChanges {
       if (changes['filter']) {
         this.isDrilledDown = false;
         d3.select(this.elem).select('#back_icon').attr('class', 'p-d-none');
+        this.checkIfDrillDownNeedOrNot(this.data)
         this.transformedData = JSON.parse(JSON.stringify(this.transformData(this.data)));
         this.dataPoints = this.transformedData.length;
         this.dataLength = this.dataPoints;
@@ -356,7 +359,7 @@ export class GroupstackchartComponent implements OnChanges {
 
       svgX.selectAll('rect.serie-rect1')
         .on('click', function (event, d) {
-          if(this.isDrilledDown){
+          if(self.shouldClickable){
           self.isDrilledDown = true;
           d3.select(self.elem).select('#back_icon').attr('class', 'p-d-block');
           const dataName = event.target.parentElement.getAttribute('data-name');
@@ -428,15 +431,9 @@ export class GroupstackchartComponent implements OnChanges {
         obj['drillDown' + '_' + val['subFilter']] = [];
         obj[val['subFilter']] = this.filter['filter1'][0] === 'Story Points' ? val['size'] : val['value'];
         obj['drillDown' + '_' + val['subFilter']].push(...val['drillDown'] ? val['drillDown'] : []);
-        if (val['drillDown'] && val['drillDown']?.length) {
-          this.isDrilledDown = true;
-        } else {
-          this.isDrilledDown = false;
-        }
       });
       element.value = obj;
     });
-    console.log(result);
     return result;
   }
 
@@ -521,6 +518,23 @@ export class GroupstackchartComponent implements OnChanges {
       }
     });
     return 0;
+  }
+
+  checkIfDrillDownNeedOrNot(data){
+    var counter = 0;
+     data.forEach((val)=>{
+        val.value.forEach(sprint=>{
+          if(sprint?.drillDown && sprint?.drillDown?.length){
+            counter++;
+          }
+        })
+     })
+
+     if(counter === 0){
+       this.shouldClickable = false;
+     }else{
+      this.shouldClickable = true
+     }
   }
 
   ngOnDestroy() {

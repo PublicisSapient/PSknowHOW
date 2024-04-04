@@ -97,10 +97,10 @@ export class ToolMenuComponent implements OnInit {
             };
             this.projectTypeChange(fakeEvent, false);
             this.selectedType = jiraOrAzure[0].toolName === 'Azure';
-            this.disableSwitch = true;
             this.http.getFieldMappings(jiraOrAzure[0].id).subscribe(mappings => {
               if (mappings && mappings['success']) {
                 this.sharedService.setSelectedFieldMapping(mappings['data']);
+                this.disableSwitch = true;
               } else {
                 this.sharedService.setSelectedFieldMapping(null);
               }
@@ -237,8 +237,16 @@ export class ToolMenuComponent implements OnInit {
             routerLink: '/dashboard/Config/JiraConfig',
             queryParams1: 'RepoTool',
             index: 12
+          },
+          {
+            toolName: 'ArgoCD',
+            category: 'ABC',
+            description: '-',
+            icon: '',
+            routerLink: '/dashboard/Config/JiraConfig',
+            queryParams1: 'ArgoCD',
+            index: 13
           }
-
 
         ];
       }

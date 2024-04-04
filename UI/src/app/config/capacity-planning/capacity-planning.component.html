@@ -340,12 +340,12 @@
                                     <td class="expanded-table-body-cell" [style]="{'max-width':'120px', 'word-wrap': 'break-word'}">
                                         <input type="email" min="0" pInputText
                                             *ngIf="projectCapacityEditMode;else showUserEmail"
-                                            (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email')"
                                             placeholder="Repo EmailId"
+                                            (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email')"
                                             [style]="{'width':'120px'}"
                                             [formControl]="selectedSprintAssigneFormArray[rowIndex]?.email"
                                             (keypress)="validateInput($event, 'email')"
-                                            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
+                                            pattern="[^@]+@[^@]+\.[a-zA-Z]{2,6}">
                                         <ng-template #showUserEmail>{{assignee?.email ?
                                             assignee?.email : '- -'}}</ng-template>
                                     </td>
@@ -402,7 +402,6 @@
                             <button pButton pRipple label="Cancel" icon="pi pi-times"
                                 class="p-button-cancel p-button-outlined p-button-secondary p-button-text p-mr-2 p-button-sm"
                                 (click)="onSprintCapacityCancel(item)"></button>
-
                             <button pButton pRipple label="Save" icon="pi pi-save"
                                 class="p-button-secondary p-button-sm" (click)="onSprintCapacitySave(item)"
                                 [disabled]="!isAdminForSelectedProject || selectedSprintAssigneValidator?.length > 0"></button>
