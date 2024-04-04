@@ -399,7 +399,7 @@ compareValues(originalValue: any, previousValue: any): boolean {
         this.isHistoryPopup[key] = false;
       }
     });
-    this.isHistoryPopup[fieldName] = !this.isHistoryPopup[fieldName];
+    this.isHistoryPopup[fieldName] = true;
     this.showSpinner = true;
     if (this.isHistoryPopup[fieldName]) {
       const fieldHistory = this.historyList.find(ele => ele.fieldName === fieldName);
@@ -408,6 +408,11 @@ compareValues(originalValue: any, previousValue: any): boolean {
       }
     }
     this.showSpinner = false;
+  }
+
+  onMouseOut(fieldName){
+    this.individualFieldHistory = [];
+        this.isHistoryPopup[fieldName] = false;
   }
 
   refreshFieldMapppingValueANDHistory(){

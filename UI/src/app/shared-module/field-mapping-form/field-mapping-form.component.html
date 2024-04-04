@@ -37,9 +37,9 @@
                                 tooltipStyleClass="tooltiptext" [escape]="false"></span>
                         </label>
                     </div>
-                    <div class="position-relative">
+                    <div class="position-relative" (mouseout)="onMouseOut(field.fieldName)">
                         <div id="comment-summary" class="btn-custom rounded p-p-0 filter-btn">
-                            <img #commentSummary class="p-p-2 h-40 cursor-pointer" (click)="handleBtnClick(field.fieldName);"
+                            <img #commentSummary class="p-p-2 h-40 cursor-pointer" (mouseover)="handleBtnClick(field.fieldName);"
                                 src="../../../assets/img/RequiresSyncIcon.svg" alt="Comments" />
                         </div>
                         <div #commentSummaryDdn id="comment-popup" class="commentSummaryDdn" *ngIf="isHistoryPopup[field.fieldName]">

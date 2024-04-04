@@ -707,4 +707,12 @@ describe('FieldMappingFormComponent', () => {
     expect(spyObj).toHaveBeenCalled();
   })
 
+  it('should close history popup on mouse out',()=>{
+    component.isHistoryPopup = {
+      f1 : true
+    }
+    component.onMouseOut("f1");
+    expect(component.isHistoryPopup['f1']).toBeFalse();
+  })
+
 });
