@@ -48,6 +48,7 @@ RUN tar xvf ${HTML_LOC}${UI2_ASSETS_ARCHIVE} -C /var/www/authui \
     && chown -R $USER:$USER /var/log/nginx/ \
     && chown -R $USER:$USER ${CERT_LOC} \
     && chown -R $USER:$USER /var/ \
+    && chown -R $USER:$USER /var/run \
     && apk add --no-cache libcap \
     && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx \
     && apk add --no-cache bash \
