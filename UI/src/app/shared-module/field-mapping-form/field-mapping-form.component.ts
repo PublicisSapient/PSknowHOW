@@ -154,7 +154,7 @@ private setting = {
       const submitData = {...this.formData};
       submitData['basicProjectConfigId'] = this.selectedConfig.id;
       delete submitData.id;
-      this.saveFieldMapping(submitData);
+      this.saveFieldMapping(submitData,true);
     }
   }
 
@@ -312,8 +312,8 @@ private setting = {
   }
 
   /** Responsible for handle save */
-  saveFieldMapping(mappingData) {
-    this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingData,this.kpiId).subscribe(response => {
+  saveFieldMapping(mappingData,isImport?) {
+    this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingData,this.kpiId,isImport).subscribe(response => {
       if (response && response['success']) {
         this.messenger.add({
           severity: 'success',

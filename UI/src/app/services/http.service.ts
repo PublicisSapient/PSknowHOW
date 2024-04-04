@@ -773,11 +773,18 @@ export class HttpService {
     }
 
   /** Save all Field Mappings */
-  setFieldMappings(toolId, mappingConfig,kpiid) {
-    return this.http.post(
-      this.fieldMappingsUrl + '/saveMapping/' + toolId + '/' + kpiid,
-      mappingConfig,
-    );
+  setFieldMappings(toolId, mappingConfig,kpiid,isImport?) {
+    if(isImport && isImport === true){
+      return this.http.post(
+        this.fieldMappingsUrl + '/' + toolId + '/fieldMapping',
+        mappingConfig,
+      );
+    }else{
+      return this.http.post(
+        this.fieldMappingsUrl + '/saveMapping/' + toolId + '/' + kpiid,
+        mappingConfig,
+      );
+    }
   }
 
   /** Get KPI-field mapping relationships */
