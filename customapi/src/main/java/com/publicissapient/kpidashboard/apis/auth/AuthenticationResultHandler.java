@@ -22,11 +22,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -34,8 +29,11 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class AuthenticationResultHandler implements AuthenticationSuccessHandler {
@@ -49,24 +47,17 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 	@Autowired
 	private AuthenticationService authenticationService;
 
-	@Autowired
-	private AuthProperties authProperties;
-
-	@Autowired
-	private CookieUtil cookieUtil;
-
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 		authenticationResponseService.handle(response, authentication);
 		// sgu106: Google Analytics data population starts
 		String username = authenticationService.getUsername(authentication);
-		Cookie authCookie = cookieUtil.getAuthCookie(request);
-		String token = authCookie.getValue();
-		Map<String, Object> userMap = customAnalyticsService.addAnalyticsData(response, username, token);
+
+		JSONObject json = customAnalyticsService.addAnalyticsData(response, username);
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
-		out.print(userMap);
+		out.print(json.toJSONString());
 		// sgu106: Google Analytics data population ends
 
 	}

@@ -22,7 +22,7 @@ unit test cases.
 @author rishabh
 *******************************/
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -41,6 +41,7 @@ import { DashboardComponent } from '../dashboard.component';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { Routes } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { of } from 'rxjs';
 
 const selectedTab = 'developer';
 const masterData = require('../../../test/resource/masterData.json');
@@ -240,6 +241,7 @@ describe('DeveloperComponent', () => {
   let excelService: ExcelService;
   let messageService: MessageService;
   let httpMock;
+  let exportExcelComponent;
 
   const baseUrl = environment.baseUrl;
 
@@ -274,6 +276,7 @@ describe('DeveloperComponent', () => {
 
     fixture = TestBed.createComponent(DeveloperComponent);
     component = fixture.componentInstance;
+    exportExcelComponent = TestBed.createComponent(ExportExcelComponent).componentInstance;
     fixture.detectChanges();
 
     const type = 'Scrum';
@@ -347,6 +350,28 @@ describe('DeveloperComponent', () => {
       done();
     }, 500);
   });
+
+  it('should get details from service when globalConfig is undefined', fakeAsync(() => {
+    const type = 'Kanban';
+    service.setDashConfigData(dashConfigData);
+    component.globalConfig = undefined
+    service.setSelectedTypeOrTabRefresh(selectedTab, type);
+    service.select(masterData, filterData, filterApplyData, selectedTab, false, true);
+    fixture.detectChanges();
+    tick(6000);
+      expect(component.globalConfig).toBeDefined();
+  }));
+
+  it('should noTabAccess as true when tab name is different ', fakeAsync(() => {
+    const type = 'Kanban';
+    service.setDashConfigData(dashConfigData);
+    component.globalConfig = undefined
+    service.setSelectedTypeOrTabRefresh(selectedTab, type);
+    service.select(masterData, filterData, filterApplyData, 'fakeTab', false, true);
+    fixture.detectChanges();
+    tick(6000);
+      expect(component.noTabAccess).not.toBeFalse();
+  }));
 
   it('should handle KPI filter change', (done) => {
     const x = {
@@ -855,8 +880,148 @@ describe('DeveloperComponent', () => {
     };
     component.handleSelectedOption(event, kpi);
     fixture.detectChanges();
-    expect(component.kpiSelectedFilterObj['kpi11']).toEqual(["debbie_integration -> PSKnowHOW -> KnowHOW"]);
+    expect(component.kpiSelectedFilterObj['kpi11']).toEqual("debbie_integration -> PSKnowHOW -> KnowHOW");
     done();
   });
+
+  it('should work download excel functionality', () => {
+    spyOn(component.exportExcelComponent, 'downloadExcel')
+    component.downloadExcel('kpi122', 'name', true, true);
+    expect(exportExcelComponent).toBeDefined();
+})
+
+it('should noTabAccess false when emp details not available', () => {
+  service.setEmptyData('');
+  fixture.detectChanges();
+  component.ngOnInit();
+  expect(component.noTabAccess).toBeFalsy();
+})
+
+it('should noTabAccess true when emp details available', () => {
+  service.setEmptyData('test');
+  fixture.detectChanges();
+  component.ngOnInit();
+  expect(component.noTabAccess).toBeTruthy();
+})
+
+it('should set the tooltip and global config data if the http request is successful', () => {
+  const filterData = ['data-1', 'data-2'];
+  spyOn(httpService,'getConfigDetails').and.returnValue(of(filterData));
+  spyOn(service, 'setGlobalConfigData');
+  component.ngOnInit();
+  expect(httpService.getConfigDetails).toHaveBeenCalled();
+  expect(component.tooltip).toEqual(filterData);
+});
+
+it('should reload KPI once mapping saved ', () => {
+  const KPiList = [{
+      id: "kpi1"
+  }];
+  const fakeKPiDetails = {
+      kpiDetails: {
+          kpiSource: 'jira',
+          kanban: true,
+          groupId: 1
+      }
+  }
+  spyOn(service, 'getSelectedType').and.returnValue('kanban');
+  spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: KPiList })
+  const spy = spyOn(component, 'postBitBucketKanbanKpi');
+  component.reloadKPI(fakeKPiDetails);
+  expect(spy).toBeDefined();
+})
+
+it('should set the kpiCommentsCountObj for a single kpiId', fakeAsync((done) => {
+  const kpiId = 'kpi-1';
+  const requestObj = {
+    nodes: ['project-1', 'project-2'],
+    level: 'level-1',
+    nodeChildId: '',
+    kpiIds: [kpiId],
+  };
+  component.filterApplyData = filterApplyData;
+  const response = { [kpiId]: 10 };
+  spyOn(helperService,'getKpiCommentsCount').and.returnValue(Promise.resolve({}));
+  component.getKpiCommentsCount(kpiId);
+  expect(component.kpiCommentsCountObj).toBeDefined();
+}));
+
+it('should set the kpiCommentsCountObj for all kpiIds', fakeAsync((done) => {
+  const kpiId = '';
+  const requestObj = {
+    nodes: ['project-1', 'project-2'],
+    level: 'level-1',
+    nodeChildId: '',
+    kpiIds: [kpiId],
+  };
+  component.filterApplyData = filterApplyData;
+  const response = { [kpiId]: 10 };
+  component.updatedConfigGlobalData = [{kpiId :'123'}]
+  spyOn(helperService,'getKpiCommentsCount').and.returnValue(Promise.resolve({}))
+  component.getKpiCommentsCount(kpiId);
+  expect(component.kpiCommentsCountObj).toBeDefined();
+}));
+
+it('should generate the color object and return the filtered array', () => {
+  const kpiId = 'kpi-1';
+  const arr = [
+    { data: 'node-1' },
+    { data: 'node-2' },
+    { data: 'node-3' },
+  ];
+  component.colorObj = {
+    node1: { nodeName: 'node-1', color: 'red' },
+    node2: { nodeName: 'node-2', color: 'green' },
+    node3: { nodeName: 'node-3', color: 'blue' },
+  };
+  const result = component.generateColorObj(kpiId, arr);
+  expect(component.chartColorList[kpiId]).toEqual(['red', 'green', 'blue']);
+  expect(result).toEqual(arr);
+});
+
+it('shouold  reset data when prject is changing',()=>{
+  service.setSelectedLevel({hierarchyLevelId : 'project'})
+  const fakeEvent = {
+    filterApplyData : {},
+    selectedTab : 'developer',
+  }
+  component.selectedtype = 'scrum'
+  component.serviceObject = {
+    'makeAPICall' : true
+  }
+  service.setSelectedType('scrum')
+  service.setDashConfigData({scrum : [{boardName : 'developer',kpis: [{kpiId : 'kpi123'}]}]})
+  component.receiveSharedData(fakeEvent)
+  expect(component.allKpiArray.length).toBe(0);
+})
+
+
+it('should generate dropdown options',()=>{
+  spyOn(component,'ifKpiExist').and.returnValue(0);
+  component.colorObj = { knowhow: { nodeName: 'knowhow' },knowhow2 :  { nodeName: 'knowhow2' }};
+  component.allKpiArray = [{
+    trendValueList: [
+      {
+        filter: 'f1',
+        filter1 : 'f4',
+        value: [
+          { data: 'knowhow' },
+          { data: 'knowhow2' }
+        ]
+      },
+      {
+        filter: 'f2',
+        filter1 : 'f46',
+        value: [
+          { data: 'knowhow' },
+          { data: 'knowhow2' }
+        ]
+      }
+    ]
+  }]
+  component.getDropdownArray('kpi123')
+  expect(component.kpiDropdowns).toBeDefined()
+})
+
 
 });

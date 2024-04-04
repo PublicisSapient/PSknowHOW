@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,20 +69,6 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	/** The operations. */
 	@Autowired
 	private MongoOperations operations;
-
-	/**
-	 * To iso 8601 utc string.
-	 *
-	 * @param date
-	 *            the date
-	 * @return the string
-	 */
-	public static String toISO8601UTC(Date date) {
-		TimeZone tz = TimeZone.getTimeZone("UTC");
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.US);
-		df.setTimeZone(tz);
-		return df.format(date);
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override

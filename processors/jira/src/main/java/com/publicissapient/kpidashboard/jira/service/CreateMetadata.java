@@ -32,5 +32,5 @@ public interface CreateMetadata {
 	 * @param client
 	 *            client
 	 */
-	void collectMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client);
+	void collectMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client, String isScheduler);
 }

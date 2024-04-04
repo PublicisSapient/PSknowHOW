@@ -22,10 +22,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Base64;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.commons.collections.CollectionUtils;
+import com.publicissapient.kpidashboard.apis.argocd.model.UserCredentialsDTO;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.http.HttpResponse;
@@ -36,6 +35,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -45,7 +46,6 @@ import org.springframework.web.client.RestTemplate;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
 import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -64,16 +64,14 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private static final String VALID_MSG = "Valid Credentials ";
 	private static final String INVALID_MSG = "Invalid Credentials ";
 	private static final String WRONG_JIRA_BEARER = "{\"expand\":\"projects\",\"projects\":[]}";
-	private static final Pattern URL_PATTERN = Pattern.compile("^(https?://)([^/?#]+)([^?#]*)(\\?[^#]*)?(#.*)?$");
 	private static final String APPICATION_JSON = "application/json";
-	private static final String CLOUD_BITBUCKET = "bitbucket.org";
+	private static final String CLOUD_BITBUCKET_IDENTIFIER = "bitbucket.org";
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	private RestTemplate restTemplate;
 	@Autowired
 	private RepoToolsProviderRepository repoToolsProviderRepository;
-
 
 	@Override
 	public ServiceResponse validateConnection(Connection connection, String toolName) {
@@ -127,6 +125,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		case Constant.TOOL_TEAMCITY:
 		case Constant.TOOL_BAMBOO:
 		case Constant.TOOL_JENKINS:
+		case Constant.TOOL_ARGOCD:
 			apiUrl = createApiUrl(connection.getBaseUrl(), toolName);
 			statusCode = testConnectionDetails(connection, apiUrl, password, toolName);
 			break;
@@ -136,9 +135,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				statusCode = validateTestConn(connection, apiUrl, password, toolName);
 			}
 			break;
-			case Constant.REPO_TOOLS:
-				apiUrl = getApiForRepoTool(connection);
-				statusCode = validateTestConn(connection, apiUrl, password, toolName);
+		case Constant.REPO_TOOLS:
+			apiUrl = getApiForRepoTool(connection);
+			statusCode = validateTestConn(connection, apiUrl, password, toolName);
 			break;
 		default:
 			return new ServiceResponse(false, "Invalid Toolname", HttpStatus.NOT_FOUND);
@@ -155,25 +154,18 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return new ServiceResponse(false, "Password/API token missing", HttpStatus.NOT_FOUND);
 	}
 
-	private String getApiForRepoTool(Connection connection){
-		RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
-				.findByToolName(connection.getRepoToolProvider());
+	private String getApiForRepoTool(Connection connection) {
 		String apiUrl = "";
-			Matcher matcher = URL_PATTERN.matcher(connection.getHttpUrl());
-			if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITHUB))
-				apiUrl = repoToolsProvider.getTestApiUrl() + connection.getUsername();
-			else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET)) {
-				if (connection.getHttpUrl().contains(CLOUD_BITBUCKET)) {
-					apiUrl = repoToolsProvider.getTestApiUrl();
-				} else if (matcher.find()) {
-					apiUrl = matcher.group(1).concat(matcher.group(2)).concat(repoToolsProvider.getTestServerApiUrl());
-				}
-			} else {
-				if (matcher.find()) {
-					apiUrl = createApiUrl(matcher.group(1).concat(matcher.group(2)), Constant.TOOL_GITLAB);
-				}
-			}
-		return apiUrl;
+		if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITHUB)) {
+			apiUrl = createGitHubTestConnectionUrl(connection);
+		} else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITLAB)) {
+			apiUrl = createApiUrl(connection.getBaseUrl(), Constant.TOOL_GITLAB);
+		} else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET)) {
+			if (connection.getBaseUrl().contains(CLOUD_BITBUCKET_IDENTIFIER))
+				connection.setCloudEnv(true);
+			apiUrl = createBitBucketUrl(connection);
+		}
+		return apiUrl != null ? apiUrl.trim() : "";
 	}
 
 	private boolean testConnection(Connection connection, String toolName, String apiUrl, String password,
@@ -194,7 +186,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				log.error("exception occured while trying to hit api.");
 			}
 		} else {
-			HttpStatus status = getApiResponseWithBasicAuth(connection.getUsername(), password, apiUrl, toolName,
+			HttpStatusCode status = getApiResponseWithBasicAuth(connection.getUsername(), password, apiUrl, toolName,
 					isSonarWithAccessToken);
 			isValidConnection = status.is2xxSuccessful();
 		}
@@ -209,7 +201,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 */
 	private boolean testConnectionWithBearerToken(String apiUrl, String pat) {
 		boolean isValidConnection;
-		HttpStatus status = null;
+		HttpStatusCode status = null;
 		status = getApiResponseWithBearer(pat, apiUrl);
 		isValidConnection = status.is2xxSuccessful();
 		return isValidConnection;
@@ -251,19 +243,19 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				isValid = testConnection(connection, toolName, apiUrl, password, false);
 			}
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-		} else {
+		} else if (toolName.equalsIgnoreCase(Constant.TOOL_ARGOCD)) {
+			isValid = testConnectionForArgoCD(apiUrl, connection.getUsername(), password);
+			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();} else {
 			if (connection.isBearerToken()) {
 				isValid = testConnectionWithBearerToken(apiUrl, password);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-		} else if (toolName.equalsIgnoreCase(CommonConstant.REPO_TOOLS)) {
+			} else if (toolName.equalsIgnoreCase(CommonConstant.REPO_TOOLS)) {
 				isValid = testConnectionForRepoTools(apiUrl, password, connection);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
+			} else {
+				isValid = testConnection(connection, toolName, apiUrl, password, false);
+				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 			}
-		else {
-			isValid = testConnection(connection, toolName, apiUrl, password, false);
-			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-		}
-
 		}
 		return statusCode;
 	}
@@ -291,6 +283,22 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 					&& Integer.valueOf(rateLimits.get(0)) > GITHUB_RATE_LIMIT_PER_HOUR;
 		} else {
 			return false;
+		}
+
+	}
+
+	private boolean testConnectionForArgoCD(String apiUrl, String username, String password) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+		HttpEntity<?> requestEntity = new HttpEntity<>(new UserCredentialsDTO(username, password), headers);
+		try {
+			ResponseEntity<String> result = restTemplate.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity,
+					String.class);
+			return result.getStatusCode().is2xxSuccessful();
+		} catch (HttpClientErrorException e) {
+			log.error(INVALID_MSG);
+			return e.getStatusCode().is5xxServerError();
 		}
 
 	}
@@ -412,24 +420,22 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 * @param apiUrl
 	 * @return API response
 	 */
-	private HttpStatus getApiResponseWithBasicAuth(String username, String password, String apiUrl, String toolName,
+	private HttpStatusCode getApiResponseWithBasicAuth(String username, String password, String apiUrl, String toolName,
 			boolean isSonarWithAccessToken) {
-		RestTemplate rest = new RestTemplate();
 		HttpHeaders httpHeaders;
 		ResponseEntity<?> responseEntity;
 		httpHeaders = createHeadersWithAuthentication(username, password, isSonarWithAccessToken);
 		HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
 		try {
-			responseEntity = rest.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
+			responseEntity = restTemplate.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
 		} catch (HttpClientErrorException e) {
 			log.error("Invalid login credentials");
 			return e.getStatusCode();
 		}
 
 		Object responseBody = responseEntity.getBody();
-		if (toolName.equalsIgnoreCase(Constant.TOOL_SONAR)
-				&& ((responseBody != null && responseBody.toString().contains("false"))
-						|| responseBody.toString().contains("</html>"))) {
+		if (toolName.equalsIgnoreCase(Constant.TOOL_SONAR) && (responseBody != null
+				&& (responseBody.toString().contains("false") || responseBody.toString().contains("</html>")))) {
 			return HttpStatus.UNAUTHORIZED;
 		}
 		if (toolName.equalsIgnoreCase(Constant.TOOL_BITBUCKET)
@@ -440,24 +446,25 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return responseEntity.getStatusCode();
 	}
 
-	private HttpStatus getApiResponseWithBearer(String pat, String apiUrl) {
-		RestTemplate rest = new RestTemplate();
+	private HttpStatusCode getApiResponseWithBearer(String pat, String apiUrl) {
 		HttpHeaders httpHeaders;
 		ResponseEntity<?> responseEntity;
 		httpHeaders = createHeadersWithBearer(pat);
 		HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
 		try {
-			responseEntity = rest.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
+			responseEntity = restTemplate.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
 		} catch (HttpClientErrorException e) {
 			log.error("Invalid login credentials");
 			return e.getStatusCode();
 		}
-		HttpStatus responseCode = responseEntity.getStatusCode();
+		HttpStatusCode responseCode = responseEntity.getStatusCode();
 
-		if (responseCode.is2xxSuccessful() && null != responseEntity.getBody()
-				&& responseEntity.getBody().toString().equalsIgnoreCase(WRONG_JIRA_BEARER)) {
+		Object responseBody = responseEntity.getBody();
+		if (responseCode.is2xxSuccessful() && responseBody != null
+				&& WRONG_JIRA_BEARER.equalsIgnoreCase(responseBody.toString())) {
 			responseCode = HttpStatus.UNAUTHORIZED;
 		}
+
 		return responseCode;
 	}
 
@@ -526,6 +533,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			return customApiConfig.getBitbucketTestConnection();
 		case Constant.TOOL_ZEPHYR:
 			return customApiConfig.getZephyrTestConnection();
+		case Constant.TOOL_ARGOCD:
+			return customApiConfig.getArgoCDTestConnection();
 		default:
 			return null;
 		}
@@ -564,8 +573,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		if (Constant.TOOL_ZEPHYR.equalsIgnoreCase(toolName) && connection.isBearerToken()) {
 			return connection.getPatOAuthToken();
 		}
-		if (Constant.REPO_TOOLS.equalsIgnoreCase(toolName) &&
-				StringUtils.isNotEmpty(connection.getAccessToken())) {
+		if (Constant.REPO_TOOLS.equalsIgnoreCase(toolName) && StringUtils.isNotEmpty(connection.getAccessToken())) {
 			return connection.getAccessToken();
 		}
 		return connection.getPassword() != null ? connection.getPassword() : connection.getApiKey();

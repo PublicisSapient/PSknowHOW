@@ -205,8 +205,7 @@ public class CommentsServiceImpl implements CommentsService {
 			}
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
-			log.error("Issue occurred while performing operation on comment.");
+			log.error("Issue occurred while performing operation on comment." + e.getMessage());
 		}
 		return false;
 	}

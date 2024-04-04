@@ -40,6 +40,7 @@ public class KpiRequest implements Serializable {
 	private String[] ids;
 	private String[] platformIds;
 	private List<KpiElement> kpiList;
+	private List<String> kpiIdList;
 	private Map<String, List<String>> selectedMap;
 	private String startDate;
 	private String endDate;
@@ -49,6 +50,8 @@ public class KpiRequest implements Serializable {
 	private int kanbanXaxisDataPoints = 7;
 	private int xAxisDataPoints = 5;
 	private String duration = CommonConstant.MONTH;
+	private String hierarchyName;
+	private String hierarchyId;
 
 	/**
 	 * Gets kpi list.
@@ -68,6 +71,63 @@ public class KpiRequest implements Serializable {
 	public void setKpiList(List<KpiElement> kpiList) {
 		this.kpiList = kpiList;
 		setRequestTrackerId();
+	}
+
+	/**
+	 * Gets hierarchy name.
+	 *
+	 * @return hierarchy name
+	 */
+	public String getHierarchyName() {
+		return hierarchyName;
+	}
+
+	/**
+	 * Sets hierarchy name.
+	 *
+	 * @param hierarchyName
+	 * 				hierarchy name
+	 */
+	public void setHierarchyName(String hierarchyName) {
+		this.hierarchyName = hierarchyName;
+	}
+
+	/**
+	 * Gets hierarchy name.
+	 *
+	 * @return hierarchy name
+	 */
+	public String getHierarchyId() {
+		return hierarchyId;
+	}
+
+	/**
+	 * Sets hierarchy id.
+	 *
+	 * @param hierarchyId
+	 * 				hierarchy id
+	 */
+	public void setHierarchyId(String hierarchyId) {
+		this.hierarchyId = hierarchyId;
+	}
+
+	/**
+	 * Gets kpi list.
+	 *
+	 * @return the kpi list
+	 */
+	public List<String> getKpiIdList() {
+		return kpiIdList;
+	}
+
+	/**
+	 * Sets kpi list.
+	 *
+	 * @param kpiIdList
+	 *            the kpi list
+	 */
+	public void setKpiIdList(List<String> kpiIdList) {
+		this.kpiIdList = kpiIdList;
 	}
 
 	/**

@@ -1,12 +1,34 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.rbac.signupapproval.rest;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -14,18 +36,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.servlet.http.Cookie;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SignupRequestsControllerTest {
@@ -47,6 +68,9 @@ public class SignupRequestsControllerTest {
 	@InjectMocks
 	private SignupRequestsController signupRequestsController;
 
+	@Mock
+	AuthProperties authProperties;
+
 	@Before
 	public void before() {
 		testId = "5dbfcc60e645ca2ee4075381";
@@ -55,7 +79,6 @@ public class SignupRequestsControllerTest {
 		authentication.setUsername("testUser");
 		authentication.setEmail("testUser@gmail.com");
 		authentication.setApproved(false);
-
 		mockMvc = MockMvcBuilders.standaloneSetup(signupRequestsController).build();
 	}
 
@@ -71,20 +94,24 @@ public class SignupRequestsControllerTest {
 	 */
 	@Test
 	public void testGetUnApprovedRequests() throws Exception {
-		when(customApiConfig.isCentralAuthSwitch()).thenReturn(false);
 		mockMvc.perform(MockMvcRequestBuilders.get("/userapprovals").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
 
 	/**
-	 * method to get all unapproved requests when CA switch is On
+	 * method to get all unapproved requests when CA switch is Off
+	 *
 	 * @throws Exception
 	 */
 	@Test
-	public void testGetAllUnApprovedRequestsCASwitchOn() throws Exception {
-		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
-		when(customApiConfig.isCentralAuthSwitch()).thenReturn(true);
-		mockMvc.perform(MockMvcRequestBuilders.get("/userapprovals").contentType(MediaType.APPLICATION_JSON_VALUE))
+	public void testGetUnApprovedRequests_ForCentralAuth() throws Exception {
+		List<UserInfoDTO> userInfoDTOS =new ArrayList<>();
+		UserInfoDTO userInfoDTO = new UserInfoDTO();
+		userInfoDTO.setAuthType(AuthType.APIKEY);
+		userInfoDTO.setEmailAddress("abc.test@test.com");
+		userInfoDTOS.add(userInfoDTO);
+		Mockito.when(userInfoService.findAllUnapprovedUsersForCentralAuth()).thenReturn(userInfoDTOS);
+		mockMvc.perform(MockMvcRequestBuilders.get("/userapprovals/central").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
 
@@ -99,35 +126,6 @@ public class SignupRequestsControllerTest {
 	public void testGetAllRequests() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/userapprovals/all").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
-	}
-
-	/**
-	 * method to test PUT /grantrequest/{id} restPoint ; Modify access request with
-	 * id
-	 *
-	 * @throws Exception
-	 */
-	@Test
-	public void testModifyAccessRequest_Approved() throws Exception {
-		String request = "{\n" + "    \"status\": \"Approved\",\n" + "    \"role\": \"ROLE_PROJECT_ADMIN\",\n"
-				+ "    \"message\": \"\"\n" + "}";
-		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
-		when(customApiConfig.isCentralAuthSwitch()).thenReturn(true);
-		mockMvc.perform(MockMvcRequestBuilders.put("/userapprovals/testUser").content(request)
-				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-
-	}
-
-	@Test
-	public void testModifyAccessRequest_Reject() throws Exception {
-		String request = "{\n" + "    \"status\": \"Rejected\",\n" + "    \"role\": \"ROLE_PROJECT_ADMIN\",\n"
-				+ "    \"message\": \"\"\n" + "}";
-		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
-		when(customApiConfig.isCentralAuthSwitch()).thenReturn(true);
-		when(userInfoService.deleteFromCentralAuthUser(any(), any())).thenReturn(true);
-		mockMvc.perform(MockMvcRequestBuilders.put("/userapprovals/testUser").content(request)
-				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-
 	}
 
 }

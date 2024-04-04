@@ -93,13 +93,18 @@ export class SharedService {
   globalConfigData : any
   visibleSideBarSubject = new BehaviorSubject(false);
   visibleSideBarObs = this.visibleSideBarSubject.asObservable();
+  addtionalFilterBackup = {} ;
   projectQueryParamSubject = new BehaviorSubject<any>('');
   projectQueryParamObs = this.projectQueryParamSubject.asObservable();
   sprintQueryParamSubject = new BehaviorSubject<any>('');
   sprintQueryParamObs = this.sprintQueryParamSubject.asObservable();
+  processorTraceLogs = [];
 
-  private currentIssue = new BehaviorSubject({});
-  currentData = this.currentIssue.asObservable();
+  public currentIssue = new BehaviorSubject({});
+  public currentData = this.currentIssue.asObservable();
+
+  boardNamesListSubject = new BehaviorSubject<any>([]);
+  boardNamesListObs = this.boardNamesListSubject.asObservable();
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -404,6 +409,69 @@ export class SharedService {
 
   setSprintQueryParamInFilters(value) {
     this.sprintQueryParamSubject.next({value});
+  }
+
+   setAddtionalFilterBackup(data){
+      this.addtionalFilterBackup = data;
+    }
+
+    getAddtionalFilterBackup(){
+      return this.addtionalFilterBackup;
+    }
+  setProcessorLogDetails(data){
+    this.processorTraceLogs = data;
+  }
+
+  getProcessorLogDetails(){
+    return this.processorTraceLogs
+  }
+
+  setUpdatedBoardList(kpiListData, selectedType) {
+    const boardNameArr = [];
+    if (
+      kpiListData[selectedType] &&
+      Array.isArray(kpiListData[selectedType])
+    ) {
+      for (let i = 0; i < kpiListData[selectedType]?.length; i++) {
+        let kpiShownCount = 0;
+        let board = kpiListData[selectedType][i];
+        let kpiList;
+        if (board?.boardName?.toLowerCase() === 'iteration') {
+          kpiList = board?.['kpis']?.filter((item) => item.kpiId != 'kpi121');
+        }else{
+          kpiList = board?.['kpis'];
+        }
+        kpiList?.forEach((item) => {
+          if (item.shown) {
+            kpiShownCount++;
+          }
+        });
+        if (kpiShownCount > 0) {
+          boardNameArr.push({
+            boardName: board?.boardName,
+            link: board?.boardName.toLowerCase().split(' ').join('-')
+          });
+        }
+      }
+
+    }
+
+    for (let i = 0; i < kpiListData['others']?.length; i++) {
+      let kpiShownCount = 0;
+      kpiListData['others'][i]['kpis']?.forEach((item) => {
+        if (item.shown) {
+          kpiShownCount++;
+        }
+      });
+      if (kpiShownCount > 0) {
+        boardNameArr.push({
+          boardName: kpiListData['others'][i].boardName,
+          link:
+            kpiListData['others'][i].boardName.toLowerCase()
+        });
+      }
+    }
+    this.boardNamesListSubject.next(boardNameArr);
   }
 }
 

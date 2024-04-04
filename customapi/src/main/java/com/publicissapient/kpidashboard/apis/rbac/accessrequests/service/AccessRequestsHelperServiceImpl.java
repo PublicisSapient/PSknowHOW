@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import org.apache.commons.collections4.CollectionUtils;
@@ -261,7 +262,7 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 	 *         is found,false if not data found
 	 */
 	@Override
-	public ServiceResponse getNotificationByStatus(String status , String token) {
+	public ServiceResponse getNotificationByStatus(String status , boolean centralAuthService) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		List<AccessRequest> accessRequest = null;
 		String message = "Found Pending Approval Count";
@@ -270,8 +271,8 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 		if (user.getAuthorities().contains(SUPERADMINROLENAME)) {
 			accessRequest = repository.findByStatus(status);
 			NotificationDataDTO userApprovalNotification;
-			if (customApiConfig.isCentralAuthSwitch() && Objects.nonNull(token)) {
-				userApprovalNotification = newCentralAuthUserApprovalRequestNotification(token);
+			if (centralAuthService) {
+				userApprovalNotification = newCentralAuthUserApprovalRequestNotification();
 			} else {
 				userApprovalNotification = newUserApprovalRequestNotification();
 			}
@@ -319,9 +320,9 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 		return notificationDataDTO;
 	}
 
-	private NotificationDataDTO newCentralAuthUserApprovalRequestNotification(String token) {
+	private NotificationDataDTO newCentralAuthUserApprovalRequestNotification() {
 		List<UserInfoDTO> nonApprovedUserList =
-				userInfoServiceImpl.findAllUnapprovedUsers(token);
+				userInfoServiceImpl.findAllUnapprovedUsersForCentralAuth();
 		NotificationDataDTO notificationDataDTO = new NotificationDataDTO();
 		notificationDataDTO.setType(NotificationEnum.USER_APPROVAL.getValue());
 		if (CollectionUtils.isEmpty(nonApprovedUserList)) {

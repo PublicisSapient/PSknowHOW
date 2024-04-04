@@ -18,9 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.zephyr.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -28,7 +30,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
+import com.publicissapient.kpidashboard.apis.data.TestExecutionDataFactory;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
+import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -67,6 +77,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 
@@ -109,6 +120,7 @@ public class AutomationPercentageServiceImplTest {
 	private KpiElement kpiElement;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	List<TestExecution> testExecutionList;
 
 	@Before
 	public void setup() {
@@ -127,6 +139,20 @@ public class AutomationPercentageServiceImplTest {
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
+
+		AdditionalFilterCategoryFactory additionalFilterCategoryFactory = AdditionalFilterCategoryFactory.newInstance();
+		List<AdditionalFilterCategory> additionalFilterCategoryList = additionalFilterCategoryFactory
+				.getAdditionalFilterCategoryList();
+		Map<String, AdditionalFilterCategory> additonalFilterMap = additionalFilterCategoryList.stream()
+				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
+		when(cacheService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
+		when(filterHelperService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
+		testExecutionList = TestExecutionDataFactory.newInstance().getTestExecutionList();
+		testExecutionList.forEach(test->{
+			test.setAutomatableTestCases(1);
+			test.setAutomatedTestCases(1);
+		});
+		when(testExecutionRepository.findTestExecutionDetailByFilters(anyMap(),anyMap())).thenReturn(testExecutionList);
 	}
 
 	@Test
@@ -146,9 +172,29 @@ public class AutomationPercentageServiceImplTest {
 				leafNodeList.addAll(v);
 			}
 		});
+		List<SprintWiseStory> sprintWiseStories = JiraIssueDataFactory.newInstance().getSprintWiseStories();
+		sprintWiseStories.forEach(sprintWiseStory -> sprintWiseStory.setBasicProjectConfigId("6335363749794a18e8a4479b"));
 		when(featureRepository.findIssuesGroupBySprint(any(), any(), any(), any()))
-				.thenReturn(JiraIssueDataFactory.newInstance().getSprintWiseStories());
+				.thenReturn(sprintWiseStories);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap= new HashMap<>();
+		Map<String, List<ProjectToolConfig>> projectTool= new HashMap<>();
+
+		ProjectToolConfig zephyConfig= new ProjectToolConfig();
+		zephyConfig.setInSprintAutomationFolderPath(Arrays.asList("test1"));
+		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
+		ProjectToolConfig jiraTest= new ProjectToolConfig();
+
+		jiraTest.setTestCaseStatus(Arrays.asList("test1"));
+		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
+		projectTool.put(ProcessorConstants.JIRA_TEST, Arrays.asList(jiraTest));
+
+		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
+		projectTool.put(ProcessorConstants.JIRA_TEST, Arrays.asList(jiraTest));
+		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), projectTool);
+		when(cacheService
+				.cacheProjectToolConfigMapData()).thenReturn(toolMap);
+
 		Map<String, Object> defectDataListMap = automationPercentageServiceImpl.fetchKPIDataFromDb(leafNodeList, null,
 				null, kpiRequest);
 		assertThat("Total Test Case value :", ((List<JiraIssue>) (defectDataListMap.get(TESTCASEKEY))).size(),
@@ -166,7 +212,9 @@ public class AutomationPercentageServiceImplTest {
 		when(featureRepository.findIssueAndDescByNumber(any())).thenReturn(issues);
 		when(cacheService.getFromApplicationCache(Mockito.anyString()))
 				.thenReturn(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name());
+
 		testFetchKPIDataFromDbData();
+		when(testCaseDetailsRepository.findTestDetails(anyMap(),anyMap(),anyString())).thenReturn(totalTestCaseList);
 		try {
 			kpiElement = automationPercentageServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -188,6 +236,44 @@ public class AutomationPercentageServiceImplTest {
 		when(featureRepository.findIssueAndDescByNumber(any())).thenReturn(issues);
 		when(cacheService.getFromApplicationCache(Mockito.anyString()))
 				.thenReturn(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name());
+		Map<String, List<String>> selectedMap = kpiRequest.getSelectedMap();
+		selectedMap.put("SQD", Arrays.asList("dummysqd"));
+		kpiRequest.setSelectedMap(selectedMap);
+
+
+		testFetchKPIDataFromDbData();
+		try {
+			kpiElement = automationPercentageServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertThat("Automated Percentage Value :",
+					((ArrayList) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(),
+					equalTo(5));
+		} catch (ApplicationException enfe) {
+
+		}
+	}
+
+	@Test
+	public void getKpiDataTestUploadData_changeFieldMapping() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		Map<String, List<String>> maturityRangeMap = new HashMap<>();
+		maturityRangeMap.put("automationPercentage", Arrays.asList("-20", "20-40", "40-60", "60-79", "80-"));
+		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
+
+		fieldMappingMap.computeIfPresent(new ObjectId("6335363749794a18e8a4479b"), (key, mapping) -> {
+			mapping.setUploadDataKPI16(true);
+			return mapping;
+		});
+
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(featureRepository.findIssueAndDescByNumber(any())).thenReturn(issues);
+		when(cacheService.getFromApplicationCache(Mockito.anyString()))
+				.thenReturn(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name());
+		Map<String, List<String>> selectedMap = kpiRequest.getSelectedMap();
+		selectedMap.put("SQD", Arrays.asList("dummysqd"));
+		kpiRequest.setSelectedMap(selectedMap);
+
 		testFetchKPIDataFromDbData();
 		try {
 			kpiElement = automationPercentageServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

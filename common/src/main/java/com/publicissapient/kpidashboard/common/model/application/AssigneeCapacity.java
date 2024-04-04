@@ -22,6 +22,7 @@ import lombok.ToString;
 public class AssigneeCapacity {
 	private String userId;
 	private String userName;
+	private String email;
 	private Role role;
 	private Double plannedCapacity;
 	private Double leaves;

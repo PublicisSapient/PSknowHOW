@@ -21,23 +21,4 @@
 // Available personas are none as of now
 
 export const features = [
-    // to test directive
-    {
-        'name': 'Developer',
-        'enabled': true
-    },
-    // to test route guard
-    {
-        'name': 'Config',
-        'enabled': true
-    },
-    // to test child module
-    {
-        'name': 'Profile',
-        'enabled': true
-    },
-    {
-        'name': 'GrantRequests',
-        'enabled': true
-    }
 ];

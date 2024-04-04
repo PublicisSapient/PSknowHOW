@@ -62,18 +62,15 @@
                     </ng-template>
                     <ng-template pTemplate="header">
                         <tr>
-                            <th style="width: 3rem; display: none;">
+                            <th id="connectionHeader" style="width: 3rem; display: none;" scope="col">
                                 <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                             </th>
 
 
-                            <th *ngFor="let connectionHeader of eachConnection.connectionTableCols"
-                                [pSortableColumn]="connectionHeader.field">{{ connectionHeader.header }} <p-sortIcon
+                            <th *ngFor="let connectionHeader of eachConnection.connectionTableCols" [pSortableColumn]="connectionHeader.field" scope="col">{{ connectionHeader.header }} <p-sortIcon
                                     [field]="connectionHeader.field"></p-sortIcon>
                             </th>
-                            <th *ngIf="isConnectionAddEditAccess" pSortableColumn="editConnectionColumn">Actions
-
-                            </th>
+                            <th *ngIf="isConnectionAddEditAccess" pSortableColumn="editConnectionColumn" scope="col">Actions</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-connection>
@@ -120,25 +117,6 @@
                     *ngIf="connectionFieldLabels.connectionType.toLowerCase() === selectedConnectionType.toLowerCase()">
                     <ng-container *ngFor="let connectionLabelFields of connectionFieldLabels.labels; let i = index">
 
-                        <!-- <div class="p-field" *ngIf="connectionFieldLabels.inputFields[i] === 'type'">
-
-                            <label for="connection_{{connectionFieldLabels.inputFields[i]}}">{{ connectionLabelFields
-                                }}</label>
-                            <p-dropdown id="connection_{{connectionFieldLabels.inputFields[i]}}"
-                                [autoDisplayFirst]="false" [filter]="true" required
-                                [options]="connectionTypeCompleteList"
-                                [(ngModel)]="connection[ connectionFieldLabels.inputFields[i] ]"
-                                [style]="{'width':'100%'}" (onChange)="onChangeConnection(connection)"
-                                formControlName="{{ connectionFieldLabels.inputFields[i] }}"
-                                [disabled]="disableConnectionTypeDropDown">
-                            </p-dropdown>
-                            <small class="p-invalid"
-                                *ngIf="submitted && !connection[ connectionFieldLabels.inputFields[i] ]">{{
-                                connectionLabelFields }}
-                                is required.</small>
-
-                        </div> -->
-
                         <div class="p-field"
                              *ngIf="connectionFieldLabels.inputFields[i] === 'bearerToken' || connectionFieldLabels.inputFields[i] === 'vault' || connectionFieldLabels.inputFields[i] === 'cloudEnv' || connectionFieldLabels.inputFields[i] === 'isOAuth' || connectionFieldLabels.inputFields[i] === 'offline' || connectionFieldLabels.inputFields[i] === 'accessTokenEnabled' || connectionFieldLabels.inputFields[i] === 'isCloneable'">
 
@@ -171,7 +149,7 @@
                             *ngIf="connectionFieldLabels.inputFields[i] === 'repoToolProvider'">
                                 <label for="platformDdwn">Select Platform Type</label>
                                 <p-dropdown [options]="platformDdwn" id="platformDdwn" formControlName="repoToolProvider"
-                                [(ngModel)]="connection[ connectionFieldLabels.inputFields[i] ]" optionValue="key" optionLabel="label">
+                                [(ngModel)]="connection[ connectionFieldLabels.inputFields[i] ]" optionValue="key" optionLabel="label" (onChange)="enableDisableSwitch(connection[ connectionFieldLabels.inputFields[i] ],'apiEndPoint')">
                                 </p-dropdown>
                         </div>
 

@@ -27,8 +27,8 @@
 .graph-container{
     border: 1px solid #c0c0c0;
     margin-right: 0.25rem;
-    flex-basis: 75%;
     flex: 1 1 auto;
+    flex-basis: 75%;
     height: calc(100vh - 220px);
     overflow: hidden;
     margin-top: 50px;

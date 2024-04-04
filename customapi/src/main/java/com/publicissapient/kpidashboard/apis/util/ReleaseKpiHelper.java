@@ -28,7 +28,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,30 +43,6 @@ public final class ReleaseKpiHelper {
 	private ReleaseKpiHelper() {
 	}
 
-	/*
-	 * filter all jiraIssues
-	 */
-	public static List<JiraIssue> getFilteredJiraIssue(List<String> issueNumberList, List<JiraIssue> allJiraIssues) {
-		List<JiraIssue> filterJiraIssueList = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(issueNumberList) && CollectionUtils.isNotEmpty(allJiraIssues)) {
-			filterJiraIssueList = allJiraIssues.stream()
-					.filter(jiraIssue -> issueNumberList.contains(jiraIssue.getNumber())).collect(Collectors.toList());
-		}
-		return filterJiraIssueList;
-	}
-
-	/*
-	 * filter all issueHistory
-	 */
-	public static List<JiraIssueCustomHistory> getFilteredJiraIssueHistory(List<String> issueNumberList,
-			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList) {
-		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(issueNumberList) && CollectionUtils.isNotEmpty(jiraIssueCustomHistoryList)) {
-			jiraIssueCustomHistories = jiraIssueCustomHistoryList.stream()
-					.filter(jiraIssue -> issueNumberList.contains(jiraIssue.getStoryID())).collect(Collectors.toList());
-		}
-		return jiraIssueCustomHistories;
-	}
 
 	public static List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(List<JiraIssue> jiraIssuesForCurrentRelease,
 			Set<JiraIssue> defectsList) {

@@ -16,7 +16,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -42,7 +41,7 @@ import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -60,7 +59,7 @@ public class DefectCountByTypeImplTest {
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraBacklogServiceR jiraService;
 	@InjectMocks
 	private DefectCountByTypeImpl defectCountByTypeImpl;
 	@Mock
@@ -105,18 +104,12 @@ public class DefectCountByTypeImplTest {
 		when(jiraIssueRepository.findByBasicProjectConfigIdAndOriginalTypeIn(any(), any())).thenReturn(issueList);
 		try {
 			KpiElement kpiElement = defectCountByTypeImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			assertNotNull(kpiElement.getTrendValueList());
 
 		} catch (ApplicationException ignored) {
 
 		}
-	}
-
-	@Test
-	public void testCalculateKPIMetrics() {
-		assertNull(defectCountByTypeImpl.calculateKPIMetrics(new HashMap<>()));
-
 	}
 
 }

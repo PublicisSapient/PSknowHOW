@@ -6,7 +6,8 @@
     "kpiUnit" : "%" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 1 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 3 ,
     "thresholdValue" : "10" ,
     "kanban" : false ,
@@ -28,7 +29,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Injection-Rate"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83853321/Defect+Injection+Rate"
           }
         }
       ]
@@ -57,7 +58,8 @@
     "kpiUnit" : "%" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 2 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
     "thresholdValue" : "75" ,
     "kanban" : false ,
@@ -79,7 +81,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#First-time-pass-rate"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049922/First+time+pass+rate+FTPR"
           }
         }
       ]
@@ -109,7 +111,8 @@
     "kpiUnit" : "%" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 3 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
     "thresholdValue" : "25" ,
     "kanban" : false ,
@@ -131,7 +134,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Density"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886083/Defect+Density"
           }
         }
       ]
@@ -160,7 +163,8 @@
     "kpiUnit" : "%" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 4 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
     "thresholdValue" : "10" ,
     "kanban" : false ,
@@ -182,7 +186,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Seepage-Rate"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049938/Defect+Seepage+Rate"
           }
         }
       ]
@@ -193,6 +197,7 @@
     "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
+    "kpiFilter" : "dropDown" ,
     "aggregationCriteria" : "average" ,
     "isAdditionalFilterSupport" : true ,
     "calculateMaturity" : true ,
@@ -211,7 +216,8 @@
     "kpiUnit" : "%" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 5 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 3 ,
     "thresholdValue" : "90" ,
     "kanban" : false ,
@@ -233,7 +239,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Removal-Efficiency"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886099/Defect+Removal+Efficiency"
           }
         }
       ]
@@ -262,7 +268,8 @@
     "kpiUnit" : "%" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 6 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 3 ,
     "thresholdValue" : "10" ,
     "kanban" : false ,
@@ -284,7 +291,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Rejection-Rate"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886115/Defect+Rejection+Rate"
           }
         }
       ]
@@ -313,7 +320,8 @@
     "kpiUnit" : "Number" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 7 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
     "thresholdValue" : "55" ,
     "kanban" : false ,
@@ -330,7 +338,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Count-by-Priority"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820546/Defect+Count+by+Priority+Quality"
           }
         }
       ]
@@ -353,7 +361,8 @@
     "kpiUnit" : "Number" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 8 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 3 ,
     "thresholdValue" : "55" ,
     "kanban" : false ,
@@ -370,7 +379,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Count-By-RCA"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820562/Defect+Count+By+RCA+Quality"
           }
         }
       ]
@@ -392,7 +401,8 @@
     "kpiUnit" : "Number" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 9 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
     "thresholdValue" : "0" ,
     "kanban" : false ,
@@ -404,7 +414,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Created-vs-Resolved"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886196/Created+vs+Resolved"
           }
         }
       ]
@@ -449,7 +459,8 @@
     "kpiName" : "Regression Automation Coverage" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 10 ,
-    "kpiSource" : "Zypher" ,
+    "kpiSource": "Zypher",
+    "combinedKpiSource": "Zephyr/Zypher/JiraTest",
     "groupId" : 1 ,
     "maxValue" : "100" ,
     "kpiUnit" : "%" ,
@@ -473,7 +484,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Regression-Automation-Coverage"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049954/Regression+Automation+Coverage"
           }
         }
       ]
@@ -502,7 +513,8 @@
     "kpiUnit" : "%" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 11 ,
-    "kpiSource" : "Zypher" ,
+    "kpiSource": "Zypher",
+    "combinedKpiSource": "Zephyr/Zypher/JiraTest",
     "groupId" : 1 ,
     "thresholdValue" : "80" ,
     "kanban" : false ,
@@ -524,7 +536,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#In-Sprint-Automation-Coverage"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886131/In-Sprint+Automation+Coverage"
           }
         }
       ]
@@ -570,7 +582,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Unit-Test-Coverage"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886147/Unit+Test+Coverage"
           }
         }
       ]
@@ -618,7 +630,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Violations"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049987/Sonar+Violations"
           }
         }
       ]
@@ -636,7 +648,7 @@
   } ,
   {
     "kpiId" : "kpi27" ,
-    "kpiName" : "Sonar Tech Debt" ,
+    "kpiName" : "Tech Debt - Sonar Maintainability" ,
     "maxValue" : "90" ,
     "kpiUnit" : "Days" ,
     "isDeleted" : "False" ,
@@ -658,7 +670,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Tech-Debt"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886163/Sonar+Tech+Debt"
           }
         }
       ]
@@ -690,7 +702,8 @@
     "kpiUnit" : "%" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 15 ,
-    "kpiSource" : "Jenkins" ,
+    "kpiSource": "Jenkins",
+    "combinedKpiSource": "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity",
     "groupId" : 14 ,
     "thresholdValue" : "30" ,
     "kanban" : false ,
@@ -712,7 +725,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Change-Failure-Rate"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71958608/DORA+Change+Failure+Rate"
           }
         }
       ]
@@ -769,7 +782,8 @@
     "kpiName" : "Test Execution and pass percentage" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 16 ,
-    "kpiSource" : "Zypher" ,
+    "kpiSource": "Zypher",
+    "combinedKpiSource": "Zephyr/Zypher/JiraTest",
     "groupId" : 1 ,
     "maxValue" : "100" ,
     "kpiUnit" : "%" ,
@@ -783,7 +797,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Test-Execution-and-pass-percentage"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049970/Test+Execution+and+pass+percentage"
           }
         }
       ]
@@ -814,7 +828,8 @@
     "kpiUnit" : "" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 17 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 5 ,
     "thresholdValue" : "20" ,
     "kanban" : false ,
@@ -826,7 +841,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Issue-Count"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050003/Issue+Count"
           }
         }
       ]
@@ -849,7 +864,8 @@
     "kpiUnit" : "%" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 18 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 2 ,
     "thresholdValue" : "85" ,
     "kanban" : false ,
@@ -871,7 +887,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Commitment-Reliability"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050019/Commitment+Reliability"
           }
         }
       ]
@@ -903,7 +919,8 @@
     "kpiOnDashboard" : [
       "Aggregated"
     ] ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 2 ,
     "maxValue" : "10" ,
     "kpiUnit" : "%" ,
@@ -927,7 +944,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Sprint-Predictability"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886228/Sprint+Predictability"
           }
         }
       ]
@@ -949,7 +966,8 @@
     "kpiUnit" : "SP" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 20 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 2 ,
     "thresholdValue" : "40" ,
     "kanban" : false ,
@@ -960,7 +978,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Sprint-Velocity"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886212/Sprint+Velocity"
           }
         }
       ]
@@ -1006,7 +1024,8 @@
     "kpiUnit" : "Hours" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 21 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 5 ,
     "thresholdValue" : "0" ,
     "kanban" : false ,
@@ -1026,7 +1045,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Sprint-Capacity-Utilization"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820594/Sprint+Capacity+Utilization"
           }
         }
       ]
@@ -1051,7 +1070,8 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 22 ,
     "groupId" : 1 ,
-    "kpiSource" : "BitBucket" ,
+    "kpiSource": "BitBucket",
+    "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
     "thresholdValue" : "55" ,
     "kanban" : false ,
     "chartType" : "line" ,
@@ -1062,7 +1082,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Mean-time-to-merge"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713477/Developer+Mean+time+to+Merge"
           }
         }
       ]
@@ -1095,7 +1115,8 @@
     "kpiUnit" : "MRs" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 23 ,
-    "kpiSource" : "BitBucket" ,
+    "kpiSource": "BitBucket",
+    "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
     "groupId" : 1 ,
     "thresholdValue" : "55" ,
     "kanban" : false ,
@@ -1107,7 +1128,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Number-of-Check-ins-&-Merge-requests"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70451310/Developer+No.+of+Check-ins+and+Merge+Requests"
           }
         }
       ]
@@ -1142,7 +1163,8 @@
     "kpiUnit" : "min" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 24 ,
-    "kpiSource" : "Jenkins" ,
+    "kpiSource": "Jenkins",
+    "combinedKpiSource": "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity",
     "groupId" : 1 ,
     "thresholdValue" : "6" ,
     "kanban" : false ,
@@ -1154,7 +1176,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Code-Build-Time"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886260/Code+Build+Time"
           }
         }
       ]
@@ -1186,7 +1208,8 @@
     "kpiUnit" : "Number" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 25 ,
-    "kpiSource" : "Jenkins" ,
+    "kpiSource": "Jenkins",
+    "combinedKpiSource": "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity",
     "groupId" : 14 ,
     "thresholdValue" : "6" ,
     "kanban" : false ,
@@ -1198,7 +1221,7 @@
           "type": "link",
           "kpiLinkDetail": {
             "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Deployment-Frequency"
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71827544/DORA+Deployment+Frequency"
           }
         }
       ]
@@ -1261,7 +1284,8 @@
     "kpiUnit" : "" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 26 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 4 ,
     "thresholdValue" : "2" ,
     "kanban" : false ,
@@ -1278,7 +1302,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Release-Frequency"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050035/Release+Frequency"
           }
         }
       ]
@@ -1300,7 +1324,8 @@
     "kpiUnit" : "" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 27 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 4 ,
     "thresholdValue" : "0" ,
     "kanban" : false ,
@@ -1317,7 +1342,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Value-delivered-(Cost-of-Delay)"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050051/Value+delivered+Cost+of+Delay"
           }
         }
       ]
@@ -1337,7 +1362,8 @@
     "kpiName" : "Ticket Open vs Closed rate by type" ,
     "kpiUnit" : "Tickets" ,
     "defaultOrder" : 1 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
     "thresholdValue" : "" ,
     "kanban" : true ,
@@ -1392,7 +1418,8 @@
     "kpiUnit" : "Tickets" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 2 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
     "thresholdValue" : "" ,
     "kanban" : true ,
@@ -1446,7 +1473,8 @@
     "kpiName" : "Net Open Ticket Count by Priority" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 3 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
     "thresholdValue" : "" ,
     "kanban" : true ,
@@ -1479,7 +1507,8 @@
     "kpiName" : "Net Open Ticket Count By RCA" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 4 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
     "thresholdValue" : "" ,
     "kanban" : true ,
@@ -1513,7 +1542,8 @@
     "kpiUnit" : "" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 5 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 2 ,
     "thresholdValue" : "" ,
     "kanban" : true ,
@@ -1546,7 +1576,8 @@
     "kpiUnit" : "Number" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 6 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 2 ,
     "thresholdValue" : "" ,
     "kanban" : true ,
@@ -1577,7 +1608,8 @@
     "kpiName" : "Regression Automation Coverage" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 7 ,
-    "kpiSource" : "Zypher" ,
+    "kpiSource": "Zypher",
+    "combinedKpiSource": "Zephyr/Zypher/JiraTest",
     "groupId" : 1 ,
     "maxValue" : "100" ,
     "kpiUnit" : "%" ,
@@ -1761,7 +1793,8 @@
     "kpiName" : "Test Execution and pass percentage" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 11 ,
-    "kpiSource" : "Zypher" ,
+    "kpiSource": "Zypher",
+    "combinedKpiSource": "Zephyr/Zypher/JiraTest",
     "groupId" : 1 ,
     "maxValue" : "100" ,
     "kpiUnit" : "%" ,
@@ -1801,7 +1834,8 @@
     "kpiName" : "Ticket Velocity" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 12 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
     "thresholdValue" : "" ,
     "maxValue" : "300" ,
@@ -1835,7 +1869,8 @@
     "kpiUnit" : "Hours" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 13 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
     "thresholdValue" : "" ,
     "kanban" : true ,
@@ -1874,7 +1909,8 @@
     "kpiUnit" : "min" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 14 ,
-    "kpiSource" : "Jenkins" ,
+    "kpiSource": "Jenkins",
+    "combinedKpiSource": "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity",
     "groupId" : 1 ,
     "thresholdValue" : "" ,
     "kanban" : true ,
@@ -1916,7 +1952,8 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 15 ,
     "groupId" : 1 ,
-    "kpiSource" : "BitBucket" ,
+    "kpiSource": "BitBucket",
+    "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
     "thresholdValue" : "55" ,
     "kanban" : true ,
     "chartType" : "line" ,
@@ -1963,7 +2000,8 @@
     "thresholdValue" : "" ,
     "defaultOrder" : 16 ,
     "kpiUnit" : "Days" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 3 ,
     "kanban" : true ,
     "chartType" : "table" ,
@@ -2061,7 +2099,8 @@
     "kpiUnit" : "" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 17 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 4 ,
     "thresholdValue" : "" ,
     "kanban" : true ,
@@ -2099,7 +2138,8 @@
     "kpiUnit" : "" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 18 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 4 ,
     "thresholdValue" : "" ,
     "kanban" : true ,
@@ -2138,7 +2178,8 @@
     "defaultOrder" : 0 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
@@ -2172,7 +2213,8 @@
     "defaultOrder" : 4 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
@@ -2192,7 +2234,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard#Work-Remaining"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680609/Work+Remaining"
           }
         }
       ]
@@ -2215,7 +2257,8 @@
     "defaultOrder" : 2 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
@@ -2227,7 +2270,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard#Planned-Work-Status"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713345/Planned+Work+Status"
           }
         }
       ]
@@ -2247,10 +2290,11 @@
     "maxValue" : "" ,
     "kpiUnit" : "Hours" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 22 ,
+    "defaultOrder" : 23 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
@@ -2262,7 +2306,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard#Estimate-vs-Actual"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680658/Estimate+vs+Actual"
           }
         }
       ]
@@ -2282,10 +2326,11 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 7 ,
+    "defaultOrder" : 8 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
@@ -2297,7 +2342,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard#Issues-likely-to-spill"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713361/Issues+likely+to+spill"
           }
         }
       ]
@@ -2317,10 +2362,11 @@
     "maxValue" : "" ,
     "kpiUnit" : "Story Point" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 6 ,
+    "defaultOrder" : 7 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
@@ -2332,7 +2378,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard#Closures-possible-today"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713377/Closures+possible+today"
           }
         }
       ]
@@ -2355,7 +2401,8 @@
     "defaultOrder" : 1 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
@@ -2366,6 +2413,13 @@
         {
           "type" : "paragraph" ,
           "value" : "Overall commitment= Initial Commitment + Scope added - Scope removed"
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418594/Iteration+Commitment"
+          }
         }
       ]
     } ,
@@ -2385,16 +2439,26 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 21 ,
+    "defaultOrder" : 22 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : null ,
     "kpiInfo" : {
-      "definition" : "It shows the count of issues which do not have estimates and count of In progress issues without any work logs."
+      "definition" : "It shows the count of issues which do not have estimates and count of In progress issues without any work logs.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680674/Estimate+Hygiene"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2411,16 +2475,26 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 14 ,
+    "defaultOrder" : 15 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects within an iteration by root cause identified."
+      "definition" : "It shows the breakup of all defects within an iteration by root cause identified.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713409/Defect+count+by+RCA"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2437,10 +2511,11 @@
     "maxValue" : "" ,
     "kpiUnit" : "" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 12 ,
+    "defaultOrder" : 13 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "isAdditionalFilterSupport" : false ,
@@ -2453,6 +2528,13 @@
         {
           "type" : "paragraph" ,
           "value" : "*Any defect created during the iteration duration but is not added to the iteration is not considered"
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680625/Quality+Status"
+          }
         }
       ]
     } ,
@@ -2472,13 +2554,23 @@
     "defaultOrder" : 5 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : null ,
     "kpiInfo" : {
-      "definition" : "It shows count of the issues which do not have a due date. It also shows the completed count amongst the unplanned issues."
+      "definition" : "It shows count of the issues which do not have a due date. It also shows the completed count amongst the unplanned issues.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680593/Unplanned+Work+Status"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2495,16 +2587,26 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 8 ,
+    "defaultOrder" : 9 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Progress" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "CumulativeMultilineChart" ,
     "kpiInfo" : {
-      "definition" : "Iteration Burnup KPI shows the cumulative actual progress against the overall scope of the iteration on a daily basis. For teams putting due dates at the beginning of iteration, the graph additionally shows the actual progress in comparison to the planning done and also predicts the probable progress for the remaining days of the iteration."
+      "definition" : "Iteration Burnup KPI shows the cumulative actual progress against the overall scope of the iteration on a daily basis. For teams putting due dates at the beginning of iteration, the graph additionally shows the actual progress in comparison to the planning done and also predicts the probable progress for the remaining days of the iteration.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680577/Iteration+Burnup"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "Days" ,
     "yaxisLabel" : "Count" ,
@@ -2522,10 +2624,11 @@
     "maxValue" : "" ,
     "kpiUnit" : "Hours" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 9 ,
+    "defaultOrder" : 10 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
@@ -2543,6 +2646,13 @@
         {
           "type" : "paragraph" ,
           "value" : "Wait time : Total time when any issue is in status similar to Ready for testing, ready for deployment as defined in the configuration etc."
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713393/Wastage"
+          }
         }
       ]
     } ,
@@ -2561,16 +2671,26 @@
     "maxValue" : "" ,
     "kpiUnit" : "Hours" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 11 ,
+    "defaultOrder" : 12 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : null ,
     "kpiInfo" : {
-      "definition" : "Percentage of tickets that passed QA with no return transition or any tagging to a specific configured status and no linkage of a defect."
+      "definition" : "Percentage of tickets that passed QA with no return transition or any tagging to a specific configured status and no linkage of a defect.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680642/First+time+pass+rate"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2589,7 +2709,8 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 3 ,
     "kpiCategory" : "Backlog" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 11 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
@@ -2601,6 +2722,15 @@
         } ,
         {
           "lhs" : "Defect Count Without Story Link= Total defects without Story link"
+        }
+      ] ,
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050083/Issues+without+story+link"
+          }
         }
       ]
     } ,
@@ -2622,13 +2752,23 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 2 ,
     "kpiCategory" : "Backlog" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 10 ,
     "thresholdValue" : "0" ,
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
-      "definition" : "It groups all the open production defects based on their ageing in the backlog."
+      "definition" : "It groups all the open production defects based on their ageing in the backlog.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886319/Production+defects+Ageing"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "Months" ,
     "yaxisLabel" : "Count" ,
@@ -2649,13 +2789,23 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 6 ,
     "kpiCategory" : "Backlog" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 10 ,
     "thresholdValue" : "40" ,
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
-      "definition" : "It measures the percentage of stories rejected during refinement as compared to the overall stories discussed in a week."
+      "definition" : "It measures the percentage of stories rejected during refinement as compared to the overall stories discussed in a week.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886335/Refinement+Rejection+Rate"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count" ,
@@ -2675,16 +2825,26 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 13 ,
+    "defaultOrder" : 14 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects within an iteration by status. User can view the total defects in the iteration as well as the defects created after iteration start."
+      "definition" : "It shows the breakup of all defects within an iteration by status. User can view the total defects in the iteration as well as the defects created after iteration start.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713425/Defect+count+by+Status"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2702,12 +2862,22 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 5 ,
     "kpiCategory" : "Backlog" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 10 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "kpiInfo" : {
-      "definition" : "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available."
+      "definition" : "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820630/Defects+Reopen+rate"
+          }
+        }
+      ]
     } ,
     "isPositiveTrend" : false ,
     "kpiFilter" : "dropdown" ,
@@ -2727,13 +2897,23 @@
     "defaultOrder" : 1 ,
     "kpiCategory" : "Release" ,
     "kpiSubCategory" : "Quality" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 9 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+      "definition" : "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79986689/Release+Defect+count+by+Status"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2753,16 +2933,26 @@
     "defaultOrder" : 2 ,
     "kpiCategory" : "Release" ,
     "kpiSubCategory" : "Quality" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 9 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
-    "chartType" : "pieChart" ,
+    "chartType" : "stackedColumn" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects tagged to a release based on RCA. The breakup is shown in terms of count & percentage."
+      "definition" : "It shows the breakup of all defects tagged to a release based on RCA. The breakup is shown in terms of count at different testing phases.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79953937/Release+Defect+count+by+RCA"
+          }
+        }
+      ]
     } ,
-    "xaxisLabel" : "" ,
-    "yaxisLabel" : "" ,
+    "xaxisLabel" : "Test Phase" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2779,13 +2969,23 @@
     "defaultOrder" : 3 ,
     "kpiCategory" : "Release" ,
     "kpiSubCategory" : "Quality" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 9 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects tagged to a release based on Assignee. The breakup is shown in terms of count & percentage."
+      "definition" : "It shows the breakup of all defects tagged to a release based on Assignee. The breakup is shown in terms of count & percentage.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79691782/Release+Defect+count+by+Assignee"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2805,13 +3005,23 @@
     "defaultOrder" : 4 ,
     "kpiCategory" : "Release" ,
     "kpiSubCategory" : "Quality" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 9 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects tagged to a release based on Priority. The breakup is shown in terms of count & percentage."
+      "definition" : "It shows the breakup of all defects tagged to a release based on Priority. The breakup is shown in terms of count & percentage.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79953921/Release+Defect+count+by+Priority"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2838,16 +3048,26 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 15 ,
+    "defaultOrder" : 16 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects within an iteration by priority. User can view the total defects in the iteration as well as the defects created after iteration start."
+      "definition" : "It shows the breakup of all defects within an iteration by priority. User can view the total defects in the iteration as well as the defects created after iteration start.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713441/Defect+count+by+Priority"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2867,13 +3087,23 @@
     "defaultOrder" : 5 ,
     "kpiCategory" : "Release" ,
     "kpiSubCategory" : "Speed" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 9 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "horizontalPercentBarChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup by status of issues tagged to a release. The breakup is based on both issue count and story points"
+      "definition" : "It shows the breakup by status of issues tagged to a release. The breakup is based on both issue count and story points" ,
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79757314/Release+Release+Progress"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2894,13 +3124,23 @@
     "defaultOrder" : 3 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Iteration Review" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 8 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : null ,
     "kpiInfo" : {
-      "definition" : "It gives a comparative view between the planned completion and actual completion from a development point of view. In addition, user can see the delay (in days) in dev completed issues"
+      "definition" : "It gives a comparative view between the planned completion and actual completion from a development point of view. In addition, user can see the delay (in days) in dev completed issues",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/99483649/Dev+Completion+Status"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2919,7 +3159,8 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 1 ,
     "kpiCategory" : "Backlog" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 11 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
@@ -2937,6 +3178,13 @@
         {
           "type" : "paragraph" ,
           "value" : "Readiness cycle time: Average time taken for Product Backlog items (PBIs) to be refined."
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886286/Backlog+Readiness"
+          }
         }
       ]
     } ,
@@ -2961,6 +3209,7 @@
     "defaultOrder": "1",
     "kpiUnit": "Days",
     "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId": 11,
     "kanban": false,
     "chartType": "line",
@@ -2997,13 +3246,23 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 13 ,
     "kpiCategory" : "Backlog" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 11 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "stacked-area" ,
     "kpiInfo" : {
-      "definition" : " Flow load indicates how many items are currently in the backlog. This KPI emphasizes on limiting work in progress to enabling a fast flow of issues"
+      "definition" : " Flow load indicates how many items are currently in the backlog. This KPI emphasizes on limiting work in progress to enabling a fast flow of issues",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820646/Flow+Load"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "Time" ,
     "yaxisLabel" : "Count" ,
@@ -3022,13 +3281,23 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 11 ,
     "kpiCategory" : "Backlog" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 10 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "stacked-area" ,
     "kpiInfo" : {
-      "definition" : "Flow Distribution evaluates the amount of each kind of work (issue types) which are open in the backlog over a period of time."
+      "definition" : "Flow Distribution evaluates the amount of each kind of work (issue types) which are open in the backlog over a period of time.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050099/Flow+Distribution"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "Time" ,
     "yaxisLabel" : "Count" ,
@@ -3043,7 +3312,8 @@
   {
     "kpiId" : "kpi149" ,
     "kpiName" : "Happiness Index" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "aggregationCriteria" : "average" ,
     "boxType" : "3_column" ,
     "calculateMaturity" : false ,
@@ -3063,13 +3333,19 @@
         {
           "type" : "paragraph" ,
           "value" : "KPI for tracking moral of team members"
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582623/People"
+          }
         }
       ]
     } ,
     "kpiUnit" : "" ,
     "maxValue" : "5" ,
     "showTrend" : false ,
-    "thresholdValue" : "" ,
     "xaxisLabel" : "Sprints" ,
     "yaxisLabel" : "Rating"
   } ,
@@ -3082,7 +3358,8 @@
     "defaultOrder" : 1 ,
     "kpiCategory" : "Release" ,
     "kpiSubCategory" : "Speed" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 9 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
@@ -3094,7 +3371,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582601/RELEASE+Health#Release-Burnup"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70484023/Release+Release+Burnup"
           }
         }
       ]
@@ -3116,13 +3393,23 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 9 ,
     "kpiCategory" : "Backlog" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 10 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "Total count of issues in the Backlog with a breakup by Status."
+      "definition" : "Total count of issues in the Backlog with a breakup by Status.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820678/Backlog+Count+by+Status"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -3140,13 +3427,23 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 10 ,
     "kpiCategory" : "Backlog" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 11 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "Total count of issues in the backlog with a breakup by issue type."
+      "definition" : "Total count of issues in the backlog with a breakup by issue type.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050115/Backlog+Count+by+Issue+type"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -3164,7 +3461,8 @@
     "kpiUnit" : "" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 29 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 4 ,
     "thresholdValue" : "0" ,
     "kanban" : false ,
@@ -3176,7 +3474,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#PI-Predictability"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050067/PI+Predictability"
           }
         }
       ]
@@ -3199,7 +3497,8 @@
     "defaultOrder" : 8 ,
     "kpiCategory" : "Iteration" ,
     "kpiSubCategory" : "Daily Standup" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 13 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
@@ -3217,13 +3516,23 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 11 ,
     "kpiCategory" : "Backlog" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 11 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "Total count of issues in the backlog with a breakup by defect type."
+      "definition" : "Total count of issues in the backlog with a breakup by defect type.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/98140489/Defect+count+by+Type"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -3242,6 +3551,7 @@
     "isDeleted": "False",
     "defaultOrder": 3,
     "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "kpiCategory": "Dora",
     "groupId": 15,
     "thresholdValue": "7",
@@ -3253,6 +3563,13 @@
         {
           "type": "paragraph",
           "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71663772/DORA+Lead+time+for+changes"
+          }
         }
       ]
     },
@@ -3314,7 +3631,8 @@
     "kpiUnit" : "MRs" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 1 ,
-    "kpiSource" : "BitBucket" ,
+    "kpiSource": "BitBucket",
+    "combinedKpiSource": "RepoTool",
     "groupId" : 1 ,
     "thresholdValue" : 55 ,
     "kanban" : false ,
@@ -3329,6 +3647,13 @@
         {
           "type" : "paragraph" ,
           "value" : "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive"
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70451310/Developer+No.+of+Check-ins+and+Merge+Requests"
+          }
         }
       ] ,
       "maturityLevels" : [
@@ -3388,7 +3713,8 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 2 ,
     "groupId" : 1 ,
-    "kpiSource" : "BitBucket" ,
+    "kpiSource": "BitBucket",
+    "combinedKpiSource": "RepoTool",
     "thresholdValue" : "55" ,
     "kanban" : false ,
     "chartType" : "line" ,
@@ -3406,6 +3732,13 @@
         {
           "type" : "paragraph" ,
           "value" : "Maturity of the KPI is calculated based on the average of the last 5 weeks"
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713477/Developer+Mean+time+to+Merge"
+          }
         }
       ] ,
       "maturityLevels" : [
@@ -3465,7 +3798,8 @@
     "isDeleted" : false ,
     "defaultOrder" : 1 ,
     "groupId" : 1 ,
-    "kpiSource" : "BitBucket" ,
+    "kpiSource": "BitBucket",
+    "combinedKpiSource": "RepoTool",
     "thresholdValue" : 55 ,
     "kanban" : true ,
     "chartType" : "line" ,
@@ -3540,7 +3874,8 @@
     "isDeleted" : false ,
     "defaultOrder" : 3 ,
     "groupId" : 1 ,
-    "kpiSource" : "BitBucket" ,
+    "kpiSource": "BitBucket",
+    "combinedKpiSource": "RepoTool",
     "thresholdValue" : 20 ,
     "kanban" : false ,
     "chartType" : "line" ,
@@ -3558,6 +3893,13 @@
         {
           "type" : "paragraph" ,
           "value" : "Maturity of the KPI is calculated based on the average of the last 5 weeks"
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680716/Developer+Pickup+time"
+          }
         }
       ] ,
       "maturityLevels" : [
@@ -3617,12 +3959,22 @@
     "isDeleted" : false ,
     "defaultOrder" : 4 ,
     "groupId" : 1 ,
-    "kpiSource" : "BitBucket" ,
+    "kpiSource": "BitBucket",
+    "combinedKpiSource": "RepoTool",
     "thresholdValue" : "4",
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
-      "definition" : "Pull request size measures the number of code lines modified in a pull request. Smaller pull requests are easier to review, safer to merge, and correlate to a lower cycle time."
+      "definition" : "Pull request size measures the number of code lines modified in a pull request. Smaller pull requests are easier to review, safer to merge, and correlate to a lower cycle time.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713493/Developer+PR+Size"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count (No. of Lines)" ,
@@ -3652,7 +4004,8 @@
     "kpiUnit" : "%" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 30.0 ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 5 ,
     "thresholdValue" : "20" ,
     "kanban" : false ,
@@ -3674,7 +4027,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Scope-Churn"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886244/Scope+Churn"
           }
         }
       ]
@@ -3705,13 +4058,23 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 7 ,
     "kpiCategory" : "Release" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 9 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "horizontalPercentBarChart" ,
     "kpiInfo" : {
-      "definition" : " It gives a breakup of escaped defects by testing phase"
+      "definition" : " It gives a breakup of escaped defects by testing phase",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/98140473/Release+Defect+count+by+Testing+phase"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -3739,13 +4102,23 @@
     "defaultOrder" : 5 ,
     "kpiCategory" : "Release" ,
     "kpiSubCategory" : "Value" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 9 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "horizontalPercentBarChart" ,
     "kpiInfo" : {
-      "definition" : "It depicts the progress of each epic in a release in terms of total count and %age completion."
+      "definition" : "It depicts the progress of each epic in a release in terms of total count and %age completion.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79986705/Release+Epic+Progress"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -3765,13 +4138,23 @@
     "isDeleted" : "False" ,
     "defaultOrder" : 5 ,
     "kpiCategory" : "Backlog" ,
-    "kpiSource" : "Jira" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 9 ,
     "thresholdValue" : "" ,
     "kanban" : false ,
     "chartType" : "horizontalPercentBarChart" ,
     "kpiInfo" : {
-      "definition" : "It depicts the progress of each epic in terms of total count and %age completion."
+      "definition" : "It depicts the progress of each epic in terms of total count and %age completion.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820662/Epic+Progress"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -3793,6 +4176,7 @@
     "defaultOrder": 4,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId": 11,
     "thresholdValue": "",
     "kanban": false,
@@ -3804,7 +4188,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Iteration-Readiness"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886303/Iteration+Readiness"
           }
         }
       ]
@@ -3827,6 +4211,7 @@
     "isDeleted": "False",
     "defaultOrder": 4,
     "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "kpiCategory": "Dora",
     "groupId": 15,
     "thresholdValue": "24",
@@ -3847,7 +4232,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71663785/DORA+Mean+time+to+Restore"
           }
         }
       ],
@@ -3930,7 +4315,7 @@
           "type": "link",
           "kpiLinkDetail": {
             "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Code-Quality"
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886180/Sonar+Code+Quality"
           }
         }
       ]
@@ -3963,12 +4348,22 @@
     "defaultOrder" : 1,
     "kpiCategory" : "Backlog",
     "kpiSource" : "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId" : 11,
     "thresholdValue" : "40",
     "kanban" : false,
     "chartType" : "line",
     "kpiInfo" : {
-      "definition" : "The percentage of time spent in work states vs wait states across the lifecycle of an issue"
+      "definition" : "The percentage of time spent in work states vs wait states across the lifecycle of an issue",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71827496/Flow+Efficiency"
+          }
+        }
+      ]
     },
     "xAxisLabel" : "Duration",
     "yAxisLabel" : "Percentage",
@@ -3991,6 +4386,7 @@
     "defaultOrder": 12,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
     "groupId": 11,
     "thresholdValue": "",
     "kanban": false,
@@ -4019,6 +4415,116 @@
     "isPositiveTrend": false,
     "kpiBaseLine": "0",
     "showTrend": false
+  },
+  {
+    "kpiId": "kpi172",
+    "kpiName": "Build Frequency",
+    "maxValue": "",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 24,
+    "kpiSource": "Jenkins",
+    "combinedKpiSource": "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity",
+    "groupId": 1,
+    "thresholdValue": "8",
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Build frequency refers the number of successful builds done in a specific time frame.",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/92930049/Build+Frequency"
+          }
+        }
+      ]
+    },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Builds Count",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "dropDown",
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-1",
+      "2-4",
+      "5-8",
+      "8-10",
+      "10-"
+    ]
+  },
+  {
+    "kpiId" : "kpi173",
+    "kpiName" : "Rework Rate",
+    "maxValue" : "",
+    "kpiUnit" : "%",
+    "isDeleted" : false,
+    "defaultOrder" : 5,
+    "groupId" : 2,
+    "kpiSource" : "BitBucket",
+    "combinedKpiSource": "RepoTool",
+    "kanban" : false,
+    "chartType" : "line",
+    "kpiInfo" : {
+      "definition" : "Percentage of code changes in which an engineer rewrites code that they recently updated (within the past three weeks).",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/106528769/Developer+Rework+Rate"
+          }
+        }
+      ]
+    },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
+    "thresholdValue" : "50",
+    "xAxisLabel" : "Weeks",
+    "yAxisLabel" : "Percentage",
+    "isPositiveTrend" : false,
+    "showTrend" : true,
+    "kpiFilter" : "dropDown",
+    "aggregationCriteria" : "average",
+    "isAdditionalFilterSupport" : false,
+    "calculateMaturity" : false,
+    "hideOverallFilter" : true,
+    "isRepoToolKpi" : true,
+    "kpiCategory" : "Developer",
+    "maturityRange" : [ "-80", "80-50", "50-20", "20-5", "5-" ]
+  },
+  {
+    "kpiId": "kpi176",
+    "kpiName": "Risks And Dependencies",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 6,
+    "kpiCategory": "Iteration",
+    "kpiSubCategory": "Iteration Review",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "definition": "It shows the count of issues which do not have estimates and count of In progress issues without any work logs.",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680674/Estimate+Hygiene"
+          }
+        }
+      ]
+    }
   }
-
 ]

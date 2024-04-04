@@ -219,8 +219,8 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 
 	}
 
-	private void updateAssigneeDetailsToggleWise(KanbanJiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
-			List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
+	void updateAssigneeDetailsToggleWise(KanbanJiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
+										 List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 
 			List<String> ownerName = assigneeName.stream().map(JiraHelper::hash).collect(Collectors.toList());

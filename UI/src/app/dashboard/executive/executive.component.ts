@@ -117,7 +117,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     noOfDataPoints:number = 5;
     maturityTableKpiList = [];
 
-    constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
+    constructor(public service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
          this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
 
@@ -298,7 +298,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         } else {
 
                             this.groupJiraKpi(kpiIdsForCurrentBoard);
-                           // this.groupBitBucketKpi(kpiIdsForCurrentBoard);
                             this.groupSonarKpi(kpiIdsForCurrentBoard);
                             this.groupJenkinsKpi(kpiIdsForCurrentBoard);
                             this.groupZypherKpi(kpiIdsForCurrentBoard);
@@ -310,41 +309,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             if(this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
                         }
                     }
-                } else if (this.filterData?.length && !$event.makeAPICall) {
-                    // alert('no call');
-                    this.allKpiArray.forEach(element => {
-                        this.getDropdownArray(element?.kpiId);
-                        // For kpi3 and kpi53 generating table column headers and table data
-                        if (element.kpiId === 'kpi3' || element.kpiId === 'kpi53') {
-                            //generating column headers
-                            const columnHeaders = [];
-                            if (Object.keys(this.kpiSelectedFilterObj)?.length && this.kpiSelectedFilterObj[element.kpiId]?.length && this.kpiSelectedFilterObj[element.kpiId][0]) {
-                                columnHeaders.push({ field: 'name', header: this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelName + ' Name' });
-                                columnHeaders.push({ field: 'value', header: this.kpiSelectedFilterObj[element.kpiId][0] });
-                                columnHeaders.push({ field: 'maturity', header: 'Maturity' });
-                            }
-                            if (this.kpiChartData[element.kpiId]) {
-                                this.kpiChartData[element.kpiId].columnHeaders = columnHeaders;
-                            }
-                            //generating Table data
-                            const kpiUnit = this.updatedConfigGlobalData?.find(kpi => kpi.kpiId === element.kpiId)?.kpiDetail?.kpiUnit;
-                            const data = [];
-                            if (this.kpiChartData[element.kpiId] && this.kpiChartData[element.kpiId].length) {
-                                for (let i = 0; i < this.kpiChartData[element.kpiId].length; i++) {
-                                    const rowData = {
-                                        name: this.kpiChartData[element.kpiId][i].data,
-                                        maturity: 'M' + this.kpiChartData[element.kpiId][i].maturity,
-                                        value: this.kpiChartData[element.kpiId][i].value[0].data + ' ' + kpiUnit
-                                    };
-                                    data.push(rowData);
-                                }
-
-                                this.kpiChartData[element.kpiId].data = data;
-                            }
-                            this.showKpiTrendIndicator[element.kpiId] = false;
-
-                        }
-                    });
                 } else {
                     this.noTabAccess = true;
                 }
@@ -398,9 +362,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 }
             }
         });
-
-        // this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.masterData, this.filterApplyData, this.filterData, '');
-        // this.postZypherKpi(this.kpiZypher, 'zypher');
 
     }
 
@@ -803,13 +764,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }
     }
 
-    sortAlphabetically(objArray) {
-        if (objArray && objArray?.length > 1) {
-            objArray?.sort((a, b) => a.data?.localeCompare(b.data));
-        }
-        return objArray;
-    }
-
     getChartData(kpiId, idx, aggregationType) {
         const trendValueList = this.allKpiArray[idx]?.trendValueList;
         this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
@@ -829,8 +783,12 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 }
               } else {
                 const tempArr = {};
-                for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-                  tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+                if(Array.isArray(this.kpiSelectedFilterObj[kpiId])){
+                    for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+                        tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+                      }
+                }else{
+                    tempArr[this.kpiSelectedFilterObj[kpiId]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId])[0]?.value);
                 }
                 this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
               }
@@ -871,17 +829,15 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
               this.kpiChartData[kpiId] = [];
               if (trendValueList &&  trendValueList?.length > 0) {
                 this.kpiChartData[kpiId]?.push(trendValueList?.filter((x) => x['filter'] == 'Overall')[0]);
-              } else if (trendValueList?.length > 0) {
-                this.kpiChartData[kpiId] = [...trendValueList];
-              } else {
-                //const obj = JSON.parse(JSON.stringify(trendValueList));
+              } 
+              else {
                 this.kpiChartData[kpiId]?.push(trendValueList);
               }
             }
           }
           else {
             if (trendValueList?.length > 0) {
-              this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
+              this.kpiChartData[kpiId] = [...this.helperService.sortAlphabetically(trendValueList)];
             } else {
               this.kpiChartData[kpiId] = [];
             }
@@ -1225,13 +1181,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
               delete event[key];
               this.kpiSelectedFilterObj[kpi?.kpiId] = event;
             } else if(Array.isArray(event[key])){
-              for (let i = 0; i < event[key]?.length; i++) {
-                this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
-              }
-            }else{
                 for (let i = 0; i < event[key]?.length; i++) {
-                    this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
+                    this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], Array.isArray(event[key]) ? event[key][i] : event[key]];
                   }
+            }else{
+             this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];
             }
           }
         } else {
@@ -1247,10 +1201,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         let worksheet;
         const workbook = new Excel.Workbook();
         worksheet = workbook.addWorksheet('Kpi Data');
-        // let level = this.service.getSelectedLevel();
         let trends = this.service.getSelectedTrends();
-        // let firstRow = [level['hierarchyLevelName']];
-        // let headerNames = ["KPI Name"];
         let headers = [{header: 'KPI Name', key: 'kpiName', width: 30}];
         for(let i = 0; i<trends.length; i++){
             let colorCode = this.trendBoxColorObj[trends[i]['nodeName']]?.color;
@@ -1366,54 +1317,16 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         return maturity;
       }
 
-      checkLatestAndTrendValueForKpi(kpiData, item){
-        let latest:string = '';
-        let trend:string = '';
-        if(item?.value?.length > 0){
-            let tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
-            var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit.trim() : '';
-            latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
-        }
-        if(item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
-            if(kpiData?.kpiDetail?.trendCalculative){
-                let lhsKey = kpiData?.kpiDetail?.trendCalculation?.length > 0 ? kpiData?.kpiDetail?.trendCalculation[0]?.lhs : '';
-                let rhsKey = kpiData?.kpiDetail?.trendCalculation?.length > 0 ? kpiData?.kpiDetail?.trendCalculation[0]?.rhs : '';
-                let lhs = item?.value[item?.value?.length - 1][lhsKey];
-                let rhs = item?.value[item?.value?.length - 1][rhsKey];
-                let operator = lhs < rhs ? '<' : lhs > rhs ? '>' : '=';
-                let trendObj = kpiData?.kpiDetail?.trendCalculation?.find((item) => item.operator == operator);
-                if(trendObj){
-                    trend = trendObj['type']?.toLowerCase() == 'downwards' ? '-ve' : trendObj['type']?.toLowerCase() == 'upwards' ? '+ve' : '-- --';
-                }else{
-                    trend = 'NA';
-                }
-            }else{
-                let lastVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
-                let secondLastVal = item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'solid')?.value;
-                let isPositive = kpiData?.kpiDetail?.isPositiveTrend;
-                if(secondLastVal > lastVal && !isPositive){
-                    trend = '+ve';
-                }else if(secondLastVal < lastVal && !isPositive){
-                    trend = '-ve';
-                }else if(secondLastVal < lastVal && isPositive){
-                    trend = '+ve';
-                }else if(secondLastVal > lastVal && isPositive){
-                    trend = '-ve';
-                }else {
-                    trend = '-- --';
-                }
-            }
-        }else{
-            trend = 'NA';
-        }
-        return [latest, trend, unit];
-      }
-
       checkLatestAndTrendValue(kpiData, item){
         let latest:string = '';
         let trend:string = '';
         if(item?.value?.length > 0){
-            let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
+            let tempVal;
+            if(item?.value[item?.value?.length - 1]?.dataValue){
+                tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
+            }else{
+                tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
+            }
             var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
             latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
         }
@@ -1431,8 +1344,14 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     trend = 'NA';
                 }
             }else{
-                let lastVal = item?.value[item?.value?.length - 1]?.value;
-                let secondLastVal = item?.value[item?.value?.length - 2]?.value;
+                let lastVal, secondLastVal;
+                if(item?.value[item?.value?.length - 1]?.dataValue){
+                    lastVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
+                    secondLastVal = item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'solid')?.value;
+                }else{
+                    lastVal = item?.value[item?.value?.length - 1]?.value;
+                    secondLastVal = item?.value[item?.value?.length - 2]?.value;
+                }
                 let isPositive = kpiData?.kpiDetail?.isPositiveTrend;
                 if(secondLastVal > lastVal && !isPositive){
                     trend = '+ve';
@@ -1460,7 +1379,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 for(let i = 0; i < this.kpiChartData[kpiId]?.length; i++){
                     if(this.kpiChartData[kpiId][i]?.value?.length > 0){
                         let trendObj = {};
-                        const [latest, trend,unit] = !this.kpiChartData[kpiId][i].value[0]?.dataValue ? this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]) : this.checkLatestAndTrendValueForKpi(enabledKpiObj, this.kpiChartData[kpiId][i]);
+                        const [latest, trend,unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
                         trendObj = {
                             "hierarchyName": this.kpiChartData[kpiId][i]?.data,
                             "value": latest,
@@ -1498,24 +1417,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }
       }
 
-      getKpiCommentsCount(kpiId?){
-        let requestObj = {
-          "nodes": [...this.filterApplyData?.['selectedMap']['project']],
-          "level":this.filterApplyData?.level,
-          "nodeChildId": "",
-          'kpiIds': []
-        };
-        if(kpiId){
-            requestObj['kpiIds'] = [kpiId];
-            this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-                this.kpiCommentsCountObj[kpiId] = res[kpiId];
-            });
-        }else{
-            requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
-            this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-                this.kpiCommentsCountObj = res;
-            });
-        }
+      async getKpiCommentsCount(kpiId?){
+        const nodes = [...this.filterApplyData?.['selectedMap']['project']];
+        const level = this.filterApplyData?.level;
+        const nodeChildId = '';
+        this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)     
     }
 
     reloadKPI(event) {

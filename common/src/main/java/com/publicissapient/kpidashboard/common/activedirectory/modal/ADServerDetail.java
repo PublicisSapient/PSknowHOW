@@ -17,8 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.activedirectory.modal;
 
-import org.hibernate.validator.constraints.NotBlank;
-
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

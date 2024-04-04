@@ -24,7 +24,7 @@ import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
-
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -39,8 +39,8 @@ export class AppComponent implements OnInit {
 
   authorized = <boolean>true;
 
-  constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
-    private ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute) {
+  constructor(public router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
+    public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute) {
     this.authorized = this.getAuth.checkAuth();
   }
 
@@ -58,18 +58,6 @@ export class AppComponent implements OnInit {
         }
       }
     );
-
-    // load google Analytics script on all instances except local and if customAPI property is true
-    this.httpService.getAnalyticsFlag()
-      .subscribe(flag => {
-        if (flag['success'] && flag['data'] && flag['data']['analyticsSwitch']) {
-          if (window.location.origin.indexOf('localhost') === -1) {
-            this.ga.load('gaTagManager').then(data => {
-              console.log('script loaded ', data);
-            }).catch(error => console.log(error));
-          }
-        }
-      });
 
     this.primengConfig.ripple = true;
     this.authorized = this.getAuth.checkAuth();

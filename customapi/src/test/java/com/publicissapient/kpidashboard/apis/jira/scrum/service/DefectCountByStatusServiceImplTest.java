@@ -18,9 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
@@ -51,7 +51,7 @@ import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -75,18 +75,13 @@ public class DefectCountByStatusServiceImplTest {
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
-	JiraServiceR jiraServiceR;
+	JiraIterationServiceR jiraServiceR;
 	private KpiRequest kpiRequest;
 	private SprintDetails sprintDetails;
 	private List<JiraIssue> storyList = new ArrayList<>();
 	private List<JiraIssue> bugList = new ArrayList<>();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-
-	@Test
-	public void testGetCalculateKPIMetrics() {
-		assertThat(defectCountByStatusService.calculateKPIMetrics(new HashMap<>()), equalTo(null));
-	}
 
 	@Test
 	public void testGetQualifierType() {
@@ -129,7 +124,7 @@ public class DefectCountByStatusServiceImplTest {
 			when(jiraServiceR.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 			when(jiraIssueRepository.findLinkedDefects(anyMap(), any(), anyMap())).thenReturn(bugList);
 			KpiElement kpiElement = defectCountByStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull(kpiElement);
 
 		} catch (ApplicationException applicationException) {
@@ -147,8 +142,8 @@ public class DefectCountByStatusServiceImplTest {
 		when(jiraServiceR.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraServiceR.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> returnMap = defectCountByStatusService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
-				kpiRequest);
+		Map<String, Object> returnMap = defectCountByStatusService.fetchKPIDataFromDb(leafNodeList.get(0), startDate,
+				endDate, kpiRequest);
 		assertNotNull(returnMap);
 	}
 }

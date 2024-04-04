@@ -69,7 +69,7 @@ export class DoraComponent implements OnInit {
   maturityObj = {};
   toolTipTop: number = 0;
 
-  constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
+  constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService) {
 
     this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
       if (Object.keys(x).length > 0) {
@@ -167,24 +167,11 @@ export class DoraComponent implements OnInit {
   }
 
 
-  getKpiCommentsCount(kpiId?) {
-    let requestObj = {
-      "nodes": [...this.filterApplyData?.['selectedMap']['project']],
-      "level": this.filterApplyData?.level,
-      "nodeChildId": "",
-      'kpiIds': []
-    };
-    if (kpiId) {
-      requestObj['kpiIds'] = [kpiId];
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj[kpiId] = res[kpiId];
-      });
-    } else {
-      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj = res;
-      });
-    }
+  async getKpiCommentsCount(kpiId?) {
+    const nodes = [...this.filterApplyData?.['selectedMap']['project']];
+    const level = this.filterApplyData?.level;
+    const nodeChildId = '';
+    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
   }
 
   receiveSharedData($event) {
@@ -362,9 +349,13 @@ export class DoraComponent implements OnInit {
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
       if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
         const tempArr = {};
-        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value[0]?.aggregationValue;
+        if (Array.isArray(this.kpiSelectedFilterObj[kpiId])) {
+          for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+            tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+            tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value[0]?.aggregationValue;
+          }
+        } else {
+          tempArr[this.kpiSelectedFilterObj[kpiId]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId])[0]?.value);
         }
         this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
       } else {
@@ -438,10 +429,10 @@ export class DoraComponent implements OnInit {
           this.kpiSelectedFilterObj[kpi?.kpiId] = event;
         } else if (Array.isArray(event[key])) {
           for (let i = 0; i < event[key]?.length; i++) {
-            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
+            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], Array.isArray(event[key]) ? event[key][i] : event[key]];
           }
         } else {
-          this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
+          this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];
         }
       }
     } else {

@@ -348,11 +348,11 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 				// after fixing this
 				final Object value = json.opt(key);
 				res.add(new IssueField(key, namesMap.get(key), typesMap.get("key"),
-						value != JSONObject.NULL ? value : null));
+						value != JSONObject.EXPLICIT_NULL ? value : null));
 			} catch (final Exception e) {
 				throw new JSONException("Error while parsing [" + key + "] field: " + e.getMessage()) {
 					@Override
-					public Throwable getCause() {
+					public synchronized Throwable getCause() {
 						return e;
 					}
 				};

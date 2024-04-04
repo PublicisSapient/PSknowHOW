@@ -32,6 +32,7 @@ import { environment } from 'src/environments/environment';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { Router } from '@angular/router';
 import { SharedService } from 'src/app/services/shared.service';
+import { of, throwError } from 'rxjs';
 
 describe('ForgotPasswordComponent', () => {
   let component: ForgotPasswordComponent;
@@ -104,4 +105,24 @@ describe('ForgotPasswordComponent', () => {
     expect(component.success).toBe('Link to reset password has been sent to your registered email address');
   }));
 
+  it('should throw error while getting forgot password call and status is not 0', waitForAsync(() => {
+    component.emailForm.controls['email'].setValue('user@gmail.com');
+    spyOn(httpService,'forgotPassword').and.returnValue(throwError('Error'))
+    component.onSubmit();
+    expect(component.error).toBe('Please check your email/notification setup')
+  }));
+
+  it('should throw error while getting forgot password call and status is 0', waitForAsync(() => {
+    component.emailForm.controls['email'].setValue('user@gmail.com');
+    spyOn(httpService,'forgotPassword').and.returnValue(throwError({status : 0}))
+    component.onSubmit();
+    expect(component.error).toBe('Could not send email, connection timed out!')
+  }));
+
+  it('should get forgot pass success response', waitForAsync(() => {
+    component.emailForm.controls['email'].setValue('user@gmail.com');
+    spyOn(httpService,'forgotPassword').and.returnValue(of({success : false}))
+    component.onSubmit();
+    expect(component.error).toBeDefined();
+   }));
 });

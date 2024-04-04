@@ -80,6 +80,7 @@ public class KpiMaster extends BasicModel {
 	private Boolean isTrendUpOnValIncrease;
 
 	private String kpiSource;
+	private String combinedKpiSource;
 	private Object maxValue;
 	private Double thresholdValue;
 

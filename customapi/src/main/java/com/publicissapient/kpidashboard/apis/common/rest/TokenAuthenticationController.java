@@ -22,9 +22,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +38,10 @@ import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationServi
 import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * aksshriv1
@@ -76,7 +77,7 @@ public class TokenAuthenticationController {
 				serviceResponse = new ServiceResponse(false, "token is expired", userMap);
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
 			} else {
-				Map<String, Object> userMap = customAnalyticsService.addAnalyticsData(httpServletResponse, userName,
+				Map<String, Object> userMap = customAnalyticsService.addAnalyticsDataAndSaveCentralUser(httpServletResponse, userName,
 						authToken);
 				userMap.put("resourceTokenValid", true);
 				serviceResponse = new ServiceResponse(true, "success_valid_token", userMap);

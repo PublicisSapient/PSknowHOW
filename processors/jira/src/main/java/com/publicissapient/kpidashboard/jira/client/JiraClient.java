@@ -16,10 +16,10 @@ import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.htmlunit.FailingHttpStatusCodeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -65,8 +65,6 @@ public class JiraClient {
 		if (connectionOptional.isPresent()) {
 			Connection connection = connectionOptional.get();
 			boolean isOauth = connection.getIsOAuth();
-			krb5Client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
-					connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
 			restClient = getProcessorRestClient(projectConfFieldMapping, isOauth, connection, krb5Client);
 		}
 		return restClient;

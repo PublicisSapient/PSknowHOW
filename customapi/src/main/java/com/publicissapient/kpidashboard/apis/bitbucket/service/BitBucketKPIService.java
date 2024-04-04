@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
+import com.publicissapient.kpidashboard.apis.model.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
@@ -29,7 +30,6 @@ import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 
 /**
@@ -76,8 +76,8 @@ public abstract class BitBucketKPIService<R, S, T> extends ToolsKPIService<R, S>
 	 * @return
 	 * @throws ApplicationException
 	 */
-	public abstract KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException;
+	public abstract KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
+			throws ApplicationException;
 
 	/**
 	 * This method creates branch filters for kpis

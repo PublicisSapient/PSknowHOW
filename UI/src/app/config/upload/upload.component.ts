@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, SecurityContext, ViewChild } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MenuItem } from 'primeng/api';
@@ -29,6 +29,7 @@ import { GetAuthorizationService } from '../../services/get-authorization.servic
 import { FormControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ManageAssigneeComponent } from '../manage-assignee/manage-assignee.component';
 declare let $: any;
+import { HelperService } from 'src/app/services/helper.service';
 
 interface TepSubmissionReq {
     projectNodeId: string;
@@ -39,6 +40,10 @@ interface TepSubmissionReq {
     endDate?: string;
     totalTestCases?: string;
     executedTestCase?: string;
+    automatedTestCases?: string;
+    automatableTestCases?: string;
+    automatedRegressionTestCases?: string;
+    totalRegressionTestCases?: string;
     passedTestCase?: string;
     sprintId?: string;
     sprintName?: string;
@@ -158,7 +163,7 @@ export class UploadComponent implements OnInit {
         }
     ]
 
-    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService, private cdr: ChangeDetectorRef) {
+    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService, private cdr: ChangeDetectorRef,private helperService : HelperService) {
     }
 
     ngOnInit() {
@@ -238,7 +243,7 @@ export class UploadComponent implements OnInit {
                     command: (event) => {
                         this.switchView(event);
                     },
-                    expanded: false
+                    expanded: true
                 }
             );
             this.selectedView = 'logo_upload';
@@ -249,20 +254,8 @@ export class UploadComponent implements OnInit {
             document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
             document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
         }
-        this.selectedView = 'cert_upload';
-        if (this.isSuperAdmin) {
-            this.items.unshift(
-                {
-                    label: 'Upload certificate',
-                    icon: 'pi pi-image',
-                    command: (event) => {
-                        this.switchView(event);
-                    },
-                    expanded: true
-                }
-            );
-            this.selectedView = 'cert_upload';
-        } else {
+        // this.selectedView = 'cert_upload';
+        if (!this.isSuperAdmin) {
             this.handleTepSelect('upload_tep');
             document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
             document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
@@ -329,12 +322,6 @@ export class UploadComponent implements OnInit {
                 this.message = '';
             }
                 break;
-            case 'Upload certificate': {
-                this.selectedView = 'cert_upload';
-                this.error = '';
-                this.message = '';
-            }
-                break;
             case 'Test Execution Percentage': {
                 this.handleTepSelect('upload_tep');
                 this.addActiveToTab();
@@ -352,7 +339,8 @@ export class UploadComponent implements OnInit {
                     if (data['image']) {
                         this.logoImage = 'data:image/png;base64,' + data['image'];
                         const blob: Blob = new Blob([this.logoImage], { type: 'image/png' });
-                        blob['objectURL'] = this.sanitizer.bypassSecurityTrustUrl((window.URL.createObjectURL(blob)));
+                        blob['objectURL'] = this.sanitizer.sanitize(SecurityContext.URL, window.URL.createObjectURL(blob))
+                        //blob['objectURL'] = this.sanitizer.bypassSecurityTrustUrl((window.URL.createObjectURL(blob)));
                         this.uploadedFile = new File([blob], 'logo.png', { type: 'image/png' });
                     }
                 });
@@ -513,7 +501,7 @@ export class UploadComponent implements OnInit {
                     this.filterData = filterData['data'];
                     if (this.filterData && this.filterData.length > 0) {
                         this.projectListArr = this.sortAlphabetically(this.filterData.filter(x => x.labelName.toLowerCase() == 'project'));
-                        this.projectListArr = this.makeUniqueArrayList(this.projectListArr);
+                        this.projectListArr = this.helperService.makeUniqueArrayList(this.projectListArr);
                         const defaultSelection = this.selectedProjectBaseConfigId ? false : true;
                         this.checkDefaultFilterSelection(defaultSelection);
                         if (Object.keys(filterData).length === 0) {
@@ -546,7 +534,7 @@ export class UploadComponent implements OnInit {
         });
 
         // Remove previous selected elements
-        dataArray.forEach(obj => {
+        dataArray?.forEach(obj => {
             if (obj.nodeId !== data.nodeId) {
                 obj.isSelected = false;
             }
@@ -700,10 +688,10 @@ export class UploadComponent implements OnInit {
         this.reqObj['totalTestCases'] = this.popupForm?.get('totalTestCases').value;
         this.reqObj['executedTestCase'] = this.popupForm?.get('executedTestCase').value;
         this.reqObj['passedTestCase'] = this.popupForm?.get('passedTestCase').value;
-        this.reqObj['automatedTestCases'] = this.popupForm?.get('automatedTestCases').value === -1 ? '' : this.popupForm?.get('automatedTestCases').value;
-        this.reqObj['automatableTestCases'] = this.popupForm?.get('automatableTestCases').value === -1 ? '' : this.popupForm?.get('automatableTestCases').value;
-        this.reqObj['automatedRegressionTestCases'] = this.popupForm?.get('automatedRegressionTestCases').value === -1 ? '' : this.popupForm?.get('automatedRegressionTestCases').value ;
-        this.reqObj['totalRegressionTestCases'] = this.popupForm?.get('totalRegressionTestCases').value === -1 ? '' : this.popupForm?.get('totalRegressionTestCases').value ;
+        this.reqObj['automatedTestCases'] = this.popupForm?.get('automatedTestCases').value === '' ? 0 : this.popupForm?.get('automatedTestCases').value;
+        this.reqObj['automatableTestCases'] = this.popupForm?.get('automatableTestCases').value === '' ? 0 : this.popupForm?.get('automatableTestCases').value;
+        this.reqObj['automatedRegressionTestCases'] = this.popupForm?.get('automatedRegressionTestCases').value === '' ? 0 : this.popupForm?.get('automatedRegressionTestCases').value;
+        this.reqObj['totalRegressionTestCases'] = this.popupForm?.get('totalRegressionTestCases').value === '' ? 0 : this.popupForm?.get('totalRegressionTestCases').value;
         this.http_service.saveTestExecutionPercent(this.reqObj)
             .subscribe(response => {
                 if (response.success) {
@@ -739,33 +727,22 @@ export class UploadComponent implements OnInit {
         }
     }
 
-    validateFirstGroupTextCountField(){
-        if (!(!!this.popupForm?.get('totalTestCases').value)) {
+    validateFirstGroupTextCountField() {
+        if (parseInt(this.popupForm?.get('totalTestCases').value) !== 0 && (this.popupForm?.get('totalTestCases').value === '' || this.popupForm?.get('totalTestCases').value === null)) {
             this.isTestExecutionSaveDisabled = true;
-            if (parseInt(this.popupForm?.get('totalTestCases').value) === 0) {
-                this.testExecutionErrorMessage = 'Total Test Cases should not be 0';
-            } else {
-                this.testExecutionErrorMessage = 'Please enter total test cases, executed test cases and passed test cases';
-            }
+            this.testExecutionErrorMessage = 'Please enter total test cases, executed test cases and passed test cases';
             return;
+        }
 
-        }
-        if (!(!!this.popupForm?.get('executedTestCase').value)) {
+        if (parseInt(this.popupForm?.get('executedTestCase').value) !== 0 && (this.popupForm?.get('executedTestCase').value === '' || this.popupForm?.get('executedTestCase').value === null)) {
             this.isTestExecutionSaveDisabled = true;
-            if (parseInt(this.popupForm?.get('executedTestCase').value) === 0) {
-                this.testExecutionErrorMessage = 'Executed Test Cases should not be 0';
-            } else {
-                this.testExecutionErrorMessage = 'Please enter total test cases, executed test cases and passed test cases';
-            }
+            this.testExecutionErrorMessage = 'Please enter total test cases, executed test cases and passed test cases';
             return;
         }
-        if (!(!!this.popupForm?.get('passedTestCase').value)) {
+
+        if (parseInt(this.popupForm?.get('passedTestCase').value) !== 0 && (this.popupForm?.get('passedTestCase').value === '' || this.popupForm?.get('passedTestCase').value === null)) {
             this.isTestExecutionSaveDisabled = true;
-            if (parseInt(this.popupForm?.get('passedTestCase').value) === 0) {
-                this.testExecutionErrorMessage = 'Passed Test Cases should not be 0';
-            } else {
-                this.testExecutionErrorMessage = 'Please enter total test cases, executed test cases and passed test cases';
-            }
+            this.testExecutionErrorMessage = 'Please enter total test cases, executed test cases and passed test cases';
             return;
         }
         if (parseFloat(this.popupForm?.get('totalTestCases').value) < parseFloat(this.popupForm?.get('executedTestCase').value)) {
@@ -782,16 +759,16 @@ export class UploadComponent implements OnInit {
         this.testExecutionErrorMessage = '';
     }
 
-    validateSecondGroupTextCountField(){
-        if((!!this.popupForm?.get('automatedTestCases').value) && !(!!this.popupForm?.get('automatableTestCases').value) ||
-        !(!!this.popupForm?.get('automatedTestCases').value) && (!!this.popupForm?.get('automatableTestCases').value)){
+    validateSecondGroupTextCountField() {
+        if ((parseInt(this.popupForm?.get('automatedTestCases').value) !== 0 && (this.popupForm?.get('automatedTestCases').value === '' || this.popupForm?.get('automatedTestCases').value === null))
+        || (parseInt(this.popupForm?.get('automatableTestCases').value) !== 0 && (this.popupForm?.get('automatableTestCases').value === '' || this.popupForm?.get('automatableTestCases').value === null)) ) {
             this.isTestExecutionSaveDisabled = true;
             this.testExecutionErrorMessage = 'Please fill Automated Test Case & Automatable Test Case both';
             return;
         }
 
-        if((!!this.popupForm?.get('automatedRegressionTestCases').value) && !(!!this.popupForm?.get('totalRegressionTestCases').value) || 
-        !(!!this.popupForm?.get('automatedRegressionTestCases').value) && (!!this.popupForm?.get('totalRegressionTestCases').value)){
+       if ((parseInt(this.popupForm?.get('automatedRegressionTestCases').value) !== 0 && (this.popupForm?.get('automatedRegressionTestCases').value === '' || this.popupForm?.get('automatedRegressionTestCases').value === null))
+       || (parseInt(this.popupForm?.get('totalRegressionTestCases').value) !== 0 && (this.popupForm?.get('totalRegressionTestCases').value === '' || this.popupForm?.get('totalRegressionTestCases').value === null))) {
             this.isTestExecutionSaveDisabled = true;
             this.testExecutionErrorMessage = 'Please fill Automated Regrassion & Total Regrassion both';
             return;
@@ -897,22 +874,23 @@ export class UploadComponent implements OnInit {
         objArray?.sort((a, b) => a.nodeName.localeCompare(b.nodeName));
         return objArray;
     }
-    makeUniqueArrayList(arr) {
-        let uniqueArray = [];
-        for (let i = 0; i < arr?.length; i++) {
-            const idx = uniqueArray?.findIndex(x => x.nodeId == arr[i]?.nodeId);
-            if (idx == -1) {
-                uniqueArray = [...uniqueArray, arr[i]];
-                uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
-                uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
-            } else {
-                uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-                uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
-            }
+    /** moved to service layer */ 
+    // makeUniqueArrayList(arr) {
+    //     let uniqueArray = [];
+    //     for (let i = 0; i < arr?.length; i++) {
+    //         const idx = uniqueArray?.findIndex(x => x.nodeId == arr[i]?.nodeId);
+    //         if (idx == -1) {
+    //             uniqueArray = [...uniqueArray, arr[i]];
+    //             uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
+    //             uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
+    //         } else {
+    //             uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
+    //             uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
+    //         }
 
-        }
-        return uniqueArray;
-    }
+    //     }
+    //     return uniqueArray;
+    // }
 
     validateInput($event) {
         if ($event.key === 'e' || $event.key === '-') {
@@ -946,7 +924,7 @@ export class UploadComponent implements OnInit {
                 } else {
                     this.testExecutionScrumData = response?.data;
                     this.isAddtionalTestField = this.testExecutionScrumData[0]['uploadEnable'];
-                     if(!this.isAddtionalTestField){
+                    if(!this.isAddtionalTestField){
                         this.cols.testExecutionScrumKeys = this.cols.testExecutionScrumKeys.filter(col=>!this.addtionalTestFieldColumn.some(obj => obj.field === col.field))
                     }else{
                         for (const additionalColumn of this.addtionalTestFieldColumn) {
@@ -969,44 +947,6 @@ export class UploadComponent implements OnInit {
                 this.noData = true;
             }
         });
-    }
-    /* Upload and  validate certificate */
-    validateCertificate(event) {
-        this.error = '';
-        this.message = '';
-        this.selectedFile = event.files[0];
-        const allowedExtensions = ['.cer'];
-        const fileExtension = this.selectedFile.name.substring(this.selectedFile.name.lastIndexOf('.')).toLowerCase();
-        if (allowedExtensions.indexOf(fileExtension) === -1) {
-            return;
-        }
-        const maxFileSize = 2 * 1024 * 1024; // 2 MB
-        if (this.selectedFile.size > maxFileSize) {
-            return;
-        }
-        if (this.selectedFile) {
-            this.isUploadEnabled = false;
-        }
-    }
-    uploadCertificate() {
-        const file = this.selectedFile;
-        this.error = '';
-        this.message = '';
-        this.http_service.uploadCertificate(file).pipe(first())
-            .subscribe(
-                data => {
-                    if (data['status'] && data['status'] === 417) {
-                        this.error = data['message'];
-                    } else {
-                        this.message = data['message'];
-                    }
-                },
-                error => {
-                    this.error = error.error.message;
-                },
-                () => this.clear(null)
-            );
-        this.isUploadEnabled = true;
     }
 
     clear(event) {

@@ -15,17 +15,20 @@ export class IssueCardComponent implements OnChanges {
       this.isOverViewSelected = true;
       this.issueData = data;
     });
-   }
-
-  ngOnChanges(changes: SimpleChanges){
-    this.isOverViewSelected=true;
   }
 
-  getNameInitials(name){
-    const initials = name.split(' ').map(d => d[0]);
-    if(initials.length > 2){
-     return  initials.map(d => d[0]).slice(0,2).join('').toUpperCase();
+  ngOnChanges(changes: SimpleChanges) {
+    this.isOverViewSelected = true;
+  }
+
+  getNameInitials(name) {
+    if (name?.length) {
+      const initials = name.split(' ').map(d => d[0]);
+      if (initials.length > 2) {
+        return initials.map(d => d[0]).slice(0, 2).join('').toUpperCase();
+      }
+      return initials.join('').toUpperCase();
     }
-    return initials.join('').toUpperCase();
-}
+    return name;
+  }
 }

@@ -24,15 +24,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,10 +48,16 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.publicissapient.kpidashboard.apis.appsetting.config.ProcessorUrlConfig;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.data.ProcessorDataFactory;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
+import com.publicissapient.kpidashboard.common.model.generic.Processor;
+import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * This class contains test cases for ProcessorServiceImpl.class
@@ -67,7 +70,7 @@ public class ProcessorServiceImplTest {
 	@InjectMocks
 	private ProcessorServiceImpl processorService;
 	@Mock
-	private ProcessorRepository processorRepository;
+	private ProcessorRepository<Processor> processorRepository;
 	@Mock
 	private ProcessorUrlConfig processorUrlConfig;
 	@Mock
@@ -83,12 +86,15 @@ public class ProcessorServiceImplTest {
 	@Mock
 	private CustomApiConfig customApiConfig;
 
+	@Mock
+	private CacheService cacheService;
+
 	/**
 	 * method includes preprocesses for test cases
 	 */
 	@Before
 	public void setup() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpServletRequest));
 	}
 
@@ -97,7 +103,9 @@ public class ProcessorServiceImplTest {
 	 */
 	@Test
 	public void testGetAllProcessors() {
-		when(processorRepository.findAll()).thenReturn(new ArrayList());
+		ProcessorDataFactory processorDataFactory = ProcessorDataFactory.newInstance();
+		when(processorRepository.findAll()).thenReturn(processorDataFactory.getProcessorList());
+		when(customApiConfig.getIsRepoToolEnable()).thenReturn(true);
 		ServiceResponse response = processorService.getAllProcessorDetails();
 		assertThat("Status: ", true, equalTo(response.getSuccess()));
 	}
@@ -109,6 +117,15 @@ public class ProcessorServiceImplTest {
 	public void testRunProcessorInvalidName() {
 		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn(StringUtils.EMPTY);
 		ServiceResponse response = processorService.runProcessor("wrongName", null);
+		assertFalse(response.getSuccess());
+	}
+
+	@Test
+	public void testRunProcessorHttpClientException() {
+		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToAtmProcessor");
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+				Mockito.<Class<String>>any())).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+		ServiceResponse response = processorService.runProcessor("validUrlToAtmProcessor", null);
 		assertFalse(response.getSuccess());
 	}
 
@@ -249,5 +266,14 @@ public class ProcessorServiceImplTest {
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request"));
 		ServiceResponse response = processorService.fetchActiveSprint("132_TestSprint");
 		assertFalse(response.getSuccess());
+	}
+
+	@Test
+	public void saveRepoToolTraceLogsTest() {
+
+		processorService.saveRepoToolTraceLogs(new RepoToolsStatusResponse("project", "repo", "src",
+				Constant.SUCCESS, "timestamp"));
+		Mockito.verify(cacheService, Mockito.times(3)).clearCache(Mockito.anyString());
+
 	}
 }

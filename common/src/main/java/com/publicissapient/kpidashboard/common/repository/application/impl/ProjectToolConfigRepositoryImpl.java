@@ -21,11 +21,11 @@ package com.publicissapient.kpidashboard.common.repository.application.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.convert.MongoConverter;
 
 import com.google.common.collect.Lists;
 import com.mongodb.BasicDBObject;
@@ -55,8 +55,8 @@ public class ProjectToolConfigRepositoryImpl implements ProjectToolConfigReposit
 		List<ProjectToolConfigProcessorItem> returnList = new ArrayList<>();
 		while (itr.hasNext()) {
 			Document obj = itr.next();
-			ProjectToolConfigProcessorItem item = operations.getConverter().read(ProjectToolConfigProcessorItem.class,
-					obj);
+			MongoConverter converter = operations.getConverter();
+			ProjectToolConfigProcessorItem item = converter.read(ProjectToolConfigProcessorItem.class, obj);
 			returnList.add(item);
 		}
 		return transform(returnList);
@@ -73,9 +73,7 @@ public class ProjectToolConfigRepositoryImpl implements ProjectToolConfigReposit
 			toolObj.setRepositoryName(item.getRepositoryName());
 			toolObj.setProcessorItemList(item.getProcessorItemList());
 			if (CollectionUtils.isNotEmpty(item.getConnection())) {
-				String url = item.getToolName().equals(ProcessorConstants.REPO_TOOLS)
-						? item.getConnection().get(0).getHttpUrl()
-						: item.getConnection().get(0).getBaseUrl();
+				String url = item.getConnection().get(0).getBaseUrl();
 				toolObj.setUrl(url);
 			}
 			tools.add(toolObj);

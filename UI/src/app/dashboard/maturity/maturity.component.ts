@@ -23,13 +23,12 @@ This is used to show maturity of kpi in form of d3.chart (sunburst chart).
 **************/
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-// import * as d3 from 'd3-3';
 import * as d3 from 'd3';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
 import { HelperService } from '../../services/helper.service';
 import { Router } from '@angular/router';
-import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 
 @Component({
@@ -124,8 +123,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
             this.isKanban = this.selectedtype?.toLowerCase() === 'kanban';
             const kpiIdsForCurrentBoard = this.service.getMasterData()['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => kpi.kpiId);
             if(this.filterData?.length > 0 && kpiIdsForCurrentBoard?.length > 0 && this.selectedtype){
-                // this.drawAreaChart(null, null);
-                // this.chart(null);
                 if (this.selectedtype?.toLowerCase() === 'scrum') {
                     this.groupJenkinsKpi(kpiIdsForCurrentBoard);
                     this.groupZypherKpi(kpiIdsForCurrentBoard);
@@ -289,7 +286,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.subscription.push(this.sonarKpiRequest
             .subscribe(getData => {
                 this.loaderSonar = false;
-                // this.loaderMaturity = false;
                 if (!(getData !== null && getData[0] === 'error')) {
                     this.sonarKpiData = getData;
                     const newObject = {};
@@ -299,13 +295,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
                     }
                     this.sonarKpiData = newObject;
-
-                    // if (this.sonarKpiData && this.sonarKpiData.kpi41 && this.sonarKpiData.kpi39) {
-                    //     this.drawAreaChart(this.sonarKpiData.kpi41.value, this.sonarKpiData.kpi39.value);
-                    // } else {
-                    //     this.drawAreaChart(null, null);
-                    // }
-
                 }
             }));
 
@@ -323,13 +312,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     newObject[this.jenkinsKpiData[obj].kpiId] = this.jenkinsKpiData[obj];
                     this.maturityValue[this.jenkinsKpiData[obj].kpiId] = this.jenkinsKpiData[obj];
                 }
-                // this.loaderMaturity = false;
                 this.jenkinsKpiData = newObject;
-                // if (this.jenkinsKpiData && this.jenkinsKpiData.kpi70 && this.jenkinsKpiData.kpi42) {
-                //     this.drawAreaChart(this.jenkinsKpiData.kpi70.trendValueList, this.jenkinsKpiData.kpi42.trendValueList);
-                // } else {
-                //     // this.drawAreaChart(null, null);
-                // }
 
             }
         });
@@ -348,11 +331,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
                 }
                 this.loaderMaturity = false;
-                /*if (this.zypherKpiData && this.zypherKpiData.kpi16 && this.zypherKpiData.kpi42) {
-                    this.drawAreaChart(this.zypherKpiData.kpi16.value, this.zypherKpiData.kpi42.value);
-                } else {
-                    this.drawAreaChart(null, null);
-                }*/
                 this.zypherKpiData = newObject;
             }
         });
@@ -361,11 +339,9 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.loaderJira =true;
         this.jiraKpiRequest = this.selectedtype.toLowerCase() === 'scrum' ? this.httpService.postKpi(postData, source) : this.httpService.postKpiKanban(postData, source);
         this.jiraKpiRequest.subscribe(getData => {
-            // this.jiraGroups = false;
             this.jiraGroups++;
             this.loaderMaturity = false;
             if (!(getData !== null && getData[0] === 'error')) {
-                // this.jiraKpiData = getData;
                 this.jiraKpiData = { ...this.jiraKpiData, ...getData };
                 const newObject = {};
                 for (const obj in this.jiraKpiData) {
@@ -390,7 +366,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.bitBucketKpiRequest = this.selectedtype.toLowerCase() === 'scrum' ? this.httpService.postKpi(postData, source) : this.httpService.postKpiKanban(postData, source);
         this.bitBucketKpiRequest.subscribe(getData => {
             this.loaderBitBucket = false;
-            // this.loaderMaturity = false;
             if (!(getData !== null && getData[0] === 'error')) {
                 this.bitBucketKpiData = getData;
                 const newObject = {};
@@ -399,12 +374,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     this.maturityValue[this.bitBucketKpiData[obj].kpiId] = this.bitBucketKpiData[obj];
                 }
                 this.bitBucketKpiData = newObject;
-
-                // if (this.bitBucketKpiData && this.bitBucketKpiData.kpi11 && this.bitBucketKpiData.kpi84) {
-                //     this.drawAreaChart(this.bitBucketKpiData.kpi11.value, this.bitBucketKpiData.kpi84.value);
-                // } else {
-                //     this.drawAreaChart(null, null);
-                // }
 
             }
         });
@@ -512,41 +481,16 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
             root = {
                 textLines: ['..'],
-                children: [{
-                    textLines: ['..'],
-                    maturity: 0
-                }, {
-                    textLines: ['..'],
-                    maturity: 0
-                }, {
-                    textLines: ['..'],
-                    maturity: 0
-                }, {
-                    textLines: ['..'],
-                    maturity: 0
-                }, {
-                    textLines: ['..'],
-                    maturity: 0
-                }, {
-                    textLines: ['..'],
-                    maturity: 0
-                }, {
-                    textLines: ['..'],
-                    maturity: 0
-                }, {
-                    textLines: ['..'],
-                    maturity: 0
-                }, {
-                    textLines: ['..'],
-                    maturity: 0
-                }, {
-                    textLines: ['..'],
-                    maturity: 0
-                }, {
-                    textLines: ['..'],
-                    maturity: 0
-                }]
+                children: []
             };
+            for(let i = 0; i<11; i++){
+                root.children.push({
+                    textLines: ['..'],
+                    maturity: 0
+                });
+            }
+            console.log(root);
+            
         } else {
             // on loading show data;
             root = {
@@ -642,7 +586,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
             const radius = edge / 2;
             const effectiveEdge = edge * 0.9;
-            // scale = d3.scaleLinear().domain([0, maxBarValue + 5]);
 
             const chart = function (selection) {
                 selection.each(function (data) {
@@ -721,7 +664,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
                         })
                         .on('mouseover', function (event, d) {
                             if (d.depth > 1) {
-                                let tooltip = d3.select(this).classed('highlight', true)
                                 div.transition()
                                     .duration(200)
                                     .style('opacity', .9)
@@ -742,9 +684,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
                                 styleClass += ' group-' + d.data.group + (d.data.on ? '-on' : '-off');
                             }
-                            // if (d.depth === 2) {
-                            //     styleClass += ' labelTextBackground';
-                            // }
 
                             if (d.depth === 1) {
                                 styleClass += ' group-' + d.data.children[0].group + '-on';
@@ -897,7 +836,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
                     // swap parents and children
                     const flatData = collectNodes(JSON.parse(JSON.stringify(kpi.children)));
-                    kpi.children = reverseNodes(JSON.parse(JSON.stringify(flatData.reverse())));
+                    const reversedData = flatData.reverse();
+                    kpi.children = reverseNodes(JSON.parse(JSON.stringify(reversedData)));
                 });
                 return root2;
             }

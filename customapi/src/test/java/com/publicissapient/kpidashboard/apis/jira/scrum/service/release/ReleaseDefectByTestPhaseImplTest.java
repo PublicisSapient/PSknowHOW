@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import static org.junit.Assert.assertNotNull;
@@ -5,10 +24,13 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +64,7 @@ public class ReleaseDefectByTestPhaseImplTest {
 	ConfigHelperService configHelperService;
 
 	@Mock
-	JiraServiceR jiraService;
+	JiraReleaseServiceR jiraService;
 
 	@Mock
 	CacheService cacheService;
@@ -80,7 +102,7 @@ public class ReleaseDefectByTestPhaseImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		KpiElement kpiElement = releaseDefectByTestingPhaseImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
@@ -89,9 +111,5 @@ public class ReleaseDefectByTestPhaseImplTest {
 		assertNotNull(releaseDefectByTestingPhaseImpl.getQualifierType());
 	}
 
-	@Test
-	public void testCalculateKPIMetrics() {
-		assertNull(releaseDefectByTestingPhaseImpl.calculateKPIMetrics(new HashMap<>()));
 
-	}
 }

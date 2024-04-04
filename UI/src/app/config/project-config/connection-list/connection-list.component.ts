@@ -131,8 +131,14 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'RepoTool',
       connectionLabel: 'RepoTool',
-      labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Http Url', 'Is Cloneable', 'SSH Url', 'Username', 'Access Token', 'User Email', 'Is Connection Private'],
-      inputFields: ['type', 'repoToolProvider', 'connectionName', 'httpUrl', 'isCloneable', 'sshUrl', 'username', 'accessToken', 'email', 'connPrivate']
+      labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Base Url', 'Api End Point', 'Username', 'Access Token', 'User Email', 'Is Connection Private'],
+      inputFields: ['type', 'repoToolProvider', 'connectionName', 'baseUrl', 'apiEndPoint', 'username', 'accessToken', 'email', 'connPrivate']
+    },
+    {
+      connectionType: 'ArgoCD',
+      connectionLabel: 'ArgoCD',
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Is Connection Private'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'connPrivate']
     }
   ];
 
@@ -378,8 +384,17 @@ export class ConnectionListComponent implements OnInit {
         { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
         { field: 'username', header: 'User Name', class: 'normal' },
         { field: 'repoToolProvider', header: 'RepoTool Provider', class: 'normal' },
-        { field: 'httpUrl', header: 'Http URL', class: 'long-text' },
+        { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
         // { field: 'cloneable', header: 'Is Cloneable', class: 'small-text' },
+      ]
+    },
+    {
+      label: 'ArgoCD',
+      value: 'ArgoCD',
+      connectionTableCols: [
+        { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
+        { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
+        { field: 'username', header: 'User Name', class: 'long-text' },
       ]
     }
   ];
@@ -470,7 +485,7 @@ export class ConnectionListComponent implements OnInit {
     'jiraAuthType': ''
   }
   jiraConnectionDialog: boolean;
-  repoConnections = ['Bitbucket','GitLab','GitHub','Azure Repository'];
+  repoConnections = ['Bitbucket','GitLab','Azure Repository'];
   repoToolsEnabled : boolean;
 
   constructor(private httpService: HttpService, private formBuilder: UntypedFormBuilder, private confirmationService: ConfirmationService, private testConnectionService: TestConnectionService
@@ -1042,10 +1057,10 @@ export class ConnectionListComponent implements OnInit {
       this.basicConnectionForm.controls['password'].enable();
       this.basicConnectionForm.controls['accessTokenEnabled'].enable();
       this.basicConnectionForm.controls['accessToken'].disable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'repotool' && !!this.basicConnectionForm.controls['isCloneable'] && this.connection['isCloneable'] === false) {
-      this.basicConnectionForm.controls['sshUrl'].disable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'repotool' && !!this.basicConnectionForm.controls['isCloneable'] && this.connection['isCloneable'] === true) {
-      this.basicConnectionForm.controls['sshUrl'].enable();
+    } else if (this.selectedConnectionType.toLowerCase() === 'repotool') {
+      if(this.connection && this.connection['repoToolProvider'] === 'bitbucket')
+      this.basicConnectionForm.controls['apiEndPoint'].enable();
+      else {this.basicConnectionForm.controls['apiEndPoint'].disable()};
     }
 
     if(this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true){
@@ -1123,13 +1138,12 @@ export class ConnectionListComponent implements OnInit {
         }
       }
 
-      if (field === 'isCloneable' && type.toLowerCase() === 'repotool') {
-        if (event.checked) {
-          this.basicConnectionForm.controls['sshUrl']?.enable();
-        } else {
-          this.basicConnectionForm.controls['sshUrl'].setValue('');
-          this.basicConnectionForm.controls['sshUrl']?.disable();
-        }
+      if (this.connection.type === "RepoTool") {
+         if(event.toLowerCase() === 'bitbucket'){
+          this.basicConnectionForm.controls[field]?.enable();
+         }else{
+          this.basicConnectionForm.controls[field]?.disable();
+         }
       }
     }
 
@@ -1379,7 +1393,7 @@ export class ConnectionListComponent implements OnInit {
         break;
 
       case 'RepoTool':
-        this.testConnectionService.testRepoTool(reqData['httpUrl'], reqData['repoToolProvider'], reqData['username'], reqData['accessToken'], reqData['email']).subscribe(next => {
+        this.testConnectionService.testRepoTool(reqData['baseUrl'],reqData['apiEndPoint'], reqData['repoToolProvider'], reqData['username'], reqData['accessToken'], reqData['email']).subscribe(next => {
           if (next.success && next.data === 200) {
             this.testConnectionMsg = 'Valid Connection';
             this.testConnectionValid = true;
@@ -1394,6 +1408,21 @@ export class ConnectionListComponent implements OnInit {
           this.testingConnection = false;
         });
 
+        break;
+        case 'ArgoCD': this.testConnectionService.testArgoCD(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['vault']).subscribe(next => {
+          if (next.success && next.data === 200) {
+            this.testConnectionMsg = 'Valid Connection';
+            this.testConnectionValid = true;
+          } else {
+            this.testConnectionMsg = 'Connection Invalid';
+            this.testConnectionValid = false;
+          }
+          this.testingConnection = false;
+        }, error => {
+          this.testConnectionMsg = 'Connection Invalid';
+          this.testConnectionValid = false;
+          this.testingConnection = false;
+        });
         break;
     }
   }
@@ -1559,6 +1588,12 @@ export class ConnectionListComponent implements OnInit {
         return details[label] !== 'RepoTool';
       }
     })
+    if(this.repoToolsEnabled){
+      const githubIndex = filteredList.findIndex(de=>de[label].toLowerCase() === 'github');
+      if(githubIndex !== -1){
+        filteredList[githubIndex][label] = 'GitHub Action'
+      }
+    }
     return filteredList;
   }
 }

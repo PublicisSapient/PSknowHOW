@@ -76,10 +76,6 @@ input[type="text"]:disabled, input[type="password"]:disabled {
     color: green;
 }
 
-p-accordionTab .card {
-    border: none;
-}
-
 ::ng-deep .p-confirm-dialog-message {
     width: 100%;
 }

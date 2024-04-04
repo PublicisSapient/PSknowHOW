@@ -33,10 +33,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -68,6 +64,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Implementation of {@link TokenAuthenticationService}
@@ -85,6 +84,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final Object USER_AUTHORITIES = "authorities";
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	public static final String EXCEPTION_MSG = "No implementation is found for SSO";
 	@Autowired
 	AuthenticationService authenticationService;
 	@Autowired
@@ -101,17 +101,18 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private CookieUtil cookieUtil;
 
 	@Override
-	public UserTokenAuthenticationDTO addAuthentication(HttpServletResponse response, Authentication authentication) {
+	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
 		String jwt = createJwtToken(authentication);
-		UserTokenAuthenticationDTO data = new UserTokenAuthenticationDTO();
+		UserTokenData data = new UserTokenData();
 		data.setUserName(authentication.getName());
-		data.setUserRoles(getRoles(authentication.getAuthorities()).stream().collect(Collectors.toList()));
-		data.setAuthToken(jwt);
+		data.setUserToken(jwt);
+		userTokenReopository.deleteAllByUserName(authentication.getName());
+		userTokenReopository.save(data);
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
+		cookie.setSecure(true);
 		response.addCookie(cookie);
 		cookieUtil.addSameSiteCookieAttribute(response);
-		return data;
 	}
 
 	public String createJwtToken(Authentication authentication) {
@@ -137,22 +138,18 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			HttpServletRequest httpServletRequest, HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()) {
-			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
+			throw new NoSSOImplementationFoundException(EXCEPTION_MSG);
 		} else {
-			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(tokenAuthProperties.getResourceName())) {
-				String token = userTokenAuthenticationDTO.getAuthToken();
-				if (StringUtils.isBlank(token)) {
-					Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
-					if (Objects.nonNull(authCookieToken)) {
-						token = authCookieToken.getValue();
-					} else {
-						return null;
-					}
+			String token = userTokenAuthenticationDTO.getAuthToken();
+			if (StringUtils.isBlank(token)) {
+				Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
+				if (Objects.nonNull(authCookieToken)) {
+					token = authCookieToken.getValue();
+				} else {
+					return null;
 				}
-				return createAuthentication(token, response);
-			} else {
-				return null;
 			}
+			return createAuthentication(token, response);
 		}
 
 	}
@@ -162,31 +159,26 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			HttpServletRequest httpServletRequest) {
 
 		if (customApiConfig.isSsoLogin()) {
-			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
+			throw new NoSSOImplementationFoundException(EXCEPTION_MSG);
 		} else {
-			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(tokenAuthProperties.getResourceName())) {
-				String token = userTokenAuthenticationDTO.getAuthToken();
-				if (StringUtils.isBlank(token)) {
-					Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
-					if (Objects.nonNull(authCookieToken)) {
-						token = authCookieToken.getValue();
-					} else {
-						return null;
-					}
+			String token = userTokenAuthenticationDTO.getAuthToken();
+			if (StringUtils.isBlank(token)) {
+				Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
+				if (Objects.nonNull(authCookieToken)) {
+					token = authCookieToken.getValue();
+				} else {
+					return null;
 				}
-				return token;
-			} else {
-				return null;
 			}
+			return token;
 		}
-
 	}
 
 	@Override
 	public Authentication validateAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()) {
-			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
+			throw new NoSSOImplementationFoundException(EXCEPTION_MSG);
 		} else {
 			Cookie authCookie = cookieUtil.getAuthCookie(request);
 			if (StringUtils.isBlank(authCookie.getValue())) {
@@ -346,7 +338,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			json.put(PROJECTS_ACCESS, projectAccessesWithRole);
 			return json;
 		}
-		return null;
+		return new JSONObject();
 	}
 
 	@Override
