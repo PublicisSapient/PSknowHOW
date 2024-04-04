@@ -352,6 +352,7 @@ export function validateToken(http, ga, sharedService) {
                     if (authToken) {
                         ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
                     }
+                    console.log('URL-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=>', url);
                     http.router.navigateByUrl(url? url : 'dashboard');
                 }
             }, error => {
