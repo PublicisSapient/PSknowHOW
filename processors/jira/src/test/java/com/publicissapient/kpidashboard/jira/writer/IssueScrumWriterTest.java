@@ -113,10 +113,10 @@ public class IssueScrumWriterTest {
         return kanbanCompositeResults;
     }
 
-    private Set<JiraIssue> createMockJiraItems() {
+    private List<JiraIssue> createMockJiraItems() {
         JiraIssue kanbanJiraIssue = new JiraIssue();
         kanbanJiraIssue.setId(new ObjectId("63bfa0f80b28191677615735"));
-        Set<JiraIssue> jiraItems = new HashSet<>();
+        List<JiraIssue> jiraItems = new ArrayList<>();
         jiraItems.add(kanbanJiraIssue);
         // Create mock KanbanJiraIssue objects and add them to the list
         return jiraItems;
