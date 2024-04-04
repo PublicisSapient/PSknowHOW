@@ -14,7 +14,7 @@ RUN apk add openssl --no-cache \
 
 ENV CONF_LOC="/etc/nginx" \
     SCRIPTS_LOC="/var/www/authui/build/" \
-    # PID_LOC="/run/nginx" \
+    PID_LOC="/run/nginx" \
     HTML_LOC="/var/lib/nginx/" \
     # UI2_LOC="/var/lib/nginx/ui2" \
     # START_SCRIPT_LOC="/etc/init.d" \
@@ -49,6 +49,7 @@ RUN tar xvf ${HTML_LOC}${UI2_ASSETS_ARCHIVE} -C /var/www/authui \
     && chown -R $USER:$USER ${CERT_LOC} \
     && chown -R $USER:$USER /var/ \
     && chown -R $USER:$USER /var/run \
+    && chown -R $USER:$USER /run \
     && apk add --no-cache libcap \
     && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx \
     && apk add --no-cache bash \
