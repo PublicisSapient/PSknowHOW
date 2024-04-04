@@ -346,8 +346,8 @@ export function validateToken(http, ga, sharedService) {
             console.log('authToken', authToken);
             // Make API call or initialization logic here...
             http.getUserValidation(obj).subscribe((response) => {
+                http.router.resetConfig([...routesAuth]);
                 if (response?.['success']) {
-                    http.router.resetConfig([...routesAuth]);
                     sharedService.setCurrentUserDetails(response?.['data']);
                     localStorage.setItem("user_name", response?.['data']?.user_name);
                     localStorage.setItem("user_email", response?.['data']?.user_email);
