@@ -72,6 +72,7 @@ private setting = {
     private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
+    this.historyList = [];
     this.filterHierarchy = JSON.parse(localStorage.getItem('completeHierarchyData')).scrum;
     this.initializeForm();
     this.generateFieldMappingConfiguration();
