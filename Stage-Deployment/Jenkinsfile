@@ -1,0 +1,112 @@
+properties([
+    parameters([
+        gitParameter(
+            branchFilter: 'origin/(.*)',
+            sortMode: 'DESCENDING_SMART',
+            defaultValue: 'origin/master',
+            useRepository: 'https://github.com/PublicisSapient/PSknowHOW.git',
+            name: 'SBRANCH',
+            type: 'PT_BRANCH_TAG',
+            quickFilterEnabled: true,
+            description: 'Select Branch'
+        ),
+        choice(
+            choices: ['PROD', 'STAGE'],
+            description: 'Select ENV',
+            name: 'SERVER'
+        ),
+        [$class: 'ChoiceParameter', 
+            choiceType: 'PT_RADIO',
+            description: 'Select Service',
+            filterLength: 1,
+            filterable: false,
+            name: 'BUILD',
+            script: [$class: 'GroovyScript',
+                fallbackScript: [
+                    classpath: [], 
+                    sandbox: true, 
+                    script: 'return ["ERROR Showing Deployment type"]'
+                ],
+                script: [
+                    classpath: [], 
+                    sandbox: true, 
+                    script: "return['customapi:selected','UI', 'jira-processor', 'devops-processor', 'azure-pipeline-repo', 'azure-board-processor']"
+                ]
+            ]
+        ],
+    ])
+])
+
+pipeline {
+   agent any
+   options {
+        ansiColor('xterm')
+        timeout(time: 60, unit: 'MINUTES')
+    }
+   environment {
+       select_ACR_registry = "${env.ACR_DEFAULT_REGISTRY}"
+       acr_registryCredId = "ACR_REGISTRY_CREDENTIALS"
+       selected_server = "${env.SERVER}"
+       }
+
+   stage('Select Environment') {
+            steps {
+                script {
+                    // Set the 'server' based on user input
+                    def server = params.SERVER
+
+                    // Set 'ip' and 'dns' based on the 'server' value
+                    def dns
+
+                    if (server == 'PROD') {
+                        DNS_NAME = 'psknowhow.tools.publicis.sapient.com'
+                    } else if (server == 'STAGE') {
+                        DNS_NAME = 'stage-psknowhow.tools.publicis.sapient.com'
+                    } else {
+                        error "Invalid server selection: ${server}"
+                    }
+
+                    echo "Selected server: ${server}"
+                    echo "DNS: ${DNS_NAME}"
+
+                    // Set 'env' variables for later use
+                    env.server = server
+                    env.dns = DNS_NAME
+                }
+            }
+        }
+
+
+      stage('Checkout for deploy') {
+        steps {
+               checkout scm: [$class: 'GitSCM', userRemoteConfigs: [[url: 'https://github.com/PublicisSapient/PSknowHOW.git',credentialsId: 'githubcred']], branches: [[name: '${SBRANCH}']]], poll: false
+        }
+      }
+      stage('Capture Version') {
+        // when{
+        //     expression { env.BUILD == 'true' }
+        // }
+          steps {
+                script {
+                       def pom = readMavenPom file: 'pom.xml'
+                       env.version = pom.version
+                       echo "${pom.version}"
+                       echo "${env.version}"
+                       version = env.version
+                }
+           }
+      }
+      stage('Deploy') {
+          steps {
+                script {
+                sh "helm upgrade first --install knowhow-ui --namespace stage-knowhow "
+                }
+            }
+      }
+      
+      post {
+        always {
+            cleanWs()
+        }
+    }
+}
