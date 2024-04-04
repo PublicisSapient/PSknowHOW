@@ -336,6 +336,8 @@ export function validateToken(http, ga, sharedService) {
             let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
             if (authToken) {
                 sharedService.setAuthToken(authToken);
+            } else {
+                authToken = sharedService.getAuthToken();
             }
             let obj = {
                 'resource': environment.RESOURCE,
