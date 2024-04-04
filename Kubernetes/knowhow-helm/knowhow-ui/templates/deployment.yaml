@@ -34,22 +34,22 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          env:
-            - name: API_HOST
-              value: customapi
-            - name: API_PORT
-              value: "8080"
-            - name: ENVIRONMENT
-              value: "prod"
-            - name: CENTRAL_LOGIN_URL
-              value: "https://{{ .Values.env}}-authnauth.tools.publicis.sapient.com"
-            - name: MAP_URL
-              value: "https://preprod-assessmentplatform.tools.publicis.sapient.com"
-            - name: RETROS_URL
-              value: "https://{{ .Values.env}}-retrospective.tools.publicis.sapient.com"
+          # env:
+          #   - name: API_HOST
+          #     value: customapi
+          #   - name: API_PORT
+          #     value: "8080"
+          #   - name: ENVIRONMENT
+          #     value: "prod"
+          #   - name: CENTRAL_LOGIN_URL
+          #     value: "https://{{ .Values.env}}-authnauth.tools.publicis.sapient.com"
+          #   - name: MAP_URL
+          #     value: "https://preprod-assessmentplatform.tools.publicis.sapient.com"
+          #   - name: RETROS_URL
+          #     value: "https://{{ .Values.env}}-retrospective.tools.publicis.sapient.com"
           envFrom:
           - configMapRef:
-              name: knowhow-config
+              name: {{ .Values.configmapname }}
           readinessProbe:
             httpGet:
               path: /

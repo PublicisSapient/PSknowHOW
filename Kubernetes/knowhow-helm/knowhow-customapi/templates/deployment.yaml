@@ -35,8 +35,8 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
-            - name: versionnumber
-              value: {{.Values.image.tag | default .Chart.AppVersion}}
+            # - name: versionnumber
+            #   value: {{.Values.image.tag | default .Chart.AppVersion}}
             - name: spring.data.mongodb.uri
               valueFrom:
                 secretKeyRef:
@@ -74,9 +74,11 @@ spec:
                   name: {{ .Values.env}}knhdbpassword
                   key: {{ .Values.env}}knhdbpassword
             - name: mongock.migration-scan-package
-              value: com.publicissapient.kpidashboard.apis.mongock.installation  
-            - name: auth.centralAuthBaseURL
-              value: "https://{{ .Values.env}}-authnauth.tools.publicis.sapient.com"
+              value: "com.publicissapient.kpidashboard.apis.mongock.upgrade"
+            - name: mongock.start-system-version
+              value: "8.0.0"
+            - name: mongock.end-system-version
+              value: "9.0.0"
           envFrom:
           - configMapRef:
               name: {{ .Values.configmapname }}

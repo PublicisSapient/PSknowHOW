@@ -76,6 +76,9 @@ spec:
                   key: {{ .Values.env}}knhdbpassword
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
+            # Adding cron expressions
+            - name: azure.cron
+              value: "0 0 */12 * * *"
           envFrom:
           - configMapRef:
               name: {{ .Values.configmapname }}
