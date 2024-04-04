@@ -82,7 +82,7 @@ export class FieldMappingComponent implements OnInit {
   }
 
   getMappings() {
-    this.selectedFieldMapping = this.sharedService.getSelectedFieldMapping().fieldMappingResponses;
+    this.selectedFieldMapping = this.sharedService.getSelectedFieldMapping()?.fieldMappingResponses;
     this.metaDataTemplateCode = this.sharedService.getSelectedFieldMapping()?.metaTemplateCode;
     if (this.selectedFieldMapping && Object.keys(this.selectedFieldMapping).length) {
       for (const obj in this.selectedFieldMapping) {
