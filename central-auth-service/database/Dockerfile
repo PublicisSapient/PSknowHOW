@@ -13,7 +13,6 @@ ENV POSTGRES_USER="postgres"
 ENV PGDATA="/var/lib/postgresql/data"
 
 COPY . /docker-entrypoint-initdb.d/
-RUN ls -ltr /docker-entrypoint-initdb.d/
 # COPY dml/ /docker-entrypoint-initdb.d/dml/
 # COPY main.sh /docker-entrypoint-initdb.d/
 
@@ -21,7 +20,8 @@ WORKDIR /docker-entrypoint-initdb.d
 
 RUN chown -R $USER:$USER /docker-entrypoint-initdb.d/ \
     && chown -R $USER:$USER $PGDATA \
-    && chmod +x /docker-entrypoint-initdb.d/main.sh
+    && chmod +x /docker-entrypoint-initdb.d/main.sh \
+    && ls -ltr /docker-entrypoint-initdb.d
 
 USER $USER:$GID
 
