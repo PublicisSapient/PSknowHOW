@@ -15,41 +15,42 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.RecursiveAction;
-
-import org.apache.commons.collections4.CollectionUtils;
-import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
-import org.apache.commons.lang.SerializationUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.stereotype.Service;
-
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.enums.FieldMappingEnum;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraKPIServiceFactory;
+import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.SerializationUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.stereotype.Service;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveAction;
 
 /**
  * This class handle all Scrum JIRA based KPI request and call each KPIs service
@@ -203,14 +204,10 @@ public class JiraServiceR {
 		/**
 		 * {@inheritDoc}
 		 */
-		@SuppressWarnings("PMD.AvoidCatchingGenericException")
 		@Override
 		public void compute() {
-			try {
-				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
-			} catch (Exception e) {
-				log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", e);
-			}
+			responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, treeAggregatorDetail));
+
 		}
 
 		/**
@@ -219,37 +216,64 @@ public class JiraServiceR {
 		 *
 		 * @param kpiRequest
 		 *            JIRA KPI request
-		 * @param responseList
-		 *            List of KpiElements having data of each KPI
 		 * @param kpiElement
 		 *            kpiElement object
 		 * @param treeAggregatorDetail
 		 *            filter tree object
-		 * @throws ApplicationException
-		 *             ApplicationException
+		 * @return KpiElement kpiElement
 		 */
-		private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-				KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+		@SuppressWarnings("PMD.AvoidCatchingGenericException")
+		private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) {
 
 			JiraKPIService<?, ?, ?> jiraKPIService = null;
 
 			KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+			try {
+				jiraKPIService = JiraKPIServiceFactory.getJiraKPIService(kpi.name());
+				long startTime = System.currentTimeMillis();
 
-			jiraKPIService = JiraKPIServiceFactory.getJiraKPIService(kpi.name());
+				if (KPICode.THROUGHPUT.equals(kpi)) {
+					log.info("No need to fetch Throughput KPI data");
+				} else {
+					//if single project is selected
+					FieldMappingEnum fieldMappingEnum = FieldMappingEnum.valueOf(kpiElement.getKpiId().toUpperCase());
+					List<String> fields = fieldMappingEnum.getFields();
+					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+							.get(kpiElement.get.getProjectFilter().getBasicProjectConfigId());
 
-			long startTime = System.currentTimeMillis();
+					if (CollectionUtils.isNotEmpty(fields) && fieldMapping != null) {
+						for (String field : fields) {
+							Field declaredField = FieldMapping.class.getDeclaredField(field);
+							declaredField.setAccessible(true);
+							Object o = declaredField.get(fieldMapping);
 
-			if (KPICode.THROUGHPUT.equals(kpi)) {
-				log.info("No need to fetch Throughput KPI data");
-			} else {
-				TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-						.clone(treeAggregatorDetail);
-				responseList.add(jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
+						}
+						}
+					}
+					TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
+							.clone(treeAggregatorDetail);
 
-				long processTime = System.currentTimeMillis() - startTime;
-				log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-						processTime);
+					kpiElement = jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
+					kpiElement.setResponseCode("200");
+					long processTime = System.currentTimeMillis() - startTime;
+					log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+							processTime);
+				} catch (ApplicationException e) {
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
 			}
+		} catch (ApplicationException exception) {
+				log.error("Kpi not found", exception);
+			} catch (Exception exception) {
+				kpiElement.setResponseCode("400");
+				log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", exception);
+				return kpiElement;
+			}
+
+			return kpiElement;
 		}
 
 	}
