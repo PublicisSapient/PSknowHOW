@@ -332,7 +332,7 @@ export function validateToken(http, ga, sharedService) {
         } else {
             // TODO: find right property to avoid string manipulation - Rishabh 3/4/2024
             let url = window.location.hash.replace('#/', '');
-            
+
             let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
             if (authToken) {
                 sharedService.setAuthToken(authToken);
@@ -352,7 +352,16 @@ export function validateToken(http, ga, sharedService) {
                     if (authToken) {
                         ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
                     }
-                    http.router.navigateByUrl(url? url : 'dashboard');
+                    console.log('URL-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=>', url);
+                    // http.router.navigateByUrl(url? url.substring(url.lastIndexOf('/'), url.length -1) : 'dashboard');
+                    let urlSegments = url.split('/');
+                    let board = '';
+                    if (url.indexOf('Config') === -1) {
+                        board = urlSegments.length > 1 ? urlSegments[urlSegments.length - 1] : urlSegments[0]
+                    } else {
+                        board = 'Config';
+                    }
+                    http.router.navigate(['/dashboard', board]);
                 }
             }, error => {
                 console.log(error);
