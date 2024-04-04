@@ -548,9 +548,6 @@ export class HttpService {
 
   /** Update access (RBAC) */
   updateAccess(requestData, username): Observable<any> {
-    if(environment?.['AUTHENTICATION_SERVICE']){
-      this.updateAccessUrl = this.baseUrl + '/api/userinfo/central/';
-    }
     return this.http.post(this.updateAccessUrl + username, requestData);
   }
 

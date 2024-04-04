@@ -471,7 +471,6 @@ export class SharedService {
         });
       }
     }
-    console.log("boardNameArr", boardNameArr);
     this.boardNamesListSubject.next(boardNameArr);
   }
 }

@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +26,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -375,10 +373,9 @@ public class FieldMapping extends FieldMappingHistory {
 	private String jiraLiveStatusKPI155;
 
 	@Builder.Default
-	private boolean notificationEnabler=true;
+	private boolean notificationEnabler = true;
 	@Builder.Default
-	private boolean excludeUnlinkedDefects=true;
-
+	private boolean excludeUnlinkedDefects = true;
 
 	private List<String> jiraIssueEpicTypeKPI153;
 
@@ -413,7 +410,7 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiraDevDoneStatusKPI150;
 	private boolean populateByDevDoneKPI150;
 
-	//threshold field
+	// threshold field
 	private String thresholdValueKPI14;
 	private String thresholdValueKPI82;
 	private String thresholdValueKPI111;

@@ -622,7 +622,7 @@ export class HelperService {
         return uniqueArray;
       }
 
-      getKpiCommentsCount(kpiCommentsCountObj,nodes,level,nodeChildId,updatedConfigGlobalData,kpiId) {
+      async getKpiCommentsCount(kpiCommentsCountObj,nodes,level,nodeChildId,updatedConfigGlobalData,kpiId) {
         let requestObj = {
           "nodes": nodes,
           "level": level,
@@ -631,12 +631,12 @@ export class HelperService {
         };
         if (kpiId) {
           requestObj['kpiIds'] = [kpiId];
-          this.getKpiCommentsHttp(requestObj).then((res: object) => {
+          await this.getKpiCommentsHttp(requestObj).then((res: object) => {
             kpiCommentsCountObj[kpiId] = res[kpiId];
           });
         } else {
           requestObj['kpiIds'] = (updatedConfigGlobalData?.map((item) => item.kpiId));
-          this.getKpiCommentsHttp(requestObj).then((res: object) => {
+          await this.getKpiCommentsHttp(requestObj).then((res: object) => {
             kpiCommentsCountObj = res;
           });
         }

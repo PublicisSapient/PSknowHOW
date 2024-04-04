@@ -95,15 +95,15 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                     if (err.status === 401) {
                         if (requestArea === 'internal') {
                             this.service.setCurrentUserDetails({});
+                            console.log("environment ------->", environment);
+                            
                             if(environment?.['SSO_LOGIN'] === true){
                                 console.log('SSO_LOGIN', true)
                             }else{
-                                if(environment.AUTHENTICATION_SERVICE){
+                                if(environment.AUTHENTICATION_SERVICE == true){
                                     /** redirect to central login url*/
-                                    let redirect_uri = window.location.href;
-                                    localStorage.setItem('redirect_uri', window.location.hash);
                                     if(environment.CENTRAL_LOGIN_URL){
-                                        window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+                                        window.location.href = environment.CENTRAL_LOGIN_URL;
                                     }
                                 }else{
                                     this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });

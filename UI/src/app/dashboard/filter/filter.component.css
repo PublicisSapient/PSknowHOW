@@ -776,7 +776,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 }
 
 .trend-line-container {
-  min-width: 220px;
+  min-width: 230px;
   width: min-content;
 }
 
@@ -1187,7 +1187,9 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   width: auto;
   top: 100% !important;
 }
-::ng-deep .p-menuitem-link-active a, ::ng-deep .p-menuitem-link-active .p-menuitem-text{
+::ng-deep .p-menuitem-link-active a{
+  background: rgba(0, 0, 0, 0.04);
+}
+::ng-deep .p-menuitem-link-active .p-menuitem-text{
   color: var(--color-cyan-blue) !important;
-  background: rgba(0, 0, 0, 0.04);;
 }
