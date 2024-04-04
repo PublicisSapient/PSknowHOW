@@ -119,7 +119,7 @@ private setting = {
         history: fieldMapping.history
       })
     }
-    if (fieldMapping && fieldMapping?.originalValue) {
+    if (fieldMapping && (fieldMapping?.originalValue || fieldMapping?.originalValue === false)) {
       return new FormControl(fieldMapping.originalValue);
     } else {
       switch (config.fieldType) {
@@ -285,6 +285,8 @@ private setting = {
       }
 
     });
+
+    console.log(finalList);
 
      if(this.selectedToolConfig[0].toolName.toLowerCase() === 'jira'){
           if (!(this.metaDataTemplateCode && this.metaDataTemplateCode === '9' || this.metaDataTemplateCode === '10' )) {
