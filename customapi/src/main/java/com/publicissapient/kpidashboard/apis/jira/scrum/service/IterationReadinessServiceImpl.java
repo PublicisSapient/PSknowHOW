@@ -16,20 +16,17 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -107,7 +104,7 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 						.filter(jiraIssue -> filterByIssueTypeKPI161.contains(jiraIssue.getTypeName().toLowerCase()))
 						.collect(Collectors.toList());
 			}
-			List<String> totalSprint = jiraService.getFutureSprintsList();
+			List<String> totalSprint = new ArrayList<>(jiraService.getFutureSprintsList());
 			totalSprint.add(CommonConstant.BLANK);
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 			resultListMap.put(SPRINT_LIST, totalSprint);
@@ -158,38 +155,52 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 				List<String> backlogNotRefinedStatus = Optional
 						.ofNullable(fieldMapping.getJiraStatusForNotRefinedKPI161()).orElse(Collections.emptyList())
 						.stream().map(String::toLowerCase).collect(Collectors.toList());
+
 				sprintList.forEach(sprint -> {
-					Map<String, List<JiraIssue>> statusWiseJiraIssue = new LinkedHashMap<>();
-					statusWiseJiraIssue.put(IN_PROGRESS, filterByStatus(sprint, jiraIssues, inProgressStatus));
-					statusWiseJiraIssue.put(READY_FOR_DEV, filterByStatus(sprint, jiraIssues, backlogRefinedStatus));
-					statusWiseJiraIssue.put(NOT_REFINED, filterByStatus(sprint, jiraIssues, backlogNotRefinedStatus));
+
 					DataCount issueCountDc = new DataCount();
+					List<DataCount> dataCountList = new ArrayList<>();
 					DataCount storyPointDc = new DataCount();
+
+					// filter by to inProgress category
+					List<JiraIssue> inProgressJiraIssue = filterByStatus(sprint, jiraIssues, inProgressStatus);
+					// filter by refined category
+					List<JiraIssue> refinedJiraIssues = filterByStatus(sprint, jiraIssues, backlogRefinedStatus);
+					// filter by not refined category
+					List<JiraIssue> notRefinedJiraIssues = filterByStatus(sprint, jiraIssues, backlogNotRefinedStatus);
+
+					filteredJiraIssue.addAll(inProgressJiraIssue);
+					filteredJiraIssue.addAll(refinedJiraIssues);
+					filteredJiraIssue.addAll(notRefinedJiraIssues);
+
+					// create drill down
+					long inProgressCount = inProgressJiraIssue.size();
+					double inProgressSize = KpiDataHelper.calculateStoryPoints(inProgressJiraIssue, fieldMapping);
+					createIssueCountDrillDown(inProgressJiraIssue, IN_PROGRESS, inProgressCount, inProgressSize,
+							dataCountList, fieldMapping);
+
+					long refinedIssuesCount = refinedJiraIssues.size();
+					double refinedIssuesSize = KpiDataHelper.calculateStoryPoints(refinedJiraIssues, fieldMapping);
+					createIssueCountDrillDown(refinedJiraIssues, READY_FOR_DEV, refinedIssuesCount, refinedIssuesSize,
+							dataCountList, fieldMapping);
+
+					long notRefinedIssuesCount = notRefinedJiraIssues.size();
+					double notRefinedIssuesSize = KpiDataHelper.calculateStoryPoints(notRefinedJiraIssues,
+							fieldMapping);
+					createIssueCountDrillDown(notRefinedJiraIssues, NOT_REFINED, notRefinedIssuesCount,
+							notRefinedIssuesSize, dataCountList, fieldMapping);
+
 					setDataCount(sprint, issueCountDc, storyPointDc);
 
-					HashMap<Object, Integer> mapOfIssueCount = new LinkedHashMap<>();
-					HashMap<Object, Double> mapOfStoryPoint = new LinkedHashMap<>();
-					if (MapUtils.isNotEmpty(statusWiseJiraIssue)) {
-						statusWiseJiraIssue.forEach((status, jiraIssue) -> {
-							filteredJiraIssue.addAll(jiraIssue);
-							mapOfIssueCount.put(status, jiraIssue.size());
-							mapOfStoryPoint.put(status, KpiDataHelper.calculateStoryPoints(jiraIssue, fieldMapping));
-
-						});
-						issueCountDc.setData(
-								String.valueOf(mapOfIssueCount.values().stream().mapToInt(Integer::intValue).sum()));
-						storyPointDc.setData(String
-								.valueOf(mapOfStoryPoint.values().stream().mapToDouble(Double::doubleValue).sum()));
-					} else {
-						issueCountDc.setData(String.valueOf(0));
-						storyPointDc.setData(String.valueOf(0));
-					}
-					issueCountDc.setValue(mapOfIssueCount);
-					storyPointDc.setValue(mapOfStoryPoint);
+					issueCountDc.setData(String.valueOf(inProgressCount + refinedIssuesCount + notRefinedIssuesCount));
+					storyPointDc.setData(String.valueOf(inProgressSize + refinedIssuesSize + notRefinedIssuesSize));
+					issueCountDc.setValue(dataCountList);
+					storyPointDc.setValue(dataCountList);
 					issueCountDcList.add(issueCountDc);
 					storyPointDcList.add(storyPointDc);
 
 				});
+
 				IterationKpiValue issueCountIterationKpiValue = new IterationKpiValue();
 				issueCountIterationKpiValue.setFilter1(ISSUE_COUNT);
 				issueCountIterationKpiValue.setValue(issueCountDcList);
@@ -211,6 +222,17 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 
 		}
 		kpiElement.setTrendValueList(overAllIterationKpiValue);
+	}
+
+	private static void createIssueCountDrillDown(List<JiraIssue> jiraIssueList, String definedStatus,
+			long definedStatusCount, double issueSize, List<DataCount> dataCountList, FieldMapping fieldMapping) {
+		List<DataCount> drillDownList = new ArrayList<>();
+		Map<String, List<JiraIssue>> issueCountStatusMap = jiraIssueList.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getStatus));
+		issueCountStatusMap.forEach((status, issueList) -> drillDownList.add(new DataCount(status, issueList.size(),
+				KpiDataHelper.calculateStoryPoints(issueList, fieldMapping), null)));
+		DataCount definedStatusDc = new DataCount(definedStatus, definedStatusCount, issueSize, drillDownList);
+		dataCountList.add(definedStatusDc);
 	}
 
 	/**

@@ -2075,6 +2075,7 @@ describe('BacklogComponent', () => {
         excelService = TestBed.inject(ExcelService);
 
         spyOn(helperService, 'colorAccToMaturity').and.returnValue(('#44739f'));
+        service.setNoProjects(true);
         httpMock = TestBed.inject(HttpTestingController);
         fixture = TestBed.createComponent(BacklogComponent);
         component = fixture.componentInstance;

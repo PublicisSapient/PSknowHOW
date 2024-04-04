@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.enums;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -223,7 +222,7 @@ public enum KPIExcelColumn {
 			"Size(story point/hours)", "Issue Status", "Due Date", "Remaining Estimate", "Assignee")),
 
 	INVALID("INVALID_KPI", Arrays.asList("Invalid")), BACKLOG_READINESS_EFFICIENCY("kpi138",
-			Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)")),
+			Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)","Created Date","DOR Date")),
 
 	FIRST_TIME_PASS_RATE_ITERATION("kpi135",
 			Arrays.asList("Issue Id", "Issue Description", "First Time Pass", "Linked Defect", "Defect Priority")),
@@ -244,7 +243,7 @@ public enum KPIExcelColumn {
 			"Issue Status", "Priority","Created Date","Updated Date", "Assignee")),
 
 	DEFECT_COUNT_BY_RCA_RELEASE("kpi142", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
-			"Issue Status", "Root Cause", "Priority", "Assignee")),
+			"Issue Status", "Root Cause", "Priority", "Assignee", "Testing Phase")),
 
 	DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143", Arrays.asList("Issue ID", "Issue Description", "Sprint Name",
 			"Issue Type", "Issue Status", "Root Cause", "Priority", "Assignee")),
@@ -290,9 +289,11 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
 					"PR Size (No. of lines)")),
 
-	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status")),
+	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status",
+			"To Do(Value/Percentage)", "In Progress(Value/Percentage)", "Done(Value/Percentage)")),
 
-	BACKLOG_EPIC_PROGRESS("kpi169", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status")),
+	BACKLOG_EPIC_PROGRESS("kpi169", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status",
+			"To Do(Value/Percentage)", "In Progress(Value/Percentage)", "Done(Value/Percentage)")),
 
     MEAN_TIME_TO_RECOVER("kpi166", Arrays.asList("Project Name", "Date", "Story ID", "Issue Type", "Issue Description",
             "Created Date", "Completion Date", "Time to Recover (In Hours)")),
@@ -302,7 +303,10 @@ public enum KPIExcelColumn {
 			"Wait Time", "Total Time", "Flow Efficiency")),
 
 	CYCLE_TIME("kpi171", Arrays.asList("Issue Id", "Issue Type", "Issue Description","DOR Date", "Intake to DOR",
-			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live"));
+			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live")),
+	REWORK_RATE("kpi173", Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks", "Rework Rate")),
+
+	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee"));
 
 	// @formatter:on
 
@@ -314,7 +318,7 @@ public enum KPIExcelColumn {
 	KPIExcelColumn(String kpiID, List<Object> columns) {
 		this.kpiId = kpiID;
 		if (columns.get(0) instanceof String) {
-			this.columns = columns.stream().map(Object::toString).collect(Collectors.toList());
+			this.columns = columns.stream().map(Object::toString).toList();
 		} else {
 			ObjectMapper objectMapper = new ObjectMapper();
 			List<KPIExcelColumnInfo> kpiExcelColumnInfoList = new ArrayList<>();

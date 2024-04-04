@@ -255,20 +255,7 @@ export class UploadComponent implements OnInit {
             document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
         }
         // this.selectedView = 'cert_upload';
-        if (this.isSuperAdmin) {
-            this.items.push(
-                {
-                    label: 'Upload certificate',
-                    icon: 'pi pi-image',
-                    command: (event) => {
-                        this.switchView(event);
-                    },
-                    expanded: false,
-                    disabled: true
-                }
-            );
-            // this.selectedView = 'cert_upload';
-        } else {
+        if (!this.isSuperAdmin) {
             this.handleTepSelect('upload_tep');
             document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
             document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
@@ -335,12 +322,6 @@ export class UploadComponent implements OnInit {
                 this.message = '';
             }
                 break;
-            // case 'Upload certificate': {
-            //     this.selectedView = 'cert_upload';
-            //     this.error = '';
-            //     this.message = '';
-            // }
-            //     break;
             case 'Test Execution Percentage': {
                 this.handleTepSelect('upload_tep');
                 this.addActiveToTab();
@@ -966,44 +947,6 @@ export class UploadComponent implements OnInit {
                 this.noData = true;
             }
         });
-    }
-    /* Upload and  validate certificate */
-    validateCertificate(event) {
-        this.error = '';
-        this.message = '';
-        this.selectedFile = event.files[0];
-        const allowedExtensions = ['.cer'];
-        const fileExtension = this.selectedFile.name.substring(this.selectedFile.name.lastIndexOf('.')).toLowerCase();
-        if (allowedExtensions.indexOf(fileExtension) === -1) {
-            return;
-        }
-        const maxFileSize = 2 * 1024 * 1024; // 2 MB
-        if (this.selectedFile.size > maxFileSize) {
-            return;
-        }
-        if (this.selectedFile) {
-            this.isUploadEnabled = false;
-        }
-    }
-    uploadCertificate() {
-        const file = this.selectedFile;
-        this.error = '';
-        this.message = '';
-        this.http_service.uploadCertificate(file).pipe(first())
-            .subscribe(
-                data => {
-                    if (data['status'] && data['status'] === 417) {
-                        this.error = data['message'];
-                    } else {
-                        this.message = data['message'];
-                    }
-                },
-                error => {
-                    this.error = error.error.message;
-                },
-                () => this.clear(null)
-            );
-        this.isUploadEnabled = true;
     }
 
     clear(event) {

@@ -369,12 +369,11 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
 				IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
 				if (ObjectUtils.isNotEmpty(issueField.getValue())) {
-					String formattedDate = JiraProcessorUtil
-							.getFormattedDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()));
-					if (StringUtils.isNotEmpty(formattedDate)) {
-						createFirstEntryOfChangeLog(dueDateChangeLog, issue,
-								LocalDateTime.parse(formattedDate).toString());
-					}
+					createFirstEntryOfChangeLog(dueDateChangeLog, issue,
+							LocalDateTime
+									.parse(JiraProcessorUtil
+											.getFormattedDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue())))
+									.toString());
 				}
 			}
 		}

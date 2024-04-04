@@ -36,5 +36,6 @@ public class RepoToolRepositories {
     private List<Branches> branchesCommitsCount;
     private List<Branches> branches;
     private String filteredBranch;
+    private double repositoryReworkRateGrade;
 
 }

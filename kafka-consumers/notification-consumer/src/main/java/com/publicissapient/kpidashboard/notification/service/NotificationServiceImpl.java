@@ -42,7 +42,7 @@ import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -176,6 +176,7 @@ public class NotificationServiceImpl implements NotificationService {
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.ssl.trust", "*");
         props.put("mail.debug", "true");
+        props.put("mail.smtp.ssl.checkserveridentity", "false");
         return mailSender;
     }
 }

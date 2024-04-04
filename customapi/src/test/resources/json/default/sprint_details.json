@@ -32,6 +32,22 @@
         "storyPoints": 1
       },
       {
+        "number": "TEST-179081",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Risk",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-179082",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Dependency",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
         "number": "TEST-18379",
         "priority": "P4 - Minor",
         "status": "Dropped",
@@ -268,6 +284,22 @@
         "priority": "P4 - Minor",
         "status": "Closed",
         "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-179081",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Risk",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-179082",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Dependency",
         "estimate": "0.0",
         "storyPoints": 1
       },
@@ -617,6 +649,22 @@
         "typeName": "Story",
         "storyPoints": "1",
         "remainingEstimate": "0"
+      },
+      {
+        "number": "TEST-179081",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Risk",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-179082",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Dependency",
+        "estimate": "0.0",
+        "storyPoints": 1
       }
     ],
     "notCompletedIssues": [
@@ -984,6 +1032,22 @@
         "typeName": "Story",
         "storyPoints": "1",
         "remainingEstimate": "0"
+      },
+      {
+        "number": "TEST-179081",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Risk",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-179082",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Dependency",
+        "estimate": "0.0",
+        "storyPoints": 1
       }
     ],
     "_class": "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"

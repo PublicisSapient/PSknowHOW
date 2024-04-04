@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -18,9 +17,6 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 
 @Service
 public class AuthTypesConfigServiceImpl implements AuthTypesConfigService {
-
-	@Autowired
-	private ADServerDetailsService adServerDetailsService;
 
 	@Autowired
 	private GlobalConfigRepository globalConfigRepository;

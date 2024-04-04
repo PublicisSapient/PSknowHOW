@@ -52,7 +52,6 @@ import { AdvancedSettingsComponent } from './advanced-settings/advanced-settings
 import { CardModule } from 'primeng/card';
 import { SharedModuleModule } from '../shared-module/shared-module.module';
 import { CalendarModule } from 'primeng/calendar';
-import { AdSettingsComponent } from './ad-settings/ad-settings.component';
 import { DialogModule } from 'primeng/dialog';
 import { ViewNewUserAuthRequestComponent } from './profile/view-new-user-auth-request/view-new-user-auth-request.component';
 import { TabViewModule } from 'primeng/tabview';
@@ -103,7 +102,6 @@ import { CapacityPlanningComponent } from './capacity-planning/capacity-planning
     ScrumKanbanPipe,
     // TextMaskPipe,
     AdvancedSettingsComponent,
-    AdSettingsComponent,
     ViewNewUserAuthRequestComponent,
     TypeofPipe,
     CompareStartEndWithCurrentDatePipe,

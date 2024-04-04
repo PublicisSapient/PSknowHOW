@@ -298,4 +298,5 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 		}
 		return null;
 	}
+
 }

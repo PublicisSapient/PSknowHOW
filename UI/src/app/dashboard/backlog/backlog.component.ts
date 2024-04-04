@@ -122,6 +122,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
       this.noProjects = res;
+       this.fullPageLoader = false;
     }));
   }
   processKpiConfigData() {
@@ -838,11 +839,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
     return typeof value === 'object' && value !== null;
   }
 
-  getKpiCommentsCount(kpiId?) {
+  async getKpiCommentsCount(kpiId?) {
     const nodes = [...this.filterApplyData?.ids]
     const level = this.filterApplyData?.level;
     const nodeChildId = '';
-    this.kpiCommentsCountObj = this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
+    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
   
   }
 

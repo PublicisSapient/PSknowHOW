@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 
 import javax.validation.Valid;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RestController
 @Slf4j
+@AllArgsConstructor
 public class AuthenticationController {
 
     private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
@@ -85,27 +87,6 @@ public class AuthenticationController {
     private final SignupManager signupManager;
     private AuthTypesConfigService authTypesConfigService;
     private TokenAuthenticationService tokenAuthenticationService;
-
-    /**
-     * Instantiates a new Authentication controller.
-     *
-     * @param authenticationService         the authentication service
-     * @param authenticationResponseService the authentication response service
-     * @param authProperties                the auth properties
-     */
-    @Autowired
-    public AuthenticationController(AuthenticationService authenticationService,
-                                    AuthenticationResponseService authenticationResponseService, UserInfoService userInfoService,
-                                    AuthProperties authProperties, SignupManager signupManager, AuthTypesConfigService authTypesConfigService,
-                                    TokenAuthenticationService tokenAuthenticationService) {
-        this.authenticationService = authenticationService;
-        this.authenticationResponseService = authenticationResponseService;
-        this.authProperties = authProperties;
-        this.userInfoService = userInfoService;
-        this.signupManager = signupManager;
-        this.authTypesConfigService = authTypesConfigService;
-        this.tokenAuthenticationService = tokenAuthenticationService;
-    }
 
     /**
      * Register user.

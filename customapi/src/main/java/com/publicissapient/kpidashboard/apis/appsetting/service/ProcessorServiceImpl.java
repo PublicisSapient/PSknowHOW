@@ -29,6 +29,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -37,11 +38,15 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.google.gson.Gson;
 import com.publicissapient.kpidashboard.apis.appsetting.config.ProcessorUrlConfig;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
@@ -76,6 +81,8 @@ public class ProcessorServiceImpl implements ProcessorService {
 	
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private CacheService cacheService;
 
 	@Override
 	public ServiceResponse getAllProcessorDetails() {
@@ -170,8 +177,10 @@ public class ProcessorServiceImpl implements ProcessorService {
 			try {
 				HttpHeaders headers = new HttpHeaders();
 				headers.add(AUTHORIZATION, token);
-
-				HttpEntity<String> requestEntity = new HttpEntity<>(sprintId, headers);
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				Gson gson = new Gson();
+				String payload = gson.toJson(sprintId);
+				HttpEntity<String> requestEntity = new HttpEntity<>(payload,headers);
 				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 				statuscode = resp.getStatusCode().value();
 			} catch (HttpClientErrorException ex) {
@@ -197,4 +206,18 @@ public class ProcessorServiceImpl implements ProcessorService {
 
 		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, null);
 	}
+
+	/**
+	 * saves the response statuses for repo tools
+	 *
+	 * @param repoToolsStatusResponse
+	 * 		repo tool response status
+	 */
+	public void saveRepoToolTraceLogs(RepoToolsStatusResponse repoToolsStatusResponse) {
+		repoToolsConfigService.saveRepoToolProjectTraceLog(repoToolsStatusResponse);
+		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
+		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
+		cacheService.clearCache(CommonConstant.BITBUCKET_KPI_CACHE);
+	}
+
 }

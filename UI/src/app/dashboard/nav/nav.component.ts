@@ -19,8 +19,6 @@
 import { Component, OnInit} from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
-import { GoogleAnalyticsService } from '../../services/google-analytics.service';
-import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
@@ -35,7 +33,6 @@ export class NavComponent implements OnInit {
   selectedTab;
   subscription: Subscription;
   configOthersData;
-  worker: any;
   kpiConfigData = {};
   kpiListData: any = {};
   changedBoardName: any;
@@ -54,8 +51,6 @@ export class NavComponent implements OnInit {
     private messageService: MessageService,
     public service: SharedService,
     public router: Router,
-    private ga: GoogleAnalyticsService,
-    private helper: HelperService,
   ) {
     this.selectedType = this.service.getSelectedType() ? this.service.getSelectedType() : 'scrum';
     this.kanban= this.selectedType.toLowerCase() === 'scrum' ? false : true;
@@ -71,6 +66,17 @@ export class NavComponent implements OnInit {
     if(this.selectedTab !== 'unauthorized access'){
       this.service.setSelectedTypeOrTabRefresh(this.selectedTab,this.selectedType);
     }
+
+    this.service.onTypeOrTabRefresh.subscribe(data => {
+      this.selectedTab = data?.selectedTab;
+    })
+
+    this.service.boardNamesListSubject.subscribe((data) => {
+      this.boardNameArr = data;
+    })
+
+    // this.selectedTab = this.service.getSelectedTab();
+    
   }
 
   ngOnInit() {
@@ -85,8 +91,6 @@ export class NavComponent implements OnInit {
         this.boardNameArr[0].boardName = this.mainTab;
       }
     });
-
-    this.startWorker();
     this.getKpiOrderedList();
   }
 
@@ -125,26 +129,6 @@ export class NavComponent implements OnInit {
     }
   }
 
-  startWorker() {
-    if (typeof Worker !== 'undefined') {
-      // Create a new
-      this.worker = new Worker(new URL('../../app.worker',import.meta.url), { type: 'module' });
-      this.worker.onmessage = ({ data }) => {
-        this.stopWorker();
-      };
-      this.worker.postMessage(localStorage.getItem('auth_token'));
-    } else {
-      // Web Workers are not supported in this environment.
-      // You should add a fallback so that your program still executes correctly.
-      console.log('Web workers not supported!!!');
-    }
-  }
-
-  stopWorker() {
-    this.worker.terminate();
-    this.worker = undefined;
-  }
-
   getKpiOrderedList() {
     this.kpiListData = this.service.getDashConfigData();
     if (!this.kpiListData || !Object.keys(this.kpiListData).length) {
@@ -169,26 +153,7 @@ export class NavComponent implements OnInit {
 
   processKPIListData() {
     this.configOthersData = this.kpiListData['others'].find(boardDetails => boardDetails.boardName === 'Kpi Maturity')?.kpis;
-    this.boardNameArr = [];
-    if (
-      this.kpiListData[this.selectedType] &&
-      Array.isArray(this.kpiListData[this.selectedType])
-    ) {
-      for (let i = 0; i < this.kpiListData[this.selectedType]?.length; i++) {
-        this.boardNameArr.push({
-          boardName: this.kpiListData[this.selectedType][i].boardName,
-          link: this.kpiListData[this.selectedType][i].boardName.toLowerCase().split(' ').join('-')
-        });
-      }
-    }
-
-    for (let i = 0; i < this.kpiListData['others']?.length; i++) {
-      this.boardNameArr.push({
-        boardName: this.kpiListData['others'][i].boardName,
-        link:
-          this.kpiListData['others'][i].boardName.toLowerCase()
-      });
-    }
+    this.service.setUpdatedBoardList(this.kpiListData, this.selectedType);
     
     // renamed tab name was not updating when navigating on iteration/backlog, issue fixed
     if (this.changedBoardName) {

@@ -196,9 +196,9 @@ public class JiraCommonServiceTest {
 		projectToolConfigsBoard = getMockProjectToolConfig("63bfa0d5b7617e260763ca21");
 		createProjectConfigMap(false);
 		when(jiraProcessorConfig.getJiraVersionApi()).thenReturn("rest/api/7/project/{projectKey}/versions");
-		URL mockedUrl = new URL("https://www.testurl.com/");
+		URL mockedUrl = new URL("https://www.testurl.in/");
 		Connection connection1 = new Connection();
-		connection1.setBaseUrl("https://www.testurl.com/");
+		connection1.setBaseUrl("https://www.testurl.in/");
 		when(projectConfFieldMapping1.getJira()).thenReturn(jiraToolConfig);
 		when(jiraToolConfig.getConnection()).thenReturn(Optional.of(connection1));
 		when(jiraToolConfig.getProjectKey()).thenReturn("1234567");

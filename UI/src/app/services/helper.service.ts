@@ -588,10 +588,8 @@ export class HelperService {
             const hiddenkpis = configGlobalData.filter(item => !item.shown);
             hiddenkpis.map((kpi, index) => kpi.order = upDatedConfigData.length + disabledKpis.length + index + 3);
             if(extraKpis){
-                console.log(extraKpis)
                 this.sharedService.kpiListNewOrder.next([extraKpis,...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
             }else{
-                console.log('without extra container')
                 this.sharedService.kpiListNewOrder.next([...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
             }
             
@@ -624,7 +622,7 @@ export class HelperService {
         return uniqueArray;
       }
 
-      getKpiCommentsCount(kpiCommentsCountObj,nodes,level,nodeChildId,updatedConfigGlobalData,kpiId) {
+      async getKpiCommentsCount(kpiCommentsCountObj,nodes,level,nodeChildId,updatedConfigGlobalData,kpiId) {
         let requestObj = {
           "nodes": nodes,
           "level": level,
@@ -633,12 +631,12 @@ export class HelperService {
         };
         if (kpiId) {
           requestObj['kpiIds'] = [kpiId];
-          this.getKpiCommentsHttp(requestObj).then((res: object) => {
+          await this.getKpiCommentsHttp(requestObj).then((res: object) => {
             kpiCommentsCountObj[kpiId] = res[kpiId];
           });
         } else {
           requestObj['kpiIds'] = (updatedConfigGlobalData?.map((item) => item.kpiId));
-          this.getKpiCommentsHttp(requestObj).then((res: object) => {
+          await this.getKpiCommentsHttp(requestObj).then((res: object) => {
             kpiCommentsCountObj = res;
           });
         }

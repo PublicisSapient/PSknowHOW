@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -774,17 +775,18 @@ public class ProjectAccessManager {
 	public List<RoleWiseProjects> getProjectAccessesWithRole(String username) {
 
 		UserInfo userInfo = getUserInfo(username);
-
-		List<ProjectsAccess> projectsAccesses = userInfo.getProjectsAccess();
 		List<RoleWiseProjects> result = new ArrayList<>();
+		if(Objects.nonNull(userInfo)) {
+			List<ProjectsAccess> projectsAccesses = userInfo.getProjectsAccess();
 
-		if (CollectionUtils.isNotEmpty(projectsAccesses)) {
-			projectsAccesses.forEach(projectsAccess -> {
-				RoleWiseProjects roleWiseProjects = new RoleWiseProjects();
-				roleWiseProjects.setRole(projectsAccess.getRole());
-				roleWiseProjects.setProjects(getProjects(projectsAccess.getAccessNodes()));
-				result.add(roleWiseProjects);
-			});
+			if (CollectionUtils.isNotEmpty(projectsAccesses)) {
+				projectsAccesses.forEach(projectsAccess -> {
+					RoleWiseProjects roleWiseProjects = new RoleWiseProjects();
+					roleWiseProjects.setRole(projectsAccess.getRole());
+					roleWiseProjects.setProjects(getProjects(projectsAccess.getAccessNodes()));
+					result.add(roleWiseProjects);
+				});
+			}
 		}
 
 		return result;

@@ -68,6 +68,7 @@ export class MilestoneComponent implements OnInit {
   navigationTabs:Array<object>;
   activeIndex = 0;
   kpiThresholdObj = {};
+  chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
 
     /** When filter dropdown change */
@@ -617,29 +618,11 @@ export class MilestoneComponent implements OnInit {
     this.helperService.drop(event,updatedContainer,this.navigationTabs,this.upDatedConfigData,this.configGlobalData);
   }
 
-  getKpiCommentsCount(kpiId?) {
-    // let requestObj = {
-    //   "nodes": this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId,
-    //   "level": this.filterApplyData?.level,
-    //   "nodeChildId": this.filterApplyData['selectedMap']?.release[0],
-    //   'kpiIds': []
-    // };
-    // if (kpiId) {
-    //   requestObj['kpiIds'] = [kpiId];
-    //   this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-    //     this.kpiCommentsCountObj[kpiId] = res[kpiId];
-    //   });
-    // } else {
-    //   requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
-    //   this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-    //     this.kpiCommentsCountObj = res;
-    //   });
-    // }
-
+  async getKpiCommentsCount(kpiId?) {
     const nodes = this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId;
     const level = this.filterApplyData?.level;
     const nodeChildId = this.filterApplyData['selectedMap']?.release[0];
-    this.kpiCommentsCountObj = this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
+    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
   
 
   }

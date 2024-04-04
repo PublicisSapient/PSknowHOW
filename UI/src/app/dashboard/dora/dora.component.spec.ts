@@ -20458,7 +20458,7 @@ describe('DoraComponent', () => {
         shown: true
       }
     ];
-    spyOn(helperService,'getKpiCommentsCount').and.returnValue({})
+    spyOn(helperService,'getKpiCommentsCount').and.returnValue(Promise.resolve({}))
     component.getKpiCommentsCount();
     tick();
     expect(component.kpiCommentsCountObj).toBeDefined();
@@ -21289,5 +21289,110 @@ it('should make post call when kpi available for Jira for Scrum', () => {
   component.groupJiraKpi(['kpi17']);
   expect(postJiraSpy).toHaveBeenCalled();
 });
+
+  it('should get kpi comments count', fakeAsync(() => {
+    component.filterApplyData = {
+      'selectedMap': {
+        'project': ["KnowHOW_6360fefc3fa9e175755f0728"]
+      },
+      'level': 5
+    };
+    const response = {
+      "message": "Found Comments Count",
+      "success": true,
+      "data": {
+        "kpi118": 1
+      }
+    };
+
+    component.kpiCommentsCountObj = {
+      'kpi118': 0
+    };
+    spyOn(helperService,'getKpiCommentsHttp').and.returnValue(of(response.data).toPromise());
+    component.getKpiCommentsCount('kpi118');
+    tick();
+    expect(component.kpiCommentsCountObj['kpi118']).toBe(1);
+  }));
+
+  it('should give error on post jira kpi ', fakeAsync(() => {
+    component.loaderJiraArray = [];
+    const errorResponse = {
+      success: false,
+      error: "Error"
+    }
+    component.jiraKpiData = {};
+    spyOn(httpService, 'postKpi').and.returnValue(of(errorResponse));
+    component.postJiraKpi(postData, 'jira');
+    expect(component.jiraKpiData['success']).toBe(false);
+  }));
+
+  it('should update the kpiSelectedFilterObj and call getChartData method', () => {
+    // Arrange
+    const event = { key1: ['value1', 'value2'], key2: 'value3' };
+    const kpi = {
+      kpiId: 'kpi74',
+      kpiDetail: {
+        aggregationCriteria: 'sum'
+      }
+    };
+    component.kpiSelectedFilterObj['action'] = 'new';
+    spyOn(component, 'getChartData');
+    spyOn(service, 'setKpiSubFilterObj');
+    // Act
+    component.handleSelectedOption(event, kpi);
+
+    // Assert
+    expect(component.kpiSelectedFilterObj[kpi.kpiId]).toEqual('value3');
+    expect(component.getChartData).toHaveBeenCalledWith(kpi.kpiId, component.ifKpiExist(kpi.kpiId), kpi.kpiDetail.aggregationCriteria);
+    expect(component.kpiSelectedFilterObj['action']).toBe('update');
+    expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(component.kpiSelectedFilterObj);
+  });
+
+  it('should push the event value to kpiSelectedFilterObj if event is not an object', () => {
+    // Arrange
+    const event = 'value';
+    const kpi = {
+      kpiId: 'kpi118',
+      kpiDetail: {
+        aggregationCriteria: 'sum'
+      }
+    };
+    component.kpiSelectedFilterObj['kpi118'] = [];
+    component.kpiSelectedFilterObj['action'] = 'new';
+    spyOn(component, 'getChartData');
+    spyOn(service, 'setKpiSubFilterObj');
+    // Act
+    component.handleSelectedOption(event, kpi);
+
+    // Assert
+    expect(component.kpiSelectedFilterObj[kpi.kpiId]).toEqual(['value']);
+    expect(component.getChartData).toHaveBeenCalledWith(kpi.kpiId, component.ifKpiExist(kpi.kpiId), kpi.kpiDetail.aggregationCriteria);
+    expect(component.kpiSelectedFilterObj['action']).toBe('update');
+    expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(component.kpiSelectedFilterObj);
+  });
+
+  it('should delete the event key from kpiSelectedFilterObj if event[key] is an empty array', () => {
+    // Arrange
+    const event = { key1: [] };
+    const kpi = {
+      kpiId: 'kpi74',
+      kpiDetail: {
+        aggregationCriteria: 'sum'
+      }
+    };
+
+    component.kpiSelectedFilterObj['action'] = 'new';
+    spyOn(component, 'getChartData');
+    spyOn(service, 'setKpiSubFilterObj');
+
+    // Act
+    component.handleSelectedOption(event, kpi);
+
+    // Assert
+    expect(component.kpiSelectedFilterObj[kpi.kpiId]).toEqual(event);
+    expect(component.getChartData).toHaveBeenCalledWith(kpi.kpiId, component.ifKpiExist(kpi.kpiId), kpi.kpiDetail.aggregationCriteria);
+    expect(component.kpiSelectedFilterObj['action']).toBe('update');
+    expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(component.kpiSelectedFilterObj);
+  });
 
 });

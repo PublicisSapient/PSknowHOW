@@ -28,8 +28,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,9 +46,12 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -75,9 +76,7 @@ public class EstimationHygieneServiceImpl extends JiraIterationKPIService {
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
 		DataCount trendValue = new DataCount();
-		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
-			projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
-		}
+		projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
@@ -116,6 +115,14 @@ public class EstimationHygieneServiceImpl extends JiraIterationKPIService {
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), jiraIssueList);
+					if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())) {
+						List<String> defectType = new ArrayList<>();
+						defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
+						defectType.addAll(fieldMapping.getJiradefecttype());
+						filtersIssuesList = filtersIssuesList.stream()
+								.filter(jiraIssue -> !defectType.contains(jiraIssue.getTypeName()))
+								.collect(Collectors.toSet());
+					}
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 			}
@@ -133,7 +140,8 @@ public class EstimationHygieneServiceImpl extends JiraIterationKPIService {
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node latestSprint, DataCount trendValue, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node latestSprint, DataCount trendValue, KpiElement kpiElement,
+			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprint, null, null, kpiRequest);

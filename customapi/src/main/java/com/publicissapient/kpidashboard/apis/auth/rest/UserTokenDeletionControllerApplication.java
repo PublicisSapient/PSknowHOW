@@ -21,8 +21,11 @@ package com.publicissapient.kpidashboard.apis.auth.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +42,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Objects;
 
 /**
  * Rest controller to handle logout requests.
@@ -57,6 +62,9 @@ public class UserTokenDeletionControllerApplication {
 	@Autowired
 	private UserInfoService userInfoService;
 
+	private final UserTokenDeletionService userTokenDeletionService;
+
+
 	/**
 	 * Instantiates a new User token deletion controller.
 	 *
@@ -65,29 +73,57 @@ public class UserTokenDeletionControllerApplication {
 	 */
 	@Autowired
 	public UserTokenDeletionControllerApplication(UserTokenDeletionService userTokenDeletionService) {
+		this.userTokenDeletionService = userTokenDeletionService;
 	}
 
 	/**
-	 * Logout user.
+	 * Logout user from central service.
+	 *
+	 * @param request
+	 *            the request
+	 */
+	@RequestMapping(value = "/centralUserlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	public ResponseEntity<ServiceResponse> deleteUserTokenForCentralAuth(HttpServletRequest request, HttpServletResponse response) {
+		Cookie authCookie = cookieUtil.getAuthCookie(request);
+		String authCookieToken = authCookie.getValue();
+		authCookie.setMaxAge(0);
+		HttpSession session;
+		SecurityContextHolder.clearContext();
+		session = request.getSession(false);
+		if (session != null) {
+			session.invalidate();
+		}
+		boolean cookieClear = userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken);
+		cookieUtil.deleteCookie(request, response, CookieUtil.AUTH_COOKIE);
+		if (cookieClear) {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Logout Successfully", true));
+		} else {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(false, "Error while Logout from Central Auth", false));
+		}
+
+	}
+
+	/**
+	 * Logout user from local auth.
 	 *
 	 * @param request
 	 *            the request
 	 */
 	@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> deleteUserToken(HttpServletRequest request, HttpServletResponse response) {
-		Cookie authCookie = cookieUtil.getAuthCookie(request);
-		String authCookieToken = authCookie.getValue();
-		authCookie.setMaxAge(0);
-		String apiKey = authProperties.getResourceAPIKey();
-		HttpSession session;
-		SecurityContextHolder.clearContext();
-		session = request.getSession(false);
-		if(session != null) {
-			session.invalidate();
-		}
-		boolean cookieClear = userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken, apiKey);
+		log.info("UserTokenDeletionController::deleteUserToken start");
+		String token = StringUtils.removeStart(request.getHeader("Authorization"), "Bearer ");
+		userTokenDeletionService.deleteUserDetails(token);
+		ResponseCookie authCookie = cookieUtil.deleteAccessTokenCookie();
+		log.info("UserTokenDeletionController::deleteUserToken end");
 		cookieUtil.deleteCookie(request, response, CookieUtil.AUTH_COOKIE);
-		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Logout Successfully", cookieClear));
+		if (Objects.nonNull(authCookie)) {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "local auth Logout Successfully", true));
+		} else {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(false, "Error while Logout from local auth", false));
+		}
 	}
 
 }

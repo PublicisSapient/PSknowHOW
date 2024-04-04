@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
@@ -32,6 +33,8 @@ import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+
 @Component
 @Slf4j
 @JobScope
@@ -43,12 +46,11 @@ public class JiraIssueSprintJobListener implements JobExecutionListener {
 	@Autowired
 	JiraProcessorCacheEvictor processorCacheEvictor;
 
-	private String sprintId;
-
 	@Autowired
-	public JiraIssueSprintJobListener(@Value("#{jobParameters['sprintId']}") String sprintId) {
-		this.sprintId = sprintId;
-	}
+	JiraClientService jiraClientService;
+
+	@Value("#{jobParameters['sprintId']}")
+	private String sprintId;
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
@@ -66,21 +68,32 @@ public class JiraIssueSprintJobListener implements JobExecutionListener {
 	public void afterJob(JobExecution jobExecution) {
 		log.info("****** Creating Sprint trace log ********");
 		long endTime = System.currentTimeMillis();
+		try {
+			if (jiraClientService.getRestClient() != null) {
+				jiraClientService.getRestClient().close();
+			}
+			if (jiraClientService.getKerberosClient() != null) {
+				jiraClientService.getKerberosClient().close();
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		// saving the execution details
-		SprintTraceLog fetchDetails = sprintTraceLogRepository.findFirstBySprintId(sprintId);
-		fetchDetails.setLastSyncDateTime(endTime);
+
+		SprintTraceLog sprintTrace = sprintTraceLogRepository.findFirstBySprintId(sprintId);
+		sprintTrace.setLastSyncDateTime(endTime);
 		if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-			fetchDetails.setErrorInFetch(false);
-			fetchDetails.setFetchSuccessful(true);
+			sprintTrace.setErrorInFetch(false);
+			sprintTrace.setFetchSuccessful(true);
 			// clearing cache
 			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
 
 		} else {
-			fetchDetails.setErrorInFetch(true);
-			fetchDetails.setFetchSuccessful(false);
+			sprintTrace.setErrorInFetch(true);
+			sprintTrace.setFetchSuccessful(false);
 		}
 		log.info("Saving sprint Trace Log for sprintId: {}", sprintId);
-		sprintTraceLogRepository.save(fetchDetails);
+		sprintTraceLogRepository.save(sprintTrace);
 
 	}
 }

@@ -104,7 +104,6 @@ public class SignupManagerTest {
 		when(authenticationService.getLoggedInUser()).thenReturn("");
 		when(authenticationRepository.findByUsername(ArgumentMatchers.anyString()))
 				.thenReturn(authenticationObj(Constant.ACCESS_REQUEST_STATUS_APPROVED, false));
-		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString())).thenReturn(userInfoObj());
 		signupManager.grantAccess(testId, grantApprovalListener);
 		verify(grantApprovalListener, atLeastOnce()).onFailure(
 				authenticationObj(Constant.ACCESS_REQUEST_STATUS_APPROVED, true), "Failed to accept the request");
@@ -119,7 +118,6 @@ public class SignupManagerTest {
 				.thenReturn(authenticationObj(Constant.ACCESS_REQUEST_STATUS_REJECTED, false));
 		when(authenticationRepository.save(ArgumentMatchers.any()))
 				.thenReturn(authenticationObj(Constant.ACCESS_REQUEST_STATUS_REJECTED, true));
-		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString())).thenReturn(userInfoObj());
 		signupManager.rejectAccessRequest(testId, rejectApprovalListener);
 		verify(rejectApprovalListener, atLeastOnce()).onFailure(
 				authenticationObj(Constant.ACCESS_REQUEST_STATUS_REJECTED, false), "Failed to reject the request");

@@ -124,6 +124,9 @@ public class CustomApiConfig {// NOPMD
 	@Value("${testconnection.gitlabApi}")
 	private String gitlabTestConnection;
 
+	@Value("${testconnection.argoCDApi}")
+	private String argoCDTestConnection;
+
 	@Value("${priority.P1}")
 	private String priorityP1;
 
@@ -142,8 +145,6 @@ public class CustomApiConfig {// NOPMD
 	@Value("${kafka.mailtopic}")
 	private String kafkaMailTopic;
 	private Map<String, String> notificationSubject;
-	@Value("${centralAuth.switch}")
-	private boolean centralAuthSwitch;
 	@Value("${notification.switch}")
 	private boolean notificationSwitch;
 	@Value("${analytics.switch}")
@@ -224,6 +225,16 @@ public class CustomApiConfig {// NOPMD
 	private Integer repoXAxisCountForCheckInsAndMergeRequests;
 	private String repoToolAPIKey;
 	private String repoToolURL;
+
+	public String getRepoToolUpdateConnectionUrl() {
+		return repoToolUpdateConnectionUrl;
+	}
+
+	public void setRepoToolUpdateConnectionUrl(String repoToolUpdateConnectionUrl) {
+		this.repoToolUpdateConnectionUrl = repoToolUpdateConnectionUrl;
+	}
+
+	private String repoToolUpdateConnectionUrl;
 	private Boolean isRepoToolEnable;
 	private String repoToolCodeCommmitsUrl;
 	private String repoToolDeleteProjectUrl;
@@ -247,8 +258,17 @@ public class CustomApiConfig {// NOPMD
 	public void setAesKeyValue(List<Character> aesKeyValue) {
 		this.aesKeyValue = aesKeyValue;
 	}
-	@Value("${x_api_key}")
+	@Value("${exposed_api_key}")
 	private String xApiKey;
+	private String repoToolReworkRateUrl;
+
+	public String getRepoToolReworkRateUrl() {
+		return repoToolReworkRateUrl;
+	}
+
+	public void setRepoToolReworkRateUrl(String repoToolReworkRateUrl) {
+		this.repoToolReworkRateUrl = repoToolReworkRateUrl;
+	}
 
 	public String getxApiKey() {
 		return xApiKey;
@@ -873,6 +893,15 @@ public class CustomApiConfig {// NOPMD
 	}
 
 	/**
+	 * ArgoCD Test Connection API path
+	 *
+	 * @return
+	 */
+	public String getArgoCDTestConnection() {
+		return argoCDTestConnection;
+	}
+
+	/**
 	 * P4 priority
 	 *
 	 * @return
@@ -955,14 +984,6 @@ public class CustomApiConfig {// NOPMD
 
 	public void setNotificationSwitch(boolean notificationSwitch) {
 		this.notificationSwitch = notificationSwitch;
-	}
-
-	public boolean isCentralAuthSwitch() {
-		return centralAuthSwitch;
-	}
-
-	public void setCentralAuthSwitch(boolean centralAuthSwitch) {
-		this.centralAuthSwitch = centralAuthSwitch;
 	}
 
 	public boolean isAnalyticsSwitch() {

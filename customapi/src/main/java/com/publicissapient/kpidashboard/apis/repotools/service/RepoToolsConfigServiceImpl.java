@@ -24,6 +24,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnectionDetail;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +105,11 @@ public class RepoToolsConfigServiceImpl {
 	public static final String SCM = "scm";
 	public static final String REPO_NAME = "repoName";
 	public static final String REPO_BRANCH = "defaultBranch";
-	public static final String VALID_REPO = ".git";
+	public static final String BITBUCKET = "bitbucket";
+	public static final String BITBUCKET_CLOUD_IDENTIFIER = "bitbucket.org";
+	public static final String PROJECT = "/projects/";
+	public static final String REPOS = "/repos/";
+
 
 
 	/**
@@ -115,9 +123,6 @@ public class RepoToolsConfigServiceImpl {
 	public int configureRepoToolProject(ProjectToolConfig projectToolConfig, Connection connection,
 			List<String> branchNames) {
 		int httpStatus;
-		if (!connection.getHttpUrl().contains(projectToolConfig.getRepositoryName() + VALID_REPO)) {
-			return HttpStatus.INTERNAL_SERVER_ERROR.value();
-		}
 		try {
 			// create scanning account
 			ToolCredential toolCredential = new ToolCredential(connection.getUsername(),
@@ -126,14 +131,22 @@ public class RepoToolsConfigServiceImpl {
 			LocalDateTime fistScan = LocalDateTime.now().minusMonths(6);
 			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
 					.findByToolName(connection.getRepoToolProvider().toLowerCase());
-
+			String[] split = projectToolConfig.getGitFullUrl().split("/");
+			String name = split[split.length - 1];
+			if (name.contains("."))
+				name = name.split(".git")[0];
+			projectToolConfig.setRepositoryName(name);
+			String apiEndPoint = null;
+			if (repoToolsProvider.getToolName().equalsIgnoreCase(BITBUCKET)
+					&& !projectToolConfig.getGitFullUrl().contains(BITBUCKET_CLOUD_IDENTIFIER)) {
+				apiEndPoint = connection.getApiEndPoint() + PROJECT + split[split.length - 2] + REPOS + name;
+			}
 			// create configuration details for repo tool
-			RepoToolConfig repoToolConfig = new RepoToolConfig(projectToolConfig.getRepositoryName(),
-					projectToolConfig.getIsNew(), projectToolConfig.getBasicProjectConfigId().toString(),
-					connection.getHttpUrl(), repoToolsProvider.getRepoToolProvider(), connection.getHttpUrl(),
-					projectToolConfig.getDefaultBranch(),
+			RepoToolConfig repoToolConfig = new RepoToolConfig(name, projectToolConfig.getIsNew(),
+					projectToolConfig.getBasicProjectConfigId().toString().concat(name), projectToolConfig.getGitFullUrl(),
+					apiEndPoint, repoToolsProvider.getRepoToolProvider(), projectToolConfig.getDefaultBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
-					fistScan.toString().replace("T", " "), toolCredential, branchNames, connection.getIsCloneable());
+					fistScan.toString().replace("T", " "), toolCredential, branchNames, false);
 
 			// api call to enroll the project
 			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig,
@@ -161,9 +174,6 @@ public class RepoToolsConfigServiceImpl {
 		// get repo tools configuration from ProjectToolConfig
 		List<ProjectToolConfig> projectRepos = projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(
 				CommonConstant.REPO_TOOLS, new ObjectId(basicProjectconfigIdList.get(0)));
-
-		List<ProcessorExecutionTraceLog> processorExecutionTraceLogList = new ArrayList<>();
-
 		try {
 
 			List<ProjectToolConfig> projectToolConfigList = projectRepos.stream()
@@ -173,11 +183,6 @@ public class RepoToolsConfigServiceImpl {
 			if (CollectionUtils.isNotEmpty(projectToolConfigList)) {
 				String projectCode = createProjectCode(basicProjectconfigIdList.get(0));
 
-				// create ProcessorExecutionTraceLog
-				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-						new ObjectId(basicProjectconfigIdList.get(0)).toHexString());
-				processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-
 				// api call to start project scanning
 				httpStatus = repoToolsClient.triggerScanCall(projectCode,
 						customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolTriggerScan(),
@@ -186,13 +191,6 @@ public class RepoToolsConfigServiceImpl {
 				// save ProcessorItemRepository for all the ProjectToolConfig
 				processorItemRepository.saveAll(createProcessorItemList(projectToolConfigList, processor.getId()));
 
-				if (httpStatus == HttpStatus.OK.value()) {
-					// save ProcessorExecutionTraceLog
-					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-					processorExecutionTraceLog.setExecutionSuccess(true);
-					processorExecutionTraceLogList.add(processorExecutionTraceLog);
-					processorExecutionTraceLogService.save(processorExecutionTraceLog);
-				}
 			}
 		} catch (Exception ex) {
 			log.error("Exception occcured while scanning project {}", basicProjectconfigIdList, ex);
@@ -222,36 +220,32 @@ public class RepoToolsConfigServiceImpl {
 	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool,
 			String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
-		try {
 			if (toolList.size() > 1) {
 				toolList.remove(tool);
-				toolList = toolList.stream().filter(projectToolConfig -> projectToolConfig.getRepositoryName()
-						.equalsIgnoreCase(tool.getRepositoryName())).collect(Collectors.toList());
-				if (toolList.size() > 1) {
-
+			if (toolList.size() > 0) {
+				// configure debbie project with
+				List<String> branch = new ArrayList<>();
+				toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
+				Connection connection = connectionRepository.findById(tool.getConnectionId())
+						.orElse(new Connection());
+				toolList.get(0).setIsNew(false);
+				httpStatus = configureRepoToolProject(toolList.get(0), connection, branch);
+			} else {
 					// delete only the repository
 					String deleteRepoUrl = customApiConfig.getRepoToolURL()
 							+ String.format(customApiConfig.getRepoToolDeleteRepoUrl(),
 									createProjectCode(basicProjectConfigId), tool.getRepositoryName());
 					httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
 							restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+			}
 				} else {
-					// configure debbie project with
-					List<String> branch = new ArrayList<>();
-					toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
-					Optional<Connection> optConnection = connectionRepository.findById(tool.getConnectionId());
-					toolList.get(0).setIsNew(false);
-					if(optConnection.isPresent())
-						httpStatus = configureRepoToolProject(toolList.get(0), optConnection.get(), branch);
-				}
-			} else {
-
+			try {
 				ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
 				// delete the project from repo tool if only one repository is present
 				httpStatus = deleteRepoToolProject(projectBasicConfig, false);
-			}
 		} catch (Exception ex) {
 			log.error("Exception while deleting project {}", ex);
+		}
 		}
 		return httpStatus == HttpStatus.OK.value();
 	}
@@ -334,21 +328,51 @@ public class RepoToolsConfigServiceImpl {
 	}
 
 	/**
-	 * create ProcessorExecutionTraceLog to track repo tool project scan
+	 * create and save ProcessorExecutionTraceLog to track repo tool project scan
 	 * 
-	 * @param basicProjectConfigId
-	 * @return
+	 * @param repoToolsStatusResponse Object containing repo tool scanning status
 	 */
-	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
+	public void saveRepoToolProjectTraceLog(RepoToolsStatusResponse repoToolsStatusResponse) {
+
+		String basicProjectConfigId = repoToolsStatusResponse.getProject()
+				.substring(repoToolsStatusResponse.getProject().lastIndexOf('_') + 1);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.REPO_TOOLS);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
-		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
-				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.REPO_TOOLS, basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
+				ProcessorConstants.REPO_TOOLS, basicProjectConfigId);
 		existingTraceLogOptional.ifPresent(
 				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
-		return processorExecutionTraceLog;
+		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+		processorExecutionTraceLog.setExecutionSuccess(
+				Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()));
+		processorExecutionTraceLogService.save(processorExecutionTraceLog);
+
+	}
+
+	public int updateRepoToolConnection(Connection conn)
+	{
+		List<RepoToolConnectionDetail> repoToolConnectionDetails = new ArrayList<>();
+		try {
+			RepoToolConnectionDetail repoToolConnectionDetail = new RepoToolConnectionDetail();
+			repoToolConnectionDetail.setEmail(conn.getEmail());
+			repoToolConnectionDetail.setPassword(
+					aesEncryptionService.decrypt(conn.getAccessToken(), customApiConfig.getAesEncryptionKey()));
+			repoToolConnectionDetail.setUsername(conn.getUsername());
+			repoToolConnectionDetail.setProvider(conn.getRepoToolProvider());
+			repoToolConnectionDetails.add(repoToolConnectionDetail);
+			RepoToolConnModel repoToolConnModel = new RepoToolConnModel(repoToolConnectionDetails);
+
+			// api call to update the detail
+			repoToolsClient.updateConnection(repoToolConnModel,
+					customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolUpdateConnectionUrl(),
+					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+			return HttpStatus.OK.value();
+		} catch (HttpClientErrorException | HttpServerErrorException ex) {
+			log.error("Exception occcured while updating conneection  {}", repoToolConnectionDetails, ex);
+		}
+		return HttpStatus.BAD_REQUEST.value();
 	}
 
 }

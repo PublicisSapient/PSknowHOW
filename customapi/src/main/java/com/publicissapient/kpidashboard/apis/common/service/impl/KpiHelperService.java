@@ -36,12 +36,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -51,13 +47,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.FieldMappingEnum;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.FieldMappingStructureResponse;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -71,6 +71,7 @@ import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.application.LabelCount;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
@@ -200,8 +201,7 @@ public class KpiHelperService { // NOPMD
 	 * @return
 	 */
 	public static List<JiraIssue> excludePriorityAndIncludeRCA(List<JiraIssue> allDefects,
-															   Map<String, List<String>> projectWisePriority,
-															   Map<String, Set<String>> projectWiseRCA) {
+			Map<String, List<String>> projectWisePriority, Map<String, Set<String>> projectWiseRCA) {
 		Set<JiraIssue> defects = new HashSet<>(allDefects);
 		List<JiraIssue> remainingDefects = new ArrayList<>();
 
@@ -210,8 +210,8 @@ public class KpiHelperService { // NOPMD
 			List<String> priorities = projectWisePriority.getOrDefault(projectId, Collections.emptyList());
 			Set<String> rcas = projectWiseRCA.getOrDefault(projectId, Collections.emptySet());
 
-			if (!priorities.contains(jiraIssue.getPriority().toLowerCase()) || rcas.isEmpty() || rcas.stream()
-					.anyMatch(rca -> jiraIssue.getRootCauseList().contains(rca.toLowerCase()))) {
+			if ((priorities.isEmpty() || !priorities.contains(jiraIssue.getPriority().toLowerCase())) && (rcas.isEmpty()
+					|| rcas.stream().anyMatch(rca -> jiraIssue.getRootCauseList().contains(rca.toLowerCase())))) {
 				remainingDefects.add(jiraIssue);
 			}
 		}
@@ -1382,7 +1382,10 @@ public class KpiHelperService { // NOPMD
 			List<ProjectToolConfig> projectToolConfig = null;
 			if (MapUtils.isNotEmpty(projectToolMap)) {
 				projectToolConfig = projectToolMap.get("Jira");
-				if (CollectionUtils.isEmpty(projectToolConfig)) {
+				if (CollectionUtils.isEmpty(projectToolConfig) && kpiSource.equalsIgnoreCase(Constant.TOOL_BITBUCKET)
+						&& projectToolMap.containsKey(Constant.REPO_TOOLS)) {
+					projectToolConfig = projectToolMap.get(Constant.REPO_TOOLS);
+				} else if (CollectionUtils.isEmpty(projectToolConfig)) {
 					projectToolConfig = projectToolMap.get("Azure");
 				}
 			}
@@ -1618,6 +1621,18 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
+	 * convert milliseconds to hours
+	 *
+	 * @param milliseconds
+	 *            milliseconds
+	 * @return time in hours
+	 */
+	public static long convertMilliSecondsToHours(double milliseconds) {
+		double hoursExact = milliseconds / (3600000);
+		return Math.round(hoursExact);
+	}
+
+	/**
 	 * @param kpiRequest
 	 *            kpiRequest
 	 * @param filteredAccountDataList
@@ -1640,7 +1655,8 @@ public class KpiHelperService { // NOPMD
 	 * @param filteredAccountDataList
 	 *            filteredAccountDataList
 	 */
-	public String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList, boolean referFromProjectCache) {
+	public String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList,
+			boolean referFromProjectCache) {
 		String[] projectKeyCache;
 		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
 			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
@@ -1673,7 +1689,79 @@ public class KpiHelperService { // NOPMD
 	}
 
 	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
-		return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi3");
+		return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi171");
 	}
 
+	/**
+	 * Create PriorityWise Count map from FieldMapping & configPriority
+	 *
+	 * @param projectWisePriorityCount
+	 *            projectWisePriorityCount
+	 * @param configPriority
+	 *            configPriority
+	 * @param leaf
+	 *            Node
+	 * @param defectPriorityCount
+	 *            From FieldMapping
+	 */
+	public static void addPriorityCountProjectWise(Map<String, Map<String, Integer>> projectWisePriorityCount,
+			Map<String, List<String>> configPriority, Node leaf, List<LabelCount> defectPriorityCount) {
+		if (CollectionUtils.isNotEmpty(defectPriorityCount)) {
+			defectPriorityCount
+					.forEach(labelCount -> labelCount.setLabelValue(labelCount.getLabelValue().toUpperCase()));
+			if (CollectionUtils.isNotEmpty(defectPriorityCount)) {
+				Map<String, Integer> priorityValues = new HashMap<>();
+				defectPriorityCount.forEach(label -> configPriority.get(label.getLabelValue()).forEach(
+						priorityValue -> priorityValues.put(priorityValue.toLowerCase(), label.getCountValue())));
+				projectWisePriorityCount.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(),
+						priorityValues);
+			}
+		}
+	}
+
+	/**
+	 * Exclude Defects based on the Priority Count tagged to Story
+	 *
+	 * @param projectWisePriority
+	 *            projectWisePriorityCount Map
+	 * @param defects
+	 *            List<JiraIssue> Defect List
+	 * @return List of Defects which are remaining after exclusion of priority count
+	 */
+	public static List<JiraIssue> excludeDefectByPriorityCount(Map<String, Map<String, Integer>> projectWisePriority,
+			Set<JiraIssue> defects) {
+		// creating storyWise linked defects priority count map
+		Map<String, Map<String, Integer>> storiesBugPriorityCount = new HashMap<>();
+		defects.forEach(defect -> {
+			Set<String> linkedStories = defect.getDefectStoryID();
+			linkedStories
+					.forEach(linkedStory -> storiesBugPriorityCount.computeIfAbsent(linkedStory, k -> new HashMap<>())
+							.merge(defect.getPriority().toLowerCase(), 1, Integer::sum));
+		});
+
+		List<JiraIssue> remainingDefects = new ArrayList<>();
+		for (JiraIssue defect : defects) {
+			if (org.apache.commons.collections4.MapUtils
+					.isNotEmpty(projectWisePriority.get(defect.getBasicProjectConfigId()))) {
+				Map<String, Integer> projPriorityCountMap = projectWisePriority.get(defect.getBasicProjectConfigId());
+				Set<String> linkedStories = defect.getDefectStoryID();
+				linkedStories.forEach(linked -> { // iterating through all linked stories
+					Map<String, Integer> storyLinkedBugPriority = storiesBugPriorityCount.getOrDefault(linked,
+							new HashMap<>());
+					storyLinkedBugPriority.forEach((priority, defectCount) -> {
+						// if defectCount of the story w.r.t priority is greater than of fieldMapping or
+						// no exclusion for priority is defined in field mapping
+						// include it as defect
+						if (!projPriorityCountMap.containsKey(priority)
+								|| projPriorityCountMap.get(priority) < defectCount) {
+							remainingDefects.add(defect);
+						}
+					});
+				});
+			} else {
+				remainingDefects.add(defect);
+			}
+		}
+		return remainingDefects;
+	}
 }

@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import com.publicissapient.kpidashboard.apis.errors.APIKeyInvalidException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -56,6 +58,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -103,6 +106,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	public static final String ERROR_MESSAGE_CONSUMING_REST_API = "Failed while consuming rest service in userInfoServiceImpl. Status code: ";
 	public static final String ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL = "Error while consuming rest service in userInfoServiceImpl";
+	public static final String ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL = "Error while Auth Service API call , Api Key token is invalid : {}";
 	@Autowired
 	TokenAuthenticationService tokenAuthenticationService;
 	@Autowired
@@ -159,7 +163,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public Collection<UserInfo> getUsers() {
 		List<UserInfo> userInfoList = userInfoRepository.findAll();
-		List<String> userNames = userInfoList.stream().map(UserInfo::getUsername).collect(Collectors.toList());
+		List<String> userNames = userInfoList.stream().map(UserInfo::getUsername).toList();
 
 		List<Authentication> authentications = authenticationRepository.findByUsernameIn(userNames);
 
@@ -244,101 +248,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	/**
-	 * Checks validity of userId when creating a dashboard remotely via api
-	 *
-	 * @param userId
-	 * @param authType
-	 * @return true if valid user
-	 */
-	@Override
-	public boolean isUserValid(String userId, AuthType authType) {
-		if (this.userInfoRepository.findByUsernameAndAuthType(userId, authType) == null) {
-			if (authType == AuthType.LDAP) {
-				try {
-					return searchLdapUser(userId);
-				} catch (NamingException ne) {
-					log.error("Failed to query ldap for: {}", userId, ne);
-					return false;
-				}
-			} else {
-				return false;
-			}
-		} else {
-			return true;
-		}
-	}
-
-	/**
-	 * Search Ldap user.
-	 *
-	 * @param searchId
-	 * @return <code>true</code> if user exists.
-	 * @throws NamingException
-	 */
-	@SuppressWarnings("PMD.AvoidCatchingGenericException")
-	private boolean searchLdapUser(String searchId) throws NamingException {
-		boolean searchResult = false;
-
-		Properties props = new Properties();
-		props.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-		props.put("java.naming.security.protocol", "ssl");
-		props.put(Context.SECURITY_AUTHENTICATION, "simple");
-
-		try {
-			if (StringUtils.isBlank(this.authProperties.getAdUrl())) {
-				props.put(Context.PROVIDER_URL, this.authProperties.getLdapServerUrl());
-				props.put(Context.SECURITY_PRINCIPAL, StringUtils.replace(this.authProperties.getLdapUserDnPattern(),
-						"{0}", this.authProperties.getLdapBindUser()));
-			} else {
-				props.put(Context.PROVIDER_URL, this.authProperties.getAdUrl());
-				props.put(Context.SECURITY_PRINCIPAL,
-						this.authProperties.getLdapBindUser() + "@" + this.authProperties.getAdDomain());
-			}
-			props.put(Context.SECURITY_CREDENTIALS, this.authProperties.getLdapBindPass());
-		} catch (Exception e) {
-			log.error("Failed to retrieve properties for InitialDirContext", e);
-			return false;
-		}
-
-		InitialDirContext context = new InitialDirContext(props);
-
-		try {
-			SearchControls ctrls = new SearchControls();
-			ctrls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-
-			String searchBase = "";
-			String searchFilter = "";
-			if (StringUtils.isBlank(this.authProperties.getAdUrl())) {
-				searchBase = this.authProperties.getLdapUserDnPattern().substring(
-						this.authProperties.getLdapUserDnPattern().indexOf(',') + 1,
-						this.authProperties.getLdapUserDnPattern().length());
-				searchFilter = "(&(objectClass=user)(sAMAccountName=" + searchId + "))";
-			} else {
-				searchBase = this.authProperties.getAdRootDn();
-				searchFilter = "(&(objectClass=user)(userPrincipalName=" + searchId + "@"
-						+ this.authProperties.getAdDomain() + "))";
-			}
-
-			NamingEnumeration<SearchResult> results = context.search(searchBase, searchFilter, ctrls);
-
-			if (!results.hasMore()) {
-				return searchResult;
-			}
-
-			SearchResult result = results.next();
-
-			Attribute memberOf = result.getAttributes().get("memberOf");
-			if (memberOf != null) {
-				searchResult = true;
-			}
-		} finally {
-			context.close();
-		}
-
-		return searchResult;
-	}
-
-	/**
 	 * update userInfo collection
 	 *
 	 * @param username
@@ -394,7 +303,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	/**
-	 * Return userinfo along with email in case of ldap or standardlogin
+	 * Return userinfo along with email in case of standardlogin
 	 *
 	 * @param username
 	 *            username
@@ -461,13 +370,15 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 *            username
 	 */
 	@Override
-	public ServiceResponse deleteUser(String username) {
+	public ServiceResponse deleteUser(String username, boolean centralAuthService) {
 		try {
 			userInfoRepository.deleteByUsername(username);
 			authenticationService.delete(username);
 			userTokenDeletionService.invalidateSession(username);
 			userBoardConfigService.deleteUser(username);
-			deleteFromCentralAuthUser(username , authProperties.getResourceAPIKey());
+			if (centralAuthService) {
+				deleteFromCentralAuthUser(username);
+			}
 			cleanAllCache();
 		} catch (Exception exception) {
 			log.error("Error in Repository :  {} " + exception);
@@ -556,8 +467,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 */
 
 	@Override
-	public UserInfo getCentralAuthUserInfo(String username, String token) {
-		HttpHeaders headers = cookieUtil.getHeaders(token, true);
+	public UserInfo getCentralAuthUserInfo(String username) {
+		String apiKey = authProperties.getResourceAPIKey();
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchUserDetailsEndPoint(), username);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -571,8 +483,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 				return response.getBody();
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
-				return new UserInfo();
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 			}
+		} catch (HttpClientErrorException e) {
+			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 		} catch (RuntimeException e) {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return null;
@@ -582,7 +497,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public CentralUserInfoDTO getCentralAuthUserInfoDetails(String username) {
 		String apiKey = authProperties.getResourceAPIKey();
-		HttpHeaders headers = cookieUtil.getHeaders(apiKey, true);
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchUserDetailsEndPoint(), username);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -597,12 +512,14 @@ public class UserInfoServiceImpl implements UserInfoService {
 				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
 				return modelMapper.map(jsonObject.get("data"), CentralUserInfoDTO.class);
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API
-						+ response.getStatusCode().value());
-				return new CentralUserInfoDTO();
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 			}
 		} catch (ParseException e) {
 			throw new AuthenticationServiceException("Unable to parse apikey token.", e);
+		} catch (HttpClientErrorException e) {
+			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 		} catch (RuntimeException e) {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return null;
@@ -610,10 +527,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public boolean getCentralAuthUserDeleteUserToken(String token, String apiKey) {
-		HttpHeaders headers = cookieUtil.getHeaders(apiKey, true);
+	public boolean getCentralAuthUserDeleteUserToken(String token) {
+		String apiKey = authProperties.getResourceAPIKey();
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
-		uriBuilder.path("/api/userlogout/");
+		uriBuilder.path(authProperties.getUserLogoutEndPoint());
 		uriBuilder.path(token);
 		String fetchUserUrl = uriBuilder.toUriString();
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -627,8 +545,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 				return true;
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
-				return false;
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 			}
+		} catch (HttpClientErrorException e) {
+			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 		} catch (RuntimeException e) {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return false;
@@ -636,8 +557,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public List<UserInfoDTO> findAllUnapprovedUsers(String token) {
-		HttpHeaders headers = cookieUtil.getHeaders(token, true);
+	public List<UserInfoDTO> findAllUnapprovedUsersForCentralAuth() {
+		String apiKey = authProperties.getResourceAPIKey();
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchPendingUsersApprovalEndPoint(), "");
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -647,18 +569,20 @@ public class UserInfoServiceImpl implements UserInfoService {
 		try {
 			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
 
-			if (response.getStatusCode().is2xxSuccessful()) {
+			if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
 				JSONParser jsonParser = new JSONParser();
 				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
 				return modelMapper.map(jsonObject.get("data"), new TypeToken<List<CentralUserInfoDTO>>() {
 				}.getType());
 
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
-				return (List<UserInfoDTO>) new UserInfo();
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 			}
 		} catch (ParseException e) {
 			throw new AuthenticationServiceException("Unable to parse response.", e);
+		} catch (HttpClientErrorException e) {
+			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 		} catch (RuntimeException e) {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return new ArrayList<>();
@@ -666,8 +590,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public boolean updateUserApprovalStatus(String user, String token) {
-		HttpHeaders headers = cookieUtil.getHeaders(token, true);
+	public boolean updateUserApprovalStatus(String user) {
+		String apiKey = authProperties.getResourceAPIKey();
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getUpdateUserApprovalStatus(), user);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -684,10 +609,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
-				return false;
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 			}
 		} catch (ParseException e) {
 			throw new AuthenticationServiceException("Unable to parse response.", e);
+		} catch (HttpClientErrorException e) {
+			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 		} catch (RuntimeException e) {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return false;
@@ -695,25 +623,27 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public boolean deleteFromCentralAuthUser(String user, String token) {
-		HttpHeaders headers = cookieUtil.getHeaders(token, true);
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
-		uriBuilder.path("/api/deleteUser/");
-		uriBuilder.path(user);
-		String fetchUserUrl = uriBuilder.toUriString();
+	public boolean deleteFromCentralAuthUser(String user) {
+		String apiKey = authProperties.getResourceAPIKey();
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
+		String deleteUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getDeleteUserEndpoint(), user);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response = null;
 		try {
-			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+			response = restTemplate.exchange(deleteUserUrl, HttpMethod.GET, entity, String.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return true;
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
-				return false;
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 			}
+		} catch (HttpClientErrorException e) {
+			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 		} catch (RuntimeException e) {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return false;

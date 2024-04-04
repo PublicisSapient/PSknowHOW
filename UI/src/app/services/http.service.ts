@@ -82,8 +82,7 @@ export class HttpService {
   private getRolesUrl = this.baseUrl + '/api/roles';
   private raiseAccessRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getAccessRequestsUrl = this.baseUrl + '/api/accessrequests/status';
-  private getAccessRequestNotificationsUrl =
-    this.baseUrl + '/api/accessrequests/Pending/notification';
+  private getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification';
   private updateRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getUserAccessRequestsUrl = this.baseUrl + '/api/accessrequests/user';
   private getScenariosUrl = this.baseUrl + '/api/scenario';
@@ -118,8 +117,6 @@ export class HttpService {
   private getPreCalculatedConfigUrl =
     this.baseUrl + '/api/pre-calculated-config';
   private getADConfigUrl = this.baseUrl + '/api/activedirectory';
-  private getAuthConfigUrl = this.baseUrl + '/api/auth-types';
-  private getLoginConfigUrl = this.baseUrl + '/api/auth-types-status';
   private getSuggestionsUrl = this.baseUrl + '/api/suggestions/project';
   private updateSuggestionsUrl = this.baseUrl + '/api/suggestions/account/';
   private getEmm360Url = this.baseUrl + '/api/emm-feed/download';
@@ -276,6 +273,9 @@ export class HttpService {
 
   /**  logout from the server */
   logout(): Observable<any> {
+    if(environment?.['AUTHENTICATION_SERVICE']){
+      this.logoutUrl = this.baseUrl + '/api/centralUserlogout';
+    }
     return this.http.get(this.logoutUrl);
   }
 
@@ -560,6 +560,9 @@ export class HttpService {
 
   /** get pending request notifications */
   getAccessRequestsNotifications() {
+    if(environment?.['AUTHENTICATION_SERVICE']){
+      this.getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification/central';
+    }  
     return this.http
       .get<NotificationResponseDTO>(this.getAccessRequestNotificationsUrl)
       .pipe(map((requests) => requests));
@@ -775,27 +778,6 @@ export class HttpService {
     return this.http.get<any>(this.getKPIFieldMappingRelationshipsUrl);
   }
 
-  /** get Active Directory Config */
-  getADConfig() {
-    return this.http.get<any>(this.getADConfigUrl);
-  }
-
-  getAuthConfig() {
-    return this.http.get<any>(this.getAuthConfigUrl);
-  }
-
-  getLoginConfig() {
-    return this.http.get<any>(this.getLoginConfigUrl);
-  }
-
-  setAuthConfig(data) {
-    return this.http.post(this.getAuthConfigUrl, data);
-  }
-
-  setADConfig(postData) {
-    return this.http.post(this.getADConfigUrl, postData);
-  }
-
   /** get emm upload history */
   getEmmHistory(): Observable<any> {
     return this.http.get<any>(this.getEmmHistoryUrl);
@@ -965,12 +947,18 @@ export class HttpService {
   }
 
   getNewUserAccessRequestFromAPI() {
+    if(environment?.['AUTHENTICATION_SERVICE']){
+      this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
+    }
     return this.http.get<UserAccessApprovalResponseDTO>(
       this.newUserAccessRequestUrl,
     );
   }
 
   updateNewUserAccessRequest(reqBody: UserAccessReqPayload, username: string) {
+    if(environment?.['AUTHENTICATION_SERVICE']){
+      this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
+    }
     return this.http.put<any>(
       `${this.newUserAccessRequestUrl}/${username}`,
       reqBody,
