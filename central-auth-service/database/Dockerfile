@@ -19,6 +19,7 @@ COPY * /docker-entrypoint-initdb.d/
 WORKDIR /docker-entrypoint-initdb.d
 
 RUN chown -R $USER:$USER /docker-entrypoint-initdb.d/ \
+    && chown -R $PGDATA \
     && chmod +x main.sh
 
 USER $USER:$GID
