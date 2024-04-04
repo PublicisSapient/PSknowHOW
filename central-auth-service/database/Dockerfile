@@ -20,8 +20,7 @@ WORKDIR /docker-entrypoint-initdb.d
 
 RUN chown -R $USER:$USER /docker-entrypoint-initdb.d/ \
     && chown -R $USER:$USER $PGDATA \
-    && chmod +x /docker-entrypoint-initdb.d/main.sh \
-    && ls -ltr /docker-entrypoint-initdb.d
+    && chmod +x /docker-entrypoint-initdb.d/main.sh
 
 USER $USER:$GID
 
