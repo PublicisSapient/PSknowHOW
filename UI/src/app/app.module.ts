@@ -354,17 +354,16 @@ export function validateToken(http, ga, sharedService) {
                     if (authToken) {
                         ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
                     }
-                    console.log('URL-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=>', url);
-                    // http.router.navigateByUrl(url? url.substring(url.lastIndexOf('/'), url.length -1) : 'dashboard');
-                    let urlSegments = url.split('/');
-                    let board = '';
-                    if (url.indexOf('Config') === -1) {
-                        board = urlSegments.length > 1 ? urlSegments[urlSegments.length - 1] : urlSegments[0]
-                    } else {
-                        board = 'Config';
-                    }
-                    http.router.navigate(['/dashboard', board]);
                 }
+                console.log('URL-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=>', url);
+                let urlSegments = url.split('/');
+                let board = '';
+                if (url.indexOf('Config') === -1) {
+                    board = urlSegments.length > 1 ? urlSegments[urlSegments.length - 1] : urlSegments[0]
+                } else {
+                    board = 'Config';
+                }
+                http.router.navigate(['/dashboard', board]);
             }, error => {
                 console.log(error);
             });
