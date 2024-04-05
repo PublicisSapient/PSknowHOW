@@ -83,7 +83,7 @@ export class RegisterComponent implements OnInit {
                         // After successfully registration redirect form to dashboard router(Executive page)
 
                         this.success = data.message;
-                        this.router.navigate(['./dashboard/']);
+                        // this.router.navigate(['./dashboard/']);
                     } else {
                         this.error = data.message;
                     }
