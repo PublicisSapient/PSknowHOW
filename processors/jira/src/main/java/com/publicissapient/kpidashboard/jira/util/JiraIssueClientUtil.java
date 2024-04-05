@@ -147,9 +147,8 @@ public final class JiraIssueClientUtil {
 	public static Map<Pair<String, String>, AccountHierarchy> getAccountHierarchy(
 			AccountHierarchyRepository accountHierarchyRepository) {
 		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findAll();
-		return accountHierarchyList.stream()
-				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
-
+		return accountHierarchyList.stream().collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p,
+				(existingValue, newValue) -> existingValue));
 	}
 
 	/**
