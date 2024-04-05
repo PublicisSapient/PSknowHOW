@@ -14,10 +14,12 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
@@ -122,7 +124,8 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 			}
 			List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList, referFromProjectCache);
+				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList,
+						referFromProjectCache);
 
 				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest,
 						filteredAccountDataList, referFromProjectCache);
@@ -259,6 +262,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	public class ParallelJiraServices extends RecursiveAction {
+		@Serial
 		private static final long serialVersionUID = 1L;
 		private final KpiRequest kpiRequest;
 		private final transient List<KpiElement> responseList;
@@ -285,18 +289,16 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 
 		/**
 		 * {@inheritDoc}
-		 * 
+		 *
 		 * @return
 		 */
 		@Override
 		public void compute() {
-			try {
-				threadLocalJiraIssues.set(jiraIssueList);
-				threadLocalHistory.set(jiraIssueCustomHistoryList);
-				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredAccountData);
-			} catch (Exception e) {
-				log.error("[PARALLEL_JIRA_BACKLOG_SERVICE].Exception occurred", e);
-			}
+
+			threadLocalJiraIssues.set(jiraIssueList);
+			threadLocalHistory.set(jiraIssueCustomHistoryList);
+			responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, filteredAccountData));
+
 		}
 
 		/**
@@ -305,31 +307,45 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 		 *
 		 * @param kpiRequest
 		 *            JIRA KPI request
-		 * @param responseList
-		 *            List of KpiElements having data of each KPI
 		 * @param kpiElement
 		 *            kpiElement object
 		 * @param filteredAccountNode
 		 *            filter tree object
-		 * @throws ApplicationException
-		 *             ApplicationException
+		 * @return Kpielement
 		 */
-		private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-				KpiElement kpiElement, Node filteredAccountNode) throws ApplicationException {
+		private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
+				Node filteredAccountNode) {
+			try {
 
-			JiraBacklogKPIService jiraKPIService = null;
-			KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
-			jiraKPIService = (JiraBacklogKPIService) JiraNonTrendKPIServiceFactory.getJiraKPIService(kpi.name());
-			long startTime = System.currentTimeMillis();
-			if (KPICode.THROUGHPUT.equals(kpi)) {
-				log.info("No need to fetch Throughput KPI data");
-			} else {
-				Node nodeDataClone = (Node) SerializationUtils.clone(filteredAccountNode);
-				responseList.add(jiraKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone));
-				long processTime = System.currentTimeMillis() - startTime;
-				log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-						processTime);
+				KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+
+				JiraBacklogKPIService jiraKPIService = (JiraBacklogKPIService) JiraNonTrendKPIServiceFactory
+						.getJiraKPIService(kpi.name());
+				long startTime = System.currentTimeMillis();
+				if (KPICode.THROUGHPUT.equals(kpi)) {
+					log.info("No need to fetch Throughput KPI data");
+				} else {
+					Node nodeDataClone = (Node) SerializationUtils.clone(filteredAccountNode);
+					if (Objects.nonNull(nodeDataClone)
+							&& kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, nodeDataClone)) {
+						kpiElement = jiraKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone);
+						kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
+					} else {
+						// mandatory fields not found
+						kpiElement.setResponseCode(CommonConstant.MANDATORY_FIELD_MAPPING);
+					}
+					long processTime = System.currentTimeMillis() - startTime;
+					log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+							processTime);
+				}
+			} catch (ApplicationException exception) {
+				log.error("Kpi not found", exception);
+			} catch (Exception exception) {
+				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+				log.error("[PARALLEL_JIRA_BACKLOG_SERVICE].Exception occurred", exception);
+				return kpiElement;
 			}
+			return kpiElement;
 		}
 	}
 
