@@ -153,7 +153,7 @@ const routes = [
                 }
             },
             {
-                path: 'iteration', component: IterationComponent, pathMatch: 'full',
+                path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "Iteration"
                 }
@@ -199,7 +199,7 @@ const routes = [
             { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
             { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
 
-        ],
+        ], canActivate: [AuthGuard],
     },
     { path: 'authentication-fail', component: SsoAuthFailureComponent },
     { path: '**', redirectTo: 'authentication' }
@@ -287,7 +287,7 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
     return new Promise<void>((resolve, reject) => {
         console.log(environment['production']);
         if (!environment['production']) {
-            // new FeatureFlagsService.config = this.featureToggleService.loadConfig().then((res) => res);
+            featureToggleService.config = featureToggleService.loadConfig().then((res) => res);
             validateToken(http, ga, sharedService, loc);
         } else {
             const env$ = http.http.get('assets/env.json').pipe(
