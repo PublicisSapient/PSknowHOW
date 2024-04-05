@@ -8,6 +8,22 @@ else
    cp /tmp/nginx_dev.conf ${CONF_LOC}/nginx.conf
 fi
 
+if [ -e $CERT_LOC/knowhow_ssl.key ] || [ "$ENVIRONMENT" = "prod" ]; then
+    echo "SSL certificate already exist in host or managed externally. "
+else
+    openssl req -newkey rsa:4096 \
+            -x509 \
+            -sha256 \
+            -days 3650 \
+            -nodes \
+            -out $CERT_LOC/knowhow_ssl.cer \
+            -keyout $CERT_LOC/knowhow_ssl.key \
+            -subj "/C=IN/ST=HR/L=ggn/O=Security/OU=IT Department/CN=${DNS_SSL}"
+    echo "Self-signed certificate created"
+    echo "your_password" > $CERT_LOC/knowhow_ssl_passphrase.txt
+
+fi
+
 # Recreate config file
 rm -rf ./env-config.js
 touch ./env-config.js
