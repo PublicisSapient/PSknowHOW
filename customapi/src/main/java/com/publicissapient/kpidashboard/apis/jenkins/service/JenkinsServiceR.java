@@ -110,7 +110,7 @@ public class JenkinsServiceR {
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
 
 				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
-					responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, treeAggregatorDetail));
+					calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
 				}
 				List<KpiElement> missingKpis = origRequestedKpis.stream()
 						.filter(reqKpi -> responseList.stream()
@@ -164,36 +164,27 @@ public class JenkinsServiceR {
 	/**
 	 * 
 	 * @param kpiRequest
+	 * @param responseList
 	 * @param kpiElement
 	 * @param treeAggregatorDetail
-	 * @return KpiElement kpiElement
+	 * @throws ApplicationException
+	 * @throws EntityNotFoundException
 	 */
-	private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) {
+	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
+			KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
 		JenkinsKPIService<?, ?, ?> jenkinsKPIService = null;
 		KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
-		try {
-			jenkinsKPIService = JenkinsKPIServiceFactory.getJenkinsKPIService(kpi.name());
+		jenkinsKPIService = JenkinsKPIServiceFactory.getJenkinsKPIService(kpi.name());
 
-			long startTime = System.currentTimeMillis();
+		long startTime = System.currentTimeMillis();
 
-			TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-					.clone(treeAggregatorDetail);
-			kpiElement = jenkinsKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
-			kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
-			long processTime = System.currentTimeMillis() - startTime;
-			log.info("[JENKINS-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-					processTime);
+		TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
+				.clone(treeAggregatorDetail);
+		responseList.add(jenkinsKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
 
-		} catch (ApplicationException exception) {
-			log.error("Kpi not found", exception);
-		} catch (Exception exception) {
-			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
-			log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), exception);
-			return kpiElement;
-		}
-		return kpiElement;
+		long processTime = System.currentTimeMillis() - startTime;
+		log.info("[JENKINS-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
 
 	}
 
