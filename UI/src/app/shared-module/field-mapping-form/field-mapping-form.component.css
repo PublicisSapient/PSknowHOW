@@ -173,13 +173,12 @@ label.btn-import-label {
   width: max-content;
   min-width: 300px;
   position: absolute;
-  top: 35px;
+  top: 20px;
   right: 0;
-  /* background: #686868; */
   box-shadow: 0px 1px 10px #00000045;
   z-index: 2000;
   border-radius: 5px;
-  left: 30px;
+  left: 20px;
   background-color: #686868;
   color: #fff;
 }
