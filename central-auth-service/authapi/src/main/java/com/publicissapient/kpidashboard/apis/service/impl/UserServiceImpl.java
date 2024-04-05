@@ -147,8 +147,8 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-	public Authentication authenticate(
-			Authentication authentication, String authType) {
+	public org.springframework.security.core.Authentication authenticate(
+			org.springframework.security.core.Authentication authentication, String authType) {
 		String fullEmail = authentication.getName();
 		// Extract the substring before '@' as the username
 		String username = fullEmail;
@@ -219,7 +219,7 @@ public class UserServiceImpl implements UserService {
 				STANDARD, modifiedDate, false));
 	}
 
-	private User getUserObject(Authentication authentication, String authType,
+	private User getUserObject(org.springframework.security.core.Authentication authentication, String authType,
 			String username) {
 		User dbUser = userRepository.findByUsername(username);
 		if (null == dbUser && authType.equalsIgnoreCase(AuthType.SAML.name())) {
@@ -340,7 +340,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String getUsername(Authentication authentication) {
+	public String getUsername(org.springframework.security.core.Authentication authentication) {
 
 		if (authentication == null) {
 			return null;
@@ -559,7 +559,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public String getLoggedInUser() {
-		Authentication authentication = SecurityContextHolder.getContext()
+		org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext()
 				.getAuthentication();
 		String username;
 
@@ -607,7 +607,7 @@ public class UserServiceImpl implements UserService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Authentication changePassword(String email, String password) {
+	public org.springframework.security.core.Authentication changePassword(String email, String password) {
 		UsernamePasswordAuthenticationToken token = null;
 		User user = userRepository.findByEmail(email);
 		if (Objects.nonNull(user)) {

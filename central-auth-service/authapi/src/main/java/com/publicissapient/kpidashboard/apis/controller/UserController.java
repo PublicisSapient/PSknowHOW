@@ -211,26 +211,6 @@ public class UserController {
 	}
 
 	/**
-	 * Validate Token
-	 *
-	 * @param request
-	 *            request
-	 * @param response
-	 *            response
-	 * @return ResponseEntity
-	 */
-	@PostMapping(value = "/validateToken")
-	public ResponseEntity<ServiceResponse> validateToken(HttpServletRequest request, HttpServletResponse response) {
-		Authentication authentication = tokenAuthenticationService.getAuthentication(request, response);
-		ServiceResponse serviceResponse = new ServiceResponse(false, messageService.getMessage(ERROR_UNAUTHORIZED_USER),
-				null);
-		if (null != authentication) {
-			serviceResponse = new ServiceResponse(true, messageService.getMessage(SUCCESS_VALID_TOKEN), null);
-		}
-		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
-	}
-
-	/**
 	 * @param authToken
 	 *            authToken
 	 * @return ResponseEntity

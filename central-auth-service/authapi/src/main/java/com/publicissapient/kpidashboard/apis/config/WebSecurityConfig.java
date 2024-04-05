@@ -100,11 +100,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.permitAll().antMatchers("/authenticationProviders").permitAll().antMatchers("/auth-types-status")
 				.permitAll().antMatchers("/saml").permitAll().antMatchers("/saml/login/**").permitAll()
 				.antMatchers("/login/**").permitAll().antMatchers("/auth/success").permitAll()
-				.antMatchers("/login-success").permitAll().antMatchers(HttpMethod.POST, "/validateToken").permitAll()
-				// resource fetch details via resource API token Key
-				.antMatchers("/userlogout/**").permitAll().antMatchers("/user/**").permitAll()
-				.antMatchers("/user-approvals/pending").permitAll().antMatchers("/update-userApproval/**").permitAll()
-				.antMatchers("/deleteUser/**").permitAll()
+				.antMatchers("/login-success").permitAll()
 				// management metrics - Public
 				.antMatchers("/appinfo").permitAll().antMatchers("/info").permitAll().antMatchers("/health").permitAll()
 				.antMatchers("/env").permitAll().antMatchers("/metrics").permitAll().antMatchers("/actuator/togglz")
@@ -112,7 +108,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				// forgot Password API calls - Public
 				.antMatchers("/forgotPassword").permitAll().antMatchers("/resetPassword").permitAll()
 				.antMatchers("/changePassword").permitAll().antMatchers("/validateEmailToken/**").permitAll()
-				// verify user - ResetPasswordToken
+				// verify user - ResetPasswordToken - Public
 				.antMatchers("/verifyUser").permitAll().anyRequest().authenticated().and().httpBasic().and().csrf()
 				.disable().headers().and()
 				.addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
