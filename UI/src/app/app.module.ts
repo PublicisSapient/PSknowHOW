@@ -206,12 +206,12 @@ const routes = [
 ];
 
 const routesAuth = [
-    // { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     {
         path: 'dashboard', component: DashboardComponent,
         canActivateChild: [AuthGuard, FeatureGuard],
         children: [
-            // { path: '', redirectTo: 'iteration', pathMatch: 'full' },
+            { path: '', redirectTo: 'iteration', pathMatch: 'full' },
             {
                 path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
@@ -283,6 +283,7 @@ export function initializeApp(http: HttpService, featureToggleService: FeatureFl
 export function checkFeatureFlag(http, featureToggleService, ga, sharedService) {
     console.log('Inside CheckFeatureFlag');
     return new Promise<void>((resolve, reject) => {
+        console.log(environment['production']);
         if (!environment['production']) {
             // new FeatureFlagsService.config = this.featureToggleService.loadConfig().then((res) => res);
             validateToken(http, ga, sharedService);
@@ -297,11 +298,6 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
                     environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
                     environment['MAP_URL'] = env['MAP_URL'] || '';
                     environment['RETROS_URL'] = env['RETROS_URL'] || '';
-                    if (environment['AUTHENTICATION_SERVICE'] != true) {
-                        http.router.resetConfig([...routes]);
-                    } else {
-                        http.router.resetConfig([...routesAuth]);
-                    }
                     validateToken(http, ga, sharedService);
                 }));
             env$.toPromise().then(async res => {
@@ -331,7 +327,7 @@ export function validateToken(http, ga, sharedService) {
             http.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
         } else {
             // TODO: find right property to avoid string manipulation - Rishabh 3/4/2024
-            let url = window.location.hash.replace('#/', '');
+            let url = window.location.hash;  //.replace('#/', '');
 
             let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
             if (authToken) {
@@ -346,7 +342,7 @@ export function validateToken(http, ga, sharedService) {
             console.log('authToken', authToken);
             // Make API call or initialization logic here...
             http.getUserValidation(obj).subscribe((response) => {
-                http.router.resetConfig([...routesAuth]);
+                // http.router.resetConfig([...routesAuth]);
                 if (response?.['success']) {
                     sharedService.setCurrentUserDetails(response?.['data']);
                     localStorage.setItem("user_name", response?.['data']?.user_name);
@@ -363,7 +359,11 @@ export function validateToken(http, ga, sharedService) {
                 } else {
                     board = 'Config';
                 }
-                http.router.navigate(['/dashboard', board]);
+
+                http.router.resetConfig([...routesAuth]);
+
+                // http.router.navigate(['dashboard', board]);
+                http.router.navigateByUrl(url);
             }, error => {
                 console.log(error);
             });
