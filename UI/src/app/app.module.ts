@@ -188,8 +188,6 @@ const routes = [
                     feature: "Dora"
                 }
             },
-            { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
-            { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
             {
                 path: 'Config',
                 loadChildren: () => import('../app/config/config.module').then(m => m.ConfigModule),
@@ -198,6 +196,8 @@ const routes = [
                 }
             },
             { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+            { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
+            { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
 
         ],
     },
@@ -219,7 +219,7 @@ const routesAuth = [
                 }
             },
             {
-                path: 'iteration', component: IterationComponent, pathMatch: 'full',
+                path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "Iteration"
                 }
@@ -282,11 +282,13 @@ export function initializeApp(http: HttpService, featureToggleService: FeatureFl
 
 export function checkFeatureFlag(http, featureToggleService, ga, sharedService) {
     console.log('Inside CheckFeatureFlag');
+    let loc = window.location.hash ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1])) : '';
+    console.log("location--------------->", loc);
     return new Promise<void>((resolve, reject) => {
         console.log(environment['production']);
         if (!environment['production']) {
             // new FeatureFlagsService.config = this.featureToggleService.loadConfig().then((res) => res);
-            validateToken(http, ga, sharedService);
+            validateToken(http, ga, sharedService, loc);
         } else {
             const env$ = http.http.get('assets/env.json').pipe(
                 tap(env => {
@@ -298,7 +300,7 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
                     environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
                     environment['MAP_URL'] = env['MAP_URL'] || '';
                     environment['RETROS_URL'] = env['RETROS_URL'] || '';
-                    validateToken(http, ga, sharedService);
+                    validateToken(http, ga, sharedService, loc);
                 }));
             env$.toPromise().then(async res => {
                 featureToggleService.config = featureToggleService.loadConfig().then((res) => res);
@@ -320,14 +322,15 @@ export function checkFeatureFlag(http, featureToggleService, ga, sharedService) 
     })
 }
 
-export function validateToken(http, ga, sharedService) {
+export function validateToken(http, ga, sharedService, location) {
     return new Promise<void>((resolve, reject) => {
         if (!environment['AUTHENTICATION_SERVICE'] == true) {
             http.router.resetConfig([...routes]);
             http.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
         } else {
+            http.router.resetConfig([...routesAuth]);
             // TODO: find right property to avoid string manipulation - Rishabh 3/4/2024
-            let url = window.location.hash;  //.replace('#/', '');
+            let url = window.location.href; 
 
             let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
             if (authToken) {
@@ -351,19 +354,12 @@ export function validateToken(http, ga, sharedService) {
                         ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
                     }
                 }
-                console.log('URL-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=>', url);
-                let urlSegments = url.split('/');
-                let board = '';
-                if (url.indexOf('Config') === -1) {
-                    board = urlSegments.length > 1 ? urlSegments[urlSegments.length - 1] : urlSegments[0]
-                } else {
-                    board = 'Config';
+                console.log("location inside validateToken", location);
+                if(location){
+                    http.router.navigateByUrl(location);
+                }else{
+                    http.router.navigate(['/dashboard/iteration']);
                 }
-
-                http.router.resetConfig([...routesAuth]);
-
-                // http.router.navigate(['dashboard', board]);
-                http.router.navigateByUrl(url);
             }, error => {
                 console.log(error);
             });
