@@ -221,4 +221,20 @@ public class TestConnectionController {
 
 	}
 
+	/**
+	 * Validate ArgoCD connection
+	 *
+	 * @param connectionDTO
+	 * @return
+	 */
+	@PostMapping(path = "/argocd", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> validateArgoCDConnection(
+			@NotNull @RequestBody ConnectionDTO connectionDTO) {
+		log.info("validating ArgoCD connections credentials");
+		final ModelMapper modelMapper = new ModelMapper();
+		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(testConnectionService.validateConnection(connection, Constant.TOOL_ARGOCD));
+	}
+
 }

@@ -39,7 +39,6 @@ import org.springframework.web.client.RestTemplate;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
-import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
@@ -338,14 +337,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	public String getLoggedInUser() {
 		org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext()
 				.getAuthentication();
-		String username;
-
-		if (authentication.getPrincipal() instanceof CustomUserDetails) {
-			username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-		} else {
-			username = authentication.getPrincipal().toString();
-		}
-		return username;
+		return authentication.getPrincipal().toString();
 	}
 
 	@Override
@@ -355,14 +347,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 			return null;
 		}
 
-		String username;
-
-		if (authentication.getPrincipal() instanceof CustomUserDetails) {
-			username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-		} else {
-			username = authentication.getPrincipal().toString();
-		}
-		return username;
+		return authentication.getPrincipal().toString();
 	}
 
 	/**

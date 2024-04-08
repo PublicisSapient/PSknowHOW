@@ -106,12 +106,16 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 							&& !finalJiraDodKPI142LowerCase.contains(jiraIssue.getStatus().toLowerCase()))
 					.toList();
 			IterationKpiValue openDefectsIterationKpiValue = new IterationKpiValue();
+			List<DataCount> openDefectsValue = getDefectsDataCountList(openDefects, fieldMapping);
 			openDefectsIterationKpiValue.setFilter1(OPEN_DEFECT);
-			openDefectsIterationKpiValue.setValue(getDefectsDataCountList(openDefects, fieldMapping));
+			if(CollectionUtils.isNotEmpty(openDefectsValue))
+				openDefectsIterationKpiValue.setValue(openDefectsValue);
 
 			IterationKpiValue totalDefectsIterationKpiValue = new IterationKpiValue();
+			List<DataCount> totalDefectsValue = getDefectsDataCountList(totalDefects, fieldMapping);
 			totalDefectsIterationKpiValue.setFilter1(TOTAL_DEFECT);
-			totalDefectsIterationKpiValue.setValue(getDefectsDataCountList(totalDefects, fieldMapping));
+			if(CollectionUtils.isNotEmpty(totalDefectsValue))
+				totalDefectsIterationKpiValue.setValue(totalDefectsValue);
 
 			overAllIterationKpiValue.add(openDefectsIterationKpiValue);
 			overAllIterationKpiValue.add(totalDefectsIterationKpiValue);

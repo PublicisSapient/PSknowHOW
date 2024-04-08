@@ -75,7 +75,7 @@
 				<module>azure-pipeline</module>
 				<module>azure-repo</module>
 				<module>azure-boards</module>
-
+				<module>argocd</module>
 			</modules>
             <build>
                 <plugins>

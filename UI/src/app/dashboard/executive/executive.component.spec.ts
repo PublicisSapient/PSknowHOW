@@ -6279,7 +6279,7 @@ describe('ExecutiveComponent', () => {
         shown: true
       }
     ];
-    spyOn(helperService, 'getKpiCommentsCount').and.returnValue({})
+    spyOn(helperService, 'getKpiCommentsCount').and.returnValue(Promise.resolve({}))
     component.getKpiCommentsCount();
     tick();
     expect(component.kpiCommentsCountObj).toBeDefined();

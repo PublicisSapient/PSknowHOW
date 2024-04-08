@@ -82,7 +82,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             .pipe(
                 tap(event => {
                     if (event instanceof HttpResponse){
-                        /**Todo: Not autochanging the user role on role change. User will have to manually logout when his/her role is changed. 
+                        /**Todo: Not autochanging the user role on role change. User will have to manually logout when his/her role is changed.
                          * Currently commiting this code as per comment on ticket DTS-30823 */
                         // if(!event?.url?.includes('api/authdetails') &&
                         // ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
@@ -95,12 +95,16 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                     if (err.status === 401) {
                         if (requestArea === 'internal') {
                             this.service.setCurrentUserDetails({});
-                            if(!environment.SSO_LOGIN){
-                                if(environment.AUTHENTICATION_SERVICE){
+                            console.log("environment ------->", environment);
+                            
+                            if(environment?.['SSO_LOGIN'] === true){
+                                console.log('SSO_LOGIN', true)
+                            }else{
+                                if(environment.AUTHENTICATION_SERVICE == true){
                                     /** redirect to central login url*/
-                                    let redirect_uri = window.location.href;
-                                    localStorage.setItem('redirect_uri', window.location.hash);
-                                    window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+                                    if(environment.CENTRAL_LOGIN_URL){
+                                        window.location.href = environment.CENTRAL_LOGIN_URL;
+                                    }
                                 }else{
                                     localStorage.removeItem('currentUserDetails');
                                     this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
@@ -108,12 +112,12 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                             }
                         }
 
-                        if (environment.SSO_LOGIN) {
+                        if (environment?.['SSO_LOGIN'] === true) {
                             this.router.navigate(['./dashboard/mydashboard']).then(success => {
                                 window.location.reload();
                             });
                         }
-                    } else if(err.status === 403 && environment.SSO_LOGIN){
+                    } else if(err.status === 403 && environment?.['SSO_LOGIN']){
                         this.httpService.unauthorisedAccess =true;
                         this.router.navigate(['/dashboard/unauthorized-access']);
                     } else {
@@ -126,7 +130,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                             if (httpErrorHandler !== 'local') {
                                 if (requestArea === 'internal') {
                                     if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
-                                        if(!environment.SSO_LOGIN || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
+                                        if(environment?.['SSO_LOGIN'] === false || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
                                         this.router.navigate(['./dashboard/Error']);
                                         }
                                         setTimeout(() => {
