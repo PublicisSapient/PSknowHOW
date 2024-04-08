@@ -216,7 +216,7 @@ const routes = [
                     feature: "Config"
                 }
             },
-            { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+            { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveV2Component : ExecutiveV2Component, pathMatch: 'full' },
             { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
             { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
 
@@ -284,7 +284,7 @@ const routesAuth = [
                     feature: "Config"
                 }
             },
-            { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+            { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveV2Component : ExecutiveV2Component, pathMatch: 'full' },
 
         ],
     },
