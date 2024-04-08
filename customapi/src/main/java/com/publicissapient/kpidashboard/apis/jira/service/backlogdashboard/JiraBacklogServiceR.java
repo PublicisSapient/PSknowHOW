@@ -210,7 +210,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
-		return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi3");
+		return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi171");
 	}
 
 	public void futureProjectWiseSprintDetails(ObjectId basicProjectConfigId, String sprintState) {

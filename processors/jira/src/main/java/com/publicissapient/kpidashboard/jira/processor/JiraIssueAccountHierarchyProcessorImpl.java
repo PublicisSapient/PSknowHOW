@@ -81,9 +81,8 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 				.collect(Collectors.toList());
 
 		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findAll();
-		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = accountHierarchyList.stream()
-				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
-
+		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = accountHierarchyList.stream().collect(Collectors
+				.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p, (existingValue, newValue) -> existingValue));
 		Set<AccountHierarchy> setToSave = new HashSet<>();
 		if (StringUtils.isNotBlank(jiraIssue.getProjectName()) && StringUtils.isNotBlank(jiraIssue.getSprintName())
 				&& StringUtils.isNotBlank(jiraIssue.getSprintBeginDate())

@@ -7,7 +7,7 @@ export class NamePipePipe implements PipeTransform {
 
   transform(value: string, ...args: unknown[]): unknown {
     if(value.toLowerCase() !== 'project') {
-    const hierarchyData = JSON.parse(localStorage.getItem('hierarchyData'));
+    const hierarchyData = JSON.parse(localStorage.getItem('hierarchyData')) || JSON.parse(localStorage.getItem('completeHierarchyData'))?.['scrum'];
     value = hierarchyData.filter(h => h.hierarchyLevelId === value).length ? hierarchyData.filter(h => h.hierarchyLevelId === value)[0].hierarchyLevelName : value;
     } else {
       value = 'Project';

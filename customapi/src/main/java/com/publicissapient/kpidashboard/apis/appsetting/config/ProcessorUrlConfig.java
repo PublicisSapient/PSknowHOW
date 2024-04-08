@@ -56,6 +56,7 @@ public class ProcessorUrlConfig {
 	String teamcity;
 	String github;
 	String githubAction;
+	String argocd;
 
 	public String getProcessorUrl(String processor) {
 		switch (processor) {
@@ -89,6 +90,8 @@ public class ProcessorUrlConfig {
 			return getAzurerepository();
 		case ProcessorConstants.TEAMCITY:
 			return getTeamcity();
+		case ProcessorConstants.ARGOCD:
+			return getArgocd();
 		default:
 			return StringUtils.EMPTY;
 		}

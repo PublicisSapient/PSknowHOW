@@ -1517,7 +1517,7 @@ a:hover {
   background: #9E9E9E !important;
 }
 .ng-select.ng-select-multiple:not(.ng-select-opened) .ng-select-container .ng-value-container .ng-placeholder{
-  padding: 0 10px 0 0;
+  padding: 0;
   z-index: 0;
 }
 .kpi-dropdown.ng-select.ng-select-opened .ng-select-container, .kpi-dropdown.ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-input{

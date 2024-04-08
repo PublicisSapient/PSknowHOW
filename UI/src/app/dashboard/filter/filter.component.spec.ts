@@ -2276,6 +2276,7 @@ const completeHierarchyData = {
     spyOn(sharedService, 'getSelectedTrends').and.returnValue(obj);
     spyOn(sharedService, 'setDashConfigData');
     const spy = spyOn(sharedService, 'select');
+    spyOn(sharedService, 'setUpdatedBoardList');
     spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(of(mockData));
     spyOn(component, 'processKpiList');
     spyOn(component, 'navigateToSelectedTab');
@@ -2283,7 +2284,7 @@ const completeHierarchyData = {
     expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab)
   })
 
-  it('should get kpi order list on project level', () => {
+  it('should get kpi order list on project level and return error', () => {
     component.selectedTab = 'backlog';
     const obj = [{
       "nodeId": "Scrum Project_6335363749794a18e8a4479b",
@@ -2693,5 +2694,22 @@ const completeHierarchyData = {
           } 
           component.closeAllDropdowns();
         })
-
+    
+        xit('should set selectedTab to the first boardName if selectedTab does not exist in kanban or scrum', () => {
+          // Arrange
+          component.kpiListData = {
+            kanban: [{ boardName: 'Board 1', kpis: [] }],
+            scrum: [],
+            others: []
+          };
+          component.kanban = true;
+          component.selectedTab = 'Non-existent Board';
+          spyOn(sharedService, 'setSelectedTab');
+          spyOn(component.router, 'navigate');
+          // Act
+          component.changeSelectedTab();
+    
+          // Assert
+          expect(component.selectedTab).toBe('Board 1');
+        });
 });

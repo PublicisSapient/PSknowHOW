@@ -83,12 +83,21 @@
                                       [ngSwitch]="kpi?.kpiDetail?.chartType"
                                       *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                       <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
-                                        <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
-                                        [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                        [unit]="kpi?.kpiDetail?.kpiUnit" [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
-                                        [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                        [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
+                                        <ng-container *ngSwitchCase="'stackedColumn'">
+                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                            <app-groupstackchart [legendType]="'normal'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                              [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
+                                              [filter]="kpiSelectedFilterObj[kpi?.kpiId]" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                                              [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId" [selectedtype]="selectedtype"
+                                              [activeTab]="activeImilesndex"
+                                              [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
+                                          </ng-container>
+                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                            <ng-container
+                                              *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }">
+                                            </ng-container>
+                                          </ng-container>
+                                        </ng-container>
                                         <app-group-bar-chart *ngSwitchCase="'CumulativeMultilineChart'"
                                           [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                           [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
@@ -233,13 +242,21 @@
                                       [ngSwitch]="kpi?.kpiDetail?.chartType"
                                       *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                       <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
-                                        <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
-                                        [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                        [unit]="kpi?.kpiDetail?.kpiUnit" [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
-                                        [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                        [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
-                                      
+                                        <ng-container *ngSwitchCase="'stackedColumn'">
+                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                            <app-groupstackchart [legendType]="'normal'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                              [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
+                                              [filter]="kpiSelectedFilterObj[kpi?.kpiId]" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                                              [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId" [selectedtype]="selectedtype"
+                                              [activeTab]="activeIndex"
+                                              [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
+                                          </ng-container>
+                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                            <ng-container
+                                              *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }">
+                                            </ng-container>
+                                          </ng-container>
+                                        </ng-container>
                                         <app-group-bar-chart *ngSwitchCase="'CumulativeMultilineChart'"
                                           [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                           [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
@@ -384,13 +401,21 @@
                                       [ngSwitch]="kpi?.kpiDetail?.chartType"
                                       *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                       <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
-                                        <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
-                                        [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                        [unit]="kpi?.kpiDetail?.kpiUnit" [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
-                                        [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                        [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
-                                      
+                                        <ng-container *ngSwitchCase="'stackedColumn'">
+                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                            <app-groupstackchart [legendType]="'normal'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                              [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
+                                              [filter]="kpiSelectedFilterObj[kpi?.kpiId]" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                                              [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId" [selectedtype]="selectedtype"
+                                              [activeTab]="activeIndex"
+                                              [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
+                                          </ng-container>
+                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                            <ng-container
+                                              *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }">
+                                            </ng-container>
+                                          </ng-container>
+                                        </ng-container>
                                         <app-group-bar-chart *ngSwitchCase="'CumulativeMultilineChart'"
                                           [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                           [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
@@ -537,13 +562,21 @@
                                       [ngSwitch]="kpi?.kpiDetail?.chartType"
                                       *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                       <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
-                                        <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
-                                        [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                        [unit]="kpi?.kpiDetail?.kpiUnit" [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
-                                        [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                        [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
-                                      
+                                        <ng-container *ngSwitchCase="'stackedColumn'">
+                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                            <app-groupstackchart [legendType]="'normal'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                              [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
+                                              [filter]="kpiSelectedFilterObj[kpi?.kpiId]" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                                              [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId" [selectedtype]="selectedtype"
+                                              [activeTab]="activeIndex"
+                                              [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
+                                          </ng-container>
+                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                            <ng-container
+                                              *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }">
+                                            </ng-container>
+                                          </ng-container>
+                                        </ng-container>
                                         <app-group-bar-chart *ngSwitchCase="'CumulativeMultilineChart'"
                                           [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                           [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"

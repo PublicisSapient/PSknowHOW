@@ -418,8 +418,6 @@ public class KPIExcelData {
 	@JsonProperty("Done(Value/Percentage)")
 	private String done;
 
-	@JsonProperty("Remediation Effort")
-	private String remediationEffort;
 
 
 }

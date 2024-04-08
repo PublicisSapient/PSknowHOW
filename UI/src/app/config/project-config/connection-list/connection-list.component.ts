@@ -133,6 +133,12 @@ export class ConnectionListComponent implements OnInit {
       connectionLabel: 'RepoTool',
       labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Base Url', 'Api End Point', 'Username', 'Access Token', 'User Email', 'Is Connection Private'],
       inputFields: ['type', 'repoToolProvider', 'connectionName', 'baseUrl', 'apiEndPoint', 'username', 'accessToken', 'email', 'connPrivate']
+    },
+    {
+      connectionType: 'ArgoCD',
+      connectionLabel: 'ArgoCD',
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Is Connection Private'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'connPrivate']
     }
   ];
 
@@ -380,6 +386,15 @@ export class ConnectionListComponent implements OnInit {
         { field: 'repoToolProvider', header: 'RepoTool Provider', class: 'normal' },
         { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
         // { field: 'cloneable', header: 'Is Cloneable', class: 'small-text' },
+      ]
+    },
+    {
+      label: 'ArgoCD',
+      value: 'ArgoCD',
+      connectionTableCols: [
+        { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
+        { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
+        { field: 'username', header: 'User Name', class: 'long-text' },
       ]
     }
   ];
@@ -1393,6 +1408,21 @@ export class ConnectionListComponent implements OnInit {
           this.testingConnection = false;
         });
 
+        break;
+        case 'ArgoCD': this.testConnectionService.testArgoCD(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['vault']).subscribe(next => {
+          if (next.success && next.data === 200) {
+            this.testConnectionMsg = 'Valid Connection';
+            this.testConnectionValid = true;
+          } else {
+            this.testConnectionMsg = 'Connection Invalid';
+            this.testConnectionValid = false;
+          }
+          this.testingConnection = false;
+        }, error => {
+          this.testConnectionMsg = 'Connection Invalid';
+          this.testConnectionValid = false;
+          this.testingConnection = false;
+        });
         break;
     }
   }

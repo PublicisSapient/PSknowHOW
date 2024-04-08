@@ -261,6 +261,18 @@ export class TestConnectionService {
     );
   }
 
-
+  testArgoCD(baseUrl, username, password, vault): Observable<any> {
+    const postData = {
+      baseUrl,
+      username,
+      password: password ? password : '',
+      vault
+    };
+    let headers: HttpHeaders = new HttpHeaders();
+    headers = headers.append('requestArea', 'thirdParty');
+    return this.http.post(environment.baseUrl + '/api/testconnection/argocd', postData
+      , { headers }
+    );
+  }
 
 }

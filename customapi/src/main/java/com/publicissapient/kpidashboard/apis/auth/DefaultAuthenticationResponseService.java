@@ -18,12 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.auth;
 
-import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
-import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
-import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,7 +27,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
+import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
+
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class call repository method to save the user authentication.
@@ -54,13 +55,7 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 	 */
 	@Override
 	public void handle(HttpServletResponse response, Authentication authentication) {
-		String username;
-		if (authentication.getPrincipal() instanceof CustomUserDetails) {
-			username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-
-		} else {
-			username = authentication.getPrincipal().toString();
-		}
+		String username = authentication.getPrincipal().toString();
 
 		Collection<GrantedAuthority> authorities = userInfoService.getAuthorities(username);
 		AbstractAuthenticationToken authenticationWithAuthorities = new UsernamePasswordAuthenticationToken(

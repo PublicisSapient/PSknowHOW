@@ -19,6 +19,7 @@
 
 package com.publicissapient.kpidashboard.jira.listener;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -26,6 +27,8 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
@@ -57,6 +60,9 @@ public class JobListenerScrumTest {
     private FieldMappingRepository fieldMappingRepository;
 
     @Mock
+    private JiraClientService jiraClientService;
+
+    @Mock
     private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 
     @Mock
@@ -71,6 +77,12 @@ public class JobListenerScrumTest {
     @Mock
     private JiraCommonService jiraCommonService;
 
+    @Mock
+    private ProcessorJiraRestClient client;
+
+    @Mock
+    private KerberosClient kerberosClient;
+
     @InjectMocks
     private JobListenerScrum jobListenerScrum;
 
@@ -79,6 +91,8 @@ public class JobListenerScrumTest {
     @Before
     public void setUp() {
         jobExecution = MetaDataInstanceFactory.createJobExecution();
+        when(jiraClientService.getRestClient()).thenReturn(client);
+        when(jiraClientService.getKerberosClient()).thenReturn(kerberosClient);
     }
 
     @Test
