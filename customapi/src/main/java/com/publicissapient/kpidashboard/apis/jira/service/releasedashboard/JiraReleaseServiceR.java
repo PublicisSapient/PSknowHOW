@@ -346,6 +346,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 						processTime);
 			}
 		} catch (ApplicationException exception) {
+			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
 			log.error("Kpi not found", exception);
 		} catch (Exception exception) {
 			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
