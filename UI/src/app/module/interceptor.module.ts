@@ -102,6 +102,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                             }else{
                                 if(environment.AUTHENTICATION_SERVICE == true){
                                     /** redirect to central login url*/
+                                    localStorage.clear();
                                     if(environment.CENTRAL_LOGIN_URL){
                                         window.location.href = environment.CENTRAL_LOGIN_URL;
                                     }

@@ -45,7 +45,7 @@ import { environment } from 'src/environments/environment';
  */
 
 @NgModule({
-  imports: [RouterModule.forRoot([], { useHash: true, relativeLinkResolution: 'legacy', enableTracing: true })],
+  imports: [RouterModule.forRoot([], { useHash: true, relativeLinkResolution: 'legacy' })],
 
   exports: [RouterModule],
   providers: [

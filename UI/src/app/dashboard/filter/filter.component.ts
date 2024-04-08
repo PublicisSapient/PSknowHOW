@@ -820,24 +820,26 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   changeSelectedTab(){
-    let boardDetails = JSON.parse(JSON.stringify(this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase()) 
-    || this.kpiListData['others'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase())));
-    let kpisShownCount = 0;
-    if(boardDetails?.boardName?.toLowerCase() === 'iteration'){
-      boardDetails['kpis'] = [...boardDetails?.kpis?.filter((item) => item.kpiId != 'kpi121')];
-    }
-    boardDetails?.kpis?.forEach((item) => {
-      if(item.shown){
-        kpisShownCount++
+    if(Object.keys(this.kpiListData)?.length > 0){
+      let boardDetails = JSON.parse(JSON.stringify(this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase()) 
+      || this.kpiListData['others'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase())));
+      let kpisShownCount = 0;
+      if(boardDetails?.boardName?.toLowerCase() === 'iteration'){
+        boardDetails['kpis'] = [...boardDetails?.kpis?.filter((item) => item.kpiId != 'kpi121')];
       }
-    })
-    if(kpisShownCount <= 0){
-      this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
-      this.service.setSelectedTab(this.selectedTab);
-      // const selectedTab = this.selectedTab;
-      // const selectedType = this.kanban ? 'kanban' : 'scrum';
-      this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
-      // this.service.onTypeOrTabRefresh.next({ selectedTab, selectedType });
+      boardDetails?.kpis?.forEach((item) => {
+        if(item.shown){
+          kpisShownCount++
+        }
+      })
+      if(kpisShownCount <= 0){
+        this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
+        this.service.setSelectedTab(this.selectedTab);
+        // const selectedTab = this.selectedTab;
+        // const selectedType = this.kanban ? 'kanban' : 'scrum';
+        this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
+        // this.service.onTypeOrTabRefresh.next({ selectedTab, selectedType });
+      }
     }
   }
 
@@ -848,6 +850,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.projectIndex = 0;
       this.service.setEmptyFilter();
       this.service.setSelectedType('scrum');
+      
       this.changeSelectedTab();
     this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
     }
@@ -1505,15 +1508,16 @@ export class FilterComponent implements OnInit, OnDestroy {
   logout() {
       this.httpService.logout().subscribe((responseData) => {
         if (responseData?.success) {
-        this.helperService.isKanban = false;
-        localStorage.clear();
-        // Set blank selectedProject after logged out state
-        this.service.setSelectedProject(null);
-        this.service.setCurrentUserDetails({});
-        this.service.setVisibleSideBar(false);
-        this.service.setAddtionalFilterBackup({});
-        this.service.setKpiSubFilterObj({});
+        
         if(!environment['AUTHENTICATION_SERVICE']){
+          this.helperService.isKanban = false;
+          localStorage.clear();
+          // Set blank selectedProject after logged out state
+          this.service.setSelectedProject(null);
+          this.service.setCurrentUserDetails({});
+          this.service.setVisibleSideBar(false);
+          this.service.setAddtionalFilterBackup({});
+          this.service.setKpiSubFilterObj({});
           this.router.navigate(['./authentication/login']);
         } else{
           let obj = {
@@ -1770,7 +1774,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       "kpiIds": this.showKpisList?.map((item) => item.kpiId),
       "nodes": []
     }
-
+    if(this.selectedTab?.toLowerCase() == 'backlog'){
+      reqObj['nodeChildId'] = "";
+    }
     this.showKpisList.forEach(x => {
       this.kpiObj[x.kpiId] = x.kpiName;
     });
