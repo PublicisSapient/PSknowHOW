@@ -100,7 +100,6 @@ public class ZephyrServiceTest {
 		List<ZephyrKPIService<?, ?, ?>> mockServices = Arrays.asList(service);
 		ZephyrKPIServiceFactory zephyrKPIServiceFactory = ZephyrKPIServiceFactory.builder().services(mockServices).build();
 		doReturn(TESTZEPHYR).when(service).getQualifierType();
-		doReturn(new KpiElement()).when(service).getKpiData(any(), any(), any());
 		zephyrKPIServiceFactory.initMyServiceCache();
 
 		projectKey = new String[] { "Regression", "Automation" };

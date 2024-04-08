@@ -352,7 +352,8 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
 				.anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
-			if (null != fieldMapping.getRootCauseIdentifier()) {
+			if (null != fieldMapping.getRootCauseIdentifier() && StringUtils.isNotEmpty(
+					fieldMapping.getRootCauseIdentifier())) {
 				if (fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
 					List<String> commonLabel = issue.getLabels().stream()
 							.filter(x -> fieldMapping.getRootCauseValues().contains(x)).collect(Collectors.toList());

@@ -146,7 +146,6 @@ public class JiraServiceRTest {
 		List<JiraKPIService<?, ?, ?>> mockServices = Arrays.asList(service);
 		JiraKPIServiceFactory serviceFactory = JiraKPIServiceFactory.builder().services(mockServices).build();
 		doReturn(TESTJIRA).when(service).getQualifierType();
-		doReturn(new KpiElement()).when(service).getKpiData(any(), any(), any());
 		serviceFactory.initMyServiceCache();
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory

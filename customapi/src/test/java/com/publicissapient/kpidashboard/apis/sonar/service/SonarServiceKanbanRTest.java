@@ -123,7 +123,6 @@ public class SonarServiceKanbanRTest {
 		List<SonarKPIService<?, ?, ?>> mockServices = Arrays.asList(service);
 		sonarKPIServiceFactory = SonarKPIServiceFactory.builder().services(mockServices).build();
 		doReturn(TESTSONAR).when(service).getQualifierType();
-		doReturn(new KpiElement()).when(service).getKpiData(any(), any(), any());
 
 		sonarKPIServiceFactory.initMyServiceCache();
 

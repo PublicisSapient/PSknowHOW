@@ -118,7 +118,6 @@ public class ZephyrServiceKanbanTest {
 		List<ZephyrKPIService<?, ?, ?>> mockServices = Arrays.asList(service);
 		zephyrKPIServiceFactory = ZephyrKPIServiceFactory.builder().services(mockServices).build();
 		doReturn(TESTZEPHYR).when(service).getQualifierType();
-		doReturn(new KpiElement()).when(service).getKpiData(any(), any(), any());
 		zephyrKPIServiceFactory.initMyServiceCache();
 
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance("/json/default/kanban_kpi_request.json");

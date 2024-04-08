@@ -121,7 +121,6 @@ public class JiraBacklogServiceRTest {
 		JiraNonTrendKPIServiceFactory serviceFactory = JiraNonTrendKPIServiceFactory.builder().services(mockServices)
 				.build();
 		doReturn(KPICode.FLOW_LOAD.name()).when(service).getQualifierType();
-		doReturn(new KpiElement()).when(service).getKpiData(any(), any(), any());
 		serviceFactory.initMyServiceCache();
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
@@ -183,7 +182,6 @@ public class JiraBacklogServiceRTest {
 			utilities.when((MockedStatic.Verification) JiraNonTrendKPIServiceFactory
 					.getJiraKPIService(KPICode.FLOW_LOAD.name())).thenReturn(jiraKPIService);
 		}
-		doThrow(ApplicationException.class).when(service).getKpiData(any(), any(), any());
 		Map<String, Integer> map = new HashMap<>();
 		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));

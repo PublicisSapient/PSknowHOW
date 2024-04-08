@@ -199,7 +199,6 @@ public class JenkinsServiceKanbanRTest {
 		List<KpiElement> resultList;
 		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
 			CodeBuildTimeKanbanServiceImpl mockService = mock(CodeBuildTimeKanbanServiceImpl.class);
-			when(mockService.getKpiData(any(), any(), any())).thenReturn(buildKpiElement);
 			mockedStatic.when(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())))
 					.thenReturn(mockService);
 			resultList = jenkinsServiceKanbanR.process(kpiRequest);
