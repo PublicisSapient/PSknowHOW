@@ -1508,15 +1508,16 @@ export class FilterComponent implements OnInit, OnDestroy {
   logout() {
       this.httpService.logout().subscribe((responseData) => {
         if (responseData?.success) {
-        this.helperService.isKanban = false;
-        localStorage.clear();
-        // Set blank selectedProject after logged out state
-        this.service.setSelectedProject(null);
-        this.service.setCurrentUserDetails({});
-        this.service.setVisibleSideBar(false);
-        this.service.setAddtionalFilterBackup({});
-        this.service.setKpiSubFilterObj({});
+        
         if(!environment['AUTHENTICATION_SERVICE']){
+          this.helperService.isKanban = false;
+          localStorage.clear();
+          // Set blank selectedProject after logged out state
+          this.service.setSelectedProject(null);
+          this.service.setCurrentUserDetails({});
+          this.service.setVisibleSideBar(false);
+          this.service.setAddtionalFilterBackup({});
+          this.service.setKpiSubFilterObj({});
           this.router.navigate(['./authentication/login']);
         } else{
           let obj = {
@@ -1773,7 +1774,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       "kpiIds": this.showKpisList?.map((item) => item.kpiId),
       "nodes": []
     }
-
+    if(this.selectedTab?.toLowerCase() == 'backlog'){
+      reqObj['nodeChildId'] = "";
+    }
     this.showKpisList.forEach(x => {
       this.kpiObj[x.kpiId] = x.kpiName;
     });
