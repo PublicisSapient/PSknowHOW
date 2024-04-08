@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnectionDetail;
@@ -373,6 +374,15 @@ public class RepoToolsConfigServiceImpl {
 			log.error("Exception occcured while updating conneection  {}", repoToolConnectionDetails, ex);
 		}
 		return HttpStatus.BAD_REQUEST.value();
+	}
+
+	public JsonNode getProjectRepoToolMembers(String basicProjectConfigId) {
+		String projectCode = createProjectCode(basicProjectConfigId);
+		String membersUrl = customApiConfig.getRepoToolURL() + String.format(customApiConfig.getRepoToolMembersUrl(),
+				projectCode);
+		JsonNode membersList = repoToolsClient.fetchProjectRepoToolMembers(membersUrl,
+				restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+		return membersList;
 	}
 
 }
