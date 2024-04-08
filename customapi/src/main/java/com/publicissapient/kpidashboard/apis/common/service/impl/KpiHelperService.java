@@ -1769,25 +1769,29 @@ public class KpiHelperService { // NOPMD
 	}
 
 	public boolean isMandatoryFieldValuePresentOrNot(KPICode kpi, Node nodeDataClone) {
-		List<String> fieldMappingName = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase()).getFields();
-		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
-		List<String> mandatoryFieldMappingName = fieldMappingStructureList.stream()
-				.filter(fieldMappingStructure -> fieldMappingStructure.isMandatory() && fieldMappingName.contains(fieldMappingStructure.getFieldName()) )
-				.map(FieldMappingStructure::getFieldName).toList();
+		try {
+			List<String> fieldMappingName = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase()).getFields();
+			List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
+			List<String> mandatoryFieldMappingName = fieldMappingStructureList.stream()
+					.filter(fieldMappingStructure -> fieldMappingStructure.isMandatory() && fieldMappingName.contains(fieldMappingStructure.getFieldName()))
+					.map(FieldMappingStructure::getFieldName).toList();
 
-		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-				.get(nodeDataClone.getProjectFilter().getBasicProjectConfigId());
-		for (String fieldName : mandatoryFieldMappingName) {
-			try {
-				Field field = FieldMapping.class.getDeclaredField(fieldName);
-				field.setAccessible(true); // NOSONAR
-				if(checkNullValue(field.get(fieldMapping)))
-					return false;
-			} catch (NoSuchFieldException e) {
-				log.warn(fieldName + " does not exist in fieldMapping.");
-			} catch (IllegalAccessException e) {
-				log.warn("Error accessing " + fieldName + " field.");
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(nodeDataClone.getProjectFilter().getBasicProjectConfigId());
+			for (String fieldName : mandatoryFieldMappingName) {
+				try {
+					Field field = FieldMapping.class.getDeclaredField(fieldName);
+					field.setAccessible(true); // NOSONAR
+					if (checkNullValue(field.get(fieldMapping)))
+						return false;
+				} catch (NoSuchFieldException e) {
+					log.warn(fieldName + " does not exist in fieldMapping.");
+				} catch (IllegalAccessException e) {
+					log.warn("Error accessing " + fieldName + " field.");
+				}
 			}
+		}catch (IllegalArgumentException exception){
+			log.warn("No FieldMappings found for kpi "+ kpi.getKpiId());
 		}
 		return true;
 	}
