@@ -171,19 +171,14 @@ export class AppInitializerService {
   ];
 
   checkFeatureFlag() {
-    console.log('Inside CheckFeatureFlag');
     let loc = window.location.hash ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1])) : '';
-    console.log("location--------------->", loc);
     return new Promise<void>((resolve, reject) => {
-        console.log(environment['production']);
         if (!environment['production']) {
             this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
             this.validateToken(loc);
         } else {
             const env$ = this.http.get('assets/env.json').pipe(
                 tap(env => {
-                    console.log("env inside app initializer", env['AUTHENTICATION_SERVICE']);
-
                     environment['baseUrl'] = env['baseUrl'] || '';
                     environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
                     environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
@@ -232,7 +227,6 @@ export class AppInitializerService {
                 'resource': environment.RESOURCE,
                 'authToken': authToken
             };
-            console.log('authToken', authToken);
             // Make API call or initialization logic here...
             this.httpService.getUserValidation(obj).subscribe((response) => {
                 // http.router.resetConfig([...routesAuth]);
@@ -244,7 +238,6 @@ export class AppInitializerService {
                         this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
                     }
                 }
-                console.log("location inside validateToken", location);
                 if(location){
                     this.router.navigateByUrl(location);
                 }else{
