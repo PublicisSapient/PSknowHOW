@@ -36,13 +36,15 @@ public enum FieldMappingEnum {
 					"jiraDevDueDateField", "jiraIssueEpicType", "storyFirstStatus", "notificationEnabler",
 					"epicLink", "jiraSubTaskDefectType", "jiraSubTaskIdentification")),
 
-	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNames", "storyFirstStatus",
-			"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
-			"epicJobSize", "jiraIssueEpicType", "rootCause", "additionalFilterConfig", "estimationCriteria",
-			"jiraStoryPointsCustomField", "jiraLiveStatusLTK", "jiraLiveStatusNOPK", "jiraLiveStatusNOSK",
-			"jiraLiveStatusNORK", "jiraLiveStatusOTA", "ticketCountIssueType", "kanbanRCACountIssueType",
-			"jiraTicketVelocityIssueType", "ticketDeliverdStatus", "jiraTicketClosedStatus", "kanbanCycleTimeIssueType",
-			"jiraTicketTriagedStatus", "jiraTicketRejectedStatus", "jiraSubTaskDefectType")),
+	KPI1("Processor (Kanban)", KPISource.JIRA.name(),
+			Arrays.asList("jiraIssueTypeNames", "storyFirstStatus", "rootCauseIdentifier", "epicCostOfDelay",
+					"epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize",
+					"jiraIssueEpicType", "rootCause", "additionalFilterConfig", "estimationCriteria",
+					"jiraStoryPointsCustomField", "jiraLiveStatusLTK", "jiraLiveStatusNOPK", "jiraLiveStatusNOSK",
+					"jiraLiveStatusNORK", "jiraLiveStatusOTA", "ticketCountIssueType", "kanbanRCACountIssueType",
+					"jiraTicketVelocityIssueType", "ticketDeliverdStatus", "jiraTicketClosedStatus",
+					"kanbanCycleTimeIssueType", "jiraTicketTriagedStatus", "jiraTicketRejectedStatus",
+					"jiraSubTaskDefectType")),
 
 	KPI40("Issue Count", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKpi40","thresholdValueKPI40")),
 

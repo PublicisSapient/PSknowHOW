@@ -1285,18 +1285,17 @@ public class KPIExcelUtility {
 			String date, List<KPIExcelData> kpiExcelData) {
 		if (CollectionUtils.isNotEmpty(velocityList)) {
 			velocityList.forEach(kanbanIssueCustomHistory -> {
-				KPIExcelData excelData = new KPIExcelData();
-				excelData.setProjectName(projectName);
-				excelData.setDayWeekMonth(date);
-				excelData.setIssueType(kanbanIssueCustomHistory.getStoryType());
-				excelData.setSizeInStoryPoints(kanbanIssueCustomHistory.getEstimate());
 				if (kanbanIssueCustomHistory.getStoryID() != null) {
+					KPIExcelData excelData = new KPIExcelData();
+					excelData.setProjectName(projectName);
+					excelData.setDayWeekMonth(date);
+					excelData.setIssueType(kanbanIssueCustomHistory.getStoryType());
+					excelData.setSizeInStoryPoints(kanbanIssueCustomHistory.getEstimate());
 					Map<String, String> storyId = new HashMap<>();
 					storyId.put(kanbanIssueCustomHistory.getStoryID(), checkEmptyURL(kanbanIssueCustomHistory));
 					excelData.setTicketIssue(storyId);
+					kpiExcelData.add(excelData);
 				}
-				kpiExcelData.add(excelData);
-
 			});
 		}
 
