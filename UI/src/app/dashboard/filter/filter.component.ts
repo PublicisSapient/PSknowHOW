@@ -1506,7 +1506,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.httpService.logout().subscribe((responseData) => {
         if (responseData?.success) {
         this.helperService.isKanban = false;
-        localStorage.clear();
+        // localStorage.clear();
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});

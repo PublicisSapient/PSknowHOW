@@ -168,7 +168,7 @@ const routes = [
         children: [
             { path: '', redirectTo: 'iteration', pathMatch: 'full' },
             {
-                path: 'mydashboard', component: !localStorage.getItem('newUI') ? ExecutiveV2Component : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'mydashboard', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "My Dashboard"
                 }
@@ -216,7 +216,7 @@ const routes = [
                     feature: "Config"
                 }
             },
-            { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveV2Component : ExecutiveV2Component, pathMatch: 'full' },
+            { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full' },
             { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
             { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
 
@@ -230,11 +230,13 @@ const routesAuth = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     {
         path: 'dashboard', component: !localStorage.getItem('newUI') ? DashboardComponent : DashboardV2Component,
-        canActivateChild: [AuthGuard, FeatureGuard],
+        canActivateChild: [
+            AuthGuard
+        ],
         children: [
             { path: '', redirectTo: 'iteration', pathMatch: 'full' },
             {
-                path: 'mydashboard', component: !localStorage.getItem('newUI') ? ExecutiveV2Component : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'mydashboard', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "My Dashboard"
                 }
@@ -284,7 +286,7 @@ const routesAuth = [
                     feature: "Config"
                 }
             },
-            { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveV2Component : ExecutiveV2Component, pathMatch: 'full' },
+            { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full' },
 
         ],
     },
@@ -349,7 +351,7 @@ export function validateToken(http, ga, sharedService, location) {
             http.router.resetConfig([...routes]);
             http.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
         } else {
-            http.router.resetConfig([...routesAuth]);
+           
             // TODO: find right property to avoid string manipulation - Rishabh 3/4/2024
             let url = window.location.href; 
 
@@ -371,11 +373,11 @@ export function validateToken(http, ga, sharedService, location) {
                     sharedService.setCurrentUserDetails(response?.['data']);
                     localStorage.setItem("user_name", response?.['data']?.user_name);
                     localStorage.setItem("user_email", response?.['data']?.user_email);
+                    http.router.resetConfig([...routesAuth]);
                     if (authToken) {
                         ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
                     }
                 }
-                console.log("location inside validateToken", location);
                 if(location){
                     http.router.navigateByUrl(location);
                 }else{
