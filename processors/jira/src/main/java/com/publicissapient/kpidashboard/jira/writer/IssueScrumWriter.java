@@ -100,12 +100,7 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 			if (CollectionUtils.isNotEmpty(compositeResult.getAccountHierarchies())) {
 				accountHierarchies.addAll(compositeResult.getAccountHierarchies());
 			}
-			if (CollectionUtils.isNotEmpty(compositeResult.getAssigneeDetails().getAssignee())) {
-				assignee.addAll(compositeResult.getAssigneeDetails().getAssignee());
-				compositeResult.getAssigneeDetails().setAssignee(assignee);
-				assigneesToSave.put(compositeResult.getAssigneeDetails().getBasicProjectConfigId(),
-						compositeResult.getAssigneeDetails());
-			}
+			addAssigness(assigneesToSave, assignee, compositeResult);
 		}
 
 		if (MapUtils.isNotEmpty(jiraIssues)) {
@@ -122,6 +117,24 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 		}
 		if (MapUtils.isNotEmpty(assigneesToSave)) {
 			writeAssigneeDetails(assigneesToSave);
+		}
+	}
+
+	/**
+	 * Adding assignees to map
+	 * 
+	 * @param assigneesToSave
+	 * @param assignee
+	 * @param compositeResult
+	 */
+	private static void addAssigness(Map<String, AssigneeDetails> assigneesToSave, Set<Assignee> assignee,
+			CompositeResult compositeResult) {
+		if (compositeResult.getAssigneeDetails() != null
+				&& CollectionUtils.isNotEmpty(compositeResult.getAssigneeDetails().getAssignee())) {
+			assignee.addAll(compositeResult.getAssigneeDetails().getAssignee());
+			compositeResult.getAssigneeDetails().setAssignee(assignee);
+			assigneesToSave.put(compositeResult.getAssigneeDetails().getBasicProjectConfigId(),
+					compositeResult.getAssigneeDetails());
 		}
 	}
 

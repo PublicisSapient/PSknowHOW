@@ -84,12 +84,7 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 			if (CollectionUtils.isNotEmpty(kanbanCompositeResult.getKanbanAccountHierarchies())) {
 				accountHierarchies.addAll(kanbanCompositeResult.getKanbanAccountHierarchies());
 			}
-			if (CollectionUtils.isNotEmpty( kanbanCompositeResult.getAssigneeDetails().getAssignee())) {
-				assignee.addAll(kanbanCompositeResult.getAssigneeDetails().getAssignee());
-				kanbanCompositeResult.getAssigneeDetails().setAssignee(assignee);
-				assigneesToSave.put(kanbanCompositeResult.getAssigneeDetails().getBasicProjectConfigId(),
-						kanbanCompositeResult.getAssigneeDetails());
-			}
+			addAssignees(assigneesToSave, assignee, kanbanCompositeResult);
 		}
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			writeKanbanJiraItem(jiraIssues);
@@ -104,6 +99,24 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 			writeAssigneeDetails(assigneesToSave);
 		}
 
+	}
+
+	/**
+	 * Adding assignees to map
+	 *
+	 * @param assigneesToSave
+	 * @param assignee
+	 * @param compositeResult
+	 */
+	private static void addAssignees(Map<String, AssigneeDetails> assigneesToSave, Set<Assignee> assignee,
+			CompositeResult kanbanCompositeResult) {
+		if (kanbanCompositeResult.getAssigneeDetails() != null
+				&& CollectionUtils.isNotEmpty(kanbanCompositeResult.getAssigneeDetails().getAssignee())) {
+			assignee.addAll(kanbanCompositeResult.getAssigneeDetails().getAssignee());
+			kanbanCompositeResult.getAssigneeDetails().setAssignee(assignee);
+			assigneesToSave.put(kanbanCompositeResult.getAssigneeDetails().getBasicProjectConfigId(),
+					kanbanCompositeResult.getAssigneeDetails());
+		}
 	}
 
 	public void writeKanbanJiraItem(List<KanbanJiraIssue> jiraItems) {
