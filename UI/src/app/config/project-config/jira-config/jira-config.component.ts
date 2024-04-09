@@ -1972,7 +1972,7 @@ export class JiraConfigComponent implements OnInit {
                 id: 'boardQuery',
                 validators: [],
                 containerClass: 'p-sm-6',
-                disabled: 'queryEnabled',
+                disabled: false,
                 show: true,
               },
               {
