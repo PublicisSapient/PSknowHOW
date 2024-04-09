@@ -22,6 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -35,8 +36,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -54,14 +53,18 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperServic
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jenkins.factory.JenkinsKPIServiceFactory;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -97,14 +100,13 @@ public class JenkinsServiceKanbanRTest {
 	private Map<String, JenkinsKPIService<?, ?, ?>> jenkinsServiceCache = new HashMap<>();
 	@Mock
 	private JenkinsKPIServiceFactory jenkinsKPIServiceFactory;
+	private KpiRequest kpiRequest;
 
 	@Before
 	public void setup() throws EntityNotFoundException {
 
 		jenkinsKPIServiceFactory.initMyServiceCache();
-
-		KpiRequest kpiRequestJenkins = createKpiRequest(2, "Jenkins");
-
+		kpiRequest = createKpiRequest(4, "Jenkins");
 		AccountHierarchyKanbanFilterDataFactory accountHierarchyKanbanFilterDataFactory = AccountHierarchyKanbanFilterDataFactory
 				.newInstance();
 		accountHierarchyDataKanbanList = accountHierarchyKanbanFilterDataFactory.getAccountHierarchyKanbanDataList();
@@ -121,107 +123,130 @@ public class JenkinsServiceKanbanRTest {
 
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		List<HierarchyLevel> hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
+
+		when(filterHelperService.getHierarachyLevelId(4, "project", true)).thenReturn("project");
+		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyDataKanbanList))
+				.thenReturn(accountHierarchyDataKanbanList);
+		when(filterHelperService.getFilteredBuildsKanban(any(), anyString()))
+				.thenReturn(accountHierarchyDataKanbanList);
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		Map<String, Integer> map = new HashMap<>();
 		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(anyBoolean())).thenReturn(map);
 
-		when(filterHelperService.getHierarachyLevelId(4, "project", true)).thenReturn("project");
-		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyDataKanbanList)).thenReturn(accountHierarchyDataKanbanList);
-
 		buildKpiElement = setKpiElement(KPICode.CODE_BUILD_TIME_KANBAN.getKpiId(), "CODE_BUILD_TIME_KANBAN");
 
 	}
 
-	private KpiElement setKpiElement(String kpiId, String kpiName) {
-
-		KpiElement kpiElement = new KpiElement();
-		kpiElement.setKpiId(kpiId);
-		kpiElement.setKpiName(kpiName);
-
-		return kpiElement;
-	}
-
-	@After
-	public void cleanup() {
-
-	}
-
 	@Test
-	public void testProcess() throws Exception {
+	public void testProcess_MandatoryField() throws Exception {
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(false);
 
-		KpiRequest kpiRequest = createKpiRequest(2, "Jenkins");
+		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME_KANBAN.name(), codeBuildTimeKanbanServiceImpl);
 
-		@SuppressWarnings("rawtypes")
-		JenkinsKPIService mcokAbstract = codeBuildTimeKanbanServiceImpl;
-		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME_KANBAN.name(), mcokAbstract);
-
-		try (MockedStatic<JenkinsKPIServiceFactory> utilities = Mockito.mockStatic(JenkinsKPIServiceFactory.class)) {
-			utilities.when((MockedStatic.Verification) JenkinsKPIServiceFactory
-					.getJenkinsKPIService(KPICode.CODE_BUILD_TIME_KANBAN.name())).thenReturn(mcokAbstract);
+		List<KpiElement> resultList;
+		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
+			CodeBuildTimeKanbanServiceImpl mockService = mock(CodeBuildTimeKanbanServiceImpl.class);
+			mockedStatic.when(
+					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())))
+					.thenReturn(mockService);
+			resultList = jenkinsServiceKanbanR.process(kpiRequest);
+			mockedStatic.verify(
+					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())));
 		}
-
-		List<KpiElement> resultList = jenkinsServiceKanbanR.process(kpiRequest);
-
-		resultList.forEach(k -> {
-
-			KPICode kpi = KPICode.getKPI(k.getKpiId());
-
-			switch (kpi) {
-
-			case CODE_BUILD_TIME_KANBAN:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("CODE_BUILD_TIME_KANBAN"));
-				break;
-
-			default:
-				break;
-			}
-
-		});
+		assertThat("Kpi Name :", resultList.get(0).getKpiName(), equalTo("CODE_BUILD_TIME_KANBAN"));
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.MANDATORY_FIELD_MAPPING));
 
 	}
 
 	@Test
 	public void testProcess1() throws Exception {
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
 
+		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME_KANBAN.name(), codeBuildTimeKanbanServiceImpl);
+
+		List<KpiElement> resultList;
+		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
+			CodeBuildTimeKanbanServiceImpl mockService = mock(CodeBuildTimeKanbanServiceImpl.class);
+			mockedStatic.when(
+					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())))
+					.thenReturn(mockService);
+			when(mockService.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
+			resultList = jenkinsServiceKanbanR.process(kpiRequest);
+			mockedStatic.verify(
+					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())));
+		}
+		assertThat("Kpi Name :", resultList.get(0).getKpiName(), equalTo("CODE_BUILD_TIME_KANBAN"));
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
+
+	}
+
+	@Test
+	public void testProcessMandatoryFalse() throws Exception {
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(false);
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 
-		@SuppressWarnings("rawtypes")
-		JenkinsKPIService mcokAbstract = codeBuildTimeKanbanServiceImpl;
-		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME_KANBAN.name(), mcokAbstract);
+		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME_KANBAN.name(), codeBuildTimeKanbanServiceImpl);
 
-		when(filterHelperService.getFilteredBuildsKanban(kpiRequest, GROUP_PROJECT))
-				.thenReturn(accountHierarchyDataKanbanList);
-		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataKanbanList, kpiRequest))
-				.thenReturn(projectKey);
+		List<KpiElement> resultList;
+		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
+			CodeBuildTimeKanbanServiceImpl mockService = mock(CodeBuildTimeKanbanServiceImpl.class);
+			mockedStatic.when(
+					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())))
+					.thenReturn(mockService);
+			resultList = jenkinsServiceKanbanR.process(kpiRequest);
+			mockedStatic.verify(
+					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())));
+		}
+
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.MANDATORY_FIELD_MAPPING));
+	}
+
+	@Test
+	public void testProcess_throwApplication() throws Exception {
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
+		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
+
+		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME_KANBAN.name(), codeBuildTimeKanbanServiceImpl);
+
+		List<KpiElement> resultList;
+		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
+			CodeBuildTimeKanbanServiceImpl mockService = mock(CodeBuildTimeKanbanServiceImpl.class);
+			mockedStatic.when(
+					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())))
+					.thenReturn(mockService);
+			when(mockService.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
+			resultList = jenkinsServiceKanbanR.process(kpiRequest);
+			mockedStatic.verify(
+					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())));
+		}
+
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+	}
+
+	@Test
+	public void testProcess_NullPointer() throws Exception {
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
+		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
+
+		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME_KANBAN.name(), codeBuildTimeKanbanServiceImpl);
 
 		List<KpiElement> resultList;
 		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
 			CodeBuildTimeKanbanServiceImpl mockService = mock(CodeBuildTimeKanbanServiceImpl.class);
 			when(mockService.getKpiData(any(), any(), any())).thenReturn(buildKpiElement);
-			mockedStatic.when(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())))
+			mockedStatic.when(
+					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())))
 					.thenReturn(mockService);
+			when(mockService.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
 			resultList = jenkinsServiceKanbanR.process(kpiRequest);
-			mockedStatic.verify(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())));
+			mockedStatic.verify(
+					() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())));
 		}
 
-		resultList.forEach(k -> {
-
-			KPICode kpi = KPICode.getKPI(k.getKpiId());
-
-			switch (kpi) {
-
-			case CODE_BUILD_TIME_KANBAN:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("CODE_BUILD_TIME_KANBAN"));
-				break;
-
-			default:
-				break;
-			}
-
-		});
-
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
 
 	@Test
@@ -230,8 +255,8 @@ public class JenkinsServiceKanbanRTest {
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 		when(filterHelperService.getFilteredBuildsKanban(kpiRequest, GROUP_PROJECT))
 				.thenReturn(accountHierarchyDataKanbanList);
-		when(cacheService.getFromApplicationCache(Mockito.any(), Mockito.any(), Mockito.any(),
-				any())).thenReturn(new ArrayList<>());
+		when(cacheService.getFromApplicationCache(Mockito.any(), Mockito.any(), Mockito.any(), any()))
+				.thenReturn(new ArrayList<>());
 
 		List<KpiElement> resultList = jenkinsServiceKanbanR.process(kpiRequest);
 		assertThat("Kpi list :", resultList.size(), equalTo(0));
@@ -266,6 +291,20 @@ public class JenkinsServiceKanbanRTest {
 		kpiElement.setMaxValue("500");
 		kpiElement.setChartType("gaugeChart");
 		kpiList.add(kpiElement);
+	}
+
+	private KpiElement setKpiElement(String kpiId, String kpiName) {
+
+		KpiElement kpiElement = new KpiElement();
+		kpiElement.setKpiId(kpiId);
+		kpiElement.setKpiName(kpiName);
+
+		return kpiElement;
+	}
+
+	@After
+	public void cleanup() {
+
 	}
 
 }

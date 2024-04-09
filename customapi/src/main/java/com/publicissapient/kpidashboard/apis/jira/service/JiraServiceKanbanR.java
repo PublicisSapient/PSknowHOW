@@ -301,6 +301,7 @@ public class JiraServiceKanbanR {
 				log.info("[JIRA-KANBAN-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
 						processTime);
 			} catch (ApplicationException exception) {
+				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
 				log.error("Kpi not found", exception);
 			} catch (Exception exception) {
 				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);

@@ -171,6 +171,7 @@ public class SonarServiceR {
 						System.currentTimeMillis() - startTime);
 			}
 		} catch (ApplicationException exception) {
+			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
 			log.error("[SONAR][{}]. Error while KPI calculation for data. No data found {} {}",
 					kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), exception.getStackTrace());
 		} catch (Exception exception) {

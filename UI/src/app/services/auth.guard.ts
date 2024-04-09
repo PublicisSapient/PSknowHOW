@@ -39,6 +39,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
             if (environment.AUTHENTICATION_SERVICE == true) {
                 /** redirect to central login url*/
                 if (environment.CENTRAL_LOGIN_URL) {
+                    console.log('Inside auth guard');
                     window.location.href = environment.CENTRAL_LOGIN_URL;
                 }
             } else {
@@ -56,6 +57,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
             if (environment.AUTHENTICATION_SERVICE == true) {
                 /** redirect to central login url*/
                 if (environment.CENTRAL_LOGIN_URL) {
+                    console.log('Inside auth guard');
                     window.location.href = environment.CENTRAL_LOGIN_URL;
                 }
             } else {

@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.zephyr.service;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -140,15 +141,10 @@ public class ZephyrServiceKanbanTest {
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(true)).thenReturn(map);
 		exampleStringList = new String[]{"exampleElement", "exampleElement"};
-
-
-
-
 	}
 
 	@Test
 	public void sonarViolationsTestProcess_cache() throws Exception {
-
 		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(cacheService.getFromApplicationCache(eq(exampleStringList), eq(KPISource.ZEPHYRKANBAN.name()), eq(1), isNull()))
@@ -170,7 +166,7 @@ public class ZephyrServiceKanbanTest {
 
 	@Test
 	public void sonarViolationsTestProcess() throws Exception {
-
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(),any())).thenReturn(true);
 		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))
@@ -185,13 +181,74 @@ public class ZephyrServiceKanbanTest {
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyKanbanDataList))
 				.thenReturn(accountHierarchyKanbanDataList);
-
-		try {
+		when(service.getKpiData(any(), any(),any())).thenReturn( kpiRequest.getKpiList().get(0));
 			List<KpiElement> resultList = zephyrService.process(kpiRequest);
-		} catch (Exception e) {
+		assertEquals(CommonConstant.KPI_PASSED, resultList.get(0).getResponseCode());
+	}
 
-		}
+	@Test
+	public void sonarViolationsTestProcess_MandatoryField() throws Exception {
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(),any())).thenReturn(false);
+		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+				.thenReturn("project");
+		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))
+				.thenReturn(accountHierarchyKanbanDataList);
+		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyKanbanDataList, kpiRequest))
+				.thenReturn(exampleStringList);
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyKanbanDataList))
+				.thenReturn(accountHierarchyKanbanDataList);
+		List<KpiElement> resultList = zephyrService.process(kpiRequest);
+		assertEquals(CommonConstant.MANDATORY_FIELD_MAPPING, resultList.get(0).getResponseCode());
+	}
 
+	@Test
+	public void sonarViolationsTestProcessThrowApplication() throws Exception {
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(),any())).thenReturn(true);
+		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+				.thenReturn("project");
+		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))
+				.thenReturn(accountHierarchyKanbanDataList);
+		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyKanbanDataList, kpiRequest))
+				.thenReturn(exampleStringList);
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyKanbanDataList))
+				.thenReturn(accountHierarchyKanbanDataList);
+		when(service.getKpiData(any(), any(),any())).thenThrow(ApplicationException.class);
+		List<KpiElement> resultList = zephyrService.process(kpiRequest);
+		assertEquals(CommonConstant.KPI_FAILED, resultList.get(0).getResponseCode());
+	}
+
+	@Test
+	public void sonarViolationsTestProcessThrowNullPointer() throws Exception {
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(),any())).thenReturn(true);
+		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+				.thenReturn("project");
+		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))
+				.thenReturn(accountHierarchyKanbanDataList);
+		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyKanbanDataList, kpiRequest))
+				.thenReturn(exampleStringList);
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyKanbanDataList))
+				.thenReturn(accountHierarchyKanbanDataList);
+		when(service.getKpiData(any(), any(),any())).thenThrow(NullPointerException.class);
+		List<KpiElement> resultList = zephyrService.process(kpiRequest);
+		assertEquals(CommonConstant.KPI_FAILED, resultList.get(0).getResponseCode());
 	}
 
 	private void createKpiRequest(String source, int level, KpiRequest kpiRequest) {

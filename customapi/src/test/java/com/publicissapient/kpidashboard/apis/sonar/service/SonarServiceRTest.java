@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -172,8 +173,40 @@ public class SonarServiceRTest {
 
 	@Test
 	public void sonarViolationsTestProcess() throws Exception {
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
+		initialization();
+		when(service.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
+		List<KpiElement> resultList = sonarService.process(kpiRequest);
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
+	}
 
-		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
+	@Test
+	public void sonarViolationsMandatory() throws Exception {
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(false);
+		initialization();
+		List<KpiElement> resultList = sonarService.process(kpiRequest);
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.MANDATORY_FIELD_MAPPING));
+	}
+
+	@Test
+	public void sonarViolationsApplication() throws Exception {
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
+		initialization();
+		when(service.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
+		List<KpiElement> resultList = sonarService.process(kpiRequest);
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+	}
+
+	@Test
+	public void sonarViolationsNullPointer() throws Exception {
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
+		initialization();
+		when(service.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
+		List<KpiElement> resultList = sonarService.process(kpiRequest);
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+	}
+
+	private void initialization() {
 		String[] exampleStringList = { "exampleElement", "exampleElement" };
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest))
 				.thenReturn(exampleStringList);
@@ -189,15 +222,6 @@ public class SonarServiceRTest {
 				.thenReturn(accountHierarchyDataList);
 		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
 		// Create a mock SonarKPIService
-
-		try {
-
-			List<KpiElement> resultList = sonarService.process(kpiRequest);
-
-		} catch (Exception e) {
-
-		}
-
 	}
 
 	@Test
