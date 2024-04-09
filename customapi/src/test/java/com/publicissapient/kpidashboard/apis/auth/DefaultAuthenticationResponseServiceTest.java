@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,10 +42,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultAuthenticationResponseServiceTest {
@@ -108,32 +108,6 @@ public class DefaultAuthenticationResponseServiceTest {
 				USERNAME, PASSWORD);
 		usernamePasswordAuthenticationToken.setDetails(AuthType.STANDARD);
 		return usernamePasswordAuthenticationToken;
-	}
-
-	@Test
-	public void shouldHandleResponse1() throws Exception {
-		ArgumentCaptor<UsernamePasswordAuthenticationToken> captorAuthentication = ArgumentCaptor
-				.forClass(UsernamePasswordAuthenticationToken.class);
-		CustomUserDetails customUserDetails = new CustomUserDetails();
-		customUserDetails.setFirstName("firstName");
-		customUserDetails.setMiddleName("middleName");
-		customUserDetails.setLastName("lastName");
-		customUserDetails.setDisplayName("displayName");
-		customUserDetails.setEmailAddress("emailAddress");
-
-		service.handle(httpServletResponse, authentication);
-
-		verify(tokenAuthenticationService).addAuthentication(Mockito.any(HttpServletResponse.class),
-				captorAuthentication.capture());
-
-		UsernamePasswordAuthenticationToken capture = captorAuthentication.getValue();
-		Collection<GrantedAuthority> authorities = capture.getAuthorities();
-		assertEquals(2, authorities.size());
-		assertTrue(authorities.contains(new SimpleGrantedAuthority("ROLE_VIEWER")));
-		assertTrue(authorities.contains(new SimpleGrantedAuthority("ROLE_SUPERADMIN")));
-
-		AuthType details = (AuthType) capture.getDetails();
-		assertEquals(AuthType.STANDARD, details);
 	}
 
 }

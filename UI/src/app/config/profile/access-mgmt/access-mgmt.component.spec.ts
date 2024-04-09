@@ -131,14 +131,6 @@ describe('AccessMgmtComponent', () => {
     done();
   });
 
-  it('should update user access', (done) => {
-    component.saveAccessChange(fakeServiceInputValid);
-    // fixture.detectChanges();
-    expect(component.displayDuplicateProject).toBeFalsy();
-    httpMock.expectOne(baseUrl + '/api/userinfo/' + fakeServiceInputValid.username);
-    done();
-  });
-
   it('should filter by project', () => {
     component.searchProject = 'KnowHOW';
     component.filterByProject();

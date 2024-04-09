@@ -349,10 +349,11 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 	private void setRCA(FieldMapping fieldMapping, Issue issue, KanbanJiraIssue jiraIssue,
 			Map<String, IssueField> fields) {
 		List<String> rcaList = new ArrayList<>();
-
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
+		if (CollectionUtils.isNotEmpty(
+				fieldMapping.getKanbanRCACountIssueType()) && fieldMapping.getKanbanRCACountIssueType().stream()
 				.anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
-			if (null != fieldMapping.getRootCauseIdentifier()) {
+			if (null != fieldMapping.getRootCauseIdentifier() && StringUtils.isNotEmpty(
+					fieldMapping.getRootCauseIdentifier())) {
 				if (fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
 					List<String> commonLabel = issue.getLabels().stream()
 							.filter(x -> fieldMapping.getRootCauseValues().contains(x)).collect(Collectors.toList());

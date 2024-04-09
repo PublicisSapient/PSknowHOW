@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -82,7 +83,7 @@ public class UserAuthorizedProjectsService {
 		UserInfo user = userInfoService.getUserInfo(authenticationService.getLoggedInUser());
 		boolean isSuperAdmin = false;
 		List<String> adminRoles = SuperAdminRoles.getAdminRoles();
-		if (user.getAuthorities().stream().anyMatch(adminRoles::contains)) {
+		if (Objects.nonNull(user) && user.getAuthorities().stream().anyMatch(adminRoles::contains)) {
 			isSuperAdmin = true;
 		}
 		return isSuperAdmin;

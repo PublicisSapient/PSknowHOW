@@ -409,5 +409,15 @@ public class KPIExcelData {
 	@JsonProperty("Rework Rate")
 	private Double reworkRate;
 
+	@JsonProperty("To Do(Value/Percentage)")
+	private String toDo;
+
+	@JsonProperty("In Progress(Value/Percentage)")
+	private String inProgress;
+
+	@JsonProperty("Done(Value/Percentage)")
+	private String done;
+
+
 
 }

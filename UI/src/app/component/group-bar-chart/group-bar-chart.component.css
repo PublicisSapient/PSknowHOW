@@ -150,7 +150,7 @@
   #svgLegend{
     height: 20px;
   }
-  ::ng-deep div.normal-legend{
+  :host::ng-deep div.normal-legend{
     font-size: 10px;
     color: var(--color-gray-34);
     position: absolute;

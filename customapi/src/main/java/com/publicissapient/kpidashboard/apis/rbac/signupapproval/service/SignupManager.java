@@ -63,13 +63,8 @@ public class SignupManager {
 	 * @param grantApprovalListener
 	 */
 	public void grantAccess(String username, GrantApprovalListener grantApprovalListener) {
-		String superAdminEmail;
 		String loggedInUser = authenticationService.getLoggedInUser();
-		if (checkForLdapUser(loggedInUser)) {
-			superAdminEmail = userInfoRepository.findByUsername(loggedInUser).getEmailAddress().toLowerCase();
-		} else {
-			superAdminEmail = authenticationRepository.findByUsername(loggedInUser).getEmail().toLowerCase();
-		}
+		String superAdminEmail = authenticationRepository.findByUsername(loggedInUser).getEmail().toLowerCase();
 		Authentication authentication = getAuthenticationByUserName(username);
 		if (authentication.isApproved()) {
 			if (grantApprovalListener != null) {
@@ -88,12 +83,6 @@ public class SignupManager {
 				sendEmailNotification(emailAddresses, customData, APPROVAL_SUBJECT_KEY, NOTIFICATION_KEY_SUCCESS);
 			}
 		}
-
-	}
-
-	private boolean checkForLdapUser(String userName) {
-		UserInfo loggedInUser = userInfoRepository.findByUsername(userName);
-		return loggedInUser.getAuthType().equals(AuthType.LDAP);
 
 	}
 
@@ -160,13 +149,9 @@ public class SignupManager {
 	 * @param listener
 	 */
 	public void rejectAccessRequest(String username, RejectApprovalListener listener) {
-		String superAdminEmail;
+
 		String loggedInUser = authenticationService.getLoggedInUser();
-		if (checkForLdapUser(loggedInUser)) {
-			superAdminEmail = userInfoRepository.findByUsername(loggedInUser).getEmailAddress().toLowerCase();
-		} else {
-			superAdminEmail = authenticationRepository.findByUsername(loggedInUser).getEmail().toLowerCase();
-		}
+		String superAdminEmail = authenticationRepository.findByUsername(loggedInUser).getEmail().toLowerCase();
 		Authentication authentication = getAuthenticationByUserName(username);
 		Authentication updatedAuthenticationRequest = updateAuthenticationApprovalStatus(authentication);
 		if (updatedAuthenticationRequest.isApproved()) {
