@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_910;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_920;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOneModel;

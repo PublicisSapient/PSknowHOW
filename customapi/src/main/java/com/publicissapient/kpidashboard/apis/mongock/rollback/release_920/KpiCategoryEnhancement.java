@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_910;
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_920;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOneModel;
