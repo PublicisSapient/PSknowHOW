@@ -137,16 +137,19 @@ public class RepoToolsConfigServiceImpl {
 				name = name.split(".git")[0];
 			projectToolConfig.setRepositoryName(name);
 			String apiEndPoint = null;
+			String organization = null;
 			if (repoToolsProvider.getToolName().equalsIgnoreCase(BITBUCKET)
 					&& !projectToolConfig.getGitFullUrl().contains(BITBUCKET_CLOUD_IDENTIFIER)) {
 				apiEndPoint = connection.getApiEndPoint() + PROJECT + split[split.length - 2] + REPOS + name;
+			} else if(repoToolsProvider.getToolName().equalsIgnoreCase(Constant.TOOL_AZUREREPO)) {
+				organization = split[3];
 			}
 			// create configuration details for repo tool
 			RepoToolConfig repoToolConfig = new RepoToolConfig(name, projectToolConfig.getIsNew(),
 					projectToolConfig.getBasicProjectConfigId().toString().concat(name), projectToolConfig.getGitFullUrl(),
 					apiEndPoint, repoToolsProvider.getRepoToolProvider(), projectToolConfig.getDefaultBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
-					fistScan.toString().replace("T", " "), toolCredential, branchNames, false);
+					fistScan.toString().replace("T", " "), toolCredential, branchNames, false, organization);
 
 			// api call to enroll the project
 			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig,
