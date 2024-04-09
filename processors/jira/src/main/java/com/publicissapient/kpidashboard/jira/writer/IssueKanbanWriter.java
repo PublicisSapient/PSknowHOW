@@ -106,7 +106,7 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 	 *
 	 * @param assigneesToSave
 	 * @param assignee
-	 * @param compositeResult
+	 * @param kanbanCompositeResult
 	 */
 	private static void addAssignees(Map<String, AssigneeDetails> assigneesToSave, Set<Assignee> assignee,
 			CompositeResult kanbanCompositeResult) {
