@@ -20,7 +20,7 @@ import { ComponentFixture, fakeAsync, inject, TestBed, tick, waitForAsync } from
 
 import { FilterComponent } from './filter.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
@@ -633,6 +633,7 @@ const completeHierarchyData = {
           hierarchyLevelName: 'Squad'
       }
   ];
+  component.initializeFilterForm();
 
   spyOn(component,'checkIfFilterAlreadySelected');
     component.additionalFiltersArr = additionalFiltersArr;
@@ -2712,4 +2713,18 @@ const completeHierarchyData = {
           // Assert
           expect(component.selectedTab).toBe('Board 1');
         });
+
+        it('should filter sprint addtional filter',()=>{
+          component.filterForm = new UntypedFormGroup({
+            sprintSearch : new UntypedFormControl('abc')
+          });
+          component.filteredAddFilters = {
+            sprint : [
+              {nodeName : "sp2"},
+              {nodeName : "sp1"}
+            ]
+          }
+          component.applySearchFilter('sprint')
+        })
+
 });
