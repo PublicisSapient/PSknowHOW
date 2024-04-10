@@ -144,6 +144,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   sprintIdQParam: string = '';
   displayMessage: boolean = false;
   copyFilteredAddFilters = {};
+  loader: boolean = false;
 
   constructor(
     public service: SharedService,
@@ -1509,10 +1510,9 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   // logout is clicked  and removing auth token , username
   logout() {
+      this.loader = true;
       this.httpService.logout().subscribe((responseData) => {
         if (responseData?.success) {
-        
-        if(!environment['AUTHENTICATION_SERVICE']){
           this.helperService.isKanban = false;
           localStorage.clear();
           // Set blank selectedProject after logged out state
@@ -1521,6 +1521,8 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.service.setVisibleSideBar(false);
           this.service.setAddtionalFilterBackup({});
           this.service.setKpiSubFilterObj({});
+        if(!environment['AUTHENTICATION_SERVICE']){
+          this.loader = false;
           this.router.navigate(['./authentication/login']);
         } else{
           let obj = {
@@ -1529,11 +1531,13 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.httpService.getUserValidation(obj).toPromise()
           .then((response) => {
             if (response && !response['success']) {
+              this.loader = false;
               let redirect_uri = window.location.href;
               window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
             }
           })
           .catch((error) => {
+            this.loader = false;
             console.log("cookie not clear on error");
           });
         }
