@@ -1513,15 +1513,15 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.loader = true;
       this.httpService.logout().subscribe((responseData) => {
         if (responseData?.success) {
+          if(!environment['AUTHENTICATION_SERVICE']){
           this.helperService.isKanban = false;
-          localStorage.clear();
           // Set blank selectedProject after logged out state
           this.service.setSelectedProject(null);
           this.service.setCurrentUserDetails({});
           this.service.setVisibleSideBar(false);
           this.service.setAddtionalFilterBackup({});
           this.service.setKpiSubFilterObj({});
-        if(!environment['AUTHENTICATION_SERVICE']){
+          localStorage.clear();
           this.loader = false;
           this.router.navigate(['./authentication/login']);
         } else{
