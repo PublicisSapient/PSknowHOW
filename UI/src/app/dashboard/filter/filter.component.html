@@ -304,8 +304,8 @@
 
    <div class="p-d-flex">
       <div class="back-btn-wraper">
-         <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3 cursor-pointer">
-            <button class="back-btn" routerLinkActive="active" (click)="navigateToDashboard()">BACK TO DASHBOARD</button>
+         <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3">
+            <button pButton pRipple class="back-btn" [ngClass]="{'disabled': backToDashboardLoader}" routerLinkActive="active" icon="{{ backToDashboardLoader ? 'pi pi-spin pi-spinner' : '' }}" iconPos="left" label="BACK TO DASHBOARD" (click)="navigateToDashboard()"></button>
          </div>
       </div>
       <div class="username-btn-wraper" role="button">
