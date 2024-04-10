@@ -148,8 +148,14 @@
                            <div class="filter-options-container add-filters-dropdown" [id]="item.hierarchyLevelId+'DDn'"
                               *ngIf="toggleDropdownObj[item?.hierarchyLevelId] && filteredAddFilters[item.hierarchyLevelId]?.length > 0">
                               <div class="filter-options">
+                                 <div class="search-container" style="padding-bottom: 1rem"  *ngIf="item?.hierarchyLevelId === 'sprint'">
+                                    <span class="p-input-icon-left">
+                                       <i class="pi pi-search"></i>
+                                       <input type="text" pInputText [formControlName]="item.hierarchyLevelId+'Search'" style="padding-left: 2rem;height: 30px;" (input)="applySearchFilter(item?.hierarchyLevelId)">
+                                   </span>
+                                  </div>
                                  <label class="checkbox-modified"
-                                    *ngFor="let key of filteredAddFilters[item.hierarchyLevelId]; let i = index">
+                                    *ngFor="let key of copyFilteredAddFilters[item.hierarchyLevelId]; let i = index">
                                     <input type="radio" *ngIf="item?.hierarchyLevelId !== 'sprint'"
                                        [formControlName]="item?.hierarchyLevelId" [value]="key.nodeId" class="p-mr-1" />
                                     <div *ngIf="item?.hierarchyLevelId === 'sprint'"
@@ -160,6 +166,9 @@
                                     </div>
                                     {{key.nodeName}}
                                  </label>
+                                 <div class="search-container"  *ngIf="item?.hierarchyLevelId === 'sprint' && !copyFilteredAddFilters[item.hierarchyLevelId].length ">
+                                  Not Found..
+                                 </div>
                               </div>
                               <div class="p-d-flex p-justify-end p-align-center p-mt-1 btn-container">
                                  <button pButton pRipple label="Cancel" icon="pi pi-times"

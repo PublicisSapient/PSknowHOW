@@ -143,6 +143,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   nodeIdQParam: string = '';
   sprintIdQParam: string = '';
   displayMessage: boolean = false;
+  copyFilteredAddFilters = {};
 
   constructor(
     public service: SharedService,
@@ -530,6 +531,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.additionalFiltersDdn[this.additionalFiltersArr[i]['hierarchyLevelId']] = arr;
           this.toggleDropdownObj[this.additionalFiltersArr[i]['hierarchyLevelId']] = false;
           if (this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sprint') {
+            this.filterForm.controls['sprintSearch'] = new UntypedFormControl('');
             this.createFormGroup(this.additionalFiltersArr[i]['hierarchyLevelId'], arr);
           } else {
             this.createFormGroup(this.additionalFiltersArr[i]['hierarchyLevelId']);
@@ -643,6 +645,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
       }
     }
+    this.copyFilteredAddFilters = {...this.filteredAddFilters};
   }
 
   onSelectedTrendValueChange(isChangedFromUI?) {
@@ -1912,5 +1915,55 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
       }
     }
+
+    /**
+     * Responsible for filter sprint (addtional filters)
+     * @param hierarchyLevelId 
+     */
+    applySearchFilter(hierarchyLevelId) {
+      const sTxt = this.filterForm.controls[hierarchyLevelId+'Search'].value;
+      this.copyFilteredAddFilters[hierarchyLevelId] = this.filteredAddFilters[hierarchyLevelId].filter((item) =>
+        item.nodeName.toLowerCase().includes(sTxt.toLowerCase())
+      );
+    }
+
+  /** 
+   * Validation on sprint addtional filters on speed/quality/value
+   * As of now out of scope but in future it can be.Hence please don't delete */
+  
+  // onCheckboxChange(event) {
+  // const selectedProjects = this.filterForm?.get('selectedTrendValue')?.value || [];
+  // const sprintWithTrueValues = Object.keys(this.filterForm.controls['sprint'].value).filter(key => this.filterForm.controls['sprint'].value[key] === true);
+  // const sprintCountForKpiCalculation = this.service.getGlobalConfigData().sprintCountForKpiCalculation;
+
+  // const projectAlongWithSprints = selectedProjects.map(projectId => {
+  //   const sprints = this.additionalFiltersDdn['sprint']
+  //     ?.filter(sprint => sprint['parentId']?.includes(projectId) && sprint['sprintState']?.toLowerCase() === 'closed')
+  //     .map(sprint => sprint.nodeId);
+
+  //   const selectedSprints = sprints.filter(sprint => sprintWithTrueValues.includes(sprint));
+  //   return {
+  //     nodeId: projectId,
+  //     sprints: sprints,
+  //     selectedSprints: selectedSprints,
+  //     sprintCount: selectedSprints.length
+  //   };
+  // });
+
+  // projectAlongWithSprints.forEach(project => {
+  //   const isFullSelection = project.selectedSprints.length === sprintCountForKpiCalculation;
+
+  //   project.sprints.forEach(sprint => {
+  //     const sprintControl = (this.filterForm.controls['sprint'] as UntypedFormGroup).get(sprint);
+  //     if (sprintControl) {
+  //       if (isFullSelection && !project.selectedSprints.includes(sprint)) {
+  //         sprintControl.disable();
+  //       } else {
+  //         sprintControl.enable();
+  //       }
+  //     }
+  //   });
+  // });
+  // }
 
 }
