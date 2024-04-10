@@ -1514,7 +1514,6 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.httpService.logout().subscribe((responseData) => {
         if (responseData?.success) {
           if(!environment['AUTHENTICATION_SERVICE']){
-            console.log("inside if of central logout")
           this.helperService.isKanban = false;
           // Set blank selectedProject after logged out state
           this.service.setSelectedProject(null);
@@ -1529,11 +1528,9 @@ export class FilterComponent implements OnInit, OnDestroy {
           let obj = {
             'resource': environment.RESOURCE
           };
-          console.log("inside else of central logout")
           this.httpService.getUserValidation(obj).toPromise()
           .then((response) => {
             if (response && !response['success']) {
-              console.log("inside if of validate token")
               this.loader = false;
               let redirect_uri = window.location.href;
               window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
