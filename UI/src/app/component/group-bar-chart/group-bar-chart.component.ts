@@ -72,6 +72,7 @@ export class GroupBarChartComponent implements OnChanges {
     d3.select(elem).select('#xCaptionContainer').select('text').remove();
     d3.select(elem).select('#horizontalSVG').select('.current-week-tooltip').selectAll('.tooltip').remove();
     let data = this.data[0]?.dataGroup;
+    console.log(data);
     this.isXaxisGapRequired = this.data[0]?.additionalInfo?.isXaxisGapRequired;
     this.customisedGroup = this.data[0]?.additionalInfo?.customisedGroup;
     data = this.formatData(data);

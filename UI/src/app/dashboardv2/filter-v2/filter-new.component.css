@@ -1,0 +1,94 @@
+.filter-container {
+    background-color: #F5F9FF;
+    font-size: 0.75rem;
+    display: flex;
+    max-width: 100vw;
+}
+
+:host ::ng-deep .p-float-label {
+    max-width: 300px;
+}
+
+:host ::ng-deep .p-float-label .p-inputwrapper-filled ~ label {
+    font-size: 0.75rem;
+    
+}
+
+:host ::ng-deep .p-multiselect-panel,
+:host ::ng-deep .p-dropdown-panel {
+    top: unset !important;
+    z-index: 1002;
+}
+
+:host ::ng-deep .p-multiselect-panel .p-multiselect-items .p-multiselect-item,
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    font-size: 10px;
+    padding: 0.5rem 0.5rem;
+}
+
+/* Scrum/Kanban tabs start*/
+.tabs {
+    display: flex;
+    margin-left: 30px;
+    margin-right: 100px;
+}
+
+.tab {
+    cursor: pointer;
+    padding: 10px 15px;
+    margin: 0 5px;
+    height: 40px;
+}
+
+.tab.active {
+    border-bottom: 2px solid #0B4BC8;
+    color: #0B4BC8;
+}
+
+.disabled {
+    pointer-events: none;
+    background-color: #dedede;
+    opacity: 0;
+}
+
+/* Scrum/Kanban tabs end*/
+
+/* Selected Filters start */
+.selected-filter-container ul {
+    list-style: none;
+    background-color: #F5F9FF;
+}
+
+ul li.selectedfilter {
+    font-size: 0.8rem;
+    display: flex;
+    line-height: 2;
+    margin: 10px;
+}
+
+.selectedfilter {
+    padding: 0 8px;
+    background-color: #fff;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.align-marker {
+    margin: 0 1rem 0 0;
+}
+
+ul li.selectedfilter .selected-node-label .align-list-marker {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+}
+
+.remove-node {
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+/* Selected Filters end */

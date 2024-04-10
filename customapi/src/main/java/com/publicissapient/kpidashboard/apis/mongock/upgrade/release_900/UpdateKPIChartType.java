@@ -17,11 +17,12 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_900;
 
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 /***
  * @author rendk
@@ -43,7 +44,8 @@ public class UpdateKPIChartType {
 	public void execution() {
 		Document query = new Document(KPI_ID, "kpi142");
 		Document update = new Document("$set", new Document().append(CHART_TYPE, "stackedColumn")
-				.append(XAXIS_LABEL, "Test Phase").append(YAXIS_LABEL, "Count"));
+				.append(XAXIS_LABEL, "Test Phase").append(YAXIS_LABEL, "Count").append("kpiInfo.definition",
+						"It shows the breakup of all defects tagged to a release based on RCA. The breakup is shown in terms of count at different testing phases."));
 		mongoTemplate.getCollection("kpi_master").updateOne(query, update);
 	}
 
@@ -51,7 +53,9 @@ public class UpdateKPIChartType {
 	public void rollBack() {
 		Document query = new Document(KPI_ID, "kpi142");
 		Document update = new Document("$set",
-				new Document().append(CHART_TYPE, "pieChart").append(XAXIS_LABEL, "").append(YAXIS_LABEL, ""));
+				new Document().append(CHART_TYPE, "pieChart").append(XAXIS_LABEL, "").append(YAXIS_LABEL, "").append(
+						"kpiInfo.definition",
+						"It shows the breakup of all defects tagged to a release based on RCA. The breakup is shown in terms of count & percentage"));
 		mongoTemplate.getCollection("kpi_master").updateOne(query, update);
 	}
 

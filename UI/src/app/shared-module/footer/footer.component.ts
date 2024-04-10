@@ -28,16 +28,16 @@ import { Router } from '@angular/router';
 })
 export class FooterComponent implements OnInit {
   currentYear: number;
-  currentversion : string;
-  isSide : boolean;
+  currentversion: string;
+  isSide: boolean;
 
-  constructor(private httpService : HttpService,private sharedService : SharedService,public router : Router) { }
+  constructor(private httpService: HttpService, private sharedService: SharedService, public router: Router) { }
 
   ngOnInit() {
     this.currentYear = (new Date()).getFullYear();
     this.getMatchVersions();
-    this.sharedService.isSideNav.subscribe(flag=>{
-       this.isSide = flag;
+    this.sharedService.isSideNav.subscribe(flag => {
+      this.isSide = flag;
     })
   }
 
@@ -50,13 +50,13 @@ export class FooterComponent implements OnInit {
     });
   }
 
-  styleObj():object{
-    let marginLeft = this.isSide ? '16rem' : '5rem'; 
+  styleObj(): object {
+    let marginLeft = this.isSide ? '16rem' : '5rem';
     const urlArray = this.router.url.split('/');
-    if(urlArray.includes('Help') || urlArray.includes('Config') || urlArray.includes('Error') || urlArray[urlArray.length-1].includes('login') || urlArray.includes('register')){
+    if (urlArray.includes('Help') || urlArray.includes('Config') || urlArray.includes('Error') || urlArray[urlArray.length - 1].includes('login') || urlArray.includes('register') || localStorage.getItem('newUI')) {
       marginLeft = '0rem'
     }
-    return {'margin-left': marginLeft}
+    return { 'margin-left': marginLeft }
 
   }
 

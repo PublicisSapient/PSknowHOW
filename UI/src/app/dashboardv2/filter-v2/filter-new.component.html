@@ -1,0 +1,44 @@
+<div class="filter-container p-p-2" [ngClass]="kanbanRequired ? 'p-jc-between' : 'p-jc-center'">
+    <div class="p-d-flex" *ngIf="kanbanRequired">
+        <div class="tabs">
+            <div class="tab" (click)="setSelectedType('Scrum')" 
+            [ngClass]="{ 'active': selectedType === 'scrum' }">Scrum
+            </div>
+            <div class="tab" (click)="setSelectedType('Kanban')"
+                [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': !kanbanRequired }">
+                Kanban</div>
+        </div>
+    </div>
+    <div class="p-d-flex p-fluid" *ngIf="filterDataArr[selectedType]">
+        <app-parent-filter *ngIf="getObjectKeys(parentFilterConfig).length" class="p-mr-2" 
+            [filterData]="filterDataArr[selectedType]" [selectedTab]="selectedTab"
+            (onSelectedLevelChange)="handleParentFilterChange($event)" [selectedType]="selectedType" [selectedTab]="selectedTab"
+            [parentFilterConfig]="parentFilterConfig"></app-parent-filter>
+        <app-primary-filter [filterData]="filterDataArr[selectedType]" [selectedLevel]="selectedLevel" [selectedType]="selectedType"
+            [primaryFilterConfig]="primaryFilterConfig" [selectedTab]="selectedTab"
+            (onPrimaryFilterChange)="handlePrimaryFilterChange($event)"></app-primary-filter>
+    </div>
+    <div>
+        <app-additional-filter></app-additional-filter>
+    </div>
+</div>
+<div class="selected-filter-container">
+    <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
+        <ng-container *ngIf="getObjectKeys(colorObj).length">
+            <ng-container *ngFor="let item of getObjectKeys(colorObj); let i = index;">
+                <li class="selectedfilter p-mr-3">
+                    <div class="selected-node">
+                        <div class="selected-node-label p-pl-0">
+                            <span class="align-list-marker" [title]="colorObj[item]?.nodeName"
+                                [ngStyle]="{'background':colorObj[item]?.color}"></span>
+                            <span class="p-l-1">{{ colorObj[item]?.nodeName?.length<= 20 ? colorObj[item]?.nodeName :
+                                    colorObj[item]?.nodeName?.slice(0,20)+'...'}} <span class="remove-node"
+                                    (click)="removeFilter(colorObj[item]?.nodeId)">&times;</span>
+                            </span>
+                        </div>
+                    </div>
+                </li>
+            </ng-container>
+        </ng-container>
+    </ul>
+</div>

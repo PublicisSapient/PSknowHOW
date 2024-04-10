@@ -52,7 +52,7 @@ export class HttpService {
   private masterDataUrl = this.baseUrl + '/api/masterData';
   private downloadAllKpiReportUrl = this.baseUrl + '/api/v1/kpi';
   private downloadKpiWiseReportUrl = this.baseUrl + '/api/v1/kpi';
-  private logoutUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/centralUserlogout' : this.baseUrl + '/api/userlogout';
+  private logoutUrl = this.baseUrl + '/api/userlogout';
   private configDetailsUrl = this.baseUrl + '/api/configDetails';
   private enginneringMaturityUrl = this.baseUrl + '/api/v1/enggMaturity';
   private enginneringMaturityTableUrl = this.baseUrl + '/api/emm/tableview';
@@ -82,7 +82,7 @@ export class HttpService {
   private getRolesUrl = this.baseUrl + '/api/roles';
   private raiseAccessRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getAccessRequestsUrl = this.baseUrl + '/api/accessrequests/status';
-  private getAccessRequestNotificationsUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/accessrequests/Pending/notification/central' : this.baseUrl + '/api/accessrequests/Pending/notification';
+  private getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification';
   private updateRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getUserAccessRequestsUrl = this.baseUrl + '/api/accessrequests/user';
   private getScenariosUrl = this.baseUrl + '/api/scenario';
@@ -98,7 +98,7 @@ export class HttpService {
   private getAllProjectsUrl = this.baseUrl + '/api/basicconfigs/all';
   private deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
   private getAllUsersUrl = this.baseUrl + '/api/userinfo';
-  private updateAccessUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/userinfo/central/' : this.baseUrl + '/api/userinfo/';
+  private updateAccessUrl = this.baseUrl + '/api/userinfo/';
   private getKPIConfigMetadataUrl =
     this.baseUrl + '/api/editConfig/jira/editKpi/';
   /** KnowHOW Lite */
@@ -130,7 +130,7 @@ export class HttpService {
   private usersCountUrl = this.baseUrl + '/api/landingpage/userscount';
   private autoApproveUrl = this.baseUrl + '/api/autoapprove';
   private saveShowHideKpiUrl = this.baseUrl + '/api/user-board-config/saveAdmin';
-  private newUserAccessRequestUrl = environment['AUTHENTICATION_SERVICE'] ? this.baseUrl + '/api/userapprovals/central' : this.baseUrl + '/api/userapprovals';
+  private newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals';
   private sonarVersionURL = this.baseUrl + '/api/sonar/version';
   private projectKeyRequestUrl = this.baseUrl + '/api/sonar/project';
   private branchListRequestUrl = this.baseUrl + '/api/sonar/branch';
@@ -273,6 +273,9 @@ export class HttpService {
 
   /**  logout from the server */
   logout(): Observable<any> {
+    if(environment?.['AUTHENTICATION_SERVICE']){
+      this.logoutUrl = this.baseUrl + '/api/centralUserlogout';
+    }
     return this.http.get(this.logoutUrl);
   }
 
@@ -557,6 +560,9 @@ export class HttpService {
 
   /** get pending request notifications */
   getAccessRequestsNotifications() {
+    if(environment?.['AUTHENTICATION_SERVICE']){
+      this.getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification/central';
+    }  
     return this.http
       .get<NotificationResponseDTO>(this.getAccessRequestNotificationsUrl)
       .pipe(map((requests) => requests));
@@ -941,12 +947,18 @@ export class HttpService {
   }
 
   getNewUserAccessRequestFromAPI() {
+    if(environment?.['AUTHENTICATION_SERVICE']){
+      this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
+    }
     return this.http.get<UserAccessApprovalResponseDTO>(
       this.newUserAccessRequestUrl,
     );
   }
 
   updateNewUserAccessRequest(reqBody: UserAccessReqPayload, username: string) {
+    if(environment?.['AUTHENTICATION_SERVICE']){
+      this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
+    }
     return this.http.put<any>(
       `${this.newUserAccessRequestUrl}/${username}`,
       reqBody,

@@ -42,8 +42,8 @@ export class SharedService {
   public title = <any>{};
   public logoImage;
   public dashConfigData;
-  iterationCongifData=new BehaviorSubject({});
-  kpiListNewOrder= new BehaviorSubject([]);
+  iterationCongifData = new BehaviorSubject({});
+  kpiListNewOrder = new BehaviorSubject([]);
   private subject = new Subject<any>();
   private accountType;
   private selectedProject;
@@ -52,7 +52,7 @@ export class SharedService {
   public passErrorToErrorPage;
   public engineeringMaturityExcelData;
   public suggestionsData: any = [];
-  private passServerRole= new BehaviorSubject<boolean>(false);
+  private passServerRole = new BehaviorSubject<boolean>(false);
   public boardId = 1;
   public isDownloadExcel;
   private authToken = '';
@@ -87,13 +87,13 @@ export class SharedService {
   public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
   noRelease = new BehaviorSubject<any>(false);
   noReleaseObs = this.noRelease.asObservable();
-  fieldMappingOptionsMetaData : any = []
-  kpiCardView : string = "chart";
+  fieldMappingOptionsMetaData: any = []
+  kpiCardView: string = "chart";
   maturityTableLoader = new Subject<boolean>();
-  globalConfigData : any
+  globalConfigData: any
   visibleSideBarSubject = new BehaviorSubject(false);
   visibleSideBarObs = this.visibleSideBarSubject.asObservable();
-  addtionalFilterBackup = {} ;
+  addtionalFilterBackup = {};
   projectQueryParamSubject = new BehaviorSubject<any>('');
   projectQueryParamObs = this.projectQueryParamSubject.asObservable();
   sprintQueryParamSubject = new BehaviorSubject<any>('');
@@ -102,6 +102,9 @@ export class SharedService {
 
   public currentIssue = new BehaviorSubject({});
   public currentData = this.currentIssue.asObservable();
+
+  boardNamesListSubject = new BehaviorSubject<any>([]);
+  boardNamesListObs = this.boardNamesListSubject.asObservable();
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -122,7 +125,7 @@ export class SharedService {
   ngOnInit() {
   }
 
-  setCurrentSelectedSprint(selectedSprint){
+  setCurrentSelectedSprint(selectedSprint) {
     this.currentSelectedSprint = selectedSprint;
     this.currentSelectedSprintSub.next(selectedSprint);
   }
@@ -154,7 +157,7 @@ export class SharedService {
   // setter dash config data
   setDashConfigData(data) {
     this.dashConfigData = JSON.parse(JSON.stringify(data));
-      this.globalDashConfigData.emit(data);
+    this.globalDashConfigData.emit(data);
   }
 
   // getter kpi config data
@@ -214,10 +217,10 @@ export class SharedService {
     return this.sharedObject;
   }
 
-  setEmptyData(flag){
+  setEmptyData(flag) {
     this.setNoData.next(flag);
   }
-  getEmptyData(){
+  getEmptyData() {
     return this.setNoData.asObservable();
   }
 
@@ -227,7 +230,7 @@ export class SharedService {
   }
 
   // calls when user select different Tab (executive , quality etc)
-  select(masterData, filterData, filterApplyData, selectedTab, isAdditionalFilters?, makeAPICall = true) {
+  select(masterData, filterData, filterApplyData, selectedTab, isAdditionalFilters?, makeAPICall = true, configDetails = null, loading = false) {
     this.sharedObject = {};
     this.sharedObject.masterData = masterData;
     this.sharedObject.filterData = filterData;
@@ -235,10 +238,16 @@ export class SharedService {
     this.sharedObject.selectedTab = selectedTab;
     this.sharedObject.isAdditionalFilters = isAdditionalFilters;
     this.sharedObject.makeAPICall = makeAPICall;
+    this.sharedObject.loading = loading;
+
+    if (configDetails) {
+      this.sharedObject.configDetails = configDetails;
+    }
+
     //emit once navigation complete
-    setTimeout(()=>{
+    setTimeout(() => {
       this.passDataToDashboard.emit(this.sharedObject);
-    },0);
+    }, 0);
   }
 
   /** KnowHOW Lite */
@@ -287,37 +296,37 @@ export class SharedService {
     this.passServerRole.next(value);
   }
 
-  setColorObj(value){
+  setColorObj(value) {
     this.mapColorToProject.next(value);
   }
 
-  setKpiSubFilterObj(value){
+  setKpiSubFilterObj(value) {
     this.selectedFilterOption.next(value);
   }
 
-  setNoSprints(value){
+  setNoSprints(value) {
     this.noSprints.next(value);
   }
-  setNoProjects(value){
+  setNoProjects(value) {
     this.noProjects.next(value);
   }
-  setClickedItem(event){
+  setClickedItem(event) {
     this.clickedItem.next(event);
   }
-  getClickedItem(){
+  getClickedItem() {
     return this.clickedItem.asObservable();
   }
-  setSelectedDateFilter(xLabel){
+  setSelectedDateFilter(xLabel) {
     this.xLabelValue = xLabel;
   }
-  getSelectedDateFilter(){
+  getSelectedDateFilter() {
     return this.xLabelValue;
   }
-  setShowTableView(val){
+  setShowTableView(val) {
     this.kpiCardView = val;
     this.showTableView.next(val);
   }
-  getKPICardView(){
+  getKPICardView() {
     return this.kpiCardView;
   }
 
@@ -329,19 +338,19 @@ export class SharedService {
       document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
     }
   }
-   setGlobalDownload(val){
+  setGlobalDownload(val) {
     this.isDownloadExcel.emit(val);
   }
-  setSelectedLevel(val){
-    this.selectedLevel = {...val};
+  setSelectedLevel(val) {
+    this.selectedLevel = { ...val };
   }
-  getSelectedLevel(){
+  getSelectedLevel() {
     return this.selectedLevel;
   }
-  setSelectedTrends(values){
+  setSelectedTrends(values) {
     this.selectedTrends = values;
   }
-  getSelectedTrends(){
+  getSelectedTrends() {
     return this.selectedTrends;
   }
 
@@ -351,76 +360,128 @@ export class SharedService {
     this.isSideNav.emit(flag);
   }
 
-  setCurrentUserDetails(details){
+  setCurrentUserDetails(details) {
 
-    if(!this.currentUserDetails  || !details || Object.keys(details).length === 0){
-      this.currentUserDetails=details;
-    }else{
-      this.currentUserDetails={...this.currentUserDetails,...details};
+    if (!this.currentUserDetails || !details || Object.keys(details).length === 0) {
+      this.currentUserDetails = details;
+    } else {
+      this.currentUserDetails = { ...this.currentUserDetails, ...details };
     }
+    localStorage.setItem('currentUserDetails', JSON.stringify(this.currentUserDetails));
     this.currentUserDetailsSubject.next(this.currentUserDetails);
   }
 
-  getCurrentUserDetails(key){
-    if(this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)){
-      return this.currentUserDetails[key] ;
-     }
-    return false;
+  getCurrentUserDetails(key = null) {
+    this.currentUserDetails = JSON.parse(localStorage.getItem('currentUserDetails'));
+    if (key && this.currentUserDetails?.hasOwnProperty(key)) {
+      return this.currentUserDetails[key];
+    } else if (!key && Object.keys(this.currentUserDetails).length) {
+      return this.currentUserDetails;
+    }
+    return null;
   }
 
-  setNoRelease(value){
+  setNoRelease(value) {
     this.noRelease.next(value)
   }
 
-  setFieldMappingMetaData(metaDataObj){
-    this.fieldMappingOptionsMetaData = [...this.fieldMappingOptionsMetaData,metaDataObj];
+  setFieldMappingMetaData(metaDataObj) {
+    this.fieldMappingOptionsMetaData = [...this.fieldMappingOptionsMetaData, metaDataObj];
   }
 
-  getFieldMappingMetaData(){
+  getFieldMappingMetaData() {
     return this.fieldMappingOptionsMetaData;
   }
 
-  setMaturiyTableLoader(value){
+  setMaturiyTableLoader(value) {
     this.maturityTableLoader.next(value)
   }
 
-  setGlobalConfigData(data){
+  setGlobalConfigData(data) {
     this.globalConfigData = data;
   }
 
-  getGlobalConfigData(){
+  getGlobalConfigData() {
     return this.globalConfigData;
   }
 
-  setAuthToken(value){
+  setAuthToken(value) {
     this.authToken = value;
   }
 
-  getAuthToken(){
+  getAuthToken() {
     return this.authToken;
   }
 
   setProjectQueryParamInFilters(value) {
-    this.projectQueryParamSubject.next({value});
+    this.projectQueryParamSubject.next({ value });
   }
 
   setSprintQueryParamInFilters(value) {
-    this.sprintQueryParamSubject.next({value});
+    this.sprintQueryParamSubject.next({ value });
   }
 
-   setAddtionalFilterBackup(data){
-      this.addtionalFilterBackup = data;
-    }
+  setAddtionalFilterBackup(data) {
+    this.addtionalFilterBackup = data;
+  }
 
-    getAddtionalFilterBackup(){
-      return this.addtionalFilterBackup;
-    }
-  setProcessorLogDetails(data){
+  getAddtionalFilterBackup() {
+    return this.addtionalFilterBackup;
+  }
+  setProcessorLogDetails(data) {
     this.processorTraceLogs = data;
   }
 
-  getProcessorLogDetails(){
+  getProcessorLogDetails() {
     return this.processorTraceLogs
+  }
+
+  setUpdatedBoardList(kpiListData, selectedType) {
+    const boardNameArr = [];
+    if (
+      kpiListData[selectedType] &&
+      Array.isArray(kpiListData[selectedType])
+    ) {
+      for (let i = 0; i < kpiListData[selectedType]?.length; i++) {
+        let kpiShownCount = 0;
+        let board = kpiListData[selectedType][i];
+        let kpiList;
+        if (board?.boardName?.toLowerCase() === 'iteration') {
+          kpiList = board?.['kpis']?.filter((item) => item.kpiId != 'kpi121');
+        }else{
+          kpiList = board?.['kpis'];
+        }
+        kpiList?.forEach((item) => {
+          if (item.shown) {
+            kpiShownCount++;
+          }
+        });
+        if (kpiShownCount > 0) {
+          boardNameArr.push({
+            boardName: board?.boardName,
+            link: board?.boardName.toLowerCase().split(' ').join('-')
+          });
+        }
+      }
+
+    }
+
+    for (let i = 0; i < kpiListData['others']?.length; i++) {
+      let kpiShownCount = 0;
+      kpiListData['others'][i]['kpis']?.forEach((item) => {
+        if (item.shown) {
+          kpiShownCount++;
+        }
+      });
+      if (kpiShownCount > 0) {
+        boardNameArr.push({
+          boardName: kpiListData['others'][i].boardName,
+          link:
+            kpiListData['others'][i].boardName.toLowerCase()
+        });
+      }
+    }
+    this.boardNamesListSubject.next(boardNameArr);
   }
 }
 

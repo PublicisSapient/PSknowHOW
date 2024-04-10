@@ -42,27 +42,14 @@ import lombok.extern.slf4j.Slf4j;
 @ConfigurationProperties(prefix = "auth")
 public class AuthProperties {// NOPMD
 	// do not remove NOPMD comment. This is for ignoring TooManyFields.
-	// fields are required for standard, LDAP and Crowd sso
+	// fields are required for standard and Crowd sso
 
 	private static final String STANDARD = "STANDARD";
-	private static final String LDAP = "LDAP";
 	private static final String CROWDSSO = "CROWDSSO";
 
 	private Long expirationTime;
 	private String secret;
-	private String ldapUserDnPattern;
-	private String ldapServerUrl;
 	private List<AuthType> authenticationProviders = Lists.newArrayList();
-
-	private String adDomain;
-	private String adLionsDomain;
-	private String adRootDn;
-	private String adLionsRootDn;
-	private String adUrl;
-	private String adLionsUrl;
-
-	private String ldapBindUser;
-	private String ldapBindPass;
 	private String providers;
 
 	private Integer accountLockedThreshold;
@@ -120,44 +107,6 @@ public class AuthProperties {// NOPMD
 	}
 
 	/**
-	 * Gets ldap user dn pattern.
-	 *
-	 * @return the ldap user dn pattern
-	 */
-	public String getLdapUserDnPattern() {
-		return ldapUserDnPattern;
-	}
-
-	/**
-	 * Sets ldap user dn pattern.
-	 *
-	 * @param ldapUserDnPattern
-	 *            the ldap user dn pattern
-	 */
-	public void setLdapUserDnPattern(String ldapUserDnPattern) {
-		this.ldapUserDnPattern = ldapUserDnPattern;
-	}
-
-	/**
-	 * Gets ldap server url.
-	 *
-	 * @return the ldap server url
-	 */
-	public String getLdapServerUrl() {
-		return ldapServerUrl;
-	}
-
-	/**
-	 * Sets ldap server url.
-	 *
-	 * @param ldapServerUrl
-	 *            the ldap server url
-	 */
-	public void setLdapServerUrl(String ldapServerUrl) {
-		this.ldapServerUrl = ldapServerUrl;
-	}
-
-	/**
 	 * Gets authentication providers.
 	 *
 	 * @return the authentication providers
@@ -174,158 +123,6 @@ public class AuthProperties {// NOPMD
 	 */
 	public void setAuthenticationProviders(List<AuthType> authenticationProviders) {
 		this.authenticationProviders = authenticationProviders;
-	}
-
-	/**
-	 * Gets ad domain.
-	 *
-	 * @return the ad domain
-	 */
-	public String getAdDomain() {
-		return adDomain;
-	}
-
-	/**
-	 * Sets ad domain.
-	 *
-	 * @param adDomain
-	 *            the ad domain
-	 */
-	public void setAdDomain(String adDomain) {
-		this.adDomain = adDomain;
-	}
-
-	/**
-	 * Gets ad root dn.
-	 *
-	 * @return the ad root dn
-	 */
-	public String getAdRootDn() {
-		return adRootDn;
-	}
-
-	/**
-	 * Sets ad root dn.
-	 *
-	 * @param adRootDn
-	 *            the ad root dn
-	 */
-	public void setAdRootDn(String adRootDn) {
-		this.adRootDn = adRootDn;
-	}
-
-	/**
-	 * Gets ad url.
-	 *
-	 * @return the ad url
-	 */
-	public String getAdUrl() {
-		return adUrl;
-	}
-
-	/**
-	 * Sets ad url.
-	 *
-	 * @param adUrl
-	 *            the ad url
-	 */
-	public void setAdUrl(String adUrl) {
-		this.adUrl = adUrl;
-	}
-
-	/**
-	 * Gets ldap bind user.
-	 *
-	 * @return the ldap bind user
-	 */
-	public String getLdapBindUser() {
-		return ldapBindUser;
-	}
-
-	/**
-	 * Sets ldap bind user.
-	 *
-	 * @param ldapBindUser
-	 *            the ldap bind user
-	 */
-	public void setLdapBindUser(String ldapBindUser) {
-		this.ldapBindUser = ldapBindUser;
-	}
-
-	/**
-	 * Gets ldap bind pass.
-	 *
-	 * @return the ldap bind pass
-	 */
-	public String getLdapBindPass() {
-		return ldapBindPass;
-	}
-
-	/**
-	 * Sets ldap bind pass.
-	 *
-	 * @param ldapBindPass
-	 *            the ldap bind pass
-	 */
-	public void setLdapBindPass(String ldapBindPass) {
-		this.ldapBindPass = ldapBindPass;
-	}
-
-	/**
-	 * Gets ad lions domain.
-	 *
-	 * @return the ad lions domain
-	 */
-	public String getAdLionsDomain() {
-		return adLionsDomain;
-	}
-
-	/**
-	 * Sets ad lions domain.
-	 *
-	 * @param adLionsDomain
-	 *            the ad lions domain
-	 */
-	public void setAdLionsDomain(String adLionsDomain) {
-		this.adLionsDomain = adLionsDomain;
-	}
-
-	/**
-	 * Gets ad lions url.
-	 *
-	 * @return the ad lions url
-	 */
-	public String getAdLionsUrl() {
-		return adLionsUrl;
-	}
-
-	/**
-	 * Sets ad lions url.
-	 *
-	 * @param adLionsUrl
-	 *            the ad lions url
-	 */
-	public void setAdLionsUrl(String adLionsUrl) {
-		this.adLionsUrl = adLionsUrl;
-	}
-
-	/**
-	 * Gets ad lions root dn.
-	 *
-	 * @return the ad lions root dn
-	 */
-	public String getAdLionsRootDn() {
-		return adLionsRootDn;
-	}
-
-	/**
-	 * Sets ad lions root dn.
-	 *
-	 * @param adLionsRootDn
-	 *            the ad lions root dn
-	 */
-	public void setAdLionsRootDn(String adLionsRootDn) {
-		this.adLionsRootDn = adLionsRootDn;
 	}
 
 	/**
@@ -555,9 +352,7 @@ public class AuthProperties {// NOPMD
 			} else {
 				if (STANDARD.equalsIgnoreCase(providers)) {
 					authenticationProviders.add(AuthType.STANDARD);
-				} else if (LDAP.equalsIgnoreCase(providers)) {
-					authenticationProviders.add(AuthType.LDAP);
-				} else if (CROWDSSO.equalsIgnoreCase(providers)) {
+				}  else if (CROWDSSO.equalsIgnoreCase(providers)) {
 					authenticationProviders.add(AuthType.CROWDSSO);
 				}
 			}

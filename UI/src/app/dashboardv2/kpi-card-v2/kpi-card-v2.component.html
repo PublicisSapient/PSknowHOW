@@ -1,0 +1,166 @@
+<div class="kpi-card-container">
+    <div class="kpi-card-header p-pr-5 p-pl-5">
+        <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader>
+            <div class="kpi-card-title-container">
+                <h3 *ngIf="kpiData">{{kpiData?.kpiName}}</h3>
+
+                <span *ngIf="kpiData?.kpiDetail?.kpiInfo" aria-hidden="true" class="info-icon"
+                    (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(false)"
+                    [style]="{'position': 'relative'}">
+                    <img alt="info" class="" src="../../../assets/img/Info.svg" />
+                    <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3 p-ml-1" [data]="kpiData?.kpiDetail?.kpiInfo"
+                        (mouseleave)="showTooltip(false)" [showChartView]="showChartView"
+                        [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
+                </span>
+                <span *ngIf="sprintsOverlayVisible"
+                    (click)="prepareData(); (trendValueList?.length) > 0 ? op.toggle($event,kpiHeader) : '' ;"
+                    class="cursor-pointer p-ml-1 sprint-hover-icon" pTooltip='<div class="inner-content">
+                        Please click on icon for all sprint details.
+                    </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper"><i
+                        class="custom-pi pi-bars"></i></span>
+            </div>
+        </div>
+        <i class="pi pi-ellipsis-v float-right" style="font-size: 20px"></i>
+    </div>
+    <!-- kpiFilter -->
+    <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer>
+        <div *ngSwitchCase="'dropdown'" class="p-d-flex p-justify-between">
+            <ng-container *ngFor="let filter of dropdownArr;let k = index">
+                <p-dropdown *ngIf="dropdownArr?.length && filter?.options?.length" [options]="filter?.options"
+                    [(ngModel)]="filterOptions['filter'+(k+1)]" placeholder="Select {{ filter?.filterType }}"
+                    [style]="{'width':'115px', 'max-width': '100%', 'margin-left': '5px', 'height': '32px'}"
+                    (onChange)="handleChange('single',k)" [virtualScroll]="true" [virtualScrollItemSize]="30"
+                    [panelStyle]="{ 'min-width': 'min(100vw, 300px)', 'overflow-x': 'hidden' }"></p-dropdown>
+
+            </ng-container>
+        </div>
+        <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-justify-between">
+            <ng-container *ngFor="let filter of dropdownArr;let k = index">
+                <ng-select *ngIf="filter?.options?.length && filter.filterType === 'Duration'"
+                    [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'"
+                    (change)="handleChange('multi')" [placeholder]="filter?.filterType" [clearable]="false"
+                    class="p-pb-0 kpi-dropdown" [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}">
+                    <ng-container *ngFor="let item of filter?.options; index as i">
+                        <ng-option [value]="item">
+                            {{item}}
+                        </ng-option>
+                    </ng-container>
+                </ng-select>
+
+                <p-multiSelect *ngIf="filter?.options?.length && filter.filterType !== 'Duration'" #multiSelect
+                    inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
+                    [(ngModel)]="selectedFilters" (onChange)="handleChange('multi')"
+                    (onClear)="handleClearAll('filter'+(k+1))" [style]="{'max-width': '100%', 'height': '32px'}"
+                    [showClear]="true" defaultLabel="{{filter?.filterType}}"
+                    [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
+                </p-multiSelect>
+            </ng-container>
+        </div>
+        <ng-container *ngSwitchCase="'radiobutton'">
+            <ng-container *ngIf="dropdownArr && dropdownArr.length && dropdownArr[0]?.options?.length">
+                <p-selectButton [options]="dropdownArr[0]?.options" [(ngModel)]="radioOption"
+                    (onChange)="handleChange('radio', $event)"></p-selectButton>
+            </ng-container>
+        </ng-container>
+    </div>
+
+    <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': kpiSize === 12 ? '250px' : '220px',
+    'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
+        <!--place for chart to be rendered-->
+        <ng-content *ngIf="trendValueList && trendValueList.length > 0 && !loader; else noData"></ng-content>
+        <ng-template #noData>
+            <div class="min-ht" *ngIf="!loader">
+                <div class="p-w-100  p-d-flex p-justify-center">
+                    <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                </div>
+                <div class="p-w-100">
+                    <h4 class="p-text-center">No data available. Contact your administrator.</h4>
+                </div>
+            </div>
+
+            <div class="min-ht"
+                *ngIf="kpi?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected && !loader">
+                <div class="err squad-err-msg">KPI cannot be measured for a Squad</div>
+            </div>
+        </ng-template>
+        <div class="overlay loader" *ngIf="loader">
+            <div class="loading-img"></div>
+        </div>
+    </div>
+    <div class="kpi-card-footer p-pr-5 p-pl-5">
+        <app-trend-indicator-v2 *ngIf="trendValueList && trendValueList.length > 0" [trendData]="trendData"
+            [colorObj]="trendBoxColorObj">
+        </app-trend-indicator-v2>
+    </div>
+</div>
+
+<p-overlayPanel #op [showCloseIcon]="true" styleClass="sprint-details-overlay">
+    <div class="p-mb-3 overlay-heading">
+        {{kpiData?.kpiName}}
+    </div>
+    <div class="dialog-body p-mb-4">
+        <p-tabView [(activeIndex)]="selectedTabIndex">
+
+            <ng-container *ngFor="let project of projectList;  let i = index;">
+                <p-tabPanel header="{{project.length > 15 ? project.substring(0,15)+'..' : project}}"
+                    [headerStyleClass]="getColorCssClasses(selectedTabIndex)">
+                    <p-table
+                        *ngIf="(sprintDetailsList[selectedTabIndex] && sprintDetailsList[selectedTabIndex]['hoverList'].length >0 ) ; else showNoDataMessage"
+                        [columns]="columnList" [value]="sprintDetailsList[selectedTabIndex]['hoverList']"
+                        styleClass="p-datatable-gridlines kpi-table" [scrollable]="true" scrollHeight="250px">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <ng-container *ngFor="let col of columns">
+                                    <th *ngIf="hasData(col.field)" [pSortableColumn]="col.field"
+                                        [ngClass]="{'kpi-value-center': col.field ==='value'}">
+                                        {{ col.header }}
+                                        <p-sortIcon *ngIf="col.field === 'value'" [field]="col.field"></p-sortIcon>
+                                    </th>
+                                </ng-container>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr>
+                                <ng-container *ngFor="let col of columns">
+                                    <td *ngIf="hasData(col.field)"
+                                        [innerHTML]="col.field == 'value' || col.field.includes('value') ? rowData[col.field]+rowData['unit'] : rowData[col.field]"
+                                        class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value'}">
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+
+
+                </p-tabPanel>
+            </ng-container>
+            <ng-template #showNoDataMessage>
+                <img alt="no-data" src="../../../assets/img/setting-icon.svg" />
+                <h2 class="p-text-center">No data available. Contact your administrator.</h2>
+            </ng-template>
+        </p-tabView>
+
+
+    </div>
+</p-overlayPanel>
+
+<p-dialog [header]="kpiData?.kpiName" [(visible)]="displayConfigModel" [modal]="true" styleClass="field-mapping">
+    <hr>
+    <ng-template pTemplate="content">
+        <app-field-mapping-form #fieldMappingForm
+            *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0 && !loading"
+            [disableSave]="disableSave" [fieldMappingMetaData]="fieldMappingMetaData"
+            [fieldMappingConfig]="fieldMappingConfig" [formData]="selectedFieldMapping"
+            [selectedConfig]="selectedConfig" [selectedToolConfig]="selectedToolConfig" (reloadKPI)="reloadKPI()"
+            [thresholdUnit]="kpiData['kpiDetail']['kpiUnit']"></app-field-mapping-form>
+    </ng-template>
+    <ng-template pTemplate="footer"></ng-template>
+    <ng-container *ngIf=" noData && !loading">
+        <h2 class="p-text-center">No Configuration Available</h2>
+    </ng-container>
+    <ng-container *ngIf="loading">
+        <div class="overlay">
+            <div class="loading-img"></div>
+        </div>
+    </ng-container>
+</p-dialog>

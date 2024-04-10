@@ -2085,7 +2085,6 @@ describe('IterationComponent', () => {
         const type = 'Scrum';
         service.selectedtype = type;
         // component.selectedtype = 'Scrum';
-        console.log('Selected Type ====> ', component.selectedtype);
         service.select(masterData, filterData, filterApplyDataWithScrum, selectedTab);
         fixture.detectChanges();
         httpMock.match(baseUrl + '/api/jira/kpi')[0].flush(fakejira);
@@ -3576,7 +3575,7 @@ describe('IterationComponent', () => {
                 shown: true
             }
         ];
-        spyOn(helperService, 'getKpiCommentsCount').and.returnValue({})
+        spyOn(helperService, 'getKpiCommentsCount').and.returnValue(Promise.resolve({}))
         component.getKpiCommentsCount();
         tick();
         expect(component.kpiCommentsCountObj).toBeDefined();
@@ -3619,7 +3618,7 @@ describe('IterationComponent', () => {
                 shown: true
             }
         ];
-        spyOn(helperService, 'getKpiCommentsCount').and.returnValue({})
+        spyOn(helperService, 'getKpiCommentsCount').and.returnValue(Promise.resolve({}))
         component.getKpiCommentsCount("kpi1");
         tick();
         expect(component.kpiCommentsCountObj).toBeDefined();

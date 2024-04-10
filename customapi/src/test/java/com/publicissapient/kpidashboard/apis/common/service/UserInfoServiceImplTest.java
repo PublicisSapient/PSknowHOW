@@ -176,35 +176,6 @@ public class UserInfoServiceImplTest {
 
 	}
 
-	@Test
-	public void shouldValidateUser() {
-		UserInfo user = new UserInfo();
-		user.setUsername("standarduser");
-		user.setAuthType(AuthType.STANDARD);
-
-		when(userInfoRepository.findByUsernameAndAuthType("abc123", AuthType.STANDARD)).thenReturn(null);
-		boolean result = service.isUserValid("abc123", AuthType.STANDARD);
-		assertFalse(result);
-
-		when(userInfoRepository.findByUsernameAndAuthType("standarduser", AuthType.STANDARD)).thenReturn(user);
-		result = service.isUserValid("standarduser", AuthType.STANDARD);
-		assertTrue(result);
-	}
-
-	@Test
-	public void isValidUserLdap_Exception() {
-		String userId = "testUserId";
-
-		when(authProperties.getAdUrl()).thenReturn("ldap://dluads2.sapient.com");
-		when(authProperties.getLdapBindUser()).thenReturn("testuser@sapient.com");
-		when(authProperties.getAdDomain()).thenReturn("sapient.com");
-		when(authProperties.getLdapBindPass()).thenReturn("secretPassword");
-
-		boolean isValid = service.isUserValid(userId, AuthType.LDAP);
-		assertFalse(isValid);
-
-	}
-
 	/**
 	 * 1. if username present in the db then update it with new one else return null
 	 *
@@ -248,24 +219,6 @@ public class UserInfoServiceImplTest {
 
 		UserInfo userInfo = service.getUserInfoWithEmail(anyString(), any());
 		assertNull(userInfo);
-	}
-
-	@Test
-	public void getUserInfoWithEmailTest_ldap() {
-		UserInfo user = new UserInfo();
-		user.setUsername("standarduser");
-		user.setAuthType(AuthType.LDAP);
-		user.setEmailAddress("email@email.com");
-
-		Authentication auth = new Authentication();
-		auth.setUsername("username");
-		auth.setEmail("mail@mail.com");
-
-		when(userInfoRepository.findByUsernameAndAuthType(anyString(), any())).thenReturn(user);
-
-		UserInfo userInfo = service.getUserInfoWithEmail(anyString(), any());
-		assertNotNull(userInfo);
-		assertNotNull(userInfo.getEmailAddress());
 	}
 
 	@Test
