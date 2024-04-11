@@ -89,6 +89,9 @@ export class AdvancedSettingsComponent implements OnInit {
         this.dataLoading = false;
         if (processorData[0] !== 'error' && !processorData.error) {
           this.processorData = processorData;
+          this.processorData['data'].map(pDetails=>{
+            pDetails['loader'] = false;
+          })
 
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error in fetching Processor data. Please try after some time.' });
@@ -215,7 +218,10 @@ export class AdvancedSettingsComponent implements OnInit {
       };
 
     }
-
+    const pDetails = this.processorData['data'].find(pDetails=>pDetails.processorName === processorName);
+    if(pDetails){
+      pDetails['loader'] = true;
+    }
     this.httpService.runProcessor(runProcessorInput)
       .subscribe(response => {
         if (response[0] !== 'error' && !response.error && response.success) {
@@ -227,6 +233,10 @@ export class AdvancedSettingsComponent implements OnInit {
             this.messageService.add({ severity: 'error', summary: `Error in running ${runProcessorInput['processor']} processor. Please try after some time.` });
           }
         }
+        const pDetails = this.processorData['data'].find(pDetails=>pDetails.processorName === runProcessorInput['processor']);
+          if(pDetails){
+            pDetails['loader'] = false;
+          }
       });
   }
 
