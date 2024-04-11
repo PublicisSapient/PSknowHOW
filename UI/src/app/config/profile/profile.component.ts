@@ -34,7 +34,7 @@ export class ProfileComponent implements OnInit {
     isProjectAdmin = false;
     changePswdDisabled = false;
     adLogin = false;
-    ssoLogin = environment.SSO_LOGIN;
+    ssoLogin:any = environment.SSO_LOGIN;
     constructor(private getAuthorizationService: GetAuthorizationService, public router: Router, private sharedService : SharedService) {}
 
     ngOnInit() {

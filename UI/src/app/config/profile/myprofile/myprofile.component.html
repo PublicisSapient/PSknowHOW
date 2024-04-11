@@ -173,8 +173,8 @@
         </div>
       </div>
     </a>
-
-    <a *ngIf="!adLogin && !ssoLogin" class="action-link float-left p-md-3 p-mb-3 p-pl-3 p-pr-3" [class.disabled]="userEmail === '--'"
+    
+    <a *ngIf="ssoLogin == 'false'" class="action-link float-left p-md-3 p-mb-3 p-pl-3 p-pr-3" [class.disabled]="userEmail === '--'"
       routerLink="/dashboard/Config/Profile/UserSettings">
       <div class="action-box clearfix bg-role">
         <div class="action-icon float-left">
