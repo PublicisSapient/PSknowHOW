@@ -47,7 +47,7 @@ export class MyprofileComponent implements OnInit {
   roleBasedProjectList = [];
   adLogin = false;
   dynamicCols: Array<any> = [];
-  ssoLogin:any = environment.SSO_LOGIN;
+  ssoLogin = environment.SSO_LOGIN;
   constructor(private formBuilder: UntypedFormBuilder, private getAuthorizationService: GetAuthorizationService, private http: HttpService, private profile: ProfileComponent,
     private sharedService : SharedService) { }
 
