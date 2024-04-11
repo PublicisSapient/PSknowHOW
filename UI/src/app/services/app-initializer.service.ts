@@ -180,7 +180,7 @@ export class AppInitializerService {
             const env$ = this.http.get('assets/env.json').pipe(
                 tap(env => {
                     environment['baseUrl'] = env['baseUrl'] || '';
-                    environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
+                    environment['SSO_LOGIN'] = env['SSO_LOGIN'] === 'true' ? true : false;
                     environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
                     environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
                     environment['MAP_URL'] = env['MAP_URL'] || '';

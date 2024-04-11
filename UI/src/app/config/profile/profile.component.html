@@ -71,7 +71,7 @@
           </a>
         </div>
       </div>
-      <div *ngIf="!adLogin && !ssoLogin" class="p-panelmenu-panel">
+      <div *ngIf="!ssoLogin" class="p-panelmenu-panel">
         <div class="p-component p-panelmenu-header">
           <a class="p-panelmenu-header-link p-align-center" routerLink="UserSettings" routerLinkActive="selected"
             [class.disabled]="changePswdDisabled ? true : null">
