@@ -384,7 +384,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 				ServiceResponse serviceResponse = new ServiceResponse();
 				serviceResponse.setMessage(jsonObject.getString("message"));
 				serviceResponse.setSuccess(jsonObject.getBoolean("success"));
-				serviceResponse.setData(jsonObject.getJSONObject("data"));
+				serviceResponse.setData(jsonObject.getString("data"));
 				return ResponseEntity.ok(serviceResponse);
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
