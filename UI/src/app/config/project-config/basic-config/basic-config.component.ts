@@ -16,8 +16,8 @@
  *
  ******************************************************************************/
 
-import { ChangeDetectionStrategy, Component, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl, FormControl } from '@angular/forms';
+import { Component, OnInit} from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';

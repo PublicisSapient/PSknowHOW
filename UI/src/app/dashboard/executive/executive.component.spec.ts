@@ -3082,12 +3082,36 @@ describe('ExecutiveComponent', () => {
   }));
 
   it('should make post Jira call', fakeAsync(() => {
+    component.tooltip = {
+      sprintCountForKpiCalculation :2
+    }
+    component.filterApplyData = {
+      label : 'sprint'
+    }
     const postData = {
       kpiList: [
         {
           id: '633ed17f2c2d5abef2451fe3',
           kpiId: 'kpi17',
           kpiName: 'Unit Test Coverage',
+        },
+        {
+          id: '633ed17f2c2d5abef2451fe3',
+          kpiId: 'kpi73',
+          kpiName: 'Unit Test Coverage',
+          trendValueList : [
+            {
+              value : [{
+                name : 'n1'
+              },
+              {
+                name : 'n1'
+              },
+              {
+                name : 'n1'
+              }]
+            }
+          ]
         },
         {
           id: '633ed17f2c2d5abef2451fe4',
@@ -3859,6 +3883,10 @@ describe('ExecutiveComponent', () => {
 
 
   it('should call set kpi values after Zypher KpiResponseReceive', () => {
+    component.filterApplyData = {
+      label : 'project'
+    }
+    spyOn(component,'getLastConfigurableTrendingListData')
     const response = [
       {
         "kpiId": "kpi42",
@@ -7228,6 +7256,10 @@ it('should noTabAccess true when emp details available', () => {
 })
 
 it('postJiraKpi should call httpServicepost', fakeAsync(() => {
+  component.filterApplyData = {
+    label : 'project'
+  }
+  spyOn(component,'getLastConfigurableTrendingListData');
   const jiraKpiData = {
       kpi14: {
           kpiId: 'kpi14',
@@ -7889,6 +7921,71 @@ it('should create trend data for kpi kpi17',()=>{
   component.createTrendsData("kpi17")
   expect(component.kpiChartData).toBeDefined();
 })
+
+it('should filter trending list based on configuration',()=>{
+  component.tooltip = {
+    sprintCountForKpiCalculation : 1
+  }
+  const kpiList = [{
+    trendValueList:  [
+      {
+          "data": "PSKnowHOW",
+          "maturity": "5",
+          "value": [
+              {
+                  "data": "0",
+                  "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
+                  "sSprintName": "KnowHOW | PI_14| ITR_3_PSKnowHOW",
+              },
+              {
+                "data": "0",
+                "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
+                "sSprintName": "KnowHOW | PI_14| ITR_3_PSKnowHOW",
+                "sprintIds": [
+                    "288_PSKnowHOW_6577df1242f50c39ed783590"
+                ],
+            },
+            {
+              "data": "0",
+              "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
+              "sSprintName": "KnowHOW | PI_14| ITR_3_PSKnowHOW",
+          }
+          ],
+          "maturityValue": "0.0"
+      }
+  ],
+  },
+  {
+    trendValueList : [
+      {
+          "filter": "Total Defects",
+          "value": [
+              {
+                  "data": "PSKnowHOW",
+                  "value": [
+                      {
+                          "data": "27.0",
+                          "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
+                      },
+                      {
+                        "data": "27.0",
+                        "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
+                    },
+                    {
+                      "data": "27.0",
+                      "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
+                  }
+                  ]
+              }
+          ]
+      },
+  ]
+  }
+
+]
+  component.getLastConfigurableTrendingListData(kpiList)
+})
+
 
 
 

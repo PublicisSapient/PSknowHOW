@@ -30,6 +30,8 @@ public class ConfigDetails {
 	private DateRangeFilter dateRangeFilter;
 	private int noOfDataPoints;
 	private boolean repoToolFlag;
+	private int sprintCountForKpiCalculation;
+
 	public boolean isRepoToolFlag() {
 		return repoToolFlag;
 	}
@@ -96,4 +98,11 @@ public class ConfigDetails {
 		this.noOfDataPoints = noOfDataPoints;
 	}
 
+	public void setSprintCountForKpiCalculation(int sprintCountForKpiCalculation) {
+		this.sprintCountForKpiCalculation = sprintCountForKpiCalculation;
+	}
+
+	public int getSprintCountForKpiCalculation() {
+		return sprintCountForKpiCalculation;
+	}
 }
