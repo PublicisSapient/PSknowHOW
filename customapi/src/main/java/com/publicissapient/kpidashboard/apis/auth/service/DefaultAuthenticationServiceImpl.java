@@ -373,7 +373,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		String changePasswordUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getChangePasswordEndPoint(), "");
-		HttpEntity<?> entity = new HttpEntity<>(headers);
+		HttpEntity<?> entity = new HttpEntity<>(request, headers);
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response = null;
