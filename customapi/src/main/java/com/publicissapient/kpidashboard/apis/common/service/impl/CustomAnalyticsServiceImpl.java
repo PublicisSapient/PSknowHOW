@@ -159,7 +159,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			userMap.put(USER_EMAIL, email);
 			userMap.put(USER_ID, userinfoKnowHow.getId().toString());
 			userMap.put(USER_AUTHORITIES, userinfoKnowHow.getAuthorities());
-			userMap.put(USER_AUTH_TYPE, "STANDARD");
+			userMap.put(USER_AUTH_TYPE, userinfoKnowHow.getAuthType().toString());
 			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 			if (CollectionUtils.isNotEmpty(projectAccessesWithRole)) {
 				userMap.put(PROJECTS_ACCESS, projectAccessesWithRole);
