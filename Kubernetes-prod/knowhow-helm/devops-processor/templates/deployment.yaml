@@ -1,0 +1,139 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-processor
+  namespace: {{ .Values.env}}knowhow
+  labels:
+    app: devops-processor
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: devops-processor
+  template:
+    metadata:
+      labels:
+        app: devops-processor
+    spec:
+      # initContainers:
+      # - name: init-customapi
+      #   image: busybox:1.28
+      #   command: ['sh', '-c', "until nslookup customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for customapi; sleep 2; done"]
+      # - name: init-ui
+      #   image: busybox:1.28
+      #   command: ['sh', '-c', "until nslookup knowhow-ui.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for knowhow-ui; sleep 2; done"]
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "devops-processor.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            {{- range $port := .Values.ports }}
+            - containerPort: {{ $port }}
+            {{- end }}
+          env:
+            - name: spring.data.mongodb.uri
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env}}knhdbconnectionstring
+                  key: {{ .Values.env}}knhdbconnectionstring
+            - name: spring.data.mongodb.host
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env}}knhdbhost
+                  key: {{ .Values.env}}knhdbhost
+            
+            - name: aesEncryptionKey
+              valueFrom:
+                secretKeyRef:
+                  name: knowhowaesencryptionkeynew
+                  key: knowhowaesencryptionkeynew
+            - name: auth.secret
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-auth-secret
+                  key: knowhow-auth-secret
+
+            - name: spring.data.mongodb.username
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env}}knhdbusername
+                  key: {{ .Values.env}}knhdbusername
+            - name: spring.data.mongodb.password
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env}}knhdbpassword
+                  key: {{ .Values.env}}knhdbpassword
+            - name: mongock.migration-scan-package
+              value: com.publicissapient.kpidashboard.apis.mongock.installation
+            # Adding cron expressions
+            - name: sonarprocessor.cron
+              value: "0 0 */12 * * *"
+            - name: argocd.cron
+              value: "0 0 */12 * * *"
+            - name: bamboo.cron
+              value: "0 0 */12 * * *"
+            - name: bitbucket.cron
+              value: "0 0 */12 * * *"
+            - name: githubaction.cron
+              value: "0 0 */12 * * *"
+            - name: github.cron
+              value: "0 0 */12 * * *"
+            - name: gitlab.cron
+              value: "0 0 */12 * * *"
+            - name: jenkins.cron
+              value: "0 0 */12 * * *"
+            - name: jira.test.cron
+              value: "0 0 */12 * * *"
+            - name: zephyr.cron
+              value: "0 0 */12 * * *"
+            - name: teamcity.cron
+              value: "0 0 */12 * * *"
+          envFrom:
+          - configMapRef:
+              name: {{ .Values.configmapname }}
+          volumeMounts:
+            - name: knowhow-secrets-store
+              mountPath: "/mnt/{{ .Values.env}}secrets-store"
+              readOnly: true
+      volumes:
+        - name: knowhow-secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "{{ .Values.env}}secretproviderclass"
+          livenessProbe:
+            tcpSocket:
+              port: {{ index .Values.ports 0 }}
+            initialDelaySeconds: {{ .Values.probeConfig.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probeConfig.periodSeconds }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ index .Values.ports 0 }}
+            initialDelaySeconds: {{ .Values.probeConfig.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probeConfig.periodSeconds }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

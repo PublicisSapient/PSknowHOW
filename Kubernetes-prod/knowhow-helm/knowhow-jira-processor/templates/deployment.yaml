@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jira-processor
+  namespace: {{ .Values.env}}knowhow
+  labels:
+    app: jira-processor
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: jira-processor
+  template:
+    metadata:
+      labels:
+        app: jira-processor
+    spec:
+      # initContainers:
+      # - name: init-customapi
+      #   image: busybox:1.28
+      #   command: ['sh', '-c', "until nslookup knowhow-customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for knowhow-customapi; sleep 2; done"]
+      # - name: init-ui
+      #   image: busybox:1.28
+      #   command: ['sh', '-c', "until nslookup knowhow-ui.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for knowhow-ui; sleep 2; done"]
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "knowhow-jira-processor.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{.Values.service.port}}
+              protocol: TCP
+          env:
+            - name: spring.data.mongodb.uri
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env}}knhdbconnectionstring
+                  key: {{ .Values.env}}knhdbconnectionstring
+            - name: spring.data.mongodb.host
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env}}knhdbhost
+                  key: {{ .Values.env}}knhdbhost
+            
+            - name: aesEncryptionKey
+              valueFrom:
+                secretKeyRef:
+                  name: knowhowaesencryptionkeynew
+                  key: knowhowaesencryptionkeynew
+            - name: auth.secret
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-auth-secret
+                  key: knowhow-auth-secret
+
+            - name: spring.data.mongodb.username
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env}}knhdbusername
+                  key: {{ .Values.env}}knhdbusername
+            - name: spring.data.mongodb.password
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env}}knhdbpassword
+                  key: {{ .Values.env}}knhdbpassword
+            - name: mongock.migration-scan-package
+              value: com.publicissapient.kpidashboard.apis.mongock.installation
+            - name:  notification.switch
+              value: "false"
+            #Adding cron expressions
+            - name: jira.scrumBoardCron
+              value: "0 0 */12 * * *"
+            - name: jira.scrumJqlCron
+              value: "0 0 */12 * * *"
+            - name: jira.kanbanBoardCron
+              value: "0 0 */12 * * *"
+            - name: jira.kanbanJqlCron
+              value: "0 0 */12 * * *"
+          envFrom:
+          - configMapRef:
+              name: {{ .Values.configmapname }}
+          volumeMounts:
+            - name: knowhow-secrets-store
+              mountPath: "/mnt/{{ .Values.env}}secrets-store"
+              readOnly: true
+      volumes:
+        - name: knowhow-secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "{{ .Values.env}}secretproviderclass"
+          livenessProbe:
+            tcpSocket:
+              port: {{.Values.service.port}}
+            initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
+            periodSeconds: 5  
+          readinessProbe:
+            tcpSocket:
+              port: {{.Values.service.port}}
+            initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

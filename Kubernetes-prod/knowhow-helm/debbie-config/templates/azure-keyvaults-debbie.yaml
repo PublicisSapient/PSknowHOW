@@ -1,0 +1,98 @@
+# # This is a SecretProviderClass example using user-assigned identity to access your key vault. The secretObjects section is used to create Kubernetes secrets from the  mounted Azure Key Vault secrets.
+# apiVersion: secrets-store.csi.x-k8s.io/v1
+# kind: SecretProviderClass
+# metadata:
+#   name: {{ .Values.env}}-debbie-secretproviderclass
+#   namespace: {{ .Values.env}}-knowhow
+# spec:
+#   provider: azure
+#   parameters:
+#     usePodIdentity: "false"
+#     useVMManagedIdentity:   "true"                                                         # Set to true for  using managed identity
+#     userAssignedIdentityID: "19ae5e85-a9ef-4e1a-bb4f-a8dd2bd0d55c"  # Set the   clientID of the user-assigned managed identity to use, from the previous step
+#     keyvaultName:   speedtoolskeyvault                                                                  # Set to the name of your key vault
+#     objects:  |
+#       array:
+#         - |
+#           objectName: {{ .Values.env}}rabbitpass
+#           objectType: secret
+#           objectVersion: ""
+#         - |
+#           objectName: {{ .Values.env}}debbieuser
+#           objectType: secret
+#           objectVersion: ""
+#         - |
+#           objectName: {{ .Values.env}}debbiepassword
+#           objectType: secret
+#           objectVersion: ""
+#         - |
+#           objectName: {{ .Values.env}}-debbie-secret-key
+#           objectType: secret
+#           objectVersion: ""
+#         - |
+#           objectName: {{ .Values.env}}-debbie-internal-key
+#           objectType: secret
+#           objectVersion: ""
+#         - |
+#           objectName: {{ .Values.env}}-debbie-db-url
+#           objectType: secret
+#           objectVersion: ""
+#         - |
+#           objectName: tenginequerypass
+#           objectType: secret
+#           objectVersion: ""
+#         - |
+#           objectName: debbietengineauthtoken
+#           objectType: secret
+#           objectVersion: ""
+#         - |
+#           objectName: debbiemailhostpass
+#           objectType: secret
+#           objectVersion: ""
+#     tenantId: "d52c9ea1-7c21-47b1-82a3-33a74b1f74b8"                 # The tenant ID of the key vault
+#   secretObjects:                                    #https://secrets-store-csi-driver.sigs.k8s.io/topics/sync-as-kubernetes-secret                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+#   - secretName: {{ .Values.env}}rabbitpass
+#     type: Opaque
+#     data:
+#     - objectName: {{ .Values.env}}rabbitpass
+#       key: {{ .Values.env}}rabbitpass
+#   - secretName: {{ .Values.env}}debbieuser
+#     type: Opaque
+#     data:
+#     - objectName: {{ .Values.env}}debbieuser
+#       key: {{ .Values.env}}debbieuser
+#   - secretName: {{ .Values.env}}debbiepassword
+#     type: Opaque
+#     data:
+#     - objectName: {{ .Values.env}}debbiepassword                           # This refers to the name of the secret as it is stored in Azure Key Vault
+#       key: {{ .Values.env}}debbiepassword                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+#   - secretName: {{ .Values.env}}-debbie-secret-key
+#     type: Opaque
+#     data:
+#     - objectName: {{ .Values.env}}-debbie-secret-key                           # This refers to the name of the secret as it is stored in Azure Key Vault
+#       key: {{ .Values.env}}-debbie-secret-key                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+#   - secretName: {{ .Values.env}}-debbie-internal-key
+#     type: Opaque
+#     data:
+#     - objectName: {{ .Values.env}}-debbie-internal-key
+#       key: {{ .Values.env}}-debbie-internal-key
+#   - secretName: {{ .Values.env}}-debbie-db-url
+#     type: Opaque
+#     data:
+#     - objectName: {{ .Values.env}}-debbie-db-url
+#       key: {{ .Values.env}}-debbie-db-url
+#   - secretName: tenginequerypass
+#     type: Opaque
+#     data:
+#     - objectName: tenginequerypass
+#       key: tenginequerypass
+#   - secretName: debbietengineauthtoken
+#     type: Opaque
+#     data:
+#     - objectName: debbietengineauthtoken
+#       key: debbietengineauthtoken
+#   - secretName: debbiemailhostpass
+#     type: Opaque
+#     data:
+#     - objectName: debbiemailhostpass
+#       key: debbiemailhostpass

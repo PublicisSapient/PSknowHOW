@@ -1,0 +1,115 @@
+kind: CronJob
+apiVersion: batch/v1
+metadata:
+  name: repotool-scanner-scheduler
+  namespace: stage-knowhow
+spec:
+  concurrencyPolicy: Allow
+  failedJobsHistoryLimit: 10
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            cattle.io/timestamp: "2020-01-27T10:29:52Z"
+        spec:
+          containers:
+          - command:
+              - python
+              - manage.py
+              - runscript
+              - scanner_scheduler
+            envFrom:
+              - configMapRef:
+                  name: stage-debbie-config
+                  optional: false
+            image: speedtools.azurecr.io/debbie-django:latest
+            imagePullPolicy: Always
+            name: repotool-scanner-scheduler
+            env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: stage-debbieuser
+                  key: stage-debbieuser
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: stage-debbie-db-url
+                  key: stage-debbie-db-url
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: stage-debbiepassword
+                  key: stage-debbiepassword
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stage-debbie-secret-key
+                  key: stage-debbie-secret-key
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: stage-rabbitpass
+                  key: stage-rabbitpass
+            - name: EMAIL_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: debbiemailhostpass
+                  key: debbiemailhostpass
+            - name: TENGINE_QUERY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tenginequerypass
+                  key: tenginequerypass
+            - name: TENGINE_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: debbietengineauthtoken
+                  key: debbietengineauthtoken
+            - name: SCAN_STATUS_APIS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: scan-status-apis-token-debbie
+                  key: scan-status-apis-token-debbie
+            - name: DEBBIE_INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stage-debbie-internal-key
+                  key: stage-debbie-internal-key
+            volumeMounts:
+              - name: debbie-secrets-store
+                mountPath: "/mnt/stage-debbie-secrets-store"
+                readOnly: true
+            resources:
+              limits:
+                cpu: 2000m
+                memory: 1024Mi
+              requests:
+                cpu: 200m
+                memory: 512Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              privileged: false
+              readOnlyRootFilesystem: false
+              runAsNonRoot: false
+            stdin: true
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            tty: true
+          volumes:
+            - name: debbie-secrets-store
+              csi:
+                driver: secrets-store.csi.k8s.io
+                readOnly: true
+                volumeAttributes:
+                  secretProviderClass: "stage-secretproviderclass"
+          dnsConfig: {}
+          dnsPolicy: ClusterFirst
+          restartPolicy: Never
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+  schedule: "0 */12 * * *"
+  successfulJobsHistoryLimit: 3
+  suspend: false

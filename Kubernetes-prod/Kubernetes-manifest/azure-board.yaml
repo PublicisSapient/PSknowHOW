@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azure-board-processor
+  namespace: prod-knowhow
+  labels:
+    app: azure-board-processor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azure-board-processor
+  template:
+    metadata:
+      labels:
+        app: azure-board-processor
+    spec:
+      # initContainers:
+      # # - name: init-mongodb
+      # #   image: busybox:1.28
+      # #   command: ['sh', '-c', "until nslookup mongodb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mongodb; sleep 2; done"]
+      # - name: init-customapi
+      #   image: busybox:1.28
+      #   command: ['sh', '-c', "until nslookup customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for customapi; sleep 2; done"]
+      containers:
+      - name: azure-board-processor
+        image: speedtools.azurecr.io/knowhow-azure-board-processor:9.0.0-SNAPSHOT
+        imagePullPolicy: Always
+        env:
+            - name: spring.data.mongodb.uri
+              valueFrom:
+                secretKeyRef:
+                  name: prod-knhdbconnectionstring
+                  key: prod-knhdbconnectionstring
+            - name: spring.data.mongodb.host
+              valueFrom:
+                secretKeyRef:
+                  name: prod-knhdbhost
+                  key: prod-knhdbhost
+            
+            - name: aesEncryptionKey
+              valueFrom:
+                secretKeyRef:
+                  name: knowhowaesencryptionkeynew
+                  key: knowhowaesencryptionkeynew
+            - name: auth.secret
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-auth-secret
+                  key: knowhow-auth-secret
+            - name: spring.data.mongodb.username
+              valueFrom:
+                secretKeyRef:
+                  name: prod-knhdbusername
+                  key: prod-knhdbusername
+            - name: spring.data.mongodb.password
+              valueFrom:
+                secretKeyRef:
+                  name: prod-knhdbpassword
+                  key: prod-knhdbpassword
+            - name: mongock.migration-scan-package
+              value: com.publicissapient.kpidashboard.apis.mongock.installation
+            # Adding cron expressions
+            - name: azure.cron
+              value: "0 0 */12 * * *"
+        # resources:
+        #   requests:
+        #     memory: "1Gi"
+        #     cpu: "0.5"
+        ports:
+          - containerPort: 50017
+        readinessProbe:
+          tcpSocket:
+            port: 50017
+          initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
+          periodSeconds: 5          # Check every 5 seconds
+        livenessProbe:
+          tcpSocket:
+            port: 50017
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        envFrom:
+        - configMapRef:
+            name: knowhow-config
+        volumeMounts:
+            - name: knowhow-secrets-store
+              mountPath: "/mnt/prod-secrets-store"
+              readOnly: true
+      volumes:
+        - name: knowhow-secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "prod-secretproviderclass"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: azure-board-processor
+  namespace: prod-knowhow
+spec:
+  selector:
+    app: azure-board-processor
+  ports:
+    - protocol: TCP
+      port: 50017
+      targetPort: 50017

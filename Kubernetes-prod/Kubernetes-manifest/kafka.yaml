@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+#kind: Deployment
+metadata:
+  name: kafka
+  namespace: prod-knowhow
+spec:
+  replicas: 1
+  serviceName: kafka-cluster
+  selector:
+    matchLabels:
+        app: kafka-cluster
+  template:
+    metadata:
+      labels:
+        app: kafka-cluster
+    spec:
+      hostname: kafka
+      containers:
+      - name: kafka
+        image: bitnami/kafka:2.6.0
+        imagePullPolicy: IfNotPresent
+#        image: bitnami/kafka:latest
+        securityContext:
+          runAsUser: 0
+        # resources:
+        #   requests:
+        #     memory: "1G"
+        #     cpu: "1"
+        ports:
+         - containerPort: 9092
+        env:
+        - name: ALLOW_PLAINTEXT_LISTENER
+          value: "yes"
+        envFrom:
+          - configMapRef:
+              name: knowhow-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-cluster
+  namespace: prod-knowhow
+spec:
+  selector:
+    app: kafka-cluster
+  ports:
+  - port: 9092
+    targetPort: 9092
+  type: ClusterIP

@@ -1,0 +1,197 @@
+# This is a SecretProviderClass example using user-assigned identity to access your key vault. The secretObjects section is used to create Kubernetes secrets from the  mounted Azure Key Vault secrets.
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: {{ .Values.env}}secretproviderclass
+  namespace: {{ .Values.env}}knowhow
+spec:
+  provider: azure
+  parameters:
+    usePodIdentity: "false"
+    useVMManagedIdentity:   "true"                                                         # Set to true for  using managed identity
+    userAssignedIdentityID: "2db9f8e7-efad-4274-9b49-bc02d0e645e6"  # Set the   clientID of the user-assigned managed identity to use, from the previous step
+    keyvaultName: msgsseunspdkv                                                                  # Set to the name of your key vault
+    objects:  |
+      array:
+        - |
+          objectName: {{ .Values.env}}knhdbusername
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: {{ .Values.env}}knhdbpassword
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: {{ .Values.env}}knhdbhost
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: {{ .Values.env}}knhdbconnectionstring
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: {{ .Values.env}}rabbitpass
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: {{ .Values.env}}debbieuser
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: {{ .Values.env}}debbiepassword
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: {{ .Values.env}}sendgrid-apikey
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: {{ .Values.env}}repo-tool-api-key
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: {{ .Values.env}}debbie-secret-key
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: {{ .Values.env}}debbie-internal-key
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: {{ .Values.env}}debbie-db-url
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: tenginequerypass
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: knowhowaesencryptionkeynew
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: knowhow-auth-secret
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: debbietengineauthtoken
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: debbiemailhostpass
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: exposed-api-key
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: auth-resourceapikeys
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: scan-status-apis-token-debbie
+          objectType: secret
+          objectVersion: ""
+    tenantId: "d52c9ea1-7c21-47b1-82a3-33a74b1f74b8"                 # The tenant ID of the key vault
+  secretObjects:                                    #https://secrets-store-csi-driver.sigs.k8s.io/topics/sync-as-kubernetes-secret
+  - secretName: {{ .Values.env}}knhdbusername
+    type: Opaque
+    data:
+    - objectName: {{ .Values.env}}knhdbusername                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: {{ .Values.env}}knhdbusername                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: {{ .Values.env}}knhdbpassword
+    type: Opaque
+    data:
+    - objectName: {{ .Values.env}}knhdbpassword
+      key: {{ .Values.env}}knhdbpassword
+  - secretName: {{ .Values.env}}knhdbhost
+    type: Opaque
+    data:
+    - objectName: {{ .Values.env}}knhdbhost
+      key: {{ .Values.env}}knhdbhost
+  - secretName: {{ .Values.env}}knhdbconnectionstring
+    type: Opaque
+    data:
+    - objectName: {{ .Values.env}}knhdbconnectionstring                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: {{ .Values.env}}knhdbconnectionstring                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: {{ .Values.env}}rabbitpass
+    type: Opaque
+    data:
+    - objectName: {{ .Values.env}}rabbitpass
+      key: {{ .Values.env}}rabbitpass
+  - secretName: {{ .Values.env}}debbieuser
+    type: Opaque
+    data:
+    - objectName: {{ .Values.env}}debbieuser
+      key: {{ .Values.env}}debbieuser
+  - secretName: {{ .Values.env}}debbiepassword
+    type: Opaque
+    data:
+    - objectName: {{ .Values.env}}debbiepassword                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: {{ .Values.env}}debbiepassword                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: {{ .Values.env}}sendgrid-apikey
+    type: Opaque
+    data:
+    - objectName: {{ .Values.env}}sendgrid-apikey
+      key: {{ .Values.env}}sendgrid-apikey
+  - secretName: {{ .Values.env}}repo-tool-api-key
+    type: Opaque
+    data:
+    - objectName: {{ .Values.env}}repo-tool-api-key
+      key: {{ .Values.env}}repo-tool-api-key
+  - secretName: {{ .Values.env}}debbie-secret-key
+    type: Opaque
+    data:
+    - objectName: {{ .Values.env}}debbie-secret-key                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: {{ .Values.env}}debbie-secret-key                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: {{ .Values.env}}debbie-internal-key
+    type: Opaque
+    data:
+    - objectName: {{ .Values.env}}debbie-internal-key
+      key: {{ .Values.env}}debbie-internal-key
+  - secretName: {{ .Values.env}}debbie-db-url
+    type: Opaque
+    data:
+    - objectName: {{ .Values.env}}debbie-db-url
+      key: {{ .Values.env}}debbie-db-url
+  - secretName: tenginequerypass
+    type: Opaque
+    data:
+    - objectName: tenginequerypass
+      key: tenginequerypass
+  - secretName: knowhowaesencryptionkeynew
+    type: Opaque
+    data:
+    - objectName: knowhowaesencryptionkeynew                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: knowhowaesencryptionkeynew                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: knowhow-auth-secret
+    type: Opaque
+    data:
+    - objectName: knowhow-auth-secret
+      key: knowhow-auth-secret
+  - secretName: debbietengineauthtoken
+    type: Opaque
+    data:
+    - objectName: debbietengineauthtoken
+      key: debbietengineauthtoken
+  - secretName: debbiemailhostpass
+    type: Opaque
+    data:
+    - objectName: debbiemailhostpass
+      key: debbiemailhostpass
+  - secretName: exposed-api-key
+    type: Opaque
+    data:
+    - objectName: exposed-api-key
+      key: exposed-api-key
+  - secretName: auth-resourceapikeys
+    type: Opaque
+    data:
+    - objectName: auth-resourceapikeys
+      key: auth-resourceapikeys
+  - secretName: scan-status-apis-token-debbie
+    type: Opaque
+    data:
+    - objectName: scan-status-apis-token-debbie
+      key: scan-status-apis-token-debbie

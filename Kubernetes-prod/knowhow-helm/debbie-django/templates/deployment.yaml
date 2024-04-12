@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "debbie-django.fullname" . }}
+  namespace: {{ .Values.env}}-knowhow
+  labels:
+    {{- include "debbie-django.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "debbie-django.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "debbie-django.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "debbie-django.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          envFrom:
+          - configMapRef:
+              name: {{ .Values.env}}-debbie-config
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env }}-debbieuser
+                  key: {{ .Values.env }}-debbieuser
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env }}-debbie-db-url
+                  key: {{ .Values.env }}-debbie-db-url
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{.Values.env}}-debbiepassword
+                  key: {{.Values.env}}-debbiepassword
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env}}-debbie-secret-key
+                  key: {{ .Values.env}}-debbie-secret-key
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env }}-rabbitpass
+                  key: {{ .Values.env }}-rabbitpass
+            - name: EMAIL_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: debbiemailhostpass
+                  key: debbiemailhostpass
+            - name: TENGINE_QUERY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tenginequerypass
+                  key: tenginequerypass
+            - name: TENGINE_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: debbietengineauthtoken
+                  key: debbietengineauthtoken
+            - name: SCAN_STATUS_APIS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: scan-status-apis-token-debbie
+                  key: scan-status-apis-token-debbie
+            - name: DEBBIE_INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env}}-debbie-internal-key
+                  key: {{ .Values.env}}-debbie-internal-key
+          volumeMounts:
+            - name: debbie-secrets-store
+              mountPath: "/mnt/{{ .Values.env}}-debbie-secrets-store"
+              readOnly: true
+      volumes:
+        - name: debbie-secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "{{ .Values.env}}-secretproviderclass"
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
+            periodSeconds: 5  
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

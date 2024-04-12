@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: knowhow-config
+  namespace: prod-knowhow
+data:
+  #Common-Config for all application
+  keystorefile: "/usr/lib/jvm/java-1.8.0-amazon-corretto/jre/lib/security/cacerts"
+  spring.data.mongodb.database: "kpidashboard"
+  flag.mailWithoutKafka: "false"
+  notification.switch: "true"
+  sendGridEnabled: "false"
+
+  # customapi Config
+  #auth.centralAuthBaseURL: "https://stage-authnauth.tools.publicis.sapient.com"
+  auth.centralAuthBaseURL: "http://authnauth-ui.stage-auth.svc.cluster.local:80"
+  auth.subDomainCookie: "true"
+  auth.domain: "tools.publicis.sapient.com"
+  forgotPassword.uiHost: "psknowhow.tools.publicis.sapient.com"
+  corsFilterValidOrigin: "psknowhow.tools.publicis.sapient.com"
+  isRepoToolEnable: "true"
+  versionnumber: "9.0.0-SNAPSHOT"
+
+  # UI Config
+  API_HOST: "customapi"
+  API_PORT: "8080"
+  CENTRAL_LOGIN_URL: "https://authnauth.tools.publicis.sapient.com"
+  MAP_URL: "https://assessmentplatform2.tools.publicis.sapient.com"
+  RETROS_URL: "https://rr.tools.publicis.sapient.com"
+  AUTHENTICATION_SERVICE: "true"
+  ENVIRONMENT: "prod"
+
+  #kafka-consumer-config
+  spring.kafka.consumer.bootstrap-servers: kafka-0.kafka-cluster.prod-knowhow.svc.cluster.local:9092
+  spring.kafka.producer.bootstrap-servers: kafka-0.kafka-cluster.prod-knowhow.svc.cluster.local:9092
+
+  #Zookeeper & Kafka
+  KAFKA_CFG_ZOOKEEPER_CONNECT: >-
+    zookeeper-0.zookeeper-cluster.prod-knowhow.svc.cluster.local:2181
+  ZOO_SERVERS: >-
+    zookeeper-0.zookeeper-cluster.prod-knowhow.svc.cluster.local:2888:3888

@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    appgw.ingress.kubernetes.io/appgw-ssl-certificate: wildcard-tools-publicos-sapient-com
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"appgw.ingress.kubernetes.io/appgw-ssl-certificate":"wildcard-tools-publicos-sapient-com"},"name":"map-ui","namespace":"prod-map"},"spec":{"ingressClassName":"azure-application-gateway","rules":[{"host":"prod-retrospective.tools.publicis.sapient.com","http":{"paths":[{"backend":{"service":{"name":"map-ui","port":{"number":80}}},"path":"/","pathType":"Exact"}]}}]}}
+  creationTimestamp: "2023-12-14T14:10:48Z"
+  generation: 7
+  name: prod-prometheus
+  namespace: prod-dashboard
+  resourceVersion: "8784047"
+  uid: ac29626d-a7c1-4b9c-b1c2-3f832b450a7b
+spec:
+  ingressClassName: azure-application-gateway
+  rules:
+  - host: prod-prometheus.tools.publicis.sapient.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: prometheus-server
+            port:
+              number: 80
+        path: /
+        pathType: Exact
+status:
+  loadBalancer:
+    ingress:
+    - ip: 13.94.97.252
