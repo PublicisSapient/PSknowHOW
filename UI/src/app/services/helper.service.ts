@@ -400,7 +400,7 @@ export class HelperService {
 
     sortAlphabetically(objArray) {
         if (objArray && objArray?.length > 1) {
-            objArray?.sort((a, b) => a.nodeName ? a.nodeName.localeCompare(b.nodeName) : a.data ? a?.data?.localeCompare(b?.data) : a.localeCompare(b));
+            objArray?.sort((a, b) => a.nodeName ? a.nodeName.localeCompare(b.nodeName) : a.data ? a?.data?.localeCompare(b?.data) : a.date ? new Date(a.date) > new Date(b.date) : a.localeCompare(b));
         }
         return objArray;
     }
@@ -593,9 +593,9 @@ export class HelperService {
             disabledKpis.map((kpi, index) => kpi.order = upDatedConfigData.length + index + 3);
             const hiddenkpis = configGlobalData.filter(item => !item.shown);
             hiddenkpis.map((kpi, index) => kpi.order = upDatedConfigData.length + disabledKpis.length + index + 3);
-            if(extraKpis){
-                this.sharedService.kpiListNewOrder.next([extraKpis,...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
-            }else{
+            if (extraKpis) {
+                this.sharedService.kpiListNewOrder.next([extraKpis, ...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
+            } else {
                 this.sharedService.kpiListNewOrder.next([...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
             }
 
@@ -628,7 +628,7 @@ export class HelperService {
         return uniqueArray;
     }
 
-      async getKpiCommentsCount(kpiCommentsCountObj,nodes,level,nodeChildId,updatedConfigGlobalData,kpiId) {
+    async getKpiCommentsCount(kpiCommentsCountObj, nodes, level, nodeChildId, updatedConfigGlobalData, kpiId) {
         let requestObj = {
             "nodes": nodes,
             "level": level,
@@ -636,15 +636,15 @@ export class HelperService {
             'kpiIds': []
         };
         if (kpiId) {
-          requestObj['kpiIds'] = [kpiId];
-          await this.getKpiCommentsHttp(requestObj).then((res: object) => {
-            kpiCommentsCountObj[kpiId] = res[kpiId];
-          });
+            requestObj['kpiIds'] = [kpiId];
+            await this.getKpiCommentsHttp(requestObj).then((res: object) => {
+                kpiCommentsCountObj[kpiId] = res[kpiId];
+            });
         } else {
-          requestObj['kpiIds'] = (updatedConfigGlobalData?.map((item) => item.kpiId));
-          await this.getKpiCommentsHttp(requestObj).then((res: object) => {
-            kpiCommentsCountObj = res;
-          });
+            requestObj['kpiIds'] = (updatedConfigGlobalData?.map((item) => item.kpiId));
+            await this.getKpiCommentsHttp(requestObj).then((res: object) => {
+                kpiCommentsCountObj = res;
+            });
         }
         return kpiCommentsCountObj
     }
