@@ -21,7 +21,7 @@
   <div class="{{selectedtype}}" id="{{selectedtype}}">
     <div class="clearfix" *ngIf="showChart !== 'table'">
       <div class="right-container col">
-        <div class="p-grid justify-content-start p-pt-3 p-pl-2 p-pr-2">
+        <div class="p-grid justify-content-start p-pt-3 p-m-0">
           <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
             <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
               <div [ngClass]="{'p-sm-6':!(showChart==='large'),'p-sm-12':showChart==='large'}">
