@@ -4651,5 +4651,73 @@
       ]
     },
     "kpiSubCategory": "Flow KPIs"
+  },
+  {
+    "kpiId": "kpi172",
+    "kpiName": "Build Frequency",
+    "maxValue": "",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 24,
+    "kpiSource": "Jenkins",
+    "groupId": 1,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Build frequency refers the number of successful builds done in a specific time frame.",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/92930049/Build+Frequency"
+          }
+        }
+      ]
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Builds Count",
+    "isPositiveTrend": false,
+    "showTrend": true,
+    "kpiFilter": "dropDown",
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-1",
+      "2-4",
+      "5-8",
+      "8-10",
+      "10-"
+    ]
+  },
+  {
+    "kpiId": "kpi176",
+    "kpiName": "Risks And Dependencies",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 6,
+    "kpiCategory": "Iteration",
+    "kpiSubCategory": "Iteration Review",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+      "definition": "It shows the count of issues which do not have estimates and count of In progress issues without any work logs.",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680674/Estimate+Hygiene"
+          }
+        }
+      ]
+    }
   }
 ]

@@ -517,8 +517,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 					"jiraIterationCompletionStatusCustomField", "jiraIterationCompletionStatusKPI135",
 					"jiraIterationCompletionStatusKPI122", "jiraIterationCompletionStatusKPI75",
-					"jiraIterationCompletionStatusKPI145", "jiraIterationCompletionStatusKPI140",
-					"jiraIterationCompletionStatusKPI132", "jiraIterationCompletionStatusKPI136",
+					"jiraIterationCompletionStatusKPI145",
 					"jiraIterationCompletionStatusKpi72", "jiraIterationCompletionStatusKpi39",
 					"jiraIterationCompletionStatusKpi5", "jiraIterationCompletionStatusKPI124",
 					"jiraIterationCompletionStatusKPI123", "jiraIterationCompletionStatusKPI125",

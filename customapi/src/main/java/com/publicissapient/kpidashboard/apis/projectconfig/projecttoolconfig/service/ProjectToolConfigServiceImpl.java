@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -398,10 +398,12 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setProjectId(e.getProjectId());
 			projectConfToolDto.setProjectKey(e.getProjectKey());
 			projectConfToolDto.setJobName(e.getJobName());
+			projectConfToolDto.setAzurePipelineName(e.getAzurePipelineName());
 			projectConfToolDto.setJobType(e.getJobType());
 			projectConfToolDto.setEnv(e.getEnv());
 			projectConfToolDto.setRepoSlug(e.getRepoSlug());
 			projectConfToolDto.setRepositoryName(e.getRepositoryName());
+			projectConfToolDto.setGitFullUrl(e.getGitFullUrl());
 			projectConfToolDto.setBitbucketProjKey(e.getBitbucketProjKey());
 			projectConfToolDto.setCreatedAt(e.getCreatedAt());
 			projectConfToolDto.setUpdatedAt(e.getUpdatedAt());

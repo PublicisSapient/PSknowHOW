@@ -1,34 +1,60 @@
-FROM psknowhow/amazoncorretto:8.1
+# Use a base image
+FROM amazoncorretto:17
 
-# There are environment variables with periods in the names so change bash as default 
-RUN ln -sf /bin/bash /bin/sh 
-#&& apt-get update && apt upgrade libc-bin -y
+# Create a non-root user
+ARG USER=knowhowuser
+ARG UID=1000
+ARG GID=1000
 
-VOLUME /tmp
-VOLUME /app
-VOLUME /app/properties
-VOLUME /app/offline_data
-VOLUME /app/certs
+# Set the working directory
+WORKDIR /app
 
+# Set the ownership of the working directory to the non-root user
+RUN ln -sf /bin/bash /bin/sh \
+    && yum install -y shadow-utils \
+    && groupadd -g $GID $USER \
+    && useradd -u $UID -g $GID -m -s /bin/bash $USER 
+
+# Set environment variables for volumes
+
+ENV APP_DIR="/app" \
+    PROPERTIES_DIR="/app/properties" \
+    CERTS_DIR="/app/certs" \
+    keytoolalias="myknowhow" \
+    keystorefile="/usr/lib/jvm/java-17-amazon-corretto/lib/security/cacerts"
+
+# Create the volumes
+VOLUME $PROPERTIES_DIR
+
+# Set the JAR file variables
 ARG AZUREPIPELINE_JAR_FILE=processors/azure-pipeline/target/azurepipeline-processor.jar
 ARG AZUREREPO_JAR_FILE=processors/azure-repo/target/azurerepo-processor.jar
 
-
+# Set the properties file names
 ARG AZUREPIPELINE_PROPERTIES_FILE_NAME=azurepipeline.properties
 ARG AZUREREPO_PROPERTIES_FILE_NAME=azurerepo.properties
 
-ADD ${AZUREPIPELINE_JAR_FILE} /app/azurepipeline.jar
-ADD ${AZUREREPO_JAR_FILE} /app/azurerepo.jar
+# Copy JAR files
+ADD ${AZUREPIPELINE_JAR_FILE} $APP_DIR/azurepipeline.jar
+ADD ${AZUREREPO_JAR_FILE} $APP_DIR/azurerepo.jar
 
-
-WORKDIR /app
+# Set environment variables
 ENV JAVA_OPTS=""
 
+# Expose ports
 EXPOSE 50015
 EXPOSE 50016
 
+# Copy startup script
+ADD processors/azure-pipeline-repo-processor-startup/start_combined_collector.sh $APP_DIR/start_combined_collector.sh
 
-ADD processors/azure-pipeline-repo-processor-startup/start_combined_collector.sh start_combined_collector.sh
-RUN ["chmod", "+x", "/app/start_combined_collector.sh"]
-RUN ls -lrt
+# Set permissions for the startup script
+RUN chown -R $USER:$USER /app \
+    && chmod +x $APP_DIR/start_combined_collector.sh \
+    && chmod 766 $keystorefile
+
+# Switch to the non-root user
+USER $USER:$GID
+
+# Command to run the application
 CMD ["sh", "start_combined_collector.sh"]

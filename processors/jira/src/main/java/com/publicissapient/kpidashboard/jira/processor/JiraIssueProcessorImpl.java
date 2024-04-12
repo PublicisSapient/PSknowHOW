@@ -37,8 +37,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -283,7 +283,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 	}
 
-	private void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
+	void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
 			List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 
@@ -301,7 +301,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 	}
 
-	String setAssigneeName(String assigneeId, String basicProjectConfigId) {
+	private String setAssigneeName(String assigneeId, String basicProjectConfigId) {
 		String assigneeName = JiraConstants.USER + JiraConstants.SPACE + 1;
 		if (null == assigneeDetails
 				|| !assigneeDetails.getBasicProjectConfigId().equalsIgnoreCase(basicProjectConfigId)) {
@@ -351,7 +351,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 		if (StringUtils.isNotBlank(fieldMapping.getJiraTechDebtIdentification())) {
 			if (fieldMapping.getJiraTechDebtIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
-				if (org.apache.commons.collections.CollectionUtils.containsAny(issue.getLabels(),
+				if (org.apache.commons.collections4.CollectionUtils.containsAny(issue.getLabels(),
 						fieldMapping.getJiraTechDebtValue())) {
 					jiraIssue.setSpeedyIssueType(NormalizedJira.TECHSTORY.getValue());
 				}
@@ -362,7 +362,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 					&& null != fields.get(fieldMapping.getJiraTechDebtCustomField())
 					&& fields.get(fieldMapping.getJiraTechDebtCustomField().trim()) != null
 					&& fields.get(fieldMapping.getJiraTechDebtCustomField().trim()).getValue() != null
-					&& org.apache.commons.collections.CollectionUtils.containsAny(fieldMapping.getJiraTechDebtValue(),
+					&& org.apache.commons.collections4.CollectionUtils.containsAny(fieldMapping.getJiraTechDebtValue(),
 							JiraIssueClientUtil
 									.getListFromJson(fields.get(fieldMapping.getJiraTechDebtCustomField().trim())))) {
 				jiraIssue.setSpeedyIssueType(NormalizedJira.TECHSTORY.getValue());
@@ -546,20 +546,24 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private void setRCA(FieldMapping fieldMapping, Issue issue, JiraIssue jiraIssue, Map<String, IssueField> fields) {
+
 		List<String> rcaList = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
-				.anyMatch(issue.getIssueType()
-						.getName()::equalsIgnoreCase) && null != fieldMapping.getRootCauseIdentifier()) {
-			if (fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
+
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())
+				&& fieldMapping.getJiradefecttype().stream().anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)
+				&& null != fieldMapping.getRootCauseIdentifier()) {
+			if (StringUtils.isNotEmpty(fieldMapping.getRootCauseIdentifier())
+					&& fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
 				List<String> commonLabel = issue.getLabels().stream()
 						.filter(x -> fieldMapping.getRootCauseValues().contains(x)).collect(Collectors.toList());
 				if (CollectionUtils.isNotEmpty(commonLabel)) {
 					rcaList.addAll(commonLabel);
 				}
-			} else if (fieldMapping.getRootCauseIdentifier().trim()
-					.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD) && fields.get(
-					fieldMapping.getRootCause().trim()) != null && fields.get(fieldMapping.getRootCause().trim())
-					.getValue() != null) {
+			} else if (StringUtils.isNotEmpty(fieldMapping.getRootCauseIdentifier())
+					&& fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
+					&& StringUtils.isNotEmpty(fieldMapping.getRootCause())
+					&& fields.get(fieldMapping.getRootCause().trim()) != null
+					&& fields.get(fieldMapping.getRootCause().trim()).getValue() != null) {
 				rcaList.addAll(getRootCauses(fieldMapping, fields));
 			}
 		}
@@ -752,7 +756,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 				isRaisedByThirdParty = true;
 				String testPhase = ((org.codehaus.jettison.json.JSONObject) issueFieldValue).get(JiraConstants.VALUE)
 						.toString();
-				if (lowerCaseBugRaisedValue.contains(testPhase.toLowerCase()) && Objects.nonNull(jiraIssue) && feature.equalsIgnoreCase(TEST_PHASE)) {
+				if (lowerCaseBugRaisedValue.contains(testPhase.toLowerCase()) && Objects.nonNull(jiraIssue)) {
 					setSpecificField(jiraIssue,feature, Collections.singletonList(testPhase));
 				}
 			}

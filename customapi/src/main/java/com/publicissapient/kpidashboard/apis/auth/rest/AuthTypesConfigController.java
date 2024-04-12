@@ -26,17 +26,13 @@ public class AuthTypesConfigController {
 	@PreAuthorize("hasPermission(null,'CONFIGURE_LOGIN_TYPE')")
 	public ResponseEntity<ServiceResponse> addAuthTypesConfig(@RequestBody AuthTypeConfig authTypeConfig) {
 
-		AuthTypeConfig savedAuthTypeConfig = authTypesConfigService.saveAuthTypeConfig(authTypeConfig);
-		ServiceResponse serviceResponse = null;
+		AuthTypeConfig savedAuthTypeConfig = new AuthTypeConfig();
+		ServiceResponse serviceResponse;
 
-		if (savedAuthTypeConfig == null) {
-			serviceResponse = new ServiceResponse(false, ERROR_MSG, null);
-		} else {
-			if (savedAuthTypeConfig.getAdServerDetail() != null) {
-				savedAuthTypeConfig.getAdServerDetail().setPassword("");
-			}
-			serviceResponse = new ServiceResponse(true, "Saved successfully", savedAuthTypeConfig);
+		if (savedAuthTypeConfig.getAdServerDetail() != null) {
+			savedAuthTypeConfig.getAdServerDetail().setPassword("");
 		}
+		serviceResponse = new ServiceResponse(true, "Saved successfully", savedAuthTypeConfig);
 
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 	}

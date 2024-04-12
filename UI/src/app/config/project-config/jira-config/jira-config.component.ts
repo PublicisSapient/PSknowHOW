@@ -2201,7 +2201,7 @@ export class JiraConfigComponent implements OnInit {
             },
             { field: 'username', header: 'User Name', class: 'normal' },
             { field: 'repoToolProvider', header: 'RepoTool Provider', class: 'normal' },
-            { field: 'httpUrl', header: 'Http URL', class: 'long-text' },
+            { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
           ];
           this.configuredToolTableCols = [
             { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
@@ -2214,12 +2214,12 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
-                label: 'Repository Name',
-                id: 'repositoryName',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Repository Name.<br / <i>Impacted : All Repository based KPIs</i>`,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
                 // onFocusOut : this.getGitActionWorkflowName
               },
               {
@@ -2245,6 +2245,46 @@ export class JiraConfigComponent implements OnInit {
                 <i>
                   Example: develop<br />
                   Impacted : All Repository based KPIs</i>`,
+              },
+            ],
+          };
+        }
+        break;
+        case 'ArgoCD':
+        {
+          this.formTitle = 'ArgoCD';
+          this.connectionTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
+            { field: 'username', header: 'User Name', class: 'long-text' },
+          ];
+
+          this.configuredToolTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'jobName', header: 'Job Name', class: 'long-text' },
+          ];
+
+          this.formTemplate = {
+            group: 'ArgoCD',
+            elements: [
+              {
+                type: 'text',
+                label: 'Job Name',
+                id: 'jobName',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Job name to access ArgoCD data.<br />
+              <i>
+                Impacted : All ArgoCD based KPIs</i>`,
               },
             ],
           };
@@ -2276,14 +2316,14 @@ export class JiraConfigComponent implements OnInit {
         for (const obj in this.selectedToolConfig[0]) {
           if (obj !== 'queryEnabled' && obj !== "team") {
             if (this.toolForm && this.toolForm.controls[obj]) {
-             
+
                 this.toolForm.controls[obj].setValue(
                   this.selectedToolConfig[0][obj],
                 );
-             
+
                 this.toolForm.controls[obj].markAsDirty();
               }
-            
+
           } else if (obj === 'queryEnabled') {
             if (this.urlParam === 'Jira' || this.urlParam === 'Azure') {
               this.queryEnabled = this.selectedToolConfig[0]['queryEnabled'];
@@ -2419,9 +2459,6 @@ export class JiraConfigComponent implements OnInit {
           delete submitData[obj];
         }
 
-        if (obj === 'azurePipelineName') {
-          delete submitData[obj];
-        }
       }
 
     }
@@ -2438,6 +2475,7 @@ export class JiraConfigComponent implements OnInit {
     if (this.urlParam === 'AzurePipeline') {
       submitData['apiVersion'] = this.azurePipelineApiVersion;
       submitData['deploymentProjectName'] = this.tool['azurePipelineName'].value;
+      submitData['azurePipelineName'] = this.azurePipelineList.find(de=>de.code===this.tool['azurePipelineName'].value)?.name;
     }
 
     submitData['toolName'] = this.urlParam;

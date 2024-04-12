@@ -33,6 +33,7 @@ public final class CommonConstant {
 	public static final String TESTING_KPI_CACHE = "testingKpiCache";
 	public static final String JIRAKANBAN_KPI_CACHE = "jiraKanbanKpiCache";
 	public static final String CACHE_ACCOUNT_HIERARCHY = "accountHierarchy";
+	public static final String CACHE_SPRINT_HIERARCHY = "sprintHierarchy";
 	public static final String CACHE_ACCOUNT_HIERARCHY_KANBAN = "accountHierarchyKanban";
 	public static final String CACHE_TOOL_CONFIG_MAP = "toolItemMap";
 	public static final String CACHE_FIELD_MAPPING_MAP = "fieldMappingMap";
@@ -269,9 +270,6 @@ public final class CommonConstant {
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI122="jiraIterationCompletionStatusKPI122";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI75="jiraIterationCompletionStatusKPI75";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI145="jiraIterationCompletionStatusKPI145";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI140="jiraIterationCompletionStatusKPI140";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI132="jiraIterationCompletionStatusKPI132";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI136="jiraIterationCompletionStatusKPI136";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI72="jiraIterationCompletionStatusKpi72";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI39="jiraIterationCompletionStatusKpi39";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI5="jiraIterationCompletionStatusKpi5";
@@ -324,6 +322,8 @@ public final class CommonConstant {
 
 	public static final String REPO = "Repo";
 	public static final String JIRADODKPI166="jiraDodKPI166";
+	public static final String JIRAISSUERISKTYPE = "jiraIssueRiskTypeKPI176";
+	public static final String JIRAISSUEDEPENDENCYTYPE = "jiraIssueDependencyTypeKPI176";
 
 	//-- auth-N-auth changes starts here --
 	public static final String ACTION_POLICY_RULES_CACHE = "actionPolicyRules";

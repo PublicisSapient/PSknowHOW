@@ -33,11 +33,10 @@ import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,7 +52,7 @@ public class SprintScrumBoardTasklet implements Tasklet {
 	FetchProjectConfiguration fetchProjectConfiguration;
 
 	@Autowired
-	JiraClient jiraClient;
+	JiraClientService jiraClientService;
 
 	@Autowired
 	private FetchSprintReport fetchSprintReport;
@@ -61,12 +60,8 @@ public class SprintScrumBoardTasklet implements Tasklet {
 	@Autowired
 	private SprintRepository sprintRepository;
 
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
-
-	@Autowired
-	public SprintScrumBoardTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-	}
 
 	/**
 	 * @param sc
@@ -83,15 +78,14 @@ public class SprintScrumBoardTasklet implements Tasklet {
 		log.info("**** Sprint report for Scrum Board started * * *");
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 		log.info("Fetching spring reports for the project : {}", projConfFieldMapping.getProjectName());
-		KerberosClient krb5Client = null;
-		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client)) {
-			List<BoardDetails> boardDetailsList = projConfFieldMapping.getProjectToolConfig().getBoards();
-			for (BoardDetails boardDetails : boardDetailsList) {
-				List<SprintDetails> sprintDetailsList = fetchSprintReport
-						.createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client, boardDetails);
-				sprintRepository.saveAll(sprintDetailsList);
-			}
+		KerberosClient krb5Client = jiraClientService.getKerberosClient();
+		List<BoardDetails> boardDetailsList = projConfFieldMapping.getProjectToolConfig().getBoards();
+		for (BoardDetails boardDetails : boardDetailsList) {
+			List<SprintDetails> sprintDetailsList = fetchSprintReport
+					.createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client, boardDetails);
+			sprintRepository.saveAll(sprintDetailsList);
 		}
+
 		log.info("**** Sprint report for Scrum Board ended * * *");
 		return RepeatStatus.FINISHED;
 	}

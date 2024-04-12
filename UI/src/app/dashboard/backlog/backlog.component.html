@@ -91,7 +91,7 @@
                                     <ng-container *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0); else noData">
                                       <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                        [unit]="kpi?.kpiDetail?.kpiUnit"
+                                        [unit]="kpi?.kpiDetail?.kpiUnit" [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
                                         [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
@@ -232,7 +232,7 @@
                                     <ng-container *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0); else noData">
                                       <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                        [unit]="kpi?.kpiDetail?.kpiUnit"
+                                        [unit]="kpi?.kpiDetail?.kpiUnit" [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
                                         [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
@@ -372,7 +372,7 @@
                                     <ng-container *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0); else noData">
                                       <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                        [unit]="kpi?.kpiDetail?.kpiUnit"
+                                        [unit]="kpi?.kpiDetail?.kpiUnit" [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
                                         [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
@@ -514,7 +514,7 @@
                                     <ng-container *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0); else noData">
                                       <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                        [unit]="kpi?.kpiDetail?.kpiUnit"
+                                        [unit]="kpi?.kpiDetail?.kpiUnit" [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
                                         [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>

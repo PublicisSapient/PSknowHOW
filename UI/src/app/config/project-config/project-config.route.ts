@@ -24,7 +24,6 @@ import { ProjectListComponent } from './project-list/project-list.component';
 import { ToolMenuComponent } from './tool-menu/tool-menu.component';
 import { FieldMappingComponent } from './field-mapping/field-mapping.component';
 import { ConnectionListComponent } from './connection-list/connection-list.component';
-import { KanbanFieldMappingComponent } from './kanban-field-mapping/kanban-field-mapping.component';
 import { JiraConfigComponent } from './jira-config/jira-config.component';
 import { FeatureGuard } from 'src/app/services/feature.guard';
 
@@ -75,13 +74,6 @@ export const ProjectConfigRoutes: Routes = [
                 component: FieldMappingComponent,
                 data: {
                     feature: "FieldMapping"
-                }
-            },
-            {
-                path: 'KanbanFieldMapping',
-                component: KanbanFieldMappingComponent,
-                data: {
-                    feature: "KanbanFieldMapping"
                 }
             },
             {

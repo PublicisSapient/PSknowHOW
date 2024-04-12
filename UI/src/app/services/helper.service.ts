@@ -24,6 +24,7 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { HttpService } from './http.service';
 import { ExcelService } from './excel.service';
 import { SharedService } from './shared.service';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Injectable()
 export class HelperService {
@@ -393,7 +394,7 @@ export class HelperService {
 
     sortAlphabetically(objArray) {
         if (objArray && objArray?.length > 1) {
-            objArray?.sort((a, b) => a.data.localeCompare(b.data));
+            objArray?.sort((a, b) => a?.data?.localeCompare(b?.data));
         }
         return objArray;
     }
@@ -564,4 +565,141 @@ export class HelperService {
           }
         })
       }
+
+    windowReload(){
+        window.location.reload();
+    }
+
+   
+    drop(event: CdkDragDrop<string[]>,updatedContainer,navigationTabs,upDatedConfigData,configGlobalData,extraKpis?) {
+        if (event?.previousIndex !== event.currentIndex) {
+            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+            if(updatedContainer.width === 'half'){
+            const updatedTabsDetails = navigationTabs.find(tabs=>tabs['label'].toLowerCase() === updatedContainer['label'].toLowerCase());
+            updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2'],...updatedTabsDetails['fullWidthKpis']];
+            }
+            upDatedConfigData = [];
+            navigationTabs.forEach(tabs=>{
+            upDatedConfigData  = upDatedConfigData.concat(tabs['kpis']);
+            })
+            upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
+            const disabledKpis = configGlobalData.filter(item => item.shown && !item.isEnabled);
+            disabledKpis.map((kpi, index) => kpi.order = upDatedConfigData.length + index + 3);
+            const hiddenkpis = configGlobalData.filter(item => !item.shown);
+            hiddenkpis.map((kpi, index) => kpi.order = upDatedConfigData.length + disabledKpis.length + index + 3);
+            if(extraKpis){
+                this.sharedService.kpiListNewOrder.next([extraKpis,...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
+            }else{
+                this.sharedService.kpiListNewOrder.next([...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
+            }
+            
+        }
+     }
+
+     createCombinations(arr1, arr2) {
+        let arr = [];
+        for (let i = 0; i < arr1?.length; i++) {
+          for (let j = 0; j < arr2?.length; j++) {
+            arr.push({ filter1: arr1[i], filter2: arr2[j] });
+          }
+        }
+        return arr;
+      }
+
+      makeUniqueArrayList(arr) {
+        let uniqueArray = [];
+        for (let i = 0; i < arr?.length; i++) {
+          const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
+          if (idx == -1) {
+            uniqueArray = [...uniqueArray, arr[i]];
+            uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
+            uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
+          } else {
+            uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
+            uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
+          }
+        }
+        return uniqueArray;
+      }
+
+      async getKpiCommentsCount(kpiCommentsCountObj,nodes,level,nodeChildId,updatedConfigGlobalData,kpiId) {
+        let requestObj = {
+          "nodes": nodes,
+          "level": level,
+          "nodeChildId": nodeChildId,
+          'kpiIds': []
+        };
+        if (kpiId) {
+          requestObj['kpiIds'] = [kpiId];
+          await this.getKpiCommentsHttp(requestObj).then((res: object) => {
+            kpiCommentsCountObj[kpiId] = res[kpiId];
+          });
+        } else {
+          requestObj['kpiIds'] = (updatedConfigGlobalData?.map((item) => item.kpiId));
+          await this.getKpiCommentsHttp(requestObj).then((res: object) => {
+            kpiCommentsCountObj = res;
+          });
+        }
+        return kpiCommentsCountObj
+      }
+
+    createBackupOfFiltersSelection(filterbackup, tab, subFilter) {
+        let savedDetails = this.sharedService.getAddtionalFilterBackup();
+        if (tab === 'backlog') {
+            let tabSpecfic = (savedDetails['kpiFilters'] && savedDetails['kpiFilters'][tab]) ? savedDetails['kpiFilters'][tab] : {}
+            savedDetails = { ...savedDetails, kpiFilters: { ...savedDetails['kpiFilters'], ...{ [tab]: { ...tabSpecfic, ...filterbackup } } } };
+        } else {
+            const subFilterValues = (savedDetails['kpiFilters'] && savedDetails['kpiFilters'][tab] && savedDetails['kpiFilters'][tab][subFilter]) ? savedDetails['kpiFilters'][tab][subFilter] : {};
+            const combineSubFilterValues = { ...subFilterValues, ...filterbackup };
+            savedDetails = { ...savedDetails, kpiFilters: { ...savedDetails['kpiFilters'], ...{ [tab]: { [subFilter]: combineSubFilterValues } } } };
+        }
+        this.sharedService.setAddtionalFilterBackup(savedDetails);
+    }
+
+    setFilterValueIfAlreadyHaveBackup(kpiId, kpiSelectedFilterObj, tab, refreshValue, initialValue, subFilter, filters?) {
+        let haveBackup = {}
+
+        if (tab === 'backlog') {
+            if (this.sharedService.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.sharedService.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(tab) && this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab].hasOwnProperty(kpiId)) {
+                haveBackup = this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab][kpiId];
+            }
+        } else {
+            if (this.sharedService.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.sharedService.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(tab) && this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab].hasOwnProperty(subFilter)) {
+                haveBackup = this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab][subFilter][kpiId];
+            }
+        }
+
+        kpiSelectedFilterObj[kpiId] = refreshValue;
+        if (haveBackup && Object.keys(haveBackup).length) {
+            if (filters) {
+                const tempObj = {};
+                for (const key in haveBackup) {
+                    tempObj[key] = haveBackup[key];
+                }
+                kpiSelectedFilterObj[kpiId] = { ...tempObj };
+            }
+            else if (Array.isArray(refreshValue)) {
+                kpiSelectedFilterObj[kpiId] = haveBackup;
+            } else {
+                kpiSelectedFilterObj[kpiId] = { 'filter1': haveBackup['filter1'] };;
+            }
+
+        } else {
+            if (filters) {
+                const tempObj = {};
+                for (const key in filters) {
+                    tempObj[key] = initialValue;
+                }
+                kpiSelectedFilterObj[kpiId] = { ...tempObj };
+            }
+            else if (Array.isArray(refreshValue)) {
+                kpiSelectedFilterObj[kpiId]?.push(initialValue);
+            } else {
+                kpiSelectedFilterObj[kpiId] = { 'filter1': initialValue }
+            }
+        }
+        this.createBackupOfFiltersSelection(kpiSelectedFilterObj, tab, subFilter);
+        this.sharedService.setKpiSubFilterObj(kpiSelectedFilterObj);
+        return kpiSelectedFilterObj;
+    }
 }

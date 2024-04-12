@@ -23,14 +23,13 @@ scrum and kanban code .
 *******************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { MessageService } from 'primeng/api';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
-import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-developer',
@@ -121,38 +120,6 @@ export class DeveloperComponent implements OnInit {
         }
       }
     }));
-
-    // this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
-    //   if (Object.keys(x).length > 0) {
-    //     this.colorObj = x;
-    //     this.trendBoxColorObj = { ...x };
-    //     let tempObj = {};
-    //     for (const key in this.trendBoxColorObj) {
-    //       const idx = key.lastIndexOf('_');
-    //       const nodeName = key.slice(0, idx);
-    //       this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-    //       tempObj[nodeName] = [];
-    //     }
-    //     if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-    //       for (const key in this.kpiChartData) {
-    //         this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
-    //         this.createTrendsData(key);
-    //       }
-    //     }
-    //   }
-    //   return this.service.passDataToDashboard;
-    // }), distinctUntilChanged()).subscribe((sharedobject: any) => {
-    //   // used to get all filter data when user click on apply button in filter
-    //   if (sharedobject?.filterData?.length) {
-    //     this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
-    //     this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
-    //     this.receiveSharedData(sharedobject);
-    //     this.noTabAccess = false;
-    //   } else {
-    //     this.noTabAccess = true;
-    //   }
-    // }));
-
     
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
       if (Object.keys(x).length > 0) {
@@ -253,7 +220,6 @@ export class DeveloperComponent implements OnInit {
             }
           }
         } else if (this.filterData?.length && !$event.makeAPICall) {
-          // alert('no call');
           this.allKpiArray.forEach(element => {
             this.getDropdownArray(element?.kpiId);
           });
@@ -333,24 +299,12 @@ export class DeveloperComponent implements OnInit {
     return id;
   }
 
-  getKpiCommentsCount(kpiId?) {
-    let requestObj = {
-      "nodes": [...this.filterApplyData?.['selectedMap']['project']],
-      "level": this.filterApplyData?.level,
-      "nodeChildId": "",
-      'kpiIds': []
-    };
-    if (kpiId) {
-      requestObj['kpiIds'] = [kpiId];
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj[kpiId] = res[kpiId];
-      });
-    } else {
-      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj = res;
-      });
-    }
+  async getKpiCommentsCount(kpiId?) {
+    const nodes = [...this.filterApplyData?.['selectedMap']['project']];
+    const level = this.filterApplyData?.level;
+    const nodeChildId = '';
+    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
+  
   }
 
   // Used for grouping all BitBucket kpi of kanban from master data and calling BitBucket kpi.
@@ -448,8 +402,12 @@ export class DeveloperComponent implements OnInit {
       if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
 
         const tempArr = {};
-        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+        if (Array.isArray(this.kpiSelectedFilterObj[kpiId])) {
+          for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+            tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+          }
+        } else {
+          tempArr[this.kpiSelectedFilterObj[kpiId]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId])[0]?.value);
         }
         this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
 
@@ -465,10 +423,6 @@ export class DeveloperComponent implements OnInit {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
 
-    // if (this.kpiChartData && Object.keys(this.kpiChartData) && Object.keys(this.kpiChartData).length === this.updatedConfigGlobalData.length) {
-    // if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
-    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    // }
     this.createTrendsData(kpiId);
   }
 
@@ -550,7 +504,7 @@ export class DeveloperComponent implements OnInit {
           delete event[key];
           this.kpiSelectedFilterObj[kpi?.kpiId] = event;
         } else {
-          this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
+          this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];
         }
       }
     } else {

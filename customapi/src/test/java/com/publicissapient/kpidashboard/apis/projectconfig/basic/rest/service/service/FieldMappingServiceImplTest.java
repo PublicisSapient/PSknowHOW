@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.basic.rest.service.service;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -47,6 +48,7 @@ import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationServi
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingServiceImpl;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -92,8 +94,8 @@ public class FieldMappingServiceImplTest {
 	@Test
 	public void getFieldMappingSuccess() {
 		FieldMapping fieldMapping = createFieldMappingScrum();
-		Map<ObjectId, FieldMapping> map =  new HashMap<>();
-		map.put(new ObjectId("5d0533b0ff45ea9c730bb718"),fieldMapping);
+		Map<ObjectId, FieldMapping> map = new HashMap<>();
+		map.put(new ObjectId("5d0533b0ff45ea9c730bb718"), fieldMapping);
 		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 		projectToolConfig.setBasicProjectConfigId(new ObjectId("5d0533b0ff45ea9c730bb718"));
 		Optional<ProjectToolConfig> projectToolConfigOpt = Optional.of(projectToolConfig);
@@ -140,9 +142,17 @@ public class FieldMappingServiceImplTest {
 	@Test
 	public void addFieldMappingSuccess2() {
 		mockRepositoriesForScrum();
+		ProjectToolConfig projectToolConfig = createProjectToolConfig();
+		projectToolConfig.setToolName(ProcessorConstants.AZURE);
+		when(projectToolConfigRepository.findById(any(ObjectId.class))).thenReturn(Optional.of(projectToolConfig));
+
+		FieldMapping fieldMapping = createFieldMappingScrum();
+		fieldMapping.setJiraBugRaisedByCustomField("fault");
+		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class))).thenReturn(fieldMapping);
 
 		FieldMapping fieldMapping1 = createFieldMappingScrum();
 		fieldMapping1.setRootCause("abc");
+		fieldMapping1.setJiraBugRaisedByCustomField("test");
 		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1);
 
 		assertNotNull(result);
@@ -306,14 +316,36 @@ public class FieldMappingServiceImplTest {
 		verify(fieldMappingRepository, times(1)).deleteByBasicProjectConfigId(new ObjectId("601a75729638120001b90891"));
 	}
 
+	@Test
+	public void findById() {
+		when(projectBasicConfigRepository.findById(Mockito.any(ObjectId.class)))
+				.thenReturn(createProjectBasicConfig(false));
+		fieldMappingService.getBasicProjectConfigById(new ObjectId("601a75729638120001b90891"));
+		verify(projectBasicConfigRepository, times(1)).findById(new ObjectId("601a75729638120001b90891"));
+	}
+
+	@Test
+	public void compareMappinOnSave() {
+		FieldMapping fieldMappingScrum = createFieldMappingScrum();
+		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class)))
+				.thenReturn(fieldMappingScrum);
+		when(projectBasicConfigRepository.findById(Mockito.any(ObjectId.class)))
+				.thenReturn(createProjectBasicConfig(false));
+		boolean b = fieldMappingService.compareMappingOnSave(new ObjectId("5fa2a16ec5a84726287d528a").toString(),
+				fieldMappingScrum);
+		assertFalse(b);
+	}
+
 	private void mockRepositoriesForScrum() {
 		FieldMapping fieldMapping = createFieldMappingScrum();
 		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class))).thenReturn(fieldMapping);
 		when(projectBasicConfigRepository.findById(Mockito.any(ObjectId.class)))
 				.thenReturn(createProjectBasicConfig(false));
 		when(fieldMappingRepository.save(Mockito.any(FieldMapping.class))).thenReturn(fieldMapping);
-		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigIdIn(Mockito.any(String.class),
-				any())).thenReturn(Arrays.asList(createProcessorExecutionTraceLog()));
+		when(processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigIdIn(Mockito.any(String.class), any()))
+						.thenReturn(Arrays.asList(createProcessorExecutionTraceLog()));
+
 	}
 
 	private void mockRepositoriesForKanban() {
@@ -322,8 +354,9 @@ public class FieldMappingServiceImplTest {
 		when(projectBasicConfigRepository.findById(Mockito.any(ObjectId.class)))
 				.thenReturn(createProjectBasicConfig(true));
 		when(fieldMappingRepository.save(Mockito.any(FieldMapping.class))).thenReturn(fieldMapping);
-		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigIdIn(Mockito.any(String.class),
-				any())).thenReturn(Collections.emptyList());
+		when(processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigIdIn(Mockito.any(String.class), any()))
+						.thenReturn(Collections.emptyList());
 	}
 
 	private FieldMapping createFieldMappingScrum() {

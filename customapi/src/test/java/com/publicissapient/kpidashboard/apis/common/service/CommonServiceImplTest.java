@@ -18,21 +18,14 @@
 
 package com.publicissapient.kpidashboard.apis.common.service;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,9 +35,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.mail.MailSendException;
 import org.testng.collections.Lists;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
@@ -53,10 +45,10 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
 import com.publicissapient.kpidashboard.common.model.application.EmailServerDetail;
 import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessNode;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
@@ -66,6 +58,8 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @SuppressWarnings("deprecation")
 @RunWith(MockitoJUnitRunner.class)
@@ -139,6 +133,33 @@ public class CommonServiceImplTest {
 		list.add("20-40-20");
 
 		Assert.assertEquals("4", commonService.getMaturityLevel(list, Constant.AUTOMATED_PERCENTAGE, "90"));
+
+	}
+
+	@Test
+	public void testGetMaturityLevel2() {
+		List<String> list = new ArrayList<>();
+
+		list.add("0-20");
+		list.add("20-40");
+		list.add("40-60");
+		list.add("60-80");
+		list.add("80-");
+		Assert.assertEquals("0", commonService.getMaturityLevel(list, "kpi168", "90"));
+		list.clear();
+		list.add("0-20");
+		list.add("20-40");
+		list.add("40-60");
+		list.add("60-80");
+		list.add("80-90");
+		Assert.assertEquals("0", commonService.getMaturityLevel(list, "kpi16", "90"));
+		list.clear();
+		list.add("0-20");
+		list.add("20-40");
+		list.add("40-60");
+		list.add("80-60");
+		list.add("80-");
+		Assert.assertEquals("0", commonService.getMaturityLevel(list, "kpi28", "90"));
 
 	}
 

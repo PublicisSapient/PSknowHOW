@@ -63,9 +63,9 @@ spec:
         #           key: stage-knhdbpassword
         #     - name: mongock.migration-scan-package
         #       value: com.publicissapient.kpidashboard.apis.mongock.installation
-        # envFrom:
-        # - configMapRef:
-        #     name: knowhow-config
+        envFrom:
+        - configMapRef:
+            name: knowhow-config
 
         ports:
         - containerPort: 50020

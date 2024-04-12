@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.NonTransientResourceException;
@@ -43,7 +43,6 @@ import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -52,6 +51,7 @@ import com.publicissapient.kpidashboard.jira.helper.ReaderRetryHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.service.FetchEpicData;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +69,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	@Autowired
 	FetchProjectConfiguration fetchProjectConfiguration;
 	@Autowired
-	JiraClient jiraClient;
+	JiraClientService jiraClientService;
 	@Autowired
 	JiraCommonService jiraCommonService;
 	@Autowired
@@ -82,24 +82,20 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	List<Issue> issues = new ArrayList<>();
 	Map<String, Map<String, String>> projectBoardWiseDeltaDate = new HashMap<>();
 	int boardIssueSize = 0;
-	Boolean fetchLastIssue = false;
+	boolean fetchLastIssue = false;
 	private ReaderRetryHelper retryHelper;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 	private Iterator<BoardDetails> boardIterator;
 	private Iterator<Issue> issueIterator;
-	private ProjectConfFieldMapping projectConfFieldMapping;
+	ProjectConfFieldMapping projectConfFieldMapping;
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
-
-	@Autowired
-	public IssueBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-		this.retryHelper = new ReaderRetryHelper();
-	}
 
 	public void initializeReader(String projectId) {
 		pageSize = jiraProcessorConfig.getPageSize();
 		projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+		retryHelper = new ReaderRetryHelper();
 	}
 
 	/*
@@ -108,59 +104,71 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	 * @see org.springframework.batch.item.ItemReader#read()
 	 */
 	@Override
-	public ReadData read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+	public ReadData read() throws Exception, UnexpectedInputException, ParseException,
+			NonTransientResourceException {
 
 		if (null == projectConfFieldMapping) {
 			log.info("Gathering data to fetch jira issues for the project : {}", projectId);
 			initializeReader(projectId);
 		}
 		ReadData readData = null;
-		KerberosClient krb5Client = null;
+		KerberosClient krb5Client = jiraClientService.getKerberosClient();
 		if (!fetchLastIssue) {
-			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
-				if (boardIterator == null
-						&& CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
-					boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
-				}
-				if (issueIterator == null || !issueIterator.hasNext()) {
-					List<Issue> epicIssues;
-					if (null == issueIterator || boardIssueSize < pageSize) {
-						pageNumber = 0;
-						if (boardIterator.hasNext()) {
-							BoardDetails boardDetails = boardIterator.next();
-							boardId = boardDetails.getBoardId();
-							fetchIssues(client);
-							epicIssues = fetchEpics(krb5Client, client);
-							if (CollectionUtils.isNotEmpty(epicIssues)) {
-								issues.addAll(epicIssues);
-							}
-						}
-					} else {
+			ProcessorJiraRestClient client = jiraClientService.getRestClient();
+			if (boardIterator == null
+					&& CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
+				boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
+			}
+			if (checkIssueIterator()) {
+				List<Issue> epicIssues;
+				if (checkIssue()) {
+					pageNumber = 0;
+					if (boardIterator.hasNext()) {
+						BoardDetails boardDetails = boardIterator.next();
+						boardId = boardDetails.getBoardId();
 						fetchIssues(client);
+						epicIssues = fetchEpics(krb5Client, client);
+						if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(epicIssues)) {
+							issues.addAll(epicIssues);
+						}
 					}
-
-					if (CollectionUtils.isNotEmpty(issues)) {
-						issueIterator = issues.iterator();
-					}
-				}
-				if (null != issueIterator && issueIterator.hasNext()) {
-					Issue issue = issueIterator.next();
-					readData = new ReadData();
-					readData.setIssue(issue);
-					readData.setProjectConfFieldMapping(projectConfFieldMapping);
-					readData.setBoardId(boardId);
-					readData.setSprintFetch(false);
+				} else {
+					fetchIssues(client);
 				}
 
-				if ((null == projectConfFieldMapping)
-						|| !boardIterator.hasNext() && (!issueIterator.hasNext() && boardIssueSize < pageSize)) {
-					log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
-					fetchLastIssue = true;
-					return readData;
+				if (CollectionUtils.isNotEmpty(issues)) {
+					issueIterator = issues.iterator();
 				}
+			}
+			if (null != issueIterator && issueIterator.hasNext()) {
+				Issue issue = issueIterator.next();
+				readData = new ReadData();
+				readData.setIssue(issue);
+				readData.setProjectConfFieldMapping(projectConfFieldMapping);
+				readData.setBoardId(boardId);
+				readData.setSprintFetch(false);
+			}
+
+			if ((null == projectConfFieldMapping)
+					|| !boardIterator.hasNext() && (issueIterator != null && !issueIterator.hasNext() && boardIssueSize < pageSize)) {
+				log.info("Data has been fetched for the project : {}", getProjectName());
+				fetchLastIssue = true;
+				return readData;
 			}
 		}
 		return readData;
+	}
+
+	private String getProjectName() {
+		return projectConfFieldMapping == null ? "" : projectConfFieldMapping.getProjectName();
+	}
+
+	private boolean checkIssue() {
+		return null == issueIterator || boardIssueSize < pageSize;
+	}
+
+	private boolean checkIssueIterator() {
+		return issueIterator == null || !issueIterator.hasNext();
 	}
 
 	private void fetchIssues(ProcessorJiraRestClient client) throws Exception {
@@ -182,7 +190,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 			retryHelper.executeWithRetry(retryableOperation);
 		} catch (Exception e) {
 			log.error("Exception while fetching issues for project: {} boardid: {}, page No: {}",
-					projectConfFieldMapping.getProjectName(), boardId, pageNumber / pageSize);
+					getProjectName(), boardId, pageNumber / pageSize);
 			log.error("All retries attempts are failed");
 
 			throw e;
@@ -209,7 +217,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 
 	private void setLastSuccessfulRunFromTraceLog(String deltaDate) {
 		log.info("fetching project status from trace log for project: {} board id :{}",
-				projectConfFieldMapping.getProjectName(), boardId);
+				getProjectName(), boardId);
 
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
 				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA,
@@ -229,7 +237,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 
 			if (MapUtils.isEmpty(boardWiseDate)) {
 				log.info("project: {} found but board {} not found in trace log so data will be fetched from beginning",
-						projectConfFieldMapping.getProjectName(), boardId);
+						getProjectName(), boardId);
 
 				if (lastSuccessfulRun == null) {
 					lastSuccessfulRun = deltaDate;
@@ -241,7 +249,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 			projectBoardWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(), boardWiseDate);
 		} else {
 			log.info("project: {} not found in trace log so data will be fetched from beginning",
-					projectConfFieldMapping.getProjectName());
+					getProjectName());
 			Map<String, String> boardWiseDate = new HashMap<>();
 			if (StringUtils.isEmpty(boardId)) {
 				boardWiseDate.put(boardId, deltaDate);
@@ -262,7 +270,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 			String lastSuccessRun = boardWiseDate.get(boardId);
 
 			log.info("project: {} and board {} found in trace log. Data will be fetched from one day before {}",
-					projectConfFieldMapping.getProjectName(), boardId, lastSuccessRun);
+					getProjectName(), boardId, lastSuccessRun);
 
 			if (!StringUtils.isBlank(lastSuccessRun)) {
 				deltaDate = lastSuccessRun;
@@ -276,14 +284,14 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	private List<Issue> fetchEpics(KerberosClient krb5Client, ProcessorJiraRestClient client) throws Exception {
 
 		ReaderRetryHelper.RetryableOperation<List<Issue>> retryableOperation = () -> {
-			log.info("Reading epics for project: {} boardid: {}", projectConfFieldMapping.getProjectName(), boardId);
+			log.info("Reading epics for project: {} boardid: {}", getProjectName(), boardId);
 			return fetchEpicData.fetchEpic(projectConfFieldMapping, boardId, client, krb5Client);
 		};
 		try {
 			return retryHelper.executeWithRetry(retryableOperation);
 		} catch (Exception e) {
 			log.error("Exception while fetching epics for project: {} boardid: {}",
-					projectConfFieldMapping.getProjectName(), boardId);
+					getProjectName(), boardId);
 			log.error("All retries attempts are failed");
 			// Re-throw the exception to allow for retries
 			throw e;

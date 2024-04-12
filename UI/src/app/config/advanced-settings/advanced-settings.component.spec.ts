@@ -32,20 +32,22 @@ import { AdvancedSettingsComponent } from './advanced-settings.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { SharedService } from '../../services/shared.service';
-import { of } from 'rxjs';
-import { compileComponentFromMetadata } from '@angular/compiler';
+import { of, throwError } from 'rxjs';
 describe('AdvancedSettingsComponent', () => {
   let component: AdvancedSettingsComponent;
   let fixture: ComponentFixture<AdvancedSettingsComponent>;
   let httpService;
+  let getAuthorizationService;
   let httpMock;
+  let messageService;
   let confirmationService;
   const baseUrl = environment.baseUrl;  // Servers Env
   // var store = {};
   // var ls = function () {
-  //   return JSON.parse(store['storage']);
-  // };
-
+    //   return JSON.parse(store['storage']);
+    // };
+    
+  const fakeProjects = require('../../../test/resource/fakeProjectsDashConfig.json');
   const fakeProcessorData = {
     message: '',
     success: true,
@@ -195,8 +197,10 @@ describe('AdvancedSettingsComponent', () => {
     fixture = TestBed.createComponent(AdvancedSettingsComponent);
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
+    getAuthorizationService = TestBed.inject(GetAuthorizationService);
     httpMock = TestBed.inject(HttpTestingController);
     confirmationService = TestBed.inject(ConfirmationService);
+    messageService = TestBed.inject(MessageService);
     fixture.detectChanges();
   });
 
@@ -386,4 +390,205 @@ describe('AdvancedSettingsComponent', () => {
     const resp = component.showExecutionDate('Jira')
     expect(resp).not.toBe("NA")
   })  
+
+  it('should fetch all the projects when superadmin', () => {
+    component.userProjects = [];
+    component.selectedProject = {};
+    const response = fakeProjects;
+    spyOn(httpService, 'getUserProjects').and.returnValue(of(response));
+    spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(true)
+    spyOn(component, 'getProcessorsTraceLogsForProject');
+    const spy = spyOn(component, 'getAllToolConfigs');
+    component.getProjects();
+    expect(spy).toHaveBeenCalledWith(component.selectedProject['id']);
+  })
+
+  it('should fetch all the projects when project admin', () => {
+    component.userProjects = [];
+    component.selectedProject = {};
+    const response = fakeProjects;
+    spyOn(httpService, 'getUserProjects').and.returnValue(of(response));
+    spyOn(getAuthorizationService, 'checkIfProjectAdmin').and.returnValue(true)
+    spyOn(component, 'getProcessorsTraceLogsForProject');
+    const spy = spyOn(component, 'getAllToolConfigs');
+    component.getProjects();
+    expect(spy).toHaveBeenCalledWith(component.selectedProject['id']);
+  })
+
+  it('should not fetch all the projects', fakeAsync(() => {
+    component.userProjects = [];
+    component.selectedProject = {};
+    const errResponse = {
+      'error': "Something went wrong"
+    };
+    spyOn(httpService, 'getUserProjects').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add')
+    component.getProjects();
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }))
+
+  it('should not get all tools config', fakeAsync(() => {
+    const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
+    const errResponse = {
+      'error': "Something went wrong"
+    };
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add')
+    component.getAllToolConfigs(basicProjectConfigId);
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }))
+
+  it('should get processors tracelog for project', fakeAsync(() => {
+    const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
+    const errResponse = {
+      'error': "Something went wrong"
+    };
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add')
+    component.getProcessorsTraceLogsForProject(basicProjectConfigId);
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }))
+
+  it('should not get processor data', fakeAsync(() => {
+    component.dataLoading = true;
+    const errResponse = {
+      'error': "Something went wrong"
+    };
+    spyOn(httpService, 'getProcessorData').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add')
+    component.getProcessorData();
+    tick();
+    expect(spy).toHaveBeenCalled();
+    expect(component.dataLoading).toBe(false);
+  }))
+
+  it('should not run Processor when processor is jira', fakeAsync(() => {
+    component.selectedProject = {
+      'id': '651af337d18501286c28a464'
+    }
+    const errResponse = {
+      data: "Error in running Jira processor. Please try after some time.",
+      message: "Got HTTP response: 404 on url: http://jira-processor:50008/api/job/startprojectwiseissuejob",
+      success: false
+    };
+    spyOn(component, 'isProjectSelected').and.returnValue(true);
+    const spy = spyOn(httpService, 'runProcessor').and.returnValue(of(errResponse));
+    component.runProcessor('Jira');
+    expect(spy).toHaveBeenCalled();
+  }))
+
+  it('should not run Processor when processor is not jira', fakeAsync(() => {
+    component.selectedProject = {
+      'id': 'sdjsagdjagdjagd'
+    }
+    const errResponse = {
+      'error': "Something went wrong",
+    };
+    spyOn(component, 'isProjectSelected').and.returnValue(false);
+    const spy = spyOn(httpService, 'runProcessor').and.returnValue(of(errResponse));
+    component.runProcessor('Sonar');
+    expect(spy).toHaveBeenCalled();
+  }))
+  it('should delete processor data', (done) => {
+    const processorDetails = {
+      processorName: 'Jira'
+    };
+    const selectedProject = {
+      id: '601bca9569515b0001d68182'
+    };
+    const toolDetails = [
+      {
+        id: '123',
+        // other properties
+      },
+      {
+        id: '456',
+        // other properties
+      }
+    ];
+    spyOn(component, 'getToolDetailsForProcessor').and.returnValue(toolDetails);
+    spyOn(httpService, 'deleteProcessorData').and.returnValues(
+      of({ success: true }),
+      of({ success: true })
+    );
+    spyOn(messageService, 'add');
+    spyOn(component, 'getAllToolConfigs');
+  
+    component.deleteProcessorDataReq(processorDetails, selectedProject);
+  
+    fixture.detectChanges();
+  
+    expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
+    expect(httpService.deleteProcessorData).toHaveBeenCalledTimes(2);
+    expect(httpService.deleteProcessorData).toHaveBeenCalledWith('123', '601bca9569515b0001d68182');
+    expect(httpService.deleteProcessorData).toHaveBeenCalledWith('456', '601bca9569515b0001d68182');
+  
+    setTimeout(() => {
+      expect(messageService.add).toHaveBeenCalledWith({ severity: 'success', summary: 'Data deleted Successfully.', detail: '' });
+      expect(component.getAllToolConfigs).toHaveBeenCalledWith('601bca9569515b0001d68182');
+      done();
+    });
+  });
+  
+  it('should handle error when deleting processor data', (done) => {
+    const processorDetails = {
+      processorName: 'Jira'
+    };
+    const selectedProject = {
+      id: '601bca9569515b0001d68182'
+    };
+    const toolDetails = [
+      {
+        id: '123',
+        // other properties
+      },
+      {
+        id: '456',
+        // other properties
+      }
+    ];
+    spyOn(component, 'getToolDetailsForProcessor').and.returnValue(toolDetails);
+    spyOn(httpService, 'deleteProcessorData').and.returnValues(
+      of({ success: true }),
+      of({ success: false })
+    );
+    spyOn(messageService, 'add');
+    spyOn(component, 'getAllToolConfigs');
+  
+    component.deleteProcessorDataReq(processorDetails, selectedProject);
+  
+    fixture.detectChanges();
+  
+    expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
+    expect(httpService.deleteProcessorData).toHaveBeenCalledTimes(2);
+    expect(httpService.deleteProcessorData).toHaveBeenCalledWith('123', '601bca9569515b0001d68182');
+    expect(httpService.deleteProcessorData).toHaveBeenCalledWith('456', '601bca9569515b0001d68182');
+  
+    setTimeout(() => {
+      expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Error in deleting project data. Please try after some time.' });
+      expect(component.getAllToolConfigs).not.toHaveBeenCalled();
+      done();
+    });
+  });
+  
+  it('should handle error when getting tool details', () => {
+    const processorDetails = {
+      processorName: 'Jira'
+    };
+    const selectedProject = {
+      id: '601bca9569515b0001d68182'
+    };
+    spyOn(component, 'getToolDetailsForProcessor').and.returnValue(null);
+    spyOn(messageService, 'add');
+  
+    component.deleteProcessorDataReq(processorDetails, selectedProject);
+  
+    fixture.detectChanges();
+  
+    expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
+    expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Something went wrong. Please try again after sometime.' });
+  });
 });

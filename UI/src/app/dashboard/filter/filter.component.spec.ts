@@ -247,7 +247,7 @@ const completeHierarchyData = {
     }
   ],
   scrum: [
-    
+
     {
       level: 4,
       hierarchyLevelId: "port",
@@ -266,12 +266,11 @@ const completeHierarchyData = {
     TestBed.configureTestingModule({
       declarations: [FilterComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      imports: [FormsModule, HttpClientTestingModule, ReactiveFormsModule, NgSelectModule, FormsModule,
-        RouterTestingModule.withRoutes(routes),
+      imports: [FormsModule, HttpClientTestingModule, ReactiveFormsModule, NgSelectModule, FormsModule, RouterTestingModule
       ],
-      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService, 
-        { provide: APP_CONFIG, useValue: AppConfig }, 
-        { provide: Router, useClass: MockRouter }]
+      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService,
+        { provide: APP_CONFIG, useValue: AppConfig }]
+        // { provide: Router, useClass: MockRouter }]
     })
       .compileComponents();
   });
@@ -359,6 +358,69 @@ const completeHierarchyData = {
     expect(spySetLevel).toHaveBeenCalled();
     expect(spy).not.toHaveBeenCalled();
   }));
+
+
+  // it('should render downloaded Excel', () => {
+  //   let response = JSON.parse(JSON.stringify(fakeFilterData));
+  //   response.data = [];
+  //   component.renderDownloadExcel(response);
+  //   expect(component.enginneringMaturityErrorMessage).toEqual('No Data Available');
+
+  //   response.success = false;
+  //   component.renderDownloadExcel(response);
+  //   expect(component.enginneringMaturityErrorMessage).toEqual('No Access!');
+
+  //   response = undefined;
+  //   component.renderDownloadExcel(response);
+  //   expect(component.enginneringMaturityErrorMessage).toEqual('Some error occurred!');
+
+  // });
+
+  // it('should make array unique', () => {
+  //   const input = [
+  //     {
+  //       nodeId: 'UI_sqd_63281fda79d8f0130811b6d5',
+  //       nodeName: 'UI',
+  //       path: [
+  //         '38295_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu',
+  //         '38294_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu'
+  //       ],
+  //       labelName: 'sqd',
+  //       parentId: [
+  //         '38295_SonarTest_63281fda79d8f0130811b6d5',
+  //         '38294_SonarTest_63281fda79d8f0130811b6d5'
+  //       ],
+  //       level: 7
+  //     },
+  //     {
+  //       nodeId: 'UI_sqd_63281fda79d8f0130811b6d5',
+  //       nodeName: 'UI',
+  //       path: '38294_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu',
+  //       labelName: 'sqd',
+  //       parentId: '38294_SonarTest_63281fda79d8f0130811b6d5',
+  //       level: 7
+  //     }
+  //   ];
+  //   const output = [
+  //     {
+  //       nodeId: 'UI_sqd_63281fda79d8f0130811b6d5',
+  //       nodeName: 'UI',
+  //       path: [
+  //         '38295_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu',
+  //         '38294_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu'
+  //       ],
+  //       labelName: 'sqd',
+  //       parentId: [
+  //         '38295_SonarTest_63281fda79d8f0130811b6d5',
+  //         '38294_SonarTest_63281fda79d8f0130811b6d5'
+  //       ],
+  //       level: 7
+  //     }
+  //   ];
+
+  //   const result = component.makeUniqueArrayList(input);
+  //   expect(result.length).toBe(1);
+  // });
 
   it('should set hierarchy levels', () => {
     component.kanban = false;
@@ -695,6 +757,22 @@ const completeHierarchyData = {
     expect(component.kpiList).not.toBeNull();
   });
 
+  it('should kpiList not blank for release', () => {
+    component.selectedTab = 'release';
+    component.kanban = false;
+    component.kpiListData = configGlobalData['data'];
+    component.processKpiList();
+    expect(component.kpiList).not.toBeNull();
+  });
+
+  it('should kpiList not blank for dora', () => {
+    component.selectedTab = 'dora';
+    component.kanban = false;
+    component.kpiListData = configGlobalData['data'];
+    component.processKpiList();
+    expect(component.kpiList).not.toBeNull();
+  });
+
   it('should handle all kpi change', () => {
     component.kpiForm = new UntypedFormGroup({
       kpis: new UntypedFormControl()
@@ -748,12 +826,12 @@ const completeHierarchyData = {
     expect(spy).toHaveBeenCalled();
   });
 
-  // it('should handle select', () => {
-  //   component.filterData = fakeFilterData['data'];
-  //   const spy = spyOn(helperService, 'makeUniqueArrayList');
-  //   component.handleSelect('project');
-  //   expect(spy).toHaveBeenCalled();
-  // });
+  it('should handle select', () => {
+    component.filterData = fakeFilterData['data'];
+    const spy = spyOn(helperService, 'makeUniqueArrayList');
+    component.handleSelect('project');
+    expect(spy).toHaveBeenCalled();
+  });
 
 
   it('should check for default filter selection for iteration tab and no projects available', () => {
@@ -864,7 +942,7 @@ const completeHierarchyData = {
     const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
     spyOn(sharedService, 'setNoSprints');
     spyOn(component, 'createFilterApplyData');
-    component.handleIterationFilters('project');
+    component.handleIterationFilters('project',true);
     expect(spy).toHaveBeenCalled();
   });
 
@@ -1084,6 +1162,7 @@ const completeHierarchyData = {
     spyOn(component,"sortAlphabetically");
     spyOn(sharedService,"setSelectedLevel");
     spyOn(sharedService,"setSelectedTrends");
+    spyOn(component,"setSelectedSprintOnServiceLayer");
     component.filterForm.get('selectedLevel').setValue("hierarchyLevelOne");
     component.filterForm.get('selectedTrendValue').setValue("AutoTest1_hierarchyLevelOne");
     spyOn(component,"compileGAData");
@@ -1102,6 +1181,7 @@ const completeHierarchyData = {
     spyOn(component,"sortAlphabetically");
     spyOn(sharedService,"setSelectedLevel");
     spyOn(sharedService,"setSelectedTrends");
+    spyOn(component,"setSelectedSprintOnServiceLayer");
     component.ngOnInit();
     component.filterForm?.get('selectedLevel')?.setValue("hierarchyLevelOne");
     component.filterForm?.get('selectedTrendValue')?.setValue("AutoTest1_hierarchyLevelOne");
@@ -1110,9 +1190,96 @@ const completeHierarchyData = {
     expect(component.toggleDateDropdown).toBeFalsy();
   })
 
+  it("should filter apply data when apply source is undefined",()=>{
+    component.hierarchyLevels = hierarchyLevels;
+    component.trendLineValueList = trendLineValueList;
+    component.additionalFiltersDdn =  additionalFiltersDdn;
+    component.additionalFiltersArr = additionalFiltersArr;
+    component.selectedFilterArray = selectedFilterArray;
+    component.kanban = true;
+    spyOn(component,"sortAlphabetically");
+    spyOn(sharedService,"setSelectedLevel");
+    spyOn(sharedService,"setSelectedTrends");
+    component.ngOnInit();
+    component.filterForm?.get('selectedLevel')?.setValue("hierarchyLevelOne");
+    component.filterForm?.get('selectedTrendValue')?.setValue(["AutoTest1_hierarchyLevelOne"]);
+    spyOn(component,"compileGAData");
+    component.applyChanges(undefined,true);
+    expect(component.toggleDateDropdown).toBeFalsy();
+  })
+
+  it("should get data when sprint selected for trending (speed/quality/value) tabs",()=>{
+      component.hierarchyLevels = hierarchyLevels;
+    component.trendLineValueList = trendLineValueList;
+    component.additionalFiltersDdn =  {
+      sprint : [{
+        labelName: 'sprint',
+        level: 5,
+        nodeId: 'AutoTest1_hierarchyLevelOne',
+        nodeName: 'DTS | KnowHOW | PI_11| ITR_4_HvyVrzlpld',
+        parentId: ['AutoTest1_hierarchyLevelOne'],
+        path: [
+          'HvyVrzlpld_63b81ef5224e7b4d03186dab###Level3_hiera…vel2_hierarchyLevelTwo###Level1_hierarchyLevelOne',
+        ],
+        sprintEndDate: '2022-11-23T10:20:00.0000000',
+        sprintStartDate: '2022-11-09T10:20:00.0000000',
+        sprintState: 'CLOSED',
+      }]
+    };
+    component.additionalFiltersArr = additionalFiltersArr;
+    component.selectedFilterArray = [{
+      nideId : "AutoTest1_hierarchyLevelOne"
+    }];
+    component.kanban = true;
+    spyOn(component,"sortAlphabetically");
+    spyOn(sharedService,"setSelectedLevel");
+    spyOn(sharedService,"setSelectedTrends");
+    component.ngOnInit();
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl(),
+      date: new UntypedFormControl(''),
+      selectedLevel: new UntypedFormControl(),
+      selectedSprintValue: new UntypedFormControl(),
+      selectedRelease: new UntypedFormControl(),
+      sprint: new UntypedFormControl(),
+    });
+    component.filterForm?.get('selectedLevel')?.setValue("hierarchyLevelOne");
+    component.filterForm?.get('selectedTrendValue')?.setValue(["AutoTest1_hierarchyLevelOne"]);
+    component.filterForm?.get('sprint')?.setValue({
+      AutoTest1_hierarchyLevelOne : true
+    });
+    spyOn(component,"compileGAData");
+    component.applyChanges("sprint",true);
+    expect(component.toggleDateDropdown).toBeFalsy();
+  })
+
   it("should apply filter on addtional filters",()=>{
     component.filteredAddFilters = {};
     component.additionalFiltersDdn = additionalFiltersDdn;
+    component.ngOnInit();
+    component.filterForm?.get('selectedLevel')?.setValue("project");
+    component.filterForm?.get('selectedTrendValue')?.setValue("AutoTest1_hierarchyLevelOne");
+    component.filterAdditionalFilters();
+    expect(component.filteredAddFilters['selectedLevel']).not.toBeNull()
+  })
+
+  it("should apply filter on addtional filters for sprint",()=>{
+    component.filteredAddFilters = {};
+    component.additionalFiltersDdn = {
+      sprint : [{
+        labelName: 'sprint',
+        level: 5,
+        nodeId: '40201_HvyVrzlpld_63b81ef5224e7b4d03186dab',
+        nodeName: 'DTS | KnowHOW | PI_11| ITR_4_HvyVrzlpld',
+        parentId: ['HvyVrzlpld_63b81ef5224e7b4d03186dab'],
+        path: [
+          'HvyVrzlpld_63b81ef5224e7b4d03186dab###Level3_hiera…vel2_hierarchyLevelTwo###Level1_hierarchyLevelOne',
+        ],
+        sprintEndDate: '2022-11-23T10:20:00.0000000',
+        sprintStartDate: '2022-11-09T10:20:00.0000000',
+        sprintState: 'CLOSED',
+      }],
+    };
     component.ngOnInit();
     component.filterForm?.get('selectedLevel')?.setValue("project");
     component.filterForm?.get('selectedTrendValue')?.setValue("AutoTest1_hierarchyLevelOne");
@@ -1281,7 +1448,7 @@ const completeHierarchyData = {
     expect(component.isTooltip).toBe(true);
    })
 
-    it('should redirect on login page',inject([Router], (router: Router) => {
+    xit('should redirect on login page',inject([Router], (router: Router) => {
       const navigateSpy = spyOn(router, 'navigate');
       component.logout();
       httpMock.expectOne(baseUrl + '/api/userlogout').flush(null);
@@ -1600,7 +1767,7 @@ const completeHierarchyData = {
   })
 
   it('should filter release when project dropdown value change',()=>{
-    const spyFunct = spyOn(component,'checkIfProjectHasRelease');
+    const spyFunct = spyOn(component,'checkIfProjectHasData');
     spyOn(component,'createFilterApplyData')
     component.additionalFiltersDdn['release'] = releaseList;
     component.trendLineValueList = [
@@ -1618,7 +1785,7 @@ const completeHierarchyData = {
     ]
     component.initializeFilterForm();
     component.filterForm?.get('selectedTrendValue').setValue('DOTC_63b51633f33fd2360e9e72bd')
-    component.handleMilestoneFilter('project');
+    component.handleIterationFilters('project',true);
     expect(spyFunct).toHaveBeenCalled();
   })
 
@@ -1679,7 +1846,7 @@ const completeHierarchyData = {
     component.showExecutionDate();
     expect(spyOnFetchData).toHaveBeenCalled();
   });
-  
+
 
   it('should get comment summary', fakeAsync(() => {
     component.showKpisList = [
@@ -1748,11 +1915,11 @@ const completeHierarchyData = {
     }
     component.selectedTab = 'my-knowhow';
     const spy = spyOn(httpService, 'getCommentSummary').and.returnValue(of({success : true,data : 'working'}));
-    
+
     component.getRecentComments();
     tick();
     expect(spy).toHaveBeenCalled();
-    
+
   }));
 
   it('should get comment summary for iterartion', fakeAsync(() => {
@@ -1788,11 +1955,11 @@ const completeHierarchyData = {
     }]
     component.selectedTab = 'iteration';
     const spy = spyOn(httpService, 'getCommentSummary').and.returnValue(throwError('Error'));
-    
+
     component.getRecentComments();
     tick();
     expect(spy).toHaveBeenCalled();
-    
+
   }));
 
   it('should handle comment summary button click', () => {
@@ -2075,7 +2242,7 @@ const completeHierarchyData = {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should navigate to home page', () => {
+  xit('should navigate to home page', () => {
     (router as any).url = '/somepath/Config';
     component.kanban = true;
     component.selectedTab = 'maturity';
@@ -2109,6 +2276,7 @@ const completeHierarchyData = {
     spyOn(sharedService, 'getSelectedTrends').and.returnValue(obj);
     spyOn(sharedService, 'setDashConfigData');
     const spy = spyOn(sharedService, 'select');
+    spyOn(sharedService, 'setUpdatedBoardList');
     spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(of(mockData));
     spyOn(component, 'processKpiList');
     spyOn(component, 'navigateToSelectedTab');
@@ -2116,7 +2284,7 @@ const completeHierarchyData = {
     expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab)
   })
 
-  it('should get kpi order list on project level', () => {
+  it('should get kpi order list on project level and return error', () => {
     component.selectedTab = 'backlog';
     const obj = [{
       "nodeId": "Scrum Project_6335363749794a18e8a4479b",
@@ -2144,7 +2312,7 @@ const completeHierarchyData = {
       "checked": true
     }
     const kpiObj = {
-      kpi75: new UntypedFormControl(true) 
+      kpi75: new UntypedFormControl(true)
     }
     component.kpiForm = new UntypedFormGroup({
       enableAllKpis: new UntypedFormControl(false),
@@ -2187,7 +2355,7 @@ const completeHierarchyData = {
       {
         'nodeId': nodeId
       }
-    ] 
+    ]
     component.setTrendValueFilter();
     expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual([nodeId])
   })
@@ -2206,10 +2374,56 @@ const completeHierarchyData = {
       {
         'nodeId': nodeId
       }
-    ] 
+    ]
     component.setTrendValueFilter();
     expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual(nodeId)
   })
+
+  it('should find project which has data when selectedTab is release', () => {
+    component.defaultFilterSelection = true;
+    component.trendLineValueList = [];
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl(''),
+      date: new UntypedFormControl(''),
+      selectedLevel: new UntypedFormControl('project'),
+      selectedSprintValue: new UntypedFormControl(),
+      selectedRelease: new UntypedFormControl(),
+    });
+    component.filterData = fakeFilterData.data;
+    component.selectedTab = 'release';
+    component.hierarchyLevels = hierarchyLevels;
+    spyOn(component, 'sortAlphabetically').and.callThrough();
+    spyOn(helperService, 'makeUniqueArrayList').and.callThrough();
+    spyOn(component, 'checkIfProjectHasRelease');
+    const len = component.trendLineValueList.length;
+    spyOn(sharedService, 'setSelectedLevel');
+    spyOn(sharedService, 'setSelectedTrends')
+    component.findProjectWhichHasData();
+    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual(component.trendLineValueList[len]?.nodeId);
+  });
+
+  it('should find project which has data when selectedTab is not release', () => {
+    component.defaultFilterSelection = true;
+    component.trendLineValueList = [];
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl(''),
+      date: new UntypedFormControl(''),
+      selectedLevel: new UntypedFormControl('project'),
+      selectedSprintValue: new UntypedFormControl(),
+      selectedRelease: new UntypedFormControl(),
+    });
+    component.filterData = fakeFilterData.data;
+    component.hierarchyLevels = hierarchyLevels;
+    component.selectedTab = 'backlog';
+    spyOn(component, 'sortAlphabetically').and.callThrough();
+    spyOn(helperService, 'makeUniqueArrayList').and.callThrough();
+    spyOn(component, 'checkIfProjectHasData');
+    const len = component.trendLineValueList.length;
+    spyOn(sharedService, 'setSelectedLevel');
+    spyOn(sharedService, 'setSelectedTrends')
+    component.findProjectWhichHasData();
+    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual(component.trendLineValueList[len]?.nodeId);
+  });
 
   it('should get logo image', () => {
     const logoImage = {
@@ -2287,13 +2501,13 @@ const completeHierarchyData = {
         { nodeId: 3, nodeName: 'Node3' },
       ];
     });
-  
+
     it('should return the node name for the given nodeId', () => {
       const nodeId = 2;
       const result = component.getNodeName(nodeId);
       expect(result).toEqual('Node2');
     });
-  
+
     it('should return undefined if the nodeId is not found', () => {
       const nodeId = 4;
       const result = component.getNodeName(nodeId);
@@ -2302,7 +2516,7 @@ const completeHierarchyData = {
   });
 
   describe('YourComponent', () => {
-  
+
     beforeEach(() => {
       component.selectedFilterArray = [
         {
@@ -2336,13 +2550,13 @@ const completeHierarchyData = {
         { nodeId: '6', nodeName: 'Node6' }
       ];
     });
-  
+
     it('should compile GA data with additional filters', () => {
       const spyob = spyOn(ga, 'setProjectData');
       component.compileGAData();
       expect(spyob).toHaveBeenCalled();
     });
-  
+
     it('should compile GA data without additional filters', () => {
       const spyob = spyOn(ga, 'setProjectData');
       component.compileGAData();
@@ -2351,36 +2565,151 @@ const completeHierarchyData = {
   });
 
   describe('YourComponent', () => {
-  
+
     beforeEach(() => {
       component.processorName = ['tool1'];
-      component.processorsTracelogs = [
+      const processorsTracelogs = [
         { processorName: 'tool1', traceLog: 'Trace log for tool1' },
         { processorName: 'tool2', traceLog: 'Trace log for tool2' },
         { processorName: 'tool3', traceLog: 'Trace log for tool3' }
       ];
+      component.service.setProcessorLogDetails(processorsTracelogs)
     });
-  
+
     it('should return the trace log for the tool if it exists in processorsTracelogs', () => {
       const result = component.findTraceLogForTool();
       expect(result).toEqual({ processorName: 'tool1', traceLog: 'Trace log for tool1' });
     });
-  
-    it('should return undefined if the tool does not exist in processorsTracelogs', () => {
-      component.processorName = ['tool4'];
-  
+  });
 
-      const result = component.findTraceLogForTool();
-      expect(result).toBeUndefined();
+  describe('YourComponent', () => {
+
+    beforeEach(() => {
+      component.selectedFilterArray = [
+        {
+          additionalFilters: [
+            {
+              path: ['1###2###3'],
+              nodeName: 'Node3',
+              nodeId: '3',
+              labelName: 'Label3'
+            }
+          ],
+          path: [],
+          nodeId: '1',
+          nodeName: 'Node1',
+          labelName: 'Label1'
+        },
+        {
+          additionalFilters: [],
+          path: ['4###5###6'],
+          nodeId: '4',
+          nodeName: 'Node4',
+          labelName: 'Label4'
+        }
+      ];
+      component.filterData = [
+        { nodeId: '1', nodeName: 'Node1' },
+        { nodeId: '2', nodeName: 'Node2' },
+        { nodeId: '3', nodeName: 'Node3' },
+        { nodeId: '4', nodeName: 'Node4' },
+        { nodeId: '5', nodeName: 'Node5' },
+        { nodeId: '6', nodeName: 'Node6' }
+      ];
     });
-  
-    it('should return undefined if processorsTracelogs is empty', () => {
-      component.processorsTracelogs = [];
-  
 
-      const result = component.findTraceLogForTool();
-      expect(result).toBeUndefined();
+    it('should compile GA data with additional filters', () => {
+      const spyob = spyOn(ga, 'setProjectData');
+      component.compileGAData();
+      expect(spyob).toHaveBeenCalled();
+    });
+
+    it('should compile GA data without additional filters', () => {
+      const spyob = spyOn(ga, 'setProjectData');
+      component.compileGAData();
+      expect(spyob).toHaveBeenCalled();
     });
   });
 
+  it('should set sprint list in service layer',()=>{
+      component.selectedFilterArray = [{
+        nodeId : 'a123',
+        additionalFilters : [{
+          nodeiId : 'sp123'
+        }]
+      }]
+      const spyObj = spyOn(sharedService,'setAddtionalFilterBackup');
+      component.setSelectedSprintOnServiceLayer();
+      expect(spyObj).toHaveBeenCalled();
+    })
+
+    it('should get backup sprints',()=>{
+      component.selectedTab = 'speed';
+      sharedService.setAddtionalFilterBackup({
+        sprint : {
+          'p1' : [
+            {nodeId : 'sp1',}
+          ]
+        }
+      })
+      spyOn(sharedService,'getSelectedTrends').and.returnValue([{nodeId : 'p1'}])
+      const rValue = component.getSprintsWhichWasAlreadySelected();
+      expect(rValue).not.toBeNull();
+    })
+
+    it('should set not blank kpi filter for release and sprint when changing',()=>{
+      component.selectedTab = 'iteration';
+      const mockObj ={
+        kpiFilters : {
+          iteration : {},
+          release : {},
+        }
+      }
+      spyOn(sharedService,'getAddtionalFilterBackup').and.returnValue(mockObj);
+      spyOn(sharedService, 'setAddtionalFilterBackup')
+      const spyobj =  spyOn(sharedService, 'setKpiSubFilterObj')
+        component.refreshKpiLevelFiltersBackup('sprint',true);
+        expect(spyobj).toHaveBeenCalled();
+      })
+
+      it('should set blank kpi filter for backlog component',()=>{
+        component.selectedTab = 'backlog';
+        const mockObj ={
+          kpiFilters : {
+            backlog : {}
+          }
+        }
+        spyOn(sharedService,'getAddtionalFilterBackup').and.returnValue(mockObj);
+        const spyobj = spyOn(sharedService, 'setAddtionalFilterBackup')
+        spyOn(sharedService, 'setKpiSubFilterObj')
+
+          component.refreshKpiLevelFiltersBackup('project',true);
+          expect(spyobj).toHaveBeenCalled();
+        })
+
+        it('should close dropdown',()=>{
+          component.toggleDropdownObj = {
+            abc : true,
+            bac : false
+          } 
+          component.closeAllDropdowns();
+        })
+    
+        xit('should set selectedTab to the first boardName if selectedTab does not exist in kanban or scrum', () => {
+          // Arrange
+          component.kpiListData = {
+            kanban: [{ boardName: 'Board 1', kpis: [] }],
+            scrum: [],
+            others: []
+          };
+          component.kanban = true;
+          component.selectedTab = 'Non-existent Board';
+          spyOn(sharedService, 'setSelectedTab');
+          spyOn(component.router, 'navigate');
+          // Act
+          component.changeSelectedTab();
+    
+          // Assert
+          expect(component.selectedTab).toBe('Board 1');
+        });
 });

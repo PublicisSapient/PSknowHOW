@@ -4,12 +4,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,12 +16,15 @@ import org.springframework.web.util.WebUtils;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+
 @Component
 @Slf4j
 public class CookieUtil {
 	public static final String AUTH_COOKIE = "authCookie";
-
-	private static final String AUTHORIZATION = "Authorization";
 	@Autowired
 	private CustomApiConfig customApiConfig; // TODO needed to delete
 
@@ -92,14 +91,16 @@ public class CookieUtil {
 		});
 	}
 
-	public static HttpHeaders getHeaders(String apiKey, boolean usingBasicAuth) {
+	public HttpHeaders getHeadersForApiKey(String apiKey, boolean usingBasicAuth) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		if (apiKey != null && !apiKey.isEmpty()) {
 			if (usingBasicAuth) {
 				headers.set("x-api-key", apiKey);
+				headers.set("resource", authProperties.getResourceName());
 			} else {
 				headers.add("x-api-key", apiKey);
+				headers.add("resource", authProperties.getResourceName());
 			}
 		}
 		return headers;

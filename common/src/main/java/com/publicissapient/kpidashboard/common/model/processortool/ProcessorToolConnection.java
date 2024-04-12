@@ -54,6 +54,7 @@ public class ProcessorToolConnection {
 	private String repoSlug;
 	private String bitbucketProjKey;
 	private String apiVersion;
+	private String azurePipelineName;
 	private String newRelicApiQuery;
 	private List<String> newRelicAppNames;
 	private boolean queryEnabled;

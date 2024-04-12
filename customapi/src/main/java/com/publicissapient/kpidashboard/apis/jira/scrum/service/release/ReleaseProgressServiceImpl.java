@@ -24,11 +24,10 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +38,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
@@ -47,7 +46,6 @@ import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.apis.util.ReleaseKpiHelper;
@@ -62,7 +60,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class ReleaseProgressServiceImpl extends JiraReleaseKPIService {
 
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String RELEASE_JIRA_ISSUE_STATUS = "releaseJiraIssueStatus";
@@ -83,15 +81,9 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 	private CommonServiceImpl commonService;
 
 	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Release Progress -> Requested sprint : {}", leafNode.getName());
 			List<JiraIssue> releaseIssues = getFilteredReleaseJiraIssuesFromBaseClass(null);
@@ -108,29 +100,20 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.RELEASE) {
-				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
+			throws ApplicationException {
+		releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
 		log.info("ReleaseProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
-	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		List<Node> latestReleaseNode = new ArrayList<>();
-		Node latestRelease = releaseLeafNodeList.get(0);
-
 		if (latestRelease != null) {
 			Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			Optional.ofNullable(latestRelease).ifPresent(latestReleaseNode::add);
-			Map<String, Object> resultMap = fetchKPIDataFromDb(latestReleaseNode, null, null, kpiRequest);
+			Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 			List<JiraIssue> releaseIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
 			JiraIssueReleaseStatus jiraIssueReleaseStatus = (JiraIssueReleaseStatus) resultMap
 					.get(RELEASE_JIRA_ISSUE_STATUS);
@@ -181,7 +164,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 
 	/**
 	 * Create statusWiseIssueCountList
-	 * 
+	 *
 	 * @param jiraIssueList
 	 * @param jiraIssueReleaseStatus
 	 * @return
@@ -220,7 +203,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 
 	/**
 	 * Create StatusWiseStoryPointList
-	 * 
+	 *
 	 * @param jiraIssueList
 	 * @param fieldMapping
 	 * @param jiraIssueReleaseStatus
@@ -265,7 +248,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 
 	/**
 	 * Create statusWise storyPoint/OriginalEstimate map
-	 * 
+	 *
 	 * @param jiraIssueList
 	 * @param fieldMapping
 	 * @return
@@ -277,7 +260,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 
 	/**
 	 * Create issueCountDrillDown
-	 * 
+	 *
 	 * @param issueCountStatusMap
 	 * @param releaseStatus
 	 * @param releaseStatusCount
@@ -293,7 +276,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 
 	/**
 	 * Create storyPointDrillDown
-	 * 
+	 *
 	 * @param spStatusMap
 	 * @param releaseStatus
 	 * @param releaseStatusSp

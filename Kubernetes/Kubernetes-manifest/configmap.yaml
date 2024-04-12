@@ -20,6 +20,7 @@ data:
   corsFilterValidOrigin: "stage-psknowhow.tools.publicis.sapient.com"
   isRepoToolEnable: "true"
   versionnumber: "9.0.0-SNAPSHOT"
+  analytics.switch: "true"
 
   # UI Config
   API_HOST: "customapi"

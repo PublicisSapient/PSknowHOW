@@ -36,8 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +65,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 public class AuthenticationControllerTest {
 
 	private AuthType standardAuthType = AuthType.STANDARD;
-	private AuthType ldapAuthType = AuthType.LDAP;
 
 	@InjectMocks
 	private AuthenticationController authController;
@@ -109,22 +107,6 @@ public class AuthenticationControllerTest {
 		List<AuthType> expectedReturn = new ArrayList<>();
 
 		expectedReturn.add(standardAuthType);
-		expectedReturn.add(ldapAuthType);
-
-		when(authProperties.getAuthenticationProviders()).thenReturn(expectedReturn);
-
-		List<AuthType> result = authController.getAuthenticationProviders();
-
-		assertNotNull(result);
-		assertTrue(result.equals(expectedReturn));
-		verify(authProperties).getAuthenticationProviders();
-	}
-
-	@Test
-	public void oneType() throws Exception {
-		List<AuthType> expectedReturn = new ArrayList<>();
-
-		expectedReturn.add(ldapAuthType);
 
 		when(authProperties.getAuthenticationProviders()).thenReturn(expectedReturn);
 

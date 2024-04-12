@@ -55,15 +55,17 @@ public class FieldMapping extends BasicModel {
 
 	// defectPriority
 	private List<String> defectPriority;
-	private List<String> defectPriorityKPI135;
+	private List<LabelCount> defectPriorityKPI135;
 	private List<String> defectPriorityKPI35;
 	private List<String> defectPriorityKPI14;
 	private List<String> defectPriorityQAKPI111;
-	private List<String> defectPriorityKPI82;
+	private List<LabelCount> defectPriorityKPI82;
 	private List<String> defectPriorityKPI133;
 	private String[] jiraIssueTypeNames;
 	private String[] jiraIssueTypeNamesAVR;
 	private List<String> jiraIssueEpicType;
+	private List<String> jiraIssueRiskTypeKPI176;
+	private List<String> jiraIssueDependencyTypeKPI176;
 	private String storyFirstStatus;
 	private String storyFirstStatusKPI148;
 	private String rootCause;
@@ -92,6 +94,8 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDodQAKPI111;
 	private List<String> jiraDodKPI127;
 	private List<String> jiraDodKPI37;
+	private List<String> jiraDodKPI142;
+	private List<String> jiraDodKPI144;
 
 	private String jiraDefectCreatedStatus;
 	private String jiraDefectCreatedStatusKPI14;
@@ -150,6 +154,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueDeliverdStatusAVR;
 	private List<String> jiraIssueDeliverdStatusKPI126;
 	private List<String> jiraIssueDeliverdStatusKPI82;
+	private List<String> jiraIterationCompletionStatusKPI176;
 
 	private String readyForDevelopmentStatus;
 	private List<String> readyForDevelopmentStatusKPI138;
@@ -199,6 +204,7 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> rootCauseValue;
 	private List<String> excludeRCAFromFTPR;
+	private List<String> excludeRCAFromKPI163;
 	private List<String> includeRCAForKPI82;
 	private List<String> includeRCAForKPI135;
 	private List<String> includeRCAForKPI14;
@@ -329,9 +335,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationCompletionStatusKPI122;
 	private List<String> jiraIterationCompletionStatusKPI75;
 	private List<String> jiraIterationCompletionStatusKPI145;
-	private List<String> jiraIterationCompletionStatusKPI140;
-	private List<String> jiraIterationCompletionStatusKPI132;
-	private List<String> jiraIterationCompletionStatusKPI136;
 	private List<String> jiraIterationCompletionStatusKpi72;
 	private List<String> jiraIterationCompletionStatusKpi39;
 	private List<String> jiraIterationCompletionStatusKpi5;
@@ -445,6 +448,7 @@ public class FieldMapping extends BasicModel {
 	private String thresholdValueKPI39;
 	private String thresholdValueKPI46;
 	private String thresholdValueKPI8;
+	private String thresholdValueKPI172;
 	private String thresholdValueKPI73;
 	private String thresholdValueKPI113;
 	private String thresholdValueKPI149;
@@ -457,6 +461,7 @@ public class FieldMapping extends BasicModel {
 	private String thresholdValueKPI170;
 	private String thresholdValueKPI139;
 	private String thresholdValueKPI166;
+	private String thresholdValueKPI173;
 
 	// Production Incident Mapping
 	private String jiraProductionIncidentIdentification;
@@ -509,7 +514,7 @@ public class FieldMapping extends BasicModel {
 		return notificationEnabler;
 	}
 
-	public List<String> getJiraStatusForInProgressKPI154() {
+	public List<String> getInProgress154() {
 		return jiraStatusForInProgressKPI119;
 	}
 

@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -119,7 +119,7 @@ public class FilterHelperService {
 	/**
 	 * filter data based on sprint state
 	 * 
-	 * @param sprintStateRequestList
+	 * @param sprintStateList
 	 *            sprintStateList
 	 * @param hierarchyDataAll
 	 *            hierarchyDataAll
@@ -293,10 +293,8 @@ public class FilterHelperService {
 	/**
 	 * clean filter data
 	 * 
-	 * @param basicProjectConfigId
+	 * @param basicConfig
 	 *            id
-	 * @param isKanban
-	 *            kanban or scrum
 	 */
 	public void cleanFilterData(ProjectBasicConfigDTO basicConfig) {
 		ObjectId basicProjectConfigId = basicConfig.getId();

@@ -77,7 +77,7 @@ public class CustomAsynchronousIssueRestClient extends AsynchronousIssueRestClie
 
 	public Promise<SearchResult> searchBoardIssue(String boardId, @Nullable String jql, @Nullable Integer maxResults,
 			@Nullable Integer startAt, @Nullable Set<String> fields) {
-		final Iterable<String> expandosValues = Iterables.transform(ImmutableList.of(SCHEMA, NAMES, CHANGELOG),
+		final Iterable<String> expandosValues = Iterables.transform(java.util.List.of(SCHEMA, NAMES, CHANGELOG),
 				EXPANDO_TO_PARAM);
 		final String notNullJql = StringUtils.defaultString(jql);
 		if (notNullJql.length() > JiraConstants.MAX_JQL_LENGTH_FOR_HTTP_GET) {

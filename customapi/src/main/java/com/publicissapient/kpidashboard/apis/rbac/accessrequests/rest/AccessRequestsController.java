@@ -18,8 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.rbac.accessrequests.rest;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+
 import javax.validation.Valid;
 
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
@@ -53,6 +52,8 @@ import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDecision;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -255,9 +256,24 @@ public class AccessRequestsController {
 	public ResponseEntity<ServiceResponse> getNotificationByStatus(@PathVariable("status") String status,
 			HttpServletRequest request) {
 		log.info("Getting requests count with current status {}", status);
-		String token = authProperties.getResourceAPIKey();
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(accessRequestsHelperService.getNotificationByStatus(status, token));
+				.body(accessRequestsHelperService.getNotificationByStatus(status , false));
+	}
+
+	/**
+	 * Gets access requests count data with a pending status.
+	 *
+	 * @param status
+	 *            status
+	 *
+	 * @return responseEntity with data,message and status
+	 */
+	@RequestMapping(value = "/{status}/notification/central", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	public ResponseEntity<ServiceResponse> getNotificationByStatusForCentral(@PathVariable("status") String status,
+			HttpServletRequest request) {
+		log.info("Getting requests count with current status {}", status);
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(accessRequestsHelperService.getNotificationByStatus(status , true));
 	}
 
 }

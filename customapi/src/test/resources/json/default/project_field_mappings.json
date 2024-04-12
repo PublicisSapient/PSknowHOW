@@ -156,6 +156,8 @@
     "jiraDodQAKPI111" : [ "Closed" ],
     "jiraDodKPI3" : [ "Closed" ],
     "jiraDodKPI127" : [ "Closed" ],
+    "jiraDodKPI142" : [ "Closed" ],
+    "jiraDodKPI144" : [ "Closed" ],
     "jiraDefectCreatedStatusKPI14" : "Open",
     "jiraDefectRejectionStatusAVR" : "Rejected",
     "jiraDefectRejectionStatusKPI28" : "Rejected",

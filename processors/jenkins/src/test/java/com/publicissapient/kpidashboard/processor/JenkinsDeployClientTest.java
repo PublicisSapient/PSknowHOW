@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
 
@@ -91,6 +92,6 @@ public class JenkinsDeployClientTest {
 
 	private String getJson(String fileName) throws IOException {
 		InputStream inputStream = JenkinsDeployClientTest.class.getResourceAsStream(fileName);
-		return IOUtils.toString(inputStream);
+		return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 	}
 }

@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.capacity.service;
 
 import static org.junit.Assert.assertEquals;
@@ -15,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -78,6 +99,8 @@ public class CapacityMasterServiceImplTest {
 	private SprintDetailsService sprintDetailsService;
 	@Mock
 	private HappinessKpiDataRepository happinessKpiDataRepository;
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 	private List<SprintDetails> sprintDetailsList;
 
 	/**
@@ -96,6 +119,7 @@ public class CapacityMasterServiceImplTest {
 		scrumCapacityMaster.setSprintNodeId("38296_Scrum Project_6335363749794a18e8a4479b");
 		scrumCapacityMaster.setKanban(false);
 		scrumCapacityMaster.setCapacity(500.0);
+		scrumCapacityMaster.setBasicProjectConfigId(new ObjectId("65eec0156f35b0294eb765f6"));
 
 		kanbanCapacity = new CapacityMaster();
 		kanbanCapacity.setProjectName("Kanban Project");
@@ -104,11 +128,20 @@ public class CapacityMasterServiceImplTest {
 		kanbanCapacity.setEndDate("2020-02-02");
 		kanbanCapacity.setKanban(true);
 		kanbanCapacity.setCapacity(500.0);
+		kanbanCapacity.setBasicProjectConfigId(new ObjectId("65eec0156f35b0294eb765f6"));
+
 
 		kanbanDbData = new KanbanCapacity();
 		kanbanDbData.setProjectName("health project");
 		kanbanDbData.setProjectId("Kanban Project_6335368249794a18e8a4479f");
 		kanbanDbData.setCapacity(200.0);
+
+		scrumCapacityAssigneeMaster.setBasicProjectConfigId(new ObjectId("65eec0156f35b0294eb765f6"));
+		
+		when(capacityKpiDataRepository.findAll()).thenReturn(capacityKpiDataList);
+		when(assigneeDetailsRepository
+				.findByBasicProjectConfigId(anyString()))
+				.thenReturn(new AssigneeDetails());
 	}
 
 	private void setUpCapacityAssignee() {
@@ -170,6 +203,7 @@ public class CapacityMasterServiceImplTest {
 	public void testProcessCapacityData_scrum_failure() {
 		Map<String, String> map = new HashMap<>();
 		map.put("projectId", scrumCapacityMaster.getProjectNodeId());
+		when(assigneeDetailsRepository.findByBasicProjectConfigId(anyString())).thenReturn(new AssigneeDetails());
 		assertNotNull(capacityMasterServiceImpl.processCapacityData(kanbanCapacity));
 	}
 
@@ -197,6 +231,7 @@ public class CapacityMasterServiceImplTest {
 	@Test
 	public void testProcessCapacityData_kanban_failure() {
 		kanbanCapacity = new CapacityMaster();
+		kanbanCapacity.setBasicProjectConfigId(new ObjectId("65eec0156f35b0294eb765f6"));
 		assertNull(capacityMasterServiceImpl.processCapacityData(kanbanCapacity));
 	}
 
@@ -347,6 +382,7 @@ public class CapacityMasterServiceImplTest {
 	public void testProcessAssigneeCapacityData_kanban_success() {
 		when(kanbanCapacityRepository.findByFilterMapAndDate(Mockito.any(), Mockito.any()))
 				.thenReturn(Lists.newArrayList(kanbanDbData));
+		kanbanCapacityAssignee.setBasicProjectConfigId(new ObjectId("65eec0156f35b0294eb765f6"));
 		assertNotNull(capacityMasterServiceImpl.processCapacityData(kanbanCapacityAssignee));
 	}
 }

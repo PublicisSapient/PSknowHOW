@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -125,12 +125,6 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 	@Override
 	public Map<ObjectId, List<SonarDetails>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate,
 			String endDate, KpiRequest kpiRequest) {
-		return new HashMap<>();
-	}
-
-	@Override
-	public Map<String, Object> getSonarJobWiseKpiData(List<Node> pList, Map<String, Node> tempMap,
-			KpiElement kpiElement) {
 		return new HashMap<>();
 	}
 

@@ -111,7 +111,7 @@ public class JenkinsProcessorTaskTests {
 
 	@BeforeEach
 	public void initMocks() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		JenkinsProcessor processor = new JenkinsProcessor();
 		processor.setId(new ObjectId("62171d0f26dd266803fa87da"));
 		JENKINSSAMPLESERVER.setUrl("http://does:matter@jenkins.com");

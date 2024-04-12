@@ -21,12 +21,11 @@
  */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -257,9 +256,9 @@ public class SonarViolationsKanbanServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
+//		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
-		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+//		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
@@ -289,7 +288,7 @@ public class SonarViolationsKanbanServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		Assert.assertThat(KPICode.SONAR_VIOLATIONS_KANBAN.name(), equalTo(svServiceImpl.getQualifierType()));
+		assertThat(KPICode.SONAR_VIOLATIONS_KANBAN.name(), equalTo(svServiceImpl.getQualifierType()));
 	}
 
 	@Test

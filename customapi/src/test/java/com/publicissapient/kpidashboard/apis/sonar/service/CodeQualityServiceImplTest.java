@@ -24,6 +24,8 @@ package com.publicissapient.kpidashboard.apis.sonar.service;
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -281,6 +283,57 @@ public class CodeQualityServiceImplTest {
 	@Test
 	public void testGetQualifier() {
 		assertEquals(codeQualityService.getQualifierType(), KPICode.SONAR_CODE_QUALITY.name());
+	}
+
+	@Test
+	public void testGetDataCount() {
+		Long value = 3L;
+		String projectName = "SampleProject";
+		String date = "2024-01-01";
+
+		DataCount result = codeQualityService.getDataCount(value, projectName, date);
+
+		assertNotNull(result);
+		assertEquals("C", result.getData());
+		assertEquals(projectName, result.getSProjectName());
+		assertEquals(date, result.getDate());
+		assertEquals(value, result.getValue());
+		assertNotNull(result.getHoverValue());
+	}
+
+	@Test
+	public void testGetDataCountA_Value() {
+		Long value = 1L;
+		String projectName = "SampleProject";
+		String date = "2024-01-01";
+
+		DataCount result = codeQualityService.getDataCount(value, projectName, date);
+		codeQualityService.getDataCount(2L, projectName, date);
+		codeQualityService.getDataCount(5L, projectName, date);
+		codeQualityService.getDataCount(4L, projectName, date);
+
+		assertNotNull(result);
+		assertEquals("A", result.getData());
+		assertEquals(projectName, result.getSProjectName());
+		assertEquals(date, result.getDate());
+		assertEquals(value, result.getValue());
+		assertNotNull(result.getHoverValue());
+	}
+
+	@Test
+	public void testGetDataCountWithNullValue() {
+		Long value = null;
+		String projectName = "SampleProject";
+		String date = "2024-01-01";
+
+		DataCount result = codeQualityService.getDataCount(value, projectName, date);
+
+		assertNotNull(result);
+		assertNull(result.getData());
+		assertEquals(projectName, result.getSProjectName());
+		assertEquals(date, result.getDate());
+		assertNull(result.getValue());
+		assertNotNull(result.getHoverValue());
 	}
 
 	private Map<String, List<DataCount>> createTrendValue() {

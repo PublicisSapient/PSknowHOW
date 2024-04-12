@@ -25,8 +25,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -66,7 +67,7 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 	 * @see org.springframework.batch.item.ItemWriter#write(java.util.List)
 	 */
 	@Override
-	public void write(List<? extends CompositeResult> kanbanCompositeResults) throws Exception {
+	public void write(Chunk<? extends CompositeResult> kanbanCompositeResults) throws Exception {
 		List<KanbanJiraIssue> jiraIssues = new ArrayList<>();
 		List<KanbanIssueCustomHistory> kanbanIssueCustomHistory = new ArrayList<>();
 		Set<KanbanAccountHierarchy> accountHierarchies = new HashSet<>();

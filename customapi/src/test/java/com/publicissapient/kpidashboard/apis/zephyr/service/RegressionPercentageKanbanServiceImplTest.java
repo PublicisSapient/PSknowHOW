@@ -18,8 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.zephyr.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -55,9 +55,11 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
@@ -103,6 +105,23 @@ public class RegressionPercentageKanbanServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 		kpiElement = kpiRequest.getKpiList().get(0);
 		kpiWiseAggregation.put("defectInjectionRate", "average");
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap= new HashMap<>();
+		Map<String, List<ProjectToolConfig>> projectTool= new HashMap<>();
+
+		ProjectToolConfig zephyConfig= new ProjectToolConfig();
+		zephyConfig.setRegressionAutomationLabels(Arrays.asList("test1"));
+		zephyConfig.setTestRegressionValue(Arrays.asList("test1"));
+		zephyConfig.setRegressionAutomationFolderPath(Arrays.asList("test1"));
+		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
+		ProjectToolConfig jiraTest= new ProjectToolConfig();
+		jiraTest.setJiraRegressionTestValue(Arrays.asList("test1"));
+		jiraTest.setTestCaseStatus(Arrays.asList("test1"));
+		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
+		projectTool.put(ProcessorConstants.JIRA_TEST, Arrays.asList(jiraTest));
+		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), projectTool);
+		when(cacheService
+				.cacheProjectToolConfigMapData()).thenReturn(toolMap);
+
 	}
 
 	@Test
@@ -157,7 +176,7 @@ public class RegressionPercentageKanbanServiceImplTest {
 				leafNodeList.addAll(v);
 			}
 		});
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+//		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(testCaseDetailsRepository.findTestDetails(any(), any(), any())).thenReturn(testCaseDetailsList);
 		Map<String, Object> defectDataListMap = regressionPercentageKanbanServiceImpl.fetchKPIDataFromDb(leafNodeList,
 				null, null, kpiRequest);

@@ -1,8 +1,27 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
@@ -33,7 +52,7 @@ import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -64,12 +83,7 @@ public class DefectCountByPriorityServiceImplTest {
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
-	private JiraServiceR jiraService;
-
-	@Test
-	public void testGetCalculateKPIMetrics() {
-		assertThat(defectCountByPriorityService.calculateKPIMetrics(new HashMap<>()), equalTo(null));
-	}
+	private JiraIterationServiceR jiraService;
 
 	@Test
 	public void testGetQualifierType() {
@@ -112,7 +126,7 @@ public class DefectCountByPriorityServiceImplTest {
 			when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 			when(jiraIssueRepository.findLinkedDefects(anyMap(), any(), anyMap())).thenReturn(bugList);
 			KpiElement kpiElement = defectCountByPriorityService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull(kpiElement);
 
 		} catch (ApplicationException applicationException) {
@@ -130,7 +144,7 @@ public class DefectCountByPriorityServiceImplTest {
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> returnMap = defectCountByPriorityService.fetchKPIDataFromDb(leafNodeList, startDate,
+		Map<String, Object> returnMap = defectCountByPriorityService.fetchKPIDataFromDb(leafNodeList.get(0), startDate,
 				endDate, kpiRequest);
 		assertNotNull(returnMap);
 	}

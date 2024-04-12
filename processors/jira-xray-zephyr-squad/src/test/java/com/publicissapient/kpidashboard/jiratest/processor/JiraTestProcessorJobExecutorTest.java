@@ -151,6 +151,7 @@ public class JiraTestProcessorJobExecutorTest {
 		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(toolList);
 		when(jiraTestService.processesJiraIssues(any())).thenReturn(10);
+		when(projectConfigRepository.findById(any())).thenReturn(projectConfigList.stream().findFirst());
 		Assert.assertEquals(true, jiraTestProcessorJobExecutor.execute(jiraProcessor));
 		jiraTestProcessorJobExecutor.setProjectsBasicConfigIds(null);
 	}

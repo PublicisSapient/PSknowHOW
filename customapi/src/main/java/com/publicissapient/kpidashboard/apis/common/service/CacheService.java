@@ -40,6 +40,8 @@ public interface CacheService {
 
 	Object cacheAccountHierarchyData();
 
+	Object cacheSprintLevelData();
+
 	Object cacheAccountHierarchyKanbanData();
 
 	void setIntoApplicationCache(String key, String value);
@@ -100,10 +102,5 @@ public interface CacheService {
 	Map<String, HierarchyLevel> getFullKanbanHierarchyLevelMap();
 
 	Map<String, AdditionalFilterCategory> getAdditionalFilterHierarchyLevel();
-
-	//-- auth-N-auth changes starts here---
-	//List<ActionPoliciesDTO> getActionPoliciesFromCache();
-
-	//-- auth-N-auth changes ends here---
 
 }

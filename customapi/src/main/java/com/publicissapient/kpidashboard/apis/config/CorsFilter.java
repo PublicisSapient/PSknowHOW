@@ -23,12 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,6 +33,10 @@ import com.publicissapient.kpidashboard.apis.constant.CORSConstants;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -50,7 +49,7 @@ public class CorsFilter extends OncePerRequestFilter {
 	@Autowired
 	private CustomApiConfig apiSettings;
 
-	@Override
+    @Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		// Added code to handle the CORS security
@@ -70,7 +69,7 @@ public class CorsFilter extends OncePerRequestFilter {
 	 * <p>
 	 * This method checks whether the request is a valid CORS request
 	 * </p>
-	 * 
+	 *
 	 * @param request
 	 * @return Boolean
 	 * @throws MalformedURLException
@@ -98,7 +97,7 @@ public class CorsFilter extends OncePerRequestFilter {
 	 * <p>
 	 * This method validates the origin with whitelist of CORS valid addresses
 	 * </p>
-	 * 
+	 *
 	 * @param originWhiteList
 	 * @param theResult
 	 * @param origin
@@ -123,7 +122,7 @@ public class CorsFilter extends OncePerRequestFilter {
 	 * <p>
 	 * This method sets the headers in reponse to enable CORS
 	 * </p>
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 */

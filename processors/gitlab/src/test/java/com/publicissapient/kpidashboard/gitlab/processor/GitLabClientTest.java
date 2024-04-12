@@ -22,12 +22,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
@@ -68,9 +69,9 @@ public class GitLabClientTest {
 	@Mock
 	private AesEncryptionService aesEncryptionService;
 
-	@BeforeEach
+	@Before
 	public void init() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		when(gitLabRestOperations.getTypeInstance()).thenReturn(restTemplate);
 
 		gitLabInfo.setBranch("release/core-r4.4");
@@ -100,7 +101,7 @@ public class GitLabClientTest {
 	}
 
 	private String getServerResponse(String resource) throws Exception {
-		return IOUtils.toString(this.getClass().getResourceAsStream(resource));
+		return IOUtils.toString(this.getClass().getResourceAsStream(resource), StandardCharsets.UTF_8);
 	}
 
 }

@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,79 +153,6 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 				}
 			}
 		}
-	}
-
-	/**
-	 * Aggregates values at leaf nodes.
-	 *
-	 * @param node
-	 *            root node
-	 * @param nodeWiseKPIValue
-	 *            node value map
-	 * @param kpiName
-	 *            kpi name to get aggregation logic
-	 * @return aggregated data
-	 */
-	@SuppressWarnings("unchecked")
-	public Map<String, Double> calculateAggValueForMapObject(Node node,
-			Map<Pair<String, String>, Node> nodeWiseKPIValue, String kpiName) {
-
-		if (node == null) {
-			return new HashMap<>();
-		}
-
-		if (!(node.getValue() instanceof HashMap) && (int) node.getValue() == 0) {
-			Map<String, Double> dataMap = new HashMap<>();
-			dataMap.put("Default", 0.0d);
-			node.setValue(dataMap);
-		}
-
-		List<Node> children = node.getChildren();
-		if (CollectionUtils.isEmpty(children)) {
-			nodeWiseKPIValue.put(Pair.of(node.getGroupName(), node.getId()), node);
-			return (Map<String, Double>) node.getValue();
-		}
-		List<Map<String, Double>> aggregatedValueList = new ArrayList<>();
-		for (Node child : children) {
-			aggregatedValueList.add(calculateAggValueForMapObject(child, nodeWiseKPIValue, kpiName));
-		}
-		node.setValue(aggregateObject(aggregatedValueList, kpiName));
-		nodeWiseKPIValue.put(Pair.of(node.getGroupName(), node.getId()), node);
-		return (Map<String, Double>) node.getValue();
-
-	}
-
-	/**
-	 * Returns aggregated value based on criteria selected.
-	 *
-	 * @param aggregatedValueList
-	 * @param kpiName
-	 * @return
-	 */
-	private Map<String, Double> aggregateObject(List<Map<String, Double>> aggregatedValueList, String kpiName) {
-
-		Map<String, Double> resultMap = new HashMap<>();
-		Map<String, List<Double>> aggMap = aggregatedValueList.stream().flatMap(m -> m.entrySet().stream()).collect(
-				Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
-
-		aggMap.forEach((key, value) -> {
-			if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiName))) {
-				if (null == customApiConfig.getPercentileValue()) {
-					resultMap.put(key, AggregationUtils.percentiles(value, 90.0D));
-				} else {
-					resultMap.put(key, AggregationUtils.percentiles(value, customApiConfig.getPercentileValue()));
-				}
-			} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiName))) {
-				resultMap.put(key, AggregationUtils.median(value));
-			} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiName))) {
-				resultMap.put(key, AggregationUtils.average(value));
-			} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiName))) {
-				resultMap.put(key, AggregationUtils.sum(value));
-			}
-		});
-		resultMap.remove("Default");
-
-		return resultMap;
 	}
 
 	/**

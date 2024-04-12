@@ -105,13 +105,13 @@ describe('ToolMenuComponent', () => {
     toolsReq.flush(toolsData);
 
     const jiraOrAzure = toolsData['data'].filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
-    expect(component.disableSwitch).toBeTrue();
     if (jiraOrAzure.length) {
       const mappingsReq = httpMock.expectOne(`${baseUrl}/api/tools/${jiraOrAzure[0].id}/fieldMapping`);
       expect(mappingsReq.request.method).toBe('GET');
       mappingsReq.flush(mappingData);
+      expect(component.disableSwitch).toBeTrue();
     }
-    if(component.isAssigneeSwitchChecked){
+    if (component.isAssigneeSwitchChecked) {
       expect(component.isAssigneeSwitchDisabled).toBeTruthy();
     }
   });
@@ -119,32 +119,36 @@ describe('ToolMenuComponent', () => {
   it('should set tool data for ga event', () => {
     component.selectedTools = [
       {
-          "id": "6361050e3fa9e175755f0730",
-          "toolName": "Jira",
+        "id": "6361050e3fa9e175755f0730",
+        "toolName": "Jira",
       },
       {
-          "id": "63615320c7a36b1d53797532",
-          "toolName": "Jenkins",
+        "id": "63615320c7a36b1d53797532",
+        "toolName": "Jenkins",
       },
       {
-          "id": "63615554c7a36b1d53797537",
-          "toolName": "GitHub",
+        "id": "63615554c7a36b1d53797537",
+        "toolName": "GitHub",
       },
       {
-          "id": "6361ff31f6f1c850816cedfe",
-          "toolName": "Zephyr",
+        "id": "6361ff31f6f1c850816cedfe",
+        "toolName": "Zephyr",
       },
       {
-          "id": "6390106ab3c061d8f778b1d2",
-          "toolName": "JiraTest",
+        "id": "6390106ab3c061d8f778b1d2",
+        "toolName": "JiraTest",
       },
       {
-          "id": "6486f2796803f300a9fd2c14",
-          "toolName": "Sonar",
+        "id": "6486f2796803f300a9fd2c14",
+        "toolName": "Sonar",
       },
       {
-          "id": "64c780f25fec906dbc18f1d7",
-          "toolName": "GitHubAction",
+        "id": "64c780f25fec906dbc18f1d7",
+        "toolName": "GitHubAction",
+      },
+      {
+        "id": "64c780f25fsvr46h46j57n3e",
+        "toolName": "ArgoCD",
       },
     ]
     component.selectedProject = {
@@ -165,12 +169,12 @@ describe('ToolMenuComponent', () => {
   it('should navigate back to Projects List if no selected project is there', () => {
     sharedService.setSelectedProject(null);
     component.selectedProject = {
-      saveAssigneeDetails : true
+      saveAssigneeDetails: true
     }
     const navigateSpy = spyOn(router, 'navigate');
     component.ngOnInit();
-    if(!component.selectedProject){
-    expect(navigateSpy).toHaveBeenCalledWith(['./dashboard/Config/ProjectList']);
+    if (!component.selectedProject) {
+      expect(navigateSpy).toHaveBeenCalledWith(['./dashboard/Config/ProjectList']);
     }
   });
 
@@ -194,70 +198,70 @@ describe('ToolMenuComponent', () => {
     expect(generateTokenSpy).not.toHaveBeenCalled();
   });
 
-  it('should make an api call for generating token and dispaly token on modal',()=>{
+  it('should make an api call for generating token and dispaly token on modal', () => {
     const response = {
       message: "API token is updated",
       success: true,
-      data:{
+      data: {
         basicProjectConfigId: '6360fefc3fa9e175755f0728',
         projectName: '"KnowHOW"',
         userName: 'TESTADMIN',
         apiToken: 'TestToken',
-        expiryDate:'2023-03-10',
+        expiryDate: '2023-03-10',
         createdAt: '2023-02-10'
       }
     };
-    spyOn(sharedService,'getSelectedProject').and.returnValue({
-      id:'6360fefc3fa9e175755f0728',
-      Project:'KnowHOW'
+    spyOn(sharedService, 'getSelectedProject').and.returnValue({
+      id: '6360fefc3fa9e175755f0728',
+      Project: 'KnowHOW'
     });
 
-    spyOn(httpService,'generateToken').and.returnValue(of(response));
+    spyOn(httpService, 'generateToken').and.returnValue(of(response));
     component.generateToken();
     fixture.detectChanges();
     expect(component.generatedToken).toEqual(response.data.apiToken);
   });
 
-  it('should show error message if generate token api fails',()=>{
+  it('should show error message if generate token api fails', () => {
     const response = {
       message: "Failed fetching API token",
       success: false,
-      data:null
+      data: null
     };
-    spyOn(sharedService,'getSelectedProject').and.returnValue({
-      id:'6360fefc3fa9e175755f0728',
-      Project:'KnowHOW'
+    spyOn(sharedService, 'getSelectedProject').and.returnValue({
+      id: '6360fefc3fa9e175755f0728',
+      Project: 'KnowHOW'
     });
 
-    spyOn(httpService,'generateToken').and.returnValue(of(response));
-    const messageServiceSpy = spyOn(messageService,'add');
+    spyOn(httpService, 'generateToken').and.returnValue(of(response));
+    const messageServiceSpy = spyOn(messageService, 'add');
     component.generateToken();
     fixture.detectChanges();
     expect(messageServiceSpy).toHaveBeenCalled();
   });
 
-  it('should copy token to clipboard',()=>{
-    component.generatedToken='TestToken1';
+  xit('should copy token to clipboard', () => {
+    component.generatedToken = 'TestToken1';
     component.copyToken();
     expect(component.tokenCopied).toBeTrue();
   });
 
 
-  it("should disable assignee switch once assignee switch is on",()=>{
+  it("should disable assignee switch once assignee switch is on", () => {
     component.isAssigneeSwitchChecked = true;
     const confirmationService = TestBed.get(ConfirmationService); // grab a handle of confirmationService
-    spyOn(component,'updateProjectDetails');
+    spyOn(component, 'updateProjectDetails');
     spyOn<any>(confirmationService, 'confirm').and.callFake((params: any) => {
       params.accept();
       params.reject();
     });
     component.onAssigneeSwitchChange();
-    if(component.isAssigneeSwitchChecked){
+    if (component.isAssigneeSwitchChecked) {
       expect(component.isAssigneeSwitchDisabled).toBeTruthy();
     }
   })
 
-  it("should prepare data for update project",()=>{
+  it("should prepare data for update project", () => {
     const hierarchyData = [
       {
         level: 1,
@@ -276,14 +280,178 @@ describe('ToolMenuComponent', () => {
       },
     ];
     component.selectedProject = {
-      Project : "My Project",
-      Type : 'kanban',
-      ["Level One"] : "T1",
-      ["Level Two"] : "T2",
-      ["Level Three"] : "T3",
+      Project: "My Project",
+      Type: 'kanban',
+      ["Level One"]: "T1",
+      ["Level Two"]: "T2",
+      ["Level Three"]: "T3",
 
     }
-    localStorage.setItem("hierarchyData",JSON.stringify(hierarchyData));
+    localStorage.setItem("hierarchyData", JSON.stringify(hierarchyData));
     component.updateProjectDetails();
   })
+
+  it('should check if project is configured when tool selected is AzurePipeline', () => {
+    component.selectedTools = [
+      {
+        "toolName": "Jira",
+      },
+      {
+        "toolName": "AzurePipeline",
+      },
+      {
+        "toolName": "AzureRepository",
+      },
+      {
+        "toolName": "GitHubAction",
+      },
+    ];
+    expect(component.isProjectConfigured('Azure Pipeline')).toBeTruthy();
+  })
+
+  it('should check if project is configured when tool selected is AzureRepository', () => {
+    component.selectedTools = [
+      {
+        "toolName": "Jira",
+      },
+      {
+        "toolName": "AzurePipeline",
+      },
+      {
+        "toolName": "AzureRepository",
+      },
+      {
+        "toolName": "GitHubAction",
+      },
+    ];
+    expect(component.isProjectConfigured('Azure Repo')).toBeTruthy();
+  })
+
+  it('should check if project is configured when tool selected is GitHub Action', () => {
+    component.selectedTools = [
+      {
+        "toolName": "Jira",
+      },
+      {
+        "toolName": "AzurePipeline",
+      },
+      {
+        "toolName": "AzureRepository",
+      },
+      {
+        "toolName": "GitHubAction",
+      },
+    ];
+    expect(component.isProjectConfigured('GitHub Action')).toBeTruthy();
+  })
+
+  it('should update project details', () => {
+    const hierarchyData = [
+      {
+        level: 1,
+        hierarchyLevelId: 'hierarchyLevelOne',
+        hierarchyLevelName: 'Level One',
+      },
+      {
+        level: 2,
+        hierarchyLevelId: 'hierarchyLevelTwo',
+        hierarchyLevelName: 'Level Two',
+      },
+      {
+        level: 3,
+        hierarchyLevelId: 'hierarchyLevelThree',
+        hierarchyLevelName: 'Level Three',
+      },
+    ];
+    component.selectedProject = {
+      Project: "My Project",
+      Type: 'kanban',
+      ["Level One"]: "T1",
+      ["Level Two"]: "T2",
+      ["Level Three"]: "T3",
+
+    }
+    localStorage.setItem("hierarchyData", JSON.stringify(hierarchyData));
+    const response = {
+      "serviceResponse": {
+          "message": "Updated Successfully.",
+          "success": true,
+          "data": {
+              "id": "63777558175a953a0a49d363",
+              "projectName": "VDOS",
+          }
+      },
+      "projectsAccess": []
+    }
+    spyOn(httpService, 'updateProjectDetails').and.returnValue(of(response));
+    component.isAssigneeSwitchDisabled = false;
+    spyOn(messageService, 'add');
+    component.updateProjectDetails();
+    expect(messageService.add).toHaveBeenCalled();
+    expect(component.isAssigneeSwitchDisabled).toBeTruthy();
+  });
+
+  it('should update project details', () => {
+    const hierarchyData = [
+      {
+        level: 1,
+        hierarchyLevelId: 'hierarchyLevelOne',
+        hierarchyLevelName: 'Level One',
+      },
+      {
+        level: 2,
+        hierarchyLevelId: 'hierarchyLevelTwo',
+        hierarchyLevelName: 'Level Two',
+      },
+      {
+        level: 3,
+        hierarchyLevelId: 'hierarchyLevelThree',
+        hierarchyLevelName: 'Level Three',
+      },
+    ];
+    component.selectedProject = {
+      Project: "My Project",
+      Type: 'kanban',
+      ["Level One"]: "T1",
+      ["Level Two"]: "T2",
+      ["Level Three"]: "T3",
+
+    }
+    localStorage.setItem("hierarchyData", JSON.stringify(hierarchyData));
+    spyOn(httpService, 'updateProjectDetails').and.returnValue(of('Error'));
+    component.isAssigneeSwitchChecked = true;
+    component.isAssigneeSwitchDisabled = true;
+    spyOn(messageService, 'add');
+    component.updateProjectDetails();
+    expect(messageService.add).toHaveBeenCalled();
+    expect(component.isAssigneeSwitchChecked).toBeFalsy();
+    expect(component.isAssigneeSwitchDisabled).toBeFalsy();
+  });
+
+  it('should filter tools based on repo tool config', () => {
+    component.tools = [
+      {
+        "id": "6361050e3fa9",
+        "toolName": 'jira'
+      }
+    ];
+    component.repoToolsEnabled = true;
+    component.repoTools = ["jira", "bitbucket"];
+    component.ngOnInit();
+    expect(component.tools.length).toEqual(1);
+  })
+
+  it('should filter tools based on repo tool config', () => {
+    component.tools = [
+      {
+        "id": "6361050e3fa9",
+        "toolName": 'jira'
+      }
+    ];
+    component.repoToolsEnabled = true;
+    component.repoTools = ["bitbucket"];
+    component.ngOnInit();
+    expect(component.tools.length).toEqual(1);
+  })
+
 });

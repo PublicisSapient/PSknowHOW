@@ -25,6 +25,12 @@
         <span class="formulaleft">{{ title }} for a sprint</span>
         <span class="inlineformula">
           <table class="frac">
+            <caption style="display: none;">Formula</caption>
+            <thead style="display: none;">
+              <tr>
+                <th scope="col"></th>
+              </tr>
+            </thead>
             <tbody>
               <tr>
                 <td>
@@ -52,6 +58,7 @@
           </div>
         </div>
         <table class="table table-bordered">
+          <caption style="display: none;">Data</caption>
           <thead>
             <tr>
               <th>Sprint Name</th>
@@ -73,12 +80,12 @@
         <div class="formdesc" *ngIf="tooltip && tooltip.kpiWiseAggregationType">
           Aggregated value for above example is
           {{
-            helperService.toolTipValue(
-              10,
-              20,
-              tooltip.kpiWiseAggregationType[kpi],
-              tooltip.percentile
-            )
+          helperService.toolTipValue(
+          10,
+          20,
+          tooltip.kpiWiseAggregationType[kpi],
+          tooltip.percentile
+          )
           }}
           .
         </div>

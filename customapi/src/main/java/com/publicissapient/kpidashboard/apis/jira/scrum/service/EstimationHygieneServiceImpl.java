@@ -25,11 +25,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +37,7 @@ import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
@@ -47,11 +46,11 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -62,7 +61,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class EstimationHygieneServiceImpl extends JiraIterationKPIService {
 
 	public static final String UNCHECKED = "unchecked";
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
@@ -74,16 +73,10 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 	ConfigHelperService configHelperService;
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
+			throws ApplicationException {
 		DataCount trendValue = new DataCount();
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
-			Filters filters = Filters.getFilter(k);
-			if (Filters.SPRINT == filters) {
-				projectWiseLeafNodeValue(v, trendValue, kpiElement, kpiRequest);
-			}
-		});
+		projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
@@ -93,15 +86,9 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 	}
 
 	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> subCategoryMap) {
-		return null;
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Estimation Hygiene -> Requested sprint : {}", leafNode.getName());
 			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
@@ -128,6 +115,14 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), jiraIssueList);
+					if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())) {
+						List<String> defectType = new ArrayList<>();
+						defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
+						defectType.addAll(fieldMapping.getJiradefecttype());
+						filtersIssuesList = filtersIssuesList.stream()
+								.filter(jiraIssue -> !defectType.contains(jiraIssue.getTypeName()))
+								.collect(Collectors.toSet());
+					}
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 			}
@@ -139,23 +134,17 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint level.
 	 *
-	 * @param sprintLeafNodeList
+	 * @param latestSprint
 	 * @param trendValue
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue, KpiElement kpiElement,
+	private void projectWiseLeafNodeValue(Node latestSprint, DataCount trendValue, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
-		List<Node> latestSprintNode = new ArrayList<>();
-		Node latestSprint = sprintLeafNodeList.get(0);
-		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
-
-		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
+		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprint, null, null, kpiRequest);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			log.info("Estimation Hygiene -> request id : {} total jira Issues : {}", requestTrackerId,

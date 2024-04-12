@@ -134,7 +134,9 @@
       "Change request"
     ],
     "jiraDueDateCustomField": "customfield_20303",
-    "jiraDueDateField": "Custom Field",
+    "jiraDevDueDateCustomField": "customfield_20303",
+    "jiraDueDateField": "Due Date",
+    "jiraDevDueDateField": "Due Date",
     "_class": "com.publicissapient.kpidashboard.common.model.application.FieldMapping"
   },
   {
@@ -258,7 +260,7 @@
     "epicTimeCriticality": "customfield_51002",
     "epicJobSize": "customfield_58103",
     "productionDefectCustomField": "",
-    "productionDefectIdentifier": "",
+    "productionDefectIdentifier": "Component",
     "productionDefectValue": [],
     "productionDefectComponentValue": "",
     "estimationCriteria": "Story Point",
@@ -273,6 +275,8 @@
       "Enabler Story",
       "Change request"
     ],
+    "jiraIssueRiskTypeKPI176": ["Risk"],
+    "jiraIssueDependencyTypeKPI176": ["Dependency"],
     "_class": "com.publicissapient.kpidashboard.common.model.application.FieldMap"
   }
 ]

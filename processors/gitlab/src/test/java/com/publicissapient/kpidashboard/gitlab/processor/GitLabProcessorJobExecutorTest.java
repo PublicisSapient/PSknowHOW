@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +35,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.powermock.reflect.Whitebox;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -199,7 +199,12 @@ public class GitLabProcessorJobExecutorTest {
 		// toolConfig.setUrl("https://test.com/scm.git");
 		toolConfigs.add(toolConfig);
 		Assert.assertEquals(1, processorItems.size());
-		Whitebox.invokeMethod(gitBucketProcessorJobExecutor, "addProcessorItems", processor);
+		Method method = GitLabProcessorJobExecutor.class.getDeclaredMethod("addProcessorItems", Processor.class);
+		method.setAccessible(true);
+
+		// Invoke the method
+		method.invoke(gitBucketProcessorJobExecutor, processor);
+
 	}
 
 	private List<ProjectBasicConfig> getProjectConfigList() {

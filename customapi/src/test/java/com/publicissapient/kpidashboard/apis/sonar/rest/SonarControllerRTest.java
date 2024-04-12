@@ -93,7 +93,7 @@ public class SonarControllerRTest {
 		kpiElementList.add(kpiElement);
 
 		when(sonarService.process(Mockito.any())).thenReturn(kpiElementList);
-		mockMvc.perform(post("/sonar/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/sonar/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
 
 	}
@@ -105,7 +105,7 @@ public class SonarControllerRTest {
 				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
 		// @formatter:on
 
-		mockMvc.perform(post("/sonar/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request)).andDo(print())
+		mockMvc.perform(post("/sonar/kpi").contentType(MediaType.APPLICATION_JSON).content(request)).andDo(print())
 				.andExpect(status().isBadRequest());
 
 	}
@@ -131,7 +131,7 @@ public class SonarControllerRTest {
 		kpiElementList.add(kpiElement);
 
 		when(sonarServiceKanban.process(Mockito.any())).thenReturn(kpiElementList);
-		mockMvc.perform(post("/sonarkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/sonarkanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
 	}
 
@@ -142,7 +142,7 @@ public class SonarControllerRTest {
 				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
 		// @formatter:on
 
-		mockMvc.perform(post("/sonarkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/sonarkanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());
 
 	}

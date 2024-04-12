@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.atlassian.jira.rest.client.api.domain.Field;
@@ -274,6 +274,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
 			fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
 		}
+		fieldMapping.setRootCauseIdentifier(AzureConstants.CUSTOM_FIELD);
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping.setJiraStatusForDevelopmentAVR(workflowMap.get(CommonConstant.DEVELOPMENT));
 		fieldMapping.setJiraStatusForDevelopmentKPI82(workflowMap.get(CommonConstant.DEVELOPMENT));
@@ -301,14 +302,10 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraIterationCompletionStatusKPI123(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI131(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI133(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraIterationCompletionStatusKPI132(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI135(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI122(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI75(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI145(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraIterationCompletionStatusKPI140(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraIterationCompletionStatusKPI132(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraIterationCompletionStatusKPI136(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKpi72(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKpi39(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKpi5(workflowMap.get(CommonConstant.DOD));

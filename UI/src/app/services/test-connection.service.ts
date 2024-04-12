@@ -243,11 +243,12 @@ export class TestConnectionService {
     );
   }
 
-  testRepoTool(httpUrl, repoToolProvider, username, accessToken, email): Observable<any> {
+  testRepoTool(baseUrl,apiEndPoint, repoToolProvider, username, accessToken, email): Observable<any> {
     let postData = {};
 
     postData = {
-      httpUrl,
+      baseUrl,
+      apiEndPoint,
       repoToolProvider,
       username,
       accessToken,
@@ -260,6 +261,18 @@ export class TestConnectionService {
     );
   }
 
-
+  testArgoCD(baseUrl, username, password, vault): Observable<any> {
+    const postData = {
+      baseUrl,
+      username,
+      password: password ? password : '',
+      vault
+    };
+    let headers: HttpHeaders = new HttpHeaders();
+    headers = headers.append('requestArea', 'thirdParty');
+    return this.http.post(environment.baseUrl + '/api/testconnection/argocd', postData
+      , { headers }
+    );
+  }
 
 }

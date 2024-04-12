@@ -122,7 +122,7 @@ public class JiraControllerRTest {
 		kpiElement.setKpiSource("Jira");
 		kpiElementList.add(kpiElement);
 		when(jiraService.process(Mockito.any())).thenReturn(kpiElementList);
-		mockMvc.perform(post("/jira/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/jira/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
 
 	}
@@ -139,7 +139,7 @@ public class JiraControllerRTest {
 				"  \"kpiList\": []\n" +
 				"}";
 
-		mockMvc.perform(post("/jira/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/jira/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());
 
 	}
@@ -175,7 +175,7 @@ public class JiraControllerRTest {
 		kpiElement.setKpiSource("JiraKanban");
 		kpiElementList.add(kpiElement);
 		when(jiraServiceKanban.process(Mockito.any())).thenReturn(kpiElementList);
-		mockMvc.perform(post("/jirakanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/jirakanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
 
 	}
@@ -191,7 +191,7 @@ public class JiraControllerRTest {
 				"  \"kpiList\": []\n" +
 				"}";
 
-		mockMvc.perform(post("/jirakanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/jirakanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());
 
 	}
@@ -217,7 +217,7 @@ public class JiraControllerRTest {
 		boardDetailsList.add(boardDetailsDTO1);
 		boardDetailsList.add(boardDetailsDTO2);
 		when(jiraToolConfigService.getJiraBoardDetailsList(Mockito.any())).thenReturn(boardDetailsList);
-		mockMvc.perform(post("/jira/board").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/jira/board").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
 
 	}
@@ -232,14 +232,14 @@ public class JiraControllerRTest {
 				+ "}";
 		//@formatter:on
 
-		mockMvc.perform(post("/jirakanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/jirakanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());
 
 	}
 
 	@Test
 	public void getJiraAssigneesListReturnError() throws Exception {
-		mockMvc.perform(get("/jira/assignees/").contentType(MediaType.APPLICATION_JSON_UTF8)).andDo(print())
+		mockMvc.perform(get("/jira/assignees/").contentType(MediaType.APPLICATION_JSON)).andDo(print())
 				.andExpect(status().isNotFound());
 	}
 
@@ -256,7 +256,7 @@ public class JiraControllerRTest {
 		assigneeResponseDTO.setBasicProjectConfigId(new ObjectId(request));
 		assigneeResponseDTO.setAssigneeDetailsList(assigneeDetailsDTOList);
 		when(jiraToolConfigService.getProjectAssigneeDetails(Mockito.any())).thenReturn(assigneeResponseDTO);
-		mockMvc.perform(get("/jira/assignees/634fdf4ec859a424263dc035").contentType(MediaType.APPLICATION_JSON_UTF8))
+		mockMvc.perform(get("/jira/assignees/634fdf4ec859a424263dc035").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().is2xxSuccessful());
 	}
 }

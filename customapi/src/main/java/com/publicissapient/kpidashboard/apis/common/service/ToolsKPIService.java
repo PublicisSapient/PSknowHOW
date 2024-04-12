@@ -13,8 +13,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -44,7 +44,7 @@ public abstract class ToolsKPIService<R, S> {
 	private Set<String> cumulativeTrend = new HashSet<>(Arrays.asList(KPICode.UNIT_TEST_COVERAGE.name(),
 			KPICode.UNIT_TEST_COVERAGE_KANBAN.name(), KPICode.SONAR_TECH_DEBT_KANBAN.name(),
 			KPICode.SONAR_TECH_DEBT.name(), KPICode.NUMBER_OF_CHECK_INS.name(), KPICode.CODE_BUILD_TIME_KANBAN.name(),
-			KPICode.TEST_EXECUTION_KANBAN.name()));
+			KPICode.TEST_EXECUTION_KANBAN.name() , KPICode.REGRESSION_AUTOMATION_COVERAGE.name()));
 
 	private Set<String> reverseTrendList = new HashSet<>(Arrays.asList(KPICode.CODE_COMMIT.name(),
 			KPICode.MEAN_TIME_TO_MERGE.name(), KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING.name(),
@@ -930,9 +930,7 @@ public abstract class ToolsKPIService<R, S> {
 	 */
 	private R calculateAggValue(String kpiName, List<DataCount> value, List<R> values, String kpiId) {
 		R aggValue = null;
-		if (kpiName.equals(KPICode.REGRESSION_AUTOMATION_COVERAGE.name())) {
-			aggValue = (R) value.get(value.size() - 1).getValue();
-		} else if (cumulativeTrend.contains(kpiName)) {
+		if (cumulativeTrend.contains(kpiName)) {
 			aggValue = (R) value.get(0).getValue();
 		} else if (kpiName.equals(KPICode.LEAD_TIME.name())) {
 			// the maturity has to be gven for < 3 Months value

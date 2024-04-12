@@ -1,7 +1,26 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -111,7 +130,8 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		totalIssueBacklogList = JiraIssueDataFactory.newInstance().getJiraIssues();
-		when(jiraIssueRepository.findIssuesByDateAndTypeAndStatus(anyMap(),anyMap(),anyString(),anyString(),anyString(),anyString(),anyBoolean())).thenReturn(totalIssueBacklogList);
+		when(jiraIssueRepository.findIssuesByDateAndTypeAndStatus(anyMap(), anyMap(), anyString(), anyString(),
+				anyString(), anyString(), anyBoolean())).thenReturn(totalIssueBacklogList);
 
 	}
 
@@ -135,7 +155,8 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 
 		try {
 			KpiElement kpiElement = productionIssuesByPriorityAndAgingService.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+					kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(dc -> {
 
@@ -182,16 +203,10 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> defectDataListMap = productionIssuesByPriorityAndAgingService
-				.fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
+				.fetchKPIDataFromDb(leafNodeList.get(0), null, null, kpiRequest);
 
 		assertThat("Total Defects issue list :", ((List<JiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(),
 				equalTo(0));
-	}
-
-	@Test
-	public void testCalculateKPIMetrics() {
-		assertThat("Total Aging value :", productionIssuesByPriorityAndAgingService.calculateKPIMetrics(null),
-				equalTo(0L));
 	}
 
 	@Test

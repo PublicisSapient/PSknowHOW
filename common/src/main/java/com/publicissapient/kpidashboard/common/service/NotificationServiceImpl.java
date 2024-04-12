@@ -6,12 +6,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
-import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.RecoverableDataAccessException;
@@ -22,13 +18,16 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
 import com.publicissapient.kpidashboard.common.model.application.EmailServerDetail;
 import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
 import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -126,6 +125,7 @@ public class NotificationServiceImpl implements NotificationService  {
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.ssl.trust", "*");
         props.put("mail.debug", "true");
+        props.put("mail.smtp.ssl.checkserveridentity", "false");
         return mailSender;
     }
 }

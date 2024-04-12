@@ -245,4 +245,44 @@ describe('RaiseRequestComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['./authentication/login']);
   }))
 
+
+it('should update the roleList and requestData when accessItem is provided', () => {
+  component.roleList = [
+    { roleName: 'ROLE_SUPERADMIN', disabled: false },
+    { roleName: 'ROLE_ADMIN', disabled: false },
+    { roleName: 'ROLE_USER', disabled: false },
+  ];
+  component.roleSelected = true;
+  component.requestData = {
+    role: 'ROLE_ADMIN',
+    accessNode: {
+      accessLevel: 'level-1',
+      accessItems: [
+        { itemId: 'item-1', itemName: 'Item 1' },
+        { itemId: 'item-2', itemName: 'Item 2' },
+      ],
+    },
+  };
+  const accessItem = {
+    value: [
+      { itemId: 'item-3', itemName: 'Item 3' },
+      { itemId: 'item-4', itemName: 'Item 4' },
+    ],
+    accessType: 'level-2',
+  };
+  component.projectSelectedEvent(accessItem);
+  expect(component.roleList).toBeDefined();
+});
+
+it('should reset the requestData when accessItem is not provided', () => {
+  component.roleList = [
+    { roleName: 'ROLE_SUPERADMIN', disabled: false },
+    { roleName: 'ROLE_ADMIN', disabled: false },
+    { roleName: 'ROLE_USER', disabled: false },
+  ];
+  const accessItem = null;
+  component.projectSelectedEvent(accessItem);
+  expect(component.roleList).toBeDefined();
+});
+
 });
