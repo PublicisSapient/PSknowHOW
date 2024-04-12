@@ -13,7 +13,7 @@ data:
 
   # customapi Config
   #auth.centralAuthBaseURL: "https://stage-authnauth.tools.publicis.sapient.com"
-  auth.centralAuthBaseURL: "http://authnauth-ui.stage-auth.svc.cluster.local:80"
+  auth.centralAuthBaseURL: "http://authnauth-ui.prod-auth.svc.cluster.local:80"
   auth.subDomainCookie: "true"
   auth.domain: "tools.publicis.sapient.com"
   forgotPassword.uiHost: "psknowhow.tools.publicis.sapient.com"
