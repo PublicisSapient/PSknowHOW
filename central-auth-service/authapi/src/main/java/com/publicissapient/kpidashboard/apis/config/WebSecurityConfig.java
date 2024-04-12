@@ -107,7 +107,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.permitAll().antMatchers("/actuator**").permitAll().antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				// forgot Password API calls - Public
 				.antMatchers("/forgotPassword").permitAll().antMatchers("/resetPassword").permitAll()
-				.antMatchers("/changePassword").permitAll().antMatchers("/validateEmailToken/**").permitAll()
+				.antMatchers("/validateEmailToken/**").permitAll()
 				// verify user - ResetPasswordToken - Public
 				.antMatchers("/verifyUser").permitAll().anyRequest().authenticated().and().httpBasic().and().csrf()
 				.disable().headers().and()
