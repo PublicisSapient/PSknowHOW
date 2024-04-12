@@ -34,7 +34,7 @@ import com.publicissapient.kpidashboard.jira.listener.JiraIssueJqlWriterListener
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueSprintJobListener;
 import com.publicissapient.kpidashboard.jira.listener.JobListenerScrum;
 import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueJqlWriterListener;
-import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueWriterListener;
+import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueBoardWriterListener;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.processor.IssueKanbanProcessor;
@@ -114,7 +114,7 @@ public class JiraProcessorJob {
 	IssueKanbanProcessor issueKanbanProcessor;
 
 	@Autowired
-	KanbanJiraIssueWriterListener kanbanJiraIssueWriterListener;
+    KanbanJiraIssueBoardWriterListener kanbanJiraIssueWriterListener;
 
 	@Autowired
 	KanbanJiraIssueJqlWriterListener kanbanJiraIssueJqlWriterListener;

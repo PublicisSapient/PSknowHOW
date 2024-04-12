@@ -37,6 +37,7 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 
@@ -48,10 +49,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-public class KanbanJiraIssueWriterListener implements ItemWriteListener<CompositeResult> {
+public class KanbanJiraIssueBoardWriterListener implements ItemWriteListener<CompositeResult> {
 
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
+
+	@Autowired
+	JiraProcessorConfig jiraProcessorConfig;
 
 	/*
 	 * (non-Javadoc)
@@ -91,7 +95,10 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 				KanbanJiraIssue firstIssue = boardData
 						.getValue().stream().sorted(
 								Comparator
-										.comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(), DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
+										.comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(
+												jiraIssue.getChangeDate(),
+												DateTimeFormatter
+														.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
 										.reversed())
 						.findFirst().orElse(null);
 				if (firstIssue != null) {
@@ -104,6 +111,9 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 								firstIssue.getChangeDate(), processorExecutionToSave);
 					} else {
 						ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+						processorExecutionTraceLog.setFirstRunDate(DateUtil.dateTimeFormatter(
+								LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()).minusDays(jiraProcessorConfig.getDaysToReduce()),
+								JiraConstants.QUERYDATEFORMAT));
 						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId,
 								firstIssue.getChangeDate(), processorExecutionToSave);
 					}

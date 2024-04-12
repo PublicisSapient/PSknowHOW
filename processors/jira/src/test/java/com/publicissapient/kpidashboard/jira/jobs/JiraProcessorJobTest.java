@@ -114,7 +114,7 @@ public class JiraProcessorJobTest {
 	private IssueKanbanProcessor issueKanbanProcessor;
 
 	@Mock
-	private KanbanJiraIssueWriterListener kanbanJiraIssueWriterListener;
+	private KanbanJiraIssueBoardWriterListener kanbanJiraIssueWriterListener;
 
 	@Mock
 	private KanbanJiraIssueJqlWriterListener kanbanJiraIssueJqlWriterListener;

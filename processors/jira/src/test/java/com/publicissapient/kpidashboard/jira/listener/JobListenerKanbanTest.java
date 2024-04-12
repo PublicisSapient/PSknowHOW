@@ -16,98 +16,188 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.listener;
-
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
-import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
-import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
-import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
-import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.powermock.api.mockito.PowerMockito;
-import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.test.MetaDataInstanceFactory;
-
-import java.util.Collections;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
+import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
+import io.atlassian.util.concurrent.Promise;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.test.MetaDataInstanceFactory;
+
+import com.atlassian.jira.rest.client.api.SearchRestClient;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
+import com.publicissapient.kpidashboard.jira.client.CustomAsynchronousIssueRestClient;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.reader.IssueReaderUtil;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
+import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
+import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
+
 @RunWith(MockitoJUnitRunner.class)
 public class JobListenerKanbanTest {
 
-    @Mock
-    private NotificationHandler handler;
+	@Mock
+	private NotificationHandler handler;
+
+	@Mock
+	private FieldMappingRepository fieldMappingRepository;
+
+	@Mock
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
+
+	@Mock
+	private JiraClientService jiraClientService;
+
+	@Mock
+	private JiraProcessorCacheEvictor jiraProcessorCacheEvictor;
+
+	@Mock
+	private OngoingExecutionsService ongoingExecutionsService;
+
+	@Mock
+	private ProjectBasicConfigRepository projectBasicConfigRepository;
+
+	@Mock
+	private JiraCommonService jiraCommonService;
+
+	@Mock
+	private ProcessorJiraRestClient client;
+
+	@Mock
+	private KerberosClient kerberosClient;
+
+	@InjectMocks
+	private JobListenerKanban jobListenerKanban;
+
+	@Mock
+	SearchRestClient searchRestClient;
+
+	@Mock
+	CustomAsynchronousIssueRestClient customAsynchronousIssueRestClient;
 
     @Mock
-    private FieldMappingRepository fieldMappingRepository;
+    KanbanJiraIssueRepository kanbanJiraIssueRepository;
+    @Mock
+    FetchProjectConfiguration fetchProjectConfiguration;
+
 
     @Mock
-    private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
+    Promise<SearchResult> promisedRs;
 
     @Mock
-    private JiraClientService jiraClientService;
+    SearchResult searchResult;
 
-    @Mock
-    private JiraProcessorCacheEvictor jiraProcessorCacheEvictor;
 
-    @Mock
-    private OngoingExecutionsService ongoingExecutionsService;
-
-    @Mock
-    private ProjectBasicConfigRepository projectBasicConfigRepository;
-
-    @Mock
-    private JiraCommonService jiraCommonService;
-
-    @Mock
-    private ProcessorJiraRestClient client;
-
-    @Mock
-    private KerberosClient kerberosClient;
-
-    @InjectMocks
-    private JobListenerKanban jobListenerKanban;
 
     private JobExecution jobExecution;
+	private String projectId = "63bfa0d5b7617e260763ca21";
+	private String connectionId = "5fd99f7bc8b51a7b55aec836";
+	String boardId = "123";
+	List<Issue> issues = new ArrayList<>();
+	List<ProjectBasicConfig> projectConfigsList;
+	List<ProjectToolConfig> projectToolConfigs;
+	Optional<Connection> connection;
 
-    @Before
-    public void setUp() {
-        jobExecution = MetaDataInstanceFactory.createJobExecution();
-        when(jiraClientService.getRestClient()).thenReturn(client);
-        when(jiraClientService.getKerberosClient()).thenReturn(kerberosClient);
-    }
+	FieldMapping fieldMapping = new FieldMapping();
+	ProjectConfFieldMapping projectConfigMap;
 
-    @Test
-    public void testAfterJob_FailedExecution() throws Exception {
-        FieldMapping fieldMapping=new FieldMapping();
+	@Before
+	public void setUp() {
+		jobExecution = MetaDataInstanceFactory.createJobExecution();
+		when(jiraClientService.getRestClient()).thenReturn(client);
+		when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
+		when(client.getCustomIssueClient()).thenReturn(customAsynchronousIssueRestClient);
+		when(jiraClientService.getKerberosClient()).thenReturn(kerberosClient);
+
+		projectToolConfigs = IssueReaderUtil.getMockProjectToolConfig(projectId);
+		projectConfigsList = IssueReaderUtil.getMockProjectConfig();
+		connection = IssueReaderUtil.getMockConnection(connectionId);
+		fieldMapping = IssueReaderUtil.getMockFieldMapping(projectId);
+		projectConfigMap = IssueReaderUtil.createProjectConfigMap(projectConfigsList, connection, fieldMapping,
+				projectToolConfigs);
+
+	}
+
+	@Test
+	public void testAfterJob_FailedExecution_JqlUnMatchedData() throws Exception {
+        projectConfigMap.getJira().setBoardQuery("abc");
         fieldMapping.setNotificationEnabler(true);
         when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
-        ProjectBasicConfig projectBasicConfig= ProjectBasicConfig.builder().projectName("xyz").build();
-        when(projectBasicConfigRepository.findByStringId(null)).thenReturn(Optional.ofNullable(projectBasicConfig));
+        when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfigMap);
+        when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
+                .thenReturn(promisedRs);
+        when(promisedRs.claim()).thenReturn(searchResult);
+        when(kanbanJiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(null, "")).thenReturn(5L);
+        when(searchResult.getTotal()).thenReturn(0);
+        when(projectBasicConfigRepository.findByStringId(null)).thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
+        ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
         when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
-                .thenReturn(Collections.singletonList(new ProcessorExecutionTraceLog()));
+                .thenReturn(Collections.singletonList(processorExecutionTraceLog));
         when(jiraCommonService.getApiHost()).thenReturn("xyz");
-        StepExecution stepExecution=jobExecution.createStepExecution("xyz");
+		StepExecution stepExecution = jobExecution.createStepExecution("xyz");
+		stepExecution.setStatus(BatchStatus.FAILED);
+		stepExecution.addFailureException(new Throwable("Exception"));
+		// Simulate a failed job
+		jobExecution.setStatus(BatchStatus.FAILED);
+
+		// Act
+		jobListenerKanban.afterJob(jobExecution);
+
+		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+	}
+
+    @Test
+    public void testAfterJob_FailedExecution_JqlMatchedData() throws Exception {
+        projectConfigMap.getJira().setBoardQuery("abc");
+        fieldMapping.setNotificationEnabler(true);
+        when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
+        when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfigMap);
+        when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
+                .thenReturn(promisedRs);
+        when(promisedRs.claim()).thenReturn(searchResult);
+        when(kanbanJiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(null, "")).thenReturn(5L);
+        when(searchResult.getTotal()).thenReturn(5);
+        when(projectBasicConfigRepository.findByStringId(null)).thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
+        ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
+                .thenReturn(Collections.singletonList(processorExecutionTraceLog));
+        when(jiraCommonService.getApiHost()).thenReturn("xyz");
+        StepExecution stepExecution = jobExecution.createStepExecution("xyz");
         stepExecution.setStatus(BatchStatus.FAILED);
         stepExecution.addFailureException(new Throwable("Exception"));
         // Simulate a failed job
@@ -120,9 +210,25 @@ public class JobListenerKanbanTest {
     }
 
     @Test
-    public void testAfterJob_SuccessExecution() throws Exception {
+    public void testAfterJob_FailedExecution_JqlNoResult() throws Exception {
+        projectConfigMap.getJira().setBoardQuery("abc");
+        fieldMapping.setNotificationEnabler(true);
+        when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
+        when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfigMap);
+        when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
+                .thenReturn(promisedRs);
+        when(promisedRs.claim()).thenReturn(null);
+        when(projectBasicConfigRepository.findByStringId(null)).thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
+        ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
+                .thenReturn(Collections.singletonList(processorExecutionTraceLog));
+        when(jiraCommonService.getApiHost()).thenReturn("xyz");
+        StepExecution stepExecution = jobExecution.createStepExecution("xyz");
+        stepExecution.setStatus(BatchStatus.FAILED);
+        stepExecution.addFailureException(new Throwable("Exception"));
         // Simulate a failed job
-        jobExecution.setStatus(BatchStatus.STARTED);
+        jobExecution.setStatus(BatchStatus.FAILED);
 
         // Act
         jobListenerKanban.afterJob(jobExecution);
@@ -131,15 +237,109 @@ public class JobListenerKanbanTest {
     }
 
     @Test
-    public void testAfterJob_WithException() throws Exception {
+    public void testAfterJob_FailedExecution_BoardMatchedData() throws Exception {
+        projectConfigMap.getJira().setBoardQuery("abc");
+        fieldMapping.setNotificationEnabler(true);
+        when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
+        when(customAsynchronousIssueRestClient.searchBoardIssue(anyString(), anyString(), Mockito.anyInt(),
+                Mockito.anyInt(), Mockito.anySet())).thenReturn(promisedRs);
+        when(promisedRs.claim()).thenReturn(searchResult);
+        when(kanbanJiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(null, "Epic")).thenReturn(5L);
+        when(searchResult.getTotal()).thenReturn(5);
+        when(projectBasicConfigRepository.findByStringId(null))
+                .thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
+        ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setBoardId("9");
+        processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
+                .thenReturn(Collections.singletonList(processorExecutionTraceLog));
+        when(jiraCommonService.getApiHost()).thenReturn("xyz");
+        StepExecution stepExecution = jobExecution.createStepExecution("xyz");
+        stepExecution.setStatus(BatchStatus.FAILED);
+        stepExecution.addFailureException(new Throwable("Exception"));
+        // Simulate a failed job
+        jobExecution.setStatus(BatchStatus.FAILED);
         // Act
-        jobListenerKanban.afterJob(null);
-
+        jobListenerKanban.afterJob(jobExecution);
         verify(ongoingExecutionsService).markExecutionAsCompleted(null);
     }
 
     @Test
-    public void testBeforeJob(){
-        jobListenerKanban.beforeJob(jobExecution);
+    public void testAfterJob_FailedExecution_BoardNoResult() throws Exception {
+        projectConfigMap.getJira().setBoardQuery("abc");
+        fieldMapping.setNotificationEnabler(true);
+        when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
+        when(customAsynchronousIssueRestClient.searchBoardIssue(anyString(), anyString(), Mockito.anyInt(),
+                Mockito.anyInt(), Mockito.anySet())).thenReturn(promisedRs);
+        when(promisedRs.claim()).thenReturn(null);
+        when(projectBasicConfigRepository.findByStringId(null))
+                .thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
+        ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setBoardId("9");
+        processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
+                .thenReturn(Collections.singletonList(processorExecutionTraceLog));
+        when(jiraCommonService.getApiHost()).thenReturn("xyz");
+        StepExecution stepExecution = jobExecution.createStepExecution("xyz");
+        stepExecution.setStatus(BatchStatus.FAILED);
+        stepExecution.addFailureException(new Throwable("Exception"));
+        // Simulate a failed job
+        jobExecution.setStatus(BatchStatus.FAILED);
+        // Act
+        jobListenerKanban.afterJob(jobExecution);
+        verify(ongoingExecutionsService).markExecutionAsCompleted(null);
     }
+
+    @Test
+    public void testAfterJob_FailedExecution_BoardUnMatchedData() throws Exception {
+        projectConfigMap.getJira().setBoardQuery("abc");
+        fieldMapping.setNotificationEnabler(true);
+        when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
+        when(customAsynchronousIssueRestClient.searchBoardIssue(anyString(), anyString(), Mockito.anyInt(),
+                Mockito.anyInt(), Mockito.anySet())).thenReturn(promisedRs);
+        when(promisedRs.claim()).thenReturn(searchResult);
+        when(kanbanJiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(null, "Epic")).thenReturn(5L);
+        when(searchResult.getTotal()).thenReturn(0);
+        when(projectBasicConfigRepository.findByStringId(null))
+                .thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
+        ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setBoardId("9");
+        processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
+                .thenReturn(Collections.singletonList(processorExecutionTraceLog));
+        when(jiraCommonService.getApiHost()).thenReturn("xyz");
+        StepExecution stepExecution = jobExecution.createStepExecution("xyz");
+        stepExecution.setStatus(BatchStatus.FAILED);
+        stepExecution.addFailureException(new Throwable("Exception"));
+        // Simulate a failed job
+        jobExecution.setStatus(BatchStatus.FAILED);
+        // Act
+        jobListenerKanban.afterJob(jobExecution);
+        verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+    }
+
+
+    @Test
+	public void testAfterJob_SuccessExecution() throws Exception {
+		// Simulate a failed job
+		jobExecution.setStatus(BatchStatus.STARTED);
+
+		// Act
+		jobListenerKanban.afterJob(jobExecution);
+
+		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+	}
+
+	@Test
+	public void testAfterJob_WithException() throws Exception {
+		// Act
+		jobListenerKanban.afterJob(null);
+
+		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+	}
+
+	@Test
+	public void testBeforeJob() {
+		jobListenerKanban.beforeJob(jobExecution);
+	}
 }

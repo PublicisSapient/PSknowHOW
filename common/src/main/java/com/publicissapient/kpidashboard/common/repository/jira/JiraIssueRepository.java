@@ -205,4 +205,7 @@ public interface JiraIssueRepository
 
 	Set<JiraIssue> findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(String configId,
 			Set<String> parentStoryIds, List<String> originalTypes);
+
+	@Query(value = "{ 'basicProjectConfigId' : ?0, 'typeName' : { $ne : ?1 } }", count = true)
+	long countByBasicProjectConfigIdAndExcludeTypeName(String basicProjectConfigId, String typeName);
 }

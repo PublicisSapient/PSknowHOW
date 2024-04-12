@@ -22,9 +22,10 @@ import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDat
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
@@ -35,20 +36,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
+import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
+import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -89,6 +96,12 @@ public class JobListenerScrum implements JobExecutionListener {
 	@Autowired
 	JiraClientService jiraClientService;
 
+	@Autowired
+	JiraIssueRepository jiraIssueRepository;
+
+	@Autowired
+	FetchProjectConfiguration fetchProjectConfiguration;
+
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
 		// in future we can use this method to do something before job execution starts
@@ -110,12 +123,6 @@ public class JobListenerScrum implements JobExecutionListener {
 				CommonConstant.CACHE_SPRINT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
 		try {
-			if (jiraClientService.getRestClient() != null) {
-				jiraClientService.getRestClient().close();
-			}
-			if (jiraClientService.getKerberosClient() != null) {
-				jiraClientService.getKerberosClient().close();
-			}
 			if (jobExecution.getStatus() == BatchStatus.FAILED) {
 				log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(),
 						projectId);
@@ -130,6 +137,12 @@ public class JobListenerScrum implements JobExecutionListener {
 				sendNotification(stepFaliureException);
 			} else {
 				setExecutionInfoInTraceLog(true);
+			}
+			if (jiraClientService.getRestClient() != null) {
+				jiraClientService.getRestClient().close();
+			}
+			if (jiraClientService.getKerberosClient() != null) {
+				jiraClientService.getKerberosClient().close();
 			}
 		} catch (Exception e) {
 			log.error("An Exception has occured in scrum jobListener", e);
@@ -157,16 +170,55 @@ public class JobListenerScrum implements JobExecutionListener {
 		return projectBasicConfig == null ? "" : projectBasicConfig.getProjectName();
 	}
 
-
 	private void setExecutionInfoInTraceLog(boolean status) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
 				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Arrays.asList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
+				checkDeltaIssues(projectId, processorExecutionTraceLog);
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(status);
 			}
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);
+		}
+	}
+
+	private void checkDeltaIssues(String projectId, ProcessorExecutionTraceLog processorExecutionTraceLog) {
+		if (StringUtils.isNotEmpty(processorExecutionTraceLog.getFirstRunDate())) {
+			if (StringUtils.isNotEmpty(processorExecutionTraceLog.getBoardId())) {
+				String query = "updatedDate>='" + processorExecutionTraceLog.getFirstRunDate();
+				Promise<SearchResult> promisedRs = jiraClientService.getRestClient().getCustomIssueClient()
+						.searchBoardIssue(processorExecutionTraceLog.getBoardId(), query, 0, 0,
+								JiraConstants.ISSUE_FIELD_SET);
+				SearchResult searchResult = promisedRs.claim();
+				if (searchResult != null && (searchResult.getTotal() != jiraIssueRepository
+						.countByBasicProjectConfigIdAndExcludeTypeName(projectId, JiraConstants.EPIC))) {
+					processorExecutionTraceLog.setDataMismatch(true);
+
+				}
+			} else {
+				ProjectConfFieldMapping projectConfig = fetchProjectConfiguration.fetchConfiguration(projectId);
+				String issueTypes = Arrays.stream(projectConfig.getFieldMapping().getJiraIssueTypeNames())
+						.map(array -> "\"" + String.join("\", \"", array) + "\"").collect(Collectors.joining(", "));
+				StringBuilder query = new StringBuilder("project in (")
+						.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") and ");
+
+				String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase()
+						.split(JiraConstants.ORDERBY)[0];
+				query.append(userQuery);
+				query.append(" and issuetype in (" + issueTypes + " ) and updatedDate>='"
+						+ processorExecutionTraceLog.getFirstRunDate() + "' ");
+				log.info("jql query :{}", query);
+				Promise<SearchResult> promisedRs = jiraClientService.getRestClient().getProcessorSearchClient()
+						.searchJql(query.toString(), 0, 0, JiraConstants.ISSUE_FIELD_SET);
+				SearchResult searchResult = promisedRs.claim();
+				if (searchResult != null && (searchResult.getTotal() != jiraIssueRepository
+						.countByBasicProjectConfigIdAndExcludeTypeName(projectId, CommonConstant.BLANK))) {
+					processorExecutionTraceLog.setDataMismatch(true);
+
+				}
+			}
+
 		}
 	}
 }

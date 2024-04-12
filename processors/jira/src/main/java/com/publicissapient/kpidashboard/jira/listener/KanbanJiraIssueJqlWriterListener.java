@@ -37,6 +37,7 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 
@@ -52,6 +53,9 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
+
+	@Autowired
+	JiraProcessorConfig jiraProcessorConfig;
 
 	/*
 	 * (non-Javadoc)
@@ -85,7 +89,8 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 			String basicProjectConfigId = entry.getKey();
 			KanbanJiraIssue firstIssue = entry.getValue().stream()
 					.sorted(Comparator
-							.comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(), DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
+							.comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
+									DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
 							.reversed())
 					.findFirst().orElse(null);
 			if (firstIssue != null) {
@@ -97,6 +102,9 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 							processorExecutionToSave);
 				} else {
 					ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+					processorExecutionTraceLog.setFirstRunDate(DateUtil.dateTimeFormatter(
+							LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()).minusDays(jiraProcessorConfig.getDaysToReduce()),
+							JiraConstants.QUERYDATEFORMAT));
 					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
 							processorExecutionToSave);
 				}

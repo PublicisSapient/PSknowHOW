@@ -37,6 +37,7 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 
@@ -52,6 +53,9 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
+
+	@Autowired
+	JiraProcessorConfig jiraProcessorConfig;
 
 	@Override
 	public void beforeWrite(Chunk<? extends CompositeResult> compositeResult) {
@@ -69,8 +73,7 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 		log.info("Saving status in Processor execution Trace log for Scrum Jql project");
 
 		List<ProcessorExecutionTraceLog> processorExecutionToSave = new ArrayList<>();
-		List<JiraIssue> jiraIssues = compositeResults.getItems().stream().map(CompositeResult::getJiraIssue)
-				.toList();
+		List<JiraIssue> jiraIssues = compositeResults.getItems().stream().map(CompositeResult::getJiraIssue).toList();
 
 		Map<String, List<JiraIssue>> projectWiseIssues = jiraIssues.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
@@ -79,7 +82,8 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 			String basicProjectConfigId = entry.getKey();
 			JiraIssue firstIssue = entry.getValue().stream()
 					.sorted(Comparator
-							.comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(), DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
+							.comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
+									DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
 							.reversed())
 					.findFirst().orElse(null);
 			if (firstIssue != null) {
@@ -91,6 +95,9 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 							processorExecutionToSave);
 				} else {
 					ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+					processorExecutionTraceLog.setFirstRunDate(DateUtil.dateTimeFormatter(
+							LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()).minusDays(jiraProcessorConfig.getDaysToReduce()),
+							JiraConstants.QUERYDATEFORMAT));
 					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
 							processorExecutionToSave);
 				}

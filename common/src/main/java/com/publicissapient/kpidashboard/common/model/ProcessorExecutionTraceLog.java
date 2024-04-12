@@ -48,4 +48,6 @@ public class ProcessorExecutionTraceLog {
 	private Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType;
 	private boolean lastEnableAssigneeToggleState;
 	private String boardId;
+	private String firstRunDate;
+	private boolean dataMismatch;
 }

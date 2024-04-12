@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,9 @@ public class KanbanJiraIssueJqlWriterListenerTest {
 
     @InjectMocks
     private KanbanJiraIssueJqlWriterListener listener;
+
+    @Mock
+    JiraProcessorConfig jiraProcessorConfig;
 
     Chunk<CompositeResult> compositeResults = new Chunk<>();
 
