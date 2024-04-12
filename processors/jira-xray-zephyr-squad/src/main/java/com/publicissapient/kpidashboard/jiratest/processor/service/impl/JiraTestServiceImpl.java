@@ -737,7 +737,6 @@ public class JiraTestServiceImpl implements JiraTestService {
 			Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart, boolean dataExist,
 			ProcessorJiraRestClient client) {
 		SearchResult searchResult = null;
-
 		if (client == null) {
 			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
 		} else {
@@ -949,6 +948,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 				projectConfig.getBasicProjectConfigId().toHexString());
 		boolean processorFetchingComplete = false;
 		try {
+			client = getProcessorJiraRestClient(projectConfig);
 			boolean dataExist = (testCaseDetailsRepository
 					.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
 			Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(projectConfig);
@@ -961,16 +961,16 @@ public class JiraTestServiceImpl implements JiraTestService {
 			String userTimeZone = getUserTimeZone(projectConfig);
 			for (int i = 0; true; i += pageSize) {
 				SearchResult searchResult = getIssues(projectConfig, maxChangeDatesByIssueTypeWithAddedTime,
-						userTimeZone, i, dataExist);
+						userTimeZone, i, dataExist,client);
 				List<Issue> issues = getIssuesFromResult(searchResult);
 				if (total == 0) {
 					total = getTotal(searchResult);
 				}
 				// in case of offline method issues size can be greater than
 				// pageSize, increase page size so that same issues not read
-				if (issues.size() >= pageSize) {
-					pageSize = issues.size() + 1;
-				}
+//				if (issues.size() >= pageSize) {
+//					pageSize = issues.size() + 1;
+//				}
 				if (CollectionUtils.isNotEmpty(issues)) {
 					List<TestCaseDetails> testCaseDetailsList = prepareTestCaseDetails(issues, projectConfig);
 					testCaseDetailsRepository.saveAll(testCaseDetailsList);
@@ -1032,7 +1032,6 @@ public class JiraTestServiceImpl implements JiraTestService {
 	public SearchResult getIssues(ProjectConfFieldMapping projectConfig,
 			Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart, boolean dataExist)
 			throws InterruptedException {
-		client = getProcessorJiraRestClient(projectConfig);
 		SearchResult searchResult = null;
 		if (client == null) {
 			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
