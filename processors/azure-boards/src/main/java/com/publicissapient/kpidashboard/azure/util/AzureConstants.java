@@ -65,6 +65,11 @@ public final class AzureConstants {
 	public static final String USER = "user";
 	public static final String SPACE = " ";
 	public static final String FORWARD_SLASH = "/";
+	public static final String COMPLETED = "completed";
+	public static final String RESOLVED = "resolved";
+	public static final String INPROGRESS = "inprogress";
+	public static final String PROPOSED = "proposed";
+	public static final String REMOVED = "removed";
 
 	static {
 		ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");

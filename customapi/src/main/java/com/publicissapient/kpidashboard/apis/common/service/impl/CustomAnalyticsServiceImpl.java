@@ -109,7 +109,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		json.put(USER_NAME, username);
 		json.put(USER_EMAIL, email);
 		json.put(USER_ID, userinfo.getId().toString());
-		json.put(USER_AUTH_TYPE, userinfo.getAuthType());
+		json.put(USER_AUTH_TYPE, userinfo.getAuthType().toString());
 		json.put(USER_AUTHORITIES, userinfo.getAuthorities());
 		Gson gson = new Gson();
 

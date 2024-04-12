@@ -15,33 +15,19 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.common.model.jira;
 
-import java.util.Map;
+package com.publicissapient.kpidashboard.common.repository.azure;
 
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+import com.publicissapient.kpidashboard.common.model.azure.AzureStateCategory;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+/**
+ * @author shi6
+ */
+public interface AzureStateCategoryRepository extends MongoRepository<AzureStateCategory, ObjectId> {
 
-@Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
-@Document(collection = "jira_issue_release_status")
-public class JiraIssueReleaseStatus extends BasicModel {
-
-	private String basicProjectConfigId;
-	private Map<Long, String> toDoList;
-	private Map<Long, String> inProgressList;
-	private Map<Long, String> closedList;
+	AzureStateCategory findByBasicProjectConfigId(String basicProjectConfigId);
 
 }
