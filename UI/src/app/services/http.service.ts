@@ -153,6 +153,7 @@ export class HttpService {
   private getCommentCountUrl = this.baseUrl + '/api/comments/getCommentCount';
   private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
   private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
+  private getAssingeeEmailsUrl = this.baseUrl + '/api/capacity/assignees/email/';
   private saveAssigneeForProjectUrl = this.baseUrl + '/api/capacity/assignee';
   private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
   private commentsSummaryUrl = this.baseUrl + '/api/comments/commentsSummary';
@@ -167,7 +168,7 @@ export class HttpService {
     this.baseUrl + '/api/capacity/jira/happiness';
   userName: string;
   userEmail: string;
-  private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
+  private activeIterationUrl = this.baseUrl + '/api/processor/fetchSprint';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
   private validateResourceUrl = this.baseUrl + '/api/validateResource';
@@ -273,7 +274,7 @@ export class HttpService {
 
   /**  logout from the server */
   logout(): Observable<any> {
-    if(environment?.['AUTHENTICATION_SERVICE']){
+    if (environment?.['AUTHENTICATION_SERVICE']) {
       this.logoutUrl = this.baseUrl + '/api/centralUserlogout';
     }
     return this.http.get(this.logoutUrl);
@@ -350,7 +351,7 @@ export class HttpService {
     const postData = { email };
     return this.http
       .post(this.forgotPasswordEmailUrl, postData)
-      .pipe(tap((res) => {}));
+      .pipe(tap((res) => { }));
   }
 
   /** POST: Change the password for loggedin user*/
@@ -363,7 +364,7 @@ export class HttpService {
     };
     return this.http
       .post(this.changePasswordUrl, postData)
-      .pipe(tap((res) => {}));
+      .pipe(tap((res) => { }));
   }
 
   /**POST update password */
@@ -371,7 +372,7 @@ export class HttpService {
     const postData = { password, resetToken };
     return this.http
       .post(this.resetPasswordUrl, postData)
-      .pipe(tap((res) => {}));
+      .pipe(tap((res) => { }));
   }
 
   /**PUT set email */
@@ -383,10 +384,10 @@ export class HttpService {
     );
   }
 
-   /** POST: This make kpi call of scrum */
-   postKpi(data, source): Observable<any> {
+  /** POST: This make kpi call of scrum */
+  postKpi(data, source): Observable<any> {
     return this.http
-    .post<any>(this.getDataUrl + source + '/kpi', data)
+      .post<any>(this.getDataUrl + source + '/kpi', data)
       .pipe(catchError(this.handleKpiError));
   }
 
@@ -422,7 +423,7 @@ export class HttpService {
     /*send request*/
     return this.http
       .post<object>(this.uploadUrl, fileFormData)
-      .pipe(tap((res) => {}));
+      .pipe(tap((res) => { }));
   }
   /** get uploaded image file */
   getUploadedImage(): Observable<object> {
@@ -431,12 +432,12 @@ export class HttpService {
 
     return this.http
       .get(this.uploadedImageUrl, { headers })
-      .pipe(tap((res) => {}));
+      .pipe(tap((res) => { }));
   }
 
   /** get uploaded image file */
   deleteImage(): Observable<object> {
-    return this.http.get(this.deleteImageUrl).pipe(tap((res) => {}));
+    return this.http.get(this.deleteImageUrl).pipe(tap((res) => { }));
   }
 
   /** GET getVersionData from the server */
@@ -560,9 +561,9 @@ export class HttpService {
 
   /** get pending request notifications */
   getAccessRequestsNotifications() {
-    if(environment?.['AUTHENTICATION_SERVICE']){
+    if (environment?.['AUTHENTICATION_SERVICE']) {
       this.getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification/central';
-    }  
+    }
     return this.http
       .get<NotificationResponseDTO>(this.getAccessRequestNotificationsUrl)
       .pipe(map((requests) => requests));
@@ -835,8 +836,11 @@ export class HttpService {
     return this.http.get<any>(this.getJiraProjectAssigneUrl + '/' + projectId);
   }
 
-  getAssigneeRoles() {
-    return this.http.get<any>(this.getAssigneeRolesUrl);
+  getAssigneeRoles(basicConfigId) {
+    const request1 = this.http.get<any>(this.getAssigneeRolesUrl);
+    const request2 = this.http.get<any>(this.getAssingeeEmailsUrl + basicConfigId);
+
+    return forkJoin([request1, request2]);
   }
 
   saveOrUpdateAssignee(postData) {
@@ -931,23 +935,23 @@ export class HttpService {
 
   /** show-Hide for dashboard config component  */
   getShowHideKpi(projectID) {
-    return this.http.get<any>(this.getShowHideKpiUrl+ '/' + projectID);
+    return this.http.get<any>(this.getShowHideKpiUrl + '/' + projectID);
   }
-  submitShowHideKpiData(data,projectID): Observable<any> {
-    return this.http.post<object>(this.saveShowHideKpiUrl + '/' + projectID , data);
+  submitShowHideKpiData(data, projectID): Observable<any> {
+    return this.http.post<object>(this.saveShowHideKpiUrl + '/' + projectID, data);
   }
 
   /** show-Hide for other nav, filter component */
-  getShowHideOnDashboard(payload){
-    return this.http.post<any>(this.getShowHideKpiUrl + '/getConfig',payload);
+  getShowHideOnDashboard(payload) {
+    return this.http.post<any>(this.getShowHideKpiUrl + '/getConfig', payload);
   }
 
-  submitShowHideOnDashboard(data){
-    return this.http.post<any>(this.getShowHideKpiUrl,data);
+  submitShowHideOnDashboard(data) {
+    return this.http.post<any>(this.getShowHideKpiUrl, data);
   }
 
   getNewUserAccessRequestFromAPI() {
-    if(environment?.['AUTHENTICATION_SERVICE']){
+    if (environment?.['AUTHENTICATION_SERVICE']) {
       this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
     }
     return this.http.get<UserAccessApprovalResponseDTO>(
@@ -956,7 +960,7 @@ export class HttpService {
   }
 
   updateNewUserAccessRequest(reqBody: UserAccessReqPayload, username: string) {
-    if(environment?.['AUTHENTICATION_SERVICE']){
+    if (environment?.['AUTHENTICATION_SERVICE']) {
       this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
     }
     return this.http.put<any>(
@@ -1059,10 +1063,10 @@ export class HttpService {
   }
 
   deleteComment(id): Observable<any> {
-    return this.http.delete<object>(this.deleteCommentUrl+ '/' + id);
+    return this.http.delete<object>(this.deleteCommentUrl + '/' + id);
   }
 
-  getCommentCount(data): Observable<any>{
+  getCommentCount(data): Observable<any> {
     return this.http.post<object>(this.getCommentCountUrl, data);
   }
 
@@ -1101,12 +1105,12 @@ export class HttpService {
     );
   }
 
-  getActiveIterationStatus(postData){
-    return this.http.post(this.activeIterationUrl + '/'+ postData.sprintId,{});
+  getActiveIterationStatus(postData) {
+    return this.http.post(this.activeIterationUrl + '/' + postData.sprintId, {});
   }
 
-  getactiveIterationfetchStatus(sprintId){
-    return this.http.get(this.activeIterationfetchStatusUrl+'/' + sprintId);
+  getactiveIterationfetchStatus(sprintId) {
+    return this.http.get(this.activeIterationfetchStatusUrl + '/' + sprintId);
   }
   getCommentSummary(data) {
     return this.http.post<object>(this.commentsSummaryUrl, data);
@@ -1117,11 +1121,11 @@ export class HttpService {
     return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
   }
 
-  getUserValidation(data){
+  getUserValidation(data) {
     return this.http.post<object>(this.validateTokenUrl, data);
   }
 
-  handleValidateResource(data){
+  handleValidateResource(data) {
     return this.http.post<object>(this.validateResourceUrl, data);
   }
   getFeatureFlags() {
@@ -1129,6 +1133,6 @@ export class HttpService {
   }
 
   getAzureTeams(connectionId) {
-      return this.http.get<any>(`${this.baseUrl}/api/azure/teams/${connectionId}`);
-    }
+    return this.http.get<any>(`${this.baseUrl}/api/azure/teams/${connectionId}`);
+  }
 }

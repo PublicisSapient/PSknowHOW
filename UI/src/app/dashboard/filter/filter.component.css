@@ -1193,3 +1193,13 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 ::ng-deep .p-menuitem-link-active .p-menuitem-text{
   color: var(--color-cyan-blue) !important;
 }
+
+:host::ng-deep .p-input-icon-left > i:first-of-type {
+  left: 0.5rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+:host::ng-deep .p-input-icon-left>i, .p-input-icon-right>i {
+  position: absolute;
+  top: 50%;
+  margin-top: -0.3rem;
+}

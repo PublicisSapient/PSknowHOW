@@ -337,15 +337,20 @@
                                 <tr class="expanded-table-body-row">
                                     <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName : '-
                                         -'}}</td>
-                                    <td class="expanded-table-body-cell" [style]="{'max-width':'120px', 'word-wrap': 'break-word'}">
-                                        <input type="email" min="0" pInputText
+                                    <td class="expanded-table-body-cell"
+                                        [style]="{'max-width':'120px', 'word-wrap': 'break-word'}">
+
+                                        <p-multiSelect [options]="projectAssigneeEmailsCopy"
                                             *ngIf="projectCapacityEditMode;else showUserEmail"
-                                            placeholder="Repo EmailId"
-                                            (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email')"
-                                            [style]="{'width':'120px'}"
+                                            defaultLabel="Select Emails" optionLabel="email"
+                                            optionDisabled="inactive" class="multiselect-custom"
+                                            [style]="{'width':'150px'}" display="chip" showClear="true"
                                             [formControl]="selectedSprintAssigneFormArray[rowIndex]?.email"
-                                            (keypress)="validateInput($event, 'email')"
-                                            pattern="[^@]+@[^@]+\.[a-zA-Z]{2,6}">
+                                            (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email')"
+                                            (onClear)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email', true)">
+                                        </p-multiSelect>
+
+
                                         <ng-template #showUserEmail>{{assignee?.email ?
                                             assignee?.email : '- -'}}</ng-template>
                                     </td>

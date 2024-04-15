@@ -630,7 +630,7 @@ export class HelperService {
 
     async getKpiCommentsCount(kpiCommentsCountObj, nodes, level, nodeChildId, updatedConfigGlobalData, kpiId) {
         let requestObj = {
-            "nodes": nodes,
+            "nodes": [...nodes],
             "level": level,
             "nodeChildId": nodeChildId,
             'kpiIds': []

@@ -87,6 +87,8 @@ export class CapacityPlanningComponent implements OnInit {
   masterData = <any>{};
   isToggleEnableForSelectedProject = false;
   projectAssigneeRoles = [];
+  projectAssigneeEmails = [];
+  projectAssigneeEmailsCopy = [];
   projectAssigneeRolesObj;
   projectCapacityEditMode = false;
   displayAssignee = false;
@@ -101,7 +103,7 @@ export class CapacityPlanningComponent implements OnInit {
   reqObj: CapacitySubmissionReq;
   isAdminForSelectedProject = false;
   constructor(private http_service: HttpService, private messageService: MessageService, private cdr: ChangeDetectorRef, public getAuthorizationService: GetAuthorizationService,
-    private helperService : HelperService) { }
+    private helperService: HelperService) { }
 
   ngOnInit(): void {
     this.cols = {
@@ -322,22 +324,34 @@ export class CapacityPlanningComponent implements OnInit {
   checkifAssigneeToggleEnabled(capacityData) {
     if (capacityData[0]['assigneeDetails']) {
       this.isToggleEnableForSelectedProject = true;
-      this.getAssigneeRoles();
+      this.getAssigneeRoles(this.selectedProjectBaseConfigId);
       this.getCapacityJiraAssignee(capacityData[0]['basicProjectConfigId']);
     }
   }
 
-  getAssigneeRoles() {
+  getAssigneeRoles(selectedProjectBaseConfigId) {
     if (!(this.projectAssigneeRoles.length > 0)) {
-      this.http_service.getAssigneeRoles()
+      this.http_service.getAssigneeRoles(selectedProjectBaseConfigId)
         .subscribe(response => {
-          if (response && response?.success && response?.data) {
-            this.projectAssigneeRolesObj = response.data;
-            for (const key in response.data) {
-              this.projectAssigneeRoles.push({ name: response.data[key], value: key });
+          if (response[0] && response[0]?.success && response[0]?.data) {
+            this.projectAssigneeRolesObj = response[0].data;
+            for (const key in response[0].data) {
+              this.projectAssigneeRoles.push({ name: response[0].data[key], value: key });
             }
           } else {
             this.messageService.add({ severity: 'error', summary: 'Error in fetching Assignee Roles.' });
+          }
+
+          if (response[0] && response[0]?.success && response[0]?.data) {
+            this.projectAssigneeEmails = response[1].data;
+            this.projectAssigneeEmailsCopy = [...this.projectAssigneeEmails].map((x) => {
+              return {
+                email: x,
+                inactive: false
+              }
+            });
+          } else {
+            this.messageService.add({ severity: 'error', summary: 'Error in fetching Assignee Emails.' });
           }
         });
     }
@@ -490,11 +504,37 @@ export class CapacityPlanningComponent implements OnInit {
   }
 
 
-  calculateAvaliableCapacity(assignee, assigneeFormControls, fieldName) {
+  calculateAvaliableCapacity(assignee, assigneeFormControls, fieldName, cleared = false) {
     assignee[fieldName] = assigneeFormControls[fieldName]?.value;
     if (fieldName === 'role') {
       assigneeFormControls.plannedCapacity.enable();
-    } else {
+    } else if (fieldName === 'email') {
+      let selectedEmailControlValues = this.selectedSprintAssigneFormArray.map((x) => x.email?.value);
+      selectedEmailControlValues = selectedEmailControlValues.filter((x) => x !== undefined);
+      let selectedEmails = [];
+      selectedEmailControlValues.forEach((elem) => {
+        if (elem) {
+          elem.forEach((subElem) => {
+            selectedEmails.push(subElem.email);
+          });
+        }
+      });
+      if(cleared) {
+        assigneeFormControls[fieldName]?.value.forEach((val) => {
+          selectedEmails.splice(selectedEmails.indexOf(val.email), 1);
+        });
+      }
+      for (let i = 0; i < this.projectAssigneeEmailsCopy.length; i++) {
+        if (!selectedEmails.includes(this.projectAssigneeEmailsCopy[i].email)) {
+          this.projectAssigneeEmailsCopy[i].inactive = false;
+        } else {
+          this.projectAssigneeEmailsCopy[i].inactive = true;
+        }
+      }
+      
+
+    }
+    else {
       if (assigneeFormControls.plannedCapacity.value > 0) {
         assigneeFormControls.leaves.setValidators([Validators.max(assignee.plannedCapacity)]);
         assigneeFormControls.leaves.enable();
@@ -521,7 +561,7 @@ export class CapacityPlanningComponent implements OnInit {
   }
 
   validateInput($event, field?) {
-    if ($event.key === '-' || (field !== 'email' && $event.key === 'e') ) {
+    if ($event.key === '-' || (field !== 'email' && $event.key === 'e')) {
       $event.preventDefault();
     }
   }

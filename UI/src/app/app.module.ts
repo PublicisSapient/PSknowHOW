@@ -39,6 +39,8 @@ import { MenuModule } from 'primeng/menu';
 
 /******************* components   ***********************/
 import { AppComponent } from './app.component';
+import { DashboardV2Component } from './dashboardv2/dashboard-v2/dashboard-v2.component';
+import { HeaderComponent } from './dashboardv2/header-v2/header.component';
 import { NavComponent } from './dashboard/nav/nav.component';
 import { CircularProgressComponent } from './component/circular-progress/circular-progress.component';
 import { ProgressbarComponent } from './component/progressbar/progressbar.component';
@@ -66,7 +68,6 @@ import { ButtonModule } from 'primeng/button';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SkeletonModule } from 'primeng/skeleton';
-import { SelectButtonModule } from 'primeng/selectbutton';
 
 /******************************************************/
 
@@ -97,8 +98,6 @@ import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
-import { environment } from 'src/environments/environment';
-import { tap } from 'rxjs/operators';
 import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-failure.component';
 import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
@@ -123,26 +122,14 @@ import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/ba
 import { FeatureFlagsService } from './services/feature-toggle.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AppInitializerService } from './services/app-initializer.service';
-import { Router, Routes } from '@angular/router';
-import { FeatureGuard } from './services/feature.guard';
-import { AccessGuard } from './services/access.guard';
-import { HttpService } from './services/http.service';
-import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { AuthGuard } from './services/auth.guard';
-import { Logged } from './services/logged.guard';
-import { SSOGuard } from './services/sso.guard';
-
-/*********************DASHBOARDV2 Start*********************************/
-import { HeaderComponent } from './dashboardv2/header-v2/header.component';
+import { RecentCommentsComponent } from './component/recent-comments/recent-comments.component';
+import { NavNewComponent } from './dashboardv2/nav-v2/nav-new.component';
 import { FilterNewComponent } from './dashboardv2/filter-v2/filter-new.component';
 import { ParentFilterComponent } from './dashboardv2/filter-v2/parent-filter/parent-filter.component';
 import { PrimaryFilterComponent } from './dashboardv2/filter-v2/primary-filter/primary-filter.component';
 import { AdditionalFilterComponent } from './dashboardv2/filter-v2/additional-filter/additional-filter.component';
-import { NavNewComponent } from './dashboardv2/nav-v2/nav-new.component';
 import { ExecutiveV2Component } from './dashboardv2/executive-v2/executive-v2.component';
-import { RecentCommentsComponent } from './component/recent-comments/recent-comments.component';
-import { DashboardV2Component } from './dashboardv2/dashboard-v2/dashboard-v2.component';
-import { IterationV2Component } from './dashboardv2/iteration-v2/iteration-v2.component';
 import { KpiCardV2Component } from './dashboardv2/kpi-card-v2/kpi-card-v2.component';
 import { MultilineV2Component } from './component/multiline-v2/multiline-v2.component';
 import { TrendIndicatorV2Component } from './dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
@@ -150,249 +137,13 @@ import { GroupedColumnPlusLineChartV2Component } from './component/grouped-colum
 import { MultilineStyleV2Component } from './component/multiline-style-v2/multiline-style-v2.component';
 import { TooltipV2Component } from './component/tooltip-v2/tooltip-v2.component';
 import { HorizontalPercentBarChartv2Component } from './component/horizontal-percent-bar-chartv2/horizontal-percent-bar-chartv2.component';
-/*********************DASHBOARDV2 End*********************************/
+
 
 /******************************************************/
-
-const routes = [
-    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-    {
-        path: 'authentication',
-        loadChildren: () => import('../app/authentication/authentication.module').then(m => m.AuthenticationModule),
-        resolve: [Logged],
-        canActivate: [SSOGuard]
-    },
-    {
-        path: 'dashboard', component: !localStorage.getItem('newUI') ? DashboardComponent : DashboardV2Component,
-        canActivateChild: [FeatureGuard],
-        children: [
-            { path: '', redirectTo: 'iteration', pathMatch: 'full' },
-            {
-                path: 'mydashboard', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "My Dashboard"
-                }
-            },
-            {
-                path: 'iteration', component: !localStorage.getItem('newUI') ? IterationComponent : IterationV2Component, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "Iteration"
-                }
-            },
-            {
-                path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "Developer"
-                }
-            },
-            {
-                path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "Maturity"
-                }
-            },
-            {
-                path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "Backlog"
-                }
-            },
-            {
-                path: 'release', component: !localStorage.getItem('newUI') ? MilestoneComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "Release"
-                }
-            },
-            {
-                path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "Dora"
-                }
-            },
-            {
-                path: 'Config',
-                loadChildren: () => import('../app/config/config.module').then(m => m.ConfigModule),
-                data: {
-                    feature: "Config"
-                }
-            },
-            { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full' },
-            { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
-            { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
-
-        ], canActivate: [AuthGuard],
-    },
-    { path: 'authentication-fail', component: SsoAuthFailureComponent },
-    { path: '**', redirectTo: 'authentication' }
-];
-
-const routesAuth = [
-    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-    {
-        path: 'dashboard', component: !localStorage.getItem('newUI') ? DashboardComponent : DashboardV2Component,
-        canActivateChild: [
-            AuthGuard
-        ],
-        children: [
-            { path: '', redirectTo: 'iteration', pathMatch: 'full' },
-            {
-                path: 'mydashboard', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "My Dashboard"
-                }
-            },
-            {
-                path: 'iteration', component: !localStorage.getItem('newUI') ? IterationComponent : IterationV2Component, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "Iteration"
-                }
-            },
-            {
-                path: 'developer', component: !localStorage.getItem('newUI') ? DeveloperComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "Developer"
-                }
-            },
-            {
-                path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "Maturity"
-                }
-            },
-            {
-                path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "Backlog"
-                }
-            },
-            {
-                path: 'release', component: !localStorage.getItem('newUI') ? MilestoneComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "Release"
-                }
-            },
-            {
-                path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
-                data: {
-                    feature: "Dora"
-                }
-            },
-            { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
-            { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
-            {
-                path: 'Config',
-                loadChildren: () => import('../app/config/config.module').then(m => m.ConfigModule),
-                data: {
-                    feature: "Config"
-                }
-            },
-            { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full' },
-
-        ],
-    },
-    { path: 'pageNotFound', component: PageNotFoundComponent },
-    { path: '**', redirectTo: 'pageNotFound' }
-];
-
-
-
-export function initializeApp(http: HttpService, featureToggleService: FeatureFlagsService,
-    ga: GoogleAnalyticsService, sharedService: SharedService) {
+export function initializeApp(appInitializerService: AppInitializerService) {
     return (): Promise<any> => {
-        return checkFeatureFlag(http, featureToggleService, ga, sharedService);
+        return appInitializerService.checkFeatureFlag();
     }
-}
-
-export function checkFeatureFlag(http, featureToggleService, ga, sharedService) {
-    console.log('Inside CheckFeatureFlag');
-    let loc = window.location.hash ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1])) : '';
-    console.log("location--------------->", loc);
-    return new Promise<void>((resolve, reject) => {
-        console.log(environment['production']);
-        if (!environment['production']) {
-            featureToggleService.config = featureToggleService.loadConfig().then((res) => res);
-            validateToken(http, ga, sharedService, loc);
-        } else {
-            const env$ = http.http.get('assets/env.json').pipe(
-                tap(env => {
-                    console.log("env inside app initializer", env['AUTHENTICATION_SERVICE']);
-
-                    environment['baseUrl'] = env['baseUrl'] || '';
-                    environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
-                    environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
-                    environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
-                    environment['MAP_URL'] = env['MAP_URL'] || '';
-                    environment['RETROS_URL'] = env['RETROS_URL'] || '';
-                    validateToken(http, ga, sharedService, loc);
-                }));
-            env$.toPromise().then(async res => {
-                featureToggleService.config = featureToggleService.loadConfig().then((res) => res);
-            });
-        }
-
-
-
-        // load google Analytics script on all instances except local and if customAPI property is true
-        let addGAScript = featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
-        if (addGAScript) {
-            if (window.location.origin.indexOf('localhost') === -1) {
-                ga.load('gaTagManager').then(data => {
-                    console.log('script loaded ', data);
-                })
-            }
-        }
-        resolve();
-    })
-}
-
-export function validateToken(http, ga, sharedService, location) {
-    return new Promise<void>((resolve, reject) => {
-        if (!environment['AUTHENTICATION_SERVICE'] == true) {
-            http.router.resetConfig([...routes]);
-            http.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
-        } else {
-           
-            // TODO: find right property to avoid string manipulation - Rishabh 3/4/2024
-            let url = window.location.href; 
-
-            let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
-            if (authToken) {
-                sharedService.setAuthToken(authToken);
-            } else {
-                authToken = sharedService.getAuthToken();
-            }
-            let obj = {
-                'resource': environment.RESOURCE,
-                'authToken': authToken
-            };
-            console.log('authToken', authToken);
-            // Make API call or initialization logic here...
-            http.getUserValidation(obj).subscribe((response) => {
-                // http.router.resetConfig([...routesAuth]);
-                if (response?.['success']) {
-                    sharedService.setCurrentUserDetails(response?.['data']);
-                    localStorage.setItem("user_name", response?.['data']?.user_name);
-                    localStorage.setItem("user_email", response?.['data']?.user_email);
-                    http.router.resetConfig([...routesAuth]);
-                    if (authToken) {
-                        ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
-                    }
-                }
-                if(location){
-                    http.router.navigateByUrl(location);
-                }else{
-                    http.router.navigate(['/dashboard/iteration']);
-                }
-            }, error => {
-                console.log(error);
-            });
-
-
-        }
-        resolve();
-
-    })
-
 }
 
 @NgModule({
@@ -462,7 +213,6 @@ export function validateToken(http, ga, sharedService, location) {
         RecentCommentsComponent,
         ExecutiveV2Component,
         DashboardV2Component,
-        IterationV2Component,
         KpiCardV2Component,
         MultilineV2Component,
         TrendIndicatorV2Component,
@@ -491,6 +241,7 @@ export function validateToken(http, ga, sharedService, location) {
         ButtonModule,
         TabMenuModule,
         ToastModule,
+        DialogModule,
         RadioButtonModule,
         InputTextareaModule,
         AccordionModule,
@@ -500,7 +251,6 @@ export function validateToken(http, ga, sharedService, location) {
         OverlayPanelModule,
         MenuModule,
         SkeletonModule,
-        SelectButtonModule,
         SharedModuleModule
     ],
     providers: [
@@ -519,8 +269,7 @@ export function validateToken(http, ga, sharedService, location) {
         {
             provide: APP_INITIALIZER,
             useFactory: initializeApp,
-            deps: [HttpService, FeatureFlagsService,
-                GoogleAnalyticsService, SharedService],
+            deps: [AppInitializerService],
             multi: true
         }
     ],
