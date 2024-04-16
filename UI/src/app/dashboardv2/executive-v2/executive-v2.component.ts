@@ -165,6 +165,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.noTabAccess = true;
       }
     }));
+
+    this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
+      if(data && Object.keys(data).length) {
+        this.updatedConfigGlobalData.forEach(kpi => {
+          this.handleSelectedOption(data, kpi);
+        });
+      }
+    })
+    );
   }
 
   processKpiConfigData(kpiListObj) {
@@ -886,11 +895,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           preAggregatedValues = [...preAggregatedValues, ...(trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
         }
         this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
-        if(!this.additionalFiltersArr['filter1']) {
+        if (!this.additionalFiltersArr['filter1']) {
           this.additionalFiltersArr['filter1'] = [];
         }
 
-        if(!this.additionalFiltersArr['filter2']) {
+        if (!this.additionalFiltersArr['filter2']) {
           this.additionalFiltersArr['filter2'] = [];
         }
         this.additionalFiltersArr['filter1'].push(trendValueList.map((x) => x.filter1));
