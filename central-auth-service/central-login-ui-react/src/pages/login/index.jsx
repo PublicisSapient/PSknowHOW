@@ -38,8 +38,9 @@ const LoginPage = ({search}) => {
                         const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
                         localStorage.setItem('user_details', JSON.stringify({ email: res.data.data.email, isAuthenticated: true }));
                         setShowLoader(false);
+                        let defaultAppUrl = process.env.NODE_ENV === 'production' ? window.env.REACT_APP_PSKnowHOW : process.env.REACT_APP_PSKnowHOW;
                         if(!redirectUri){
-                            window.location.href = (process.env['REACT_APP_PSKnowHOW'] + '?authToken=' + authToken);
+                            window.location.href = (defaultAppUrl + '?authToken=' + authToken);
                         }else{
                             if(redirectUri.indexOf('?') === -1){
                                 window.location.href = (`${redirectUri}?authToken=${authToken}`);
@@ -54,7 +55,7 @@ const LoginPage = ({search}) => {
                 }).catch((err) => {
                     console.log(err);
                     setShowLoader(false);
-                    let errMessage = error?.response?.data?.message ?  error?.response?.data?.message : 'Please try again after sometime'
+                    let errMessage = err?.response?.data?.message ?  err?.response?.data?.message : 'Please try again after sometime'
                     setError(errMessage);
                 });
             }
@@ -62,7 +63,7 @@ const LoginPage = ({search}) => {
         .catch((err) => {
             console.log(err);
             setShowLoader(false);
-            let errMessage = error?.response?.data?.message ?  error?.response?.data?.message : 'Please try again after sometime'
+            let errMessage = err?.response?.data?.message ?  err?.response?.data?.message : 'Please try again after sometime'
             setError(errMessage);
         });
     }
