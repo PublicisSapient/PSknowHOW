@@ -110,7 +110,6 @@ public class JenkinsServiceR {
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
 
 				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
-
 					calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
 				}
 				List<KpiElement> missingKpis = origRequestedKpis.stream()

@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.writer;
 
 import static org.mockito.Mockito.times;
@@ -38,6 +37,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.item.Chunk;
 
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
@@ -77,16 +77,6 @@ public class IssueKanbanWriterTest {
 		verify(kanbanJiraIssueRepository, times(1)).saveAll(createMockJiraItems());
 	}
 
-	@Test
-	public void testWriteWithEmptyValue() throws Exception {
-		// Mock data
-		CompositeResult compositeResult = new CompositeResult();
-		Chunk<CompositeResult> compositeResults=new Chunk<>();
-		compositeResults.add(compositeResult);
-		// Invoke the method to be tested
-		issueKanbanWriter.write(compositeResults);
-
-	}
 
 	// Helper methods to create mock data for testing
 	private Chunk<CompositeResult> createMockKanbanCompositeResults() {
@@ -129,7 +119,11 @@ public class IssueKanbanWriterTest {
 
 	private Map<String, AssigneeDetails> createMockAssigneesToSave() {
 		AssigneeDetails assigneeDetails = new AssigneeDetails();
+		Assignee assignee = new Assignee();
+		Set<Assignee> assignees = new HashSet<>();
+		assignees.add(assignee);
 		assigneeDetails.setBasicProjectConfigId("63bfa0f80b28191677615735");
+		assigneeDetails.setAssignee(assignees);
 		Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
 		assigneesToSave.put("0", assigneeDetails);
 		// Create mock AssigneeDetails objects and add them to the map

@@ -17,13 +17,12 @@
  ******************************************************************************/
 
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService,ConfirmationService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
-import { ChangeDetectionStrategy } from '@angular/core';
 import { FieldMappingFormComponent } from 'src/app/shared-module/field-mapping-form/field-mapping-form.component';
 declare const require: any;
 

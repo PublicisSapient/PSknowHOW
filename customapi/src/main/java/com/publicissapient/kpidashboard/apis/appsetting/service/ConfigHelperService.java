@@ -18,7 +18,18 @@
 
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -38,16 +49,8 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Helper class for configuration
@@ -246,10 +249,16 @@ public class ConfigHelperService {
 	public Map<String, List<String>> calculateMaturity() {
 		List<KpiMaster> masterList = (List<KpiMaster>) loadKpiMaster();
 
-		Map<String, List<String>> kpiIdRangeMap = new HashMap<>();
+		Map<String, List<String>> kpiIdRangeMap = new HashMap<>(
+				masterList.stream().filter(d -> d.getMaturityRange() != null)
+						.collect(Collectors.toMap(KpiMaster::getKpiId, KpiMaster::getMaturityRange)));
 
-		kpiIdRangeMap.putAll(masterList.stream().filter(d -> d.getMaturityRange() != null)
-				.collect(Collectors.toMap(KpiMaster::getKpiId, KpiMaster::getMaturityRange)));
+		// for LeadTimeKanban we require the maturity level to be used in the kpi
+		// calculation
+		masterList.stream().filter(
+				d -> d.getMaturityLevel() != null && d.getKpiId().equalsIgnoreCase(KPICode.LEAD_TIME_KANBAN.getKpiId()))
+				.forEach(master -> kpiIdRangeMap.putAll(master.getMaturityLevel().stream()
+						.collect(Collectors.toMap(MaturityLevel::getLevel, MaturityLevel::getRange))));
 
 		return kpiIdRangeMap;
 

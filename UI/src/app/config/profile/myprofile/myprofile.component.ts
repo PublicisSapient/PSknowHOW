@@ -45,9 +45,9 @@ export class MyprofileComponent implements OnInit {
   dataLoading = false;
   noAccess = false;
   roleBasedProjectList = [];
-  adLogin = false;
   dynamicCols: Array<any> = [];
   ssoLogin = environment.SSO_LOGIN;
+  loginType: string = '';
   constructor(private formBuilder: UntypedFormBuilder, private getAuthorizationService: GetAuthorizationService, private http: HttpService, private profile: ProfileComponent,
     private sharedService : SharedService) { }
 
@@ -89,16 +89,18 @@ export class MyprofileComponent implements OnInit {
       email: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]],
       confirmEmail: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]]
     }, { validator: this.checkConfirmEmail });
-
-    this.adLogin = localStorage.loginType === 'AD';
-    console.log('adLogin: ' + this.adLogin);
-
+    this.loginType = this.sharedService.getCurrentUserDetails('authType');
 
   }
 
   getTableHeadings(){
-    const cols = JSON.parse(localStorage.getItem('hierarchyData'));
-    cols.forEach((x) => {
+    let cols = JSON.parse(localStorage.getItem('hierarchyData'));
+    if(!cols){
+      const tempCols = JSON.parse(localStorage.getItem('completeHierarchyData'))?.['scrum'];
+      let projectLevel = tempCols?.filter((item) => item.hierarchyLevelId?.toLowerCase() === 'project')?.[0]?.level;
+      cols = tempCols.filter((item) => item.level < projectLevel);
+    }
+    cols?.forEach((x) => {
       const obj = {
         id: x.hierarchyLevelId,
         name: x.hierarchyLevelName
