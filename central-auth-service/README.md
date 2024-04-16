@@ -3,6 +3,7 @@
 ## Prerequisite
 
 1. DNS allocated to the Host machine
+2. Valid SSL certificate with Common Name
 
 ## Steps
 
