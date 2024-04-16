@@ -30,11 +30,11 @@ services:
     mem_limit: 2048m
     mem_reservation: 1024m
     environment:
-      - auth.baseUrl=https://<DNS / HOST IP>
-      - auth.baseUiUrl=https://<DNS / HOST IP>
+      - auth.baseUrl=https://<DNS>
+      - auth.baseUiUrl=https://<DNS>
       - auth.secret=3106dd9eee424487884363ce026ea979
-      - forgotPassword.uiHost=https://<DNS / HOST IP>
-      - auth.corsFilterValidOrigin=https://<DNS / HOST IP>
+      - forgotPassword.uiHost=https://<DNS>
+      - auth.corsFilterValidOrigin=https://<DNS>
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     links:
@@ -56,7 +56,7 @@ services:
     ports:
       - 443:443
     environment:
-      - REACT_APP_DNS=https://<DNS / HOST IP>
+      - REACT_APP_DNS=https://<DNS>
       - REACT_APP_PSKnowHOW=https://<KNOWHOW DNS>
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
