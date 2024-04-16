@@ -238,6 +238,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     if (JSON.stringify(this.filterApplyData) !== JSON.stringify($event.filterApplyData) || this.configGlobalData) {
       this.tooltip = $event.configDetails;
+      this.additionalFiltersArr = [];
       this.noOfDataPoints = $event.configDetails['noOfDataPoints'] || 5;
       if (this.serviceObject['makeAPICall']) {
         this.allKpiArray = [];
