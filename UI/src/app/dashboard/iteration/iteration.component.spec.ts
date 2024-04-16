@@ -1934,6 +1934,7 @@ describe('IterationComponent', () => {
                 groupId: 4,
                 aggregationCriteria: 'sum',
                 trendCalculative: false,
+                kpiSubCategory: 'Iteration Review'
             },
             shown: true
         },
@@ -1956,6 +1957,7 @@ describe('IterationComponent', () => {
                 groupId: 4,
                 aggregationCriteria: 'sum',
                 trendCalculative: false,
+                kpiSubCategory: 'Iteration Progress'
             },
             shown: true
         },
@@ -1979,6 +1981,7 @@ describe('IterationComponent', () => {
                 groupId: 4,
                 aggregationCriteria: 'sum',
                 trendCalculative: false,
+                kpiSubCategory: 'Iteration Progress'
             },
             shown: true
         },
@@ -2002,6 +2005,7 @@ describe('IterationComponent', () => {
                 groupId: 4,
                 aggregationCriteria: 'sum',
                 trendCalculative: false,
+                kpiSubCategory: 'Iteration Progress'
             },
             shown: true
         }
@@ -2098,15 +2102,31 @@ describe('IterationComponent', () => {
         component.configGlobalData.push({
             kpiId: 'kpi120',
             isEnabled: false,
-            shown: true
-
+            shown: true,
+            kpiName: 'Iteration Commitment',
+            order: 1,
+            subCategoryBoard: 'Iteration Review',
+            kpiDetail: {
+                subCategoryBoard: 'Iteration Review',
+                id: '63320976b7f239ac93c2686a',
+                kpiId: 'kpi120',
+                kpiName: 'Iteration Commitment',
+                isDeleted: 'False',
+                defaultOrder: 17,
+                kpiUnit: '',
+                chartType: 'line',
+                kanban: true,
+                groupId: 4,
+                aggregationCriteria: 'sum',
+                trendCalculative: false,
+                kpiSubCategory: 'Iteration Review'
+            },
         });
-        component.processKpiConfigData();
-        expect(component.noKpis).toBeFalse();
         component.configGlobalData[0]['isEnabled'] = false;
         component.configGlobalData[0]['shown'] = false;
         component.processKpiConfigData();
         expect(component.kpiConfigData).toBeDefined();
+        expect(component.noKpis).toBeFalse();
     });
 
     it('should call groupKpi methods on selecting filter', () => {
@@ -2168,21 +2188,22 @@ describe('IterationComponent', () => {
     });
 
     it('should make post call when kpi available for Jira for Scrum', () => {
-        const kpiListJira = [{
-            id: '6332dd4b82451128f9939a29',
-            kpiId: 'kpi17',
-            kpiName: 'Unit Test Coverage'
-        }];
-        component.masterData = {
-            kpiList: [{
+        component.updatedConfigGlobalData = [
+            {
                 kpiId: 'kpi17',
-                kanban: false,
-                kpiSource: 'Jira',
-                kpiCategory: 'Iteration',
-                groupId: 1
-            }]
-        };
-        const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
+                kpiName: 'Unit Test Coverage',
+                isEnabled: true,
+                order: 23,
+                kpiDetail: {
+                    kanban: false,
+                    kpiSource: 'Jira',
+                    kpiCategory: 'Iteration',
+                    groupId: 1
+                },
+                shown: true
+            }
+        ];
+        const spy = spyOn(helperService, 'groupKpiFromMaster');
         const postJiraSpy = spyOn(component, 'postJiraKpi');
         component.groupJiraKpi(['kpi17']);
         expect(postJiraSpy).toHaveBeenCalled();

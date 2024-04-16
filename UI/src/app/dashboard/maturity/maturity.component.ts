@@ -84,6 +84,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
     noDataForFilter = false;
     noProjects =false;
     isKanban = false;
+    updatedGlobalConfigData: Array<object> = [];
     constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService, private router: Router) {
         this.subscription.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
             this.receiveSharedData(sharedobject);
@@ -149,6 +150,9 @@ export class MaturityComponent implements OnInit, OnDestroy {
                 this.configGlobalData = globalConfig;
                 this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration' && board?.boardName.toLowerCase() !== 'developer');
                 this.selectedTabKpis = this.tabs[0].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled);
+                this.tabs.forEach((item) => {
+                    this.updatedGlobalConfigData = [...this.updatedGlobalConfigData, ...item.kpis];
+                })
             }));
             this.subscription.push(this.service.noProjectsObs.subscribe((res) => {
                 this.noProjects = res;
@@ -166,7 +170,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Sonar kpi from master data and calling Sonar kpi.
     groupSonarKpi(kpiIdsForCurrentBoard) {
-        this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
         if (this.kpiListSonar?.kpiList?.length > 0) {
             this.postSonarKpi(this.kpiListSonar, 'sonar');
         }
@@ -174,7 +178,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Jenkins kpi from master data and calling jenkins kpi.
     groupJenkinsKpi(kpiIdsForCurrentBoard) {
-        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
         if (this.kpiJenkins?.kpiList?.length > 0) {
             this.postJenkinsKpi(this.kpiJenkins, 'jenkins');
         }
@@ -182,7 +186,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Sonar kpi from master data and calling Sonar kpi.
     groupZypherKpi(kpiIdsForCurrentBoard) {
-        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
         if (this.kpiZypher?.kpiList?.length > 0) {
             this.postZypherKpi(this.kpiZypher, 'zypher');
         }
@@ -194,9 +198,9 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.jiraKpiData = {};
         // creating a set of unique group Ids
         const groupIdSet = new Set();
-        this.masterData?.kpiList?.forEach((obj) => {
-            if (!obj.kanban && obj.kpiSource === 'Jira') {
-                groupIdSet.add(obj.groupId);
+        this.updatedGlobalConfigData?.forEach((obj) => {
+            if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira') {
+                groupIdSet.add(obj['kpiDetail'].groupId);
             }
         });
         this.noOfJiraGroups =groupIdSet.size;
@@ -204,7 +208,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
         // sending requests after grouping the the KPIs according to group Id
         groupIdSet.forEach((groupId) => {
             if (groupId) {
-                this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,this.selectedTab);
+                this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,this.selectedTab);
                 if (this.kpiJira?.kpiList?.length > 0) {
                     this.postJiraKpi(this.kpiJira, 'jira');
                 } else {
@@ -216,7 +220,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all BitBucket kpi of scrum from master data and calling BitBucket kpi.
     groupBitBucketKpi(kpiIdsForCurrentBoard) {
-        this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
         if (this.kpiBitBucket?.kpiList?.length > 0) {
             this.postBitBucketKpi(this.kpiBitBucket, 'bitbucket');
         }
@@ -227,17 +231,19 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.jiraKpiData = {};
         // creating a set of unique group Ids
         const groupIdSet = new Set();
-        this.masterData?.kpiList?.forEach((obj) => {
-            if (obj.kanban && obj.kpiSource === 'Jira') {
-                groupIdSet.add(obj.groupId);
+        
+        this.updatedGlobalConfigData?.forEach((obj) => {
+            if (obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira') {   
+                groupIdSet.add(obj['kpiDetail'].groupId);
             }
         });
 
         this.noOfJiraGroups =groupIdSet.size;
         // sending requests after grouping the the KPIs according to group Id
+        
         groupIdSet.forEach((groupId) => {
             if (groupId) {
-                this.kpiJira = this.helperService.groupKpiFromMaster('Jira', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,this.selectedTab);
+                this.kpiJira = this.helperService.groupKpiFromMaster('Jira', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,this.selectedTab);  
                 if (this.kpiJira?.kpiList?.length > 0) {
                     this.postJiraKpi(this.kpiJira, 'jira');
                 } else {
@@ -248,7 +254,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
     }
     // Used for grouping all Sonar kpi of kanban from master data and calling Sonar kpi.
     groupSonarKanbanKpi(kpiIdsForCurrentBoard) {
-        this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
         if (this.kpiListSonar?.kpiList?.length > 0) {
             this.postSonarKpi(this.kpiListSonar, 'sonar');
         }
@@ -256,7 +262,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Jenkins kpi of kanban from master data and calling jenkins kpi.
     groupJenkinsKanbanKpi(kpiIdsForCurrentBoard) {
-        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
         if (this.kpiJenkins?.kpiList?.length > 0) {
             this.postJenkinsKpi(this.kpiJenkins, 'jenkins');
         }
@@ -264,7 +270,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Zypher kpi of kanban from master data and calling Zypher kpi.
     groupZypherKanbanKpi(kpiIdsForCurrentBoard) {
-        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
         if (this.kpiZypher?.kpiList?.length > 0) {
             this.postZypherKpi(this.kpiZypher, 'zypher');
         }
@@ -272,7 +278,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all BitBucket kpi of kanban from master data and calling BitBucket kpi.
     groupBitBucketKanbanKpi(kpiIdsForCurrentBoard) {
-        this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
         if (this.kpiBitBucket?.kpiList?.length > 0) {
             this.postBitBucketKpi(this.kpiBitBucket, 'bitbucket');
         }
@@ -489,7 +495,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     maturity: 0
                 });
             }
-            console.log(root);
             
         } else {
             // on loading show data;

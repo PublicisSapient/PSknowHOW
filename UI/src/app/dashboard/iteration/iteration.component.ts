@@ -153,7 +153,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item?.shown && item?.isEnabled);
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item?.shown);
     this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
 
@@ -176,8 +176,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.navigationTabs[0]['count']++;
     }
 
-    this.formatNavigationTabs();
-
+    this.formatNavigationTabs();   
     if (this.upDatedConfigData?.length === 0 && !this.commitmentReliabilityKpi?.isEnabled) {
       this.noKpis = true;
     } else {
@@ -309,17 +308,16 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.jiraKpiData = {};
     // creating a set of unique group Ids
     const groupIdSet = new Set();
-
-    this.masterData.kpiList.forEach((obj) => {
+    this.updatedConfigGlobalData.forEach((obj) => {
       // we should only call kpi154 on the click of Daily Standup tab, there is separate code for sending kpi154 request
-      if (!obj.kanban && obj.kpiSource === 'Jira' && obj.kpiCategory == 'Iteration' && obj.kpiId !== 'kpi154') {
-        groupIdSet.add(obj.groupId);
+      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Iteration' && obj.kpiId !== 'kpi154') {
+        groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
-    // sending requests after grouping the the KPIs according to group Id
+    // sending requests after grouping the the KPIs according to group Id 
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Iteration');
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Iteration');
         this.postJiraKpi(this.kpiJira, 'jira');
       }
     });
@@ -949,7 +947,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   /** Reload KPI once field mappoing updated */
   reloadKPI(event) {
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
-    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event?.kpiDetail?.groupId, 'Iteration');
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, {}, event?.kpiDetail?.groupId, 'Iteration');
     if (currentKPIGroup?.kpiList?.length > 0) {
       this.postJiraKpi(currentKPIGroup, 'jira');
     }
@@ -966,7 +964,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     let index = e.index;
     if (index === 2) {
       let kpi154Data = this.masterData?.kpiList.filter(kpi => kpi.kpiId === 'kpi154')[0];
-      this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, ['kpi154'], kpi154Data['groupId'], 'Iteration');
+      this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, ['kpi154'], kpi154Data['groupId'], 'Iteration');
       this.postJiraKpi(this.kpiJira, 'jira');
     }
   }

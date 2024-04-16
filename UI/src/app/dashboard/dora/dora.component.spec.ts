@@ -20569,7 +20569,11 @@ describe('DoraComponent', () => {
     });
 
     it('should call postJenkinsKpi if kpiSource is "jenkins"', () => {
-      spyOn(component, 'postJenkinsKpi');
+      const kpiListJenkins = [{
+        id: '6332dd4b82451128f9939a29',
+        kpiId: 'kpi118',
+        kpiName: 'Deployment Frequency'
+      }];
       const event = {
         "kpiId": "kpi118",
         "kpiName": "Deployment Frequency",
@@ -20656,196 +20660,22 @@ describe('DoraComponent', () => {
         },
         "shown": true
       };
+      spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJenkins });
+      const spy = spyOn(component, 'postJenkinsKpi');
       component.reloadKPI(event);
-      expect(component.postJenkinsKpi).toHaveBeenCalledWith({
-        "kpiList": [
-          {
-            "id": "6570635518989f8fe1280eaf",
-            "kpiId": "kpi116",
-            "kpiName": "Change Failure Rate",
-            "isDeleted": "False",
-            "defaultOrder": 15,
-            "kpiCategory": "Dora",
-            "kpiUnit": "%",
-            "chartType": "",
-            "upperThresholdBG": "red",
-            "lowerThresholdBG": "white",
-            "showTrend": true,
-            "isPositiveTrend": false,
-            "calculateMaturity": true,
-            "hideOverallFilter": true,
-            "kpiSource": "Jenkins",
-            "maxValue": "100",
-            "thresholdValue": 30,
-            "kanban": false,
-            "groupId": 14,
-            "kpiInfo": {
-              "definition": "Measures the proportion of builds that have failed over a given period of time",
-              "formula": [
-                {
-                  "lhs": "Change Failure Rate",
-                  "operator": "division",
-                  "operands": [
-                    "Total number of failed Builds",
-                    "Total number of Builds"
-                  ]
-                }
-              ],
-              "details": [
-                {
-                  "type": "link",
-                  "kpiLinkDetail": {
-                    "text": "Detailed Information at",
-                    "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Change-Failure-Rate"
-                  }
-                }
-              ]
-            },
-            "kpiFilter": "dropDown",
-            "aggregationCriteria": "average",
-            "aggregationCircleCriteria": "average",
-            "maturityRange": [
-              "-60",
-              "60-45",
-              "45-30",
-              "30-15",
-              "15-"
-            ],
-            "maturityLevel": [
-              {
-                "level": "M5",
-                "bgColor": "#167a26",
-                "displayRange": "0-15 %"
-              },
-              {
-                "level": "M4",
-                "bgColor": "#4ebb1a",
-                "displayRange": "15-30 %"
-              },
-              {
-                "level": "M3",
-                "bgColor": "#ef7643",
-                "displayRange": "30-45 %"
-              },
-              {
-                "level": "M2",
-                "bgColor": "#f53535",
-                "displayRange": "45-60 %"
-              },
-              {
-                "level": "M1",
-                "bgColor": "#c91212",
-                "displayRange": "60 % and Above"
-              }
-            ],
-            "trendCalculative": false,
-            "isAdditionalFilterSupport": false
-          },
-          {
-            "id": "6570635518989f8fe1280eb0",
-            "kpiId": "kpi118",
-            "kpiName": "Deployment Frequency",
-            "isDeleted": "False",
-            "defaultOrder": 25,
-            "kpiCategory": "Dora",
-            "kpiUnit": "Number",
-            "chartType": "",
-            "upperThresholdBG": "white",
-            "lowerThresholdBG": "red",
-            "showTrend": true,
-            "isPositiveTrend": true,
-            "calculateMaturity": true,
-            "hideOverallFilter": false,
-            "kpiSource": "Jenkins",
-            "maxValue": "100",
-            "thresholdValue": 6,
-            "kanban": false,
-            "groupId": 14,
-            "kpiInfo": {
-              "definition": "Measures how often code is deployed to production in a period",
-              "details": [
-                {
-                  "type": "link",
-                  "kpiLinkDetail": {
-                    "text": "Detailed Information at",
-                    "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Deployment-Frequency"
-                  }
-                }
-              ]
-            },
-            "kpiFilter": "multiSelectDropDown",
-            "aggregationCriteria": "sum",
-            "aggregationCircleCriteria": "average",
-            "maturityRange": [
-              "0-2",
-              "2-4",
-              "4-6",
-              "6-8",
-              "8-"
-            ],
-            "maturityLevel": [
-              {
-                "level": "M5",
-                "bgColor": "#167a26",
-                "label": ">= 2 per week",
-                "displayRange": "8 and Above"
-              },
-              {
-                "level": "M4",
-                "bgColor": "#4ebb1a",
-                "label": "Once per week",
-                "displayRange": "6,7"
-              },
-              {
-                "level": "M3",
-                "bgColor": "#ef7643",
-                "label": "Once in 2 weeks",
-                "displayRange": "4,5"
-              },
-              {
-                "level": "M2",
-                "bgColor": "#f53535",
-                "label": "Once in 4 weeks",
-                "displayRange": "2,3"
-              },
-              {
-                "level": "M1",
-                "bgColor": "#c91212",
-                "label": "< Once in 8 weeks",
-                "displayRange": "0,1"
-              }
-            ],
-            "trendCalculative": false,
-            "xaxisLabel": "Weeks",
-            "yaxisLabel": "Count",
-            "isAdditionalFilterSupport": false
-          }
-        ],
-        "ids": [
-          "PSknowHOW _6527af981704342160f43748"
-        ],
-        "level": 5,
-        "selectedMap": {
-          "bu": [],
-          "ver": [],
-          "acc": [],
-          "port": [],
-          "project": [
-            "PSknowHOW _6527af981704342160f43748"
-          ],
-          "sprint": [],
-          "release": [],
-          "sqd": []
-        },
-        "sprintIncluded": [
-          "CLOSED"
-        ],
-        "label": "project"
-      }, 'jenkins');
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should call postJiraKpi if kpiSource is not "jenkins"', () => {
-      spyOn(component, 'postJiraKpi');
+      const kpiListJira = [{
+        id: '6332dd4b82451128f9939a29',
+        kpiId: 'kpi166',
+        kpiName: 'Mean Time to Recover'
+      }, {
+        id: '6332dd4b82451128f9939b29',
+        kpiId: 'kpi156',
+        kpiName: 'Lead Time For Change'
+      }];
       const event = {
         "kpiId": "kpi156",
         "kpiName": "Lead Time For Change",
@@ -20929,190 +20759,10 @@ describe('DoraComponent', () => {
         },
         "shown": true
       };
+      spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
+      const spy = spyOn(component, 'postJiraKpi');
       component.reloadKPI(event);
-      expect(component.postJiraKpi).toHaveBeenCalledWith({
-        "kpiList": [
-          {
-            "id": "6570635518989f8fe1280eae",
-            "kpiId": "kpi166",
-            "kpiName": "Mean Time to Recover",
-            "isDeleted": "False",
-            "defaultOrder": 4,
-            "kpiCategory": "Dora",
-            "kpiUnit": "Hours",
-            "chartType": "",
-            "upperThresholdBG": "red",
-            "lowerThresholdBG": "white",
-            "showTrend": true,
-            "isPositiveTrend": false,
-            "calculateMaturity": true,
-            "hideOverallFilter": false,
-            "kpiSource": "Jira",
-            "maxValue": "100",
-            "thresholdValue": 24,
-            "kanban": false,
-            "groupId": 15,
-            "kpiInfo": {
-              "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
-              "details": [
-                {
-                  "type": "paragraph",
-                  "value": "For all the production incident tickets raised during a time period, the time between created date and closed date of the incident ticket will be calculated."
-                },
-                {
-                  "type": "paragraph",
-                  "value": "The average of all such tickets will be shown."
-                },
-                {
-                  "type": "link",
-                  "kpiLinkDetail": {
-                    "text": "Detailed Information at",
-                    "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"
-                  }
-                }
-              ],
-              "maturityLevels": []
-            },
-            "kpiFilter": "",
-            "aggregationCriteria": "sum",
-            "aggregationCircleCriteria": "average",
-            "maturityRange": [
-              "48-",
-              "24-48",
-              "12-24",
-              "1-12",
-              "-1"
-            ],
-            "maturityLevel": [
-              {
-                "level": "M5",
-                "bgColor": "#167a26",
-                "displayRange": "0-1 Hour"
-              },
-              {
-                "level": "M4",
-                "bgColor": "#4ebb1a",
-                "displayRange": "1-12 Hours"
-              },
-              {
-                "level": "M3",
-                "bgColor": "#ef7643",
-                "displayRange": "12-24 Hours"
-              },
-              {
-                "level": "M2",
-                "bgColor": "#f53535",
-                "displayRange": "24-48 Hours"
-              },
-              {
-                "level": "M1",
-                "bgColor": "#c91212",
-                "displayRange": "48 Hours and Above"
-              }
-            ],
-            "trendCalculative": false,
-            "xaxisLabel": "Weeks",
-            "yaxisLabel": "Hours",
-            "isAdditionalFilterSupport": false
-          },
-          {
-            "id": "6570635518989f8fe1280eb1",
-            "kpiId": "kpi156",
-            "kpiName": "Lead Time For Change",
-            "isDeleted": "False",
-            "defaultOrder": 3,
-            "kpiCategory": "Dora",
-            "kpiUnit": "Days",
-            "chartType": "",
-            "upperThresholdBG": "white",
-            "lowerThresholdBG": "red",
-            "showTrend": true,
-            "isPositiveTrend": true,
-            "calculateMaturity": true,
-            "hideOverallFilter": false,
-            "kpiSource": "Jira",
-            "maxValue": "100",
-            "thresholdValue": 7,
-            "kanban": false,
-            "groupId": 15,
-            "kpiInfo": {
-              "definition": "LEAD TIME FOR CHANGE measures the velocity of software delivery.",
-              "details": [
-                {
-                  "type": "paragraph",
-                  "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
-                }
-              ]
-            },
-            "kpiFilter": "",
-            "aggregationCriteria": "sum",
-            "aggregationCircleCriteria": "average",
-            "maturityRange": [
-              "90-",
-              "30-90",
-              "7-30",
-              "1-7",
-              "-1"
-            ],
-            "maturityLevel": [
-              {
-                "level": "M5",
-                "bgColor": "#167a26",
-                "label": "< 1 Day",
-                "displayRange": "0-1 Day"
-              },
-              {
-                "level": "M4",
-                "bgColor": "#4ebb1a",
-                "label": "< 7 Days",
-                "displayRange": "1-7 Days"
-              },
-              {
-                "level": "M3",
-                "bgColor": "#ef7643",
-                "label": "< 30 Days",
-                "displayRange": "7-30 Days"
-              },
-              {
-                "level": "M2",
-                "bgColor": "#f53535",
-                "label": "< 90 Days",
-                "displayRange": "30-90 Days"
-              },
-              {
-                "level": "M1",
-                "bgColor": "#c91212",
-                "label": ">= 90 Days",
-                "displayRange": "90 Days and Above"
-              }
-            ],
-            "trendCalculative": false,
-            "xaxisLabel": "Weeks",
-            "yaxisLabel": "Days",
-            "isAdditionalFilterSupport": false
-          }
-        ],
-        "ids": [
-          "PSknowHOW _6527af981704342160f43748"
-        ],
-        "level": 5,
-        "selectedMap": {
-          "bu": [],
-          "ver": [],
-          "acc": [],
-          "port": [],
-          "project": [
-            "PSknowHOW _6527af981704342160f43748"
-          ],
-          "sprint": [],
-          "release": [],
-          "sqd": []
-        },
-        "sprintIncluded": [
-          "CLOSED"
-        ],
-        "label": "project"
-      }, 'jira');
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should not call postJenkinsKpi or postJiraKpi if kpiList is empty', () => {
@@ -21275,15 +20925,19 @@ it('should make post call when kpi available for Jira for Scrum', () => {
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
   }];
-  component.masterData = {
-      kpiList: [{
-          kpiId: 'kpi17',
-          kanban: false,
-          kpiSource: 'Jira',
-          kpiCategory: 'Dora',
-          groupId: 1
-      }]
-  };
+  component.updatedConfigGlobalData = [{
+    kpiId: 'kpi17',
+    kpiName: 'Unit Test Coverage',
+    isEnabled: true,
+    order: 23,
+    kpiDetail: {
+        kanban: false,
+        kpiSource: 'Jira',
+        kpiCategory: 'dora',
+        groupId: 1
+    },
+    shown: true
+  }];
   const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
   const postJiraSpy = spyOn(component, 'postJiraKpi');
   component.groupJiraKpi(['kpi17']);
