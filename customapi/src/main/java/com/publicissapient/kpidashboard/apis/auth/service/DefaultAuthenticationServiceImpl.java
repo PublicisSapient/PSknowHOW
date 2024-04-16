@@ -18,6 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.auth.service;
 
+import static com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl.ERROR_MESSAGE_CONSUMING_REST_API;
+import static com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl.ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL;
+import static com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl.ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,22 +30,30 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
-import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
+import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
+import com.publicissapient.kpidashboard.apis.errors.APIKeyInvalidException;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
@@ -61,22 +73,15 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	private final AuthenticationRepository authenticationRepository;
 	private final AuthProperties authProperties;
 	private final UserInfoRepository userInfoRepository;
-
-	// ------- auth-N-auth required code starts here -------
-	private static final String RESPONSE = "response {}";
-	private static final String DATA_FOUND = "data found";
-	private static final String FETCHED_RESPONSE = "fetched response {}";
-	private static final String ERROR_CODE = "Error while fetching from {}. with status {}";
-	private static final String ERROR_MESSAGE = "Error while fetching from {}:  {}";
-
-	// ----- auth-N-auth required code end here ----------------
+	private final CookieUtil cookieUtil;
 
 	@Autowired
 	public DefaultAuthenticationServiceImpl(AuthenticationRepository authenticationRepository,
-			AuthProperties authProperties, UserInfoRepository userInfoRepository) {
+			AuthProperties authProperties, UserInfoRepository userInfoRepository, CookieUtil cookieUtil) {
 		this.authenticationRepository = authenticationRepository;
 		this.authProperties = authProperties;
 		this.userInfoRepository = userInfoRepository;
+		this.cookieUtil = cookieUtil;
 	}
 
 	@Autowired
@@ -338,14 +343,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	public String getLoggedInUser() {
 		org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext()
 				.getAuthentication();
-		String username;
-
-		if (authentication.getPrincipal() instanceof CustomUserDetails) {
-			username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-		} else {
-			username = authentication.getPrincipal().toString();
-		}
-		return username;
+		return authentication.getPrincipal().toString();
 	}
 
 	@Override
@@ -355,14 +353,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 			return null;
 		}
 
-		String username;
-
-		if (authentication.getPrincipal() instanceof CustomUserDetails) {
-			username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-		} else {
-			username = authentication.getPrincipal().toString();
-		}
-		return username;
+		return authentication.getPrincipal().toString();
 	}
 
 	/**
@@ -376,31 +367,37 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		return authenticationRepository.findByApproved(approved);
 	}
 
-	// ---- auth-N-auth required code starts here ----
+	@Override
+	public ResponseEntity<ServiceResponse> changePasswordForCentralAuth(ChangePasswordRequest request) {
+		String apiKey = authProperties.getResourceAPIKey();
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
+		String changePasswordUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getChangePasswordEndPoint(), "");
+		HttpEntity<?> entity = new HttpEntity<>(request, headers);
 
-	/**
-	 *
-	 * @param responseEntity
-	 * @param url
-	 * @return
-	 */
-	public ServiceResponse getAuthNAuthResponse(ResponseEntity<ServiceResponse> responseEntity, String url) {
-		ServiceResponse fetchDataResponse = new ServiceResponse();
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
 		try {
-			log.info(RESPONSE, responseEntity);
-			if (responseEntity.getStatusCode() == HttpStatus.OK) {
-				log.info(DATA_FOUND);
-				fetchDataResponse = responseEntity.getBody();
-				log.info(FETCHED_RESPONSE, fetchDataResponse);
+			response = restTemplate.exchange(changePasswordUrl, HttpMethod.POST, entity, String.class);
+			if (response.getStatusCode().is2xxSuccessful()) {
+				JSONObject jsonObject = new JSONObject(response.getBody());
+				ServiceResponse serviceResponse = new ServiceResponse();
+				serviceResponse.setMessage(jsonObject.getString("message"));
+				serviceResponse.setSuccess(jsonObject.getBoolean("success"));
+				serviceResponse.setData(jsonObject.getString("data"));
+				return ResponseEntity.ok(serviceResponse);
 			} else {
-				String statusCode = responseEntity.getStatusCode().toString();
-				log.error(ERROR_CODE, url, statusCode);
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
 			}
-		} catch (Exception exception) {
-			log.error(ERROR_MESSAGE, url, exception.getMessage());
+		} catch (JSONException e) {
+			throw new AuthenticationServiceException("Unable to parse response.", e);
+		} catch (HttpClientErrorException e) {
+			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			throw new AuthenticationServiceException("Unable to parse response.", e);
 		}
-		return fetchDataResponse;
 	}
-	// --- auth-N-auth required code end here --------------
-
 }

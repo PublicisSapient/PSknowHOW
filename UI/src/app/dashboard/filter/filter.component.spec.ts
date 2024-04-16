@@ -16,11 +16,11 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, fakeAsync, inject, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, inject, TestBed, tick } from '@angular/core/testing';
 
 import { FilterComponent } from './filter.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
@@ -633,6 +633,7 @@ const completeHierarchyData = {
           hierarchyLevelName: 'Squad'
       }
   ];
+  component.initializeFilterForm();
 
   spyOn(component,'checkIfFilterAlreadySelected');
     component.additionalFiltersArr = additionalFiltersArr;
@@ -2276,6 +2277,7 @@ const completeHierarchyData = {
     spyOn(sharedService, 'getSelectedTrends').and.returnValue(obj);
     spyOn(sharedService, 'setDashConfigData');
     const spy = spyOn(sharedService, 'select');
+    spyOn(sharedService, 'setUpdatedBoardList');
     spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(of(mockData));
     spyOn(component, 'processKpiList');
     spyOn(component, 'navigateToSelectedTab');
@@ -2283,7 +2285,7 @@ const completeHierarchyData = {
     expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab)
   })
 
-  it('should get kpi order list on project level', () => {
+  it('should get kpi order list on project level and return error', () => {
     component.selectedTab = 'backlog';
     const obj = [{
       "nodeId": "Scrum Project_6335363749794a18e8a4479b",
@@ -2692,6 +2694,37 @@ const completeHierarchyData = {
             bac : false
           } 
           component.closeAllDropdowns();
+        })
+    
+        xit('should set selectedTab to the first boardName if selectedTab does not exist in kanban or scrum', () => {
+          // Arrange
+          component.kpiListData = {
+            kanban: [{ boardName: 'Board 1', kpis: [] }],
+            scrum: [],
+            others: []
+          };
+          component.kanban = true;
+          component.selectedTab = 'Non-existent Board';
+          spyOn(sharedService, 'setSelectedTab');
+          spyOn(component.router, 'navigate');
+          // Act
+          component.changeSelectedTab();
+    
+          // Assert
+          expect(component.selectedTab).toBe('Board 1');
+        });
+
+        it('should filter sprint addtional filter',()=>{
+          component.filterForm = new UntypedFormGroup({
+            sprintSearch : new UntypedFormControl('abc')
+          });
+          component.filteredAddFilters = {
+            sprint : [
+              {nodeName : "sp2"},
+              {nodeName : "sp1"}
+            ]
+          }
+          component.applySearchFilter('sprint')
         })
 
 });

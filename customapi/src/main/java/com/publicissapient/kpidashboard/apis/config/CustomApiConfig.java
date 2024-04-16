@@ -124,6 +124,9 @@ public class CustomApiConfig {// NOPMD
 	@Value("${testconnection.gitlabApi}")
 	private String gitlabTestConnection;
 
+	@Value("${testconnection.argoCDApi}")
+	private String argoCDTestConnection;
+
 	@Value("${priority.P1}")
 	private String priorityP1;
 
@@ -246,6 +249,7 @@ public class CustomApiConfig {// NOPMD
 	private List<String> leadTimeRange;
 	private List<String> cycleTimeRange;
 	private List<Character> aesKeyValue;
+	private int sprintCountForKpiCalculation;
 
 	public List<Character> getAesKeyValue() {
 		return aesKeyValue;
@@ -889,6 +893,15 @@ public class CustomApiConfig {// NOPMD
 	}
 
 	/**
+	 * ArgoCD Test Connection API path
+	 *
+	 * @return
+	 */
+	public String getArgoCDTestConnection() {
+		return argoCDTestConnection;
+	}
+
+	/**
 	 * P4 priority
 	 *
 	 * @return
@@ -1199,5 +1212,13 @@ public class CustomApiConfig {// NOPMD
 
 	public void setSonarMonthCount(Integer sonarMonthCount) {
 		this.sonarMonthCount = sonarMonthCount;
+	}
+
+	public int getSprintCountForKpiCalculation() {
+		return sprintCountForKpiCalculation;
+	}
+
+	public void setSprintCountForKpiCalculation(int sprintCountForKpiCalculation) {
+		this.sprintCountForKpiCalculation = sprintCountForKpiCalculation;
 	}
 }

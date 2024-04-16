@@ -96,8 +96,6 @@ import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
-import { environment } from 'src/environments/environment';
-import { tap } from 'rxjs/operators';
 import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-failure.component';
 import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
@@ -122,17 +120,13 @@ import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/ba
 import { FeatureFlagsService } from './services/feature-toggle.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AppInitializerService } from './services/app-initializer.service';
+import { AuthGuard } from './services/auth.guard';
+
 
 /******************************************************/
-export function initializeApp(initializeService: AppInitializerService) {
-    return (): Promise<any> => { 
-        return initializeService.validateToken();
-    }
-}
-
-export function initializeApp2(initializeService: AppInitializerService) {
-    return (): Promise<any> => { 
-        return initializeService.checkFeatureFlag();
+export function initializeApp(appInitializerService: AppInitializerService) {
+    return (): Promise<any> => {
+        return appInitializerService.checkFeatureFlag();
     }
 }
 
@@ -237,16 +231,11 @@ export function initializeApp2(initializeService: AppInitializerService) {
         MessageService,
         DatePipe,
         FeatureFlagsService,
+        AuthGuard,
         { provide: APP_CONFIG, useValue: AppConfig },
         {
             provide: APP_INITIALIZER,
             useFactory: initializeApp,
-            deps: [AppInitializerService],
-            multi: true
-        },
-        {
-            provide: APP_INITIALIZER,
-            useFactory: initializeApp2,
             deps: [AppInitializerService],
             multi: true
         }

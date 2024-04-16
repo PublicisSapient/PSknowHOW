@@ -35,10 +35,10 @@ import io.mongock.api.annotations.RollbackExecution;
  */
 @ChangeUnit(id = "kpi_sonar_code_quality", order = "8104", author = "shi6", systemVersion = "8.1.0")
 public class KpiSonarCodeQuality {
-	private static final String KPI_ID= "kpiId";
-	private static final String KPI_168= "kpi168";
-	private static final String PARAGRAPH= "paragraph";
-	private static final String VALUE= "value";
+	private static final String KPI_ID = "kpiId";
+	private static final String KPI_168 = "kpi168";
+	private static final String PARAGRAPH = "paragraph";
+	private static final String VALUE = "value";
 
 	private final MongoTemplate mongoTemplate;
 	private MongoCollection<Document> kpiMaster;
@@ -71,8 +71,7 @@ public class KpiSonarCodeQuality {
 						.append("details", Arrays.asList(
 								new Document().append("type", PARAGRAPH).append(VALUE,
 										"Code Quality in Sonarqube is shown as Grades (A to E)."),
-								new Document().append("type", PARAGRAPH).append(VALUE,
-										"A is the highest (best) and,"),
+								new Document().append("type", PARAGRAPH).append(VALUE, "A is the highest (best) and,"),
 								new Document().append("type", PARAGRAPH).append(VALUE, "E is the least"),
 								new Document().append("type", "link").append("kpiLinkDetail",
 										new Document().append("text", "Detailed Information at").append("link",
@@ -90,24 +89,34 @@ public class KpiSonarCodeQuality {
 
 	private void updateInKpiCategoryMapping() {
 		MongoCollection<Document> kpiCategoryMapping = mongoTemplate.getCollection("kpi_category_mapping");
-		// Query to find the kpi_category_mapping for kpiId = 38
-		// Execute the query
-		MongoCursor<Document> cursor = kpiCategoryMapping.find(new Document(KPI_ID, "kpi38")).iterator();
 
-		// Initialize the categoryId
-		String categoryId = null;
-		// Iterate over the results (assuming kpiId is unique)
-		while (cursor.hasNext()) {
-			Document document = cursor.next();
-			categoryId = document.getString("categoryId");
+		// Check if KPI_168 already exists in the collection
+		Document query = new Document(KPI_ID, KPI_168);
+		long count = kpiCategoryMapping.countDocuments(query);
+
+		if (count == 0) { // KPI_168 does not exist, proceed with insertion
+			// Query to find the kpi_category_mapping for kpiId = 38
+			// Execute the query
+			MongoCursor<Document> cursor = kpiCategoryMapping.find(new Document(KPI_ID, "kpi38")).iterator();
+
+			// Initialize the categoryId
+			String categoryId = null;
+			// Iterate over the results (assuming kpiId is unique)
+			while (cursor.hasNext()) {
+				Document document = cursor.next();
+				categoryId = document.getString("categoryId");
+			}
+
+			// Check if categoryId is not null
+			if (categoryId != null) {
+				// Create the insert script document
+				kpiCategoryMapping.insertOne(new Document().append(KPI_ID, KPI_168).append("categoryId", categoryId)
+						.append("kpiOrder", 15).append("kanban", false));
+			}
+		} else {
+			System.out.println("KPI_168 already exists in the collection.");
 		}
 
-		// Check if categoryId is not null and create an insert script
-		if (categoryId != null) {
-			// Create the insert script document
-			kpiCategoryMapping.insertOne(new Document().append(KPI_ID, KPI_168).append("categoryId", categoryId)
-					.append("kpiOrder", 15).append("kanban", false));
-		}
 	}
 
 	@RollbackExecution

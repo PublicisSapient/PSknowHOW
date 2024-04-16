@@ -490,6 +490,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.selectedTestExecutionFilterData = {};
         this.loaderZypher = false;
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
+            if(this.filterApplyData['label'] === 'project'){
+                this.getLastConfigurableTrendingListData(getData);
+            }
             // creating array into object where key is kpi id
             this.zypherKpiData = this.helperService.createKpiWiseId(getData);
             let calculatedObj;
@@ -600,6 +603,17 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.jiraKpiRequest = this.httpService.postKpi(postData, source)
             .subscribe(getData => {
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
+                    const releaseFrequencyInd = getData.findIndex(de=>de.kpiId === 'kpi73')
+                    if(this.filterApplyData['label'] === 'project'){
+                        this.getLastConfigurableTrendingListData(getData);
+                    }else if(this.filterApplyData['label'] === 'sprint' && releaseFrequencyInd !== -1){
+                        getData[releaseFrequencyInd].trendValueList?.map(trendData=>{
+                            const valueLength = trendData.value.length;
+                            if(valueLength > this.tooltip.sprintCountForKpiCalculation){
+                                trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
+                            }
+                        })
+                    }
                     // creating array into object where key is kpi id
                     const localVariable = this.helperService.createKpiWiseId(getData);
                     for (const kpi in localVariable) {
@@ -1417,29 +1431,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }
       }
 
-      getKpiCommentsCount(kpiId?){
-        // let requestObj = {
-        //   "nodes": [...this.filterApplyData?.['selectedMap']['project']],
-        //   "level":this.filterApplyData?.level,
-        //   "nodeChildId": "",
-        //   'kpiIds': []
-        // };
-        // if(kpiId){
-        //     requestObj['kpiIds'] = [kpiId];
-        //     this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        //         this.kpiCommentsCountObj[kpiId] = res[kpiId];
-        //     });
-        // }else{
-        //     requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
-        //     this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        //         this.kpiCommentsCountObj = res;
-        //     });
-        // }
-
+      async getKpiCommentsCount(kpiId?){
         const nodes = [...this.filterApplyData?.['selectedMap']['project']];
         const level = this.filterApplyData?.level;
         const nodeChildId = '';
-        this.kpiCommentsCountObj = this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
+        this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)     
     }
 
     reloadKPI(event) {
@@ -1504,5 +1500,26 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }else{
             this.service.setMaturiyTableLoader(true);
         }
+      }
+
+      getLastConfigurableTrendingListData(KpiData){
+        KpiData.map(kpiList=>{
+            kpiList.trendValueList?.map(trendData=>{
+                if(trendData.hasOwnProperty('filter') || trendData.hasOwnProperty('filter1') ){
+                    trendData?.value.map(projectWiseData=>{
+                        const valueLength = projectWiseData.value.length;
+                        if(valueLength > this.tooltip.sprintCountForKpiCalculation){
+                            projectWiseData.value = projectWiseData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
+                        }
+                    })
+                }else{
+                    const valueLength = trendData.value.length;
+                    if(valueLength > this.tooltip.sprintCountForKpiCalculation){
+                        trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
+                    }
+                }
+               
+            })
+        })
       }
 }

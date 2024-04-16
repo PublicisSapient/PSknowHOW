@@ -43,7 +43,6 @@ import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -52,12 +51,11 @@ import com.publicissapient.kpidashboard.jira.helper.ReaderRetryHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.service.FetchEpicData;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.util.StringUtils;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @author pankumar8
@@ -71,7 +69,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	@Autowired
 	FetchProjectConfiguration fetchProjectConfiguration;
 	@Autowired
-	JiraClient jiraClient;
+	JiraClientService jiraClientService;
 	@Autowired
 	JiraCommonService jiraCommonService;
 	@Autowired
@@ -114,49 +112,48 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 			initializeReader(projectId);
 		}
 		ReadData readData = null;
-		KerberosClient krb5Client = null;
+		KerberosClient krb5Client = jiraClientService.getKerberosClient();
 		if (!fetchLastIssue) {
-			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
-				if (boardIterator == null
-						&& CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
-					boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
-				}
-				if (checkIssueIterator()) {
-					List<Issue> epicIssues;
-					if (checkIssue()) {
-						pageNumber = 0;
-						if (boardIterator.hasNext()) {
-							BoardDetails boardDetails = boardIterator.next();
-							boardId = boardDetails.getBoardId();
-							fetchIssues(client);
-							epicIssues = fetchEpics(krb5Client, client);
-							if (CollectionUtils.isNotEmpty(epicIssues)) {
-								issues.addAll(epicIssues);
-							}
-						}
-					} else {
+			ProcessorJiraRestClient client = jiraClientService.getRestClient();
+			if (boardIterator == null
+					&& CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
+				boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
+			}
+			if (checkIssueIterator()) {
+				List<Issue> epicIssues;
+				if (checkIssue()) {
+					pageNumber = 0;
+					if (boardIterator.hasNext()) {
+						BoardDetails boardDetails = boardIterator.next();
+						boardId = boardDetails.getBoardId();
 						fetchIssues(client);
+						epicIssues = fetchEpics(krb5Client, client);
+						if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(epicIssues)) {
+							issues.addAll(epicIssues);
+						}
 					}
-
-					if (CollectionUtils.isNotEmpty(issues)) {
-						issueIterator = issues.iterator();
-					}
-				}
-				if (null != issueIterator && issueIterator.hasNext()) {
-					Issue issue = issueIterator.next();
-					readData = new ReadData();
-					readData.setIssue(issue);
-					readData.setProjectConfFieldMapping(projectConfFieldMapping);
-					readData.setBoardId(boardId);
-					readData.setSprintFetch(false);
+				} else {
+					fetchIssues(client);
 				}
 
-				if ((null == projectConfFieldMapping)
-						|| !boardIterator.hasNext() && (issueIterator!= null && !issueIterator.hasNext() && boardIssueSize < pageSize)) {
-					log.info("Data has been fetched for the project : {}", getProjectName());
-					fetchLastIssue = true;
-					return readData;
+				if (CollectionUtils.isNotEmpty(issues)) {
+					issueIterator = issues.iterator();
 				}
+			}
+			if (null != issueIterator && issueIterator.hasNext()) {
+				Issue issue = issueIterator.next();
+				readData = new ReadData();
+				readData.setIssue(issue);
+				readData.setProjectConfFieldMapping(projectConfFieldMapping);
+				readData.setBoardId(boardId);
+				readData.setSprintFetch(false);
+			}
+
+			if ((null == projectConfFieldMapping)
+					|| !boardIterator.hasNext() && (issueIterator != null && !issueIterator.hasNext() && boardIssueSize < pageSize)) {
+				log.info("Data has been fetched for the project : {}", getProjectName());
+				fetchLastIssue = true;
+				return readData;
 			}
 		}
 		return readData;

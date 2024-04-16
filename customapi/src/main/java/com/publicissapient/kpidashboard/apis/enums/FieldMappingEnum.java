@@ -36,13 +36,15 @@ public enum FieldMappingEnum {
 					"jiraDevDueDateField", "jiraIssueEpicType", "storyFirstStatus", "notificationEnabler",
 					"epicLink", "jiraSubTaskDefectType", "jiraSubTaskIdentification")),
 
-	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNames", "storyFirstStatus",
-			"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
-			"epicJobSize", "jiraIssueEpicType", "rootCause", "additionalFilterConfig", "estimationCriteria",
-			"jiraStoryPointsCustomField", "jiraLiveStatusLTK", "jiraLiveStatusNOPK", "jiraLiveStatusNOSK",
-			"jiraLiveStatusNORK", "jiraLiveStatusOTA", "ticketCountIssueType", "kanbanRCACountIssueType",
-			"jiraTicketVelocityIssueType", "ticketDeliverdStatus", "jiraTicketClosedStatus", "kanbanCycleTimeIssueType",
-			"jiraTicketTriagedStatus", "jiraTicketRejectedStatus", "jiraSubTaskDefectType")),
+	KPI1("Processor (Kanban)", KPISource.JIRA.name(),
+			Arrays.asList("jiraIssueTypeNames", "storyFirstStatus", "rootCauseIdentifier", "epicCostOfDelay",
+					"epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize",
+					"jiraIssueEpicType", "rootCause", "additionalFilterConfig", "estimationCriteria",
+					"jiraStoryPointsCustomField", "jiraLiveStatusLTK", "jiraLiveStatusNOPK", "jiraLiveStatusNOSK",
+					"jiraLiveStatusNORK", "jiraLiveStatusOTA", "ticketCountIssueType", "kanbanRCACountIssueType",
+					"jiraTicketVelocityIssueType", "ticketDeliverdStatus", "jiraTicketClosedStatus",
+					"kanbanCycleTimeIssueType", "jiraTicketTriagedStatus", "jiraTicketRejectedStatus",
+					"jiraSubTaskDefectType")),
 
 	KPI40("Issue Count", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKpi40","thresholdValueKPI40")),
 
@@ -248,8 +250,7 @@ public enum FieldMappingEnum {
 	KPI173("Rework Rate", KPISource.BITBUCKET.name(), Collections.singletonList(
 			"thresholdValueKPI173")),
 	KPI176("Risks and Dependencies", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKPI176",
-			"jiraIssueDependencyTypeKPI176", "jiraIssueRiskTypeKPI176")),
-	KPI174("Tech Debt - Sonar Security", KPISource.SONAR.name(), Arrays.asList("costPerLineKPI174", "thresholdValueKPI174"));
+			"jiraIssueDependencyTypeKPI176", "jiraIssueRiskTypeKPI176"));
 
 	private List<String> fields;
 	private String kpiName;
