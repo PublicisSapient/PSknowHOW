@@ -3,6 +3,8 @@ package com.publicissapient.kpidashboard.apis.repotools.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 public class RepoToolUserDetails {
 	private String email;
@@ -14,4 +16,5 @@ public class RepoToolUserDetails {
 	private Long count;
 	@JsonProperty("mr_count")
 	private Long mrCount;
+	private Map<String, Double> mergeRequestsPT;
 }
