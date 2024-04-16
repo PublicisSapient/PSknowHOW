@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import java.time.DayOfWeek;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,6 +40,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.common.model.application.Tool;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -122,6 +129,8 @@ public class KpiHelperService { // NOPMD
 	private static final String SPRINT_WISE_SPRINTDETAILS = "sprintWiseSprintDetailMap";
 	private static final String ISSUE_DATA = "issueData";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+	public static final String WEEK_FREQUENCY = "week";
+	public static final String DAY_FREQUENCY = "day";
 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
@@ -147,6 +156,8 @@ public class KpiHelperService { // NOPMD
 	private CacheService cacheService;
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
+	@Autowired
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
 	public static void getDroppedDefectsFilters(Map<String, Map<String, List<String>>> droppedDefects,
 			ObjectId basicProjectConfigId, List<String> resolutionTypeForRejection, String jiraDefectRejectionStatus) {
@@ -1633,6 +1644,90 @@ public class KpiHelperService { // NOPMD
 	public static long convertMilliSecondsToHours(double milliseconds) {
 		double hoursExact = milliseconds / (3600000);
 		return Math.round(hoursExact);
+	}
+
+	/**
+	 * get date range
+	 *
+	 * @param dateRange
+	 * 		date range
+	 * @param duration
+	 * 		time duration
+	 * @return date range string
+	 */
+	public static String getDateRange(CustomDateRange dateRange, String duration) {
+		String range = null;
+		if (CommonConstant.WEEK.equalsIgnoreCase(duration)) {
+			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(
+					dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+		} else {
+			range = dateRange.getStartDate().toString();
+		}
+		return range;
+	}
+
+	/**
+	 * gets next date
+	 *
+	 * @param duration
+	 * 		time duration
+	 * @param currentDate
+	 * 		current date
+	 * @return next local date
+	 */
+	public static LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
+		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
+			currentDate = currentDate.minusWeeks(1);
+		} else {
+			currentDate = currentDate.minusDays(1);
+		}
+		return currentDate;
+	}
+
+	/**
+	 * get kpi data from repo tools api
+	 *
+	 * @param endDate
+	 * 		end date
+	 * @param toolMap
+	 * 		tool map from cache
+	 * @param node
+	 * 		project node
+	 * @param dataPoint
+	 * 		no of days/weeks
+	 * @param duration
+	 * 		time duration
+	 * @return lis of RepoToolKpiMetricResponse object
+	 */
+	public List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
+			Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node, String duration, Integer dataPoint, String repoToolKpi) {
+
+		List<String> projectCodeList = new ArrayList<>();
+		ProjectFilter accountHierarchyData = node.getProjectFilter();
+		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap())
+				.getOrDefault(Constant.REPO_TOOLS, Collections.emptyList());
+		if (!CollectionUtils.isEmpty(tools)) {
+			projectCodeList.add(node.getId());
+		}
+
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(projectCodeList)) {
+			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
+			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+				startDate = LocalDate.now().minusWeeks(dataPoint);
+				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+					startDate = startDate.minusDays(1);
+				}
+			}
+			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
+			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
+					repoToolKpi, startDate.toString(), endDate.toString(),
+					debbieDuration);
+		}
+
+		return repoToolKpiMetricResponseList;
 	}
 
 	/**

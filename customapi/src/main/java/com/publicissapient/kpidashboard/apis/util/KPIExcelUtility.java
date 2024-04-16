@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -985,125 +986,97 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateMeanTimeMergeExcelData(String projectName, List<Map<String, Double>> repoWiseMRList,
-			List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData) {
+	public static void populateMeanTimeMergeExcelData(List<RepoToolValidationData> repoToolValidationDataList,
+			List<KPIExcelData> kpiExcelData) {
+		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
+			repoToolValidationDataList.forEach(repoToolValidationData -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setProject(repoToolValidationData.getProjectName());
+				Map<String, String> repoUrl = new HashMap<>();
+				repoUrl.put(repoToolValidationData.getRepoUrl(), repoToolValidationData.getRepoUrl());
+				excelData.setRepositoryURL(repoUrl);
+				excelData.setBranch(repoToolValidationData.getBranchName());
+				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setDaysWeeks(repoToolValidationData.getDate());
+				excelData.setMeanTimetoMerge(repoToolValidationData.getMeanTimeToMerge().toString());
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
 
-		if (CollectionUtils.isNotEmpty(repoWiseMRList)) {
-			for (int i = 0; i < repoWiseMRList.size(); i++) {
-				Map<String, Double> repoWiseMap = repoWiseMRList.get(i);
-				for (Map.Entry<String, Double> m : repoWiseMap.entrySet()) {
-					KPIExcelData excelData = new KPIExcelData();
-					excelData.setProject(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
-					excelData.setBranch(branchList.get(i));
-					excelData.setDaysWeeks(m.getKey());
-					excelData.setMeanTimetoMerge(m.getValue().toString());
-					kpiExcelData.add(excelData);
-				}
+	public static void populatePickupTimeExcelData(List<RepoToolValidationData> repoToolValidationDataList,
+			List<KPIExcelData> kpiExcelData) {
+		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
+			repoToolValidationDataList.forEach(repoToolValidationData -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setProject(repoToolValidationData.getProjectName());
+				Map<String, String> repoUrl = new HashMap<>();
+				repoUrl.put(repoToolValidationData.getRepoUrl(), repoToolValidationData.getRepoUrl());
+				excelData.setRepositoryURL(repoUrl);
+				excelData.setBranch(repoToolValidationData.getBranchName());
+				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setDaysWeeks(repoToolValidationData.getDate());
+				excelData.setPickupTime(repoToolValidationData.getPickupTime().toString());
+				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
 
-			}
+	public static void populatePRSizeExcelData(List<RepoToolValidationData> repoToolValidationDataList, List<KPIExcelData> kpiExcelData) {
+		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
+			repoToolValidationDataList.forEach(repoToolValidationData -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setProject(repoToolValidationData.getProjectName());
+				Map<String, String> repoUrl = new HashMap<>();
+				repoUrl.put(repoToolValidationData.getRepoUrl(), repoToolValidationData.getRepoUrl());
+				excelData.setRepositoryURL(repoUrl);
+				excelData.setBranch(repoToolValidationData.getBranchName());
+				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setDaysWeeks(repoToolValidationData.getDate());
+				excelData.setPrSize(String.valueOf(repoToolValidationData.getPrSize()));
+				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
+
+	public static void populateReworkRateExcelData(List<RepoToolValidationData> repoToolValidationDataList, List<KPIExcelData> kpiExcelData) {
+
+		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
+			repoToolValidationDataList.forEach(repoToolValidationData -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setProject(repoToolValidationData.getProjectName());
+				Map<String, String> repoUrl = new HashMap<>();
+				repoUrl.put(repoToolValidationData.getRepoUrl(), repoToolValidationData.getRepoUrl());
+				excelData.setRepositoryURL(repoUrl);
+				excelData.setBranch(repoToolValidationData.getBranchName());
+				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setDaysWeeks(repoToolValidationData.getDate());
+				excelData.setReworkRate(repoToolValidationData.getReworkRate());
+				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
+				kpiExcelData.add(excelData);
+			});
 		}
 
 	}
 
-	public static void populatePickupTimeExcelData(String projectName, List<Map<String, Double>> repoWiseMRList,
-			List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData) {
+	public static void populateCodeCommit(List<RepoToolValidationData>repoToolValidationDataList, List<KPIExcelData> kpiExcelData) {
 
-		if (CollectionUtils.isNotEmpty(repoWiseMRList)) {
-			for (int i = 0; i < repoWiseMRList.size(); i++) {
-				Map<String, Double> repoWiseMap = repoWiseMRList.get(i);
-				for (Map.Entry<String, Double> m : repoWiseMap.entrySet()) {
-					KPIExcelData excelData = new KPIExcelData();
-					excelData.setProject(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
-					excelData.setBranch(branchList.get(i));
-					excelData.setDaysWeeks(m.getKey());
-					excelData.setPickupTime(m.getValue().toString());
-					kpiExcelData.add(excelData);
-				}
-
-			}
-		}
-
-	}
-
-	public static void populatePRSizeExcelData(String projectName, List<Map<String, Long>> repoWiseMRList,
-			List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData) {
-
-		if (CollectionUtils.isNotEmpty(repoWiseMRList)) {
-			for (int i = 0; i < repoWiseMRList.size(); i++) {
-				Map<String, Long> repoWiseMap = repoWiseMRList.get(i);
-				for (Map.Entry<String, Long> m : repoWiseMap.entrySet()) {
-					KPIExcelData excelData = new KPIExcelData();
-					excelData.setProject(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
-					excelData.setBranch(branchList.get(i));
-					excelData.setDaysWeeks(m.getKey());
-					excelData.setPrSize(m.getValue().toString());
-					kpiExcelData.add(excelData);
-				}
-
-			}
-		}
-
-	}
-
-	public static void populateReworkRateExcelData(String projectName, List<Map<String, Double>> repoWiseMRList,
-			List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData) {
-
-		if (CollectionUtils.isNotEmpty(repoWiseMRList)) {
-			for (int i = 0; i < repoWiseMRList.size(); i++) {
-				Map<String, Double> repoWiseMap = repoWiseMRList.get(i);
-				for (Map.Entry<String, Double> m : repoWiseMap.entrySet()) {
-					KPIExcelData excelData = new KPIExcelData();
-					excelData.setProject(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
-					excelData.setBranch(branchList.get(i));
-					excelData.setDaysWeeks(m.getKey());
-					excelData.setReworkRate(m.getValue());
-					kpiExcelData.add(excelData);
-				}
-
-			}
-		}
-
-	}
-
-	public static void populateCodeCommit(String projectName, List<Map<String, Long>> repoWiseCommitList,
-			List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData,
-			List<Map<String, Long>> repoWiseMergeRequestList) {
-
-		if (CollectionUtils.isNotEmpty(repoWiseCommitList) && CollectionUtils.isNotEmpty(repoWiseMergeRequestList)) {
-			for (int i = 0; i < repoWiseCommitList.size(); i++) {
-				Map<String, Long> repoWiseCommitMap = repoWiseCommitList.get(i);
-				Map<String, Long> repoWiseMergeMap = repoWiseMergeRequestList.get(i);
-
-				for (String date : Sets.union(repoWiseCommitMap.keySet(), repoWiseMergeMap.keySet())) {
-
-					Long commitHours = repoWiseCommitMap.get(date);
-					Long mergeHours = repoWiseMergeMap.get(date);
-					KPIExcelData excelData = new KPIExcelData();
-					excelData.setProjectName(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
-					excelData.setBranch(branchList.get(i));
-					excelData.setDaysWeeks(date);
-					excelData.setNumberOfCommit(commitHours.toString());
-					excelData.setNumberOfMerge(mergeHours.toString());
-					kpiExcelData.add(excelData);
-				}
-
-			}
-
+		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
+			repoToolValidationDataList.forEach(repoToolValidationData -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setProject(repoToolValidationData.getProjectName());
+				Map<String, String> repoUrl = new HashMap<>();
+				repoUrl.put(repoToolValidationData.getRepoUrl(), repoToolValidationData.getRepoUrl());
+				excelData.setRepositoryURL(repoUrl);
+				excelData.setBranch(repoToolValidationData.getBranchName());
+				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setDaysWeeks(repoToolValidationData.getDate());
+				excelData.setNumberOfCommit(String.valueOf(repoToolValidationData.getCommitCount()));
+				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
+				kpiExcelData.add(excelData);
+			});
 		}
 	}
 
@@ -1285,18 +1258,17 @@ public class KPIExcelUtility {
 			String date, List<KPIExcelData> kpiExcelData) {
 		if (CollectionUtils.isNotEmpty(velocityList)) {
 			velocityList.forEach(kanbanIssueCustomHistory -> {
-				KPIExcelData excelData = new KPIExcelData();
-				excelData.setProjectName(projectName);
-				excelData.setDayWeekMonth(date);
-				excelData.setIssueType(kanbanIssueCustomHistory.getStoryType());
-				excelData.setSizeInStoryPoints(kanbanIssueCustomHistory.getEstimate());
 				if (kanbanIssueCustomHistory.getStoryID() != null) {
+					KPIExcelData excelData = new KPIExcelData();
+					excelData.setProjectName(projectName);
+					excelData.setDayWeekMonth(date);
+					excelData.setIssueType(kanbanIssueCustomHistory.getStoryType());
+					excelData.setSizeInStoryPoints(kanbanIssueCustomHistory.getEstimate());
 					Map<String, String> storyId = new HashMap<>();
 					storyId.put(kanbanIssueCustomHistory.getStoryID(), checkEmptyURL(kanbanIssueCustomHistory));
 					excelData.setTicketIssue(storyId);
+					kpiExcelData.add(excelData);
 				}
-				kpiExcelData.add(excelData);
-
 			});
 		}
 
@@ -1322,23 +1294,20 @@ public class KPIExcelUtility {
 			}
 	}
 
-	public static void populateCodeCommitKanbanExcelData(String projectName, List<Map<String, Long>> repoWiseCommitList,
-			List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData) {
-		if (CollectionUtils.isNotEmpty(repoWiseCommitList) && CollectionUtils.isNotEmpty(repoList)
-				&& CollectionUtils.isNotEmpty(branchList)) {
-			for (int i = 0; i < repoWiseCommitList.size(); i++) {
-				for (String date : repoWiseCommitList.get(i).keySet()) {
-					KPIExcelData excelData = new KPIExcelData();
-					excelData.setProjectName(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
-					excelData.setBranch(branchList.get(i));
-					excelData.setDaysWeeks(date);
-					excelData.setNumberOfCommit(repoWiseCommitList.get(i).get(date).toString());
-					kpiExcelData.add(excelData);
-				}
-			}
+	public static void populateCodeCommitKanbanExcelData(List<RepoToolValidationData> repoToolValidationDataList,
+			List<KPIExcelData> kpiExcelData) {
+		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
+			repoToolValidationDataList.forEach(repoToolValidationData -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setProjectName(repoToolValidationData.getProjectName());
+				Map<String, String> repoUrl = new HashMap<>();
+				repoUrl.put(repoToolValidationData.getRepoUrl(), repoToolValidationData.getRepoUrl());
+				excelData.setRepositoryURL(repoUrl);
+				excelData.setBranch(repoToolValidationData.getBranchName());
+				excelData.setDaysWeeks(repoToolValidationData.getDate());
+				excelData.setNumberOfCommit(String.valueOf(repoToolValidationData.getCommitCount()));
+				kpiExcelData.add(excelData);
+			});
 		}
 
 	}

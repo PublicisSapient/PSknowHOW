@@ -97,8 +97,13 @@ export class MyprofileComponent implements OnInit {
   }
 
   getTableHeadings(){
-    const cols = JSON.parse(localStorage.getItem('hierarchyData'));
-    cols.forEach((x) => {
+    let cols = JSON.parse(localStorage.getItem('hierarchyData'));
+    if(!cols){
+      const tempCols = JSON.parse(localStorage.getItem('completeHierarchyData'))?.['scrum'];
+      let projectLevel = tempCols?.filter((item) => item.hierarchyLevelId?.toLowerCase() === 'project')?.[0]?.level;
+      cols = tempCols.filter((item) => item.level < projectLevel);
+    }
+    cols?.forEach((x) => {
       const obj = {
         id: x.hierarchyLevelId,
         name: x.hierarchyLevelName

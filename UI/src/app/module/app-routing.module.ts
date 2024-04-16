@@ -42,7 +42,6 @@ import { environment } from 'src/environments/environment';
 
 import { ExecutiveV2Component } from '../dashboardv2/executive-v2/executive-v2.component';
 import { DashboardV2Component } from '../dashboardv2/dashboard-v2/dashboard-v2.component';
-import { IterationV2Component } from '../dashboardv2/iteration-v2/iteration-v2.component';
 
 /***************************NEW UI End**************************************** */
 /**
@@ -53,7 +52,7 @@ import { IterationV2Component } from '../dashboardv2/iteration-v2/iteration-v2.c
  */
 
 @NgModule({
-  imports: [RouterModule.forRoot([], { useHash: true, relativeLinkResolution: 'legacy', enableTracing: true })],
+  imports: [RouterModule.forRoot([], { useHash: true, relativeLinkResolution: 'legacy' })],
 
   exports: [RouterModule],
   providers: [

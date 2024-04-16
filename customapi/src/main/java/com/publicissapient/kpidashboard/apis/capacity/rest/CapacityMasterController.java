@@ -110,4 +110,9 @@ public class CapacityMasterController {
 		return ResponseEntity.status(HttpStatus.OK).body(happinessKpiService.saveHappinessKpiData(happinessKpiDTO));
 	}
 
+	@GetMapping(value = "/assignees/email/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> getRepoToolProjectMembers(@PathVariable("id") String projectConfigId) {
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ServiceResponse(true, "", capacityMasterService.getRepoToolAssigneeEmail(projectConfigId)));
+	}
 }

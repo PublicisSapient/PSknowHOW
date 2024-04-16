@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Set;
+
 @Data
 @Builder
 @Getter
@@ -22,7 +24,7 @@ import lombok.ToString;
 public class AssigneeCapacity {
 	private String userId;
 	private String userName;
-	private String email;
+	private Set<String> email;
 	private Role role;
 	private Double plannedCapacity;
 	private Double leaves;

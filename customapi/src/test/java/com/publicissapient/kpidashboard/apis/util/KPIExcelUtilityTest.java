@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.DSRValidationData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -141,19 +142,17 @@ public class KPIExcelUtilityTest {
 	@Test
 	public void populatePickupTimeExcelData_ValidData_PopulatesKPIExcelData() {
 		// Arrange
-		String projectName = "Project1";
-		List<Map<String, Double>> repoWiseMRList = new ArrayList<>();
-		Map<String, Double> repoWiseMap1 = new HashMap<>();
-		repoWiseMap1.put("Week1", 5.0);
-		repoWiseMap1.put("Week2", 8.0);
-		repoWiseMRList.add(repoWiseMap1);
-
-		List<String> repoList = Arrays.asList("Repo1");
-		List<String> branchList = Arrays.asList("Branch1");
+		RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+		repoToolValidationData.setProjectName("Project1");
+		repoToolValidationData.setPickupTime(10.0d);
+		repoToolValidationData.setDate("Week");
+		repoToolValidationData.setRepoUrl("repoUrl");
+		repoToolValidationData.setBranchName("master");
+		repoToolValidationData.setDeveloperName("developer");
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
 
 		// Act
-		excelUtility.populatePickupTimeExcelData(projectName, repoWiseMRList, repoList, branchList, kpiExcelData);
+		excelUtility.populatePickupTimeExcelData(Arrays.asList(repoToolValidationData), kpiExcelData);
 
 		// Assert
 		assertEquals(2, kpiExcelData.size());
@@ -162,19 +161,17 @@ public class KPIExcelUtilityTest {
 	@Test
 	public void populatePRSizeExcelData_ValidData_PopulatesKPIExcelData() {
 		// Arrange
-		String projectName = "Project1";
-		List<Map<String, Long>> repoWiseMRList = new ArrayList<>();
-		Map<String, Long> repoWiseMap1 = new HashMap<>();
-		repoWiseMap1.put("Week1", 5L);
-		repoWiseMap1.put("Week2", 8L);
-		repoWiseMRList.add(repoWiseMap1);
-
-		List<String> repoList = Arrays.asList("Repo1");
-		List<String> branchList = Arrays.asList("Branch1");
+		RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+		repoToolValidationData.setProjectName("Project1");
+		repoToolValidationData.setPrSize(10L);
+		repoToolValidationData.setDate("Week");
+		repoToolValidationData.setRepoUrl("repoUrl");
+		repoToolValidationData.setBranchName("master");
+		repoToolValidationData.setDeveloperName("developer");
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
 
 		// Act
-		excelUtility.populatePRSizeExcelData(projectName, repoWiseMRList, repoList, branchList, kpiExcelData);
+		excelUtility.populatePRSizeExcelData(Arrays.asList(repoToolValidationData), kpiExcelData);
 
 		// Assert
 		assertEquals(2, kpiExcelData.size());
@@ -183,26 +180,18 @@ public class KPIExcelUtilityTest {
 	@Test
 	public void populateCodeCommit_ValidData_PopulatesKPIExcelData() {
 		// Arrange
-		String projectName = "Project1";
-		List<Map<String, Long>> repoWiseCommitList = new ArrayList<>();
-		Map<String, Long> repoWiseCommitMap1 = new HashMap<>();
-		repoWiseCommitMap1.put("Week1", 10L);
-		repoWiseCommitMap1.put("Week2", 15L);
-		repoWiseCommitList.add(repoWiseCommitMap1);
-
-		List<Map<String, Long>> repoWiseMergeRequestList = new ArrayList<>();
-		Map<String, Long> repoWiseMergeMap1 = new HashMap<>();
-		repoWiseMergeMap1.put("Week1", 3L);
-		repoWiseMergeMap1.put("Week2", 5L);
-		repoWiseMergeRequestList.add(repoWiseMergeMap1);
-
-		List<String> repoList = Arrays.asList("Repo1");
-		List<String> branchList = Arrays.asList("Branch1");
+		RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+		repoToolValidationData.setProjectName("Project1");
+		repoToolValidationData.setCommitCount(10L);
+		repoToolValidationData.setMrCount(2L);
+		repoToolValidationData.setDate("Week");
+		repoToolValidationData.setRepoUrl("repoUrl");
+		repoToolValidationData.setBranchName("master");
+		repoToolValidationData.setDeveloperName("developer");
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
 
 		// Act
-		excelUtility.populateCodeCommit(projectName, repoWiseCommitList, repoList, branchList, kpiExcelData,
-				repoWiseMergeRequestList);
+		excelUtility.populateCodeCommit(Arrays.asList(repoToolValidationData), kpiExcelData);
 
 		// Assert
 		assertEquals(2, kpiExcelData.size());

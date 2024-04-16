@@ -16,11 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.jira;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+package com.publicissapient.kpidashboard.apis.repotools.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,42 +24,29 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
- * user assignee details
+ * RepoTool kpi validation data
  */
-
+@Data
+@Builder
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class Assignee {
+@ToString
+public class RepoToolValidationData {
+	private String projectName;
+	private String repoUrl;
+	private String branchName;
+	private String developerName;
+	private String date;
+	private long commitCount;
+	private long mrCount;
+	private Double meanTimeToMerge;
+	private long prSize;
+	private Double pickupTime;
+	private Double reworkRate;
 
-	private String assigneeId;
-	private String assigneeName;
-	private Set<String> email;
-
-	public Assignee(String assigneeId, String assigneeName) {
-		this.assigneeId = assigneeId;
-		this.assigneeName = assigneeName;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof Assignee))
-			return false;
-
-		Assignee assignee = (Assignee) o;
-
-		return Objects.equals(assigneeId, assignee.assigneeId);
-	}
-
-	@Override
-	public int hashCode() {
-		return assigneeId != null ? assigneeId.hashCode() : 0;
-	}
 }

@@ -418,6 +418,9 @@ public class KPIExcelData {
 	@JsonProperty("Done(Value/Percentage)")
 	private String done;
 
+	@JsonProperty("Developer")
+	private String developer;
+
 
 
 }

@@ -249,6 +249,7 @@ public class CustomApiConfig {// NOPMD
 	private List<String> leadTimeRange;
 	private List<String> cycleTimeRange;
 	private List<Character> aesKeyValue;
+	private int sprintCountForKpiCalculation;
 
 	public List<Character> getAesKeyValue() {
 		return aesKeyValue;
@@ -260,6 +261,16 @@ public class CustomApiConfig {// NOPMD
 	@Value("${exposed_api_key}")
 	private String xApiKey;
 	private String repoToolReworkRateUrl;
+
+	public String getRepoToolMembersUrl() {
+		return repoToolMembersUrl;
+	}
+
+	public void setRepoToolMembersUrl(String repoToolMembersUrl) {
+		this.repoToolMembersUrl = repoToolMembersUrl;
+	}
+
+	private String repoToolMembersUrl;
 
 	public String getRepoToolReworkRateUrl() {
 		return repoToolReworkRateUrl;
@@ -1211,5 +1222,13 @@ public class CustomApiConfig {// NOPMD
 
 	public void setSonarMonthCount(Integer sonarMonthCount) {
 		this.sonarMonthCount = sonarMonthCount;
+	}
+
+	public int getSprintCountForKpiCalculation() {
+		return sprintCountForKpiCalculation;
+	}
+
+	public void setSprintCountForKpiCalculation(int sprintCountForKpiCalculation) {
+		this.sprintCountForKpiCalculation = sprintCountForKpiCalculation;
 	}
 }
