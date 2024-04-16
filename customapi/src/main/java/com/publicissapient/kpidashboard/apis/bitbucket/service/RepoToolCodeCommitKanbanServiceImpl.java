@@ -179,10 +179,9 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		aggDataMap.put(Constant.AGGREGATED_VALUE, dayWiseCount);
 		mapTmp.get(node.getId()).setValue(aggDataMap);
 
-		if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-//			KPIExcelUtility.populateCodeCommitKanbanExcelData(node.getProjectFilter().getName(), repoWiseCommitList,
-//					repoList, branchList, excelData);
-		}
+//		if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+//			KPIExcelUtility.populateCodeCommitKanbanExcelData(repo, excelData);
+//		}
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CODE_COMMIT_MERGE_KANBAN.getColumns());
 		kpiElement.setMapOfSprintAndData(validationMap);

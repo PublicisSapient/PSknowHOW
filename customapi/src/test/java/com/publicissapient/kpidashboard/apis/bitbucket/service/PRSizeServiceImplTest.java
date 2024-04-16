@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
@@ -107,6 +108,8 @@ public class PRSizeServiceImplTest {
     private CommonService commonService;
     @Mock
     private AssigneeDetailsRepository assigneeDetailsRepository;
+    @Mock
+    private KpiHelperService kpiHelperService;
 
     @Before
     public void setup() {
@@ -145,8 +148,10 @@ public class PRSizeServiceImplTest {
         assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
         assigneeDetails.setSource("Jira");
         Set<Assignee> assigneeSet = new HashSet<>();
-        assigneeSet.add(new Assignee("aks", "Akshat Shrivastava", "akshat.shrivastav@publicissapient.com"));
-        assigneeSet.add(new Assignee("llid", "Hiren", "99163630+hirbabar@users.noreply.github.com"));
+        assigneeSet.add(new Assignee("aks", "Akshat Shrivastava",
+                new HashSet<>(Arrays.asList("akshat.shrivastav@publicissapient.com"))));
+        assigneeSet.add(new Assignee("llid", "Hiren",
+                new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
         assigneeDetails.setAssignee(assigneeSet);
         when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 
@@ -229,7 +234,8 @@ public class PRSizeServiceImplTest {
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
                 .thenReturn(kpiRequestTrackerId);
 
-        when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any())).thenReturn(repoToolKpiMetricResponseList);
+        when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
+                repoToolKpiMetricResponseList);
         try {
             KpiElement kpiElement = prSizeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
