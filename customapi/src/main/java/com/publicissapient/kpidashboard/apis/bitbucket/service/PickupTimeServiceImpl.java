@@ -256,8 +256,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 			repoToolValidationData.setMrCount(userMrCount);
 			repoToolValidationDataList.add(repoToolValidationData);
 
-			setDataCount(projectName, date, userKpiGroup, repoToolUserDetails.get().getHours(),
-					repoToolUserDetails.get().getMergeRequests(), dateUserWiseAverage);
+			setDataCount(projectName, date, userKpiGroup, userHours,
+					userMrCount, dateUserWiseAverage);
 
 		});
 		return dateUserWiseAverage;

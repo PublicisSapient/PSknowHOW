@@ -20,8 +20,10 @@ package com.publicissapient.kpidashboard.apis.auth.service;
 
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
+import org.springframework.http.ResponseEntity;
 
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
 /**
  * An Interface to provide authentication service.
@@ -204,4 +206,5 @@ public interface AuthenticationService {
 
 	Iterable<Authentication> getAuthenticationByApproved(boolean approved);
 
+	ResponseEntity<ServiceResponse> changePasswordForCentralAuth(ChangePasswordRequest request);
 }

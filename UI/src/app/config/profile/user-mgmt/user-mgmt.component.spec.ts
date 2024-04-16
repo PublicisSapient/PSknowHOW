@@ -89,7 +89,8 @@ describe('UserManagementComponent', () => {
     component.changePasswordForm.controls['confirmpassword'].setValue('Qwerty@123');
     component.onSubmit();
     fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/changePassword')[0].flush(successResponse);
+    const url = environment['AUTHENTICATION_SERVICE'] == true ? baseUrl + '/api/changePassword/central' : baseUrl + '/api/changePassword';
+    httpMock.match(url)[0].flush(successResponse);
     expect(component.changePasswordForm.valid).toBeTruthy();
     // expect(component.success).toBe('Password changed succesfully');
   });

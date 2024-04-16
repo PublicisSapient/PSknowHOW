@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -181,8 +182,8 @@ public class JiraToolConfigServiceImplTest {
 		assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
 		assigneeDetails.setSource("Jira");
 		Set<Assignee> assigneeSet = new HashSet<>();
-		assigneeSet.add(new Assignee("ankbhard", "Ankita sharma", ""));
-		assigneeSet.add(new Assignee("llid", "displayName", ""));
+		assigneeSet.add(new Assignee("ankbhard", "Ankita sharma", new HashSet<>(Arrays.asList(""))));
+		assigneeSet.add(new Assignee("llid", "displayName", new HashSet<>(Arrays.asList(""))));
 		assigneeDetails.setAssignee(assigneeSet);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 		AssigneeResponseDTO assigneeResponseDTO = jiraToolConfigService.getProjectAssigneeDetails(basicConfigId);

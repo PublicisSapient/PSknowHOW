@@ -33,10 +33,8 @@ import java.util.regex.Pattern;
 
 import javax.validation.Valid;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +65,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -233,6 +232,13 @@ public class AuthenticationController {
                     .body(new ServiceResponse(false, "Unprocessable Entity", null));
         }
     }
+
+	@RequestMapping(value = "/changePassword/central", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	// NOSONAR
+	public ResponseEntity<ServiceResponse> changePasswordForCentralAuth(HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse, @Valid @RequestBody ChangePasswordRequest request) { // NOSONAR
+		return authenticationService.changePasswordForCentralAuth(request);
+	}
 
     /**
      * @param isValidUser

@@ -70,12 +70,15 @@ export class AdditionalFilterComponent implements OnChanges, OnInit {
 
   }
 
-  applyAdditionalFilter(e, filterName) {
-    let obj = {};
-    if(!this.appliedFilters[filterName]) {
-      this.appliedFilters[filterName] = [];
+  applyAdditionalFilter(e, index, multi = false) {
+    if (!this.appliedFilters['filter' + index]) {
+      this.appliedFilters['filter' + index] = [];
     }
-    this.appliedFilters[filterName].push(e.value);
-    console.log(this.appliedFilters);
+    if (multi) {
+      this.appliedFilters['filter' + index].push(e.value);
+    } else {
+      this.appliedFilters['filter' + index] = [e.value];
+    }
+    this.service.applyAdditionalFilters(this.appliedFilters);
   }
 }

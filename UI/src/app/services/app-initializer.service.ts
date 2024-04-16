@@ -182,7 +182,7 @@ export class AppInitializerService {
             const env$ = this.http.get('assets/env.json').pipe(
                 tap(env => {
                     environment['baseUrl'] = env['baseUrl'] || '';
-                    environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
+                    environment['SSO_LOGIN'] = env['SSO_LOGIN'] === 'true' ? true : false;
                     environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
                     environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
                     environment['MAP_URL'] = env['MAP_URL'] || '';
@@ -215,7 +215,6 @@ export class AppInitializerService {
             this.router.resetConfig([...this.routes]);
             this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
         } else {
-            this.router.resetConfig([...this.routesAuth]);
             // TODO: find right property to avoid string manipulation - Rishabh 3/4/2024
             let url = window.location.href; 
 
@@ -231,9 +230,9 @@ export class AppInitializerService {
             };
             // Make API call or initialization logic here...
             this.httpService.getUserValidation(obj).subscribe((response) => {
-                // http.router.resetConfig([...routesAuth]);
                 if (response?.['success']) {
                     this.sharedService.setCurrentUserDetails(response?.['data']);
+                    this.router.resetConfig([...this.routesAuth]);
                     localStorage.setItem("user_name", response?.['data']?.user_name);
                     localStorage.setItem("user_email", response?.['data']?.user_email);
                     if (authToken) {
