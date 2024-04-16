@@ -63,6 +63,7 @@ public class AuthProperties {// NOPMD
 	private String fetchUserDetailsEndPoint;
 	private String fetchPendingUsersApprovalEndPoint;
 	private String updateUserApprovalStatus;
+	private String changePasswordEndPoint;
 	private String resourceName;
 
 	private boolean subDomainCookie;
@@ -252,6 +253,19 @@ public class AuthProperties {// NOPMD
 	 */
 	public String getUpdateUserApprovalStatus() {
 		return updateUserApprovalStatus;
+	}
+
+	/**
+	 * get central auth userinfo url
+	 *
+	 * @return
+	 */
+	public String getChangePasswordEndPoint() {
+		return changePasswordEndPoint;
+	}
+
+	public void setChangePasswordEndPoint(String changePasswordEndPoint) {
+		this.changePasswordEndPoint = changePasswordEndPoint;
 	}
 
 	/**

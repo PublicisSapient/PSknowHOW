@@ -114,6 +114,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   loading: boolean = false;
   tabsArr = new Set();
   selectedKPITab: string;
+  additionalFiltersArr = [];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
@@ -164,6 +165,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.noTabAccess = true;
       }
     }));
+
+    this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
+      if(data && Object.keys(data).length) {
+        this.updatedConfigGlobalData.forEach(kpi => {
+          this.handleSelectedOption(data, kpi);
+        });
+      }
+    })
+    );
   }
 
   processKpiConfigData(kpiListObj) {
@@ -228,6 +238,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     if (JSON.stringify(this.filterApplyData) !== JSON.stringify($event.filterApplyData) || this.configGlobalData) {
       this.tooltip = $event.configDetails;
+      this.additionalFiltersArr = [];
       this.noOfDataPoints = $event.configDetails['noOfDataPoints'] || 5;
       if (this.serviceObject['makeAPICall']) {
         this.allKpiArray = [];
@@ -885,6 +896,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           preAggregatedValues = [...preAggregatedValues, ...(trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
         }
         this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
+        if (!this.additionalFiltersArr['filter1']) {
+          this.additionalFiltersArr['filter1'] = [];
+        }
+
+        if (!this.additionalFiltersArr['filter2']) {
+          this.additionalFiltersArr['filter2'] = [];
+        }
+        this.additionalFiltersArr['filter1'].push(trendValueList.map((x) => x.filter1));
+        this.additionalFiltersArr['filter2'].push(trendValueList.map((x) => x.filter2));
       }
       else {
         this.kpiChartData[kpiId] = [];
@@ -945,7 +965,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     this.createTrendsData(kpiId);
     this.handleMaturityTableLoader();
-    console.log(this.kpiChartData);
+    this.service.setAdditionalFilters(this.additionalFiltersArr);
   }
 
   getChartDataForRelease(kpiId, idx, aggregationType?) {

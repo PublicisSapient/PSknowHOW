@@ -1,1 +1,25 @@
-
+<div style="display: flex; overflow-y: visible; overflow-x: visible;" #addnlFilterDiv>
+    <ng-container *ngFor="let config of additionalFilterConfig; let i = index;">
+            <span class="p-float-label"
+                *ngIf="filterData?.length && filterData[i]?.length && config['type'] !== 'singleSelect'"
+                style="margin-left: 10px;">
+                <p-multiSelect #multiSelect inputId="multiselectFilter"
+                    [style]="{'width':'200px', 'max-width': '100%', 'height': '40px'}" [selectionLimit]="6"
+                    [selectedItemsLabel]="'{0} selected'" defaultLabel="Select"
+                    [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }" [appendTo]="addnlFilterDiv"
+                    [options]="filterData[i]" (onChange)="applyAdditionalFilter($event, i + 1, true)">
+                </p-multiSelect>
+                <label class="floating-label" for="multiselectFilter">Select {{ config.defaultLevel.labelName }}</label>
+            </span>
+            <span *ngIf="filterData?.length && filterData[i]?.length && config['type'] === 'singleSelect'"
+                class="p-float-label" style="margin-left: 10px;">
+                <p-dropdown inputId="singleselectFilter" placeholder="Select"
+                    [style]="{'width':'200px', 'max-width': '100%', 'height': '40px'}"
+                    [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }" [appendTo]="addnlFilterDiv"
+                    [options]="filterData[i]" (onChange)="applyAdditionalFilter($event, i + 1)">
+                </p-dropdown>
+                <label class="floating-label" for="singleselectFilter">Select {{ config.defaultLevel.labelName
+                    }}</label>
+            </span>
+    </ng-container>
+</div>

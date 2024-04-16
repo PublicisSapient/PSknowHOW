@@ -362,6 +362,9 @@ export class HttpService {
       email: this.userEmail,
       user: this.userName,
     };
+    if(environment?.['AUTHENTICATION_SERVICE']){
+      this.changePasswordUrl = this.baseUrl + '/api/changePassword/central';
+    }  
     return this.http
       .post(this.changePasswordUrl, postData)
       .pipe(tap((res) => { }));
