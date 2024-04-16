@@ -373,7 +373,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		String changePasswordUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getChangePasswordEndPoint(), "");
-		HttpEntity<?> entity = new HttpEntity<>(headers);
+		HttpEntity<?> entity = new HttpEntity<>(request, headers);
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response = null;
@@ -384,7 +384,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 				ServiceResponse serviceResponse = new ServiceResponse();
 				serviceResponse.setMessage(jsonObject.getString("message"));
 				serviceResponse.setSuccess(jsonObject.getBoolean("success"));
-				serviceResponse.setData(jsonObject.getJSONObject("data"));
+				serviceResponse.setData(jsonObject.getString("data"));
 				return ResponseEntity.ok(serviceResponse);
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
