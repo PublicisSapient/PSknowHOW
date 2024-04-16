@@ -19,7 +19,8 @@
             (onPrimaryFilterChange)="handlePrimaryFilterChange($event)"></app-primary-filter>
     </div>
     <div>
-        <app-additional-filter></app-additional-filter>
+        <app-additional-filter [selectedTab]="selectedTab" [selectedLevel]="selectedLevel" [selectedType]="selectedType"
+        [additionalFilterConfig]="additionalFilterConfig"></app-additional-filter>
     </div>
 </div>
 <div class="selected-filter-container">

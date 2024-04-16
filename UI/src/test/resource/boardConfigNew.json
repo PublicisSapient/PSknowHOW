@@ -4321,7 +4321,20 @@
                             "sortBy": null
                         }
                     },
-                    "parentFilter": null
+                    "parentFilter": null,
+                    "additionalFilters": [{
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "branch",
+                            "sortBy": null
+                        }
+                    },{
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "developer",
+                            "sortBy": null
+                        }
+                    }]
                 }
             }
         ],
@@ -6403,7 +6416,20 @@
                             "sortBy": null
                         }
                     },
-                    "parentFilter": null
+                    "parentFilter": null,
+                    "additionalFilters": [{
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "branch",
+                            "sortBy": null
+                        }
+                    },{
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "developer",
+                            "sortBy": null
+                        }
+                    }]
                 }
             }
         ],

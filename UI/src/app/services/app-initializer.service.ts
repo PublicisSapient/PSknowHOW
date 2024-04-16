@@ -60,7 +60,7 @@ export class AppInitializerService {
                 }
             },
             {
-                path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'developer', component: !localStorage.getItem('newUI') ? DeveloperComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "Developer"
                 }
@@ -126,7 +126,7 @@ export class AppInitializerService {
                 }
             },
             {
-                path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'developer', component: !localStorage.getItem('newUI') ? DeveloperComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "Developer"
                 }

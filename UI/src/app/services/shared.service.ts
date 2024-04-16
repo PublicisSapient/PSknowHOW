@@ -103,6 +103,8 @@ export class SharedService {
   public currentIssue = new BehaviorSubject({});
   public currentData = this.currentIssue.asObservable();
 
+  public populateAdditionalFilters;
+
   boardNamesListSubject = new BehaviorSubject<any>([]);
   boardNamesListObs = this.boardNamesListSubject.asObservable();
 
@@ -114,6 +116,7 @@ export class SharedService {
     this.passEventToNav = new EventEmitter();
     this.isDownloadExcel = new EventEmitter();
     this.isSideNav = new EventEmitter();
+    this.populateAdditionalFilters = new EventEmitter();
   }
 
   // for DSV
@@ -163,6 +166,11 @@ export class SharedService {
   // getter kpi config data
   getDashConfigData() {
     return this.dashConfigData;
+  }
+
+  // Additional Filters in New UI 
+  setAdditionalFilters(data) {
+    this.populateAdditionalFilters.emit(data);
   }
 
   // login account type

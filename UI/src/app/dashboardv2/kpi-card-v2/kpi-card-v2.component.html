@@ -23,7 +23,7 @@
         <i class="pi pi-ellipsis-v float-right" style="font-size: 20px"></i>
     </div>
     <!-- kpiFilter -->
-    <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer>
+    <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' }" class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer>
         <div *ngSwitchCase="'dropdown'" class="p-d-flex p-justify-between">
             <ng-container *ngFor="let filter of dropdownArr;let k = index">
                 <p-dropdown *ngIf="dropdownArr?.length && filter?.options?.length" [options]="filter?.options"

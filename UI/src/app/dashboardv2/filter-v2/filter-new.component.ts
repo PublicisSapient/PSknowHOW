@@ -21,6 +21,7 @@ export class FilterNewComponent implements OnInit {
   kanbanRequired: boolean = false;
   parentFilterConfig: any = {};
   primaryFilterConfig: any = {};
+  additionalFilterConfig: any = {};
   selectedNodeIdArr: any = {
     "basicProjectConfigIds": []
   };
@@ -91,6 +92,7 @@ export class FilterNewComponent implements OnInit {
         this.selectedLevel = null;
       }
       this.primaryFilterConfig = selectedBoard.filters.primaryFilter;
+      this.additionalFilterConfig = selectedBoard.filters.additionalFilters;
     }
   }
 
