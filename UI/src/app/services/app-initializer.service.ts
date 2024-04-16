@@ -213,7 +213,6 @@ export class AppInitializerService {
             this.router.resetConfig([...this.routes]);
             this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
         } else {
-            this.router.resetConfig([...this.routesAuth]);
             // TODO: find right property to avoid string manipulation - Rishabh 3/4/2024
             let url = window.location.href; 
 
@@ -229,9 +228,9 @@ export class AppInitializerService {
             };
             // Make API call or initialization logic here...
             this.httpService.getUserValidation(obj).subscribe((response) => {
-                // http.router.resetConfig([...routesAuth]);
                 if (response?.['success']) {
                     this.sharedService.setCurrentUserDetails(response?.['data']);
+                    this.router.resetConfig([...this.routesAuth]);
                     localStorage.setItem("user_name", response?.['data']?.user_name);
                     localStorage.setItem("user_email", response?.['data']?.user_email);
                     if (authToken) {
