@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
@@ -72,6 +73,7 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 		List<KanbanIssueCustomHistory> kanbanIssueCustomHistory = new ArrayList<>();
 		Set<KanbanAccountHierarchy> accountHierarchies = new HashSet<>();
 		Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
+		Set<Assignee> assignee = new HashSet<>();
 
 		for (CompositeResult kanbanCompositeResult : kanbanCompositeResults) {
 			if (null != kanbanCompositeResult.getKanbanJiraIssue()) {
@@ -83,10 +85,7 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 			if (CollectionUtils.isNotEmpty(kanbanCompositeResult.getKanbanAccountHierarchies())) {
 				accountHierarchies.addAll(kanbanCompositeResult.getKanbanAccountHierarchies());
 			}
-			if (null != kanbanCompositeResult.getAssigneeDetails()) {
-				assigneesToSave.put(kanbanCompositeResult.getAssigneeDetails().getBasicProjectConfigId(),
-						kanbanCompositeResult.getAssigneeDetails());
-			}
+			addAssignees(assigneesToSave, assignee, kanbanCompositeResult);
 		}
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			writeKanbanJiraItem(jiraIssues);
@@ -101,6 +100,24 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 			writeAssigneeDetails(assigneesToSave);
 		}
 
+	}
+
+	/**
+	 * Adding assignees to map
+	 *
+	 * @param assigneesToSave
+	 * @param assignee
+	 * @param kanbanCompositeResult
+	 */
+	private static void addAssignees(Map<String, AssigneeDetails> assigneesToSave, Set<Assignee> assignee,
+			CompositeResult kanbanCompositeResult) {
+		if (kanbanCompositeResult.getAssigneeDetails() != null
+				&& CollectionUtils.isNotEmpty(kanbanCompositeResult.getAssigneeDetails().getAssignee())) {
+			assignee.addAll(kanbanCompositeResult.getAssigneeDetails().getAssignee());
+			kanbanCompositeResult.getAssigneeDetails().setAssignee(assignee);
+			assigneesToSave.put(kanbanCompositeResult.getAssigneeDetails().getBasicProjectConfigId(),
+					kanbanCompositeResult.getAssigneeDetails());
+		}
 	}
 
 	public void writeKanbanJiraItem(List<KanbanJiraIssue> jiraItems) {

@@ -143,6 +143,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   nodeIdQParam: string = '';
   sprintIdQParam: string = '';
   displayMessage: boolean = false;
+  copyFilteredAddFilters = {};
+  loader: boolean = false;
 
   constructor(
     public service: SharedService,
@@ -530,6 +532,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.additionalFiltersDdn[this.additionalFiltersArr[i]['hierarchyLevelId']] = arr;
           this.toggleDropdownObj[this.additionalFiltersArr[i]['hierarchyLevelId']] = false;
           if (this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sprint') {
+            this.filterForm.controls['sprintSearch'] = new UntypedFormControl('');
             this.createFormGroup(this.additionalFiltersArr[i]['hierarchyLevelId'], arr);
           } else {
             this.createFormGroup(this.additionalFiltersArr[i]['hierarchyLevelId']);
@@ -643,6 +646,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
       }
     }
+    this.copyFilteredAddFilters = {...this.filteredAddFilters};
   }
 
   onSelectedTrendValueChange(isChangedFromUI?) {
@@ -820,24 +824,26 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   changeSelectedTab(){
-    let boardDetails = JSON.parse(JSON.stringify(this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase()) 
-    || this.kpiListData['others'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase())));
-    let kpisShownCount = 0;
-    if(boardDetails?.boardName?.toLowerCase() === 'iteration'){
-      boardDetails['kpis'] = [...boardDetails?.kpis?.filter((item) => item.kpiId != 'kpi121')];
-    }
-    boardDetails?.kpis?.forEach((item) => {
-      if(item.shown){
-        kpisShownCount++
+    if(Object.keys(this.kpiListData)?.length > 0){
+      let boardDetails = JSON.parse(JSON.stringify(this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase()) 
+      || this.kpiListData['others'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase())));
+      let kpisShownCount = 0;
+      if(boardDetails?.boardName?.toLowerCase() === 'iteration'){
+        boardDetails['kpis'] = [...boardDetails?.kpis?.filter((item) => item.kpiId != 'kpi121')];
       }
-    })
-    if(kpisShownCount <= 0){
-      this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
-      this.service.setSelectedTab(this.selectedTab);
-      // const selectedTab = this.selectedTab;
-      // const selectedType = this.kanban ? 'kanban' : 'scrum';
-      this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
-      // this.service.onTypeOrTabRefresh.next({ selectedTab, selectedType });
+      boardDetails?.kpis?.forEach((item) => {
+        if(item.shown){
+          kpisShownCount++
+        }
+      })
+      if(kpisShownCount <= 0){
+        this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
+        this.service.setSelectedTab(this.selectedTab);
+        // const selectedTab = this.selectedTab;
+        // const selectedType = this.kanban ? 'kanban' : 'scrum';
+        this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
+        // this.service.onTypeOrTabRefresh.next({ selectedTab, selectedType });
+      }
     }
   }
 
@@ -848,6 +854,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.projectIndex = 0;
       this.service.setEmptyFilter();
       this.service.setSelectedType('scrum');
+      
       this.changeSelectedTab();
     this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
     }
@@ -1503,17 +1510,19 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   // logout is clicked  and removing auth token , username
   logout() {
+      this.loader = true;
       this.httpService.logout().subscribe((responseData) => {
         if (responseData?.success) {
-        this.helperService.isKanban = false;
-        localStorage.clear();
-        // Set blank selectedProject after logged out state
-        this.service.setSelectedProject(null);
-        this.service.setCurrentUserDetails({});
-        this.service.setVisibleSideBar(false);
-        this.service.setAddtionalFilterBackup({});
-        this.service.setKpiSubFilterObj({});
-        if(!environment['AUTHENTICATION_SERVICE']){
+          if(!environment['AUTHENTICATION_SERVICE']){
+          this.helperService.isKanban = false;
+          // Set blank selectedProject after logged out state
+          this.service.setSelectedProject(null);
+          this.service.setCurrentUserDetails({});
+          this.service.setVisibleSideBar(false);
+          this.service.setAddtionalFilterBackup({});
+          this.service.setKpiSubFilterObj({});
+          localStorage.clear();
+          this.loader = false;
           this.router.navigate(['./authentication/login']);
         } else{
           let obj = {
@@ -1522,11 +1531,13 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.httpService.getUserValidation(obj).toPromise()
           .then((response) => {
             if (response && !response['success']) {
+              this.loader = false;
               let redirect_uri = window.location.href;
               window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
             }
           })
           .catch((error) => {
+            this.loader = false;
             console.log("cookie not clear on error");
           });
         }
@@ -1770,7 +1781,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       "kpiIds": this.showKpisList?.map((item) => item.kpiId),
       "nodes": []
     }
-
+    if(this.selectedTab?.toLowerCase() == 'backlog'){
+      reqObj['nodeChildId'] = "";
+    }
     this.showKpisList.forEach(x => {
       this.kpiObj[x.kpiId] = x.kpiName;
     });
@@ -1906,5 +1919,55 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
       }
     }
+
+    /**
+     * Responsible for filter sprint (addtional filters)
+     * @param hierarchyLevelId 
+     */
+    applySearchFilter(hierarchyLevelId) {
+      const sTxt = this.filterForm.controls[hierarchyLevelId+'Search'].value;
+      this.copyFilteredAddFilters[hierarchyLevelId] = this.filteredAddFilters[hierarchyLevelId].filter((item) =>
+        item.nodeName.toLowerCase().includes(sTxt.toLowerCase())
+      );
+    }
+
+  /** 
+   * Validation on sprint addtional filters on speed/quality/value
+   * As of now out of scope but in future it can be.Hence please don't delete */
+  
+  // onCheckboxChange(event) {
+  // const selectedProjects = this.filterForm?.get('selectedTrendValue')?.value || [];
+  // const sprintWithTrueValues = Object.keys(this.filterForm.controls['sprint'].value).filter(key => this.filterForm.controls['sprint'].value[key] === true);
+  // const sprintCountForKpiCalculation = this.service.getGlobalConfigData().sprintCountForKpiCalculation;
+
+  // const projectAlongWithSprints = selectedProjects.map(projectId => {
+  //   const sprints = this.additionalFiltersDdn['sprint']
+  //     ?.filter(sprint => sprint['parentId']?.includes(projectId) && sprint['sprintState']?.toLowerCase() === 'closed')
+  //     .map(sprint => sprint.nodeId);
+
+  //   const selectedSprints = sprints.filter(sprint => sprintWithTrueValues.includes(sprint));
+  //   return {
+  //     nodeId: projectId,
+  //     sprints: sprints,
+  //     selectedSprints: selectedSprints,
+  //     sprintCount: selectedSprints.length
+  //   };
+  // });
+
+  // projectAlongWithSprints.forEach(project => {
+  //   const isFullSelection = project.selectedSprints.length === sprintCountForKpiCalculation;
+
+  //   project.sprints.forEach(sprint => {
+  //     const sprintControl = (this.filterForm.controls['sprint'] as UntypedFormGroup).get(sprint);
+  //     if (sprintControl) {
+  //       if (isFullSelection && !project.selectedSprints.includes(sprint)) {
+  //         sprintControl.disable();
+  //       } else {
+  //         sprintControl.enable();
+  //       }
+  //     }
+  //   });
+  // });
+  // }
 
 }

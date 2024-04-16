@@ -109,6 +109,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		json.put(USER_NAME, username);
 		json.put(USER_EMAIL, email);
 		json.put(USER_ID, userinfo.getId().toString());
+		json.put(USER_AUTH_TYPE, userinfo.getAuthType().toString());
 		json.put(USER_AUTHORITIES, userinfo.getAuthorities());
 		Gson gson = new Gson();
 
@@ -158,7 +159,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			userMap.put(USER_EMAIL, email);
 			userMap.put(USER_ID, userinfoKnowHow.getId().toString());
 			userMap.put(USER_AUTHORITIES, userinfoKnowHow.getAuthorities());
-			userMap.put(USER_AUTH_TYPE, userinfoKnowHow.getAuthType());
+			userMap.put(USER_AUTH_TYPE, userinfoKnowHow.getAuthType().toString());
 			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 			if (CollectionUtils.isNotEmpty(projectAccessesWithRole)) {
 				userMap.put(PROJECTS_ACCESS, projectAccessesWithRole);

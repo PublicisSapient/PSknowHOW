@@ -52,6 +52,7 @@ public class ConfigDetailsServiceImpl implements ConfigDetailService {
 		configDetails.setDateRangeFilter(dateRangeFilter);
 		configDetails.setNoOfDataPoints(customApiConfig.getSprintCountForFilters());
 		configDetails.setRepoToolFlag(customApiConfig.getIsRepoToolEnable());
+		configDetails.setSprintCountForKpiCalculation(customApiConfig.getSprintCountForKpiCalculation());
 		return configDetails;
 	}
 

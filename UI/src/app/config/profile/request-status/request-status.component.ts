@@ -19,8 +19,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
-import { MessageService } from 'primeng/api';
-import { ConfirmationService } from 'primeng/api';
+import { MessageService,ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-request-status',

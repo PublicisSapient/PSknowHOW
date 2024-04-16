@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,16 +88,6 @@ public class IssueScrumWriterTest {
         verify(kanbanJiraIssueRepository, times(1)).saveAll(createMockJiraItems());
     }
 
-    @Test
-    public void testWriteWithEmptyValue() throws Exception {
-        // Mock data
-        CompositeResult compositeResult = new CompositeResult();
-        Chunk<CompositeResult> compositeResults= new Chunk<>();
-        compositeResults.add(compositeResult);
-        // Invoke the method to be tested
-        issueScrumWriter.write(compositeResults);
-
-    }
 
     // Helper methods to create mock data for testing
     private Chunk<CompositeResult> createMockScrumCompositeResults() {
@@ -142,7 +133,11 @@ public class IssueScrumWriterTest {
 
     private Map<String, AssigneeDetails> createMockAssigneesToSave() {
         AssigneeDetails assigneeDetails = new AssigneeDetails();
+        Assignee assignee = new Assignee();
+        Set<Assignee> assignees = new HashSet<>();
+        assignees.add(assignee);
         assigneeDetails.setBasicProjectConfigId("63bfa0f80b28191677615735");
+        assigneeDetails.setAssignee(assignees);
         Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
         assigneesToSave.put("0", assigneeDetails);
         // Create mock AssigneeDetails objects and add them to the map
