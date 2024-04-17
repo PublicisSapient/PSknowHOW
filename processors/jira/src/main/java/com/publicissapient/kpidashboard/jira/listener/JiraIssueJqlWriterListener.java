@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.ItemWriteListener;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.item.Chunk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,6 +41,7 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,7 +51,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeResult> {
+public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeResult> {//todo:::
 
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
@@ -74,6 +77,8 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 
 		Map<String, List<JiraIssue>> projectWiseIssues = jiraIssues.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
+		// getting step execution
+		StepExecution stepExecution = StepSynchronizationManager.getContext().getStepExecution();
 
 		for (Map.Entry<String, List<JiraIssue>> entry : projectWiseIssues.entrySet()) {
 			String basicProjectConfigId = entry.getKey();
@@ -88,11 +93,11 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 				if (procTraceLog.isPresent()) {
 					ProcessorExecutionTraceLog processorExecutionTraceLog = procTraceLog.get();
 					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
-							processorExecutionToSave);
+							processorExecutionToSave, stepExecution);
 				} else {
 					ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
-							processorExecutionToSave);
+							processorExecutionToSave, stepExecution);
 				}
 			}
 
@@ -103,11 +108,12 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 	}
 
 	private void setTraceLog(ProcessorExecutionTraceLog processorExecutionTraceLog, String basicProjectConfigId,
-			String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave) {
+			String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave, StepExecution stepExecution) {
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(changeDate,
 				JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
+		JiraProcessorUtil.fetchProgressFromContext(processorExecutionTraceLog, stepExecution);
 		processorExecutionToSave.add(processorExecutionTraceLog);
 	}
 

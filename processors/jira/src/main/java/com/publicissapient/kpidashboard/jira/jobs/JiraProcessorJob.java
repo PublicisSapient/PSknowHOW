@@ -218,8 +218,8 @@ public class JiraProcessorJob {
 	}
 
 	private Step kanbanReleaseDataStep() {
-		return builderFactory.getStepBuilder("KanbanReleaseData-Kanban-board",jobRepository).tasklet(kanbanReleaseDataTasklet, transactionManager)
-				.build();
+		return builderFactory.getStepBuilder("KanbanReleaseData-Kanban-board", jobRepository)
+				.tasklet(kanbanReleaseDataTasklet, transactionManager).listener(jobStepProgressListener).build();
 	}
 
 	/** Kanban projects for board job : End **/

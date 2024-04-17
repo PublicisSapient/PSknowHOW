@@ -17,7 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -28,23 +27,21 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.ProgressStatus;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -126,21 +123,7 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 		processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(changeDate,
 				JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
-		if (stepExecution != null) {
-			ExecutionContext stepContext = stepExecution.getExecutionContext();
-			int total = stepContext.getInt(JiraConstants.TOTAL_ISSUES);
-			int processed = stepContext.getInt(JiraConstants.PROCESSED_ISSUES);
-			int pageStart = stepContext.getInt(JiraConstants.PAGE_START);
-			List<ProgressStatus> progressStatusList = Optional
-					.ofNullable(processorExecutionTraceLog.getProgressStatusList()).orElseGet(ArrayList::new);
-			ProgressStatus progressStatus = new ProgressStatus();
-			progressStatus.setStepName(
-					MessageFormat.format("Processing issues {0} to {1} out of {2}", pageStart, processed, total));
-			progressStatus.setStatus(BatchStatus.COMPLETED.toString());
-			progressStatus.setStartTime(String.valueOf(stepExecution.getStartTime()));
-			progressStatusList.add(progressStatus);
-			processorExecutionTraceLog.setProgressStatusList(progressStatusList);
-		}
+		JiraProcessorUtil.fetchProgressFromContext(processorExecutionTraceLog, stepExecution);
 		processorExecutionToSave.add(processorExecutionTraceLog);
 	}
 

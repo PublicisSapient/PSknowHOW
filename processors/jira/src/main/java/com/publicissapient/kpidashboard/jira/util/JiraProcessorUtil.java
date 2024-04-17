@@ -22,22 +22,30 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.json.simple.JSONArray;
+import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.ProgressStatus;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.util.JsonUtils;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -306,4 +314,33 @@ public class JiraProcessorUtil {
 
 		return finalQuery;
 	}
+
+	/**
+	 * Method to fetch progress of chunk based issues processing from context & save
+	 * into traceLog.
+	 *
+	 * @param processorExecutionTraceLog
+	 *            processorExecutionTraceLog
+	 * @param stepExecution
+	 *            stepExecution
+	 */
+	public static void fetchProgressFromContext(ProcessorExecutionTraceLog processorExecutionTraceLog,
+			StepExecution stepExecution) {
+		if (stepExecution != null) {
+			ExecutionContext stepContext = stepExecution.getExecutionContext();
+			int total = stepContext.getInt(JiraConstants.TOTAL_ISSUES);
+			int processed = stepContext.getInt(JiraConstants.PROCESSED_ISSUES);
+			int pageStart = stepContext.getInt(JiraConstants.PAGE_START);
+			List<ProgressStatus> progressStatusList = Optional
+					.ofNullable(processorExecutionTraceLog.getProgressStatusList()).orElseGet(ArrayList::new);
+			ProgressStatus progressStatus = new ProgressStatus();
+			progressStatus.setStepName(
+					MessageFormat.format("Processing issues {0} to {1} out of {2}", pageStart, processed, total));
+			progressStatus.setStatus(BatchStatus.COMPLETED.toString());
+			progressStatus.setStartTime(String.valueOf(stepExecution.getStartTime()));
+			progressStatusList.add(progressStatus);
+			processorExecutionTraceLog.setProgressStatusList(progressStatusList);
+		}
+	}
+
 }

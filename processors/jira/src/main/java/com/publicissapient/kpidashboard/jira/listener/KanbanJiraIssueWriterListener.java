@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.ItemWriteListener;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.item.Chunk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,6 +41,7 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -82,7 +85,9 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 				.filter(issue -> !issue.getTypeName().equalsIgnoreCase(JiraConstants.EPIC))
 				.collect(Collectors.groupingBy(KanbanJiraIssue::getBasicProjectConfigId,
 						Collectors.groupingBy(KanbanJiraIssue::getBoardId)));
-
+		// getting step execution
+		StepExecution stepExecution = StepSynchronizationManager.getContext().getStepExecution();
+		
 		for (Map.Entry<String, Map<String, List<KanbanJiraIssue>>> entry : projectBoardWiseIssues.entrySet()) {
 			String basicProjectConfigId = entry.getKey();
 			Map<String, List<KanbanJiraIssue>> boardWiseIssues = entry.getValue();
@@ -101,11 +106,11 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 					if (procTraceLog.isPresent()) {
 						ProcessorExecutionTraceLog processorExecutionTraceLog = procTraceLog.get();
 						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId,
-								firstIssue.getChangeDate(), processorExecutionToSave);
+								firstIssue.getChangeDate(), processorExecutionToSave, stepExecution);
 					} else {
 						ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId,
-								firstIssue.getChangeDate(), processorExecutionToSave);
+								firstIssue.getChangeDate(), processorExecutionToSave, stepExecution);
 					}
 				}
 			}
@@ -117,12 +122,14 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 	}
 
 	private void setTraceLog(ProcessorExecutionTraceLog processorExecutionTraceLog, String basicProjectConfigId,
-			String boardId, String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave) {
+			String boardId, String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave,
+			StepExecution stepExecution) {
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		processorExecutionTraceLog.setBoardId(boardId);
 		processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(changeDate,
 				JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
+		JiraProcessorUtil.fetchProgressFromContext(processorExecutionTraceLog, stepExecution);
 		processorExecutionToSave.add(processorExecutionTraceLog);
 	}
 
