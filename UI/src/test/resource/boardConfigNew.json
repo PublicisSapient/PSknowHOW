@@ -7676,7 +7676,7 @@
             {
                 "boardId": 16,
                 "boardName": "KPI Maturity",
-                "boardSlug": "kpi-maturity",
+                "boardSlug": "Maturity",
                 "kpis": [
                     {
                         "kpiId": "kpi989",
