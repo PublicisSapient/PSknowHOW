@@ -19,12 +19,10 @@ package com.publicissapient.kpidashboard.jira.listener;
 
 import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDateToCustomFormat;
 
-import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.batch.core.BatchStatus;
@@ -86,9 +84,6 @@ public class JobListenerKanban implements JobExecutionListener {
 	@Autowired
 	private JiraCommonService jiraCommonService;
 
-	@Autowired
-	JiraClientService jiraClientService;
-
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
 		// in future we can use this method to do something before job execution starts
@@ -108,12 +103,6 @@ public class JobListenerKanban implements JobExecutionListener {
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRAKANBAN_KPI_CACHE);
 		try {
-			if (jiraClientService.getRestClient() != null) {
-				jiraClientService.getRestClient().close();
-			}
-			if (jiraClientService.getKerberosClient() != null) {
-				jiraClientService.getKerberosClient().close();
-			}
 			// sending notification in case of job failure
 			if (jobExecution.getStatus() == BatchStatus.FAILED) {
 				log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(),
