@@ -54,7 +54,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,6 +72,7 @@ import java.util.stream.Collectors;
 public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Object>, Map<String, Object>> {
 
 	private static final String REPO_TOOLS = "RepoTool";
+	private static final String ASSIGNEE = "assignee";
 	@Autowired
 	private ConfigHelperService configHelperService;
 
@@ -131,7 +131,7 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 		statusTypeProjectWiseDc.forEach((issueType, projectWiseDc) -> {
 			DataCountGroup dataCountGroup = new DataCountGroup();
 			List<DataCount> dataList = new ArrayList<>();
-			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
+			projectWiseDc.entrySet().forEach(trend -> dataList.addAll(trend.getValue()));
 			// split for filters
 			String[] issueFilter = issueType.split("#");
 			dataCountGroup.setFilter1(issueFilter[0]);
@@ -144,14 +144,14 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	}
 
 	/**
-	 * create data counts for kpi elements
+	 * Populates KPI value to project leaf nodes. It also gives the trend analysis project wise.
 	 *
 	 * @param kpiElement
 	 * 		kpi element
 	 * @param mapTmp
-	 * 		mapTmp
+	 * 		node map
 	 * @param projectLeafNode
-	 * 		project node
+	 * 		leaf node of project
 	 * @param kpiRequest
 	 * 		kpi request
 	 */
@@ -192,8 +192,8 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 
 		String projectName = projectLeafNode.getProjectFilter().getName();
 		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
-		Map<String, Object> resultmap = fetchKPIDataFromDb(Arrays.asList(projectLeafNode), null, null, kpiRequest);
-		Set<Assignee> assignees = (Set<Assignee>) resultmap.get("assignee");
+		Map<String, Object> resultmap = fetchKPIDataFromDb(List.of(projectLeafNode), null, null, kpiRequest);
+		Set<Assignee> assignees = (Set<Assignee>) resultmap.get(ASSIGNEE);
 		Set<String> overAllUsers = repoToolKpiMetricResponseList.stream().flatMap(value -> value.getUsers().stream())
 				.map(RepoToolUserDetails::getEmail).collect(Collectors.toSet());
 		LocalDate currentDate = LocalDate.now();
@@ -251,6 +251,30 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	}
 
 	/**
+	 * fetch data from db
+	 *
+	 * @param leafNodeList
+	 * 		leaf node list
+	 * @param startDate
+	 * 		start date
+	 * @param endDate
+	 * 		end date
+	 * @param kpiRequest
+	 * 		kpi request
+	 * @return map of data
+	 */
+	@Override
+	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+			KpiRequest kpiRequest) {
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(
+				leafNodeList.get(0).getId());
+		Set<Assignee> assignees = assigneeDetails != null ? assigneeDetails.getAssignee() : new HashSet<>();
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put(ASSIGNEE, assignees);
+		return resultMap;
+	}
+
+	/**
 	 * set data count for user filter
 	 *
 	 * @param overAllUsers
@@ -281,13 +305,15 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double userReworkRate = repoToolUserDetails.map(RepoToolUserDetails::getUserReworkRatePercent).orElse(0.0d);
 			String userKpiGroup = filter + "#" + developerName;
-			RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
-			repoToolValidationData.setProjectName(projectName);
-			repoToolValidationData.setBranchName(filter);
-			repoToolValidationData.setDeveloperName(developerName);
-			repoToolValidationData.setDate(date);
-			repoToolValidationData.setReworkRate(userReworkRate);
-			repoToolValidationDataList.add(repoToolValidationData);
+			if(repoToolUserDetails.isPresent()) {
+				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+				repoToolValidationData.setProjectName(projectName);
+				repoToolValidationData.setBranchName(filter);
+				repoToolValidationData.setDeveloperName(developerName);
+				repoToolValidationData.setDate(date);
+				repoToolValidationData.setReworkRate(userReworkRate);
+				repoToolValidationDataList.add(repoToolValidationData);
+			}
 
 			setDataCount(projectName, date, userKpiGroup, userReworkRate, dateUserWiseAverage);
 
@@ -325,11 +351,11 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	 * populate excel data
 	 *
 	 * @param requestTrackerId
-	 * 		request tracker id
+	 * 				request tracker id
 	 * @param repoToolUserDetails
-	 * 		repo tool validation data
+	 * 				repo tool validation data
 	 * @param validationDataMap
-	 * 		excel data map
+	 * 				excel data map
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<RepoToolValidationData> repoToolUserDetails,
 			List<KPIExcelData> validationDataMap) {
@@ -346,30 +372,6 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiId) {
 		return calculateKpiValueForDouble(valueList, kpiId);
-	}
-
-	/**
-	 * fetch data from db
-	 *
-	 * @param leafNodeList
-	 * 		leaf node list
-	 * @param startDate
-	 * 		start date
-	 * @param endDate
-	 * 		end date
-	 * @param kpiRequest
-	 * 		kpi request
-	 * @return map of data
-	 */
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
-		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(
-				leafNodeList.get(0).getId());
-		Set<Assignee> assignees = assigneeDetails != null ? assigneeDetails.getAssignee() : new HashSet<>();
-		Map<String, Object> resultMap = new HashMap<>();
-		resultMap.put("assignee", assignees);
-		return resultMap;
 	}
 
 	@Override

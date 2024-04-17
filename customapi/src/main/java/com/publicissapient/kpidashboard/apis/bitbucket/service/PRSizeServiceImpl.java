@@ -131,6 +131,19 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		return kpiElement;
 	}
 
+	/**
+	 * Populates KPI value to project leaf nodes. It also gives the trend analysis project wise.
+	 *
+	 * @param kpiElement
+	 * 		kpi element
+	 * @param mapTmp
+	 * 		node map
+	 * @param projectLeafNode
+	 * 		leaf node of project
+	 * @param kpiRequest
+	 * 		kpi request
+	 */
+	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, Node projectLeafNode,
 			KpiRequest kpiRequest) {
 

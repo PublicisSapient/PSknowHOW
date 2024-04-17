@@ -131,7 +131,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
 		LocalDate localEndDate = dateRange.getEndDate();
 
-		Integer dataPoints = kpiRequest.getXAxisDataPoints();
+		int dataPoints = kpiRequest.getXAxisDataPoints();
 		String duration = kpiRequest.getDuration();
 
 		// gets the tool configuration

@@ -66,7 +66,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 
 @RunWith(MockitoJUnitRunner.class)
 public class BitBucketServiceKanbanRTest {
-	private static String GROUP_PROJECT = "PROJECT";
+
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock

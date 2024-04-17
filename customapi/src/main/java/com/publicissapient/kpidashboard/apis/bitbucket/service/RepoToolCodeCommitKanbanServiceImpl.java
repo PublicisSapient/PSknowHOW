@@ -71,6 +71,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 
 	private static final String NO_CHECKIN = "No. of Checkins";
 	private static final String REPO_TOOLS = "RepoTool";
+	private static final String ASSIGNEE = "assignee";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -101,7 +102,6 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 	 * @throws ApplicationException
 	 * 				throws application exception
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
@@ -141,6 +141,18 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 
 	}
 
+	/**
+	 * Populates KPI value to project leaf nodes. It also gives the trend analysis project wise.
+	 *
+	 * @param kpiElement
+	 * 		kpi element
+	 * @param mapTmp
+	 * 		node map
+	 * @param node
+	 * 		leaf node of project
+	 * @param kpiRequest
+	 * 		kpi request
+	 */
 	@SuppressWarnings("unchecked")
 	private void kpiWithFilter(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseCommitList,
 			Map<String, Node> mapTmp, Node node, KpiElement kpiElement, KpiRequest kpiRequest) {
@@ -160,7 +172,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		String projectName = node.getProjectFilter().getName();
 		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
 		Map<String, Object> resultmap = fetchKPIDataFromDb(List.of(node), null, null, kpiRequest);
-		Set<Assignee> assignees = (Set<Assignee>) resultmap.get("assignee");
+		Set<Assignee> assignees = (Set<Assignee>) resultmap.get(ASSIGNEE);
 		Set<String> overAllUsers = repoToolKpiMetricResponseCommitList.stream()
 				.flatMap(value -> value.getUsers().stream()).map(RepoToolUserDetails::getCommitterEmail)
 				.collect(Collectors.toSet());
@@ -217,6 +229,30 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CODE_COMMIT_MERGE_KANBAN.getColumns());
 		kpiElement.setMapOfSprintAndData(validationMap);
+	}
+
+	/**
+	 * fetch data from db
+	 *
+	 * @param leafNodeList
+	 * 		leaf node list
+	 * @param startDate
+	 * 		start date
+	 * @param endDate
+	 * 		end date
+	 * @param kpiRequest
+	 * 		kpi request
+	 * @return map of data
+	 */
+	@Override
+	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+			KpiRequest kpiRequest) {
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(
+				leafNodeList.get(0).getId());
+		Set<Assignee> assignees = assigneeDetails != null ? assigneeDetails.getAssignee() : new HashSet<>();
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put(ASSIGNEE, assignees);
+		return resultMap;
 	}
 
 	/**
@@ -290,31 +326,6 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		hoverValues.put(NO_CHECKIN, commitValue);
 		dataCount.setHoverValue(hoverValues);
 		dataCountMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dataCount);
-	}
-
-	/**
-	 * fetch data from db
-	 *
-	 * @param leafNodeList
-	 * 		leaf node list
-	 * @param startDate
-	 * 		start date
-	 * @param endDate
-	 * 		end date
-	 * @param kpiRequest
-	 * 		kpi request
-	 * @return map of data
-	 */
-	@SuppressWarnings("PMD.AvoidCatchingGenericException")
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
-		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(
-				leafNodeList.get(0).getId());
-		Set<Assignee> assignees = assigneeDetails != null ? assigneeDetails.getAssignee() : new HashSet<>();
-		Map<String, Object> resultMap = new HashMap<>();
-		resultMap.put("assignee", assignees);
-		return resultMap;
 	}
 
 	@Override
