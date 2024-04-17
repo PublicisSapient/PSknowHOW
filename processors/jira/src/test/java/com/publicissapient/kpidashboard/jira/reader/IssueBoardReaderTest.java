@@ -73,6 +73,9 @@ public class IssueBoardReaderTest {
 	private FetchProjectConfigurationImpl fetchProjectConfiguration;
 
 	@Mock
+	private JiraClient jiraClient;
+
+	@Mock
 	private JiraClientService jiraClientService;
 
 	@Mock
