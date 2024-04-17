@@ -74,6 +74,7 @@
             <tr>
               <th id="processorName">Processor Name</th>
               <th id="executionTime">Last Executed On</th>
+              <th></th>
               <th id="state">Status</th>
               <th id="run-btn">Action</th>
             </tr>
@@ -87,19 +88,26 @@
               <td class='custom-table-cell'>
                   {{ showExecutionDate(processor.processorName) }}
               </td>
+              <td class="custom-table-cell">
+                  <p-progressBar mode="indeterminate" *ngIf="processor.processorName === 'Jira' && processor.loader === true " [style]="{ height: '6px' }"></p-progressBar>
+              </td>
               <td class='custom-table-cell'>
+                <div class="p-d-flex p-align-center">
                 <div *ngIf="showProcessorLastState(processor.processorName) !== 'NA'"
                   class="status-container" [ngClass]="showProcessorLastState(processor.processorName) === 'Success' ? 'active' : 'inactive'">
                   {{ showProcessorLastState(processor.processorName)}}
                 </div>
                 <span *ngIf="showProcessorLastState(processor.processorName) === 'NA'">NA</span>
+                <div class="p-ml-2" *ngIf="processor.processorName === 'Jira'">
+                  <i class="pi pi-info-circle cursor-pointer" (click)="op.toggle($event)" style="font-size: 1.2rem"></i>
+                </div>
+              </div>
               </td>
               <td class='custom-table-cell p-d-flex p-align-center column-width'>
-                <button pButton pRipple label="Run Now" icon="{{processor.loader === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
+                <button pButton pRipple label="Run Now"
+                  icon="{{processor.loader === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
                   [disabled]="shouldDisableRunProcessor() || processor.loader === true"
-                  class="p-button-sm p-button-success p-button-raised"
-                  (click)="runProcessor(processor.processorName)"></button>
-
+                  class="p-button-sm p-button-success p-button-raised" (click)="runProcessor(processor.processorName)"></button>               
                   <div  class="action-btns p-ml-3" [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.processorName)?.length > 0 && findTraceLogForTool(processor?.processorName))}" *ngIf="!shouldDisableRunProcessor()"><i class="far fa-trash-alt" (click)="deleteProcessorData(processor)"></i></div>
               </td>
             </tr>
@@ -123,3 +131,28 @@
       <button type="button" (click)="cd.reject()" pButton label="No"></button>
   </p-footer>
 </p-confirmDialog>
+
+<p-overlayPanel #op [showCloseIcon]="false">
+  <div class="dialog-body p-mb-4">
+      <p-table [value]="jiraExecutionSteps" [tableStyle]="{ 'min-width': '50rem' }"  *ngIf="jiraExecutionSteps?.length && showProcessorLastState('Jira') === 'Success' else showNoDataMessage">
+        <ng-template pTemplate="header">
+            <tr>
+              <th>Step Name</th>
+              <th>Start Time</th>
+              <th>Status</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+            <tr>
+              <td>{{item.stepName}}</td>
+              <td>{{item.startTime |  date : 'MMM d, h:mm:ss a'}}</td>
+              <td>{{item.status}}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+ 
+  <ng-template #showNoDataMessage>
+      <h2 class="p-text-center">{{findTraceLogForTool('Jira')?.executionSuccess ? 'Fetching Data..' : findTraceLogForTool('Jira')?.errorMessage }}</h2>
+  </ng-template>
+  </div>
+</p-overlayPanel>

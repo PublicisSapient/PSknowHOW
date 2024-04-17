@@ -22,8 +22,9 @@ import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { DatePipe } from '@angular/common';
-import { forkJoin } from 'rxjs';
+import { forkJoin,interval,Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { delay, switchMap, takeWhile } from 'rxjs/operators';
 
 @Component({
   selector: 'app-advanced-settings',
@@ -43,6 +44,10 @@ export class AdvancedSettingsComponent implements OnInit {
   processorsTracelogs = [];
   toolConfigsDetails=[];
   ssoLogin = environment.SSO_LOGIN;
+  jirsStepsPopup : boolean = false;
+  jiraExecutionSteps : any = [];
+  jiraStatusContinuePulling = false;
+   subscription: Subscription;
 
   constructor(private httpService: HttpService, private messageService: MessageService, private getAuthorizationService: GetAuthorizationService,
     private service: SharedService, private confirmationService: ConfirmationService) { }
@@ -154,7 +159,12 @@ export class AdvancedSettingsComponent implements OnInit {
     this.httpService.getProcessorsTraceLogsForProject(basicProjectConfigId)
       .subscribe(response => {
         //console.log(JSON.stringify(response));
-
+        this.processorData['data'].map(pDetails=>{
+          pDetails['loader'] = false;
+        })
+        this.jiraExecutionSteps = []
+        this.jiraStatusContinuePulling = false;
+        this.subscription?.unsubscribe();
         if (response.success) {
           that.processorsTracelogs = response.data;
         } else {
@@ -226,17 +236,44 @@ export class AdvancedSettingsComponent implements OnInit {
       .subscribe(response => {
         if (response[0] !== 'error' && !response.error && response.success) {
           this.messageService.add({ severity: 'success', summary: `${runProcessorInput['processor']} started successfully.` });
+          if(runProcessorInput['processor'].toLowerCase() === 'jira'){
+            this.jiraStatusContinuePulling = true;
+            this.subscription = interval(3000).pipe(
+              takeWhile(() => this.jiraStatusContinuePulling),
+              switchMap(() => this.httpService.getProgressStatusOfProcessors(runProcessorInput))
+            ).subscribe(response => {
+              console.log("second call response came")
+              if (response && response['success']) {
+                const jiraInd = this.processorData['data'].findIndex(pDetails => pDetails.processorName === 'Jira');
+                if (response['data'][0]['executionOngoing']) {
+                  if (jiraInd !== -1) {
+                    this.processorData['data'][jiraInd].loader = true;
+                    this.jiraStatusContinuePulling = true
+                  }
+                } else {
+                  this.processorData['data'][jiraInd].loader = false;
+                  this.jiraStatusContinuePulling = false;
+                }
+                this.jiraExecutionSteps = response['data'][0]['progressStatusList'];
+              }
+            })
+          }else{
+            const pDetails = this.processorData['data'].find(pDetails=>pDetails.processorName === runProcessorInput['processor']);
+            if(pDetails){
+              pDetails['loader'] = false;
+            }
+          }
         } else {
           if(runProcessorInput['processor'].toLowerCase() === 'jira'){
             this.messageService.add({ severity: 'error', summary: response.data });
           }else{
             this.messageService.add({ severity: 'error', summary: `Error in running ${runProcessorInput['processor']} processor. Please try after some time.` });
           }
-        }
-        const pDetails = this.processorData['data'].find(pDetails=>pDetails.processorName === runProcessorInput['processor']);
+          const pDetails = this.processorData['data'].find(pDetails=>pDetails.processorName === runProcessorInput['processor']);
           if(pDetails){
             pDetails['loader'] = false;
-          }
+          }       
+        } 
       });
   }
 
