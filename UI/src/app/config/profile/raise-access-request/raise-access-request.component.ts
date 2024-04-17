@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, AfterViewChecked } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { HttpService } from '../../../services/http.service';
 import { MessageService } from 'primeng/api';
