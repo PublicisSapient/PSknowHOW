@@ -30,7 +30,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
-@ChangeUnit(id = "r_kpi_category_enhancement", order = "09101", author = "kunkambl", systemVersion = "9.1.0")
+@ChangeUnit(id = "r_kpi_category_enhancement", order = "09101", author = "kunkambl", systemVersion = "9.2.0")
 public class KpiCategoryEnhancement {
 	private final MongoTemplate mongoTemplate;
 	private static final String KPI_ID = "kpiId";
