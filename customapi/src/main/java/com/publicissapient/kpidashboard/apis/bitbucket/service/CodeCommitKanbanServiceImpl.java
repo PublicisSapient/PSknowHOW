@@ -154,10 +154,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 					Collectors.toMap(CommitDetails::getDate, CommitDetails::getCount))));
 		}
 
-		List<Map<String, Long>> repoWiseCommitList = new LinkedList<>();
 		Map<String, List<DataCount>> projectWiseDataMap = new LinkedHashMap<>();
-		List<String> listOfRepo = new LinkedList<>();
-		List<String> listOfBranch = new LinkedList<>();
 		LocalDate currentDate = LocalDate.now();
 		String projectNodeId = node.getId();
 		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
@@ -189,15 +186,12 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	}
 
 	/**
-	 * loop tool wise to fetch data for each day
 	 *
 	 * @param reposList
 	 * @param dateRange
 	 * @param commitListItemId
 	 * @param projectName
-	 * @param repoWiseCommitList
-	 * @param listOfRepo
-	 * @param listOfBranch
+	 * @param repoToolValidationDataList
 	 * @return
 	 */
 	private Map<String, Long> filterKanbanDataBasedOnStartAndEndDateAndCommitDetails(List<Tool> reposList,

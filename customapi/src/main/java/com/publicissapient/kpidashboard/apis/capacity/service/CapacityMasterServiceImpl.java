@@ -6,8 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.collections4.CollectionUtils;
@@ -71,9 +69,6 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
-	@Autowired
-	private RepoToolsConfigServiceImpl repoToolsConfigService;
-
 	/**
 	 * This method process the capacity data.
 	 *
@@ -97,10 +92,6 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 		return capacityMaster;
 	}
 
-	public JsonNode getRepoToolAssigneeEmail(String basicProjectConfigId) {
-		return repoToolsConfigService.getProjectRepoToolMembers(basicProjectConfigId);
-
-	}
 	private void saveAssigneEmail(CapacityMaster capacityMaster) {
 		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(capacityMaster.getBasicProjectConfigId().toString());
 		List<CapacityKpiData> capacities = (List<CapacityKpiData>) capacityKpiDataRepository.findAll();
