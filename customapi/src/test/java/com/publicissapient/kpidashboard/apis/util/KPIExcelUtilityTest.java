@@ -155,7 +155,7 @@ public class KPIExcelUtilityTest {
 		excelUtility.populatePickupTimeExcelData(Arrays.asList(repoToolValidationData), kpiExcelData);
 
 		// Assert
-		assertEquals(2, kpiExcelData.size());
+		assertEquals(1, kpiExcelData.size());
 	}
 
 	@Test
@@ -174,7 +174,7 @@ public class KPIExcelUtilityTest {
 		excelUtility.populatePRSizeExcelData(Arrays.asList(repoToolValidationData), kpiExcelData);
 
 		// Assert
-		assertEquals(2, kpiExcelData.size());
+		assertEquals(1, kpiExcelData.size());
 	}
 
 	@Test
@@ -194,7 +194,7 @@ public class KPIExcelUtilityTest {
 		excelUtility.populateCodeCommit(Arrays.asList(repoToolValidationData), kpiExcelData);
 
 		// Assert
-		assertEquals(2, kpiExcelData.size());
+		assertEquals(1, kpiExcelData.size());
 	}
 
 	@Test

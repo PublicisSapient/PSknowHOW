@@ -141,8 +141,10 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 		assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
 		assigneeDetails.setSource("Jira");
 		Set<Assignee> assigneeSet = new HashSet<>();
-		assigneeSet.add(new Assignee("aks", "Akshat Shrivastava", "akshat.shrivastav@publicissapient.com"));
-		assigneeSet.add(new Assignee("llid", "Hiren", "99163630+hirbabar@users.noreply.github.com"));
+		assigneeSet.add(new Assignee("aks", "Akshat Shrivastava",
+				new HashSet<>(Arrays.asList("akshat.shrivastav@publicissapient.com"))));
+		assigneeSet.add(new Assignee("llid", "Hiren",
+				new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
 		assigneeDetails.setAssignee(assigneeSet);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 
@@ -215,8 +217,8 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 				.thenReturn("Jira-Excel-5be544de025de212549176a9");
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any()))
-				.thenReturn(repoToolKpiMetricResponseList);
+		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
+				repoToolKpiMetricResponseList);
 		KpiElement kpiElement = meanTimeToMergeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		List<BranchMergeReqCount> out = (List<BranchMergeReqCount>) kpiElement.getTrendValueList();

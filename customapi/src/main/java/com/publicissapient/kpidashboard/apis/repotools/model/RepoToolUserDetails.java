@@ -8,6 +8,8 @@ import java.util.Map;
 @Data
 public class RepoToolUserDetails {
 	private String email;
+	@JsonProperty("committer__email")
+	private String committerEmail;
 	private Double average;
 	private Long mergeRequests;
 	private Long linesChanged;

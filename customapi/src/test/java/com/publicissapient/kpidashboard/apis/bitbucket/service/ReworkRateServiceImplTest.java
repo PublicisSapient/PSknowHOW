@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
@@ -106,6 +107,8 @@ public class ReworkRateServiceImplTest {
 	private CommonService commonService;
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
+	@Mock
+	private KpiHelperService kpiHelperService;
 
 	@Before
 	public void setup() {
@@ -144,8 +147,10 @@ public class ReworkRateServiceImplTest {
 		assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
 		assigneeDetails.setSource("Jira");
 		Set<Assignee> assigneeSet = new HashSet<>();
-		assigneeSet.add(new Assignee("aks", "Akshat Shrivastava", "akshat.shrivastav@publicissapient.com"));
-		assigneeSet.add(new Assignee("llid", "Hiren", "99163630+hirbabar@users.noreply.github.com"));
+		assigneeSet.add(new Assignee("aks", "Akshat Shrivastava",
+				new HashSet<>(Arrays.asList("akshat.shrivastav@publicissapient.com"))));
+		assigneeSet.add(new Assignee("llid", "Hiren",
+				new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
 		assigneeDetails.setAssignee(assigneeSet);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 
@@ -168,7 +173,8 @@ public class ReworkRateServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
 				.thenReturn(kpiRequestTrackerId);
 
-		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any())).thenReturn(repoToolKpiMetricResponseList);
+		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
+				repoToolKpiMetricResponseList);
 		try {
 			KpiElement kpiElement = reworkRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
