@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -70,6 +71,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	FetchProjectConfiguration fetchProjectConfiguration;
 	@Autowired
 	JiraClientService jiraClientService;
+	@Autowired JiraClient jiraClient;
 	@Autowired
 	JiraCommonService jiraCommonService;
 	@Autowired
@@ -89,6 +91,8 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	private Iterator<BoardDetails> boardIterator;
 	private Iterator<Issue> issueIterator;
 	ProjectConfFieldMapping projectConfFieldMapping;
+	KerberosClient krb5Client;
+	ProcessorJiraRestClient client;
 	@Value("#{jobParameters['projectId']}")
 	private String projectId;
 
@@ -96,6 +100,8 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		pageSize = jiraProcessorConfig.getPageSize();
 		projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 		retryHelper = new ReaderRetryHelper();
+		krb5Client = jiraClientService.getKerberosClient();
+		client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
 	}
 
 	/*
@@ -112,9 +118,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 			initializeReader(projectId);
 		}
 		ReadData readData = null;
-		KerberosClient krb5Client = jiraClientService.getKerberosClient();
 		if (!fetchLastIssue) {
-			ProcessorJiraRestClient client = jiraClientService.getRestClient();
 			if (boardIterator == null
 					&& CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
 				boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();

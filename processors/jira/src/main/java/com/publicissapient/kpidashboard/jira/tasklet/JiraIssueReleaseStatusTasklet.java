@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -45,6 +47,9 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
 
 	@Autowired
 	FetchProjectConfiguration fetchProjectConfiguration;
+
+	@Autowired
+	JiraClient jiraClient;
 
 	@Autowired
 	CreateJiraIssueReleaseStatus createJiraIssueReleaseStatus;
@@ -70,9 +75,12 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-		ProcessorJiraRestClient client = jiraClientService.getRestClient();
-		log.info("Fetching release statuses for the project : {}", projConfFieldMapping.getProjectName());
-		createJiraIssueReleaseStatus.processAndSaveProjectStatusCategory(client, projectId);
+		KerberosClient krb5Client = jiraClientService.getKerberosClient();
+		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client)) {
+			log.info("Fetching release statuses for the project : {}", projConfFieldMapping.getProjectName());
+
+			createJiraIssueReleaseStatus.processAndSaveProjectStatusCategory(client, projectId);
+		}
 		return RepeatStatus.FINISHED;
 	}
 

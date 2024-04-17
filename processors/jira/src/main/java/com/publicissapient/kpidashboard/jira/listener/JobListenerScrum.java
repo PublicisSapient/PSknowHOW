@@ -110,12 +110,6 @@ public class JobListenerScrum implements JobExecutionListener {
 				CommonConstant.CACHE_SPRINT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
 		try {
-			if (jiraClientService.getRestClient() != null) {
-				jiraClientService.getRestClient().close();
-			}
-			if (jiraClientService.getKerberosClient() != null) {
-				jiraClientService.getKerberosClient().close();
-			}
 			if (jobExecution.getStatus() == BatchStatus.FAILED) {
 				log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(),
 						projectId);
