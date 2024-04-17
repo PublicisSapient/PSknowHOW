@@ -694,7 +694,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		for (FieldMappingResponse response : fieldMappingResponseList) {
 			String fieldName = response.getFieldName();
 
-			if (fieldName.contains("history") || fieldName.equalsIgnoreCase("id")){
+			if (fieldName.contains(HISTORY) || fieldName.equalsIgnoreCase("id")){
 				continue;
 			}
 			if (isFieldPresent(fieldMapping.getClass(), fieldName)) {
