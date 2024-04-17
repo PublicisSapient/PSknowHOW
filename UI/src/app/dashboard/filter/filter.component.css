@@ -1052,10 +1052,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 .back-btn{
   padding: 0.75rem;
   border: 1px solid var(--color-black);
-  background-color: white;
   border-radius: 0.25rem;
-  cursor: pointer;
-  color: rgb(85,26,139);
   font-size: 12px;
   font-family: inherit;
 }
@@ -1202,4 +1199,8 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   position: absolute;
   top: 50%;
   margin-top: -0.3rem;
+}
+::ng-deep .back-btn .pi{
+  font-size: 12px;
+  font-weight: bolder;
 }
