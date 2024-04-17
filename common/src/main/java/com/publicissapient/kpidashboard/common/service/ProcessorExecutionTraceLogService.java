@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.service;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.zephyr.ProgressStatus;
 
 /**
  * @author anisingh4
@@ -30,4 +31,21 @@ public interface ProcessorExecutionTraceLogService {
 	List<ProcessorExecutionTraceLog> getTraceLogs();
 
 	List<ProcessorExecutionTraceLog> getTraceLogs(String processorName, String basicProjectConfigId);
+
+	/**
+	 * Save progress status in trace log
+	 *
+	 * @param basicProjectConfigId projectId
+	 * @param processorName Name of the processor
+	 * @param progressStatus Progress status of the processor
+	 */
+	void saveProgressStatusInTraceLog(String basicProjectConfigId, String processorName, ProgressStatus progressStatus);
+
+	/**
+	 * Set execution ongoing for processor
+	 * @param processorName Name of Processor
+	 * @param basicProjectConfigId ProjectId
+	 * @param isOngoing Flag is processor execution ongoing
+	 */
+	void setExecutionOngoingForProcessor(String processorName,String basicProjectConfigId,boolean isOngoing);
 }

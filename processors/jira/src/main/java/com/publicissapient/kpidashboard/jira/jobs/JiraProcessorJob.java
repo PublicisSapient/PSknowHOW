@@ -17,8 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.jobs;
 
-import com.publicissapient.kpidashboard.jira.helper.BuilderFactory;
-import com.publicissapient.kpidashboard.jira.listener.JobListenerKanban;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -26,13 +24,17 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.helper.BuilderFactory;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueBoardWriterListener;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueJqlWriterListener;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueSprintJobListener;
+import com.publicissapient.kpidashboard.jira.listener.JobListenerKanban;
 import com.publicissapient.kpidashboard.jira.listener.JobListenerScrum;
+import com.publicissapient.kpidashboard.jira.listener.JobStepProgressListener;
 import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueJqlWriterListener;
 import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueWriterListener;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
@@ -50,7 +52,6 @@ import com.publicissapient.kpidashboard.jira.tasklet.SprintReportTasklet;
 import com.publicissapient.kpidashboard.jira.tasklet.SprintScrumBoardTasklet;
 import com.publicissapient.kpidashboard.jira.writer.IssueKanbanWriter;
 import com.publicissapient.kpidashboard.jira.writer.IssueScrumWriter;
-import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * @author pankumar8
@@ -131,6 +132,9 @@ public class JiraProcessorJob {
 	@Autowired
 	BuilderFactory builderFactory;
 
+	@Autowired
+	JobStepProgressListener jobStepProgressListener;
+
 	/** Scrum projects for board job : Start **/
 	/**
 	 * @return Job
@@ -144,17 +148,17 @@ public class JiraProcessorJob {
 	}
 	
 	private Step metaDataStep() {
-		return builderFactory.getStepBuilder("Fetch metadata",jobRepository).tasklet(metaDataTasklet, transactionManager).build();
+		return builderFactory.getStepBuilder("Fetch metadata",jobRepository).tasklet(metaDataTasklet, transactionManager).listener(jobStepProgressListener).build();
 	}
 
 	private Step sprintReportStep() {
 		return builderFactory.getStepBuilder("Fetch Sprint Report-Scrum-board",jobRepository).tasklet(sprintScrumBoardTasklet, transactionManager)
-				.build();
+				.listener(jobStepProgressListener).build();
 	}
 
 	private Step processProjectStatusStep() {
 		return builderFactory.getStepBuilder("processProjectStatus-Scrum-board",jobRepository)
-				.tasklet(jiraIssueReleaseStatusTasklet, transactionManager).build();
+				.tasklet(jiraIssueReleaseStatusTasklet, transactionManager).listener(jobStepProgressListener).build();
 	}
 
 	@TrackExecutionTime
@@ -166,7 +170,7 @@ public class JiraProcessorJob {
 
 	private Step scrumReleaseDataStep() {
 		return builderFactory.getStepBuilder("ScrumReleaseData-Scrum-board",jobRepository).tasklet(scrumReleaseDataTasklet, transactionManager)
-				.build();
+				.listener(jobStepProgressListener).build();
 	}
 
 	/** Scrum projects for board job : End **/

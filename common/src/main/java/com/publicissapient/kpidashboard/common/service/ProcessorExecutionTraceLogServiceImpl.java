@@ -28,7 +28,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.zephyr.ProgressStatus;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -101,5 +103,65 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 		return resultTraceLogs.stream()
 				.sorted(Comparator.comparing(ProcessorExecutionTraceLog::getExecutionEndedAt).reversed())
 				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Save the progress status of a processor in the trace log
+	 * 
+	 * @param processorName
+	 *            projectId
+	 * @param basicProjectConfigId
+	 *            Name of the processor
+	 * @param progressStatus
+	 *            Progress status of the processor
+	 */
+	@Override
+	public void saveProgressStatusInTraceLog(String processorName, String basicProjectConfigId,
+			ProgressStatus progressStatus) {
+		Optional<ProcessorExecutionTraceLog> existingTraceLog = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(processorName, basicProjectConfigId);
+		log.info("Saving the progress of {} processor of step {} for projectId {} ", ProcessorConstants.JIRA,
+				progressStatus.getStepName(), basicProjectConfigId);
+		ProcessorExecutionTraceLog processorExecutionTraceLog = existingTraceLog
+				.orElseGet(ProcessorExecutionTraceLog::new);
+
+		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+		processorExecutionTraceLog.setProcessorName(processorName);
+		List<ProgressStatus> progressStatusList = Optional
+				.ofNullable(processorExecutionTraceLog.getProgressStatusList()).orElseGet(ArrayList::new);
+		progressStatusList.add(progressStatus);
+		processorExecutionTraceLog.setExecutionOngoing(true);
+		processorExecutionTraceLog.setProgressStatusList(progressStatusList);
+		processorExecutionTraceLogRepository.save(processorExecutionTraceLog);
+	}
+
+	/**
+	 * Set the executionOngoing flag for a processor
+	 * 
+	 * @param processorName
+	 *            Name of Processor
+	 * @param basicProjectConfigId
+	 *            ProjectId
+	 * @param executionOngoing
+	 *            Flag is processor execution ongoing
+	 */
+
+	@Override
+	public void setExecutionOngoingForProcessor(String processorName, String basicProjectConfigId,
+			boolean executionOngoing) {
+		Optional<ProcessorExecutionTraceLog> existingTraceLog = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(processorName, basicProjectConfigId);
+		ProcessorExecutionTraceLog processorExecutionTraceLog = existingTraceLog
+				.orElseGet(ProcessorExecutionTraceLog::new);
+		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+		processorExecutionTraceLog.setExecutionOngoing(executionOngoing);
+		processorExecutionTraceLog.setProcessorName(processorName);
+		// If executionOngoing is true, clean progressStatusList
+		if (executionOngoing) {
+			processorExecutionTraceLog.setProgressStatusList(new ArrayList<>());
+		}
+		log.info("ProjectId {} for processor {} executionOngoing to {} ", basicProjectConfigId, executionOngoing,
+				processorName);
+		processorExecutionTraceLogRepository.save(processorExecutionTraceLog);
 	}
 }

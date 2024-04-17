@@ -45,6 +45,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.scope.context.StepContext;
+import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -258,6 +261,7 @@ public class JiraCommonService {
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
 				if (searchResult != null) {
+					saveSearchDetailsInContext(searchResult, pageStart, StepSynchronizationManager.getContext());
 					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
 							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
 							searchResult.getTotal()));
@@ -273,6 +277,30 @@ public class JiraCommonService {
 
 		}
 		return searchResult;
+	}
+
+	/**
+	 * Method to save the search details in context.
+	 * 
+	 * @param searchResult
+	 *            searchResult
+	 * @param pageStart
+	 *            pageStart
+	 * @param stepContext
+	 *            stepContext
+	 */
+	private void saveSearchDetailsInContext(SearchResult searchResult, int pageStart, StepContext stepContext) {
+		if (stepContext == null) {
+			log.error("StepContext is null");
+			return;
+		}
+		int total = searchResult.getTotal();
+		int processed = Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, total);
+		// Saving Progress details in context
+		StepExecution stepExecution = stepContext.getStepExecution();
+		stepExecution.getExecutionContext().putInt("total", total);
+		stepExecution.getExecutionContext().putInt("processed", processed);
+		stepExecution.getExecutionContext().putInt("pageStart", pageStart);
 	}
 
 	/**
@@ -341,6 +369,7 @@ public class JiraCommonService {
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
 				if (searchResult != null) {
+					saveSearchDetailsInContext(searchResult, pageStart, StepSynchronizationManager.getContext());
 					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
 							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
 							searchResult.getTotal()));

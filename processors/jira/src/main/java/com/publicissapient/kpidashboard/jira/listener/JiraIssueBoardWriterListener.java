@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,14 +28,19 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ItemWriteListener;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.item.Chunk;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.zephyr.ProgressStatus;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
@@ -76,6 +82,8 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 		Map<String, Map<String, List<JiraIssue>>> projectBoardWiseIssues = jiraIssues.stream()
 				.filter(issue -> !issue.getTypeName().equalsIgnoreCase(JiraConstants.EPIC)).collect(Collectors
 						.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.groupingBy(JiraIssue::getBoardId)));
+		// getting step execution
+        StepExecution stepExecution = StepSynchronizationManager.getContext().getStepExecution();
 
 		for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : projectBoardWiseIssues.entrySet()) {
 			String basicProjectConfigId = entry.getKey();
@@ -95,11 +103,11 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 					if (procTraceLog.isPresent()) {
 						ProcessorExecutionTraceLog processorExecutionTraceLog = procTraceLog.get();
 						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId,
-								firstIssue.getChangeDate(), processorExecutionToSave);
+								firstIssue.getChangeDate(), processorExecutionToSave,stepExecution);
 					} else {
 						ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId,
-								firstIssue.getChangeDate(), processorExecutionToSave);
+								firstIssue.getChangeDate(), processorExecutionToSave,stepExecution);
 					}
 				}
 			}
@@ -111,12 +119,25 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 	}
 
 	private void setTraceLog(ProcessorExecutionTraceLog processorExecutionTraceLog, String basicProjectConfigId,
-			String boardId, String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave) {
+			String boardId, String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave,StepExecution stepExecution) {
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		processorExecutionTraceLog.setBoardId(boardId);
 		processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(changeDate,
 				JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
+		List<ProgressStatus> progressStatusList = Optional
+				.ofNullable(processorExecutionTraceLog.getProgressStatusList()).orElseGet(ArrayList::new);
+		ProgressStatus progressStatus = new ProgressStatus();
+		ExecutionContext stepContext = stepExecution.getExecutionContext();//todo:: change null pointer
+		int total = stepContext.getInt("total");
+		int processed = stepContext.getInt("processed");
+		int pageStart = stepContext.getInt("pageStart");
+		progressStatus.setStepName(
+				MessageFormat.format("Processing issues {0} to {1} out of {2}", pageStart, processed, total));
+		progressStatus.setStatus(BatchStatus.COMPLETED.toString());
+		progressStatus.setStartTime(String.valueOf(stepExecution.getStartTime()));
+		progressStatusList.add(progressStatus);
+		processorExecutionTraceLog.setProgressStatusList(progressStatusList);
 		processorExecutionToSave.add(processorExecutionTraceLog);
 	}
 
