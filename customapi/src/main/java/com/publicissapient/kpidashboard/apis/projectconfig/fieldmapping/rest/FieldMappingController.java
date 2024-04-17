@@ -73,20 +73,23 @@ public class FieldMappingController {
 
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> addFieldMapping(@PathVariable String projectToolConfigId,
-			@RequestBody FieldMappingDTO fieldMappingDTO) {
+			@RequestBody List<FieldMappingResponse> fieldMappingResponseList) {
 
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
 
 		ProjectBasicConfig projectBasicConfig = fieldMappingService
-				.getBasicProjectConfigById(fieldMappingDTO.getBasicProjectConfigId());
+				.getBasicProjectConfigById(new ObjectId(projectToolConfigId));
 		policy.checkPermission(projectBasicConfig, "UPDATE_PROJECT");
-
-		final ModelMapper modelMapper = new ModelMapper();
-		FieldMapping fieldMapping = modelMapper.map(fieldMappingDTO, FieldMapping.class);
 		ServiceResponse response;
 		try {
+			FieldMapping fieldMapping = new FieldMapping();
+			boolean allfieldFound=fieldMappingService.convertToFieldMappingAndCheckIsFieldPresent(fieldMappingResponseList,fieldMapping);
 			fieldMappingService.addFieldMapping(projectToolConfigId, fieldMapping);
-			response = new ServiceResponse(true, "field mappings added successfully", null);
+			if (!allfieldFound) {
+				response = new ServiceResponse(true, "field mappings added successfully", null);
+			} else {
+				response = new ServiceResponse(false, "field mappings added successfully but some fields are missing, please verify your imported fields", null);
+			}
 		} catch (Exception ex) {
 			response = new ServiceResponse(false, "failed to add field mappings", null);
 		}

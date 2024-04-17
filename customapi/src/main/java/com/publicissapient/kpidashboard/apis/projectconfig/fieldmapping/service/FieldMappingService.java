@@ -79,4 +79,6 @@ public interface FieldMappingService {
 
 	void updateSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfigId,
 			List<FieldMappingResponse> fieldMappingResponseList) throws NoSuchFieldException, IllegalAccessException;
+
+	boolean convertToFieldMappingAndCheckIsFieldPresent(List<FieldMappingResponse> fieldMappingResponseList, FieldMapping fieldMapping) throws IllegalAccessException;
 }

@@ -151,11 +151,13 @@ private setting = {
       }
     }
      if (!this.form.invalid) {
-      this.formData = {...this.formData,...this.selectedFieldMapping};
-      const submitData = {...this.formData};
-      submitData['basicProjectConfigId'] = this.selectedConfig.id;
-      delete submitData.id;
-      this.saveFieldMapping(submitData,true);
+     const finalList = [];
+
+     Object.keys(this.selectedFieldMapping).forEach(fieldName => {
+                 const originalVal = this.selectedFieldMapping[fieldName];
+             finalList.push({ fieldName: fieldName, originalValue: originalVal })
+     });
+     this.saveFieldMapping(finalList);
     }
   }
 
@@ -329,7 +331,7 @@ private setting = {
       } else {
         this.messenger.add({
           severity: 'error',
-          summary: 'Some error occurred. Please try again later.'
+          summary: response['message']
         });
       }
     });
@@ -422,7 +424,7 @@ compareValues(originalValue: any, previousValue: any): boolean {
         this.metaDataTemplateCode = mappings['data'].metaTemplateCode;
         this.ngOnInit();
         this.sharedService.setSelectedFieldMapping(mappings['data']);
-      } 
+      }
     });
   }
 }
