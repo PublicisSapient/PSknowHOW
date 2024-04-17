@@ -2104,15 +2104,31 @@ describe('BacklogComponent', () => {
         component.configGlobalData.push({
             kpiId: 'kpi120',
             isEnabled: false,
-            shown: true
-
+            shown: true,
+            kpiName: 'Iteration Commitment',
+            order: 1,
+            subCategoryBoard: 'Iteration Review',
+            kpiDetail: {
+                subCategoryBoard: 'Iteration Review',
+                id: '63320976b7f239ac93c2686a',
+                kpiId: 'kpi120',
+                kpiName: 'Iteration Commitment',
+                isDeleted: 'False',
+                defaultOrder: 17,
+                kpiUnit: '',
+                chartType: 'line',
+                kanban: true,
+                groupId: 4,
+                aggregationCriteria: 'sum',
+                trendCalculative: false,
+                kpiSubCategory: 'Iteration Review'
+            },
         });
-        component.processKpiConfigData();
-        expect(component.noKpis).toBeFalse();
         component.configGlobalData[0]['isEnabled'] = false;
         component.configGlobalData[0]['shown'] = false;
         component.processKpiConfigData();
         expect(Object.keys(component.kpiConfigData).length).toBe(configGlobalData.length);
+        expect(component.noKpis).toBeFalse();
     });
 
     it('should call groupKpi methods on selecting filter', () => {
@@ -2177,16 +2193,22 @@ describe('BacklogComponent', () => {
             kpiId: 'kpi17',
             kpiName: 'Unit Test Coverage'
         }];
-        component.masterData = {
-            kpiList: [{
+        component.updatedConfigGlobalData = [
+            {
                 kpiId: 'kpi17',
-                kanban: false,
-                kpiSource: 'Jira',
-                kpiCategory: 'Backlog',
-                groupId: 1
-            }]
-        };
-        const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
+                kpiName: 'Unit Test Coverage',
+                isEnabled: true,
+                order: 23,
+                kpiDetail: {
+                    kanban: false,
+                    kpiSource: 'Jira',
+                    kpiCategory: 'Backlog',
+                    groupId: 1
+                },
+                shown: true
+            }
+        ];
+        const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });;
         const postJiraSpy = spyOn(component, 'postJiraKpi');
         component.groupJiraKpi(['kpi17']);
         expect(postJiraSpy).toHaveBeenCalled();
@@ -2198,15 +2220,21 @@ describe('BacklogComponent', () => {
             kpiId: 'kpi17',
             kpiName: 'Unit Test Coverage'
         }];
-        component.masterData = {
-            kpiList: [{
+        component.updatedConfigGlobalData = [
+            {
                 kpiId: 'kpi17',
-                kanban: false,
-                kpiSource: 'Jira',
-                kpiCategory: 'Backlog',
-                groupId: 1
-            }]
-        };
+                kpiName: 'Unit Test Coverage',
+                isEnabled: true,
+                order: 23,
+                kpiDetail: {
+                    kanban: false,
+                    kpiSource: 'Jira',
+                    kpiCategory: 'Backlog',
+                    groupId: 1
+                },
+                shown: true
+            }
+        ];
         component.kpiJira = {
             kpiList : []
         }

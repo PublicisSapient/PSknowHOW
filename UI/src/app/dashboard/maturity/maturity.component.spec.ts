@@ -274,15 +274,20 @@ describe('MaturityComponent', () => {
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
-  }];
-  component.masterData ={
-    kpiList :[{
+    }];
+    component.updatedGlobalConfigData = [{
       kpiId: 'kpi17',
-      kanban:false,
-      kpiSource:'Jira',
-      groupId:1
+      kpiName: 'Unit Test Coverage',
+      isEnabled: true,
+      order: 23,
+      kpiDetail: {
+          kanban: false,
+          kpiSource: 'Jira',
+          kpiCategory: 'Iteration',
+          groupId: 1
+      },
+      shown: true
     }]
-  };
     const spy=spyOn(helperService,'groupKpiFromMaster').and.returnValue({kpiList : kpiListJira});
     const spyMasterData =spyOn(service,'getMasterData').and.returnValue(['kpi17']);
     const postJiraSpy=spyOn(component,'postJiraKpi');
@@ -295,15 +300,20 @@ describe('MaturityComponent', () => {
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
-  }];
-  component.masterData ={
-    kpiList :[{
+    }];
+    component.updatedGlobalConfigData = [{
       kpiId: 'kpi17',
-      kanban:true,
-      kpiSource:'Jira',
-      groupId:1
+      kpiName: 'Unit Test Coverage',
+      isEnabled: true,
+      order: 23,
+      kpiDetail: {
+          kanban: true,
+          kpiSource: 'Jira',
+          kpiCategory: 'Iteration',
+          groupId: 1
+      },
+      shown: true
     }]
-  };
     const spy=spyOn(helperService,'groupKpiFromMaster').and.returnValue({kpiList : kpiListJira});
     const spyMasterData =spyOn(service,'getMasterData').and.returnValue(['kpi17']);
     const postJiraSpy=spyOn(component,'postJiraKpi');

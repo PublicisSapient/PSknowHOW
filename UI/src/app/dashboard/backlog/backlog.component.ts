@@ -143,7 +143,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     const disabledKpis = this.configGlobalData?.filter(item => item.shown && !item.isEnabled);
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
-    this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
+    this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown);
 
     const kpi3Index = this.updatedConfigGlobalData.findIndex(kpi => kpi.kpiId === 'kpi3');
     const kpi3 = this.updatedConfigGlobalData.splice(kpi3Index, 1);
@@ -224,16 +224,16 @@ export class BacklogComponent implements OnInit, OnDestroy {
     this.jiraKpiData = {};
     // creating a set of unique group Ids
     const groupIdSet = new Set();
-    this.masterData.kpiList.forEach((obj) => {
-      if (!obj.kanban && obj.kpiSource === 'Jira' && obj.kpiCategory == 'Backlog') {
-        groupIdSet.add(obj.groupId);
+    this.updatedConfigGlobalData?.forEach((obj) => {
+      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Backlog') {
+        groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
 
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        const currentPayload = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Backlog');
+        const currentPayload = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Backlog');
         if (Object.keys(this.kpiJira).length) {
           this.kpiJira = { ...currentPayload, kpiList: currentPayload.kpiList.concat(this.kpiJira.kpiList) }
         } else {
@@ -850,7 +850,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
   /** Reload KPI once field mappoing updated */
   reloadKPI(event) {
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
-    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Backlog');
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Backlog');
     if (currentKPIGroup?.kpiList?.length > 0) {
       this.postJiraKpi(currentKPIGroup, 'jira');
     }
