@@ -86,20 +86,21 @@
               </td>
 
               <td class='custom-table-cell'>
-                  {{ showExecutionDate(processor.processorName) }}
+                  <span *ngIf="!processor.loader">{{ showExecutionDate(processor.processorName) }}</span>
               </td>
               <td class="custom-table-cell">
                   <p-progressBar mode="indeterminate" *ngIf="processor.processorName === 'Jira' && processor.loader === true " [style]="{ height: '6px' }"></p-progressBar>
               </td>
               <td class='custom-table-cell'>
                 <div class="p-d-flex p-align-center">
-                <div *ngIf="showProcessorLastState(processor.processorName) !== 'NA'"
+                <div *ngIf="showProcessorLastState(processor.processorName) !== 'NA' && !processor.loader"
                   class="status-container" [ngClass]="showProcessorLastState(processor.processorName) === 'Success' ? 'active' : 'inactive'">
                   {{ showProcessorLastState(processor.processorName)}}
                 </div>
-                <span *ngIf="showProcessorLastState(processor.processorName) === 'NA'">NA</span>
+                <span *ngIf="showProcessorLastState(processor.processorName) === 'NA' && !processor.loader">NA</span>
                 <div class="p-ml-2" *ngIf="processor.processorName === 'Jira'">
-                  <i class="pi pi-info-circle cursor-pointer" (click)="op.toggle($event)" style="font-size: 1.2rem"></i>
+                  <i class="pi pi-info-circle" [ngClass]="{'cursor-pointer': (!findTraceLogForTool('Jira')?.executionSuccess && findTraceLogForTool('Jira')?.errorMessage) || jiraExecutionSteps?.length}" 
+                  (click)="((!findTraceLogForTool('Jira')?.executionSuccess && findTraceLogForTool('Jira')?.errorMessage) || jiraExecutionSteps?.length) ? op.toggle($event) : ''" style="font-size: 1.2rem"></i>
                 </div>
               </div>
               </td>
@@ -134,7 +135,7 @@
 
 <p-overlayPanel #op [showCloseIcon]="false">
   <div class="dialog-body p-mb-4">
-      <p-table [value]="jiraExecutionSteps" [tableStyle]="{ 'min-width': '50rem' }"  *ngIf="jiraExecutionSteps?.length && showProcessorLastState('Jira') === 'Success' else showNoDataMessage">
+      <p-table [value]="jiraExecutionSteps" [tableStyle]="{ 'min-width': '40rem' }"  *ngIf="jiraExecutionSteps?.length">
         <ng-template pTemplate="header">
             <tr>
               <th>Step Name</th>
@@ -150,9 +151,6 @@
             </tr>
         </ng-template>
     </p-table>
- 
-  <ng-template #showNoDataMessage>
-      <h2 class="p-text-center">{{findTraceLogForTool('Jira')?.executionSuccess ? 'Fetching Data..' : findTraceLogForTool('Jira')?.errorMessage }}</h2>
-  </ng-template>
+      <h3 class="p-text-center" *ngIf="showProcessorLastState('Jira') === 'Failure' && !jiraExecutionSteps?.length" class="error-text">{{findTraceLogForTool('Jira')?.errorMessage}}</h3>
   </div>
 </p-overlayPanel>

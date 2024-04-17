@@ -232,6 +232,12 @@ export class AdvancedSettingsComponent implements OnInit {
     if(pDetails){
       pDetails['loader'] = true;
     }
+    const jiraInd = this.processorData['data'].findIndex(pDetails => pDetails.processorName === 'Jira');
+    const jiraTraceLOgInd = this.processorsTracelogs.findIndex(ptl => ptl['processorName'] == 'Jira');
+
+    if(processorName === 'Jira'){
+      this.processorsTracelogs.find(ptl => ptl['processorName'] == 'Jira').errorMessage = ''
+    }
     this.httpService.runProcessor(runProcessorInput)
       .subscribe(response => {
         if (response[0] !== 'error' && !response.error && response.success) {
@@ -242,9 +248,7 @@ export class AdvancedSettingsComponent implements OnInit {
               takeWhile(() => this.jiraStatusContinuePulling),
               switchMap(() => this.httpService.getProgressStatusOfProcessors(runProcessorInput))
             ).subscribe(response => {
-              console.log("second call response came")
               if (response && response['success']) {
-                const jiraInd = this.processorData['data'].findIndex(pDetails => pDetails.processorName === 'Jira');
                 if (response['data'][0]['executionOngoing']) {
                   if (jiraInd !== -1) {
                     this.processorData['data'][jiraInd].loader = true;
@@ -254,7 +258,12 @@ export class AdvancedSettingsComponent implements OnInit {
                   this.processorData['data'][jiraInd].loader = false;
                   this.jiraStatusContinuePulling = false;
                 }
-                this.jiraExecutionSteps = response['data'][0]['progressStatusList'];
+                if(response['data'][0]['errorMessage']){
+                  this.jiraExecutionSteps = []
+                }else{
+                  this.jiraExecutionSteps = response['data'][0]['progressStatusList'];
+                }
+                this.processorsTracelogs[jiraTraceLOgInd].executionEndedAt = response['data'][0]['executionEndedAt'];
               }
             })
           }else{
