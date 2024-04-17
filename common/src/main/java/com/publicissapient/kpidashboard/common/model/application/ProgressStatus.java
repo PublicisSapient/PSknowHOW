@@ -15,7 +15,7 @@
  *    limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.common.model.zephyr;
+package com.publicissapient.kpidashboard.common.model.application;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -20,7 +20,7 @@ package com.publicissapient.kpidashboard.common.service;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.zephyr.ProgressStatus;
+import com.publicissapient.kpidashboard.common.model.application.ProgressStatus;
 
 /**
  * @author anisingh4

@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.zephyr.ProgressStatus;
+import com.publicissapient.kpidashboard.common.model.application.ProgressStatus;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -120,8 +120,6 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 			ProgressStatus progressStatus) {
 		Optional<ProcessorExecutionTraceLog> existingTraceLog = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(processorName, basicProjectConfigId);
-		log.info("Saving the progress of {} processor of step {} for projectId {} ", ProcessorConstants.JIRA,
-				progressStatus.getStepName(), basicProjectConfigId);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = existingTraceLog
 				.orElseGet(ProcessorExecutionTraceLog::new);
 
@@ -132,6 +130,8 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 		progressStatusList.add(progressStatus);
 		processorExecutionTraceLog.setExecutionOngoing(true);
 		processorExecutionTraceLog.setProgressStatusList(progressStatusList);
+		log.info("Saving the progress of {} processor of step {} for projectId {} ", ProcessorConstants.JIRA,
+				progressStatus.getStepName(), basicProjectConfigId);
 		processorExecutionTraceLogRepository.save(processorExecutionTraceLog);
 	}
 

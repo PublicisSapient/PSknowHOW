@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.zephyr.ProgressStatus;
+import com.publicissapient.kpidashboard.common.model.application.ProgressStatus;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +53,7 @@ public class JobStepProgressListener implements StepExecutionListener {
 	 */
 	@Override
 	public void beforeStep(StepExecution stepExecution) {
-		// in future we can use this method to do something before saving data in db
+		// in the future, we can use this method to do something before saving data in db
 	}
 
 	/**
@@ -68,12 +68,11 @@ public class JobStepProgressListener implements StepExecutionListener {
 		String stepName = stepExecution.getStepName();
 		BatchStatus status = stepExecution.getStatus();
 		LocalDateTime startTime = stepExecution.getStartTime();
-		log.info("Step {} done with status {}", stepName, status);
 		ProgressStatus progressStatus = new ProgressStatus();
 		progressStatus.setStepName(stepName);
 		progressStatus.setStatus(status.toString());
 		progressStatus.setStartTime(String.valueOf(startTime));
-
+		log.info("Step {} done with status {}", stepName, status);
 		processorExecutionTraceLogService.saveProgressStatusInTraceLog(ProcessorConstants.JIRA, projectId,
 				progressStatus);
 

@@ -24,7 +24,7 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.publicissapient.kpidashboard.common.model.zephyr.ProgressStatus;
+import com.publicissapient.kpidashboard.common.model.application.ProgressStatus;
 
 import lombok.Data;
 

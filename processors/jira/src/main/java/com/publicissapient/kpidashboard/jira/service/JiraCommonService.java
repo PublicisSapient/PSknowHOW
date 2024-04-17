@@ -298,9 +298,9 @@ public class JiraCommonService {
 		int processed = Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, total);
 		// Saving Progress details in context
 		StepExecution stepExecution = stepContext.getStepExecution();
-		stepExecution.getExecutionContext().putInt("total", total);
-		stepExecution.getExecutionContext().putInt("processed", processed);
-		stepExecution.getExecutionContext().putInt("pageStart", pageStart);
+		stepExecution.getExecutionContext().putInt(JiraConstants.TOTAL_ISSUES, total);
+		stepExecution.getExecutionContext().putInt(JiraConstants.PROCESSED_ISSUES, processed);
+		stepExecution.getExecutionContext().putInt(JiraConstants.PAGE_START, pageStart);
 	}
 
 	/**
