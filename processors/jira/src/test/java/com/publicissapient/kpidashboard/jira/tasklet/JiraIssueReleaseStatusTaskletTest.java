@@ -49,6 +49,9 @@ public class JiraIssueReleaseStatusTaskletTest {
     private JiraClientService jiraClientService;
 
     @Mock
+    private JiraClient jiraClient;
+
+    @Mock
     private CreateJiraIssueReleaseStatus createJiraIssueReleaseStatus;
 
     @Mock
@@ -77,7 +80,7 @@ public class JiraIssueReleaseStatusTaskletTest {
         when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
 
         ProcessorJiraRestClient client = mock(ProcessorJiraRestClient.class);
-            when(jiraClientService.getRestClient()).thenReturn(client);
+            when(jiraClient.getClient(projectConfFieldMapping, null)).thenReturn(client);
 
             // Act
             RepeatStatus result = jiraIssueReleaseStatusTasklet.execute(stepContribution, chunkContext);

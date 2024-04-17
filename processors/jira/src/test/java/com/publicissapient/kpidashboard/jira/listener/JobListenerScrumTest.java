@@ -91,8 +91,8 @@ public class JobListenerScrumTest {
     @Before
     public void setUp() {
         jobExecution = MetaDataInstanceFactory.createJobExecution();
-        when(jiraClientService.getRestClient()).thenReturn(client);
-        when(jiraClientService.getKerberosClient()).thenReturn(kerberosClient);
+       // when(jiraClientService.getRestClient()).thenReturn(client);
+       // when(jiraClientService.getKerberosClient()).thenReturn(kerberosClient);
     }
 
     @Test
