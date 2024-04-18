@@ -19,12 +19,10 @@ package com.publicissapient.kpidashboard.jira.listener;
 
 import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDateToCustomFormat;
 
-import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.batch.core.BatchStatus;
@@ -46,6 +44,7 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
@@ -125,10 +124,10 @@ public class JobListenerKanban implements JobExecutionListener {
 						break;
 					}
 				}
-				setExecutionInfoInTraceLog(false);
+				setExecutionInfoInTraceLog(false, stepFaliureException);
 				sendNotification(stepFaliureException);
 			} else {
-				setExecutionInfoInTraceLog(true);
+				setExecutionInfoInTraceLog(true, null);
 			}
 		} catch (Exception e) {
 			log.error("An Exception has occured in kanban jobListener", e);
@@ -156,13 +155,17 @@ public class JobListenerKanban implements JobExecutionListener {
 		return projectBasicConfig == null ? "" : projectBasicConfig.getProjectName();
 	}
 
-	private void setExecutionInfoInTraceLog(boolean status) {
+	private void setExecutionInfoInTraceLog(boolean status, Throwable stepFailureException) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
 				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Arrays.asList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(status);
+				if (stepFailureException != null) {
+					String rootCauseMessage = (stepFailureException).toString();
+					processorExecutionTraceLog.setErrorMessage("Step failed due to: " + rootCauseMessage);
+				}
 			}
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);
 		}

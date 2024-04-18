@@ -156,9 +156,9 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		processorExecutionTraceLog.setExecutionOngoing(executionOngoing);
 		processorExecutionTraceLog.setProcessorName(processorName);
-		// If executionOngoing is true, clean progressStatusList
 		if (executionOngoing) {
-			processorExecutionTraceLog.setProgressStatusList(new ArrayList<>());
+			processorExecutionTraceLog.setProgressStatusList(new ArrayList<>()); // clear the prev record
+			processorExecutionTraceLog.setErrorMessage(null); // Clear the error message
 		}
 		log.info("ProjectId {} for processor {} executionOngoing to {} ", basicProjectConfigId, executionOngoing,
 				processorName);

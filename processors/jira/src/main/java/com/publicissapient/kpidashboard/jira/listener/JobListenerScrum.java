@@ -168,8 +168,6 @@ public class JobListenerScrum implements JobExecutionListener {
 				if (stepFailureException != null) {
 					String rootCauseMessage = (stepFailureException).toString();
 					processorExecutionTraceLog.setErrorMessage("Step failed due to: " + rootCauseMessage);
-				} else {
-					processorExecutionTraceLog.setErrorMessage(null); // Clear the error message
 				}
 			}
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);

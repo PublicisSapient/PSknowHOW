@@ -328,18 +328,22 @@ public class JiraProcessorUtil {
 			StepExecution stepExecution) {
 		if (stepExecution != null) {
 			ExecutionContext stepContext = stepExecution.getExecutionContext();
-			int total = stepContext.getInt(JiraConstants.TOTAL_ISSUES);
-			int processed = stepContext.getInt(JiraConstants.PROCESSED_ISSUES);
-			int pageStart = stepContext.getInt(JiraConstants.PAGE_START);
-			List<ProgressStatus> progressStatusList = Optional
-					.ofNullable(processorExecutionTraceLog.getProgressStatusList()).orElseGet(ArrayList::new);
-			ProgressStatus progressStatus = new ProgressStatus();
-			progressStatus.setStepName(
-					MessageFormat.format("Processing issues {0} to {1} out of {2}", pageStart, processed, total));
-			progressStatus.setStatus(BatchStatus.COMPLETED.toString());
-			progressStatus.setStartTime(String.valueOf(stepExecution.getStartTime()));
-			progressStatusList.add(progressStatus);
-			processorExecutionTraceLog.setProgressStatusList(progressStatusList);
+			int totalIssues = stepContext.getInt(JiraConstants.TOTAL_ISSUES, 0);
+			int processedIssues = stepContext.getInt(JiraConstants.PROCESSED_ISSUES, 0);
+			int pageStart = stepContext.getInt(JiraConstants.PAGE_START, 0);
+
+			// Only save progressStatus if totalIssues issue to be fetching is non-zero
+			if (totalIssues != 0) {
+				List<ProgressStatus> progressStatusList = Optional
+						.ofNullable(processorExecutionTraceLog.getProgressStatusList()).orElseGet(ArrayList::new);
+				ProgressStatus progressStatus = new ProgressStatus();
+				progressStatus.setStepName(MessageFormat.format("Processing issues {0} to {1} out of {2}", pageStart,
+						processedIssues, totalIssues));
+				progressStatus.setStatus(BatchStatus.COMPLETED.toString());
+				progressStatus.setStartTime(String.valueOf(stepExecution.getStartTime()));
+				progressStatusList.add(progressStatus);
+				processorExecutionTraceLog.setProgressStatusList(progressStatusList);
+			}
 		}
 	}
 
