@@ -9,7 +9,8 @@ ARG GID=1000
 RUN yum install -y shadow-utils \
     && ln -sf /bin/bash /bin/sh \
     && groupadd -g $GID $USER \
-    && useradd -u $UID -g $GID -m -s /bin/bash $USER 
+    && useradd -u $UID -g $GID -m -s /bin/bash $USER \
+    && yum clean all -y
 
 # Set the environment variables
 ENV CONFIG_LOCATION="/app/properties/customapi.properties" \
