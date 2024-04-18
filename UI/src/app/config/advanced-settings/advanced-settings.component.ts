@@ -264,6 +264,7 @@ export class AdvancedSettingsComponent implements OnInit {
                   this.jiraExecutionSteps = response['data'][0]['progressStatusList'];
                 }
                 this.processorsTracelogs[jiraTraceLOgInd].executionEndedAt = response['data'][0]['executionEndedAt'];
+                this.processorsTracelogs[jiraTraceLOgInd].errorMessage = response['data'][0]?.['errorMessage'];
               }
             })
           }else{
