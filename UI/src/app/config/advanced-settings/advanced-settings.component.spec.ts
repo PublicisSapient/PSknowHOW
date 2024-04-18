@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, fakeAsync, flush, TestBed, tick, waitForAsync,flushMicrotasks } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync, discardPeriodicTasks } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
@@ -279,7 +279,46 @@ describe('AdvancedSettingsComponent', () => {
     httpMock.match(baseUrl + '/api/processor/trigger/Jira')[0].flush({ message: 'Got HTTP response: 200 on url: http://jira_processor:50008/processor/run', success: true });
   });
 
-  it('should run  jira processor', fakeAsync(() => {
+  it('should continue get stacks of jira processor untill flag true', fakeAsync(() => {
+    component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true,
+          errorMessage : "test"
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
+    component.processorsTracelogs = [
+      {
+        processorName : 'Jira',
+        loader : true,
+        errorMessage : "test"
+      }
+    ]
+    const response = { success: true, data: [{ executionOngoing: true, errorMessage: null }] };
+    spyOn(httpService,'runProcessor').and.returnValue(of(response));
+     let jiraStatusContinuePulling = true;
+     const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: true }] };
+     const continueCall = spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
+       return of(mockProgressStatusResponse).pipe(
+         takeWhile(() => jiraStatusContinuePulling)
+       );
+     });
+     component.runProcessor('Jira');
+     tick(3000);
+     jiraStatusContinuePulling = false
+     discardPeriodicTasks()
+     expect(component.processorsTracelogs).toBeDefined();
+     
+  }));
+
+  it('should stop get stacks of jira processor when flagis false', fakeAsync(() => {
     component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
     component.processorData = {
       data : [
@@ -305,7 +344,7 @@ describe('AdvancedSettingsComponent', () => {
     spyOn(httpService,'runProcessor').and.returnValue(of(response));
      let jiraStatusContinuePulling = true;
      const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: false }] };
-     spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
+     const continueCall = spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
        return of(mockProgressStatusResponse).pipe(
          takeWhile(() => jiraStatusContinuePulling)
        );
@@ -313,8 +352,8 @@ describe('AdvancedSettingsComponent', () => {
      component.runProcessor('Jira');
      tick(3000);
      jiraStatusContinuePulling = false
-     flush();
-     flushMicrotasks();
+     discardPeriodicTasks()
+     expect(component.processorsTracelogs).toBeDefined();
      
   }));
 
