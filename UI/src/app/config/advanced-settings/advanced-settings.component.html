@@ -86,18 +86,20 @@
               </td>
 
               <td class='custom-table-cell'>
-                  <span *ngIf="!processor.loader">{{ showExecutionDate(processor.processorName) }}</span>
+                  <span *ngIf="(!processor.loader && processor.processorName === 'Jira') || processor.processorName !== 'Jira'">{{ showExecutionDate(processor.processorName) }}</span>
               </td>
               <td class="custom-table-cell">
                   <p-progressBar mode="indeterminate" *ngIf="processor.processorName === 'Jira' && processor.loader === true " [style]="{ height: '6px' }"></p-progressBar>
               </td>
               <td class='custom-table-cell'>
                 <div class="p-d-flex p-align-center">
-                <div *ngIf="showProcessorLastState(processor.processorName) !== 'NA' && !processor.loader"
-                  class="status-container" [ngClass]="showProcessorLastState(processor.processorName) === 'Success' ? 'active' : 'inactive'">
-                  {{ showProcessorLastState(processor.processorName)}}
-                </div>
-                <span *ngIf="showProcessorLastState(processor.processorName) === 'NA' && !processor.loader">NA</span>
+                  <div *ngIf="(!processor.loader && processor.processorName === 'Jira') || processor.processorName !== 'Jira'">
+                    <div *ngIf="showProcessorLastState(processor.processorName) !== 'NA'" class="status-container"
+                      [ngClass]="showProcessorLastState(processor.processorName) === 'Success' ? 'active' : 'inactive'">
+                      {{ showProcessorLastState(processor.processorName)}}
+                    </div>
+                    <span *ngIf="showProcessorLastState(processor.processorName) === 'NA'">NA</span>
+                  </div>
                 <div class="p-ml-2" *ngIf="processor.processorName === 'Jira'">
                   <i class="pi pi-info-circle" [ngClass]="{'cursor-pointer': (!findTraceLogForTool('Jira')?.executionSuccess && findTraceLogForTool('Jira')?.errorMessage) || jiraExecutionSteps?.length}" 
                   (click)="((!findTraceLogForTool('Jira')?.executionSuccess && findTraceLogForTool('Jira')?.errorMessage) || jiraExecutionSteps?.length) ? op.toggle($event) : ''" style="font-size: 1.2rem"></i>
