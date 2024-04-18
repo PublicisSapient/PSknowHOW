@@ -44,7 +44,6 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
