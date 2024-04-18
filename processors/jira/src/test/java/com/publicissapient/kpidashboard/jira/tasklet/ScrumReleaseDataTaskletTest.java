@@ -24,7 +24,6 @@ import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.FetchKanbanReleaseData;
 import com.publicissapient.kpidashboard.jira.service.FetchScrumReleaseData;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +46,7 @@ public class ScrumReleaseDataTaskletTest {
     private FetchProjectConfiguration fetchProjectConfiguration;
 
     @Mock
-    private JiraClientService jiraClientService;
+    private JiraClient jiraClient;
 
     @Mock
     FetchScrumReleaseData fetchKanbanReleaseData;
@@ -72,6 +71,8 @@ public class ScrumReleaseDataTaskletTest {
         ProjectConfFieldMapping projectConfFieldMapping= ProjectConfFieldMapping.builder().projectName("KnowHow").build();
 
         when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
+
+        when(jiraClient.getClient(projectConfFieldMapping, null)).thenReturn(null);
 
         // Act
         RepeatStatus result = jiraIssueReleaseStatusTasklet.execute(stepContribution, chunkContext);

@@ -19,12 +19,13 @@
 
 package com.publicissapient.kpidashboard.jira.tasklet;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-import java.util.Optional;
-
+import com.publicissapient.kpidashboard.jira.client.JiraClient;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.service.CreateMetadata;
+import com.publicissapient.kpidashboard.jira.service.FetchKanbanReleaseData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,24 +35,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.BeanUtils;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
-import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.dataFactories.ConnectionsDataFactory;
-import com.publicissapient.kpidashboard.jira.dataFactories.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.jira.dataFactories.ProjectBasicConfigDataFactory;
-import com.publicissapient.kpidashboard.jira.dataFactories.ToolConfigDataFactory;
-import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.service.CreateMetadata;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MetaDataTaskletTest {
@@ -61,9 +50,6 @@ public class MetaDataTaskletTest {
 
     @Mock
     private JiraClient jiraClient;
-
-    @Mock
-    private JiraClientService jiraClientService;;
 
     @Mock
     CreateMetadata createMetadata;
@@ -77,29 +63,23 @@ public class MetaDataTaskletTest {
     @Mock
     private JiraProcessorConfig jiraProcessorConfig;
 
-    List<ProjectToolConfig> projectToolConfigs;
-    Optional<Connection> connection;
-    List<ProjectBasicConfig> projectConfigsList;
-    List<FieldMapping> fieldMappingList;
-
     @InjectMocks
     private MetaDataTasklet metaDataTasklet;
 
     @Before
     public void setUp() {
         // Mock any setup or common behavior needed before each test
-        projectToolConfigs = getMockProjectToolConfig();
-        connection = getMockConnection();
-        projectConfigsList = getMockProjectConfig();
-        fieldMappingList = getMockFieldMapping();
     }
 
     @Test
     public void testExecute() throws Exception {
         // Arrange
+        ProjectConfFieldMapping projectConfFieldMapping= ProjectConfFieldMapping.builder().projectName("KnowHow").build();
 
-        when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(createProjectConfigMap());
+        when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
 
+        ProcessorJiraRestClient client = mock(ProcessorJiraRestClient.class);
+        when(jiraClient.getClient(projectConfFieldMapping,null)).thenReturn(client);
         when(jiraProcessorConfig.isFetchMetadata()).thenReturn(true);
         // Act
         RepeatStatus result = metaDataTasklet.execute(stepContribution, chunkContext);
@@ -107,53 +87,6 @@ public class MetaDataTaskletTest {
         //verify(createMetadata, times(1)).collectMetadata(projectConfFieldMapping, null);
         assertEquals(RepeatStatus.FINISHED, result);
     }
-
-    private ProjectConfFieldMapping createProjectConfigMap() {
-        ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-        ProjectBasicConfig projectConfig = projectConfigsList.get(2);
-        BeanUtils.copyProperties(projectConfig, projectConfFieldMapping);
-        projectConfFieldMapping.setProjectBasicConfig(projectConfig);
-        projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
-        projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
-        projectConfFieldMapping.setJira(getJiraToolConfig());
-        projectConfFieldMapping.setProjectToolConfig(projectToolConfigs.get(0));
-        projectConfFieldMapping.setJiraToolConfigId(projectToolConfigs.get(0).getId());
-        projectConfFieldMapping.setFieldMapping(fieldMappingList.get(1));
-        return projectConfFieldMapping;
-    }
-
-    private JiraToolConfig getJiraToolConfig() {
-        JiraToolConfig toolObj = new JiraToolConfig();
-        BeanUtils.copyProperties(projectToolConfigs.get(0), toolObj);
-        toolObj.setConnection(connection);
-        return toolObj;
-    }
-
-    private List<ProjectToolConfig> getMockProjectToolConfig() {
-        ToolConfigDataFactory projectToolConfigDataFactory = ToolConfigDataFactory
-                .newInstance("/json/default/project_tool_configs.json");
-        return projectToolConfigDataFactory.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA,
-                "63bfa0d5b7617e260763ca21");
-    }
-
-    private Optional<Connection> getMockConnection() {
-        ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
-                .newInstance("/json/default/connections.json");
-        return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
-    }
-
-    private List<ProjectBasicConfig> getMockProjectConfig() {
-        ProjectBasicConfigDataFactory projectConfigDataFactory = ProjectBasicConfigDataFactory
-                .newInstance("/json/default/project_basic_configs.json");
-        return projectConfigDataFactory.getProjectBasicConfigs();
-    }
-
-    private List<FieldMapping> getMockFieldMapping() {
-        FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
-                .newInstance("/json/default/field_mapping.json");
-        return fieldMappingDataFactory.getFieldMappings();
-    }
-
 
 
 }

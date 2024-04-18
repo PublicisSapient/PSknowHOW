@@ -18,14 +18,9 @@
 package com.publicissapient.kpidashboard.jira.tasklet;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -63,12 +58,6 @@ public class SprintReportTasklet implements Tasklet {
 	@Autowired
 	private SprintRepository sprintRepository;
 
-	@Autowired
-	JiraClient jiraClient;
-
-	@Autowired
-	JiraClientService jiraClientService;
-
 	@Value("#{jobParameters['sprintId']}")
 	private String sprintId;
 
@@ -87,16 +76,7 @@ public class SprintReportTasklet implements Tasklet {
 		log.info("Sprint report job started for the sprint : {}", sprintId);
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration
 				.fetchConfigurationBasedOnSprintId(sprintId);
-		Optional<Connection> connectionOptional = projConfFieldMapping.getJira().getConnection();
 		KerberosClient krb5Client = null;
-		if (connectionOptional.isPresent()) {
-			Connection connection = connectionOptional.get();
-			krb5Client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
-					connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
-		}
-		ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
-		jiraClientService.setRestClient(client);
-		jiraClientService.setKerberosClient(krb5Client);
 		SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
 		List<String> originalBoardIds = sprintDetails.getOriginBoardId();
 		for (String boardId : originalBoardIds) {
@@ -111,6 +91,7 @@ public class SprintReportTasklet implements Tasklet {
 				sprintRepository.saveAll(setOfSprintDetails);
 			}
 		}
+
 		return RepeatStatus.FINISHED;
 	}
 
