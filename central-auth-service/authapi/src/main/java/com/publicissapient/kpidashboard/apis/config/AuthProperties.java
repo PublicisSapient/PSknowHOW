@@ -51,12 +51,15 @@ public class AuthProperties {
 	private int samlMaxAuthenticationAgeMillis;
 	private String baseUrl;
 	private String baseUiUrl;
-	private String holdingEntityId;
-	private String assertingEntityId;
 	private String nameId;
 	private String logoutEmailQueryParam;
 	private String loginCallback;
 	private String logoutCallback;
+
+	private String holdingEntityId;
+	private String assertingEntityId;
+	private String alias;
+	private String samlLoginUrl;
 
 	private String loginSuccessPageFormat;
 	private String defaultRedirectToAfterLogout;
