@@ -121,6 +121,7 @@ import { FeatureFlagsService } from './services/feature-toggle.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AppInitializerService } from './services/app-initializer.service';
 import { AuthGuard } from './services/auth.guard';
+import { RecommendationsComponent } from './component/recommendations/recommendations.component';
 
 
 /******************************************************/
@@ -187,7 +188,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         DeveloperComponent,
         BarWithYAxisGroupComponent,
         DeveloperComponent,
-        PageNotFoundComponent
+        PageNotFoundComponent,
+        RecommendationsComponent
     ],
     imports: [
         DropdownModule,

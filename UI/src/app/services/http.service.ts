@@ -172,6 +172,7 @@ export class HttpService {
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
   private validateResourceUrl = this.baseUrl + '/api/validateResource';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
+  private recommendationsUrl = 'https://rr.tools.publicis.sapient.com/api/health-dashboard/recommendations';
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -1134,4 +1135,8 @@ export class HttpService {
   getAzureTeams(connectionId) {
       return this.http.get<any>(`${this.baseUrl}/api/azure/teams/${connectionId}`);
     }
+  
+  getRecommendations(data){
+    return this.http.post<object>(this.recommendationsUrl, data);
+  }
 }

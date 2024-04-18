@@ -1,0 +1,17 @@
+<div class="container-recommendations">
+    <div class="img-container" (click)="handleClick()">
+        <img src="../../../assets/img/ico-recommendations.svg" alt="Recommendations" />
+        <p class="text-recommendations">Recommendations</p>
+    </div>
+</div>
+<p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
+    <p-header>
+        <div>
+            Recommendations for Optimising KPI's
+        </div>
+    </p-header>
+    <div class="dialog-body p-mb-4">
+        
+    </div>
+
+</p-dialog>
