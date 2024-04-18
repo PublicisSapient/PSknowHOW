@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed, tick, waitForAsync,flushMicrotasks } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
@@ -32,7 +32,8 @@ import { AdvancedSettingsComponent } from './advanced-settings.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { SharedService } from '../../services/shared.service';
-import { of, throwError } from 'rxjs';
+import { of, throwError,interval } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
 describe('AdvancedSettingsComponent', () => {
   let component: AdvancedSettingsComponent;
   let fixture: ComponentFixture<AdvancedSettingsComponent>;
@@ -257,7 +258,8 @@ describe('AdvancedSettingsComponent', () => {
       data : [
         {
           processorName : 'Jira',
-          loader : true
+          loader : true,
+          errorMessage : "test"
         },
         {
           processorName : 'Github',
@@ -265,10 +267,56 @@ describe('AdvancedSettingsComponent', () => {
         }
       ]
     }
+    component.processorsTracelogs = [
+      {
+        processorName : 'Jira',
+        loader : true,
+        errorMessage : "test"
+      }
+    ]
     component.runProcessor('Jira');
     fixture.detectChanges();
     httpMock.match(baseUrl + '/api/processor/trigger/Jira')[0].flush({ message: 'Got HTTP response: 200 on url: http://jira_processor:50008/processor/run', success: true });
   });
+
+  it('should run  jira processor', fakeAsync(() => {
+    component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true,
+          errorMessage : "test"
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
+    component.processorsTracelogs = [
+      {
+        processorName : 'Jira',
+        loader : true,
+        errorMessage : "test"
+      }
+    ]
+    const response = { success: true, data: [{ executionOngoing: true, errorMessage: null }] };
+    spyOn(httpService,'runProcessor').and.returnValue(of(response));
+     let jiraStatusContinuePulling = true;
+     const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: false }] };
+     spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
+       return of(mockProgressStatusResponse).pipe(
+         takeWhile(() => jiraStatusContinuePulling)
+       );
+     });
+     component.runProcessor('Jira');
+     tick(3000);
+     jiraStatusContinuePulling = false
+     flush();
+     flushMicrotasks();
+     
+  }));
 
   it('should run Github Processor for the selected projects', () => {
     component.processorData = {
@@ -299,6 +347,18 @@ describe('AdvancedSettingsComponent', () => {
 
   it('should get processors trace logs for project', fakeAsync(() => {
     const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(fakeProcessorsTracelog));
     component.getProcessorsTraceLogsForProject(basicProjectConfigId);
     tick();
@@ -469,6 +529,18 @@ describe('AdvancedSettingsComponent', () => {
     const errResponse = {
       'error': "Something went wrong"
     };
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(errResponse));
     const spy = spyOn(messageService, 'add')
     component.getProcessorsTraceLogsForProject(basicProjectConfigId);
@@ -494,7 +566,8 @@ describe('AdvancedSettingsComponent', () => {
       data : [
         {
           processorName : 'Jira',
-          loader : true
+          loader : true,
+          errorMessage : ''
         },
         {
           processorName : 'Github',
@@ -505,6 +578,13 @@ describe('AdvancedSettingsComponent', () => {
     component.selectedProject = {
       'id': '651af337d18501286c28a464'
     }
+    component.processorsTracelogs = [
+      {
+        processorName : 'Jira',
+        loader : true,
+        errorMessage : ''
+      },
+    ]
     const errResponse = {
       data: "Error in running Jira processor. Please try after some time.",
       message: "Got HTTP response: 404 on url: http://jira-processor:50008/api/job/startprojectwiseissuejob",
