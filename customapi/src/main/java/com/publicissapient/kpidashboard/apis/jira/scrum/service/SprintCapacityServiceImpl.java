@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +74,10 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	private KpiHelperService kpiHelperService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private FilterHelperService flterHelperService;
+	@Autowired
+	private CacheService cacheService;
 
 	/**
 	 * Gets Qualifier Type
@@ -232,7 +238,7 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 			mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_CAPACITY_UTILIZATION.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_CAPACITY_UTILIZATION.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 	}
 
 	/**
