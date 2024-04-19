@@ -37,6 +37,9 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.DSRValidationData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterValue;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -60,6 +63,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
+import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
 import org.testng.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -256,6 +260,32 @@ public class KPIExcelUtilityTest {
 	@Test
 	public void testPopulateDefectRelatedExcelData_DRE() {
 		// Mock input parameters
+		Set<String> set= new HashSet<>();
+		set.add("A");
+		set.add("B");
+
+
+		jiraIssues.forEach(jira->{
+			AdditionalFilterConfig  additionalFilterConfig= new AdditionalFilterConfig();
+			additionalFilterConfig.setFilterId("sqd");
+			additionalFilterConfig.setValues(set);
+			List<AdditionalFilterConfig> additionalFilterConfigList= new ArrayList<>();
+			additionalFilterConfigList.add(additionalFilterConfig);
+
+			List<AdditionalFilterValue>  additionalFilterValueList= new ArrayList<>();
+			AdditionalFilterValue additionalFilterValue= new AdditionalFilterValue();
+			additionalFilterValue.setValue("abc");
+			additionalFilterValue.setValueId("abc12");
+			additionalFilterValueList.add(additionalFilterValue);
+
+			List<AdditionalFilter> additionalFilterConfigsList= new ArrayList<>();
+			AdditionalFilter additionalFilter= new AdditionalFilter();
+			additionalFilter.setFilterId("sqd");
+			additionalFilter.setFilterValues(additionalFilterValueList);
+			additionalFilterConfigsList.add(additionalFilter);
+
+			jira.setAdditionalFilters(additionalFilterConfigsList);
+		});
 		Map<String, JiraIssue> bug = jiraIssues.stream().filter(issue -> issue.getTypeName().equalsIgnoreCase("Bug"))
 				.collect(Collectors.toMap(JiraIssue::getNumber, x -> x));
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
