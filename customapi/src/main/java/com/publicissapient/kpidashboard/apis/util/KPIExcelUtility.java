@@ -598,7 +598,7 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateSprintPredictability(String sprint, Set<IssueDetails> issueDetailsSet,
-			List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+			List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping, Map<String, JiraIssue> jiraIssueMap) {
 		if (CollectionUtils.isNotEmpty(issueDetailsSet)) {
 			for (IssueDetails issueDetails : issueDetailsSet) {
 				KPIExcelData excelData = new KPIExcelData();
@@ -607,6 +607,7 @@ public class KPIExcelUtility {
 				storyDetails.put(issueDetails.getSprintIssue().getNumber(), checkEmptyURL(issueDetails));
 				excelData.setStoryId(storyDetails);
 				excelData.setIssueDesc(checkEmptyName(issueDetails));
+				setSquads(excelData,jiraIssueMap.get(issueDetails.getSprintIssue().getNumber()));
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 					excelData.setStoryPoint(String.valueOf(roundingOff(
@@ -635,6 +636,7 @@ public class KPIExcelUtility {
 				storyDetails.put(issue.getNumber(), checkEmptyURL(issue));
 				excelData.setStoryId(storyDetails);
 				excelData.setIssueDesc(checkEmptyName(issue));
+				setSquads(excelData,issue);
 				String daysLogged = "0.0";
 				String daysEstimated = "0.0";
 				if (issue.getTimeSpentInMinutes() != null && issue.getTimeSpentInMinutes() > 0) {
@@ -757,6 +759,7 @@ public class KPIExcelUtility {
 				excelData.setStoryId(storyDetails);
 				excelData.setIssueType(jiraIssue.getTypeName());
 				excelData.setIssueStatus(jiraIssue.getStatus());
+				setSquads(excelData,jiraIssue);
 				if (initialIssueNumber.contains(jiraIssue)) {
 					excelData.setInitialCommited("Y");
 				}
@@ -788,6 +791,7 @@ public class KPIExcelUtility {
 					excelData.setEpicID(epicLink);
 					excelData.setEpicName(checkEmptyName(epic));
 					excelData.setCostOfDelay(epic.getCostOfDelay());
+					setSquads(excelData,epic);
 					String month = Constant.EMPTY_STRING;
 					String epicEndDate = Constant.EMPTY_STRING;
 					if (epic.getChangeDate() != null) {
@@ -1700,6 +1704,7 @@ public class KPIExcelUtility {
 				excelData.setIssueType(jiraIssue.getTypeName());
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
 				excelData.setIssueStatus(jiraIssue.getStatus());
+				setSquads(excelData,jiraIssue);
 				if (entry.getKey().equals(CommonConstant.ADDED)) {
 					excelData.setScopeChange(entry.getKey());
 					excelData.setScopeChangeDate(addedIssueDateMap.get(jiraIssue.getNumber()));
