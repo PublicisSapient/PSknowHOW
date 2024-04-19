@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>com.publicissapient.kpidashboard</groupId>
 	<artifactId>notification-consumer</artifactId>
-	<version>10.0.0-SNAPSHOT</version>
+	<version>9.0.0-SNAPSHOT</version>
 	<name>notification-consumer</name>
 	<description>Notification consumer for Apache Kafka</description>
 	<properties>
@@ -17,6 +17,21 @@
 		<final.name>notification-consumer</final.name>
 		<lombok.version>1.18.30</lombok.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>6.1.5</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-core</artifactId>
+				<version>6.2.3</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>

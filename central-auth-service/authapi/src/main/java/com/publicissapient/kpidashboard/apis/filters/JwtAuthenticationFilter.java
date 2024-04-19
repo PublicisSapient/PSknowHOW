@@ -26,7 +26,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,9 +58,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		if (request != null) {
 			Cookie authCookie = cookieUtil.getAuthCookie(request);
 
-			if (authCookie == null || StringUtils.isBlank(authCookie.getValue())) {
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-				log.error("No token found in cookie");
+			if (authCookie == null) {
+				filterChain.doFilter(request, response);
 				return;
 			}
 

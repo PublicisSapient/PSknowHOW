@@ -1,39 +1,32 @@
 # Use a base image
 FROM amazoncorretto:17
 
-# Change bash as default and install necessary packages
-RUN ln -sf /bin/bash /bin/sh \
-    && yum install -y shadow-utils
-
 # Create a non-root user
-ARG USER=myuser
+ARG USER=knowhowuser
 ARG UID=1000
 ARG GID=1000
-
-RUN groupadd -g $GID $USER \
-    && useradd -u $UID -g $GID -m -s /bin/bash $USER
 
 # Set the working directory
 WORKDIR /app
 
 # Set the ownership of the working directory to the non-root user
-RUN chown -R $USER:$USER /app
+RUN ln -sf /bin/bash /bin/sh \
+    && yum install -y shadow-utils \
+    && groupadd -g $GID $USER \
+    && useradd -u $UID -g $GID -m -s /bin/bash $USER \
+    && yum clean all -y
 
 # Set environment variables for volumes
-ENV TMP_DIR="/tmp"
-ENV APP_DIR="/app"
-ENV PROPERTIES_DIR="/app/properties"
-ENV OFFLINE_DATA_DIR="/app/offline_data"
+
+ENV APP_DIR="/app" \
+    PROPERTIES_DIR="/app/properties" \
+    CONFIG_LOCATION="/app/properties/jira.properties" \
+    JAVA_OPTS="" \
+    keytoolalias="myknowhow" \
+    keystorefile="/usr/lib/jvm/java-17-amazon-corretto/lib/security/cacerts"
 
 # Create the volumes
-VOLUME $TMP_DIR
-VOLUME $APP_DIR
 VOLUME $PROPERTIES_DIR
-VOLUME $OFFLINE_DATA_DIR
-
-# Set environment variables
-ENV CONFIG_LOCATION="/app/properties/jira.properties"
-ENV JAVA_OPTS=""
 
 # Set the JAR file variable
 ARG JAR_FILE
@@ -46,7 +39,8 @@ ADD src/main/resources/application.properties $PROPERTIES_DIR/jira.properties
 EXPOSE 50008
 
 # Set permissions for the JAR file
-RUN chown $USER:$USER $APP_DIR/jira.jar
+RUN chown -R $USER:$USER /app \
+    && chmod 766 $keystorefile
 
 # Switch to the non-root user
 USER $USER:$GID

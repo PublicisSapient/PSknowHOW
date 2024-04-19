@@ -3,8 +3,6 @@
 ---
 SET search_path TO auth;
 
-CREATE EXTENSION IF NOT EXISTS LTREE;
-
 CREATE TABLE IF NOT EXISTS users (
 	id serial PRIMARY KEY,
 	username VARCHAR(250) UNIQUE NOT NULL,

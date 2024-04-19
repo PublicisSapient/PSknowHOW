@@ -38,8 +38,9 @@ const LoginPage = ({search}) => {
                         const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
                         localStorage.setItem('user_details', JSON.stringify({ email: res.data.data.email, isAuthenticated: true }));
                         setShowLoader(false);
+                        let defaultAppUrl = process.env.NODE_ENV === 'production' ? window.env.REACT_APP_PSKnowHOW : process.env.REACT_APP_PSKnowHOW;
                         if(!redirectUri){
-                            window.location.href = (process.env['REACT_APP_PSKnowHOW'] + '?authToken=' + authToken);
+                            window.location.href = (defaultAppUrl + '?authToken=' + authToken);
                         }else{
                             if(redirectUri.indexOf('?') === -1){
                                 window.location.href = (`${redirectUri}?authToken=${authToken}`);
@@ -54,14 +55,16 @@ const LoginPage = ({search}) => {
                 }).catch((err) => {
                     console.log(err);
                     setShowLoader(false);
-                    setError(err.message);
+                    let errMessage = err?.response?.data?.message ?  err?.response?.data?.message : 'Please try again after sometime'
+                    setError(errMessage);
                 });
             }
         })
         .catch((err) => {
-            console.log(err.message);
+            console.log(err);
             setShowLoader(false);
-            setError(err.message);
+            let errMessage = err?.response?.data?.message ?  err?.response?.data?.message : 'Please try again after sometime'
+            setError(errMessage);
         });
     }
 
@@ -143,7 +146,7 @@ const LoginPage = ({search}) => {
                             }}>
                         </FloatingInput>
                         {(methods.formState.errors['password']) && <p className='errMsg'>{methods.formState.errors['password'].message}</p>}
-                        {error && error.length > 0 && <p className='errMsg'>{error}</p>}
+                        
                         <Button
                             className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[18px] w-full"
                             clickFn={methods.handleSubmit(PerformCredentialLogin)}
@@ -166,6 +169,7 @@ const LoginPage = ({search}) => {
                                 Login
                             </Text>
                         </Button>
+                        {error && error.length > 0 && <p className='errMsg'>{error}</p>}
                     </form>
                 </FormProvider>
                 <div className="routeContainer mt-4">

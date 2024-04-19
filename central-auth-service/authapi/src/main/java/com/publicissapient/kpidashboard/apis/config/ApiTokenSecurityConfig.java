@@ -49,8 +49,9 @@ public class ApiTokenSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.headers().cacheControl();
 		http.csrf().disable().authorizeRequests().antMatchers("/userlogout/**").permitAll().antMatchers("/user/**")
 				.permitAll().antMatchers("/user-approvals/pending").permitAll().antMatchers("/update-userApproval/**")
-				.permitAll().antMatchers("/deleteUser/**").authenticated().and().httpBasic().and().csrf().disable()
-				.headers().and().addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class);
+				.permitAll().antMatchers("/deleteUser/**").permitAll().antMatchers("/changePassword").authenticated()
+				.and().httpBasic().and().csrf().disable().headers().and()
+				.addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 
 	@Bean

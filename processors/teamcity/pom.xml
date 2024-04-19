@@ -23,7 +23,7 @@
 	<groupId>com.publicissapient.kpidashboard</groupId>
 	<description>Teamcity Build Processor Microservice</description>
 	<packaging>jar</packaging>
-	<version>10.0.0-SNAPSHOT</version>
+	<version>9.0.0-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -117,6 +117,21 @@
 		</testResources>
 	</build>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>6.1.5</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-core</artifactId>
+				<version>6.2.3</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.publicissapient.kpidashboard</groupId>
@@ -142,10 +157,6 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.16.1</version>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>

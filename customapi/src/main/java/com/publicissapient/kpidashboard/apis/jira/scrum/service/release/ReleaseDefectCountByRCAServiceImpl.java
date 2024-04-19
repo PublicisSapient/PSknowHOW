@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -100,16 +101,21 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 			}
 			Set<String> finalJiraDodKPI142LowerCase = jiraDodKPI142LowerCase;
 			List<JiraIssue> openDefects = totalDefects.stream()
-					.filter(jiraIssue -> fieldMapping.getStoryFirstStatus().contains(jiraIssue.getStatus())
+					.filter(jiraIssue -> StringUtils.isNotEmpty(jiraIssue.getStatus())
+							&& !finalJiraDodKPI142LowerCase.isEmpty()
 							&& !finalJiraDodKPI142LowerCase.contains(jiraIssue.getStatus().toLowerCase()))
 					.toList();
 			IterationKpiValue openDefectsIterationKpiValue = new IterationKpiValue();
+			List<DataCount> openDefectsValue = getDefectsDataCountList(openDefects, fieldMapping);
 			openDefectsIterationKpiValue.setFilter1(OPEN_DEFECT);
-			openDefectsIterationKpiValue.setValue(getDefectsDataCountList(openDefects, fieldMapping));
+			if(CollectionUtils.isNotEmpty(openDefectsValue))
+				openDefectsIterationKpiValue.setValue(openDefectsValue);
 
 			IterationKpiValue totalDefectsIterationKpiValue = new IterationKpiValue();
+			List<DataCount> totalDefectsValue = getDefectsDataCountList(totalDefects, fieldMapping);
 			totalDefectsIterationKpiValue.setFilter1(TOTAL_DEFECT);
-			totalDefectsIterationKpiValue.setValue(getDefectsDataCountList(totalDefects, fieldMapping));
+			if(CollectionUtils.isNotEmpty(totalDefectsValue))
+				totalDefectsIterationKpiValue.setValue(totalDefectsValue);
 
 			overAllIterationKpiValue.add(openDefectsIterationKpiValue);
 			overAllIterationKpiValue.add(totalDefectsIterationKpiValue);

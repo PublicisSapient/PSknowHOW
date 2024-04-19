@@ -33,8 +33,7 @@ export class ProfileComponent implements OnInit {
     isSuperAdmin = false;
     isProjectAdmin = false;
     changePswdDisabled = false;
-    adLogin = false;
-    ssoLogin = environment.SSO_LOGIN;
+    loginType: string = '';
     constructor(private getAuthorizationService: GetAuthorizationService, public router: Router, private sharedService : SharedService) {}
 
     ngOnInit() {
@@ -52,7 +51,7 @@ export class ProfileComponent implements OnInit {
                 }
           })
 
-        this.adLogin = localStorage.loginType === 'AD';
+        this.loginType = this.sharedService.getCurrentUserDetails('authType');
     }
 
 }

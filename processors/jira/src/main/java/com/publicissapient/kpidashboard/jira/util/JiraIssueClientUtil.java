@@ -18,7 +18,12 @@
 
 package com.publicissapient.kpidashboard.jira.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -137,8 +142,8 @@ public final class JiraIssueClientUtil {
 	public static Map<Pair<String, String>, AccountHierarchy> getAccountHierarchy(
 			AccountHierarchyRepository accountHierarchyRepository) {
 		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findAll();
-		return accountHierarchyList.stream()
-				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
+		return accountHierarchyList.stream().collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p,
+				(existingValue, newValue) -> existingValue));
 
 	}
 

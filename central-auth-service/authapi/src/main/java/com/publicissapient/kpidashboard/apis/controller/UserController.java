@@ -211,26 +211,6 @@ public class UserController {
 	}
 
 	/**
-	 * Validate Token
-	 *
-	 * @param request
-	 *            request
-	 * @param response
-	 *            response
-	 * @return ResponseEntity
-	 */
-	@PostMapping(value = "/validateToken")
-	public ResponseEntity<ServiceResponse> validateToken(HttpServletRequest request, HttpServletResponse response) {
-		Authentication authentication = tokenAuthenticationService.getAuthentication(request, response);
-		ServiceResponse serviceResponse = new ServiceResponse(false, messageService.getMessage(ERROR_UNAUTHORIZED_USER),
-				null);
-		if (null != authentication) {
-			serviceResponse = new ServiceResponse(true, messageService.getMessage(SUCCESS_VALID_TOKEN), null);
-		}
-		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
-	}
-
-	/**
 	 * @param authToken
 	 *            authToken
 	 * @return ResponseEntity
@@ -486,7 +466,7 @@ public class UserController {
 	 * @throws ServletException
 	 *             the servlet exception
 	 */
-	@PostMapping(value = "/changePassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/changePassword", produces = APPLICATION_JSON_VALUE)
 	// NOSONAR
 	public ResponseEntity<ServiceResponse> changePassword(HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, @Valid @RequestBody ChangePasswordRequestDTO request)
@@ -574,20 +554,13 @@ public class UserController {
 	private ResponseEntity<ServiceResponse> isValidUser(boolean isValidUser, @Valid ChangePasswordRequestDTO request,
 			HttpServletResponse httpServletResponse) {
 		if (isValidUser) {
-			Authentication authentication = userService.changePassword(request.getEmail(), request.getPassword());
-			authenticationResponseService.handle(httpServletResponse, authentication, AuthType.STANDARD);
-			return ResponseEntity.ok().body(new ServiceResponse(true, getResponse(httpServletResponse), null));
+			userService.changePassword(request.getEmail(), request.getPassword());
+			return ResponseEntity.ok().body(new ServiceResponse(true,
+					messageService.getMessage("success_change_password"), request.getUser()));
 		} else {
 			return ResponseEntity.ok()
 					.body(new ServiceResponse(false, messageService.getMessage("error_wrong_password"), null));
 		}
-	}
-
-	private String getResponse(HttpServletResponse response) {
-		JSONObject json = new JSONObject();
-		json.put(CommonConstant.AUTH_RESPONSE_HEADER, response.getHeader(CommonConstant.AUTH_RESPONSE_HEADER));
-		json.put(CommonConstant.STATUS, CommonConstant.STATUS);
-		return json.toJSONString();
 	}
 
 	@GetMapping(value = "/validateEmailToken", produces = APPLICATION_JSON_VALUE) // NOSONAR

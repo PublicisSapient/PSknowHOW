@@ -51,7 +51,8 @@ public class ConfigDetailsController {
 	 * Returns required properties from application.prop
 	 * 
 	 * @param request
-	 * @return
+	 *            request
+	 * @return ResponseEntity<ConfigDetails>
 	 */
 	@RequestMapping(value = "/configDetails", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ConfigDetails> getConfigDetails(HttpServletRequest request) {

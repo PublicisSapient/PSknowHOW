@@ -9,29 +9,20 @@ ARG GID=1000
 RUN ln -sf /bin/bash /bin/sh \
     && yum install -y shadow-utils \
     && groupadd -g $GID $USER \
-    && useradd -u $UID -g $GID -m -s /bin/bash $USER
+    && useradd -u $UID -g $GID -m -s /bin/bash $USER \
+    && yum clean all -y
 
 # Set the working directory
 WORKDIR /app
 
-# Set the ownership of the working directory to the non-root user
-RUN chown -R $USER:$USER /app
-
 # Set environment variables for volumes
-ENV TMP_DIR="/tmp"
-ENV APP_DIR="/app"
-ENV PROPERTIES_DIR="/app/properties"
-ENV OFFLINE_DATA_DIR="/app/offline_data"
+ENV APP_DIR="/app" \
+    PROPERTIES_DIR="/app/properties" \
+    CONFIG_LOCATION="/app/properties/notification-consumer.properties" \
+    JAVA_OPTS=""
 
 # Create the volumes
-VOLUME $TMP_DIR
-VOLUME $APP_DIR
 VOLUME $PROPERTIES_DIR
-VOLUME $OFFLINE_DATA_DIR
-
-# Set environment variables
-ENV CONFIG_LOCATION="/app/properties/notification-consumer.properties"
-ENV JAVA_OPTS=""
 
 # Set the JAR file variable
 ARG NOTIFICATION_CONSUMER_JAR_FILE
@@ -44,7 +35,7 @@ ADD kafka-consumers/notification-consumer/src/main/resources/application.propert
 EXPOSE 50020
 
 # Set permissions for the JAR file
-RUN chown $USER:$USER $APP_DIR/notification-consumer.jar
+RUN chown -R $USER:$USER $APP_DIR
 
 # Switch to the non-root user
 USER $USER:$GID

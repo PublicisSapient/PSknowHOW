@@ -318,18 +318,5 @@ public class AuthenticationServiceTest {
 		Assertions.assertTrue(authService.getAuthenticationByApproved(true).iterator().hasNext());
 	}
 
-	@Test
-	public void getAuthNAuthResponseTest() {
-		ResponseEntity<ServiceResponse> responseEntity = new ResponseEntity<ServiceResponse>(
-				HttpStatusCode.valueOf(200));
-		Assertions.assertNull(authService.getAuthNAuthResponse(responseEntity, "test.com"));
-	}
-
-	@Test
-	public void getAuthNAuthResponseWhenError() {
-		ResponseEntity<ServiceResponse> responseEntity = new ResponseEntity<ServiceResponse>(
-				HttpStatusCode.valueOf(503));
-		Assertions.assertNotNull(authService.getAuthNAuthResponse(responseEntity, "test.com"));
-	}
 
 }

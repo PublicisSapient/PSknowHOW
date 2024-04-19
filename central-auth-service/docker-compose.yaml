@@ -32,7 +32,7 @@ services:
     environment:
       - auth.baseUrl=https://<DNS>
       - auth.baseUiUrl=https://<DNS>
-      - auth.secret=<add auth secret>
+      - auth.secret=<Your Auth Secret>
       - forgotPassword.uiHost=https://<DNS>
       - auth.corsFilterValidOrigin=https://<DNS>
       - spring.datasource.password=<DB PASSWORD>

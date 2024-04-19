@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { useForm, FormProvider } from "react-hook-form";
 import apiProvider from '../../services/API/IndividualApis';
 import { Text } from "../../components/Text";
@@ -49,7 +50,8 @@ const RegisterPage = () => {
             })
             .catch(function (error) {
                 console.log(error);
-                setError(error.message);
+                let errMessage = error?.response?.data?.message ?  error?.response?.data?.message : 'Please try again after sometime'
+                setError(errMessage);
                 setSuccess('');
                 setShowLoader(false);
             });
@@ -126,7 +128,7 @@ const RegisterPage = () => {
                             }}>
                         </FloatingInput>
                         {(methods.formState.errors['displayName']) && <p className='errMsg'>{methods.formState.errors['displayName'].message}</p>}
-                        {error && error.length > 0 && <p className='errMsg'>{error}</p>}
+                        {/* {error && error.length > 0 && <p className='errMsg'>{error}</p>} */}
                         <Button
                             className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[18px] w-full"
                             clickFn={methods.handleSubmit(onSubmit)}
@@ -155,7 +157,7 @@ const RegisterPage = () => {
                 </FormProvider>
                 <div className="routeContainer mt-4">
                     <p className='inline'>Already have an account? </p>
-                    {/* <NavLink to="/">Login here.</NavLink> */}
+                    <NavLink to="/">Login here.</NavLink>
                 </div>
             </div>
         </div>

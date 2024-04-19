@@ -1,35 +1,30 @@
 # Use a base image
 FROM amazoncorretto:17
 
-# Change bash as default and install necessary packages
-RUN ln -sf /bin/bash /bin/sh \
-    && yum install -y shadow-utils
-
 # Create a non-root user
-ARG USER=myuser
+ARG USER=knowhowuser
 ARG UID=1000
 ARG GID=1000
 
-RUN groupadd -g $GID $USER \
-    && useradd -u $UID -g $GID -m -s /bin/bash $USER
-
-# Set the working directory
-WORKDIR /app
-
-# Set the ownership of the working directory to the non-root user
-RUN chown -R $USER:$USER /app
+RUN ln -sf /bin/bash /bin/sh \
+    && yum install -y shadow-utils \
+    && groupadd -g $GID $USER \
+    && useradd -u $UID -g $GID -m -s /bin/bash $USER \
+    && yum clean all -y
 
 # Set environment variables for volumes
-ENV TMP_DIR="/tmp"
-ENV APP_DIR="/app"
-ENV PROPERTIES_DIR="/app/properties"
-ENV CERTS_DIR="/app/certs"
+ENV APP_DIR="/app" \
+    PROPERTIES_DIR="/app/properties" \
+    keytoolalias="myknowhow" \
+    certhostpath="/app/certs/" \
+    keystorefile="/usr/lib/jvm/java-17-amazon-corretto/lib/security/cacerts" \
+    JAVA_OPTS=""
+
+# Set the working directory
+WORKDIR $APP_DIR
 
 # Create the volumes
-VOLUME $TMP_DIR
-VOLUME $APP_DIR
 VOLUME $PROPERTIES_DIR
-VOLUME $CERTS_DIR
 
 # Set the JAR file variables
 ARG ZEPHYR_JAR_FILE=processors/jira-zephyr-scale/target/zephyr-processor.jar
@@ -65,10 +60,7 @@ ADD ${BITBUCKET_JAR_FILE} $APP_DIR/bitbucket.jar
 ADD ${TEAMCITY_JAR_FILE} $APP_DIR/teamcity.jar
 ADD ${GITLAB_JAR_FILE} $APP_DIR/gitlab.jar
 ADD ${GITHUB_JAR_FILE} $APP_DIR/github.jar
-ADD ${GITHUBACTION_JAR_FILE} $APP_DIR/githubaction.jar
-
-# Set environment variables
-ENV JAVA_OPTS=""
+ADD ${GITHUBACTION_JAR_FILE} $APP_DIR/githubaction.jar 
 
 # Expose ports
 EXPOSE 50001
@@ -85,8 +77,11 @@ EXPOSE 50022
 # Copy startup script
 ADD processors/devops-processor-startup/start_combined_collector.sh $APP_DIR/start_combined_collector.sh
 
-# Set permissions for the startup script
-RUN chmod +x $APP_DIR/start_combined_collector.sh
+# Set the ownership of the working directory to the non-root user
+
+RUN chown -R $USER:$USER $APP_DIR \
+    && chmod +x $APP_DIR/start_combined_collector.sh \
+    && chmod 766 $keystorefile
 
 # Switch to the non-root user
 USER $USER:$GID
