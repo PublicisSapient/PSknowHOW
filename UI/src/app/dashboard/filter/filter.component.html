@@ -157,9 +157,7 @@
                                  </div>
                                  <label class="checkbox-modified"
                                     *ngFor="let key of copyFilteredAddFilters[item.hierarchyLevelId]; let i = index">
-                                    <input type="radio" *ngIf="item?.hierarchyLevelId !== 'sprint'"
-                                       [formControlName]="item?.hierarchyLevelId" [value]="key.nodeId" class="p-mr-1" />
-                                    <div *ngIf="item?.hierarchyLevelId === 'sprint'"
+                                       <div *ngIf="item?.hierarchyLevelId === 'sprint' || item?.hierarchyLevelId === 'sqd'"
                                        [formGroupName]="item?.hierarchyLevelId">
                                        <input type="checkbox" [formControlName]="key.nodeId"
                                           [checked]="filterForm?.get(item?.hierarchyLevelId)?.value[key.nodeId]"
