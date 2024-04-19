@@ -22,7 +22,7 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { CommonModule } from '@angular/common';
 import { InputSwitchModule } from 'primeng/inputswitch';
-import { ReactiveFormsModule,FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { MessageService } from 'primeng/api';
@@ -30,6 +30,8 @@ import { ToastModule } from 'primeng/toast';
 import { TabViewModule } from 'primeng/tabview';
 import { SharedModuleModule } from '../shared-module/shared-module.module';
 
+import { MessagesModule } from 'primeng/messages';
+import { MessageModule } from 'primeng/message';
 
 @NgModule({
   imports: [
@@ -40,6 +42,8 @@ import { SharedModuleModule } from '../shared-module/shared-module.module';
     CommonModule,
     ToastModule,
     TabViewModule,
+    MessagesModule,
+    MessageModule,
     SharedModuleModule
   ],
   declarations: [

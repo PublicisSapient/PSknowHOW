@@ -19,9 +19,9 @@
 <div class="login" fxFlex>
   <div class="login-intro" fxFlex fxHide fxShow.gt-xs>
     <img src="../../../assets/img/ps-logo.svg" alt="Publicis Sapient" class="ps-logo"/>
-    <div class="p-grid">
+    <div class="p-grid p-d-flex">
 
-        <div class="login-form-wrapper p-lg-5 p-sm-7 p-xl-4">
+        <div class="login-form-wrapper p-lg-5 p-sm-5 p-xl-5">
           <img src="../../../assets/img/knowHOW_logo_final.png" alt="Publicis Sapient" class="knowHowImage">
           <div class="login-form">
            <!-- Display error messages-->
@@ -126,6 +126,9 @@
       
            
           </div>
+        </div>
+        <div class="banner p-lg-3 p-sm-3 p-xl-4">
+          <p-messages [(value)]="msgs" [escape]="false"></p-messages>
         </div>
     </div>
   </div>

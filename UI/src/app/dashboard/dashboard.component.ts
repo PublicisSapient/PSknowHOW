@@ -30,6 +30,7 @@ import { SharedService } from '../services/shared.service';
 import { GetAuthService } from '../services/getauth.service';
 import { HttpService } from '../services/http.service';
 import { NavigationEnd, Router } from '@angular/router';
+import { Message } from 'primeng/api';
 
 @Component({
   selector: 'app-dashboard',
@@ -52,7 +53,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   isApply = false;
   headerStyle;
   sideNavStyle;
-
+  msgs: Message[];
   constructor(
     public cdRef: ChangeDetectorRef,
     public router: Router,
@@ -71,6 +72,13 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   }
 
   ngOnInit() {
+    this.msgs = [
+      {severity:'info', summary:'Your access has been temporarily restricted', detail:
+      `We are migrating our servers to Azure cloud.
+      You will regain your access once the activity is complete.
+      Thank you for your patience and stay tuned for the latest KnowHOW updates !
+      Please check your project on the new Azure Production Instance: <a target="_blank" href="https://psknowhow.tools.publicis.sapient.com">https://psknowhow.tools.publicis.sapient.com</a>`}
+  ];
     this.setPageContentWrapperHeight();
     // this.authorized = this.getAuth.checkAuth();
 

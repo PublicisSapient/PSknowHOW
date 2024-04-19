@@ -23,6 +23,8 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { first } from 'rxjs/operators';
 import { SharedService } from '../../services/shared.service';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+import { Message } from 'primeng/api';
+
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
@@ -38,6 +40,7 @@ export class LoginComponent implements OnInit {
     sessionMsg = '';
     adLogin = true;
     loginConfig = {};
+    msgs: Message[];
 
 
 
@@ -45,6 +48,15 @@ export class LoginComponent implements OnInit {
     }
 
     ngOnInit() {
+
+        this.msgs = [
+            {severity:'info', summary:'Your access has been temporarily restricted', detail:
+            `We are migrating our servers to <br/> Azure cloud.<br/>
+            You will regain your access once the <br/> activity is complete. <br/>
+            Thank you for your patience and stay tuned for the latest KnowHOW updates !
+            Please check your project on the new Azure Production Instance:<br/> <a target="_blank" href="https://psknowhow.tools.publicis.sapient.com">https://psknowhow.tools.publicis.sapient.com</a>`}
+        ];
+
         this.getLoginConfig();
         this.adLogin = !localStorage.getItem('loginType') || localStorage.getItem('loginType') === 'AD';
 
@@ -75,8 +87,8 @@ export class LoginComponent implements OnInit {
 
     getLoginConfig() {
         this.httpService.getLoginConfig().subscribe(response => {
-            if(response.success) {
-               this.loginConfig = response.data;
+            if (response.success) {
+                this.loginConfig = response.data;
             } else {
                 this.loginConfig = {
                     standardLogin: true,
@@ -88,15 +100,15 @@ export class LoginComponent implements OnInit {
 
     /* convenience getter for easy access to form fields*/
     get f() {
- return this.loginForm.controls;
-}
+        return this.loginForm.controls;
+    }
 
     /* convenience getter for easy access to form fields*/
     get adf() {
- return this.adLoginForm.controls;
-}
+        return this.adLoginForm.controls;
+    }
 
-   
+
 
     onSubmit(loginType) {
         this.submitted = true;
