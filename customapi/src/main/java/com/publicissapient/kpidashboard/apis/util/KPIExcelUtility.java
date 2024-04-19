@@ -58,6 +58,7 @@ import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.LeadTimeChangeData;
 import com.publicissapient.kpidashboard.apis.model.MeanTimeRecoverData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterValue;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
@@ -590,6 +591,7 @@ public class KPIExcelUtility {
 							roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
 									+ roundingOff(totalOriginalEstimate) + " hrs");
 				}
+				setSquads(excelData,jiraIssue);
 				kpiExcelData.add(excelData);
 			});
 		}
@@ -936,6 +938,7 @@ public class KPIExcelUtility {
 						storyDetails.put(sprintIssue.getNumber(), checkEmptyURL(sprintIssue));
 						excelData.setStoryId(storyDetails);
 						excelData.setIssueDesc(checkEmptyName(sprintIssue));
+						setSquads(excelData, sprintIssue);
 						kpiExcelData.add(excelData);
 					});
 		}
@@ -1949,6 +1952,19 @@ public class KPIExcelUtility {
 		iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
 		overAllmodalValues.add(iterationKpiModalValue);
 		modalValues.add(iterationKpiModalValue);
+	}
+
+	private static void setSquads(KPIExcelData excelData, JiraIssue jiraIssue){
+		if (CollectionUtils.isNotEmpty(jiraIssue.getAdditionalFilters())) {
+			excelData
+					.setSquads(jiraIssue
+							.getAdditionalFilters().stream().flatMap(additionalFilter -> additionalFilter
+									.getFilterValues().stream().map(AdditionalFilterValue::getValue))
+							.toList());
+
+		} else {
+			excelData.setSquads(List.of(Constant.DASH));
+		}
 	}
 
 }

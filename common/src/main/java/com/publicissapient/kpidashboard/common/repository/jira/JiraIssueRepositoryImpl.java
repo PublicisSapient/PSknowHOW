@@ -98,6 +98,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	private static final String STATE = "state";
 	private static final String ISSUE_ID = "issueId";
 	private static final String SPRINT_END_DATE = "sprintEndDate";
+	private static final String ADDITIONAL_FILTER = "additionalFilters";
 
 	@Autowired
 	private MongoTemplate operations;
@@ -172,6 +173,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include("resolution");
 		query.fields().include(NAME);
 		query.fields().include(URL);
+		query.fields().include(ADDITIONAL_FILTER);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -222,6 +224,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(LOGGED_WORK_MINUTES);
 		query.fields().include(SPRINT_ASSET_STATE);
 		query.fields().include(SPRINT_END_DATE);
+		query.fields().include(ADDITIONAL_FILTER);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -299,6 +302,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include("labels");
 		query.fields().include("uatDefectGroup");
 		query.fields().include(SPRINT_ID);
+		query.fields().include(ADDITIONAL_FILTER);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -326,6 +330,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(TICKET_CREATED_DATE_FIELD);
 		query.fields().include(NAME);
 		query.fields().include(PRIORITY);
+		query.fields().include(ADDITIONAL_FILTER);
 		return operations.find(query, JiraIssue.class);
 	}
 
@@ -427,6 +432,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(ROOT_CAUSE);
 		query.fields().include(URL);
 		query.fields().include(NAME);
+		query.fields().include(ADDITIONAL_FILTER);
 
 		return operations.find(query, JiraIssue.class);
 
@@ -519,6 +525,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(DEFECT_STORY_ID);
 		query.fields().include(URL);
 		query.fields().include(NAME);
+		query.fields().include(ADDITIONAL_FILTER);
 
 		return operations.find(query, JiraIssue.class);
 	}
@@ -564,6 +571,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(RESOLUTION);
 		query.fields().include(JIRA_ISSUE_STATUS);
 		query.fields().include(AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES);
+		query.fields().include(ADDITIONAL_FILTER);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -596,6 +604,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(SPRINT_NAME);
 		query.fields().include(SPRINT_ID);
 		query.fields().include(URL);
+		query.fields().include(ADDITIONAL_FILTER);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -759,6 +768,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(NAME);
 		query.fields().include(URL);
 		query.fields().include(CONFIG_ID);
+		query.fields().include(ADDITIONAL_FILTER);
 		return new ArrayList<>(operations.find(query, JiraIssue.class));
 
 	}

@@ -21,8 +21,19 @@ package com.publicissapient.kpidashboard.apis.enums;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.bson.types.ObjectId;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 
 /**
  * to order the headings of excel columns
@@ -33,7 +44,7 @@ public enum KPIExcelColumn {
 	CODE_BUILD_TIME("kpi8",
 			Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url",
 					"Weeks")), ISSUE_COUNT("kpi40",
-							Arrays.asList("Sprint Name", "Story ID", "Issue Description")), CODE_COMMIT("kpi11",
+							Arrays.asList("Sprint Name", "Story ID", "Squad", "Issue Description")), CODE_COMMIT("kpi11",
 									Arrays.asList("Project Name", "Repository Url", "Branch", "Days/Weeks", "No. Of Commit",
 											"No. of Merge")),
 
@@ -51,7 +62,7 @@ public enum KPIExcelColumn {
 			"Triage to Complete (In Days)", "Complete TO Live (In Days)", "Lead Time (In Days)")),
 
 	SPRINT_VELOCITY("kpi39",
-			Arrays.asList("Sprint Name", "Story ID", "Issue Description",
+			Arrays.asList("Sprint Name", "Story ID", "Squad", "Issue Description",
 					"Size(story point/hours)")), SPRINT_PREDICTABILITY(
 							"kpi5",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description",
@@ -349,6 +360,31 @@ public enum KPIExcelColumn {
 	 * @return the source
 	 */
 	public List<String> getColumns() {
+		return columns;
+	}
+
+	public List<String> getColumns(List<Node> nodeList, CacheService cacheService,
+			FilterHelperService filterHelperService) {
+		Set<ObjectId> projectIds = nodeList.stream().map(a -> a.getProjectFilter().getBasicProjectConfigId())
+				.collect(Collectors.toSet());
+		boolean squadConfigured = false;
+		Map<String, AdditionalFilterCategory> addFilterCat = filterHelperService.getAdditionalFilterHierarchyLevel();
+		List<AccountHierarchyData> accountHierarchyData = (List<AccountHierarchyData>) cacheService
+				.cacheAccountHierarchyData();
+		for (ObjectId projectId : projectIds) {
+			if (CollectionUtils.isNotEmpty((accountHierarchyData).stream().filter(
+					a -> addFilterCat.containsKey(a.getLabelName()) && a.getBasicProjectConfigId().equals(projectId))
+					.toList())) {
+				squadConfigured = true;
+				break;
+			}
+		}
+		if (!squadConfigured) {
+			List<String> modifiableList = new ArrayList<>(columns);
+			modifiableList.removeIf(a -> a.equalsIgnoreCase("Squad"));
+			return modifiableList;
+
+		}
 		return columns;
 	}
 
