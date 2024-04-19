@@ -17,7 +17,7 @@ services:
       - POSTGRES_PASSWORD=<DB PASSWORD>
       - POSTGRES_DB=<DB NAME >
     networks:
-      - Network_knowhow
+      - Network_auth
 
   authnauth:
     image: psknowhow/authnauth:<TAG VERSION>
@@ -35,12 +35,18 @@ services:
       - auth.secret=<Your Auth Secret>
       - forgotPassword.uiHost=https://<DNS>
       - auth.corsFilterValidOrigin=https://<DNS>
+      - spring.datasource.password=<DB PASSWORD>
+      - spring.datasource.username=<POSTGRES_USER>
+      - auth.holdingEntityId=
+      - auth.assertingEntityId=
+      - auth.alias=
+      - auth.samlLoginUrl=
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     links:
       - authdb:authdb
     networks:
-      - Network_knowhow
+      - Network_auth
 
   authnauth-ui:
     image: psknowhow/authnauth-ui:<TAG VERSION>
@@ -63,10 +69,13 @@ services:
     links:
       - authdb:authdb
     networks:
-      - Network_knowhow
+      - Network_auth
+
+volumes:
+  authdata:
 
 networks:
-  Network_knowhow:
+  Network_auth:
     driver: bridge
     ipam:
       config:
