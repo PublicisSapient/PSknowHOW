@@ -17,4 +17,8 @@
     ```
     docker-compose up -d
     ```
-5. Your application will now be running and can be accessed from a browser using the DNS or Host IP.
+5. Your application will now be running and can be accessed from a browser using the DNS.
+6. Now connect the Knowhow container with auth containers
+   ```
+   docker network connect <auth container network> <knowhow ui container name>
+   ```
