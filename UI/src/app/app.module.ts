@@ -124,6 +124,8 @@ import { DoraComponent } from './dashboard/dora/dora.component';
 import { DeveloperComponent } from './dashboard/developer/developer.component';
 import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/bar-with-y-axis-group.component';
 import { FeatureFlagsService } from './services/feature-toggle.service';
+import { MessagesModule } from 'primeng/messages';
+import { MessageModule } from 'primeng/message';
 /******************************************************/
 
 export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService) {
@@ -233,6 +235,8 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         OverlayPanelModule,
         MenuModule,
         SkeletonModule,
+        MessagesModule,
+        MessageModule,
         SharedModuleModule
     ],
     providers: [

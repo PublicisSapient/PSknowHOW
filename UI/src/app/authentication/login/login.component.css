@@ -481,3 +481,7 @@ input[type='password'],
     top: 20px;
     left: 20px;
 }
+
+:host ::ng-deep .p-message .p-message-detail {
+    word-break: break-word;
+}
