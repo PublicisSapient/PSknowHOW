@@ -80,6 +80,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	public static final String INVALID_PROJECT_TOOL_CONFIG_ID = "Invalid projectToolConfigId";
 	public static final String HISTORY = "history";
+	public static final String OBJECT_ID = "org.bson.types.ObjectId";
+	public static final String DOUBLE = "java.lang.Double";
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 
@@ -690,6 +692,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	@Override
 	public boolean convertToFieldMappingAndCheckIsFieldPresent(List<FieldMappingResponse> fieldMappingResponseList, FieldMapping fieldMapping) throws IllegalAccessException {
+		// this function checks if Fields are Present in FieldMapping or not and converts fieldMappingResponseList to FieldMapping.
 		boolean allfieldFound=false;
 		for (FieldMappingResponse response : fieldMappingResponseList) {
 			String fieldName = response.getFieldName();
@@ -724,7 +727,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			Object v=convertToSameType(field,value);
 			field.set(object, v);
 		} catch (NoSuchFieldException e) {
-			// Field not found, ignore
+			log.warn("Field not found");
 		}
 	}
 
@@ -733,9 +736,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		if (fieldType.isArray() && fieldType.getComponentType() == String.class) {
 			List<?> list = (List<?>) value1;
 			return list.toArray(new String[0]);
-		} else if (fieldType.getName().equalsIgnoreCase("org.bson.types.ObjectId")) {
+		} else if (fieldType.getName().equalsIgnoreCase(OBJECT_ID)) {
 			return new ObjectId((String) value1);
-		} else if (fieldType.getName().equalsIgnoreCase("java.lang.Double")) {
+		} else if (fieldType.getName().equalsIgnoreCase(DOUBLE)) {
 			return ((Integer) value1).doubleValue();
 		} else {
 			// Unsupported type, return null
