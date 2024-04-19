@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -80,6 +81,7 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 		Set<AccountHierarchy> accountHierarchies = new HashSet<>();
 		Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
 		Set<SprintDetails> sprintDetailsSet = new HashSet<>();
+		Set<Assignee> assignee = new HashSet<>();
 
 		for (CompositeResult compositeResult : compositeResults) {
 			if (null != compositeResult.getJiraIssue()) {
@@ -98,10 +100,7 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 			if (CollectionUtils.isNotEmpty(compositeResult.getAccountHierarchies())) {
 				accountHierarchies.addAll(compositeResult.getAccountHierarchies());
 			}
-			if (null != compositeResult.getAssigneeDetails()) {
-				assigneesToSave.put(compositeResult.getAssigneeDetails().getBasicProjectConfigId(),
-						compositeResult.getAssigneeDetails());
-			}
+			addAssigness(assigneesToSave, assignee, compositeResult);
 		}
 
 		if (MapUtils.isNotEmpty(jiraIssues)) {
@@ -118,6 +117,24 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 		}
 		if (MapUtils.isNotEmpty(assigneesToSave)) {
 			writeAssigneeDetails(assigneesToSave);
+		}
+	}
+
+	/**
+	 * Adding assignees to map
+	 * 
+	 * @param assigneesToSave
+	 * @param assignee
+	 * @param compositeResult
+	 */
+	private static void addAssigness(Map<String, AssigneeDetails> assigneesToSave, Set<Assignee> assignee,
+			CompositeResult compositeResult) {
+		if (compositeResult.getAssigneeDetails() != null
+				&& CollectionUtils.isNotEmpty(compositeResult.getAssigneeDetails().getAssignee())) {
+			assignee.addAll(compositeResult.getAssigneeDetails().getAssignee());
+			compositeResult.getAssigneeDetails().setAssignee(assignee);
+			assigneesToSave.put(compositeResult.getAssigneeDetails().getBasicProjectConfigId(),
+					compositeResult.getAssigneeDetails());
 		}
 	}
 
