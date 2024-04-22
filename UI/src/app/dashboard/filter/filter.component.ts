@@ -566,7 +566,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   createFormGroup(level, arr?) {
     if (arr?.length > 0) {
       const obj = {};
-      const alreadySelectedSprints = this.getSprintsWhichWasAlreadySelected();
+      const alreadySelectedSprints = this.getSprintsWhichWasAlreadySelected(level);
       for (let i = 0; i < arr?.length; i++) {
         if(alreadySelectedSprints.includes(arr[i]['nodeId'])){
           obj[arr[i]['nodeId']] = new UntypedFormControl(true);
@@ -659,10 +659,7 @@ export class FilterComponent implements OnInit, OnDestroy {
      /** Refreshing kpiFilter backup when project is changing */
         this.service.setAddtionalFilterBackup({});
         this.service.setKpiSubFilterObj({});
-
-    this.additionalFiltersArr.forEach((additionalFilter) => {
-      this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
-    });
+this.resetAddtionalFIlters();
     this.applyChanges();
     this.totalProjectSelected = this.service.getSelectedTrends().length;
   }
@@ -729,7 +726,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
 
       if(this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity'){
-        this.setSelectedSprintOnServiceLayer();
+        this.setSelectedSprintOnServiceLayer(applySource);
       }
 
       if (!applySource) {
@@ -1329,6 +1326,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.emptyIdsFromQueryParam();
     }
      this.refreshKpiLevelFiltersBackup(level, isChangedFromUI) // Refreshing KPi level filters backup
+     if(level !== 'sqd'){
+      this.resetAddtionalFIlters();
+     }
     this.lastSyncData = {};
     this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
@@ -1355,13 +1355,15 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setCurrentSelectedSprint(this.selectedSprint);
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
-        if(level === 'sqd'){
-          const AllSqd = this.filterForm.get(level).value;
-          const selectedSqd = Object.keys(AllSqd).filter(sq=>AllSqd[sq] === true);
-         if(selectedSqd){
-          const selectedAdditionalFilter = this.additionalFiltersDdn[level].filter(sqd=>selectedSqd.includes(sqd['nodeId']));
-          this.selectedFilterArray[0]['additionalFilters'] = selectedAdditionalFilter;
-         }
+         if(this.filterForm.get(level)){
+           const AllSqd = this.filterForm.get(level).value;
+           const selectedSqd = Object.keys(AllSqd).filter(sq => AllSqd[sq] === true);
+            if (selectedSqd) {
+              const selectedAdditionalFilter = this.additionalFiltersDdn[level].filter(sqd => selectedSqd.includes(sqd['nodeId']));
+              this.selectedFilterArray[0]['additionalFilters'] = selectedAdditionalFilter;
+              this.setSelectedSprintOnServiceLayer(level);
+
+          }
         }
         this.createFilterApplyData();
         this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
@@ -1900,28 +1902,28 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   /*Sets the selected sprints on the service layer for storage. */
-  setSelectedSprintOnServiceLayer() {
+  setSelectedSprintOnServiceLayer(level) {
     let selectedSprint = {}
     this.selectedFilterArray?.forEach(element => {
       if (element['additionalFilters'].length) {
-        selectedSprint = { ...selectedSprint, [element['nodeId']]: element['additionalFilters'] }
+        selectedSprint = { ...selectedSprint, [this.selectedTab.toLowerCase() === 'iteration' ? element['parentId'][0] : element['nodeId']]: element['additionalFilters'] }
       }
     });
-  this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), sprint: selectedSprint });
+  this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), [level] : selectedSprint });
   }
 
   /**
   Filters a list of sprints to only include those that were previously selected
   @returns An array containing the node IDs of sprints that were previously selected */
 
-  getSprintsWhichWasAlreadySelected() {
+  getSprintsWhichWasAlreadySelected(level) {
     const sprintsWhichWasAlreadySelected = []
-    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()['sprint'] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity') {
+    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()[level] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity') {
       const selectedProjects = this.service.getSelectedTrends().map(data => data.nodeId);
       selectedProjects.forEach(nodeId => {
-        const projectWhichSprintWasSelected = Object.keys(this.service.getAddtionalFilterBackup()['sprint']);
+        const projectWhichSprintWasSelected = Object.keys(this.service.getAddtionalFilterBackup()[level]);
         if (projectWhichSprintWasSelected && projectWhichSprintWasSelected.length && projectWhichSprintWasSelected.includes(nodeId)) {
-          sprintsWhichWasAlreadySelected.push(...this.service.getAddtionalFilterBackup()['sprint'][nodeId].map(details => details.nodeId));
+          sprintsWhichWasAlreadySelected.push(...this.service.getAddtionalFilterBackup()[level][nodeId].map(details => details.nodeId));
         }
       })
     }
@@ -1952,6 +1954,12 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.copyFilteredAddFilters[hierarchyLevelId] = this.filteredAddFilters[hierarchyLevelId].filter((item) =>
         item.nodeName.toLowerCase().includes(sTxt.toLowerCase())
       );
+    }
+
+    resetAddtionalFIlters() {
+      this.additionalFiltersArr.forEach((additionalFilter) => {
+        this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
+      });
     }
 
   /** 
