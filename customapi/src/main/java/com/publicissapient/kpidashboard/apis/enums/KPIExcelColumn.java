@@ -34,11 +34,11 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url",
 					"Weeks")), ISSUE_COUNT("kpi40",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description")), CODE_COMMIT("kpi11",
-									Arrays.asList("Project Name", "Repository Url", "Branch", "Days/Weeks", "No. Of Commit",
+									Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No. Of Commit",
 											"No. of Merge")),
 
 	MEAN_TIME_TO_MERGE("kpi84",
-			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
+			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks",
 					"Mean Time To Merge (In Hours)")), AVERAGE_RESOLUTION_TIME(
 							"kpi83",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Issue Type",
@@ -164,7 +164,7 @@ public enum KPIExcelColumn {
 			"Build Status", "Build Url")),
 
 	CODE_COMMIT_MERGE_KANBAN("kpi65",
-			Arrays.asList("Project Name", "Repository Url", "Branch", "Days/Weeks", "No. Of Commit")),
+			Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No. Of Commit")),
 
 	TEAM_CAPACITY_KANBAN("kpi58",
 			Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
@@ -282,11 +282,11 @@ public enum KPIExcelColumn {
 			"Sprint Name", "Assignee", "Issue Status", "Testing Phase")),
 
 	PICKUP_TIME("kpi160",
-			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
+			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks",
 					"Pickup Time (In Hours)")),
 
 	PR_SIZE("kpi162",
-			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
+			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks",
 					"PR Size (No. of lines)")),
 
 	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status",
@@ -304,7 +304,7 @@ public enum KPIExcelColumn {
 
 	CYCLE_TIME("kpi171", Arrays.asList("Issue Id", "Issue Type", "Issue Description","DOR Date", "Intake to DOR",
 			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live")),
-	REWORK_RATE("kpi173", Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks", "Rework Rate")),
+	REWORK_RATE("kpi173", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Rework Rate")),
 
 	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee"));
 
