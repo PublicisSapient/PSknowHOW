@@ -569,6 +569,26 @@ public class FieldMappingServiceImplTest {
 
 	}
 
+	@Test
+	public void convertToFieldMappingAndCheckIsFieldPresent() throws IllegalAccessException {
+		FieldMappingResponse response = new FieldMappingResponse();
+		response.setFieldName("rootCauseIdentifier");
+		response.setOriginalValue("CustomField");
+		response.setPreviousValue("");
+
+		FieldMappingResponse response2 = new FieldMappingResponse();
+		response2.setFieldName("jiraIssueTypeNames");
+		response2.setOriginalValue(Arrays.asList("abc"));
+		response2.setPreviousValue("");
+
+		FieldMappingResponse response3 = new FieldMappingResponse();
+		response3.setFieldName("adc");
+		response3.setOriginalValue("bc");
+		response3.setPreviousValue("");
+
+		fieldMappingService.convertToFieldMappingAndCheckIsFieldPresent(Arrays.asList(response,response2, response3),new FieldMapping());
+	}
+
 	private void mockRepositoriesForScrum() {
 		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class)))
 				.thenReturn(scrumFieldMapping);

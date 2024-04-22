@@ -80,6 +80,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	public static final String INVALID_PROJECT_TOOL_CONFIG_ID = "Invalid projectToolConfigId";
 	public static final String HISTORY = "history";
+	public static final String OBJECT_ID = "org.bson.types.ObjectId";
+	public static final String DOUBLE = "java.lang.Double";
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 
@@ -576,25 +578,27 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				String fieldName = field.getName();
 				String setterName = "setHistory" + fieldName;
 				FieldMappingStructure mappingStructure = fieldMappingStructureMap.get(fieldName);
-				List<ConfigurationHistoryChangeLog> changeLogs = getAccessibleFieldHistory(oldMapping, field.getName());
-				Method setter = historyClass.getMethod(setterName, List.class);
-				if (isValueUpdated(oldValue, newValue)) {
-					newValue = getNestedField(newMapping, fieldMappingClass, newValue, mappingStructure);
-					newValue = generateAdditionalFilters(newValue, fieldName);
-					String loggedInUser = authenticationService.getLoggedInUser();
-					String localDateTime = LocalDateTime.now().toString();
-					if (CollectionUtils.isNotEmpty(changeLogs)) {
-						// if change log is already present then we will be adding the new log
-						changeLogs.add(
-								new ConfigurationHistoryChangeLog(changeLogs.get(changeLogs.size() - 1).getChangedTo(),
-										newValue, loggedInUser, localDateTime));
-					} else {
-						// if change log is absent then we will be creating the new log
-						changeLogs = new ArrayList<>();
-						changeLogs.add(new ConfigurationHistoryChangeLog("", newValue, loggedInUser, localDateTime));
+				if(mappingStructure!=null) {
+					List<ConfigurationHistoryChangeLog> changeLogs = getAccessibleFieldHistory(oldMapping, field.getName());
+					Method setter = historyClass.getMethod(setterName, List.class);
+					if (isValueUpdated(oldValue, newValue)) {
+						newValue = getNestedField(newMapping, fieldMappingClass, newValue, mappingStructure);
+						newValue = generateAdditionalFilters(newValue, fieldName);
+						String loggedInUser = authenticationService.getLoggedInUser();
+						String localDateTime = LocalDateTime.now().toString();
+						if (CollectionUtils.isNotEmpty(changeLogs)) {
+							// if change log is already present then we will be adding the new log
+							changeLogs.add(
+									new ConfigurationHistoryChangeLog(changeLogs.get(changeLogs.size() - 1).getChangedTo(),
+											newValue, loggedInUser, localDateTime));
+						} else {
+							// if change log is absent then we will be creating the new log
+							changeLogs = new ArrayList<>();
+							changeLogs.add(new ConfigurationHistoryChangeLog("", newValue, loggedInUser, localDateTime));
+						}
+						setter.invoke(newMapping, changeLogs);
 					}
 				}
-				setter.invoke(newMapping, changeLogs);
 			} catch (IllegalAccessException | NoSuchFieldException | InvocationTargetException
 					| NoSuchMethodException e) {
 				log.debug("No Such Method Found" + e);
@@ -629,7 +633,11 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				return !(value1 instanceof String[] && Arrays.equals((String[]) value, (String[]) value1));
 
 			} else {
-				return !value1.equals(value);
+				if (value1 != null) {
+					return !value1.equals(value);
+				} else {
+					return true;
+				}
 
 			}
 		}
@@ -637,21 +645,24 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	private void saveTemplateCode(ProjectBasicConfig projectBasicConfig, ProjectToolConfig projectToolConfig) {
 		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)|| projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE)) {
-			if (projectBasicConfig.getIsKanban() && !projectToolConfig.getMetadataTemplateCode()
-					.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN)) {
-				projectToolConfig.setMetadataTemplateCode(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN);
-				toolConfigRepository.save(projectToolConfig);
-				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
-			} else if (!projectBasicConfig.getIsKanban() && !projectToolConfig.getMetadataTemplateCode()
-					.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM)) {
+			if(projectToolConfig.getMetadataTemplateCode()!=null) {
+				if (projectBasicConfig.getIsKanban() && !projectToolConfig.getMetadataTemplateCode()
+						.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN)) {
+					projectToolConfig.setMetadataTemplateCode(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN);
+					toolConfigRepository.save(projectToolConfig);
+					cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+				} else if (!projectBasicConfig.getIsKanban() && !projectToolConfig.getMetadataTemplateCode()
+						.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM)) {
+					projectToolConfig.setMetadataTemplateCode(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM);
+					toolConfigRepository.save(projectToolConfig);
+					cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+				}
+			} else {
 				projectToolConfig.setMetadataTemplateCode(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM);
 				toolConfigRepository.save(projectToolConfig);
 				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			}
 
-		}
-		else if(projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE)){
-			projectToolConfig.setMetadataTemplateCode(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM);
 		}
 
 	}
@@ -679,4 +690,59 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 	}
 
+	@Override
+	public boolean convertToFieldMappingAndCheckIsFieldPresent(List<FieldMappingResponse> fieldMappingResponseList, FieldMapping fieldMapping) throws IllegalAccessException {
+		// this function checks if Fields are Present in FieldMapping or not and converts fieldMappingResponseList to FieldMapping.
+		boolean allfieldFound=false;
+		for (FieldMappingResponse response : fieldMappingResponseList) {
+			String fieldName = response.getFieldName();
+
+			if (fieldName.contains(HISTORY) || fieldName.equalsIgnoreCase("id")){
+				continue;
+			}
+			if (isFieldPresent(fieldMapping.getClass(), fieldName)) {
+				Object originalValue = response.getOriginalValue();
+				setFieldValue(fieldMapping, fieldName, originalValue);
+			} else if (!allfieldFound) {
+				allfieldFound=true;
+			}
+		}
+
+		return allfieldFound;
+	}
+
+	private boolean isFieldPresent(Class<?> clazz, String fieldName) {
+		try {
+			clazz.getDeclaredField(fieldName);
+			return true;
+		} catch (NoSuchFieldException e) {
+			return false;
+		}
+	}
+
+	private void setFieldValue(FieldMapping object, String fieldName, Object value) throws IllegalAccessException {
+		try {
+			Field field = FieldMapping.class.getDeclaredField(fieldName);
+			setAccessible(field);
+			Object v=convertToSameType(field,value);
+			field.set(object, v);
+		} catch (NoSuchFieldException e) {
+			log.warn("Field not found");
+		}
+	}
+
+	private Object convertToSameType(Field field, Object value1) {
+		Class<?> fieldType = field.getType();
+		if (fieldType.isArray() && fieldType.getComponentType() == String.class) {
+			List<?> list = (List<?>) value1;
+			return list.toArray(new String[0]);
+		} else if (fieldType.getName().equalsIgnoreCase(OBJECT_ID)) {
+			return new ObjectId((String) value1);
+		} else if (fieldType.getName().equalsIgnoreCase(DOUBLE)) {
+			return ((Integer) value1).doubleValue();
+		} else {
+			// Unsupported type, return null
+			return value1;
+		}
+	}
 }
