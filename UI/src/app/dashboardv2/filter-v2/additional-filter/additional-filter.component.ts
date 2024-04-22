@@ -17,8 +17,10 @@ export class AdditionalFilterComponent implements OnChanges, OnInit {
   filterData1 = new Set();
   filterData2 = new Set();
   filterSet: any;
-  filterData: string[] = [];
+  filterData = [];
   appliedFilters = {};
+  filterDisplayValue: any;
+  initialLoad: boolean = true;
 
   constructor(private service: SharedService, private helperService: HelperService) {
 
@@ -64,7 +66,23 @@ export class AdditionalFilterComponent implements OnChanges, OnInit {
           f = Array.from(f);
           this.filterData[index] = f;
         });
+        if (this.initialLoad) {
+          this.filterData.forEach(filterArray => {
+            if (filterArray.indexOf('Overall') !== -1) {
+              filterArray.splice(filterArray.indexOf('Overall'), 1);
+              filterArray.unshift('Overall');
+            }
+            let fakeEvent = {};
+            fakeEvent['value'] = filterArray[0];
+            this.filterDisplayValue = filterArray[0];
+            setTimeout(() => {
+              this.initialLoad = false;
+              this.applyAdditionalFilter(fakeEvent, 1);
+            }, 0)
+          });
+        }
         console.log(this.filterData);
+
       }
     }));
 

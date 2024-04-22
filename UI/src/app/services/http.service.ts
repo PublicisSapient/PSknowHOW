@@ -153,7 +153,7 @@ export class HttpService {
   private getCommentCountUrl = this.baseUrl + '/api/comments/getCommentCount';
   private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
   private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
-  private getAssingeeEmailsUrl = this.baseUrl + '/api/capacity/assignees/email/';
+  private getAssingeeEmailsUrl = this.baseUrl + 'repotool/assignees/email/';
   private saveAssigneeForProjectUrl = this.baseUrl + '/api/capacity/assignee';
   private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
   private commentsSummaryUrl = this.baseUrl + '/api/comments/commentsSummary';
