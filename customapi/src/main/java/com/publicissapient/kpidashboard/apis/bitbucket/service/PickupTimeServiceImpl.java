@@ -199,6 +199,11 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 							.sum()).orElse(0L);
 			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
 					overallPickupTime, overAllMergeRequests, aggDataMap);
+			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
+					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
+			repoToolValidationDataList.addAll(
+					setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, Constant.AGGREGATED_VALUE,
+							projectName, date, aggDataMap));
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
 						.getId() != null) {
@@ -224,12 +229,6 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 
 				}
 			});
-
-			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-			repoToolValidationDataList.addAll(
-					setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, Constant.AGGREGATED_VALUE,
-							projectName, date, aggDataMap));
 
 			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 		}

@@ -177,6 +177,11 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 					.orElse(0.0d);
 			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
 					KpiHelperService.convertMilliSecondsToHours(overAllMeanTimeToMerge), aggDataMap);
+			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
+					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
+			repoToolValidationDataList.addAll(
+					setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, Constant.AGGREGATED_VALUE,
+							projectName, date, aggDataMap));
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
 						.getId() != null) {
@@ -201,11 +206,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 
 				}
 			});
-			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-			repoToolValidationDataList.addAll(
-					setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, Constant.AGGREGATED_VALUE,
-							projectName, date, aggDataMap));
+
 			currentDate = KpiHelperService.getNextRangeDate(duration, finalCurrentDate);
 		}
 
