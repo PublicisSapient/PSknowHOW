@@ -139,7 +139,7 @@
                      <div class="p-d-flex"
                         *ngIf="selectedTab?.toLowerCase() !== 'value' && selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'dora' && selectedTab?.toLowerCase() !== 'developer'">
                         <div *ngFor="let item of additionalFiltersArr; let i = index;" class="position-relative">
-                           <div *ngIf="item?.hierarchyLevelId !== 'release' && (item?.hierarchyLevelId !== 'sprint' && selectedTab?.toLowerCase() === 'iteration')" 
+                           <div *ngIf="item?.hierarchyLevelId !== 'release' && !(item?.hierarchyLevelId === 'sprint' && selectedTab?.toLowerCase() === 'iteration')" 
                               class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"
                               [ngClass]="{'active': toggleDropdownObj[item?.hierarchyLevelId], 'disabled': isAddFilterDisabled(item?.hierarchyLevelId)}"
                               (click)="toggleDropdownObj[item.hierarchyLevelId] = !toggleDropdownObj[item.hierarchyLevelId]"
