@@ -204,6 +204,11 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
 					overAllLinesChanged, overAllMergeRequests, aggDataMap);
 
+			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
+					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
+
+			repoToolValidationDataList.addAll(setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, Constant.AGGREGATED_VALUE,
+					projectName, date, aggDataMap));
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
 						.getId() != null) {
@@ -229,11 +234,6 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 					setDataCount(projectName, date, overallKpiGroup, linesChanged, mergeRequests, aggDataMap);
 				}
 			});
-			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-
-			repoToolValidationDataList.addAll(setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, Constant.AGGREGATED_VALUE,
-					projectName, date, aggDataMap));
 
 			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 		}
