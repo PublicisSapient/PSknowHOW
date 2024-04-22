@@ -99,10 +99,8 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.MEAN_TIME_TO_MERGE);
-		Map<String, List<DataCount>> unsortedMap = trendValuesMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
 		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();
-		unsortedMap.forEach((statusType, dataCounts) -> {
+		trendValuesMap.forEach((statusType, dataCounts) -> {
 			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
 					.collect(Collectors.groupingBy(DataCount::getData));
 			statusTypeProjectWiseDc.put(statusType, projectWiseDc);
@@ -177,11 +175,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 					.orElse(0.0d);
 			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
 					KpiHelperService.convertMilliSecondsToHours(overAllMeanTimeToMerge), aggDataMap);
-			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-			repoToolValidationDataList.addAll(
-					setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, Constant.AGGREGATED_VALUE,
-							projectName, date, aggDataMap));
+
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
 						.getId() != null) {
@@ -206,6 +200,11 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 
 				}
 			});
+			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
+					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
+			repoToolValidationDataList.addAll(
+					setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, Constant.AGGREGATED_VALUE,
+							projectName, date, aggDataMap));
 
 			currentDate = KpiHelperService.getNextRangeDate(duration, finalCurrentDate);
 		}
