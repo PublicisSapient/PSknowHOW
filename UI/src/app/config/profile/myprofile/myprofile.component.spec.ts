@@ -672,7 +672,7 @@ describe('MyprofileComponent', () => {
       (key, value) => (localStore[key] = value + '')
     );
     spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
-
+    shared.setCurrentUserDetails({ username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'rishabh.shukla@publicissapient.com' })
     localStorage.setItem('hierarchyData', JSON.stringify(hierarchyData));
     fixture.detectChanges();
   });
