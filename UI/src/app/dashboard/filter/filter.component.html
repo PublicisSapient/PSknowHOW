@@ -98,7 +98,7 @@
                      </ng-select>
                   </div>
                   </div>
-                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release'">
+                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'backlog'  && selectedTab?.toLowerCase() !== 'release'">
                      <!-- Date filter start -->
                      <div *ngIf="(kanban && selectedDateFilter !== '') || this.selectedTab?.toLowerCase() === 'developer'"
                         class="selected-date p-ml-auto p-mr-2 p-mt-auto p-align-end">
@@ -139,7 +139,7 @@
                      <div class="p-d-flex"
                         *ngIf="selectedTab?.toLowerCase() !== 'value' && selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'dora' && selectedTab?.toLowerCase() !== 'developer'">
                         <div *ngFor="let item of additionalFiltersArr; let i = index;" class="position-relative">
-                           <div *ngIf="item?.hierarchyLevelId !== 'release'"
+                           <div *ngIf="item?.hierarchyLevelId !== 'release' && (item?.hierarchyLevelId !== 'sprint' && selectedTab?.toLowerCase() === 'iteration')" 
                               class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"
                               [ngClass]="{'active': toggleDropdownObj[item?.hierarchyLevelId], 'disabled': isAddFilterDisabled(item?.hierarchyLevelId)}"
                               (click)="toggleDropdownObj[item.hierarchyLevelId] = !toggleDropdownObj[item.hierarchyLevelId]"
@@ -157,9 +157,7 @@
                                  </div>
                                  <label class="checkbox-modified"
                                     *ngFor="let key of copyFilteredAddFilters[item.hierarchyLevelId]; let i = index">
-                                    <input type="radio" *ngIf="item?.hierarchyLevelId !== 'sprint'"
-                                       [formControlName]="item?.hierarchyLevelId" [value]="key.nodeId" class="p-mr-1" />
-                                    <div *ngIf="item?.hierarchyLevelId === 'sprint'"
+                                   <div
                                        [formGroupName]="item?.hierarchyLevelId">
                                        <input type="checkbox" [formControlName]="key.nodeId"
                                           [checked]="filterForm?.get(item?.hierarchyLevelId)?.value[key.nodeId]"
@@ -177,7 +175,7 @@
                                     (click)="toggleDropdownObj[item?.hierarchyLevelId] = false"></button>
                                  <button pButton pRipple label="Apply" icon="pi pi-save"
                                     class="p-button-secondary p-button-sm"
-                                    (click)="applyChanges(item?.hierarchyLevelId)"
+                                    (click)=" selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('sqd', true) : applyChanges(item?.hierarchyLevelId)"
                                     [attr.disabled]="checkIfBtnDisabled(item?.hierarchyLevelId)"></button>
                               </div>
                            </div>
@@ -190,20 +188,6 @@
          </div>
 
          <div class="p-d-flex p-align-center">
-            <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
-               <div class="p-d-flex p-align-center p-jc-end">
-                  <img *ngIf="selectedProjectLastSyncStatus === 'SUCCESS'" src="../../../assets/img/icon-success.svg" alt="Success" class="p-mr-1"/>
-                  <img *ngIf="selectedProjectLastSyncStatus === 'NA' && !lastSyncData?.fetchSuccessful" src="../../../assets/img/icon-time.svg" alt="Time" class="p-mr-1" />
-                  <img *ngIf="selectedProjectLastSyncStatus === 'FAILURE'" src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />
-                  <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
-                     Last Sync
-                  </h4>
-
-               </div>
-               <p class="last-sync-date p-m-0 p-text-right">
-                  {{selectedProjectLastSyncStatus != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
-               </p>
-            </div>
 
             <!-- SHow/Hide start for iteration and backlog -->
 
@@ -454,6 +438,22 @@
             </span>
          </div>
          <div class="p-d-flex p-align-center">
+
+            <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
+               <div class="p-d-flex p-align-center p-jc-end">
+                  <img *ngIf="selectedProjectLastSyncStatus === 'SUCCESS'" src="../../../assets/img/icon-success.svg" alt="Success" class="p-mr-1"/>
+                  <img *ngIf="selectedProjectLastSyncStatus === 'NA' && !lastSyncData?.fetchSuccessful" src="../../../assets/img/icon-time.svg" alt="Time" class="p-mr-1" />
+                  <img *ngIf="selectedProjectLastSyncStatus === 'FAILURE'" src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />
+                  <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
+                     Last Sync
+                  </h4>
+
+               </div>
+               <p class="last-sync-date p-m-0 p-text-right">
+                  {{selectedProjectLastSyncStatus != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
+               </p>
+            </div>
+
             <div class="p-mr-2" *ngIf="this.selectedSprint?.['sprintState']?.toLowerCase() === 'active' && !isGuest && selectedTab?.toLowerCase() === 'iteration'">
                <span class="refresh-state p-p-2" (click)="displayModal = true"
                *ngIf=" (lastSyncData | json) == '{}' || lastSyncData.errorInFetch">
