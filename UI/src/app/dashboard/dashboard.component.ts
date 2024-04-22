@@ -77,7 +77,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
       `We are migrating our servers to Azure cloud.
       You will regain your access once the activity is complete.
       Thank you for your patience and stay tuned for the latest KnowHOW updates !
-      Please check your project on the new Azure Production Instance: <a target="_blank" href="https://psknowhow.tools.publicis.sapient.com">https://psknowhow.tools.publicis.sapient.com</a>`}
+      `}
   ];
     this.setPageContentWrapperHeight();
     // this.authorized = this.getAuth.checkAuth();

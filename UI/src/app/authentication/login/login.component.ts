@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit {
             `We are migrating our servers to <br/> Azure cloud.<br/>
             You will regain your access once the <br/> activity is complete. <br/>
             Thank you for your patience and stay tuned for the latest KnowHOW updates !
-            Please check your project on the new Azure Production Instance:<br/> <a target="_blank" href="https://psknowhow.tools.publicis.sapient.com">https://psknowhow.tools.publicis.sapient.com</a>`}
+            `}
         ];
 
         this.getLoginConfig();
