@@ -39,7 +39,7 @@ describe('MyprofileComponent', () => {
   let shared;
   let authService;
   const baseUrl = environment.baseUrl;
-  const successResponse = { message: 'Email updated successfully', success: true, data: { username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'rishabh.shukla@publicissapient.com' } };
+  const successResponse = { message: 'Email updated successfully', success: true, data: { username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'testuser@gmail.com' } };
   const hierarchyData = [
     {
       level: 1,
@@ -672,7 +672,7 @@ describe('MyprofileComponent', () => {
       (key, value) => (localStore[key] = value + '')
     );
     spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
-    shared.setCurrentUserDetails({ username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'rishabh.shukla@publicissapient.com' })
+    shared.setCurrentUserDetails({ username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'testuser@gmail.com'})
     localStorage.setItem('hierarchyData', JSON.stringify(hierarchyData));
     fixture.detectChanges();
   });
