@@ -141,7 +141,7 @@ export class FilterNewComponent implements OnInit {
     let colorsArr = ['#6079C5', '#A4F6A5', '#FBCF5F', '#9FECFF', '#FFB587', '#D48DEF']
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
-      if (data[i] && data[i].nodeId) {
+      if (data[i]?.nodeId) {
         this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId }
       }
     }
@@ -267,6 +267,10 @@ export class FilterNewComponent implements OnInit {
       }
 
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
+      this.filterApplyData['selectedMap']['date'] = ['WEEKS'];
+
+      // set selected projects(trends)
+      this.service.setSelectedTrends([...new Set(event.map((item) => item.basicProjectConfigId))]);
 
       if (this.selectedLevel) {
         if (typeof this.selectedLevel === 'string') {

@@ -167,7 +167,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
-      if(data && Object.keys(data).length) {
+      if (data && Object.keys(data).length) {
         this.updatedConfigGlobalData.forEach(kpi => {
           this.handleSelectedOption(data, kpi);
         });
@@ -840,7 +840,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return objArray;
   }
 
-  getChartData(kpiId, idx, aggregationType) {
+  getChartData(kpiId, idx, aggregationType, kpiFilterChange = false) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
     this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
@@ -965,7 +965,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     this.createTrendsData(kpiId);
     this.handleMaturityTableLoader();
-    this.service.setAdditionalFilters(this.additionalFiltersArr);
+    if (!kpiFilterChange) {
+      this.service.setAdditionalFilters(this.additionalFiltersArr);
+    }
   }
 
   getChartDataForRelease(kpiId, idx, aggregationType?) {
@@ -1496,9 +1498,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     const agType = this.updatedConfigGlobalData?.filter(x => x.kpiId == kpi?.kpiId)[0]?.kpiDetail?.aggregationCriteria;
     if (this.selectedTab !== 'release') {
-      this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), agType);
+      this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), agType, true);
     } else {
-      this.getChartDataForRelease(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
+      this.getChartDataForRelease(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), true);
     }
     this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj, 'release', this.filterApplyData['ids'][0]);
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
