@@ -62,8 +62,8 @@ public class KerberosClient {
 
 	private String jaasConfigFilePath;
 	private String krb5ConfigFilePath;
-	private CloseableHttpClient loginHttpClient;
-	private CloseableHttpClient httpClient;
+	private HttpClient loginHttpClient;
+	private HttpClient httpClient;
 	private BasicCookieStore cookieStore;
 	private String JaasUser;
 	private String samlEndPoint;
@@ -71,7 +71,7 @@ public class KerberosClient {
 
 	/**
 	 * Kerberos client constructor
-	 * 
+	 *
 	 * @param jaasConfigFilePath
 	 *            path to a file that contains login information
 	 * @param krb5ConfigFilePath
@@ -97,7 +97,7 @@ public class KerberosClient {
 
 	/**
 	 * Get cookie store
-	 * 
+	 *
 	 * @return basic cookie store.
 	 */
 	public BasicCookieStore getCookieStore() {
@@ -106,7 +106,7 @@ public class KerberosClient {
 
 	/**
 	 * Get jira host
-	 * 
+	 *
 	 * @return jira host string
 	 */
 	public String getJiraHost() {
@@ -115,10 +115,10 @@ public class KerberosClient {
 
 	/**
 	 * This method build a Http client with SPNEGO scheme factory and cookie store
-	 * 
+	 *
 	 * @return http client
 	 */
-	private CloseableHttpClient buildLoginHttpClient() {
+	private HttpClient buildLoginHttpClient() {
 		HttpClientBuilder builder = HttpClientBuilder.create();
 		Lookup<AuthSchemeProvider> authSchemeRegistry = RegistryBuilder.<AuthSchemeProvider>create()
 				.register("negotiate", new SPNegoSchemeFactory(true)).build();
@@ -134,10 +134,10 @@ public class KerberosClient {
 
 	/**
 	 * This method build simple Http client with cookie store
-	 * 
+	 *
 	 * @return http client
 	 */
-	private CloseableHttpClient buildHttpClient() {
+	private HttpClient buildHttpClient() {
 		RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
 		return HttpClientBuilder.create().setDefaultCookieStore(cookieStore).setDefaultRequestConfig(requestConfig)
 				.build();
@@ -166,7 +166,7 @@ public class KerberosClient {
 	/**
 	 * This method fetch login cookies necessary to establish connection with spnego
 	 * jira client
-	 * 
+	 *
 	 * @param samlTokenStartString
 	 * @param samlTokenEndString
 	 * @param samlUrlStartString
@@ -198,7 +198,7 @@ public class KerberosClient {
 
 	/**
 	 * This method execute login call with http client
-	 * 
+	 *
 	 * @param loginURL
 	 * @param samlTokenStartString
 	 * @param samlTokenEndString
@@ -226,7 +226,7 @@ public class KerberosClient {
 
 	/**
 	 * This method generate the cookies required for connection
-	 * 
+	 *
 	 * @param loginResponse
 	 * @param samlTokenStartString
 	 * @param samlTokenEndString
@@ -250,7 +250,7 @@ public class KerberosClient {
 
 	/**
 	 * This method return the response of http request submitted
-	 * 
+	 *
 	 * @param httpUriRequest
 	 *            httpUriRequest
 	 * @return string response
@@ -264,7 +264,7 @@ public class KerberosClient {
 
 	/**
 	 * This method perform http request provided by user
-	 * 
+	 *
 	 * @param httpUriRequest
 	 *            httpUriRequest
 	 * @return string http response
@@ -277,7 +277,7 @@ public class KerberosClient {
 
 	/**
 	 * This is a utility method which fetch data from login response
-	 * 
+	 *
 	 * @param input
 	 *            input string
 	 * @param start
@@ -299,7 +299,7 @@ public class KerberosClient {
 
 	/**
 	 * This method get Cookie object and convert it into string
-	 * 
+	 *
 	 * @return string containing cookie.
 	 */
 	public String getCookies() {
@@ -307,17 +307,6 @@ public class KerberosClient {
 		this.getCookieStore().getCookies().forEach(cookie -> cookieHeaderBuilder.append(cookie.getName()).append("=")
 				.append(cookie.getValue()).append(";"));
 		return cookieHeaderBuilder.toString();
-	}
-
-	public void close() throws IOException {
-		try {
-			if (loginHttpClient != null && httpClient != null) {
-				httpClient.close();
-				loginHttpClient.close();
-			}
-		} catch (Exception var2) {
-			throw var2 instanceof IOException ? (IOException)var2 : new IOException(var2);
-		}
 	}
 
 	/**

@@ -115,7 +115,6 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
             ongoingExecutionsService.markExecutionAsCompleted(projectId);
             try {
                 jiraClientService.getRestClient().close();
-                jiraClientService.getKerberosClient().close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

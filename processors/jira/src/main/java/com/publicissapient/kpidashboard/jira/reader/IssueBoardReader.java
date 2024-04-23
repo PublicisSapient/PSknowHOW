@@ -89,17 +89,23 @@ public class IssueBoardReader implements ItemReader<ReadData> {
     private ProjectConfFieldMapping projectConfFieldMapping;
     private String projectId;
 
+	ProcessorJiraRestClient client;
+	KerberosClient krb5Client;
     @Autowired
     public IssueBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {
         this.projectId = projectId;
         this.retryHelper = new ReaderRetryHelper();
     }
 
-    public void initializeReader(String projectId) {
-        pageSize = jiraProcessorConfig.getPageSize();
-        projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-    }
 
+
+	public void initializeReader(String projectId) {
+		pageSize = jiraProcessorConfig.getPageSize();
+		projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+		retryHelper = new ReaderRetryHelper();
+		client = jiraClientService.getRestClient();
+		krb5Client = jiraClientService.getKerberosClient();
+	}
     /*
      * (non-Javadoc)
      *
@@ -115,9 +121,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
             initializeReader(projectId);
         }
         ReadData readData = null;
-        KerberosClient krb5Client = jiraClientService.getKerberosClient();
         if (!fetchLastIssue) {
-            ProcessorJiraRestClient client = jiraClientService.getRestClient();
             if (boardIterator == null
                     && CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
                 boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();

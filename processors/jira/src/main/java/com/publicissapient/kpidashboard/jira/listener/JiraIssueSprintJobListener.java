@@ -87,7 +87,6 @@ public class JiraIssueSprintJobListener extends JobExecutionListenerSupport {
 		sprintTraceLogRepository.save(fetchDetails);
 		try {
 			jiraClientService.getRestClient().close();
-			jiraClientService.getKerberosClient().close();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

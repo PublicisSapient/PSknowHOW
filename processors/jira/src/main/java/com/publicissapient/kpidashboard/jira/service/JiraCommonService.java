@@ -191,7 +191,8 @@ public class JiraCommonService {
 	 *             InterruptedException
 	 */
 	public List<Issue> fetchIssuesBasedOnJql(ProjectConfFieldMapping projectConfig,
-			ProcessorJiraRestClient clientIncoming, int pageNumber, String deltaDate) throws InterruptedException {
+			ProcessorJiraRestClient clientIncoming, int pageNumber, String deltaDate)
+			throws InterruptedException, IOException {
 
 		client = clientIncoming;
 		List<Issue> issues = new ArrayList<>();
