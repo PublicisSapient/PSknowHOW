@@ -708,7 +708,10 @@ this.resetAddtionalFIlters();
             if (typeof additionalFilterFormVal === 'object' && Object.keys(additionalFilterFormVal)?.length > 0) {
               const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => additionalFilterFormVal[x['nodeId']] == true);
               for (let j = 0; j < selectedAdditionalFilter?.length; j++) {
-                const parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
+                let parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
+                if(parentNodeIdx < 0){
+                  parentNodeIdx = this.selectedFilterArray?.findIndex((x) => selectedAdditionalFilter[j]['path'][0]?.includes(x.nodeId))
+                }
                 if (parentNodeIdx >= 0) {
                   this.selectedFilterArray[parentNodeIdx]['additionalFilters'] =
                     [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter[j]];
@@ -771,7 +774,7 @@ this.resetAddtionalFIlters();
               this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.parentId[0],this.filterApplyData['selectedMap']['project'])
               this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['sprint'])
             }else{
-              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['project'])
+              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['project'])
             }
           }
         }
