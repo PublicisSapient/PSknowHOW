@@ -436,7 +436,7 @@
                   {{iterationConfigData.capacity?.value?.value ? iterationConfigData.capacity?.value?.value + ' Hours' :
                   'NA'}}</p>
             </span>
-            <span *ngIf="selectedProjectForIteration && selectedProjectForIteration[0]?.additionalFilters?.length">
+            <span *ngIf="selectedTab?.toLowerCase() === 'iteration' && selectedProjectForIteration && selectedProjectForIteration[0]?.additionalFilters?.length">
                <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
                   <ng-container *ngFor="let item of selectedProjectForIteration; let i = index;">
                      <li class="selectedfilter p-mr-3">
