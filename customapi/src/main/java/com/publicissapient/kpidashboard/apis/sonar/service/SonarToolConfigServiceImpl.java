@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -63,6 +65,8 @@ public class SonarToolConfigServiceImpl {
 	private AesEncryptionService aesEncryptionService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private ConnectionService connectionService;
 	private ObjectMapper mapper = new ObjectMapper();
 
 	/**
@@ -173,6 +177,8 @@ public class SonarToolConfigServiceImpl {
 			} while (hasNextPage(paging));
 
 		} catch (Exception exception) {
+			String errMsg = ((HttpClientErrorException.Unauthorized) exception).getStatusCode().toString();
+			connectionService.updateBreakingConnection(connection, errMsg);
 			log.error("Error while fetching projects {}", exception.getMessage());
 		}
 
