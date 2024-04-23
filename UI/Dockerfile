@@ -12,7 +12,7 @@ RUN apk add openssl --no-cache \
 
 # Set environment variables
 ENV PID_LOC="/run/nginx" \
-    CONF_LOG="/etc/nginx/conf.d" \
+    CONF_LOC="/etc/nginx/conf.d" \
     HTML_LOC="/var/lib/nginx/" \
     UI2_LOC="/var/lib/nginx/ui2" \
     START_SCRIPT_LOC="/etc/init.d" \
@@ -22,7 +22,7 @@ ENV PID_LOC="/run/nginx" \
     CERT_LOC="/etc/ssl/certs"
 
 # Create necessary directories
-RUN mkdir -p ${PID_LOC}  ${UI2_LOC} && rm -f ${CONF_LOG}/default.conf ${HTML_LOC}index.html && touch /var/run/nginx.pid
+RUN mkdir -p ${PID_LOC}  ${UI2_LOC} && rm -f ${CONF_LOC}/default.conf ${HTML_LOC}index.html && touch /var/run/nginx.pid
 
 # Copy files
 COPY nginx/files/nginx-dev.conf /tmp/nginx_dev.conf
@@ -40,7 +40,8 @@ RUN tar xvf ${HTML_LOC}${UI2_ASSETS_ARCHIVE} -C ${UI2_LOC} && tar xvf ${HTML_LOC
 
 # granting permission's
 
-RUN chown -R $USER:$USER ${CONF_LOG} \
+RUN chown -R $USER:$USER ${CONF_LOC} \
+    && chown -R $USER:$USER ${CERT_LOC} \
     && chown -R $USER:$USER /var/ \
     && chown -R $USER:$USER /var/run/nginx.pid \
     && apk add --no-cache libcap \
