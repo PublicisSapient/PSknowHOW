@@ -1331,7 +1331,7 @@ this.resetAddtionalFIlters();
       this.emptyIdsFromQueryParam();
     }
      this.refreshKpiLevelFiltersBackup(level, isChangedFromUI) // Refreshing KPi level filters backup
-     if(level !== 'sqd'){
+     if(level !== 'sqd' && isChangedFromUI === true){
       this.resetAddtionalFIlters();
      }
      this.selectedProjectForIteration = [];
@@ -1361,13 +1361,13 @@ this.resetAddtionalFIlters();
         this.service.setCurrentSelectedSprint(this.selectedSprint);
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
-         if(this.filterForm.get(level)){
-           const AllSqd = this.filterForm.get(level).value;
+         if(this.filterForm.get('sqd')){
+           const AllSqd = this.filterForm.get('sqd').value;
            const selectedSqd = Object.keys(AllSqd).filter(sq => AllSqd[sq] === true);
             if (selectedSqd) {
-              const selectedAdditionalFilter = this.additionalFiltersDdn[level].filter(sqd => selectedSqd.includes(sqd['nodeId']));
+              const selectedAdditionalFilter = this.additionalFiltersDdn['sqd'].filter(sqd => selectedSqd.includes(sqd['nodeId']));
               this.selectedFilterArray[0]['additionalFilters'] = selectedAdditionalFilter;
-              this.setSelectedSprintOnServiceLayer(level);
+              this.setSelectedSprintOnServiceLayer('sqd');
               this.selectedProjectForIteration = this.service.getSelectedTrends();
               this.selectedProjectForIteration[0]['additionalFilters'] = selectedAdditionalFilter;
           }
@@ -1492,7 +1492,7 @@ this.resetAddtionalFIlters();
 
   checkIfBtnDisabled(hierarchyLevelId) {
     let isDisabled = true;
-    if (hierarchyLevelId === 'sprint') {
+    if (hierarchyLevelId === 'sprint' || hierarchyLevelId === 'sqd') {
       for (const item in this.filterForm?.get(hierarchyLevelId)?.value) {
         if (this.filterForm?.get(hierarchyLevelId)?.value[item]) {
           isDisabled = null;
