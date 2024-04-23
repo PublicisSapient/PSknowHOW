@@ -1973,15 +1973,26 @@ this.resetAddtionalFIlters();
       });
     }
 
-    checkedState(event) {
+    checkedState(event, hierarchyLevelId, id) {
+      let formControls = this.filterForm?.get(hierarchyLevelId)['controls'];
       if(event.target.checked === true){
         if(this.counter < 2){
           this.counter++
         }else{
-          event.target.checked = false;
+          this.counter++;
+          for(let item in formControls){
+            if(!this.filterForm?.get(hierarchyLevelId)['controls'][item].value){
+              this.filterForm?.get(hierarchyLevelId)['controls'][item]?.disable()
+            }
+          }
         }
-      }else if(this.counter>0){
+      }else{
         this.counter--;
+        for(let item in formControls){
+          if(!this.filterForm?.get(hierarchyLevelId)['controls'][item].value){
+            this.filterForm?.get(hierarchyLevelId)['controls'][item]?.enable()
+          }
+        }
       }
     }
 
