@@ -272,6 +272,16 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedDateFilter(this.selectedDayType);
         this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
         this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
+        let selectedSqds = this.filterForm.get('sqd')?.['controls'];
+        let sqdCount = 0;
+        for(let key in selectedSqds){
+          if(key['value']){
+            sqdCount++;
+          }
+        }
+        if(this.counter != sqdCount){
+          this.counter = sqdCount;
+        }
       }),
 
       this.service.mapColorToProjectObs.subscribe((x) => {
@@ -1974,24 +1984,26 @@ this.resetAddtionalFIlters();
       });
     }
 
-    checkedState(event, hierarchyLevelId, id) {
-      let formControls = this.filterForm?.get(hierarchyLevelId)['controls'];
-      if(event.target.checked === true){
-        if(this.counter < 2){
-          this.counter++
-        }else{
-          this.counter++;
-          for(let item in formControls){
-            if(!this.filterForm?.get(hierarchyLevelId)['controls'][item].value){
-              this.filterForm?.get(hierarchyLevelId)['controls'][item]?.disable()
+    checkedState(event, hierarchyLevelId) {
+      if(hierarchyLevelId == 'sqd'){
+        let formControls = this.filterForm?.get(hierarchyLevelId)['controls'];
+        if(event.target.checked === true){
+          if(this.counter < 2){
+            this.counter++
+          }else{
+            this.counter++;
+            for(let item in formControls){
+              if(!this.filterForm?.get(hierarchyLevelId)['controls'][item].value){
+                this.filterForm?.get(hierarchyLevelId)['controls'][item]?.disable()
+              }
             }
           }
-        }
-      }else{
-        this.counter--;
-        for(let item in formControls){
-          if(!this.filterForm?.get(hierarchyLevelId)['controls'][item].value){
-            this.filterForm?.get(hierarchyLevelId)['controls'][item]?.enable()
+        }else{
+          this.counter--;
+          for(let item in formControls){
+            if(!this.filterForm?.get(hierarchyLevelId)['controls'][item].value){
+              this.filterForm?.get(hierarchyLevelId)['controls'][item]?.enable()
+            }
           }
         }
       }
