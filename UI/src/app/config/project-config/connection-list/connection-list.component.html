@@ -74,7 +74,7 @@
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-connection>
-                        <tr>
+                  <tr [ngClass]="{'highlighted': connection.brokenConnection}" (mouseenter)="connection.brokenConnection ? mouseEnter($event,connection.connectionErrorMsg) : ''" (mouseleave)="mouseLeave()">
                             <td style="display: none;">
                                 <p-tableCheckbox [value]="connection"></p-tableCheckbox>
                             </td>
@@ -299,3 +299,5 @@
         <button type="button" (click)="cs.accept()" pButton label="OK"></button>
     </p-footer>
 </p-confirmDialog>
+
+<div class="tool-tip" *ngIf="showToolTip" innerHtml="{{toolTipHtml}}" [ngStyle]="{'left': left, 'top': top}"></div>

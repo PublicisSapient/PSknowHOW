@@ -487,6 +487,10 @@ export class ConnectionListComponent implements OnInit {
   jiraConnectionDialog: boolean;
   repoConnections = ['Bitbucket','GitLab','Azure Repository'];
   repoToolsEnabled : boolean;
+  showToolTip: boolean = false;
+  toolTipHtml: string = '';
+  left: string = '';
+  top: string = '';
 
   constructor(private httpService: HttpService, private formBuilder: UntypedFormBuilder, private confirmationService: ConfirmationService, private testConnectionService: TestConnectionService
     , private authorization: GetAuthorizationService,private sharedService : SharedService,
@@ -1595,5 +1599,17 @@ export class ConnectionListComponent implements OnInit {
       }
     }
     return filteredList;
+  }
+
+  mouseEnter(event, error) {
+    this.toolTipHtml = error;
+    this.top = event.pageY + 'px';
+    this.left = event.pageX + 'px';
+    this.showToolTip = true;
+  }
+
+  mouseLeave() {
+    this.showToolTip = false;
+    this.toolTipHtml = '';
   }
 }
