@@ -4,7 +4,7 @@
 
 replicaCount: 1
 
-env: stage
+env: prod
 
 image:
   repository: speedtools.azurecr.io/debbie-django

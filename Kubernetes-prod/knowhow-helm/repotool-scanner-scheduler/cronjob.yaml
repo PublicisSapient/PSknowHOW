@@ -2,7 +2,7 @@ kind: CronJob
 apiVersion: batch/v1
 metadata:
   name: repotool-scanner-scheduler
-  namespace: stage-knowhow
+  namespace: prod-knowhow
 spec:
   concurrencyPolicy: Allow
   failedJobsHistoryLimit: 10
@@ -21,7 +21,7 @@ spec:
               - scanner_scheduler
             envFrom:
               - configMapRef:
-                  name: stage-debbie-config
+                  name: prod-debbie-config
                   optional: false
             image: speedtools.azurecr.io/debbie-django:latest
             imagePullPolicy: Always
@@ -30,28 +30,28 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: stage-debbieuser
-                  key: stage-debbieuser
+                  name: prod-debbieuser
+                  key: prod-debbieuser
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: stage-debbie-db-url
-                  key: stage-debbie-db-url
+                  name: prod-debbie-db-url
+                  key: prod-debbie-db-url
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: stage-debbiepassword
-                  key: stage-debbiepassword
+                  name: prod-debbiepassword
+                  key: prod-debbiepassword
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: stage-debbie-secret-key
-                  key: stage-debbie-secret-key
+                  name: prod-debbie-secret-key
+                  key: prod-debbie-secret-key
             - name: RABBITMQ_DEFAULT_PASS
               valueFrom:
                 secretKeyRef:
-                  name: stage-rabbitpass
-                  key: stage-rabbitpass
+                  name: prod-rabbitpass
+                  key: prod-rabbitpass
             - name: EMAIL_HOST_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -75,11 +75,11 @@ spec:
             - name: DEBBIE_INTERNAL_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: stage-debbie-internal-key
-                  key: stage-debbie-internal-key
+                  name: prod-debbie-internal-key
+                  key: prod-debbie-internal-key
             volumeMounts:
               - name: debbie-secrets-store
-                mountPath: "/mnt/stage-debbie-secrets-store"
+                mountPath: "/mnt/prod-debbie-secrets-store"
                 readOnly: true
             resources:
               limits:
@@ -103,7 +103,7 @@ spec:
                 driver: secrets-store.csi.k8s.io
                 readOnly: true
                 volumeAttributes:
-                  secretProviderClass: "stage-secretproviderclass"
+                  secretProviderClass: "prod-secretproviderclass"
           dnsConfig: {}
           dnsPolicy: ClusterFirst
           restartPolicy: Never

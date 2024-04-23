@@ -67,13 +67,13 @@ spec:
               value: "false"
             #Adding cron expressions
             - name: jira.scrumBoardCron
-              value: "0 0 */12 * * *"
+              value: "0 0 */8 * * *"
             - name: jira.scrumJqlCron
-              value: "0 0 */12 * * *"
+              value: "0 0 */10 * * *"
             - name: jira.kanbanBoardCron
               value: "0 0 */12 * * *"
             - name: jira.kanbanJqlCron
-              value: "0 0 */12 * * *"
+              value: "0 0 */13 * * *"
         envFrom:
         - configMapRef:
             name: knowhow-config
