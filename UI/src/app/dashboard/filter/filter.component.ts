@@ -1362,6 +1362,7 @@ this.resetAddtionalFIlters();
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
          if(this.filterForm.get('sqd')){
+          this.closeAllDropdowns();
            const AllSqd = this.filterForm.get('sqd').value;
            const selectedSqd = Object.keys(AllSqd).filter(sq => AllSqd[sq] === true);
             if (selectedSqd) {
