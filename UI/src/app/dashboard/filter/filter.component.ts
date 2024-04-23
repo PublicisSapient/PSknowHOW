@@ -23,7 +23,7 @@ import { HelperService } from '../../services/helper.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormControl, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MessageService, MenuItem } from 'primeng/api';
 import { faRotateRight } from '@fortawesome/fontawesome-free';
 import { NgSelectComponent } from '@ng-select/ng-select';
@@ -533,7 +533,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           arr = this.helperService.makeUniqueArrayList(arr);
           this.additionalFiltersDdn[this.additionalFiltersArr[i]['hierarchyLevelId']] = arr;
           this.toggleDropdownObj[this.additionalFiltersArr[i]['hierarchyLevelId']] = false;
-          if (this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sprint') {
+          if (this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sprint' || this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sqd') {
             this.filterForm.controls['sprintSearch'] = new UntypedFormControl('');
           }
             this.createFormGroup(this.additionalFiltersArr[i]['hierarchyLevelId'], arr);

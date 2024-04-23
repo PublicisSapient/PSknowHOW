@@ -21,8 +21,19 @@ package com.publicissapient.kpidashboard.apis.enums;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.bson.types.ObjectId;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 
 /**
  * to order the headings of excel columns
@@ -33,7 +44,7 @@ public enum KPIExcelColumn {
 	CODE_BUILD_TIME("kpi8",
 			Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url",
 					"Weeks")), ISSUE_COUNT("kpi40",
-							Arrays.asList("Sprint Name", "Story ID", "Issue Description")), CODE_COMMIT("kpi11",
+							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad" )), CODE_COMMIT("kpi11",
 									Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No. Of Commit",
 											"No. of Merge")),
 
@@ -51,35 +62,35 @@ public enum KPIExcelColumn {
 			"Triage to Complete (In Days)", "Complete TO Live (In Days)", "Lead Time (In Days)")),
 
 	SPRINT_VELOCITY("kpi39",
-			Arrays.asList("Sprint Name", "Story ID", "Issue Description",
+			Arrays.asList("Sprint Name", "Story ID",  "Issue Description", "Squad",
 					"Size(story point/hours)")), SPRINT_PREDICTABILITY(
 							"kpi5",
-							Arrays.asList("Sprint Name", "Story ID", "Issue Description",
+							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad",
 									"Size(story point/hours)")), SPRINT_CAPACITY_UTILIZATION(
 											"kpi46",
-											Arrays.asList("Sprint Name", "Story ID", "Issue Description",
+											Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad",
 													"Original Time Estimate (in hours)",
 													"Total Time Spent (in hours)")), COMMITMENT_RELIABILITY("kpi72",
-															Arrays.asList("Sprint Name", "Story ID", "Issue Status","Issue Type",
+															Arrays.asList("Sprint Name", "Story ID", "Squad", "Issue Status","Issue Type",
 																	"Initial Commitment", "Size(story point/hours)")),
 
-	DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Linked Defects")),
+	DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad", "Linked Defects")),
 
-	FIRST_TIME_PASS_RATE("kpi82", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "First Time Pass")),
+	FIRST_TIME_PASS_RATE("kpi82", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad", "First Time Pass")),
 
-	DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Linked Defects to Story",
+	DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad",  "Linked Defects to Story",
 			"Size(story point/hours)")),
 
-	DEFECT_SEEPAGE_RATE("kpi35", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Escaped Defect", "Escaped defect identifier")),
+	DEFECT_SEEPAGE_RATE("kpi35", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Squad", "Escaped Defect", "Escaped defect identifier")),
 
 	DEFECT_REMOVAL_EFFICIENCY("kpi34",
-			Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Defect Removed")),
+			Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Squad", "Defect Removed")),
 
-	DEFECT_REJECTION_RATE("kpi37", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Defect Rejected")),
+	DEFECT_REJECTION_RATE("kpi37", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Squad", "Defect Rejected")),
 
-	DEFECT_COUNT_BY_PRIORITY("kpi28", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Priority")),
+	DEFECT_COUNT_BY_PRIORITY("kpi28", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Squad", "Priority")),
 
-	DEFECT_COUNT_BY_RCA("kpi36", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Root Cause")),
+	DEFECT_COUNT_BY_RCA("kpi36", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Squad", "Root Cause")),
 
 	DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140", Arrays.asList("Defect ID", "Issue Description", "Issue Status",
 			"Issue Type", "Size(story point/hours)", "Root Cause", "Priority", "Assignee", "Created during Iteration")),
@@ -87,7 +98,7 @@ public enum KPIExcelColumn {
 	DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132", Arrays.asList("Defect ID", "Issue Description", "Issue Status",
 			"Issue Type", "Size(story point/hours)", "Root Cause", "Priority", "Assignee", "Created during Iteration")),
 
-	CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Issue Description",
+	CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Issue Description", "Squad",
 			"Defect added after Sprint Start", "Resolved")),
 
 	DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136", Arrays.asList("Defect ID", "Issue Description", "Issue Status",
@@ -111,7 +122,7 @@ public enum KPIExcelColumn {
 			Arrays.asList("Sprint Name", "Total Test", "Executed Test", "Execution %", "Passed Test", "Passed %")),
 
 	COST_OF_DELAY("kpi113",
-			Arrays.asList("Project Name", "Cost of Delay", "Epic ID", "Epic Name", "Epic End Date", "Month")),
+			Arrays.asList("Project Name", "Cost of Delay", "Epic ID", "Epic Name", "Squad", "Epic End Date", "Month")),
 
 	RELEASE_FREQUENCY("kpi73",
 			Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
@@ -264,7 +275,7 @@ public enum KPIExcelColumn {
 	RELEASE_BURNUP("kpi150", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
 			"Priority", "Assignee", "Issue Status", "Release Tag Date (Latest)", "Dev Completion Date", "Completion Date")),
 
-	PI_PREDICTABILITY("kpi153", Arrays.asList("Project Name", "Epic ID", "Epic Name", "Status", "PI Name",
+	PI_PREDICTABILITY("kpi153", Arrays.asList("Project Name", "Epic ID", "Epic Name", "Squad", "Status", "PI Name",
 			"Planned Value", "Achieved Value")),
 
 	DAILY_STANDUP_VIEW("kpi154", Arrays.asList("Remaining Capacity", "Remaining Estimate", "Remaining Work", "Delay")),
@@ -273,7 +284,7 @@ public enum KPIExcelColumn {
 	DEFECT_COUNT_BY_TYPE("kpi155", Arrays.asList("Issue ID", "Issue Description", "Issue Type",
 			"Issue Status", "Sprint Name", "Priority","Created Date","Updated Date", "Assignee")),
 	//DTS-26123 end
-	SCOPE_CHURN("kpi164", Arrays.asList("Sprint Name","Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)","Scope Change Date","Scope Change (Added/Removed)","Issue Status")),
+	SCOPE_CHURN("kpi164", Arrays.asList("Sprint Name","Issue ID", "Issue Type", "Issue Description", "Squad", "Size(story point/hours)","Scope Change Date","Scope Change (Added/Removed)","Issue Status")),
 
 	LEAD_TIME_FOR_CHANGE("Kpi156", Arrays.asList("Project Name", "Date", "Story ID", "Lead Time (In Days)",
 			"Completion Date", "Merge Date", "Release Date", "Merge Request Id", "Branch")),
@@ -349,6 +360,31 @@ public enum KPIExcelColumn {
 	 * @return the source
 	 */
 	public List<String> getColumns() {
+		return columns;
+	}
+
+	public List<String> getColumns(List<Node> nodeList, CacheService cacheService,
+			FilterHelperService filterHelperService) {
+		Set<ObjectId> projectIds = nodeList.stream().map(a -> a.getProjectFilter().getBasicProjectConfigId())
+				.collect(Collectors.toSet());
+		boolean squadConfigured = false;
+		Map<String, AdditionalFilterCategory> addFilterCat = filterHelperService.getAdditionalFilterHierarchyLevel();
+		List<AccountHierarchyData> accountHierarchyData = (List<AccountHierarchyData>) cacheService
+				.cacheAccountHierarchyData();
+		for (ObjectId projectId : projectIds) {
+			if (CollectionUtils.isNotEmpty(accountHierarchyData) && CollectionUtils.isNotEmpty((accountHierarchyData).stream().filter(
+					a -> addFilterCat.containsKey(a.getLabelName()) && a.getBasicProjectConfigId().equals(projectId))
+					.toList())) {
+				squadConfigured = true;
+				break;
+			}
+		}
+		if (!squadConfigured) {
+			List<String> modifiableList = new ArrayList<>(columns);
+			modifiableList.removeIf(a -> a.equalsIgnoreCase("Squad"));
+			return modifiableList;
+
+		}
 		return columns;
 	}
 
