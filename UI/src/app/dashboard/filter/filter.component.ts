@@ -146,7 +146,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   copyFilteredAddFilters = {};
   loader: boolean = false;
   selectedProjectForIteration : any = [];
-
+  selectedItems: number = 0;
+  counter: number = 0;
   constructor(
     public service: SharedService,
     private httpService: HttpService,
@@ -1970,6 +1971,18 @@ this.resetAddtionalFIlters();
       this.additionalFiltersArr.forEach((additionalFilter) => {
         this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
       });
+    }
+
+    checkedState(event) {
+      if(event.target.checked === true){
+        if(this.counter < 2){
+          this.counter++
+        }else{
+          event.target.checked = false;
+        }
+      }else if(this.counter>0){
+        this.counter--;
+      }
     }
 
   /** 
