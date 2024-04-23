@@ -947,6 +947,41 @@ const completeHierarchyData = {
     expect(spy).toHaveBeenCalled();
   });
 
+  it('should handle iteration filter for sqd', () => {
+    const selectedSqd = {
+      'sq1' : new UntypedFormControl(true)
+    }
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl('DOTC_63b51633f33fd2360e9e72bd'),
+      selectedSprintValue: new UntypedFormControl('40201_HvyVrzlpld_63b81ef5224e7b4d03186dab'),
+      'sqd' : new UntypedFormControl(true)
+    });
+    component.selectedSprint = [{nodeName : 'sprint'}]
+    component.selectedFilterArray = [];
+    component.trendLineValueList = [{nodeId:'DOTC_63b51633f33fd2360e9e72bd', basicProjectConfigId: '63284960fdd20276d60e4df5'}];
+    component.additionalFiltersDdn = {
+      sqd : [{
+        labelName: 'sqd',
+        level: 5,
+        nodeId: 'sq1',
+        nodeName: 'DTS | KnowHOW | PI_11| ITR_4_HvyVrzlpld',
+        parentId: ['DOTC_63b51633f33fd2360e9e72bd'],
+        path: [
+          'HvyVrzlpld_63b81ef5224e7b4d03186dab###Level3_hiera…vel2_hierarchyLevelTwo###Level1_hierarchyLevelOne',
+        ],
+        sprintEndDate: '2022-11-23T10:20:00.0000000',
+        sprintStartDate: '2022-11-09T10:20:00.0000000',
+        sprintState: 'active',
+      }]
+    };
+    const spy = spyOn(component, 'getProcessorsTraceLogsForProject');
+    spyOn(sharedService, 'setNoSprints');
+    spyOn(component, 'createFilterApplyData');
+    component.handleIterationFilters('sqd',true);
+    expect(spy).toHaveBeenCalled();
+  });
+
+
   it('should handle iteration filter for close sprints', () => {
     component.filterForm = new UntypedFormGroup({
       selectedTrendValue: new UntypedFormControl('DOTC_63b51633f33fd2360e9e72bd'),
@@ -1023,6 +1058,7 @@ const completeHierarchyData = {
 
 
   it('should remove sprint', () => {
+    component.selectedTab = 'knowhow'
     component.filterForm = new UntypedFormGroup({
       sprint: new UntypedFormControl({})
     });
@@ -1030,6 +1066,17 @@ const completeHierarchyData = {
     const spy = spyOn(component, 'applyChanges');
     component.removeItem('sprint', '38994_DEMO_SONAR_63284960fdd20276d60e4df5');
     expect(component.filterForm.get('sprint').value).toBeFalsy();
+  });
+
+  it('should remove sprint for sqd and iteration tab', () => {
+    component.selectedTab = 'iteration'
+    component.filterForm = new UntypedFormGroup({
+      sqd: new UntypedFormControl({})
+    });
+
+    const spy = spyOn(component, 'handleIterationFilters');
+    component.removeItem('sqd', '38994_DEMO_SONAR_63284960fdd20276d60e4df5');
+    expect(component.filterForm.get('sqd').value).toBeFalsy();
   });
 
   it('should remove node', () => {
@@ -2633,6 +2680,7 @@ const completeHierarchyData = {
   });
 
   it('should set sprint list in service layer',()=>{
+    component.selectedTab = 'value'
       component.selectedFilterArray = [{
         nodeId : 'a123',
         additionalFilters : [{
@@ -2640,7 +2688,7 @@ const completeHierarchyData = {
         }]
       }]
       const spyObj = spyOn(sharedService,'setAddtionalFilterBackup');
-      component.setSelectedSprintOnServiceLayer();
+      component.setSelectedSprintOnServiceLayer('sqd');
       expect(spyObj).toHaveBeenCalled();
     })
 
@@ -2654,7 +2702,7 @@ const completeHierarchyData = {
         }
       })
       spyOn(sharedService,'getSelectedTrends').and.returnValue([{nodeId : 'p1'}])
-      const rValue = component.getSprintsWhichWasAlreadySelected();
+      const rValue = component.getSprintsWhichWasAlreadySelected('sprint');
       expect(rValue).not.toBeNull();
     })
 

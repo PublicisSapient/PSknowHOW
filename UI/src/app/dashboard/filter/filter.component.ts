@@ -145,6 +145,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   displayMessage: boolean = false;
   copyFilteredAddFilters = {};
   loader: boolean = false;
+  selectedProjectForIteration : any = [];
 
   constructor(
     public service: SharedService,
@@ -1332,6 +1333,7 @@ this.resetAddtionalFIlters();
      if(level !== 'sqd'){
       this.resetAddtionalFIlters();
      }
+     this.selectedProjectForIteration = [];
     this.lastSyncData = {};
     this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
@@ -1365,7 +1367,8 @@ this.resetAddtionalFIlters();
               const selectedAdditionalFilter = this.additionalFiltersDdn[level].filter(sqd => selectedSqd.includes(sqd['nodeId']));
               this.selectedFilterArray[0]['additionalFilters'] = selectedAdditionalFilter;
               this.setSelectedSprintOnServiceLayer(level);
-
+              this.selectedProjectForIteration = this.service.getSelectedTrends();
+              this.selectedProjectForIteration[0]['additionalFilters'] = selectedAdditionalFilter;
           }
         }
         this.createFilterApplyData();
@@ -1425,7 +1428,11 @@ this.resetAddtionalFIlters();
       this.filterForm.get(hierarchyLevelId).setValue('');
     }
 
-    this.applyChanges(hierarchyLevelId);
+    if(this.selectedTab.toLowerCase() === 'iteration'){
+      this.handleIterationFilters(hierarchyLevelId)
+    }else{
+      this.applyChanges(hierarchyLevelId);
+    }
   }
 
   removeNode(nodeId: string) {

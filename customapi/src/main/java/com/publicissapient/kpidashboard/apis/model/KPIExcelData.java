@@ -253,8 +253,8 @@ public class KPIExcelData {
 	@JsonProperty("Build Url")
 	private Map<String, String> buildUrl;
 
-	@JsonProperty("Repository Url")
-	private Map<String, String> repositoryURL;
+	@JsonProperty("Repo")
+	private String repo;
 
 	@JsonProperty("Branch")
 	private String branch;
