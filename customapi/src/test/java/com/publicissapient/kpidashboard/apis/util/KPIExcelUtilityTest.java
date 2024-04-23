@@ -124,9 +124,7 @@ public class KPIExcelUtilityTest {
 				for (Map.Entry<String, Double> m : repoWiseMap.entrySet()) {
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProject(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
+					excelData.setRepo(repoList.get(i));
 					excelData.setBranch(branchList.get(i));
 					excelData.setDaysWeeks(m.getKey());
 					excelData.setPickupTime(m.getValue().toString());

@@ -163,7 +163,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 							projectName, duration, dataPoints);
 					aggDataMap.put(getBranchSubFilter(repo, projectName), dataCountList);
 					repoWiseMRList.add(excelDataLoader);
-					repoList.add(repo.getUrl());
+					repoList.add(repo.getRepositoryName());
 					branchList.add(repo.getBranch());
 				}
 			}

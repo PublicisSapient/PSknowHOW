@@ -995,9 +995,7 @@ public class KPIExcelUtility {
 				for (Map.Entry<String, Double> m : repoWiseMap.entrySet()) {
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProject(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
+					excelData.setRepo(repoList.get(0));
 					excelData.setBranch(branchList.get(i));
 					excelData.setDaysWeeks(m.getKey());
 					excelData.setMeanTimetoMerge(m.getValue().toString());
@@ -1018,9 +1016,7 @@ public class KPIExcelUtility {
 				for (Map.Entry<String, Double> m : repoWiseMap.entrySet()) {
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProject(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
+					excelData.setRepo(repoList.get(i));
 					excelData.setBranch(branchList.get(i));
 					excelData.setDaysWeeks(m.getKey());
 					excelData.setPickupTime(m.getValue().toString());
@@ -1041,9 +1037,7 @@ public class KPIExcelUtility {
 				for (Map.Entry<String, Long> m : repoWiseMap.entrySet()) {
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProject(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
+					excelData.setRepo(repoList.get(i));
 					excelData.setBranch(branchList.get(i));
 					excelData.setDaysWeeks(m.getKey());
 					excelData.setPrSize(m.getValue().toString());
@@ -1064,9 +1058,7 @@ public class KPIExcelUtility {
 				for (Map.Entry<String, Double> m : repoWiseMap.entrySet()) {
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProject(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
+					excelData.setRepo(repoList.get(i));
 					excelData.setBranch(branchList.get(i));
 					excelData.setDaysWeeks(m.getKey());
 					excelData.setReworkRate(m.getValue());
@@ -1093,9 +1085,7 @@ public class KPIExcelUtility {
 					Long mergeHours = repoWiseMergeMap.get(date);
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProjectName(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
+					excelData.setRepo(repoList.get(i));
 					excelData.setBranch(branchList.get(i));
 					excelData.setDaysWeeks(date);
 					excelData.setNumberOfCommit(commitHours.toString());
@@ -1330,9 +1320,7 @@ public class KPIExcelUtility {
 				for (String date : repoWiseCommitList.get(i).keySet()) {
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProjectName(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
+					excelData.setRepo(repoList.get(i));
 					excelData.setBranch(branchList.get(i));
 					excelData.setDaysWeeks(date);
 					excelData.setNumberOfCommit(repoWiseCommitList.get(i).get(date).toString());
