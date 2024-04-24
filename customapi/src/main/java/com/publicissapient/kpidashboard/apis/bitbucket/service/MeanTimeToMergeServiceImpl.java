@@ -158,12 +158,13 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 						.get(repo.getProcessorItemList().get(0).getId());
 				if (CollectionUtils.isNotEmpty(mergeReqList)) {
 					Map<String, Double> excelDataLoader = new HashMap<>();
+					String repoName = repo.getRepositoryName() != null ? repo.getRepositoryName() : repo.getRepoSlug();
 					aggMergeRequests.addAll(mergeReqList);
 					List<DataCount> dataCountList = setWeekWiseMeanTimeToMerge(mergeReqList, excelDataLoader,
 							projectName, duration, dataPoints);
 					aggDataMap.put(getBranchSubFilter(repo, projectName), dataCountList);
 					repoWiseMRList.add(excelDataLoader);
-					repoList.add(repo.getRepositoryName());
+					repoList.add(repoName);
 					branchList.add(repo.getBranch());
 				}
 			}

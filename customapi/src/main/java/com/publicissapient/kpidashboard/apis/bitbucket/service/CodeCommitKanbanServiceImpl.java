@@ -224,7 +224,8 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 				}
 				// if data is there for any branch then only will shown on excel
 				if (MapUtils.isNotEmpty(excelLoader)) {
-					listOfRepo.add(tool.getRepositoryName());
+					String repoName = tool.getRepositoryName() != null ? tool.getRepositoryName() : tool.getRepoSlug();
+					listOfRepo.add(repoName);
 					listOfBranch.add(tool.getBranch());
 					excelLoaderfinal.putAll(excelLoader);
 				}
