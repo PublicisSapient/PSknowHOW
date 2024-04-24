@@ -992,9 +992,7 @@ public class KPIExcelUtility {
 			repoToolValidationDataList.forEach(repoToolValidationData -> {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setProject(repoToolValidationData.getProjectName());
-				Map<String, String> repoUrl = new HashMap<>();
-				repoUrl.put(repoToolValidationData.getRepoUrl(), repoToolValidationData.getRepoUrl());
-				excelData.setRepositoryURL(repoUrl);
+				excelData.setRepositoryURL(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
@@ -1010,9 +1008,7 @@ public class KPIExcelUtility {
 			repoToolValidationDataList.forEach(repoToolValidationData -> {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setProject(repoToolValidationData.getProjectName());
-				Map<String, String> repoUrl = new HashMap<>();
-				repoUrl.put(repoToolValidationData.getRepoUrl(), repoToolValidationData.getRepoUrl());
-				excelData.setRepositoryURL(repoUrl);
+				excelData.setRepositoryURL(repoToolValidationData.getProjectName());
 				excelData.setBranch(repoToolValidationData.getBranchName());
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
@@ -1028,9 +1024,7 @@ public class KPIExcelUtility {
 			repoToolValidationDataList.forEach(repoToolValidationData -> {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setProject(repoToolValidationData.getProjectName());
-				Map<String, String> repoUrl = new HashMap<>();
-				repoUrl.put(repoToolValidationData.getRepoUrl(), repoToolValidationData.getRepoUrl());
-				excelData.setRepositoryURL(repoUrl);
+				excelData.setRepositoryURL(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
@@ -1047,9 +1041,7 @@ public class KPIExcelUtility {
 			repoToolValidationDataList.forEach(repoToolValidationData -> {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setProject(repoToolValidationData.getProjectName());
-				Map<String, String> repoUrl = new HashMap<>();
-				repoUrl.put(repoToolValidationData.getRepoUrl(), repoToolValidationData.getRepoUrl());
-				excelData.setRepositoryURL(repoUrl);
+				excelData.setRepositoryURL(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
@@ -1067,9 +1059,7 @@ public class KPIExcelUtility {
 			repoToolValidationDataList.forEach(repoToolValidationData -> {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setProject(repoToolValidationData.getProjectName());
-				Map<String, String> repoUrl = new HashMap<>();
-				repoUrl.put(repoToolValidationData.getRepoUrl(), repoToolValidationData.getRepoUrl());
-				excelData.setRepositoryURL(repoUrl);
+				excelData.setRepositoryURL(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
@@ -1300,9 +1290,7 @@ public class KPIExcelUtility {
 			repoToolValidationDataList.forEach(repoToolValidationData -> {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setProjectName(repoToolValidationData.getProjectName());
-				Map<String, String> repoUrl = new HashMap<>();
-				repoUrl.put(repoToolValidationData.getRepoUrl(), repoToolValidationData.getRepoUrl());
-				excelData.setRepositoryURL(repoUrl);
+				excelData.setRepositoryURL(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setNumberOfCommit(String.valueOf(repoToolValidationData.getCommitCount()));

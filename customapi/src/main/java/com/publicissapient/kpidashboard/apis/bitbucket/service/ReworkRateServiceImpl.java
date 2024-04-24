@@ -38,6 +38,7 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolUserDetails
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -118,10 +119,9 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.REWORK_RATE);
-		Map<String, List<DataCount>> unsortedMap = trendValuesMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
+
 		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();
-		unsortedMap.forEach((statusType, dataCounts) -> {
+		trendValuesMap.forEach((statusType, dataCounts) -> {
 			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
 					.collect(Collectors.groupingBy(DataCount::getData));
 			statusTypeProjectWiseDc.put(statusType, projectWiseDc);
@@ -214,9 +214,8 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 					overallPickupTime, aggDataMap);
 			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
 					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-			repoToolValidationDataList.addAll(
-					setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, Constant.AGGREGATED_VALUE,
-							projectName, date, aggDataMap));
+			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
+							projectName, date, aggDataMap);
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
 						.getId() != null) {
@@ -234,7 +233,7 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
 					}
 					repoToolValidationDataList.addAll(
-							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, branchName, projectName,
+							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, repo, projectName,
 									date, aggDataMap));
 					setDataCount(projectName, date, overallKpiGroup, reworkRate, aggDataMap);
 				}
@@ -282,8 +281,8 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	 * 		list of repo tool user data
 	 * @param assignees
 	 * 		assignee data
-	 * @param filter
-	 * 		branch filter
+	 * @param repo
+	 * 		repo tool item
 	 * @param projectName
 	 * 		project name
 	 * @param date
@@ -293,7 +292,7 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	 * @return repotool validation data
 	 */
 	private List<RepoToolValidationData> setUserDataCounts(Set<String> overAllUsers,
-			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, String filter,
+			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, Tool repo,
 			String projectName, String date,  Map<String, List<DataCount>> dateUserWiseAverage) {
 		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
 		overAllUsers.forEach(userEmail -> {
@@ -303,11 +302,13 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double userReworkRate = repoToolUserDetails.map(RepoToolUserDetails::getUserReworkRatePercent).orElse(0.0d);
-			String userKpiGroup = filter + "#" + developerName;
-			if(repoToolUserDetails.isPresent()) {
+			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
+			String userKpiGroup = branchName + "#" + developerName;
+			if(repoToolUserDetails.isPresent() && repo != null) {
 				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
 				repoToolValidationData.setProjectName(projectName);
-				repoToolValidationData.setBranchName(filter);
+				repoToolValidationData.setBranchName(repo.getBranch());
+				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
 				repoToolValidationData.setDeveloperName(developerName);
 				repoToolValidationData.setDate(date);
 				repoToolValidationData.setReworkRate(userReworkRate);

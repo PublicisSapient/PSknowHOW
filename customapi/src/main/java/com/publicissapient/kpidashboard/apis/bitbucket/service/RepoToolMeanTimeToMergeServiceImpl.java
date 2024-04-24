@@ -38,6 +38,7 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolUserDetails
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -193,7 +194,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
 					}
 					repoToolValidationDataList.addAll(
-							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, branchName, projectName,
+							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, repo, projectName,
 									date, aggDataMap));
 					setDataCount(projectName, date, overallKpiGroup,
 							KpiHelperService.convertMilliSecondsToHours(meanTimeToMerge), aggDataMap);
@@ -202,9 +203,8 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			});
 			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
 					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-			repoToolValidationDataList.addAll(
-					setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, Constant.AGGREGATED_VALUE,
-							projectName, date, aggDataMap));
+			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
+							projectName, date, aggDataMap);
 
 			currentDate = KpiHelperService.getNextRangeDate(duration, finalCurrentDate);
 		}
@@ -224,18 +224,18 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 	 * 		list of repo tool user data
 	 * @param assignees
 	 * 		assignee data
-	 * @param filter
-	 * 		branch filter
+	 * @param repo
+	 * 		repo tool
 	 * @param projectName
 	 * 		project name
 	 * @param date
 	 * 		date
 	 * @param aggDataMap
 	 * 		total data map
-	 * @return repotool validation data
+	 * @return repo tool validation data
 	 */
 	private List<RepoToolValidationData> setUserDataCounts(Set<String> overAllUsers,
-			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, String filter,
+			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, Tool repo,
 			String projectName, String date, Map<String, List<DataCount>> aggDataMap) {
 		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
 		overAllUsers.forEach(userEmail -> {
@@ -246,14 +246,16 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double userAverageSeconds = repoToolUserDetails.map(RepoToolUserDetails::getAverage).orElse(0.0d);
 			Long userAverageHrs = KpiHelperService.convertMilliSecondsToHours(userAverageSeconds);
-			String userKpiGroup = filter + "#" + developerName;
-			if (repoToolUserDetails.isPresent()) {
+			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
+			String userKpiGroup = branchName + "#" + developerName;
+			if (repoToolUserDetails.isPresent() && repo != null) {
 				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
 				repoToolValidationData.setProjectName(projectName);
-				repoToolValidationData.setBranchName(filter);
+				repoToolValidationData.setBranchName(repo.getBranch());
 				repoToolValidationData.setDeveloperName(developerName);
 				repoToolValidationData.setDate(date);
 				repoToolValidationData.setMeanTimeToMerge(userAverageHrs);
+				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
 				repoToolValidationDataList.add(repoToolValidationData);
 			}
 			setDataCount(projectName, date, userKpiGroup, userAverageHrs, aggDataMap);

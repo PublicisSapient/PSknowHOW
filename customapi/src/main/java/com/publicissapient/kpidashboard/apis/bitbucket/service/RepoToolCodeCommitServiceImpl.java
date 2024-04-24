@@ -38,6 +38,7 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolUserDetails
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -195,11 +196,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			Long overAllMrCount = repoToolKpiMetricResponse.map(RepoToolKpiMetricResponse::getMrCount).orElse(0L);
 			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
 					overAllCommitCount, overAllMrCount, aggDataMap);
-			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-			repoToolValidationDataList.addAll(
-					setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, Constant.AGGREGATED_VALUE,
-							projectName, date, aggDataMap));
+
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
 						.getId() != null) {
@@ -220,12 +217,15 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 						mrCount = matchingBranch.map(Branches::getMergeRequestCount).orElse(0L);
 						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
 					}
-					repoToolValidationDataList.addAll(
-							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, branchName, projectName,
+					repoToolValidationDataList.addAll(setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, repo, projectName,
 									date, aggDataMap));
 					setDataCount(projectName, date, overallKpiGroup, commitCount, mrCount, aggDataMap);
 				}
 			});
+			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
+					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
+			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
+							projectName, date, aggDataMap);
 			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 		}
 		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
@@ -267,8 +267,8 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 	 * 		list of repo tool user data
 	 * @param assignees
 	 * 		assignee data
-	 * @param filter
-	 * 		branch filter
+	 * @param repo
+	 * 		repo tool item
 	 * @param projectName
 	 * 		project name
 	 * @param date
@@ -278,7 +278,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 	 * @return repo tool validation data
 	 */
 	private List<RepoToolValidationData> setUserDataCounts(Set<String> overAllUsers,
-			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, String filter,
+			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, Tool repo,
 			String projectName, String date, Map<String, List<DataCount>> dateUserWiseAverage) {
 
 		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
@@ -291,11 +291,13 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Long commitCount = repoToolUserDetails.map(RepoToolUserDetails::getCount).orElse(0L);
 			Long mrCount = repoToolUserDetails.map(RepoToolUserDetails::getMrCount).orElse(0L);
-			String userKpiGroup = filter + "#" + developerName;
-			if(repoToolUserDetails.isPresent()) {
+			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
+			String userKpiGroup = branchName + "#" + developerName;
+			if(repoToolUserDetails.isPresent() && repo != null) {
 				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
 				repoToolValidationData.setProjectName(projectName);
-				repoToolValidationData.setBranchName(filter);
+				repoToolValidationData.setBranchName(repo.getBranch());
+				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
 				repoToolValidationData.setDeveloperName(developerName);
 				repoToolValidationData.setDate(date);
 				repoToolValidationData.setCommitCount(commitCount);

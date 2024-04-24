@@ -34,6 +34,7 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperServic
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolUserDetails;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
@@ -201,9 +202,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 					overallPickupTime, overAllMergeRequests, aggDataMap);
 			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
 					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-			repoToolValidationDataList.addAll(
-					setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, Constant.AGGREGATED_VALUE,
-							projectName, date, aggDataMap));
+			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
+							projectName, date, aggDataMap);
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
 						.getId() != null) {
@@ -223,7 +223,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
 					}
 					repoToolValidationDataList.addAll(
-							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, branchName, projectName,
+							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, repo, projectName,
 									date, aggDataMap));
 					setDataCount(projectName, date, overallKpiGroup, pickupTime, mrCount, aggDataMap);
 
@@ -271,8 +271,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 	 * 		list of repo tool user data
 	 * @param assignees
 	 * 		assignee data
-	 * @param filter
-	 * 		branch filter
+	 * @param repo
+	 * 		repo tool item
 	 * @param projectName
 	 * 		project name
 	 * @param date
@@ -282,7 +282,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 	 * @return repotool validation data
 	 */
 	private List<RepoToolValidationData> setUserDataCounts(Set<String> overAllUsers,
-			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, String filter,
+			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, Tool repo,
 			String projectName, String date, Map<String, List<DataCount>> dateUserWiseAverage) {
 		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
 		overAllUsers.forEach(userEmail -> {
@@ -293,11 +293,13 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double userHours = repoToolUserDetails.map(RepoToolUserDetails::getHours).orElse(0.0d);
 			long userMrCount = repoToolUserDetails.map(RepoToolUserDetails::getMergeRequestsPT).stream().count();
-			String userKpiGroup = filter + "#" + developerName;
-			if (repoToolUserDetails.isPresent()) {
+			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
+			String userKpiGroup = branchName + "#" + developerName;
+			if (repoToolUserDetails.isPresent() && repo != null) {
 				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
 				repoToolValidationData.setProjectName(projectName);
-				repoToolValidationData.setBranchName(filter);
+				repoToolValidationData.setBranchName(repo.getBranch());
+				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
 				repoToolValidationData.setDeveloperName(developerName);
 				repoToolValidationData.setDate(date);
 				repoToolValidationData.setPickupTime(userHours);
