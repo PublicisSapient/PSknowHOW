@@ -85,10 +85,14 @@ public class JiraIssueSprintJobListener extends JobExecutionListenerSupport {
 		}
 		log.info("Saving sprint Trace Log for sprintId: {}", sprintId);
 		sprintTraceLogRepository.save(fetchDetails);
-		try {
-			jiraClientService.getRestClient().close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+		if (jiraClientService.isContainRestClient(sprintId)){
+			try {
+				jiraClientService.getRestClientMap(sprintId).close();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			jiraClientService.removeRestClientMapClientForKey(sprintId);
+			jiraClientService.removeKerberosClientMapClientForKey(sprintId);
 		}
 
 	}

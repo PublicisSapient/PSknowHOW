@@ -88,24 +88,23 @@ public class IssueBoardReader implements ItemReader<ReadData> {
     private Iterator<Issue> issueIterator;
     private ProjectConfFieldMapping projectConfFieldMapping;
     private String projectId;
-
-	ProcessorJiraRestClient client;
 	KerberosClient krb5Client;
-    @Autowired
-    public IssueBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {
-        this.projectId = projectId;
-        this.retryHelper = new ReaderRetryHelper();
-    }
+	ProcessorJiraRestClient client;
 
-
+	@Autowired
+	public IssueBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {
+		this.projectId = projectId;
+		this.retryHelper = new ReaderRetryHelper();
+	}
 
 	public void initializeReader(String projectId) {
 		pageSize = jiraProcessorConfig.getPageSize();
 		projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 		retryHelper = new ReaderRetryHelper();
-		client = jiraClientService.getRestClient();
-		krb5Client = jiraClientService.getKerberosClient();
+		krb5Client = jiraClientService.getKerberosClientMap(projectId);
+		client = jiraClientService.getRestClientMap(projectId);
 	}
+
     /*
      * (non-Javadoc)
      *

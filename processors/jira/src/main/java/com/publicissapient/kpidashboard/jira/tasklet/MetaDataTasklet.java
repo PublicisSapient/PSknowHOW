@@ -81,14 +81,14 @@ public class MetaDataTasklet implements Tasklet {
         log.info("Fetching metadata for the project : {}", projConfFieldMapping.getProjectName());
         Optional<Connection> connectionOptional = projConfFieldMapping.getJira().getConnection();
         KerberosClient krb5Client = null;
-        if (connectionOptional.isPresent()) {
+        if (connectionOptional.isPresent() && connectionOptional.get().getIsOAuth()) {
             Connection connection = connectionOptional.get();
             krb5Client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
                     connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
         }
         ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
-        jiraClientService.setRestClient(client);
-        jiraClientService.setKerberosClient(krb5Client);
+		jiraClientService.setRestClientMap(projectId,client);
+        jiraClientService.setKerberosClientMap(projectId,krb5Client);
         if (jiraProcessorConfig.isFetchMetadata()) {
             createMetadata.collectMetadata(projConfFieldMapping, client);
         }

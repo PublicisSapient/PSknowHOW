@@ -78,6 +78,8 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 	@Autowired
 	JiraIssueRepository jiraIssueRepository;
 
+	private ProcessorJiraRestClient client;
+
 	@Override
 	public List<Issue> fetchIssuesSprintBasedOnJql(ProjectConfFieldMapping projectConfig,
 			ProcessorJiraRestClient client, int pageNumber, String sprintId) throws InterruptedException {
@@ -114,10 +116,10 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 		return issues;
 	}
 
-	public SearchResult getIssuesSprint(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client,
+	public SearchResult getIssuesSprint(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient clientIn,
 			int pageStart, List<String> issueKeys) throws InterruptedException {
 		SearchResult searchResult = null;
-
+		client=clientIn;
 		if (org.apache.commons.lang3.StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey())) {
 			log.info("Project key is empty {}", projectConfig.getProjectToolConfig().getProjectKey());
 		} else {

@@ -70,8 +70,7 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
         ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-        KerberosClient krb5Client = null;
-        ProcessorJiraRestClient client = jiraClientService.getRestClient();
+        ProcessorJiraRestClient client = jiraClientService.getRestClientMap(projectId);
         log.info("Fetching release statuses for the project : {}", projConfFieldMapping.getProjectName());
         createJiraIssueReleaseStatus.processAndSaveProjectStatusCategory(client, projectId);
         return RepeatStatus.FINISHED;

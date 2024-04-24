@@ -83,6 +83,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
     private ProjectConfFieldMapping projectConfFieldMapping;
     private String projectId;
     private ReaderRetryHelper retryHelper;
+    ProcessorJiraRestClient client;
 
     @Autowired
     public IssueJqlReader(@Value("#{jobParameters['projectId']}") String projectId) {
@@ -94,6 +95,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
         log.info("**** Jira Issue fetch started * * *");
         pageSize = jiraProcessorConfig.getPageSize();
         projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+        client = jiraClientService.getRestClientMap(projectId);
     }
 
     /*
@@ -111,7 +113,6 @@ public class IssueJqlReader implements ItemReader<ReadData> {
         }
         ReadData readData = null;
         if (null != projectConfFieldMapping && !fetchLastIssue) {
-            ProcessorJiraRestClient client = jiraClientService.getRestClient();
             if (issueIterator == null || !issueIterator.hasNext()) {
                 fetchIssues(client);
                 if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(issues)) {

@@ -113,10 +113,14 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
             log.info("removing project with basicProjectConfigId {}", projectId);
             // Mark the execution as completed
             ongoingExecutionsService.markExecutionAsCompleted(projectId);
-            try {
-                jiraClientService.getRestClient().close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if (jiraClientService.isContainRestClient(projectId)){
+                try {
+                    jiraClientService.getRestClientMap(projectId).close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                jiraClientService.removeRestClientMapClientForKey(projectId);
+                jiraClientService.removeKerberosClientMapClientForKey(projectId);
             }
         }
     }

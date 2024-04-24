@@ -94,8 +94,8 @@ public class SprintReportTasklet implements Tasklet {
                     connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
         }
         ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
-        jiraClientService.setRestClient(client);
-        jiraClientService.setKerberosClient(krb5Client);
+        jiraClientService.setRestClientMap(sprintId,client);
+        jiraClientService.setKerberosClientMap(sprintId,krb5Client);
         SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
         List<String> originalBoardIds = sprintDetails.getOriginBoardId();
         for (String boardId : originalBoardIds) {

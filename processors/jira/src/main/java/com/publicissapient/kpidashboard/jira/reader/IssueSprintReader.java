@@ -69,6 +69,7 @@ public class IssueSprintReader implements ItemReader<ReadData> {
     private ProjectConfFieldMapping projectConfFieldMapping;
     private String sprintId;
     private ReaderRetryHelper retryHelper;
+    ProcessorJiraRestClient client;
 
     @Autowired
     public IssueSprintReader(@Value("#{jobParameters['sprintId']}") String sprintId) {
@@ -80,6 +81,7 @@ public class IssueSprintReader implements ItemReader<ReadData> {
         log.info("**** Jira Issue fetch started * * *");
         pageSize = jiraProcessorConfig.getPageSize();
         projectConfFieldMapping = fetchProjectConfiguration.fetchConfigurationBasedOnSprintId(sprintId);
+        client = jiraClientService.getRestClientMap(sprintId);
     }
 
     @Override
@@ -91,7 +93,6 @@ public class IssueSprintReader implements ItemReader<ReadData> {
         }
         ReadData readData = null;
         if (null != projectConfFieldMapping) {
-            ProcessorJiraRestClient client = jiraClientService.getRestClient();
             if (null == issueIterator) {
                 pageNumber = 0;
                 fetchIssues(client);
