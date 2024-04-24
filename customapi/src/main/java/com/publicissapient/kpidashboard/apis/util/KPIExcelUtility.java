@@ -321,6 +321,7 @@ public class KPIExcelUtility {
 				excelData.setIssueStatus(jiraIssue.getStatus());
 				excelData.setIssueType(jiraIssue.getTypeName());
 				populateAssignee(jiraIssue, excelData);
+				setSquads(excelData, jiraIssue);
 
 				if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
