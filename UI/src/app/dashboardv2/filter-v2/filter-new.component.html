@@ -18,7 +18,7 @@
             [primaryFilterConfig]="primaryFilterConfig" [selectedTab]="selectedTab"
             (onPrimaryFilterChange)="handlePrimaryFilterChange($event)"></app-primary-filter>
     </div>
-    <div>
+    <div *ngIf="additionalFilterConfig?.length">
         <app-additional-filter [selectedTab]="selectedTab" [selectedLevel]="selectedLevel" [selectedType]="selectedType"
         [additionalFilterConfig]="additionalFilterConfig"></app-additional-filter>
     </div>

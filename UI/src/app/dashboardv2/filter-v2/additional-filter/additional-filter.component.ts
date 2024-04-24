@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -25,16 +25,21 @@ export class AdditionalFilterComponent implements OnChanges, OnInit {
 
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['selectedTab']) {
+      this.filterData = [];
+      this.filterSet = new Set();
+    }
   }
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       this.filterData = [];
+      this.filterSet = new Set();
+      this.filterSet = new Set();
       let primarySet1 = new Set();
       let primarySet2 = new Set();
       if (Object.keys(data).length) {
-        this.filterSet = new Set();
         data.filter1.forEach(f => {
           primarySet1.add(f);
         });
@@ -66,12 +71,20 @@ export class AdditionalFilterComponent implements OnChanges, OnInit {
           this.filterData[index] = f;
         });
 
-        this.filterData.forEach(filterArray => {
+        this.filterData.forEach((filterArray, index) => {
           let fakeEvent = {};
-          fakeEvent['value'] = filterArray[0];
-          this.filterDisplayValue = filterArray[0];
+          if(filterArray.includes('Overall')) {
+            filterArray.splice(filterArray.indexOf('Overall'), 1);
+            filterArray.unshift('Overall');
+            fakeEvent['value'] = 'Overall';
+            this.filterDisplayValue = 'Overall';
+          } else {
+            fakeEvent['value'] = filterArray[0];
+            this.filterDisplayValue = filterArray[0];
+          }
+          
           setTimeout(() => {
-            this.applyAdditionalFilter(fakeEvent, 1);
+            this.applyAdditionalFilter(fakeEvent, index + 1);
           }, 0)
         });
 
