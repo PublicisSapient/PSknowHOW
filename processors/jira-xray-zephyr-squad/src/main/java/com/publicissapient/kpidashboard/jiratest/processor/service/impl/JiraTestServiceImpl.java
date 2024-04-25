@@ -31,8 +31,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,6 +56,7 @@ import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -72,6 +71,7 @@ import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetails
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jiratest.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jiratest.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jiratest.config.JiraTestProcessorConfig;
@@ -152,6 +152,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 		}
 		return 0;
 	}
+
 	public int processesJiraIssues(ProjectConfFieldMapping projectConfig) {
 
 		int savedIsuesCount = 0;
@@ -640,13 +641,13 @@ public class JiraTestServiceImpl implements JiraTestService {
 	private void setStoryLinkWithDefect(Issue issue, TestCaseDetails testCaseDetail) {
 		if (null != issue.getIssueLinks()) {
 			Set<String> defectStorySet = new HashSet<>();
-			for (IssueLink issueLink : issue.getIssueLinks()) {
-				if (CollectionUtils.isNotEmpty(jiraTestProcessorConfig.getExcludeLinks())
-						&& jiraTestProcessorConfig.getExcludeLinks().stream()
-								.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
-					break;
+			if (CollectionUtils.isNotEmpty(jiraTestProcessorConfig.getExcludeLinks())) {
+				for (IssueLink issueLink : issue.getIssueLinks()) {
+					if (!jiraTestProcessorConfig.getExcludeLinks().stream()
+							.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
+						defectStorySet.add(issueLink.getTargetIssueKey());
+					}
 				}
-				defectStorySet.add(issueLink.getTargetIssueKey());
 			}
 			testCaseDetail.setDefectStoryID(defectStorySet);
 		}
@@ -690,39 +691,38 @@ public class JiraTestServiceImpl implements JiraTestService {
 	}
 
 	public ProcessorJiraRestClient getProcessorJiraRestClient(ProjectConfFieldMapping projectConfFieldMapping) {
-		Optional<Connection> connection = connectionRepository.findById(projectConfFieldMapping.getProcessorToolConnection().getConnectionId());
+		Optional<Connection> connection = connectionRepository
+				.findById(projectConfFieldMapping.getProcessorToolConnection().getConnectionId());
 		String username = "";
 		String password = "";
 		if (connection.isPresent()) {
 			Connection conn = connection.get();
 			if (conn.isVault()) {
-				ToolCredential toolCredential = toolCredentialProvider
-						.findCredential(conn.getUsername());
+				ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
 				if (toolCredential != null) {
 					username = toolCredential.getUsername();
 					password = toolCredential.getPassword();
-					client = jiraRestClientFactory.getJiraClient(
-							JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
-									.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
+					client = jiraRestClientFactory
+							.getJiraClient(JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
+									.password(password).jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
 				}
-			}
-			else if (conn.getIsOAuth()) {
+			} else if (conn.getIsOAuth()) {
 				username = conn.getUsername();
 				password = decryptJiraPassword(conn.getPassword());
-				client = jiraRestClientFactory.getJiraOAuthClient(
-						JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
-								.jiraConfigAccessToken(conn.getAccessToken()).jiraConfigProxyUrl(null)
-								.jiraConfigProxyPort(null).build());
+				client = jiraRestClientFactory
+						.getJiraOAuthClient(JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
+								.password(password).jiraConfigAccessToken(conn.getAccessToken())
+								.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
 			} else if (conn.isJaasKrbAuth()) {
-				krb5Client = new KerberosClient(conn.getJaasConfigFilePath(),
-						conn.getKrb5ConfigFilePath(), conn.getJaasUser(), conn.getSamlEndPoint(), conn.getBaseUrl());
+				krb5Client = new KerberosClient(conn.getJaasConfigFilePath(), conn.getKrb5ConfigFilePath(),
+						conn.getJaasUser(), conn.getSamlEndPoint(), conn.getBaseUrl());
 				client = jiraRestClientFactory.getSpnegoSamlClient(krb5Client);
 			} else {
 				username = conn.getUsername();
 				password = decryptJiraPassword(conn.getPassword());
-				client = jiraRestClientFactory.getJiraClient(
-						JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
-								.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
+				client = jiraRestClientFactory
+						.getJiraClient(JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
+								.password(password).jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
 			}
 		}
 		return client;
@@ -757,7 +757,8 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 				});
 
-				query = JiraProcessorUtil.createJql(projectConfig.getProjectKey(), startDateTimeStrByIssueType, projectConfig);
+				query = JiraProcessorUtil.createJql(projectConfig.getProjectKey(), startDateTimeStrByIssueType,
+						projectConfig);
 				log.info("jql= " + query);
 				Instant start = Instant.now();
 
@@ -867,35 +868,37 @@ public class JiraTestServiceImpl implements JiraTestService {
 		return userTimeZone;
 	}
 
-	private String getDataFromServer(ProcessorToolConnection processorToolConnection, HttpURLConnection httpURLConnection)
-			throws IOException {
+	private String getDataFromServer(ProcessorToolConnection processorToolConnection,
+			HttpURLConnection httpURLConnection) throws IOException {
 		String username = null;
 		String password = null;
-		Optional<Connection> connectionOptional = connectionRepository.findById(processorToolConnection.getConnectionId());
+		Optional<Connection> connectionOptional = connectionRepository
+				.findById(processorToolConnection.getConnectionId());
 		if (connectionOptional.isPresent() && connectionOptional.map(Connection::isJaasKrbAuth).orElse(false)) {
 			HttpUriRequest httpUriRequest = RequestBuilder.get().setUri(httpURLConnection.getURL().toString())
 					.setHeader(HttpHeaders.ACCEPT, "application/json")
 					.setHeader(HttpHeaders.CONTENT_TYPE, "application/json").build();
 			return krb5Client.getResponse(httpUriRequest);
-		}
-		else if (connectionOptional.isPresent() && connectionOptional.map(Connection:: isBearerToken).orElse(false)) {
+		} else if (connectionOptional.isPresent() && connectionOptional.map(Connection::isBearerToken).orElse(false)) {
 			String patOAuthToken = decryptJiraPassword(connectionOptional.get().getPatOAuthToken());
 			httpURLConnection.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
-		}
-		else if(connectionOptional.isPresent() && connectionOptional.map(Connection:: isVault).orElse(false)){
-				ToolCredential toolCredential = toolCredentialProvider.findCredential(connectionOptional.get().getUsername());
-				if (toolCredential != null) {
-					username = toolCredential.getUsername();
-					password = toolCredential.getPassword();
-				}
+		} else if (connectionOptional.isPresent() && connectionOptional.map(Connection::isVault).orElse(false)) {
+			ToolCredential toolCredential = toolCredentialProvider
+					.findCredential(connectionOptional.get().getUsername());
+			if (toolCredential != null) {
+				username = toolCredential.getUsername();
+				password = toolCredential.getPassword();
+			}
 		} else {
 			username = connectionOptional.map(Connection::getUsername).orElse(null);
 			password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
-			httpURLConnection.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password));
+			httpURLConnection.setRequestProperty("Authorization",
+					"Basic " + encodeCredentialsToBase64(username, password));
 		}
 		httpURLConnection.connect();
 		StringBuilder sb = new StringBuilder();
-		try (InputStream in = (InputStream) httpURLConnection.getContent(); BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
+		try (InputStream in = (InputStream) httpURLConnection.getContent();
+				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
 			int cp;
 			while ((cp = inReader.read()) != -1) {
 				sb.append((char) cp);
@@ -939,6 +942,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 			}
 		}
 	}
+
 	private int processesJiraIssuesJQL(ProjectConfFieldMapping projectConfig) {
 		int savedIssuesCount = 0;
 		int total = 0;
@@ -961,16 +965,16 @@ public class JiraTestServiceImpl implements JiraTestService {
 			String userTimeZone = getUserTimeZone(projectConfig);
 			for (int i = 0; true; i += pageSize) {
 				SearchResult searchResult = getIssues(projectConfig, maxChangeDatesByIssueTypeWithAddedTime,
-						userTimeZone, i, dataExist,client);
+						userTimeZone, i, dataExist, client);
 				List<Issue> issues = getIssuesFromResult(searchResult);
 				if (total == 0) {
 					total = getTotal(searchResult);
 				}
 				// in case of offline method issues size can be greater than
 				// pageSize, increase page size so that same issues not read
-//				if (issues.size() >= pageSize) {
-//					pageSize = issues.size() + 1;
-//				}
+				// if (issues.size() >= pageSize) {
+				// pageSize = issues.size() + 1;
+				// }
 				if (CollectionUtils.isNotEmpty(issues)) {
 					List<TestCaseDetails> testCaseDetailsList = prepareTestCaseDetails(issues, projectConfig);
 					testCaseDetailsRepository.saveAll(testCaseDetailsList);
@@ -1062,7 +1066,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 				log.debug("jql query processed for JQL");
 				if (searchResult != null) {
 					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
-									Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()));
+							Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()));
 				}
 				TimeUnit.MILLISECONDS.sleep(jiraTestProcessorConfig.getSubsequentApiCallDelayInMilli());
 			} catch (RestClientException e) {
