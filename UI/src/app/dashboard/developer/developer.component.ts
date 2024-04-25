@@ -296,7 +296,7 @@ export class DeveloperComponent implements OnInit {
         //     optionsArr?.splice(index, 1);
         //   }
         // }
-        obj['filterType'] = 'Select a filter';
+        obj['filterType'] = 'Filter by Branch';
         obj['options'] = optionsArr;
         this.kpiDropdowns[kpiId] = [];
         this.kpiDropdowns[kpiId].push(obj);
@@ -311,7 +311,7 @@ export class DeveloperComponent implements OnInit {
               return 0; // Maintain the original order of other elements
             }
           });
-          obj2['filterType'] = 'Filter by issue type';
+          obj2['filterType'] = 'Filter by Developer';
           obj2['options'] = optionsArr2;
           this.kpiDropdowns[kpiId].push(obj2);
         }
