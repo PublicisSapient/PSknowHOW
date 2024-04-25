@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,6 +91,8 @@ public class SprintCapacityServiceImplTest {
 	CustomApiConfig customApiConfig;
 	@Mock
 	CapacityKpiDataRepository capacityKpiDataRepository;
+	@Mock
+	FilterHelperService filterHelperService;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;

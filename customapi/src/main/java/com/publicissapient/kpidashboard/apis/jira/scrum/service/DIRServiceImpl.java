@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +70,10 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 	@Autowired
 	private KpiHelperService kpiHelperService;
+	@Autowired
+	private CacheService cacheService;
+	@Autowired
+	private FilterHelperService flterHelperService;
 
 	/**
 	 * {@inheritDoc}
@@ -246,7 +252,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			trendValueList.add(dataCount);
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_INJECTION_RATE.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_INJECTION_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 	}
 
 	/**
