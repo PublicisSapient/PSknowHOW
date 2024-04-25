@@ -67,6 +67,6 @@ export class RecommendationsComponent implements OnInit {
     });
     
     console.log("tabs", this.tabs);
-    console.log("tabContent", this.tabsContent);
+    console.log("maturities", this.maturities);
   }
 }
