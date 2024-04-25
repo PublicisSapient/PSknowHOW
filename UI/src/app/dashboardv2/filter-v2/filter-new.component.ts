@@ -27,6 +27,11 @@ export class FilterNewComponent implements OnInit {
   };
   colorObj: any = {};
   previousFilterEvent: any = [];
+  selectedDateFilter = '';
+  selectedDayType;
+  dateRangeFilter: any;
+  selectedDateValue: string;
+  toggleDateDropdown = false;
 
   constructor(
     private httpService: HttpService,
@@ -51,10 +56,47 @@ export class FilterNewComponent implements OnInit {
                 this.kanban = false;
               }
               this.processBoardData(this.boardData);
+
+              if (this.selectedTab.toLowerCase() === 'developer') {
+                this.selectedDayType = 'Days';
+                // different date filter for developer tab
+                this.dateRangeFilter = {
+                  "types": [
+                    "Days",
+                    "Weeks",
+                  ],
+                  "counts": [
+                    5,
+                    10
+                  ]
+                }
+              } else {
+                this.selectedDayType = 'Weeks';
+                this.dateRangeFilter = {
+                  "types": [
+                    "Days",
+                    "Weeks",
+                    "Months"
+                  ],
+                  "counts": [
+                    5,
+                    10,
+                    15
+                  ]
+                }
+              };
+
+              this.service.setSelectedDateFilter(this.selectedDayType);
+              this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+              this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
             })
         );
       })
     );
+  }
+
+  setSelectedDateType(label: string) {
+    this.selectedDayType = label;
   }
 
   setSelectedType(type) {
@@ -247,17 +289,17 @@ export class FilterNewComponent implements OnInit {
           this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
         } else {
           this.filterApplyData['ids'] = [5];
-          this.filterApplyData['selectedMap']['date'] = ['DAYS']
+          this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
         }
       } else {
         if (this.selectedTab === 'Iteration') {
           this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
         } else {
-          this.filterApplyData['ids'] = [5];
+          this.filterApplyData['ids'] = [this.selectedDateValue];
         }
         this.filterApplyData['startDate'] = '';
         this.filterApplyData['endDate'] = '';
-        this.filterApplyData['selectedMap']['date'] = ['WEEKS'];
+        this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
         this.filterApplyData['selectedMap']['release'] = [];
         this.filterApplyData['selectedMap']['sqd'] = [];
       }
@@ -267,7 +309,6 @@ export class FilterNewComponent implements OnInit {
       }
 
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
-      this.filterApplyData['selectedMap']['date'] = ['WEEKS'];
 
       // set selected projects(trends)
       this.service.setSelectedTrends([...new Set(event.map((item) => item.basicProjectConfigId))]);
@@ -281,6 +322,24 @@ export class FilterNewComponent implements OnInit {
       } else {
         this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
       }
+    }
+  }
+
+  applyDateFilter() {
+    this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+    this.service.setSelectedDateFilter(this.selectedDayType);
+    this.toggleDateDropdown = false;
+    this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
+    this.filterApplyData['ids'] = [this.selectedDateValue];
+
+    if (this.selectedLevel) {
+      if (typeof this.selectedLevel === 'string') {
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+      } else {
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+      }
+    } else {
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
     }
   }
 }
