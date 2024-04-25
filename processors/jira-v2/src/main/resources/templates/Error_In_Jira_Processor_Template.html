@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Error Occured In Jira Processor</title>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'/>
+
+</head>
+<body style="font-family: 'Roboto', sans-serif;font-size: 16px;line-height: 24px;background-color: #ccc;margin: 0;">
+<table cellpadding="0" cellspacing="0" class="main" style=" width: 800px;margin:20px;background-color: #fff;">
+    <tbody>
+    <tr>
+        <td style="height: 100px;display: table; text-align: center;width: 100%;">
+            <div style="font-size: 52px; padding: 25px;text-align: center;">
+                PS | kn<span style="color: #FE414D;">o</span>w<span
+                    style="font-weight: 900;">HOW</span>
+            </div>
+            <hr style="border-top:1px solid #0099ff;"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 25px 25px;">
+            <table cellpadding="0" cellspacing="0" class="content" style="width: 800px;">
+                <tbody>
+                <tr>
+                    <div style="margin-bottom: 10px;">
+                        Dear User,
+                    </div>
+                </tr>
+                <tr>
+                    <td>
+                        <div>The last Jira processor run that started at <em th:text="${Notification_Msg}"> </em>
+                            was not successful.
+                        </div>
+
+                        <div>
+                            <details>
+                                <summary>The reason for failure was</summary>
+                                <p><em th:text="${Notification_Error}"> </em></p>
+                            </details>
+                        </div>
+                        <div><p>Please re-run the processor by logging into KnowHOW.</p></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="margin-top: 10px;">Regards,</div>
+                        <div>PSknowHOW Team</div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table
+                    style="text-align: center;background-color: #0099ff; height: 50px;width: 850px;display: table; margin-top: 25px;">
+                <tbody>
+                <tr>
+                    <td class="footer-content"
+                        style="height: 50px; display: table-cell;text-align: center;vertical-align: middle;color: #fff;">
+                        For any further support, drop an email at <a
+                            href="mailto:dojosupport@publicicssapient.com"
+                            style="color: #fff;">
+                        dojosupport@publicicssapient.com</a>.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

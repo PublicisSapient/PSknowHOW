@@ -51,6 +51,7 @@
                 <module>processors/github-action</module>
                 <module>processors/sonar</module>
                 <module>processors/jira</module>
+                <module>processors/jira-v2</module>
                 <module>processors/jira-xray-zephyr-squad</module>
                 <module>processors/jenkins</module>
                 <module>processors/bamboo</module>
@@ -228,6 +229,13 @@
             <modules>
                 <module>common</module>
                 <module>processors/jira</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>jira-processor-v2</id>
+            <modules>
+                <module>common</module>
+                <module>processors/jira-v2</module>
             </modules>
         </profile>
         <profile>
