@@ -436,7 +436,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			userDetailsResponseDTO.setUserName(username);
 			userDetailsResponseDTO.setUserEmail(email);
 			userDetailsResponseDTO.setAuthorities(userinfo.getAuthorities());
-
+			userDetailsResponseDTO.setAuthType(userinfo.getAuthType().toString());
 			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 
 			userDetailsResponseDTO.setProjectsAccess(projectAccessesWithRole);
