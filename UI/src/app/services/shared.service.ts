@@ -55,6 +55,7 @@ export class SharedService {
   private passServerRole= new BehaviorSubject<boolean>(false);
   public boardId = 1;
   public isDownloadExcel;
+  addtionalFilterBackup = {} ;
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
@@ -360,6 +361,14 @@ export class SharedService {
 
   setMaturiyTableLoader(value){
     this.maturityTableLoader.next(value)
+  }
+
+  setAddtionalFilterBackup(data){
+    this.addtionalFilterBackup = data;
+  }
+
+  getAddtionalFilterBackup(){
+    return this.addtionalFilterBackup;
   }
 }
 
