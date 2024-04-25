@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -208,6 +209,36 @@ public class GitLabClient {
 		repo.setUpdatedTime(System.currentTimeMillis());
 
 		return mergeRequests;
+	}
+
+	/**
+	 * Get Gitlab Repository Name
+	 * @param projectToolConfig
+	 * 				project tool config id
+	 * @param gitLabInfo
+	 * 				gitlab info
+	 * @param repo
+	 * 				processor item object
+	 * @return updated project tool config id
+	 */
+	public void setRepositoryNameByProjectId(ProjectToolConfig projectToolConfig, ProcessorToolConnection gitLabInfo,
+			GitLabRepo repo) {
+		try {
+			String decryptedApiToken = decryptApiToken(gitLabInfo.getAccessToken());
+			String restUrl = new GitLabURIBuilder(repo, gitLabConfig, gitLabInfo).repoDetailsUrlBuild();
+			String restUri = URLDecoder.decode(restUrl, "UTF-8");
+			log.debug("REST URL {}", restUri);
+			ResponseEntity<String> respPayload = getResponse(gitLabInfo.getUsername(), decryptedApiToken, restUri);
+			if (respPayload != null) {
+				JSONParser parser = new JSONParser();
+				JSONObject responseJson = (JSONObject) parser.parse(respPayload.getBody());
+				String repositoryName = (String) responseJson.get(GitLabConstants.REPOSITORY_NAME);
+				projectToolConfig.setRepositoryName(repositoryName);
+			}
+		} catch (URISyntaxException | RestClientException | GeneralSecurityException | ParseException |
+				UnsupportedEncodingException ex) {
+			log.error("Failed to fetch merge request details ", ex);
+		}
 	}
 
 	private void initializeMergeRequestDetails(List<MergeRequests> mergeRequestList, JSONArray jsonArray,
