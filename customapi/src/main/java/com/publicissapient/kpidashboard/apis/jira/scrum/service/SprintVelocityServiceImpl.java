@@ -30,6 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -92,6 +94,10 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	private SprintVelocityServiceHelper velocityHelper;
 	@Autowired
 	private SprintRepositoryCustom sprintRepositoryCustom;
+	@Autowired
+	private FilterHelperService flterHelperService;
+	@Autowired
+	private CacheService cacheService;
 
 	/**
 	 * Gets Qualifier Type
@@ -289,8 +295,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			trendValueList.add(dataCount);
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_VELOCITY.getColumns());
-	}
+		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_VELOCITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));	}
 
 	/**
 	 * Create map consisting of sprint and its velocity
