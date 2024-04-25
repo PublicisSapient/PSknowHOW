@@ -16,7 +16,7 @@
                 <p-table [value]="tabsContent[tab]" [tableStyle]="{ 'min-width': '50rem' }"
                 [globalFilterFields]="['maturity']">
                     <ng-template pTemplate="header">
-                        <tr>
+                        <tr class="table-heading">
                             <th id="kpiName">KPI Name</th>
                             <th id="maturity">Maturity Level</th>
                             <th id="recommendation">Recommendation</th>
@@ -40,10 +40,10 @@
                                 </p-columnFilter>
                             </th>
                             <th>
-                                <p-columnFilter type="text" field="recommendation"></p-columnFilter>
+                                
                             </th>
                             <th>
-                                <p-columnFilter type="text" field="details"></p-columnFilter>
+                                
                             </th>
                         </tr>
                     </ng-template>

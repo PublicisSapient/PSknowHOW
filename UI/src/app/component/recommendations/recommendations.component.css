@@ -37,6 +37,6 @@
     0%   { right:50%;opacity: 0 }
     100% { right: 91%; opacity: 1;}
   }
-:host ::ng-deep  .p-datatable .p-datatable-thead > tr > th{
+:host ::ng-deep  .p-datatable .p-datatable-thead > tr.table-heading  > th{
     background: #eee;
 }
