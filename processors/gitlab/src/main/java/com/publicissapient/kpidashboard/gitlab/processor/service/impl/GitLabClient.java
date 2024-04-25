@@ -68,6 +68,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GitLabClient {
 
 	private static final String PAGE_PARAM = "&page=";
+	private static final String UTF = "UTF-8";
 	/**
 	 * The Git lab config.
 	 */
@@ -115,7 +116,7 @@ public class GitLabClient {
 		try {
 			String decryptedApiToken = decryptApiToken(gitLabInfo.getAccessToken());
 			String restUrl = new GitLabURIBuilder(repo, gitLabConfig, gitLabInfo).build();
-			restUri = URLDecoder.decode(restUrl, "UTF-8");
+			restUri = URLDecoder.decode(restUrl, UTF);
 			log.debug("REST URL {}", restUri);
 			boolean hasMorePage = true;
 			int nextPage = 1;
@@ -179,7 +180,7 @@ public class GitLabClient {
 		try {
 			String decryptedApiToken = decryptApiToken(gitLabInfo.getAccessToken());
 			String restUrl = new GitLabURIBuilder(repo, gitLabConfig, gitLabInfo).mergeRequestUrlbuild();
-			restUri = URLDecoder.decode(restUrl, "UTF-8");
+			restUri = URLDecoder.decode(restUrl, UTF);
 			log.debug("REST URL {}", restUri);
 			boolean hasMorePage = true;
 			int nextPage = 1;
@@ -219,14 +220,13 @@ public class GitLabClient {
 	 * 				gitlab info
 	 * @param repo
 	 * 				processor item object
-	 * @return updated project tool config id
 	 */
 	public void setRepositoryNameByProjectId(ProjectToolConfig projectToolConfig, ProcessorToolConnection gitLabInfo,
 			GitLabRepo repo) {
 		try {
 			String decryptedApiToken = decryptApiToken(gitLabInfo.getAccessToken());
 			String restUrl = new GitLabURIBuilder(repo, gitLabConfig, gitLabInfo).repoDetailsUrlBuild();
-			String restUri = URLDecoder.decode(restUrl, "UTF-8");
+			String restUri = URLDecoder.decode(restUrl, UTF);
 			log.debug("REST URL {}", restUri);
 			ResponseEntity<String> respPayload = getResponse(gitLabInfo.getUsername(), decryptedApiToken, restUri);
 			if (respPayload != null) {
