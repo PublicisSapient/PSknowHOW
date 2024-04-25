@@ -123,6 +123,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
     border: 1px solid var(--color-black);
     cursor: pointer;
     height: 3rem;
+    background-color: #fff;
 }
 
 .selected-date {
