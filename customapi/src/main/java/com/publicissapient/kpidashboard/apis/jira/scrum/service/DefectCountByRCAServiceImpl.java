@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +71,12 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 
 	@Autowired
 	private CommonServiceImpl commonService;
+
+	@Autowired
+	private CacheService cacheService;
+
+	@Autowired
+	private FilterHelperService filterHelperService;
 
 	private static void overallRCACountMap(List<DataCount> dataCountListForAllPriorities,
 			Map<String, Integer> overallRCACountMapAggregate) {
@@ -285,8 +293,8 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 							latestSprint.getSprintFilter().getName(), fieldMapping, createDuringIteration);
 
 					kpiElement.setSprint(latestSprint.getName());
-					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIE_CHART.getColumns());
-					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIE_CHART.getColumns());
+					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIE_CHART.getColumns(Collections.singletonList(latestSprint), cacheService,filterHelperService));
+					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIE_CHART.getColumns(Collections.singletonList(latestSprint), cacheService,filterHelperService));
 					kpiElement.setExcelData(excelData);
 					sortedFilterDataList.add(filterDataList.stream()
 							.filter(iterationKpiValue -> iterationKpiValue.getFilter1()
