@@ -178,7 +178,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 					setWeekWisePRSize(dateWisePRSize, dateWiseMRCount, excelDataLoader, branchName, projectName,
 							aggDataMap, kpiRequest);
 					repoWisePRSizeList.add(excelDataLoader);
-					repoList.add(repo.getUrl());
+					repoList.add(repo.getRepositoryName() != null ? repo.getRepositoryName() : repo.getRepoSlug());
 					branchList.add(repo.getBranch());
 
 				}

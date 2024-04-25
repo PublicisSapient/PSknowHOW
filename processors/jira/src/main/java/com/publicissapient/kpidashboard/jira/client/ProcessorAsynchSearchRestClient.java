@@ -177,9 +177,6 @@ public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestCli
 					.putOpt(JiraConstants.START_AT_ATTRIBUTE, startAt)
 					.putOpt(JiraConstants.MAX_RESULTS_ATTRIBUTE, maxResults);
 
-			if (fields != null) {
-				postEntity.put(JiraConstants.FIELDS_ATTRIBUTE, fields); // putOpt doesn't work with collections
-			}
 		} catch (JSONException e) {
 			throw new RestClientException(e);
 		}

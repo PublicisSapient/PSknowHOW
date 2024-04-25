@@ -178,7 +178,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 					aggDataMap.put(getBranchSubFilter(repo, projectName), dayWiseCount);
 					repoWiseCommitList.add(excelDataLoader);
 					repoWiseMergeRequestList.add(mergeRequestExcelDataLoader);
-					repoList.add(repo.getUrl());
+					repoList.add(repo.getRepositoryName() != null ? repo.getRepositoryName() : repo.getRepoSlug());
 					branchList.add(repo.getBranch());
 
 				}

@@ -18,6 +18,28 @@
 
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -45,28 +67,8 @@ import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This service reflects the logic for the number of check-ins in master
@@ -210,7 +212,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 						aggDataMap.put(getBranchSubFilter(repo, projectName), dayWiseCount);
 						repoWiseCommitList.add(excelDataLoader);
 						repoWiseMergeRequestList.add(mergeRequestExcelDataLoader);
-						repoList.add(repo.getUrl());
+						repoList.add(repo.getRepositoryName() != null ? repo.getRepositoryName() : repo.getRepoSlug());
 						branchList.add(repo.getBranch());
 
 					}
