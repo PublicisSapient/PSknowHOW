@@ -1,0 +1,35 @@
+[
+  {
+    "level": "6",
+    "hierarchyLevelId": "sqd",
+    "hierarchyLevelName": "Squad"
+  },
+  {
+    "level": "5",
+    "hierarchyLevelId": "sprint",
+    "hierarchyLevelName": "Sprint"
+  },
+  {
+    "level": "4",
+    "hierarchyLevelId": "project",
+    "hierarchyLevelName": "Project"
+  },
+  {
+    "_id": "632814ec8d7e06a0cfd669be",
+    "level": "3",
+    "hierarchyLevelId": "hierarchyLevelThree",
+    "hierarchyLevelName": "Level Three"
+  },
+  {
+    "_id": "632814ec8d7e06a0cfd669bd",
+    "level": "2",
+    "hierarchyLevelId": "hierarchyLevelTwo",
+    "hierarchyLevelName": "Level Two"
+  },
+  {
+    "_id": "632814ec8d7e06a0cfd669bc",
+    "level": "1",
+    "hierarchyLevelId": "hierarchyLevelOne",
+    "hierarchyLevelName": "Level One"
+  }
+]
