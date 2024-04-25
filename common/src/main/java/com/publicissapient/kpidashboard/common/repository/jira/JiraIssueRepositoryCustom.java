@@ -257,9 +257,14 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 
 	/**
 	 * find unique Release Version Name group by type name
+	 *
 	 * @param mapOfFilters
-	 * @param  @return
+	 * @param @return
 	 */
 
 	List<ReleaseWisePI> findUniqueReleaseVersionByUniqueTypeName(Map<String, List<String>> mapOfFilters);
+
+
+	List<JiraIssue> findIssueByNumberWithAdditionalFilter(Set<String> storyNumber,
+										  Map<String, Map<String, Object>> uniqueProjectMap);
 }

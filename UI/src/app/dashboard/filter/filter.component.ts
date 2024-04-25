@@ -136,6 +136,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   totalProjectSelected: number = 1;
   selectedLevelValue: string = 'project';
   displayModal: boolean = false;
+  selectedProjectForIteration : any = [];
+  counter: number = 0;
 
   constructor(
     private service: SharedService,
@@ -231,6 +233,16 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedDateFilter(this.selectedDayType);
         this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
         this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
+        let selectedSqds = this.filterForm.get('sqd')?.['controls'];
+        let sqdCount = 0;
+        for(let key in selectedSqds){
+          if(key['value']){
+            sqdCount++;
+          }
+        }
+        if(this.counter != sqdCount){
+          this.counter = sqdCount;
+        }
       }),
 
       this.service.mapColorToProjectObs.subscribe((x) => {
@@ -472,11 +484,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           arr = this.makeUniqueArrayList(arr);
           this.additionalFiltersDdn[this.additionalFiltersArr[i]['hierarchyLevelId']] = arr;
           this.toggleDropdownObj[this.additionalFiltersArr[i]['hierarchyLevelId']] = false;
-          if (this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sprint') {
             this.createFormGroup(this.additionalFiltersArr[i]['hierarchyLevelId'], arr);
-          } else {
-            this.createFormGroup(this.additionalFiltersArr[i]['hierarchyLevelId']);
-          }
         }
       }
       if (!this.noProjects) {
@@ -508,8 +516,13 @@ export class FilterComponent implements OnInit, OnDestroy {
   createFormGroup(level, arr?) {
     if (arr?.length > 0) {
       const obj = {};
+      const alreadySelectedSprints = this.getSprintsWhichWasAlreadySelected(level);
       for (let i = 0; i < arr?.length; i++) {
-        obj[arr[i]['nodeId']] = new UntypedFormControl(false);
+        if(alreadySelectedSprints.includes(arr[i]['nodeId'])){
+          obj[arr[i]['nodeId']] = new UntypedFormControl(true);
+        }else{
+          obj[arr[i]['nodeId']] = new UntypedFormControl(false);
+        }
       }
       this.filterForm.controls[level] = new UntypedFormGroup(obj);
     } else {
@@ -573,9 +586,12 @@ export class FilterComponent implements OnInit, OnDestroy {
         for (let i = 0; i < selectedProjects?.length; i++) {
           for (const key in this.additionalFiltersDdn) {
             if (key == 'sprint') {
-              this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter((x) => x['parentId']?.includes(selectedProjects[i]) && x['sprintState']?.toLowerCase() == 'closed')];
-            } else {
-              this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter((x) => x['path'][0]?.includes(selectedProjects[i]))];
+              if (this.selectedTab?.toLowerCase() === 'iteration') {
+                this.filteredAddFilters[key] = [...this.additionalFiltersDdn[key]?.filter((x) => x['parentId']?.includes(selectedProjects))];
+              } else {
+                this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter((x) => x['parentId']?.includes(selectedProjects[i]) && x['sprintState']?.toLowerCase() == 'closed')];
+              }} else {
+                this.filteredAddFilters[key] = [...this.additionalFiltersDdn[key]?.filter((x) => x['path'][0]?.includes(Array.isArray(selectedProjects) ? selectedProjects[i] : selectedProjects))];
             }
           }
         }
@@ -583,10 +599,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSelectedTrendValueChange($event) {
-    this.additionalFiltersArr.forEach((additionalFilter) => {
-      this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
-    });
+  onSelectedTrendValueChange(isChangedFromUI) {
+    this.resetAddtionalFIlters();
     this.applyChanges();
     this.totalProjectSelected = this.service.getSelectedTrends().length;
   }
@@ -610,6 +624,11 @@ export class FilterComponent implements OnInit, OnDestroy {
 
       this.service.setSelectedLevel(selectedLevel);
       this.service.setSelectedTrends(selectedTrendValues);
+
+      if(this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity'){
+        this.setSelectedSprintOnServiceLayer(applySource);
+      }
+
       if (!applySource) {
         this.ngselect?.close();
         this.ngselect?.blur();
@@ -631,7 +650,10 @@ export class FilterComponent implements OnInit, OnDestroy {
             if (typeof additionalFilterFormVal === 'object' && Object.keys(additionalFilterFormVal)?.length > 0) {
               const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => additionalFilterFormVal[x['nodeId']] == true);
               for (let j = 0; j < selectedAdditionalFilter?.length; j++) {
-                const parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
+                let parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
+                if(parentNodeIdx < 0){
+                  parentNodeIdx = this.selectedFilterArray?.findIndex((x) => selectedAdditionalFilter[j]['path'][0]?.includes(x.nodeId))
+                }
                 if (parentNodeIdx >= 0) {
                   this.selectedFilterArray[parentNodeIdx]['additionalFilters'] =
                     [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter[j]];
@@ -685,9 +707,14 @@ export class FilterComponent implements OnInit, OnDestroy {
             this.filterApplyData['ids'].push(temp[j].nodeId);
           }
           this.filterApplyData['label'] = temp[j]?.labelName;
-          if (temp[j].labelName != 'sprint' || this.filterApplyData['selectedMap']['sprint']?.length == 0) {
-            this.filterApplyData['selectedMap']['project'].push(this.selectedFilterArray[i]?.nodeId);
+        if (temp[j].labelName != 'sprint' || this.filterApplyData['selectedMap']['sprint']?.length == 0) {
+          if(this.selectedTab.toLowerCase() === 'iteration'){
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.parentId[0],this.filterApplyData['selectedMap']['project'])
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['sprint'])
+          }else{
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['project'])
           }
+        }
         }
       } else {
         this.filterApplyData['level'] = this.selectedFilterArray[i]?.level;
@@ -706,6 +733,13 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
     }
     this.compileGAData();
+  }
+
+   /** This method is using as a helper of createFilterApplyData() */
+   checkAndAssignProjectsInFilterApplyData(value,selectedMap){
+    if(!selectedMap.includes(value)){
+      selectedMap.push(value);
+    }
   }
 
   checkIfMaturityTabHidden() {
@@ -1076,7 +1110,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (hierarchyLevelId == 'sprint') {
       isDisabled = !isProject || !this.filteredAddFilters[hierarchyLevelId] || this.filteredAddFilters[hierarchyLevelId]?.length == 0 || (isProject && projectSelected == 0);
     } else {
-      isDisabled = !isProject || (isProject && projectSelected !== 1) || !this.filteredAddFilters[hierarchyLevelId] || this.filteredAddFilters[hierarchyLevelId]?.length == 0;
+      isDisabled = !isProject || (isProject && projectSelected !== 1 && this.selectedTab?.toLowerCase() !== 'iteration') || !this.filteredAddFilters[hierarchyLevelId] || this.filteredAddFilters[hierarchyLevelId]?.length == 0;
     }
     return isDisabled;
   }
@@ -1149,7 +1183,12 @@ export class FilterComponent implements OnInit, OnDestroy {
   /*'type' argument: to understand onload or onchange
     1: onload
     2: onchange */
-  handleIterationFilters(level) {
+  handleIterationFilters(level,isChangedFromUI?) {
+    this.refreshKpiLevelFiltersBackup(level, isChangedFromUI) // Refreshing KPi level filters backup
+    if(level !== 'sqd' && isChangedFromUI === true){
+      this.resetAddtionalFIlters();
+     }
+     this.selectedProjectForIteration = [];
     this.lastSyncData = {};
     this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
@@ -1160,6 +1199,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
         this.checkIfProjectHasData();
         this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint['nodeId']);
+        this.filterAdditionalFilters();
       }
 
       if (level?.toLowerCase() == 'sprint') {
@@ -1175,6 +1215,18 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setCurrentSelectedSprint(this.selectedSprint);
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
+        if(this.filterForm.get('sqd')){
+          this.closeAllDropdowns();
+           const AllSqd = this.filterForm.get('sqd').value;
+           const selectedSqd = Object.keys(AllSqd).filter(sq => AllSqd[sq] === true);
+            if (selectedSqd) {
+              const selectedAdditionalFilter = this.additionalFiltersDdn['sqd'].filter(sqd => selectedSqd.includes(sqd['nodeId']));
+              this.selectedFilterArray[0]['additionalFilters'] = selectedAdditionalFilter;
+              this.setSelectedSprintOnServiceLayer('sqd');
+              this.selectedProjectForIteration = this.service.getSelectedTrends();
+              this.selectedProjectForIteration[0]['additionalFilters'] = selectedAdditionalFilter;
+          }
+        }
         this.createFilterApplyData();
         this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
       }
@@ -1231,6 +1283,12 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.filterForm.get(hierarchyLevelId).setValue('');
     }
 
+    if(this.selectedTab.toLowerCase() === 'iteration'){
+      this.handleIterationFilters(hierarchyLevelId)
+    }else{
+      this.applyChanges(hierarchyLevelId);
+    }
+
     this.applyChanges(hierarchyLevelId);
   }
 
@@ -1284,7 +1342,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   checkIfBtnDisabled(hierarchyLevelId) {
     let isDisabled = true;
-    if (hierarchyLevelId === 'sprint') {
+    if (hierarchyLevelId === 'sprint' || hierarchyLevelId === 'sqd') {
       for (const item in this.filterForm?.get(hierarchyLevelId)?.value) {
         if (this.filterForm?.get(hierarchyLevelId)?.value[item]) {
           isDisabled = null;
@@ -1663,4 +1721,79 @@ export class FilterComponent implements OnInit, OnDestroy {
     const final = pId.replace(sortName, longName);
     return final;
   }
+
+  /**
+  Filters a list of sprints to only include those that were previously selected
+  @returns An array containing the node IDs of sprints that were previously selected */
+
+  getSprintsWhichWasAlreadySelected(level) {
+    const sprintsWhichWasAlreadySelected = []
+    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()[level] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity') {
+      const selectedProjects = this.service.getSelectedTrends().map(data => data.nodeId);
+      selectedProjects.forEach(nodeId => {
+        const projectWhichSprintWasSelected = Object.keys(this.service.getAddtionalFilterBackup()[level]);
+        if (projectWhichSprintWasSelected && projectWhichSprintWasSelected.length && projectWhichSprintWasSelected.includes(nodeId)) {
+          sprintsWhichWasAlreadySelected.push(...this.service.getAddtionalFilterBackup()[level][nodeId].map(details => details.nodeId));
+        }
+      })
+    }
+    return sprintsWhichWasAlreadySelected;
+  }
+
+  resetAddtionalFIlters() {
+    this.additionalFiltersArr.forEach((additionalFilter) => {
+      this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
+    });
+  }
+
+    /*Sets the selected sprints on the service layer for storage. */
+    setSelectedSprintOnServiceLayer(level) {
+      let selectedSprint = {}
+      this.selectedFilterArray?.forEach(element => {
+        if (element['additionalFilters'].length) {
+          selectedSprint = { ...selectedSprint, [this.selectedTab.toLowerCase() === 'iteration' ? element['parentId'][0] : element['nodeId']]: element['additionalFilters'] }
+        }
+      });
+    this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), [level] : selectedSprint });
+    }
+
+     /************************
+     * Refresh KPI Level Filters when project is changing
+     */
+     refreshKpiLevelFiltersBackup(level, isManually) {
+      if (isManually) {
+        if (level === 'release' || level === 'sprint') {
+          const updatedFilterBackup = { ...this.service.getAddtionalFilterBackup()['kpiFilters'][this.selectedTab.toLowerCase()]= {}}
+          this.service.setKpiSubFilterObj(updatedFilterBackup)
+        } else {
+          this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), kpiFilters: {} });
+          this.service.setKpiSubFilterObj({})
+        }
+      }
+    }
+
+    checkedState(event, hierarchyLevelId) {
+      if(hierarchyLevelId == 'sqd'){
+        let formControls = this.filterForm?.get(hierarchyLevelId)['controls'];
+        if(event.target.checked === true){
+          if(this.counter < 2){
+            this.counter++
+          }else{
+            this.counter++;
+            for(let item in formControls){
+              if(!this.filterForm?.get(hierarchyLevelId)['controls'][item].value){
+                this.filterForm?.get(hierarchyLevelId)['controls'][item]?.disable()
+              }
+            }
+          }
+        }else{
+          this.counter--;
+          for(let item in formControls){
+            if(!this.filterForm?.get(hierarchyLevelId)['controls'][item].value){
+              this.filterForm?.get(hierarchyLevelId)['controls'][item]?.enable()
+            }
+          }
+        }
+      }
+    }
 }

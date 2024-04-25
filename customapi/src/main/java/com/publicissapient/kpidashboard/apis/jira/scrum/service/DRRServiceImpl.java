@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.Feature;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -104,6 +105,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 	@Autowired
 	private FilterHelperService flterHelperService;
+	@Autowired
+	private CacheService cacheService;
 	@Autowired
 	private SprintRepository sprintRepository;
 	@Autowired
@@ -419,7 +422,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_REJECTION_RATE.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_REJECTION_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 	}
 
 	/**

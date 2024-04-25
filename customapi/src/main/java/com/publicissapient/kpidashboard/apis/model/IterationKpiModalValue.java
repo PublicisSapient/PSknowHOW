@@ -137,6 +137,8 @@ public class IterationKpiModalValue implements Serializable {
 	private String releaseName;
 	@JsonProperty("Updated Date")
 	private String updatedDate;
+	@JsonProperty("Squad")
+	private List<String> squads;
 	@JsonProperty("Intake to DOR (In Days)")
 	private String intakeToDor;
 	@JsonProperty("DOR to DOD (In Days)")
