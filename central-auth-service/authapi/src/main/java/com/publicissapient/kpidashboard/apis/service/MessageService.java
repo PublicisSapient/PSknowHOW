@@ -15,26 +15,13 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.jira.service;
 
-import org.springframework.stereotype.Service;
+package com.publicissapient.kpidashboard.apis.service;
 
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+public interface MessageService {
 
-import lombok.Getter;
-import lombok.Setter;
+	String getMessage(String id);
 
-/**
- * @author purgupta2
- *
- */
-@Getter
-@Setter
-@Service
-public class JiraClientService {
+	String getMessage(String id, Object[] args);
 
-    private ProcessorJiraRestClient restClient;
-
-    private KerberosClient kerberosClient;
 }

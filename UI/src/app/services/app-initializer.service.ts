@@ -109,8 +109,8 @@ export class AppInitializerService {
   routesAuth: Routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     {
-        path: 'dashboard', component: !localStorage.getItem('newUI') ? DashboardComponent : DashboardV2Component,
-        canActivateChild: [AuthGuard, FeatureGuard],
+        path: 'dashboard', component: DashboardComponent,
+        canActivateChild: [FeatureGuard],
         children: [
             { path: '', redirectTo: 'iteration', pathMatch: 'full' },
             {
@@ -166,7 +166,7 @@ export class AppInitializerService {
             },
             { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full' },
 
-        ],
+        ], canActivate: [AuthGuard],
     },
     { path: 'pageNotFound', component: PageNotFoundComponent },
     { path: '**', redirectTo: 'pageNotFound' }
@@ -213,7 +213,8 @@ export class AppInitializerService {
     return new Promise<void>((resolve, reject) => {
         if (!environment['AUTHENTICATION_SERVICE'] == true) {
             this.router.resetConfig([...this.routes]);
-            this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
+            this.router.navigate([location]);
+            //this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
         } else {
             // TODO: find right property to avoid string manipulation - Rishabh 3/4/2024
             let url = window.location.href; 
