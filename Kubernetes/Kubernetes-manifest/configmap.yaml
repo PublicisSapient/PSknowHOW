@@ -5,7 +5,7 @@ metadata:
   namespace: stage-knowhow
 data:
   #Common-Config for all application
-  keystorefile: "/usr/lib/jvm/java-1.8.0-amazon-corretto/jre/lib/security/cacerts"
+  keystorefile: "/usr/lib/jvm/java-17-amazon-corretto/lib/security/cacerts"
   spring.data.mongodb.database: "kpidashboard"
   flag.mailWithoutKafka: "false"
   notification.switch: "true"
