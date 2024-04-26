@@ -137,7 +137,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedLevelValue: string = 'project';
   displayModal: boolean = false;
   selectedProjectForIteration : any = [];
-  counter: number = 0;
+  isAdditionalFilter: boolean = false;
 
   constructor(
     private service: SharedService,
@@ -233,16 +233,6 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedDateFilter(this.selectedDayType);
         this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
         this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
-        let selectedSqds = this.filterForm.get('sqd')?.['controls'];
-        let sqdCount = 0;
-        for(let key in selectedSqds){
-          if(key['value']){
-            sqdCount++;
-          }
-        }
-        if(this.counter != sqdCount){
-          this.counter = sqdCount;
-        }
       }),
 
       this.service.mapColorToProjectObs.subscribe((x) => {
@@ -649,14 +639,19 @@ export class FilterComponent implements OnInit, OnDestroy {
           if (additionalFilterFormVal) {
             if (typeof additionalFilterFormVal === 'object' && Object.keys(additionalFilterFormVal)?.length > 0) {
               const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => additionalFilterFormVal[x['nodeId']] == true);
-              for (let j = 0; j < selectedAdditionalFilter?.length; j++) {
-                let parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
-                if(parentNodeIdx < 0){
-                  parentNodeIdx = this.selectedFilterArray?.findIndex((x) => selectedAdditionalFilter[j]['path'][0]?.includes(x.nodeId))
+              if(this.selectedTab?.toLowerCase() != 'backlog' && this.selectedTab?.toLowerCase() != 'value'){
+                for (let j = 0; j < selectedAdditionalFilter?.length; j++) {
+                  let parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
+                  if(parentNodeIdx < 0){
+                    parentNodeIdx = this.selectedFilterArray?.findIndex((x) => selectedAdditionalFilter[j]['path'][0]?.includes(x.nodeId))
+                  }
+                  if (parentNodeIdx >= 0) {
+                    this.selectedFilterArray[parentNodeIdx]['additionalFilters'] =
+                      [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter[j]];
+                  }
                 }
-                if (parentNodeIdx >= 0) {
-                  this.selectedFilterArray[parentNodeIdx]['additionalFilters'] =
-                    [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter[j]];
+                if(Object.keys(this.additionalFiltersDdn)[i] != 'sprint' && selectedAdditionalFilter?.length > 0){
+                  this.isAdditionalFilter = true;
                 }
               }
             } else {
@@ -680,13 +675,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
       this.createFilterApplyData();
       this.setMarker();
-      let isAdditionalFilters = false;
-      for (const key in this.additionalFiltersDdn) {
-        if (key != 'sprint' && this.filterForm.get(key)?.value) {
-          isAdditionalFilters = true;
-        }
-      }
-      this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, isAdditionalFilters, filterApplied,);
+      this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter, filterApplied,);
     }
   }
 
@@ -1768,31 +1757,6 @@ export class FilterComponent implements OnInit, OnDestroy {
         } else {
           this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), kpiFilters: {} });
           this.service.setKpiSubFilterObj({})
-        }
-      }
-    }
-
-    checkedState(event, hierarchyLevelId) {
-      if(hierarchyLevelId == 'sqd'){
-        let formControls = this.filterForm?.get(hierarchyLevelId)['controls'];
-        if(event.target.checked === true){
-          if(this.counter < 2){
-            this.counter++
-          }else{
-            this.counter++;
-            for(let item in formControls){
-              if(!this.filterForm?.get(hierarchyLevelId)['controls'][item].value){
-                this.filterForm?.get(hierarchyLevelId)['controls'][item]?.disable()
-              }
-            }
-          }
-        }else{
-          this.counter--;
-          for(let item in formControls){
-            if(!this.filterForm?.get(hierarchyLevelId)['controls'][item].value){
-              this.filterForm?.get(hierarchyLevelId)['controls'][item]?.enable()
-            }
-          }
         }
       }
     }

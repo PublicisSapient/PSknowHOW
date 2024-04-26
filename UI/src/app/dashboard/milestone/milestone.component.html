@@ -69,7 +69,7 @@
                           <ng-template #chart>
                             <div class="p-sm-12 p-mb-3 p-pr-0 p-pl-0 iteration-chart p-pt-0 p-pb-0" cdkDragLockAxis="y" cdkDrag>
                               <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
+                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.isAdditionalFilterSupport)"
                                 [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                                 (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
@@ -199,7 +199,7 @@
                           <ng-template #chart>
                             <div class="p-sm-12 p-mb-3 p-pr-0 p-pl-0 iteration-chart p-pt-0 p-pb-0" cdkDragLockAxis="y" cdkDrag>
                               <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
+                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.isAdditionalFilterSupport)"
                                 [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                                 (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
@@ -329,7 +329,7 @@
                           <ng-template #chart>
                             <div class="p-sm-12 p-mb-3 p-pr-0 p-pl-0 iteration-chart p-pt-0 p-pb-0" cdkDragLockAxis="y" cdkDrag>
                               <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
+                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.isAdditionalFilterSupport)"
                                 [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                                 (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
@@ -464,7 +464,7 @@
                           <ng-template #chart>
                             <div class="p-sm-12 p-mb-3 p-pr-0 p-pl-0 iteration-chart p-pt-0 p-pb-0" cdkDragLockAxis="y" cdkDrag>
                               <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
+                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.isAdditionalFilterSupport)"
                                 [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                                 (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
