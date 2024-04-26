@@ -81,7 +81,7 @@ public class MetaDataTasklet implements Tasklet {
         log.info("Fetching metadata for the project : {}", projConfFieldMapping.getProjectName());
         Optional<Connection> connectionOptional = projConfFieldMapping.getJira().getConnection();
         KerberosClient krb5Client = null;
-        if (connectionOptional.isPresent() && connectionOptional.get().getIsOAuth()) {
+        if (connectionOptional.isPresent()) {
             Connection connection = connectionOptional.get();
             krb5Client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
                     connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
