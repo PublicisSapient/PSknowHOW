@@ -710,18 +710,20 @@ this.resetAddtionalFIlters();
           if (additionalFilterFormVal) {
             if (typeof additionalFilterFormVal === 'object' && Object.keys(additionalFilterFormVal)?.length > 0) {
               const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => additionalFilterFormVal[x['nodeId']] == true);
-              for (let j = 0; j < selectedAdditionalFilter?.length; j++) {
-                let parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
-                if(parentNodeIdx < 0){
-                  parentNodeIdx = this.selectedFilterArray?.findIndex((x) => selectedAdditionalFilter[j]['path'][0]?.includes(x.nodeId))
+              if(this.selectedTab?.toLowerCase() != 'backlog' && this.selectedTab?.toLowerCase() != 'value'){
+                for (let j = 0; j < selectedAdditionalFilter?.length; j++) {
+                  let parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
+                  if(parentNodeIdx < 0){
+                    parentNodeIdx = this.selectedFilterArray?.findIndex((x) => selectedAdditionalFilter[j]['path'][0]?.includes(x.nodeId))
+                  }
+                  if (parentNodeIdx >= 0) {
+                    this.selectedFilterArray[parentNodeIdx]['additionalFilters'] =
+                      [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter[j]];
+                  }
                 }
-                if (parentNodeIdx >= 0) {
-                  this.selectedFilterArray[parentNodeIdx]['additionalFilters'] =
-                    [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter[j]];
+                if(Object.keys(this.additionalFiltersDdn)[i] != 'sprint' && selectedAdditionalFilter?.length > 0){
+                  this.isAdditionalFilter = true;
                 }
-              }
-              if(Object.keys(this.additionalFiltersDdn)[i] != 'sprint' && selectedAdditionalFilter?.length > 0){
-                this.isAdditionalFilter = true;
               }
             } else {
               const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => x['nodeId'] == additionalFilterFormVal)[0];
@@ -1168,7 +1170,6 @@ this.resetAddtionalFIlters();
   checkIfFilterAlreadySelected() {
     const selectedLevel = this.service.getSelectedLevel();
     const selectedTrends = this.service.getSelectedTrends();
-
     if (Object.keys(selectedLevel).length > 0 && selectedTrends?.length > 0) {
       if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release') {
         if (this.previousType || selectedLevel['hierarchyLevelId'] !== 'project') {
