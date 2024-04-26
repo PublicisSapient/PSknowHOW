@@ -226,7 +226,6 @@ public class BitBucketServiceKanbanRTest {
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitKanbanServiceImpl mockService = mock(CodeCommitKanbanServiceImpl.class);
-			when(mockService.getKpiData(any(), any(), any())).thenReturn(commitKpiElement);
 			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())))
 					.thenReturn(mockService);
 			
