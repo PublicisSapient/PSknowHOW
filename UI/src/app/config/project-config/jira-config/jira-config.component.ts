@@ -106,10 +106,6 @@ export class JiraConfigComponent implements OnInit {
   jiraTemplate: any[];
   gitActionWorkflowNameList: any[];
   cloudEnv: any;
-  showToolTip: boolean = false;
-  toolTipHtml: string = '';
-  left: string = '';
-  top: string = '';
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -2783,17 +2779,5 @@ export class JiraConfigComponent implements OnInit {
       self.tool['apiVersion'].enable();
       self.tool['projectKey'].enable();
     }
-  }
-
-  mouseEnter(event, error) {
-    this.toolTipHtml = error;
-    this.top = event.pageY + 'px';
-    this.left = event.pageX + 'px';
-    this.showToolTip = true;
-  }
-
-  mouseLeave() {
-    this.showToolTip = false;
-    this.toolTipHtml = '';
   }
 }

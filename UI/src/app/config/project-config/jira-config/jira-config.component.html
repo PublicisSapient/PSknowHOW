@@ -58,7 +58,7 @@
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-connection let-columns="columns">
-                <tr [ngClass]="{'highlighted': connection.brokenConnection}" (mouseenter)="connection.brokenConnection ? mouseEnter($event,connection.connectionErrorMsg) : ''" (mouseleave)="mouseLeave()">
+                <tr>
                     <td>
                         <p-tableRadioButton [value]="connection" (click)="onConnectionSelect(connection)">
                         </p-tableRadioButton>
