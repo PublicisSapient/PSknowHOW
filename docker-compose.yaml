@@ -63,8 +63,8 @@ services:
     mem_limit: 1024m
     mem_reservation: 256m
     ports:
-      - 80:80
-      - 443:443
+      - 82:80
+      - 445:443
     volumes:
       - uivol:/var/log/nginx
       #- uivol:/etc/ssl/certs/ # If you have your SSL certificate uncomment it and copy to /app/apps/certs directory 
