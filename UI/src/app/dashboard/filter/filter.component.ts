@@ -147,7 +147,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   loader: boolean = false;
   selectedProjectForIteration : any = [];
   selectedItems: number = 0;
-  counter: number = 0;
+  isAdditionalFilter: boolean = false;
+  
   constructor(
     public service: SharedService,
     private httpService: HttpService,
@@ -272,16 +273,6 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedDateFilter(this.selectedDayType);
         this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
         this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
-        let selectedSqds = this.filterForm.get('sqd')?.['controls'];
-        let sqdCount = 0;
-        for(let key in selectedSqds){
-          if(key['value']){
-            sqdCount++;
-          }
-        }
-        if(this.counter != sqdCount){
-          this.counter = sqdCount;
-        }
       }),
 
       this.service.mapColorToProjectObs.subscribe((x) => {
@@ -729,6 +720,9 @@ this.resetAddtionalFIlters();
                     [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter[j]];
                 }
               }
+              if(Object.keys(this.additionalFiltersDdn)[i] != 'sprint' && selectedAdditionalFilter?.length > 0){
+                this.isAdditionalFilter = true;
+              }
             } else {
               const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => x['nodeId'] == additionalFilterFormVal)[0];
               const parentNodeIdx = this.selectedFilterArray?.findIndex((x) => selectedAdditionalFilter['path'][0]?.includes(x.nodeId));
@@ -754,12 +748,6 @@ this.resetAddtionalFIlters();
       }
       this.createFilterApplyData();
       this.setMarker();
-      let isAdditionalFilters = false;
-      for (const key in this.additionalFiltersDdn) {
-        if (key != 'sprint' && this.filterForm.get(key)?.value) {
-          isAdditionalFilters = true;
-        }
-      }
       this.getKpiOrderListProjectLevel();
     }
   }
@@ -926,7 +914,7 @@ this.resetAddtionalFIlters();
           this.service.setDashConfigData(this.kpiListData);
           const selectedType = this.kanban ? 'kanban' : 'scrum';
           this.service.setUpdatedBoardList(this.kpiListData, selectedType);
-          this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+          this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter);
           this.processKpiList();
           this.navigateToSelectedTab();
         }
@@ -1982,31 +1970,6 @@ this.resetAddtionalFIlters();
       this.additionalFiltersArr.forEach((additionalFilter) => {
         this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
       });
-    }
-
-    checkedState(event, hierarchyLevelId) {
-      if(hierarchyLevelId == 'sqd'){
-        let formControls = this.filterForm?.get(hierarchyLevelId)['controls'];
-        if(event.target.checked === true){
-          if(this.counter < 2){
-            this.counter++
-          }else{
-            this.counter++;
-            for(let item in formControls){
-              if(!this.filterForm?.get(hierarchyLevelId)['controls'][item].value){
-                this.filterForm?.get(hierarchyLevelId)['controls'][item]?.disable()
-              }
-            }
-          }
-        }else{
-          this.counter--;
-          for(let item in formControls){
-            if(!this.filterForm?.get(hierarchyLevelId)['controls'][item].value){
-              this.filterForm?.get(hierarchyLevelId)['controls'][item]?.enable()
-            }
-          }
-        }
-      }
     }
 
   /** 
