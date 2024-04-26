@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
 import java.time.DayOfWeek;
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,6 +38,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
@@ -1858,5 +1860,45 @@ public class KpiHelperService { // NOPMD
 			}
 		}
 		return remainingDefects;
+	}
+
+	public boolean isMandatoryFieldValuePresentOrNot(KPICode kpi, Node nodeDataClone) {
+		List<String> fieldMappingName = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase()).getFields();
+		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
+		List<String> mandatoryFieldMappingName = fieldMappingStructureList.stream()
+				.filter(fieldMappingStructure -> fieldMappingStructure.isMandatory() && fieldMappingName.contains(fieldMappingStructure.getFieldName()) )
+				.map(FieldMappingStructure::getFieldName).toList();
+
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				.get(nodeDataClone.getProjectFilter().getBasicProjectConfigId());
+		for (String fieldName : mandatoryFieldMappingName) {
+			try {
+				Field field = FieldMapping.class.getDeclaredField(fieldName);
+				field.setAccessible(true); // NOSONAR
+				if(checkNullValue(field.get(fieldMapping)))
+					return false;
+			} catch (NoSuchFieldException e) {
+				log.warn(fieldName + " does not exist in fieldMapping.");
+			} catch (IllegalAccessException e) {
+				log.warn("Error accessing " + fieldName + " field.");
+			}
+		}
+		return true;
+	}
+
+	private boolean checkNullValue(Object value){
+		if(value == null){
+			return true;
+		}
+		else{
+			if(value instanceof List){
+				return CollectionUtils.isEmpty((List<?>) value);
+			}
+			if (value instanceof String[]){
+				return  ((String[]) value).length<1;
+			}
+
+		}
+		return false;
 	}
 }

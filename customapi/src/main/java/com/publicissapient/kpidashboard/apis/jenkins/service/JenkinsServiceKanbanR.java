@@ -41,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.jenkins.factory.JenkinsKPIServiceFa
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -109,7 +110,7 @@ public class JenkinsServiceKanbanR {
 
 			for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 
-				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
+				responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, treeAggregatorDetail));
 			}
 
 			setIntoApplicationCache(kpiRequest, responseList, groupId, kanbanProjectKeyCache);
@@ -131,8 +132,10 @@ public class JenkinsServiceKanbanR {
 
 	/**
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param filteredAccountDataList
-	 * @return
+	 *            filteredAccountDataList
+	 * @return String of array
 	 */
 	private String[] getProjectKeyCache(KpiRequest kpiRequest,
 			List<AccountHierarchyDataKanban> filteredAccountDataList) {
@@ -142,8 +145,10 @@ public class JenkinsServiceKanbanR {
 
 	/**
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param filteredAccountDataList
-	 * @return
+	 *            filteredAccountDataList
+	 * @return list
 	 */
 	private List<AccountHierarchyDataKanban> getAuthorizedFilteredList(KpiRequest kpiRequest,
 			List<AccountHierarchyDataKanban> filteredAccountDataList) {
@@ -156,31 +161,47 @@ public class JenkinsServiceKanbanR {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param kpiRequest
-	 * @param responseList
+	 *            kpiRequest
 	 * @param kpiElement
+	 *            kpiElement
 	 * @param treeAggregatorDetail
-	 * @throws ApplicationException
+	 *            treeAggregatorDetail
+	 * @return Kpielement
 	 */
-	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-			KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
+			TreeAggregatorDetail treeAggregatorDetail) {
+		try {
+			KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+			JenkinsKPIService<?, ?, ?> jenkinsKPIService = JenkinsKPIServiceFactory.getJenkinsKPIService(kpi.name());
+			long startTime = System.currentTimeMillis();
+			TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
+					.clone(treeAggregatorDetail);
+			List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
+					.get(CommonConstant.PROJECT.toLowerCase());
 
-		JenkinsKPIService<?, ?, ?> jenkinsKPIService = null;
-
-		KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
-
-		jenkinsKPIService = JenkinsKPIServiceFactory.getJenkinsKPIService(kpi.name());
-
-		long startTime = System.currentTimeMillis();
-
-		TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-				.clone(treeAggregatorDetail);
-		responseList.add(jenkinsKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
-
-		long processTime = System.currentTimeMillis() - startTime;
-		log.info("[JENKINS-KANBAN-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-				processTime);
+			if (!projectNodes.isEmpty() && (projectNodes.size() > 1
+					|| kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, projectNodes.get(0)))) {
+				kpiElement = jenkinsKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
+				kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
+			} else if (!kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, projectNodes.get(0))) {
+				// mandatory fields not found
+				kpiElement.setResponseCode(CommonConstant.MANDATORY_FIELD_MAPPING);
+			}
+			long processTime = System.currentTimeMillis() - startTime;
+			log.info("[JENKINS-KANBAN-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+					processTime);
+		} catch (ApplicationException exception) {
+			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+			log.error("Kpi not found", exception);
+		} catch (Exception exception) {
+			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+			log.error("[JENKINS KANBAN][{}]. Error while KPI calculation for data {} {}",
+					kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), exception);
+			return kpiElement;
+		}
+		return kpiElement;
 
 	}
 
@@ -188,9 +209,13 @@ public class JenkinsServiceKanbanR {
 	 * Sets cache.
 	 * 
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param responseList
+	 *            responseList
 	 * @param groupId
+	 *            groupId
 	 * @param kanbanProjectKeyCache
+	 *            kanbanProjectKeyCache
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] kanbanProjectKeyCache) {

@@ -35,8 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -55,13 +54,16 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperServic
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -123,6 +125,8 @@ public class BitBucketServiceKanbanRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		commitKpiElement = setKpiElement(KPICode.NUMBER_OF_CHECK_INS.getKpiId(), "Code Commit Time");
+		when(filterHelperService.getFilteredBuildsKanban(Mockito.any(), Mockito.any()))
+				.thenReturn(accountHierarchyDataKanbanList);
 
 	}
 
@@ -144,52 +148,103 @@ public class BitBucketServiceKanbanRTest {
 	public void testProcess() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(2, "Bitbucket");
+		bitbucketServiceCache.put(KPICode.NUMBER_OF_CHECK_INS.name(), codeCommitKanbanServiceImpl);
 
-		BitBucketKPIService mcokAbstract = codeCommitKanbanServiceImpl;
-		bitbucketServiceCache.put(KPICode.NUMBER_OF_CHECK_INS.name(), mcokAbstract);
-
-		when(filterHelperService.getFilteredBuildsKanban(Mockito.any(), Mockito.any()))
-				.thenReturn(accountHierarchyDataKanbanList);
 		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataKanbanList, kpiRequest))
 				.thenReturn(projectKey);
+		List<KpiElement> resultList = null;
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
+		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
+			CodeCommitKanbanServiceImpl mockService = mock(CodeCommitKanbanServiceImpl.class);
+			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())))
+					.thenReturn(mockService);
+			when(mockService.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
+			resultList = bitbucketServiceKanbanR.process(kpiRequest);
+			mockedStatic
+					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())));
+		}
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
 
+	}
+
+	@Test
+	public void testProcess_NullPointer() throws Exception {
+
+		KpiRequest kpiRequest = createKpiRequest(2, "Bitbucket");
+		bitbucketServiceCache.put(KPICode.NUMBER_OF_CHECK_INS.name(), codeCommitKanbanServiceImpl);
+
+		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataKanbanList, kpiRequest))
+				.thenReturn(projectKey);
+		List<KpiElement> resultList = null;
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
+		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
+			CodeCommitKanbanServiceImpl mockService = mock(CodeCommitKanbanServiceImpl.class);
+			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())))
+					.thenReturn(mockService);
+			when(mockService.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
+			resultList = bitbucketServiceKanbanR.process(kpiRequest);
+			mockedStatic
+					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())));
+		}
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+
+	}
+
+
+	@Test
+	public void testProcess_Application() throws Exception {
+
+		KpiRequest kpiRequest = createKpiRequest(2, "Bitbucket");
+		bitbucketServiceCache.put(KPICode.NUMBER_OF_CHECK_INS.name(), codeCommitKanbanServiceImpl);
+
+		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataKanbanList, kpiRequest))
+				.thenReturn(projectKey);
+		List<KpiElement> resultList = null;
+		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
+		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
+			CodeCommitKanbanServiceImpl mockService = mock(CodeCommitKanbanServiceImpl.class);
+			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())))
+					.thenReturn(mockService);
+			when(mockService.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
+			resultList = bitbucketServiceKanbanR.process(kpiRequest);
+			mockedStatic
+					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())));
+		}
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+
+	}
+
+
+	@Test
+	public void testProcess_MandatoryFields() throws Exception {
+
+		KpiRequest kpiRequest = createKpiRequest(2, "Bitbucket");
+		bitbucketServiceCache.put(KPICode.NUMBER_OF_CHECK_INS.name(), codeCommitKanbanServiceImpl);
+
+		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataKanbanList, kpiRequest))
+				.thenReturn(projectKey);
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitKanbanServiceImpl mockService = mock(CodeCommitKanbanServiceImpl.class);
 			when(mockService.getKpiData(any(), any(), any())).thenReturn(commitKpiElement);
-			mockedStatic.when(
-					() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())))
+			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())))
 					.thenReturn(mockService);
+			
 			resultList = bitbucketServiceKanbanR.process(kpiRequest);
-			mockedStatic.verify(
-					() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())));
+			mockedStatic
+					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())));
 		}
-
-		resultList.forEach(k -> {
-
-			KPICode kpi = KPICode.getKPI(k.getKpiId());
-
-			switch (kpi) {
-
-			case NUMBER_OF_CHECK_INS:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("Code Commit Time"));
-				break;
-
-			default:
-				break;
-			}
-
-		});
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.MANDATORY_FIELD_MAPPING));
 
 	}
-
+	
 	@Test
 	public void testProcessCachedData() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(2, "Bitbucket");
 
 		List<KpiElement> resultList = bitbucketServiceKanbanR.process(kpiRequest);
-		assertThat("Kpi list :", resultList.size(), equalTo(0));
+		assertThat("Kpi list :", resultList.size(), equalTo(1));
 
 	}
 
