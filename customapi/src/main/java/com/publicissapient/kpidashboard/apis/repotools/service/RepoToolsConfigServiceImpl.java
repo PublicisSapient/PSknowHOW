@@ -180,7 +180,7 @@ public class RepoToolsConfigServiceImpl {
 			List<ProjectToolConfig> projectToolConfigList = projectRepos.stream()
 					.filter(projectToolConfig -> projectToolConfig.getBasicProjectConfigId()
 							.equals(new ObjectId(basicProjectconfigIdList.get(0))))
-					.collect(Collectors.toList());
+					.toList();
 			if (CollectionUtils.isNotEmpty(projectToolConfigList)) {
 				String projectCode = createProjectCode(basicProjectconfigIdList.get(0));
 
@@ -269,14 +269,13 @@ public class RepoToolsConfigServiceImpl {
 		String repoToolApiKey = restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey());
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons = new ArrayList<>();
 		RepoToolKpiRequestBody repoToolKpiRequestBody = new RepoToolKpiRequestBody(
-				projectCode.stream().map(code -> code.replaceAll("\\s", "")).collect(Collectors.toList()), startDate,
+				projectCode.stream().map(code -> code.replaceAll("\\s", "")).toList(), startDate,
 				endDate, frequency);
 		try {
 			String url = String.format(repoToolUrl, startDate, endDate, frequency);
 			RepoToolKpiBulkMetricResponse repoToolKpiBulkMetricResponse = repoToolsClient.kpiMetricCall(url,
 					repoToolApiKey, repoToolKpiRequestBody);
-			repoToolKpiMetricRespons = repoToolKpiBulkMetricResponse.getValues().stream().flatMap(List::stream)
-					.collect(Collectors.toList());
+			repoToolKpiMetricRespons = repoToolKpiBulkMetricResponse.getValues().stream().flatMap(List::stream).toList();
 		} catch (Exception ex) {
 			log.error("Exception while fetching KPI data {}", projectCode, ex);
 		}
@@ -378,13 +377,19 @@ public class RepoToolsConfigServiceImpl {
 		return HttpStatus.BAD_REQUEST.value();
 	}
 
+	/**
+	 * get repository members from repo tool
+	 *
+	 * @param basicProjectConfigId
+	 * 		basic project config id
+	 * @return list of repo members
+	 */
 	public JsonNode getProjectRepoToolMembers(String basicProjectConfigId) {
 		String projectCode = createProjectCode(basicProjectConfigId);
 		String membersUrl = customApiConfig.getRepoToolURL() + String.format(customApiConfig.getRepoToolMembersUrl(),
 				projectCode);
-		JsonNode membersList = repoToolsClient.fetchProjectRepoToolMembers(membersUrl,
+		return repoToolsClient.fetchProjectRepoToolMembers(membersUrl,
 				restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
-		return membersList;
 	}
 
 }

@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -51,9 +50,6 @@ public class SprintDataProcessorImplTest {
 
     @Mock
     private FetchSprintReport fetchSprintReport;
-
-    @Mock
-    private JiraClientService jiraClientService;
 
     @InjectMocks
     private SprintDataProcessorImpl sprintDataProcessor;

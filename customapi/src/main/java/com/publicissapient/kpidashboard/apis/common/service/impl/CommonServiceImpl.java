@@ -328,6 +328,11 @@ public class CommonServiceImpl implements CommonService {
 			sortedMap.put(CommonConstant.OVERALL, trendMap.get(CommonConstant.OVERALL));
 			trendMap.remove(CommonConstant.OVERALL);
 		}
+		if (null != trendMap.get(CommonConstant.OVERALL + "#" + CommonConstant.OVERALL)) {
+			sortedMap.put(CommonConstant.OVERALL + "#" + CommonConstant.OVERALL,
+					trendMap.get(CommonConstant.OVERALL + "#" + CommonConstant.OVERALL));
+			trendMap.remove(CommonConstant.OVERALL + "#" + CommonConstant.OVERALL);
+		}
 		Map<String, List<DataCount>> temp = trendMap.entrySet().stream()
 				.sorted((i1, i2) -> i1.getKey().compareTo(i2.getKey()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));

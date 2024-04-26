@@ -244,7 +244,7 @@ public class RepoToolCodeCommitServiceImplTest {
 			KpiElement kpiElement = repoToolCodeCommitService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
-				String projectName = data.getFilter();
+				String projectName = data.getFilter1();
 				switch (projectName) {
 				case "Overall":
 					assertThat("Overall Commit Details:", data.getValue().size(), equalTo(2));

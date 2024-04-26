@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -17,23 +17,29 @@ export class AdditionalFilterComponent implements OnChanges, OnInit {
   filterData1 = new Set();
   filterData2 = new Set();
   filterSet: any;
-  filterData: string[] = [];
+  filterData = [];
   appliedFilters = {};
+  filterDisplayValue: any;
 
   constructor(private service: SharedService, private helperService: HelperService) {
 
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['selectedTab']) {
+      this.filterData = [];
+      this.filterSet = new Set();
+    }
   }
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       this.filterData = [];
+      this.filterSet = new Set();
+      this.filterSet = new Set();
       let primarySet1 = new Set();
       let primarySet2 = new Set();
       if (Object.keys(data).length) {
-        this.filterSet = new Set();
         data.filter1.forEach(f => {
           primarySet1.add(f);
         });
@@ -64,7 +70,26 @@ export class AdditionalFilterComponent implements OnChanges, OnInit {
           f = Array.from(f);
           this.filterData[index] = f;
         });
+
+        this.filterData.forEach((filterArray, index) => {
+          let fakeEvent = {};
+          if(filterArray.includes('Overall')) {
+            filterArray.splice(filterArray.indexOf('Overall'), 1);
+            filterArray.unshift('Overall');
+            fakeEvent['value'] = 'Overall';
+            this.filterDisplayValue = 'Overall';
+          } else {
+            fakeEvent['value'] = filterArray[0];
+            this.filterDisplayValue = filterArray[0];
+          }
+          
+          setTimeout(() => {
+            this.applyAdditionalFilter(fakeEvent, index + 1);
+          }, 0)
+        });
+
         console.log(this.filterData);
+
       }
     }));
 

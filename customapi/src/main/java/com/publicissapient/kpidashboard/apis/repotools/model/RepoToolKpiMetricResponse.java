@@ -38,7 +38,7 @@ public class RepoToolKpiMetricResponse {
     private long mrCount;
     private long mergeRequests;
     private long prLinesChanged;
-    public double average;
+    private double average;
     private double projectReworkRateGrade;
     private double projectReworkRatePercent;
     private List<RepoToolRepositories> repositories;

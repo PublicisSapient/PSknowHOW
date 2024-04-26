@@ -128,10 +128,6 @@ export class SharedService {
     this.currentIssue.next(data);
   }
 
-
-  ngOnInit() {
-  }
-
   setCurrentSelectedSprint(selectedSprint) {
     this.currentSelectedSprint = selectedSprint;
     this.currentSelectedSprintSub.next(selectedSprint);

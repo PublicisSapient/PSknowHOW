@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
-import com.publicissapient.kpidashboard.apis.model.Node;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrati
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -195,7 +195,7 @@ public class JiraServiceR {
 		 * @param treeAggregatorDetail
 		 */
 		public ParallelJiraServices(KpiRequest kpiRequest, List<KpiElement> responseList, KpiElement kpiEle,
-									TreeAggregatorDetail treeAggregatorDetail) {
+				TreeAggregatorDetail treeAggregatorDetail) {
 			super();
 			this.kpiRequest = kpiRequest;
 			this.responseList = responseList;
@@ -216,14 +216,17 @@ public class JiraServiceR {
 		 * This method call by multiple thread, take object of specific KPI and call
 		 * method of these KPIs
 		 *
-		 * @param kpiRequest           JIRA KPI request
-		 * @param kpiElement           kpiElement object
-		 * @param treeAggregatorDetail filter tree object
+		 * @param kpiRequest
+		 *            JIRA KPI request
+		 * @param kpiElement
+		 *            kpiElement object
+		 * @param treeAggregatorDetail
+		 *            filter tree object
 		 * @return KpiElement kpiElement
 		 */
 		@SuppressWarnings("PMD.AvoidCatchingGenericException")
 		private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
-															TreeAggregatorDetail treeAggregatorDetail) {
+				TreeAggregatorDetail treeAggregatorDetail) {
 
 			JiraKPIService<?, ?, ?> jiraKPIService = null;
 
@@ -237,14 +240,14 @@ public class JiraServiceR {
 				} else {
 					TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
 							.clone(treeAggregatorDetail);
-					List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes().get(CommonConstant.PROJECT.toLowerCase());
+					List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
+							.get(CommonConstant.PROJECT.toLowerCase());
 
-					if (!projectNodes.isEmpty() && (projectNodes.size() > 1 || kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi,projectNodes.get(0))))
-					{
+					if (!projectNodes.isEmpty() && (projectNodes.size() > 1
+							|| kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, projectNodes.get(0)))) {
 						kpiElement = jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
 						kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
-					}
-					else if(!kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi,projectNodes.get(0))) {
+					} else if (!kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, projectNodes.get(0))) {
 						// mandatory fields not found
 						kpiElement.setResponseCode(CommonConstant.MANDATORY_FIELD_MAPPING);
 					}
@@ -264,22 +267,21 @@ public class JiraServiceR {
 		}
 	}
 
-		/**
-		 * This method is called when the request for kpi is done from exposed API
-		 *
-		 * @param kpiRequest
-		 *            JIRA KPI request true if flow for precalculated, false for direct
-		 *            flow.
-		 * @return List of KPI data
-		 * @throws EntityNotFoundException
-		 *             EntityNotFoundException
-		 */
-		public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
-			referFromProjectCache = false;
-			List<KpiElement> kpiElementList = process(kpiRequest);
-			referFromProjectCache = true;
-			return kpiElementList;
-		}
-
+	/**
+	 * This method is called when the request for kpi is done from exposed API
+	 *
+	 * @param kpiRequest
+	 *            JIRA KPI request true if flow for precalculated, false for direct
+	 *            flow.
+	 * @return List of KPI data
+	 * @throws EntityNotFoundException
+	 *             EntityNotFoundException
+	 */
+	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
+		referFromProjectCache = false;
+		List<KpiElement> kpiElementList = process(kpiRequest);
+		referFromProjectCache = true;
+		return kpiElementList;
+	}
 
 }

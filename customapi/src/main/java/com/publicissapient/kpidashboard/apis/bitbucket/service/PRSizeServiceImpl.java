@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +33,7 @@ import java.util.stream.Collectors;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolUserDetails;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
@@ -106,10 +106,8 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.MEAN_TIME_TO_MERGE);
-		Map<String, List<DataCount>> unsortedMap = trendValuesMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
 		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();
-		unsortedMap.forEach((statusType, dataCounts) -> {
+		trendValuesMap.forEach((statusType, dataCounts) -> {
 			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
 					.collect(Collectors.groupingBy(DataCount::getData));
 			statusTypeProjectWiseDc.put(statusType, projectWiseDc);
@@ -131,6 +129,19 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		return kpiElement;
 	}
 
+	/**
+	 * Populates KPI value to project leaf nodes. It also gives the trend analysis project wise.
+	 *
+	 * @param kpiElement
+	 * 		kpi element
+	 * @param mapTmp
+	 * 		node map
+	 * @param projectLeafNode
+	 * 		leaf node of project
+	 * @param kpiRequest
+	 * 		kpi request
+	 */
+	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, Node projectLeafNode,
 			KpiRequest kpiRequest) {
 
@@ -165,12 +176,10 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 			return;
 		}
 
-		List<Map<String, Long>> repoWisePRSizeList = new ArrayList<>();
-		List<String> repoList = new ArrayList<>();
-		List<String> branchList = new ArrayList<>();
+
 		String projectName = projectLeafNode.getProjectFilter().getName();
-		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
-		Map<String, Object> resultmap = fetchKPIDataFromDb(Arrays.asList(projectLeafNode), null, null, kpiRequest);
+		Map<String, List<DataCount>> aggDataMap = new LinkedHashMap<>();
+		Map<String, Object> resultmap = fetchKPIDataFromDb(List.of(projectLeafNode), null, null, kpiRequest);
 		Set<Assignee> assignees = (Set<Assignee>) resultmap.get("assignee");
 		LocalDate currentDate = LocalDate.now();
 		Set<String> overAllUsers = repoToolKpiMetricResponseList.stream().flatMap(value -> value.getUsers().stream())
@@ -184,7 +193,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 			String date = KpiHelperService.getDateRange(weekRange, duration);
 
 			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricResponseList.stream()
-					.filter(value -> value.getDateLabel().equals(dateRange.getStartDate().toString())).findFirst();
+					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
 
 			Long overAllLinesChanged = repoToolKpiMetricResponse.map(RepoToolKpiMetricResponse::getPrLinesChanged)
 					.orElse(0L);
@@ -212,19 +221,16 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 
 					}
 					setDataCount(projectName, date, overallKpiGroup, linesChanged, mergeRequests, aggDataMap);
-					aggDataMap.putAll(
-							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, branchName, projectName,
-									date, repoToolValidationDataList));
-					setDataCount(projectName, date, branchName, linesChanged, mergeRequests, aggDataMap);
-					repoList.add(repo.getUrl());
-					branchList.add(repo.getBranch());
+					repoToolValidationDataList.addAll(
+							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, repo, projectName,
+									date, aggDataMap));
 				}
 			});
 			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
 					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
 
-			aggDataMap.putAll(setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, Constant.AGGREGATED_VALUE,
-					projectName, date, repoToolValidationDataList));
+			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
+					projectName, date, aggDataMap);
 
 			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 		}
@@ -236,19 +242,29 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 	}
 
 	/**
+	 * set data count for user filter
 	 *
 	 * @param overAllUsers
+	 * 		list of user emails from repotool
 	 * @param repoToolUserDetailsList
+	 * 		list of repo tool user data
 	 * @param assignees
-	 * @param filter
+	 * 		assignee data
+	 * @param repo
+	 * 		repo tool item
 	 * @param projectName
+	 * 		project name
 	 * @param date
-	 * @param dateUserWiseAverage
+	 * 		date
+	 * @param aggDataMap
+	 * 		total data map
+	 * @return repotool validation data
 	 */
-	private Map<String, List<DataCount>> setUserDataCounts(Set<String> overAllUsers,
-			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, String filter,
-			String projectName, String date, List<RepoToolValidationData> repoToolValidationDataList) {
-		Map<String, List<DataCount>> dateUserWiseAverage = new HashMap<>();
+	private List<RepoToolValidationData> setUserDataCounts(Set<String> overAllUsers,
+			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, Tool repo,
+			String projectName, String date, Map<String, List<DataCount>> aggDataMap) {
+
+		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
 		overAllUsers.forEach(userEmail -> {
 			Optional<RepoToolUserDetails> repoToolUserDetails = repoToolUserDetailsList.stream()
 					.filter(user -> userEmail.equalsIgnoreCase(user.getEmail())).findFirst();
@@ -258,22 +274,39 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Long userPrSize = repoToolUserDetails.map(RepoToolUserDetails::getLinesChanged).orElse(0L);
 			Long userMrCount = repoToolUserDetails.map(RepoToolUserDetails::getMergeRequests).orElse(0L);
-			String userKpiGroup = filter + "#" + developerName;
-			RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
-			repoToolValidationData.setProjectName(projectName);
-			repoToolValidationData.setBranchName(filter);
-			repoToolValidationData.setDeveloperName(developerName);
-			repoToolValidationData.setDate(date);
-			repoToolValidationData.setPrSize(userPrSize);
-			repoToolValidationData.setMrCount(userMrCount);
-			repoToolValidationDataList.add(repoToolValidationData);
+			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
+			String userKpiGroup = branchName + "#" + developerName;
+			if(repoToolUserDetails.isPresent() && repo != null) {
+				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+				repoToolValidationData.setProjectName(projectName);
+				repoToolValidationData.setBranchName(repo.getBranch());
+				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
+				repoToolValidationData.setDeveloperName(developerName);
+				repoToolValidationData.setDate(date);
+				repoToolValidationData.setPrSize(userPrSize);
+				repoToolValidationData.setMrCount(userMrCount);
+				repoToolValidationDataList.add(repoToolValidationData);
+			}
 
-			setDataCount(projectName, date, userKpiGroup, userPrSize, userMrCount, dateUserWiseAverage);
+			setDataCount(projectName, date, userKpiGroup, userPrSize, userMrCount, aggDataMap);
 
 		});
-		return dateUserWiseAverage;
+		return repoToolValidationDataList;
 	}
 
+	/**
+	 * set individual data count
+	 * @param projectName
+	 * 				project name
+	 * @param week
+	 * 				date
+	 * @param kpiGroup
+	 * 				combined filter
+	 * @param value
+	 * 				value
+	 * @param dataCountMap
+	 * 				data count map by filter
+	 */
 	private void setDataCount(String projectName, String week, String kpiGroup, Long value, Long mrCount,
 			Map<String, List<DataCount>> dataCountMap) {
 		DataCount dataCount = new DataCount();
@@ -288,11 +321,10 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		dataCountMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dataCount);
 	}
 
-	private void populateExcelDataObject(String requestTrackerId, List<RepoToolValidationData> repoToolValidationDataList, List<KPIExcelData> validationDataMap) {
+	private void populateExcelDataObject(String requestTrackerId,
+			List<RepoToolValidationData> repoToolValidationDataList, List<KPIExcelData> validationDataMap) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-
 			KPIExcelUtility.populatePRSizeExcelData(repoToolValidationDataList, validationDataMap);
-
 		}
 	}
 

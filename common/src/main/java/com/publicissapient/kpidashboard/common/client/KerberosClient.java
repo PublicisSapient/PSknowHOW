@@ -31,6 +31,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -61,8 +62,8 @@ public class KerberosClient {
 
 	private String jaasConfigFilePath;
 	private String krb5ConfigFilePath;
-	private CloseableHttpClient loginHttpClient;
-	private CloseableHttpClient httpClient;
+	private HttpClient loginHttpClient;
+	private HttpClient httpClient;
 	private BasicCookieStore cookieStore;
 	private String JaasUser;
 	private String samlEndPoint;
@@ -117,7 +118,7 @@ public class KerberosClient {
 	 * 
 	 * @return http client
 	 */
-	private CloseableHttpClient buildLoginHttpClient() {
+	private HttpClient buildLoginHttpClient() {
 		HttpClientBuilder builder = HttpClientBuilder.create();
 		Lookup<AuthSchemeProvider> authSchemeRegistry = RegistryBuilder.<AuthSchemeProvider>create()
 				.register("negotiate", new SPNegoSchemeFactory(true)).build();
@@ -136,7 +137,7 @@ public class KerberosClient {
 	 * 
 	 * @return http client
 	 */
-	private CloseableHttpClient buildHttpClient() {
+	private HttpClient buildHttpClient() {
 		RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
 		return HttpClientBuilder.create().setDefaultCookieStore(cookieStore).setDefaultRequestConfig(requestConfig)
 				.build();
@@ -306,17 +307,6 @@ public class KerberosClient {
 		this.getCookieStore().getCookies().forEach(cookie -> cookieHeaderBuilder.append(cookie.getName()).append("=")
 				.append(cookie.getValue()).append(";"));
 		return cookieHeaderBuilder.toString();
-	}
-
-	public void close() throws IOException {
-		try {
-			if (loginHttpClient != null && httpClient != null) {
-				httpClient.close();
-				loginHttpClient.close();
-			}
-		} catch (Exception var2) {
-			throw var2 instanceof IOException ? (IOException)var2 : new IOException(var2);
-		}
 	}
 
 	/**

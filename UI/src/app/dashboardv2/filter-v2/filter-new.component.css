@@ -9,9 +9,9 @@
     max-width: 300px;
 }
 
-:host ::ng-deep .p-float-label .p-inputwrapper-filled ~ label {
+:host ::ng-deep .p-float-label .p-inputwrapper-filled~label {
     font-size: 0.75rem;
-    
+
 }
 
 :host ::ng-deep .p-multiselect-panel,
@@ -54,6 +54,10 @@
 /* Scrum/Kanban tabs end*/
 
 /* Selected Filters start */
+.selected-filter-container {
+    background-color: #F5F9FF;
+}
+
 .selected-filter-container ul {
     list-style: none;
     background-color: #F5F9FF;
@@ -92,3 +96,144 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 }
 
 /* Selected Filters end */
+
+.date-filter-container {
+    display: flex;
+}
+
+.filter-btn {
+    font-size: 12px !important;
+    /* height: 3.25rem; */
+    height: 3rem;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-custom {
+    color: var(--color-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 -1px;
+    padding: 7px;
+    font-weight: 300;
+    text-align: center;
+    font-size: 13px;
+    border: 1px solid var(--color-black);
+    cursor: pointer;
+    height: 3rem;
+    background-color: #fff;
+}
+
+.selected-date {
+    list-style-type: none;
+    color: var(--color-cyan-blue);
+    display: flex;
+    align-items: center;
+}
+
+.btn-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: #fff;
+    padding: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.filter-date {
+    height: auto;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #cacaca;
+}
+
+.filter-options-container {
+    position: absolute;
+    top: 102%;
+    right: 0;
+    background: #fff;
+    border: 1px solid lightgrey;
+    width: max-content;
+    min-width: 190px;
+    border-radius: 5px;
+    max-width: 500px;
+    z-index: 1002;
+}
+
+.filter-options label {
+    border: none;
+    text-align: initial;
+}
+
+.filter-options input {
+    display: inline-block;
+}
+
+.filter-date .p-button-secondary {
+    background: transparent;
+    border: 1px solid var(--color-black);
+    color: var(--color-black);
+}
+
+.filter-date .p-buttonset button {
+    border-radius: 5px;
+    margin-left: 10px;
+    font-size: 12px !important;
+}
+
+.filter-date .p-buttonset button:first-child {
+    margin-left: 0;
+}
+
+.filter-date .p-buttonset {
+    margin-bottom: 15px;
+}
+
+.filter-date .p-buttonset .btn-active {
+    background: var(--color-secondary-blue);
+    color: var(--color-white);
+    border-color: var(--color-secondary-blue);
+}
+
+.date-filter-dropdown .ui-g-12 {
+    margin-top: 5px;
+}
+
+.date-filter-dropdown .filter-date .p-buttonset .p-button.p-button-sm {
+    padding: 0.5rem 0.7rem;
+}
+
+.date-filter-dropdown .btn-container .p-button.p-button-secondary:last-child {
+    margin-right: 10px;
+}
+
+.filter-options-container {
+    position: absolute;
+    top: 102%;
+    right: 0;
+    background: #fff;
+    border: 1px solid lightgrey;
+    width: max-content;
+    min-width: 190px;
+    border-radius: 5px;
+    max-width: 500px;
+    z-index: 1002;
+}
+
+.filter-options {
+    margin: 15px 15px 45px 15px;
+    overflow-y: auto;
+}
+
+.filter-options label {
+    border: none;
+    text-align: initial;
+}
+
+.filter-options input {
+    display: inline-block;
+}

@@ -33,7 +33,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -663,7 +662,7 @@ public class KpiHelperService { // NOPMD
 		});
 
 		List<SprintDetails> sprintDetailList = sprintRepository.findBySprintIDIn(sprintList);
-		sprintDetailList.sort(Comparator.comparing(SprintDetails::getStartDate));
+		sprintDetailList.sort(Comparator.comparing(SprintDetails::getStartDate).reversed());
 		List<SprintDetails> sprintDetails = sprintDetailList.stream()
 				.limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
 		List<String> totalIssueIds = new ArrayList<>();
