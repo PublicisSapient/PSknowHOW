@@ -288,9 +288,6 @@ export class HttpService {
     if (provider === 'LDAP') {
       return this.ldapLoginUrl;
     }
-    // if (provider === 'CROWDSSO' || provider === '') {
-    //     return this.crowdSsoLoginLoginUrl;
-    // }
   }
 
   /** POST: login user */
