@@ -93,8 +93,8 @@ public class JobListenerKanbanTest {
     @Before
     public void setUp() {
         jobExecution = MetaDataInstanceFactory.createJobExecution();
-        when(jiraClientService.getRestClient()).thenReturn(client);
-        when(jiraClientService.getKerberosClient()).thenReturn(kerberosClient);
+        when(jiraClientService.isContainRestClient(null)).thenReturn(true);
+        when(jiraClientService.getRestClientMap(null)).thenReturn(client);
     }
 
     @Test

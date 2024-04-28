@@ -19,8 +19,10 @@ package com.publicissapient.kpidashboard.jira.listener;
 
 import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDateToCustomFormat;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.jira.service.JiraClientService;
@@ -110,12 +112,6 @@ public class JobListenerScrum implements JobExecutionListener {
 				CommonConstant.CACHE_SPRINT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
 		try {
-			if (jiraClientService.getRestClient() != null) {
-				jiraClientService.getRestClient().close();
-			}
-			if (jiraClientService.getKerberosClient() != null) {
-				jiraClientService.getKerberosClient().close();
-			}
 			if (jobExecution.getStatus() == BatchStatus.FAILED) {
 				log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(),
 						projectId);
@@ -137,6 +133,15 @@ public class JobListenerScrum implements JobExecutionListener {
 			log.info("removing project with basicProjectConfigId {}", projectId);
 			// Mark the execution as completed
 			ongoingExecutionsService.markExecutionAsCompleted(projectId);
+            if (jiraClientService.isContainRestClient(projectId)){
+                try {
+                    jiraClientService.getRestClientMap(projectId).close();
+                } catch (IOException e) {
+					throw new RuntimeException("Failed to close rest client",e);// NOSONAR
+                }
+                jiraClientService.removeRestClientMapClientForKey(projectId);
+                jiraClientService.removeKerberosClientMapClientForKey(projectId);
+            }
 		}
 	}
 
@@ -160,7 +165,7 @@ public class JobListenerScrum implements JobExecutionListener {
 
 	private void setExecutionInfoInTraceLog(boolean status) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
-				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Arrays.asList(projectId));
+				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Collections.singletonList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());

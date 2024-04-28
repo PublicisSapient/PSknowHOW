@@ -77,7 +77,7 @@ public class JiraIssueReleaseStatusTaskletTest {
         when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
 
         ProcessorJiraRestClient client = mock(ProcessorJiraRestClient.class);
-            when(jiraClientService.getRestClient()).thenReturn(client);
+        when(jiraClientService.getRestClientMap(null)).thenReturn(client);
 
             // Act
             RepeatStatus result = jiraIssueReleaseStatusTasklet.execute(stepContribution, chunkContext);
