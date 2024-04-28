@@ -8,7 +8,7 @@
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ * Unless required    by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -3086,7 +3086,10 @@ describe('ExecutiveComponent', () => {
       sprintCountForKpiCalculation :2
     }
     component.filterApplyData = {
-      label : 'sprint'
+      label : 'project',
+      selectedMap : {
+      sprint : []
+    }
     }
     const postData = {
       kpiList: [
@@ -7926,6 +7929,12 @@ it('should filter trending list based on configuration',()=>{
   component.tooltip = {
     sprintCountForKpiCalculation : 1
   }
+  component.filterApplyData = {
+    label : 'project',
+    selectedMap : {
+      sprint : []
+    }
+  }
   const kpiList = [{
     trendValueList:  [
       {
@@ -7983,7 +7992,77 @@ it('should filter trending list based on configuration',()=>{
   }
 
 ]
-  component.getLastConfigurableTrendingListData(kpiList)
+    component.getLastConfigurableTrendingListData(kpiList)
+})
+
+it('should filter trending list based on configuration when label is sqd',()=>{
+  component.tooltip = {
+    sprintCountForKpiCalculation : 1
+  }
+  component.filterApplyData = {
+    label : 'sqd',
+    selectedMap : {
+      sprint : ['abc']
+    }
+  }
+  const kpiList = [{
+    trendValueList:  [
+      {
+          "data": "PSKnowHOW",
+          "maturity": "5",
+          "value": [
+              {
+                  "data": "0",
+                  "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
+                  "sSprintName": "KnowHOW | PI_14| ITR_3_PSKnowHOW",
+              },
+              {
+                "data": "0",
+                "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
+                "sSprintName": "KnowHOW | PI_14| ITR_3_PSKnowHOW",
+                "sprintIds": [
+                    "288_PSKnowHOW_6577df1242f50c39ed783590"
+                ],
+            },
+            {
+              "data": "0",
+              "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
+              "sSprintName": "KnowHOW | PI_14| ITR_3_PSKnowHOW",
+          }
+          ],
+          "maturityValue": "0.0"
+      }
+  ],
+  },
+  {
+    trendValueList : [
+      {
+          "filter": "Total Defects",
+          "value": [
+              {
+                  "data": "PSKnowHOW",
+                  "value": [
+                      {
+                          "data": "27.0",
+                          "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
+                      },
+                      {
+                        "data": "27.0",
+                        "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
+                    },
+                    {
+                      "data": "27.0",
+                      "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
+                  }
+                  ]
+              }
+          ]
+      },
+  ]
+  }
+
+]
+    component.getLastConfigurableTrendingListData(kpiList)
 })
 
 
