@@ -71,7 +71,7 @@ public class ScrumReleaseDataTasklet implements Tasklet {
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		log.info("**** ReleaseData fetch started ****");
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-		KerberosClient krb5Client = jiraClientService.getKerberosClient();
+        KerberosClient krb5Client = jiraClientService.getKerberosClientMap(projectId);
 		fetchScrumReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
 		log.info("**** ReleaseData fetch ended ****");
 		return RepeatStatus.FINISHED;

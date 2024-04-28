@@ -68,8 +68,8 @@ public class JiraIssueSprintJobListenerTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
-		when(jiraClientService.getRestClient()).thenReturn(client);
-		when(jiraClientService.getKerberosClient()).thenReturn(kerberosClient);
+		when(jiraClientService.isContainRestClient(null)).thenReturn(true);
+		when(jiraClientService.getRestClientMap(null)).thenReturn(client);
 	}
 
 	@Test

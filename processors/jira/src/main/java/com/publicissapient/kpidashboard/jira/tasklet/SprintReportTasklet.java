@@ -89,14 +89,14 @@ public class SprintReportTasklet implements Tasklet {
 				.fetchConfigurationBasedOnSprintId(sprintId);
 		Optional<Connection> connectionOptional = projConfFieldMapping.getJira().getConnection();
 		KerberosClient krb5Client = null;
-		if (connectionOptional.isPresent()) {
+		if (connectionOptional.isPresent() && connectionOptional.get().isJaasKrbAuth()) {
 			Connection connection = connectionOptional.get();
 			krb5Client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
 					connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
+			jiraClientService.setKerberosClientMap(sprintId,krb5Client);
 		}
 		ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
-		jiraClientService.setRestClient(client);
-		jiraClientService.setKerberosClient(krb5Client);
+        jiraClientService.setRestClientMap(sprintId,client);
 		SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
 		List<String> originalBoardIds = sprintDetails.getOriginBoardId();
 		for (String boardId : originalBoardIds) {

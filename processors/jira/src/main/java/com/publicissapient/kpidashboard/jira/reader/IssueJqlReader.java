@@ -78,22 +78,24 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 	List<Issue> issues = new ArrayList<>();
 	Map<String, String> projectWiseDeltaDate;
 	int issueSize = 0;
-	Boolean fetchLastIssue = false;
+	boolean fetchLastIssue;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 	private Iterator<Issue> issueIterator;
 	ProjectConfFieldMapping projectConfFieldMapping;
 	private ReaderRetryHelper retryHelper;
+    ProcessorJiraRestClient client;
 
-	@Value("#{jobParameters['projectId']}")
+    @Value("#{jobParameters['projectId']}")
 	private String projectId;
 
-	public void initializeReader(String projectId) {
-		log.info("**** Jira Issue fetch started * * *");
-		pageSize = jiraProcessorConfig.getPageSize();
-		projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+    public void initializeReader(String projectId) {
+        log.info("**** Jira Issue fetch started * * *");
+        pageSize = jiraProcessorConfig.getPageSize();
+        projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 		retryHelper = new ReaderRetryHelper();
-	}
+		client = jiraClientService.getRestClientMap(projectId);
+    }
 
 	/*
 	 * (non-Javadoc)
@@ -110,10 +112,9 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		if (null != projectConfFieldMapping && !fetchLastIssue) {
-			ProcessorJiraRestClient client = jiraClientService.getRestClient();
 			if (issueIterator == null || !issueIterator.hasNext()) {
 				fetchIssues(client);
-				if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(issues)) {
+				if (CollectionUtils.isNotEmpty(issues)) {
 					issueIterator = issues.iterator();
 				}
 			}

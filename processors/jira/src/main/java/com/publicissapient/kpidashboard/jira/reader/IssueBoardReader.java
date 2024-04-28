@@ -82,21 +82,26 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	List<Issue> issues = new ArrayList<>();
 	Map<String, Map<String, String>> projectBoardWiseDeltaDate = new HashMap<>();
 	int boardIssueSize = 0;
-	boolean fetchLastIssue = false;
+	boolean fetchLastIssue;
 	private ReaderRetryHelper retryHelper;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 	private Iterator<BoardDetails> boardIterator;
 	private Iterator<Issue> issueIterator;
 	ProjectConfFieldMapping projectConfFieldMapping;
+	KerberosClient krb5Client;
+	ProcessorJiraRestClient client;
+
 	@Value("#{jobParameters['projectId']}")
 	private String projectId;
 
-	public void initializeReader(String projectId) {
-		pageSize = jiraProcessorConfig.getPageSize();
-		projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-		retryHelper = new ReaderRetryHelper();
-	}
+    public void initializeReader(String projectId) {
+        pageSize = jiraProcessorConfig.getPageSize();
+        projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+        retryHelper = new ReaderRetryHelper();
+        krb5Client = jiraClientService.getKerberosClientMap(projectId);
+        client = jiraClientService.getRestClientMap(projectId);
+    }
 
 	/*
 	 * (non-Javadoc)
@@ -112,9 +117,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 			initializeReader(projectId);
 		}
 		ReadData readData = null;
-		KerberosClient krb5Client = jiraClientService.getKerberosClient();
 		if (!fetchLastIssue) {
-			ProcessorJiraRestClient client = jiraClientService.getRestClient();
 			if (boardIterator == null
 					&& CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
 				boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();

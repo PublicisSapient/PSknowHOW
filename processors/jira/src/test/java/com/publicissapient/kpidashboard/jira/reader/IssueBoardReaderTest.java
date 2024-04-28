@@ -145,7 +145,8 @@ public class IssueBoardReaderTest {
 		issueIterator = issues.iterator();
 		when(jiraProcessorConfig.getPageSize()).thenReturn(1);
 		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
-
+		when(jiraClientService.getRestClientMap(null)).thenReturn(client);
+		when(jiraClientService.getKerberosClientMap(null)).thenReturn(krb5Client);
 	}
 
 	@Test
