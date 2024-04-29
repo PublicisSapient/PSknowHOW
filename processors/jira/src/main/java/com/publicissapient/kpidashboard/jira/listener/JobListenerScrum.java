@@ -21,7 +21,6 @@ import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDat
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
