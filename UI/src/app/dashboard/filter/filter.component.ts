@@ -145,6 +145,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   displayMessage: boolean = false;
   copyFilteredAddFilters = {};
   loader: boolean = false;
+  backToDashboardLoader : boolean = false;
 
   constructor(
     public service: SharedService,
@@ -1608,10 +1609,12 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.service.setSelectedDateFilter(this.selectedDayType);
       this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
       this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
+      this.backToDashboardLoader = false
   }
 
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
+    this.backToDashboardLoader = true;
     let projectList = [];
     if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
       projectList = this.service.getSelectedTrends().map(data => data.nodeId);
