@@ -127,7 +127,6 @@ export class AdvancedSettingsComponent implements OnInit {
           that.selectedProject = that.userProjects[0];
           that.getProcessorsTraceLogsForProject(that.selectedProject['id']);
           that.getAllToolConfigs(that.selectedProject['id']);
-          console.log(JSON.stringify(that.selectedProject));
         }
 
 
@@ -157,6 +156,9 @@ export class AdvancedSettingsComponent implements OnInit {
 
         if (response.success) {
           that.processorsTracelogs = response.data;
+          this.processorData['data'].map(pDetails=>{
+            pDetails['loader'] = false;
+          })
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error in fetching processor\'s execution date. Please try after some time.' });
         }

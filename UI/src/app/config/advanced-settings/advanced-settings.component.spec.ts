@@ -298,6 +298,18 @@ describe('AdvancedSettingsComponent', () => {
   }))
 
   it('should get processors trace logs for project', fakeAsync(() => {
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
     const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(fakeProcessorsTracelog));
     component.getProcessorsTraceLogsForProject(basicProjectConfigId);
