@@ -196,7 +196,7 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 				setWeekWiseReworkRate(dateWiseReworkRate, excelDataLoader, branchName, projectName, aggDataMap,
 						kpiRequest);
 				repoWiseReworkRateList.add(excelDataLoader);
-				repoList.add(repo.getUrl());
+				repoList.add(repo.getRepositoryName());
 				branchList.add(repo.getBranch());
 
 			}

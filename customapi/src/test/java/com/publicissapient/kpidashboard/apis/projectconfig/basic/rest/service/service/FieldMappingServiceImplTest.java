@@ -140,6 +140,7 @@ public class FieldMappingServiceImplTest {
 		scrumFieldMapping2 = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(scrumFieldMapping.getBasicProjectConfigId(), scrumFieldMapping);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(configHelperService.loadFieldMappingStructure()).thenReturn(Arrays.asList(new FieldMappingStructure()));
 
 	}
 
@@ -598,7 +599,6 @@ public class FieldMappingServiceImplTest {
 		when(processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigIdIn(Mockito.any(String.class), any()))
 						.thenReturn(Arrays.asList(createProcessorExecutionTraceLog()));
-		when(authenticationService.getLoggedInUser()).thenReturn("currentUser");
 	}
 
 	private void mockRepositoriesForKanban() {
