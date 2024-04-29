@@ -13,7 +13,8 @@ WORKDIR /app
 RUN ln -sf /bin/bash /bin/sh \
     && yum install -y shadow-utils \
     && groupadd -g $GID $USER \
-    && useradd -u $UID -g $GID -m -s /bin/bash $USER 
+    && useradd -u $UID -g $GID -m -s /bin/bash $USER \
+    && yum clean all -y
 
 # Set environment variables for volumes
 
