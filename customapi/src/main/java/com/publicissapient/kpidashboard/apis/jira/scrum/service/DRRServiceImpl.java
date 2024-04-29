@@ -351,7 +351,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					.filter(element -> dodAndDefectRejStatus.contains(element.getStatus().toLowerCase())).collect(Collectors.toList());
 
 			sprintCompletedDefects.addAll(
-					KpiDataHelper.getCompletedSubTasksByHistory(sprintSubtask, totalSubtaskHistory, sd, dodAndDefectRejStatus));
+					KpiDataHelper.getCompletedSubTasksByHistory(sprintSubtask, totalSubtaskHistory, sd, dodAndDefectRejStatus, new HashMap<>()));
 
 			List<JiraIssue> sprintWiseRejectedDefectList = new ArrayList<>();
 			List<JiraIssue> sprintWiseCompletedDefectList = new ArrayList<>();

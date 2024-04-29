@@ -148,15 +148,18 @@ describe('AdditionalFilterFieldComponent', () => {
 
   it('should generate additional filter mappings',()=>{
     component.filterHierarchy = completeHierarchyData.scrum;
-    spyOn(sharedService,'getSelectedFieldMapping').and.returnValue({
-      additionalFilterConfig: [
-        {
+    spyOn(sharedService, 'getSelectedFieldMapping').and.returnValue({
+      fieldMappingResponses: [
+       { fieldName: 'additionalFilterConfig',
+        originalValue: [
+          {
             "filterId": "sqd",
             "identifyFrom": "Component",
             "identificationField": "",
             "values": []
-        }
-    ]
+          }
+        ]}
+      ]
     });
     spyOn(component,'addAdditionalFilterOptions');
     component.generateAdditionalFilterMappings();

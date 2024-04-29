@@ -23,7 +23,7 @@ import { HelperService } from '../../services/helper.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormControl, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MessageService, MenuItem } from 'primeng/api';
 import { faRotateRight } from '@fortawesome/fontawesome-free';
 import { NgSelectComponent } from '@ng-select/ng-select';
@@ -145,10 +145,11 @@ export class FilterComponent implements OnInit, OnDestroy {
   displayMessage: boolean = false;
   copyFilteredAddFilters = {};
   loader: boolean = false;
+  backToDashboardLoader : boolean = false;
   selectedProjectForIteration : any = [];
   selectedItems: number = 0;
   isAdditionalFilter: boolean = false;
-  
+
   constructor(
     public service: SharedService,
     private httpService: HttpService,
@@ -169,7 +170,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       },
     });
     if (!this.ssoLogin) {
-      
+
 
       this.appList = [
           {
@@ -686,7 +687,7 @@ this.resetAddtionalFIlters();
       if(selectedTrendValues.length === 1){
         this.selectedProjectData = selectedTrendValues[0];
         this.getProcessorsTraceLogsForProject(selectedTrendValues[0]['basicProjectConfigId']);
-      }   
+      }
 
       this.service.setSelectedLevel(selectedLevel);
       this.service.setSelectedTrends(selectedTrendValues);
@@ -843,7 +844,7 @@ this.resetAddtionalFIlters();
 
   changeSelectedTab(){
     if(Object.keys(this.kpiListData)?.length > 0){
-      let boardDetails = JSON.parse(JSON.stringify(this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase()) 
+      let boardDetails = JSON.parse(JSON.stringify(this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase())
       || this.kpiListData['others'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase())));
       let kpisShownCount = 0;
       if(boardDetails?.boardName?.toLowerCase() === 'iteration'){
@@ -872,7 +873,7 @@ this.resetAddtionalFIlters();
       this.projectIndex = 0;
       this.service.setEmptyFilter();
       this.service.setSelectedType('scrum');
-      
+
       this.changeSelectedTab();
     this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
     }
@@ -1646,10 +1647,12 @@ this.resetAddtionalFIlters();
       this.service.setSelectedDateFilter(this.selectedDayType);
       this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
       this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
+      this.backToDashboardLoader = false
   }
 
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
+    this.backToDashboardLoader = true;
     let projectList = [];
     if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
       projectList = this.service.getSelectedTrends().map(data => data.nodeId);
@@ -1960,7 +1963,7 @@ this.resetAddtionalFIlters();
 
     /**
      * Responsible for filter sprint (addtional filters)
-     * @param hierarchyLevelId 
+     * @param hierarchyLevelId
      */
     applySearchFilter(hierarchyLevelId) {
       const sTxt = this.filterForm.controls[hierarchyLevelId+'Search'].value;
@@ -1975,10 +1978,10 @@ this.resetAddtionalFIlters();
       });
     }
 
-  /** 
+  /**
    * Validation on sprint addtional filters on speed/quality/value
    * As of now out of scope but in future it can be.Hence please don't delete */
-  
+
   // onCheckboxChange(event) {
   // const selectedProjects = this.filterForm?.get('selectedTrendValue')?.value || [];
   // const sprintWithTrueValues = Object.keys(this.filterForm.controls['sprint'].value).filter(key => this.filterForm.controls['sprint'].value[key] === true);

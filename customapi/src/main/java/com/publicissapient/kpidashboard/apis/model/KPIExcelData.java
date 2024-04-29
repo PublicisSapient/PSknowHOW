@@ -121,8 +121,8 @@ public class KPIExcelData {
 	@JsonProperty("Root Cause")
 	private List<String> rootCause;
 
-	@JsonProperty("Resolved")
-	private String resolvedTickets;
+	@JsonProperty("Resolved Status")
+	private String resolvedStatus;
 
 	@JsonProperty("Defect ID")
 	private Map<String, String> defectId;
