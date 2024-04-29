@@ -191,7 +191,6 @@ public class BitBucketServiceRTest {
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);
-			when(mockService.getKpiData(any(), any(), any())).thenReturn(commitKpiElement);
 			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())))
 					.thenReturn(mockService);
 			resultList = bitbucketServiceR.process(kpiRequest);
@@ -313,7 +312,6 @@ public class BitBucketServiceRTest {
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);
-			when(mockService.getKpiData(any(), any(), any())).thenReturn(commitKpiElement);
 			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())))
 					.thenReturn(mockService);
 			resultList = bitbucketServiceR.process(kpiRequest);
