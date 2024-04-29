@@ -653,6 +653,8 @@ export class FilterComponent implements OnInit, OnDestroy {
                 if(Object.keys(this.additionalFiltersDdn)[i] != 'sprint' && selectedAdditionalFilter?.length > 0){
                   this.isAdditionalFilter = true;
                 }
+              }else{
+                this.isAdditionalFilter = false;
               }
             } else {
               const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => x['nodeId'] == additionalFilterFormVal)[0];

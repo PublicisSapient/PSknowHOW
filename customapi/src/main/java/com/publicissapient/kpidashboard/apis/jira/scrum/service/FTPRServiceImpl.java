@@ -56,6 +56,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getFilteredJiraIssue;
+
 @Slf4j
 @Component
 public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -202,13 +204,12 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 				List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(completedIssues)) {
-					List<JiraIssue> jiraIssueList = jiraIssueRepository
-							.findByNumberInAndBasicProjectConfigId(completedIssues, basicProjectConfigId);
+					List<JiraIssue> filteredJiraIssue = getFilteredJiraIssue(completedIssues, totalJiraIssueList);
 					List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
 							.orElse(Collections.emptyList());
 					Set<String> completedSprintReportDefects = new HashSet<>();
 					Set<String> completedSprintReportStories = new HashSet<>();
-					sprintDetails.getCompletedIssues().stream().forEach(sprintIssue -> {
+					filteredJiraIssue.stream().forEach(sprintIssue -> {
 						if (defectTypes.contains(sprintIssue.getTypeName())) {
 							completedSprintReportDefects.add(sprintIssue.getNumber());
 						} else {
@@ -226,7 +227,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getCompletedIssues(), jiraIssueList);
+									sprintDetails.getCompletedIssues(), filteredJiraIssue);
 
 					// fetched all defects which is linked to current sprint report stories
 					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
