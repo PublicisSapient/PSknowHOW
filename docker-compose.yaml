@@ -255,7 +255,7 @@ debbie-postgres:
     networks:
       - Network_apps
 
-  debbie-rabbitmq:
+debbie-rabbitmq:
     container_name: debbie-rabbitmq
     image: rabbitmq:3.8-management
     env_file:
@@ -267,7 +267,7 @@ debbie-postgres:
     networks:
       - Network_apps
 
-  debbie-django:
+debbie-django:
     container_name: debbie-django
     image: psknowhow/debbie-django:latest
     ports:
@@ -281,7 +281,7 @@ debbie-postgres:
     networks:
       - Network_apps
 
-  debbie-knowhow:
+debbie-knowhow:
     container_name: debbie-knowhow
     image: psknowhow/debbie-knowhow:latest
     restart: always
