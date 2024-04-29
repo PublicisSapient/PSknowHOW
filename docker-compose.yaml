@@ -283,7 +283,7 @@ debbie-postgres:
 
   debbie-knowhow:
     container_name: debbie-knowhow
-    image: setup-speedy.tools.publicis.sapient.com/speedy/debbie-knowhow:latest
+    image: psknowhow/debbie-knowhow:latest
     restart: always
     env_file:
       - '.env'
