@@ -127,11 +127,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 			original.setCreatedBy(maskStrings(original.getCreatedBy()));
 			original.setUsername(maskStrings(original.getUsername()));
 			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
-			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
-				List<String> connectionUsers=new ArrayList<>();
-				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(connectionUser));
-				original.setConnectionUsers(connectionUsers);
-			}
 		});
 
 		if (authorizedProjectsService.ifSuperAdminUser()) {
@@ -220,11 +215,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 			original.setCreatedBy(maskStrings(original.getCreatedBy()));
 			original.setUsername(maskStrings(original.getUsername()));
 			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
-			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
-				List<String> connectionUsers=new ArrayList<>();
-				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(connectionUser));
-				original.setConnectionUsers(connectionUsers);
-			}
 		});
 
 		if (CollectionUtils.isEmpty(typeList)) {
