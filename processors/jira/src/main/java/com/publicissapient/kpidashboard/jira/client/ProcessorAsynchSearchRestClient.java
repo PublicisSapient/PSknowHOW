@@ -105,7 +105,7 @@ public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestCli
 		final Iterable<String> expandosValues = Iterables.transform(java.util.List.of(SCHEMA, NAMES, CHANGELOG),
 				EXPANDO_TO_PARAM);
 		final String notNullJql = StringUtils.defaultString(jql);
-		if (notNullJql.length() > 0) {
+		if (notNullJql.length() > JiraConstants.MAX_JQL_LENGTH_FOR_HTTP_GET) {
 			return searchJqlImplPost(maxResults, startAt, expandosValues, notNullJql, fields);
 		} else {
 			return searchJqlImplGet(maxResults, startAt, expandosValues, notNullJql, fields);
