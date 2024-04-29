@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
