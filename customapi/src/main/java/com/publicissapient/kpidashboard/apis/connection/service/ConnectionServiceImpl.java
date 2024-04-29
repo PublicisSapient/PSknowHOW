@@ -129,7 +129,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
 			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
 				List<String> connectionUsers=new ArrayList<>();
-				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(maskStrings(connectionUser)));
+				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(connectionUser));
 				original.setConnectionUsers(connectionUsers);
 			}
 		});
@@ -222,7 +222,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
 			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
 				List<String> connectionUsers=new ArrayList<>();
-				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(maskStrings(connectionUser)));
+				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(connectionUser));
 				original.setConnectionUsers(connectionUsers);
 			}
 		});
