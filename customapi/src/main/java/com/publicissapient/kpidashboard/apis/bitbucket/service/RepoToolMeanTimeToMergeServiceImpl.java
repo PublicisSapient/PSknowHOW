@@ -172,7 +172,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 				setWeekWiseMeanTimeToMergeForRepoTools(dateWiseMeanTimeToMerge, excelDataLoader, branchName,
 						projectName, aggDataMap, duration, dataPoints);
 				repoWiseMRList.add(excelDataLoader);
-				repoList.add(repo.getUrl());
+				repoList.add(repo.getRepositoryName());
 				branchList.add(repo.getBranch());
 
 			}

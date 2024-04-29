@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,6 +79,8 @@ public class SprintCapacityServiceImplTest {
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
+	@Mock
+	FilterHelperService filterHelperService;
 	@Mock
 	KpiHelperService kpiHelperService;
 	@InjectMocks

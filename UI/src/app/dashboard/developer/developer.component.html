@@ -28,10 +28,10 @@
                     <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                     [trendData]="kpiTrendsObj[kpi?.kpiId]" [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders"
                     [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
-                    (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
+                    (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.isAdditionalFilterSupport)"
                     [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
                     [showExport]="showChart" [showChartView]="showChart" [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"
-                    [isShow]="(kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false) || (!iSAdditionalFilterSelected && kpiLoader === false) && (ifKpiExist(kpi.kpiId) != -1) ? true : false"
+                    [isShow]="(kpi?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false) || (!iSAdditionalFilterSelected && kpiLoader === false) && (ifKpiExist(kpi.kpiId) != -1) ? true : false"
                     [sprintsOverlayVisible]="sprintsOverlayVisible && kpi?.kpiDetail?.chartType !== 'table'" [trendValueList]="kpiChartData[kpi?.kpiId]" [colors]="this.colorObj" [showCommentIcon]="showCommentIcon"
                     [commentCount]="kpiCommentsCountObj[kpi?.kpiId]" (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                       <ng-container *ngIf="!noTabAccess else noDataAccess">
@@ -39,7 +39,7 @@
                           <div class="p-pl-3 p-pr-3" [ngSwitch]="kpi?.kpiDetail?.chartType"
                             *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                             <ng-container
-                              *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0 && chartColorList[kpi?.kpiId]?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData[kpi?.kpiId]?.length > 0 && chartColorList[kpi?.kpiId]?.length>0 && kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData">
+                              *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0 && chartColorList[kpi?.kpiId]?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData[kpi?.kpiId]?.length > 0 && chartColorList[kpi?.kpiId]?.length>0 && kpi?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected); else noData">
                               <ng-container *ngIf="!(showChart === 'table')">
                                 <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'tooltip'"
                                   [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
@@ -70,15 +70,15 @@
                         </ng-container>
                         <ng-template #noData>
                           <div class="overlay"
-                            *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length && !iSAdditionalFilterSelected) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length && kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected)|| kpiLoader">
+                            *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length && !iSAdditionalFilterSelected) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length && kpi?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)|| kpiLoader">
                             <div class="loading-img"></div>
                           </div>
                           <div class="min-ht"
-                            *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && !iSAdditionalFilterSelected && kpiLoader === false) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false)">
+                            *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && !iSAdditionalFilterSelected && kpiLoader === false) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpi?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false)">
                             <div class="err">No Data Available</div>
                           </div>
                           <div class="min-ht"
-                            *ngIf="kpi?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected && kpiLoader === false">
+                            *ngIf="kpi?.kpiDetail?.isAdditionalFilterSupport === false && iSAdditionalFilterSelected && kpiLoader === false">
                             <div class="err squad-err-msg">KPI cannot be measured for a Squad</div>
                           </div>
                         </ng-template>

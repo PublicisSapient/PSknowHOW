@@ -192,7 +192,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 				aggDataMap.put(getBranchSubFilter(repo, projectName), dayWiseCount);
 				repoWiseCommitList.add(excelDataLoader);
 				repoWiseMergeRequestList.add(mergeRequestExcelDataLoader);
-				repoList.add(repo.getUrl());
+				repoList.add(repo.getRepositoryName());
 				branchList.add(repo.getBranch());
 
 			}

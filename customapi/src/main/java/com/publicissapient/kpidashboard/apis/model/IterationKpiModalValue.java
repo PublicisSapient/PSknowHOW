@@ -152,6 +152,8 @@ public class IterationKpiModalValue implements Serializable {
 	private String actualCompletionDateInTime;
 	@JsonProperty("Actual-Start-Date")
 	private String actualStartDateInTime;
+	@JsonProperty("Squad")
+	private List<String> squads;
 	private Map<String, List<String>> statusLogGroup;
 	private Map<String, List<String>> workLogGroup;
 	private Map<String, List<String>> assigneeLogGroup;

@@ -53,6 +53,9 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.LeadTimeChangeData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterValue;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -123,9 +126,7 @@ public class KPIExcelUtilityTest {
 				for (Map.Entry<String, Double> m : repoWiseMap.entrySet()) {
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProject(projectName);
-					Map<String, String> repoUrl = new HashMap<>();
-					repoUrl.put(repoList.get(i), repoList.get(i));
-					excelData.setRepositoryURL(repoUrl);
+					excelData.setRepo(repoList.get(i));
 					excelData.setBranch(branchList.get(i));
 					excelData.setDaysWeeks(m.getKey());
 					excelData.setPickupTime(m.getValue().toString());
@@ -255,6 +256,31 @@ public class KPIExcelUtilityTest {
 	@Test
 	public void testPopulateDefectRelatedExcelData_DRE() {
 		// Mock input parameters
+		Set<String> set = new HashSet<>();
+		set.add("A");
+		set.add("B");
+
+		jiraIssues.forEach(jira -> {
+			AdditionalFilterConfig additionalFilterConfig = new AdditionalFilterConfig();
+			additionalFilterConfig.setFilterId("sqd");
+			additionalFilterConfig.setValues(set);
+			List<AdditionalFilterConfig> additionalFilterConfigList = new ArrayList<>();
+			additionalFilterConfigList.add(additionalFilterConfig);
+
+			List<AdditionalFilterValue> additionalFilterValueList = new ArrayList<>();
+			AdditionalFilterValue additionalFilterValue = new AdditionalFilterValue();
+			additionalFilterValue.setValue("abc");
+			additionalFilterValue.setValueId("abc12");
+			additionalFilterValueList.add(additionalFilterValue);
+
+			List<AdditionalFilter> additionalFilterConfigsList = new ArrayList<>();
+			AdditionalFilter additionalFilter = new AdditionalFilter();
+			additionalFilter.setFilterId("sqd");
+			additionalFilter.setFilterValues(additionalFilterValueList);
+			additionalFilterConfigsList.add(additionalFilter);
+
+			jira.setAdditionalFilters(additionalFilterConfigsList);
+		});
 		Map<String, JiraIssue> bug = jiraIssues.stream().filter(issue -> issue.getTypeName().equalsIgnoreCase("Bug"))
 				.collect(Collectors.toMap(JiraIssue::getNumber, x -> x));
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
@@ -772,7 +798,7 @@ public class KPIExcelUtilityTest {
 		jiraIssue.add(jiraIssues.get(0));
 
 		Map<String, String> map = new HashMap<>();
-		map.put(jiraIssues.get(0).getNumber(),jiraIssues.get(0).getStatus());
+		map.put(jiraIssues.get(0).getNumber(), jiraIssues.get(0).getStatus());
 		List<JiraIssue> createdConditionStories = new ArrayList<>();
 		createdConditionStories.add(jiraIssues.get(0));
 		// Arrange
