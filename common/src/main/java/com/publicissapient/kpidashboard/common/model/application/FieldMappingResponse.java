@@ -15,10 +15,9 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package com.publicissapient.kpidashboard.common.model.application;
 
-package com.publicissapient.kpidashboard.common.model.jira;
-
-import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,16 +26,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * The response of fieldmapping api call
+ * 
+ * @author shi6
+ */
+
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class JiraHistoryChangeLog {
+public class FieldMappingResponse {
 
-	private String changedFrom;
-	private String changedTo;
-	private LocalDateTime updatedOn;
+	String fieldName;
+	Object originalValue;
+	Object previousValue;
+	List<ConfigurationHistoryChangeLog> history;
 
 }
