@@ -19,14 +19,20 @@
 package com.publicissapient.kpidashboard.apis.kpiintegration.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
+import com.publicissapient.kpidashboard.apis.model.ProjectWiseKpiRecommendation;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import org.junit.Before;
@@ -46,6 +52,12 @@ import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrService;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author kunkambl
@@ -76,6 +88,12 @@ public class KpiIntegrationServiceImplTest {
 
 	@Mock
 	private CacheService cacheService;
+
+	@Mock
+	private RestTemplate restTemplate;
+
+	@Mock
+	private CustomApiConfig customApiConfig;
 
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement1;
@@ -125,5 +143,19 @@ public class KpiIntegrationServiceImplTest {
 		when(kpiMasterRepository.findByKpiIdIn(kpiIdList)).thenReturn(kpiMasterDataFactory.getSpecificKpis(kpiIdList));
 		List<KpiElement> kpiElementList = maturityService.getKpiResponses(kpiRequest);
 		assertEquals(0, kpiElementList.size());
+	}
+
+	@Test
+	public void testGetProjectWiseKpiRecommendation() {
+		KpiRequest kpiRequest = new KpiRequest();
+		kpiRequest.setIds(new String[] { "id1" });
+		kpiRequest.setKpiIdList(Arrays.asList("kpi1", "kpi2"));
+		ProjectWiseKpiRecommendation expectedResponse = new ProjectWiseKpiRecommendation();
+		ResponseEntity<ProjectWiseKpiRecommendation> responseEntity = ResponseEntity.ok(expectedResponse);
+		when(customApiConfig.getRnrRecommendationUrl()).thenReturn("recommendation/%s/%s");
+		when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class),
+				eq(ProjectWiseKpiRecommendation.class))).thenReturn(responseEntity);
+		ProjectWiseKpiRecommendation actualResponse = maturityService.getProjectWiseKpiRecommendation(kpiRequest);
+		assertNotNull(actualResponse);
 	}
 }
