@@ -242,5 +242,63 @@ volumes:
   customapivol:
   mongodbvol:
 
+debbie-postgres:
+    container_name: debbie-postgres
+    image: postgres:11.1
+    env_file:
+      - '.env'
+    volumes:
+      - /app/apps/debbie/debbie-postgres-data:/var/lib/postgresql/data
+    restart: always
+    ports:
+      - '8001:5432'
+    networks:
+      - Network_apps
+
+  debbie-rabbitmq:
+    container_name: debbie-rabbitmq
+    image: rabbitmq:3.8-management
+    env_file:
+      - '.env'
+    ports:
+      - "8002:5672"
+      - "8003:15672"
+    cpus: 0.1
+    networks:
+      - Network_apps
+
+  debbie-django:
+    container_name: debbie-django
+    image: psknowhow/debbie-django:latest
+    ports:
+      - '8000:8000'
+    env_file:
+      - '.env'
+    depends_on:
+      - debbie-postgres
+      - debbie-rabbitmq
+    restart: always
+    networks:
+      - Network_apps
+
+  debbie-knowhow:
+    container_name: debbie-knowhow
+    image: setup-speedy.tools.publicis.sapient.com/speedy/debbie-knowhow:latest
+    restart: always
+    env_file:
+      - '.env'
+    environment:
+      - GIT_PROCESS_ONLY_ONE_COMMIT=false
+      - GIT_WITHOUT_MODIFICATIONS=true
+      - GITLAB_URL=https://gitlab.tremend.com
+    volumes:
+      - /app/apps/debbie/debbie-scanner-storage:/debbie-storage
+    depends_on:
+      - debbie-postgres
+      - debbie-rabbitmq
+    networks:
+      - Network_apps
+
+
 networks:
   Network_apps:
