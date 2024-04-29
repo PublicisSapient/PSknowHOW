@@ -211,6 +211,7 @@ export class AppInitializerService {
     return new Promise<void>((resolve, reject) => {
         if (!environment['AUTHENTICATION_SERVICE'] == true) {
             this.router.resetConfig([...this.routes]);
+            this.router.navigate([location]);
             //this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
         } else {
             // TODO: find right property to avoid string manipulation - Rishabh 3/4/2024
