@@ -64,7 +64,7 @@ public class RepoToolsClient {
 		setHttpHeaders(apiKey);
 		Gson gson = new Gson();
 		String payload = gson.toJson(repoToolConfig);
-		log.info("enroll project request {} {}", repoToolsUrl, repoToolConfig);
+		log.info("enroll project request {} {}", repoToolsUrl, payload);
 		URI url = URI.create(repoToolsUrl);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
@@ -95,7 +95,7 @@ public class RepoToolsClient {
 	public int triggerScanCall(String projectKey, String repoToolsUrl, String apiKey) {
 		setHttpHeaders(apiKey);
 		String triggerScanUrl = String.format(repoToolsUrl, projectKey);
-		log.info("trigger project scan request {} {}", triggerScanUrl);
+		log.info("trigger project scan request {}", triggerScanUrl);
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(triggerScanUrl, HttpMethod.GET, entity, String.class);
 		return response.getStatusCode().value();
