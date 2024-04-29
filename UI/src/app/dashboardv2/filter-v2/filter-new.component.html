@@ -1,5 +1,5 @@
-<div class="filter-container p-p-2" [ngClass]="kanbanRequired ? 'p-jc-between' : 'p-jc-center'">
-    <div class="p-d-flex" *ngIf="kanbanRequired">
+<div class="filter-container p-grid p-m-0">
+    <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch" *ngIf="kanbanRequired">
         <div class="tabs">
             <div class="tab" (click)="setSelectedType('Scrum')" [ngClass]="{ 'active': selectedType === 'scrum' }">Scrum
             </div>
@@ -8,7 +8,7 @@
                 Kanban</div>
         </div>
     </div>
-    <div class="p-d-flex p-fluid" *ngIf="filterDataArr[selectedType]">
+    <div class="p-d-flex p-col-fixed p-jc-end p-pl-0 p-pr-0 primary-filter-container" *ngIf="filterDataArr[selectedType]">
         <app-parent-filter *ngIf="getObjectKeys(parentFilterConfig).length" class="p-mr-2"
             [filterData]="filterDataArr[selectedType]" [selectedTab]="selectedTab"
             (onSelectedLevelChange)="handleParentFilterChange($event)" [selectedType]="selectedType"
@@ -17,9 +17,11 @@
             [selectedType]="selectedType" [primaryFilterConfig]="primaryFilterConfig" [selectedTab]="selectedTab"
             (onPrimaryFilterChange)="handlePrimaryFilterChange($event)"></app-primary-filter>
     </div>
-    <div *ngIf="additionalFilterConfig?.length">
-        <app-additional-filter [selectedTab]="selectedTab" [selectedLevel]="selectedLevel" [selectedType]="selectedType"
-            [additionalFilterConfig]="additionalFilterConfig"></app-additional-filter>
+    <div class="p-col-fixed p-pl-0 p-pr-0 additional-filter-container">
+        <ng-container *ngIf="additionalFilterConfig?.length">
+            <app-additional-filter [selectedTab]="selectedTab" [selectedLevel]="selectedLevel"
+                [selectedType]="selectedType" [additionalFilterConfig]="additionalFilterConfig"></app-additional-filter>
+        </ng-container>
     </div>
 </div>
 <div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3">
@@ -43,35 +45,23 @@
     </ul>
     <div class="date-filter-container">
         <!-- Date filter start -->
-        <div *ngIf="(kanban && selectedDateFilter !== '') || this.selectedTab?.toLowerCase() === 'developer'"
-            class="selected-date p-ml-auto p-mr-2 p-mt-auto p-align-end">
-            <img src="../../../assets/img/ico-date.svg" alt="date" class="p-mr-1" />
-            <span>{{selectedDateFilter}}</span>
-        </div>
         <div class="position-relative" *ngIf="kanban || this.selectedTab?.toLowerCase() === 'developer'">
-            <div class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"
+            <div class="p-d-flex p-align-center p-p-2 rounded p-ml-2 date-filter-btn"
                 #dateToggleButton [ngClass]="{'active': toggleDateDropdown}"
                 (click)="toggleDateDropdown = !toggleDateDropdown">
-                Date
+                <i class="pi pi-calendar-plus p-mr-2"></i>
+                Date Filter
             </div>
             <div class="filter-options-container date-filter-dropdown" *ngIf="toggleDateDropdown" #dateDrpmenu>
-                <div class="filter-options filter-date">
-                    <div class="p-buttonset">
-                        <button pButton type="button" class="p-button-secondary p-button-sm"
-                            *ngFor='let label of dateRangeFilter?.types'
-                            [ngClass]="{'btn-active': selectedDayType === label}" label={{label}}
-                            (click)="setSelectedDateType(label)"></button>
-                    </div>
-                    <div class="ui-g-12" *ngFor='let count of dateRangeFilter?.counts;'>
-                        <p-radioButton value="{{count}}" label="{{count}}" [(ngModel)]="selectedDateValue"
-                            inputId="{{count}}"></p-radioButton>
-                    </div>
+                <div class="filter-options filter-date p-d-flex p-jc-evenly">
+                    <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.counts" [(ngModel)]="selectedDateValue"></p-dropdown>
+                    <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.types" (onChange)="setSelectedDateType($event.value)"></p-dropdown>
                 </div>
-                <div class="p-d-flex p-justify-end p-align-center p-mt-1 btn-container">
+                <div class="p-d-flex p-justify-end p-align-center btn-container">
                     <button pButton pRipple label="Cancel" icon="pi pi-times"
                         class="p-button-secondary p-button-text p-mr-2 p-button-sm"
                         (click)="toggleDateDropdown = false"></button>
-                    <button pButton pRipple label="Apply" icon="pi pi-save" class="p-button-secondary p-button-sm"
+                    <button pButton pRipple label="Apply" icon="pi pi-save" class="p-button-secondary p-button-sm btn-apply"
                         (click)="applyDateFilter()"></button>
                 </div>
             </div>

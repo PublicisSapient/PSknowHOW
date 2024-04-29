@@ -101,31 +101,6 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
     display: flex;
 }
 
-.filter-btn {
-    font-size: 12px !important;
-    /* height: 3.25rem; */
-    height: 3rem;
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-custom {
-    color: var(--color-black);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 0 -1px;
-    padding: 7px;
-    font-weight: 300;
-    text-align: center;
-    font-size: 13px;
-    border: 1px solid var(--color-black);
-    cursor: pointer;
-    height: 3rem;
-    background-color: #fff;
-}
-
 .selected-date {
     list-style-type: none;
     color: var(--color-cyan-blue);
@@ -147,17 +122,31 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 
 .filter-date {
     height: auto;
-    padding-bottom: 10px;
+    padding: 10px 0;
     border-bottom: 1px solid #cacaca;
 }
 
-.filter-options-container {
+:host ::ng-deep .filter-options-container::before {
+    content:"\A";
+    width: 10px; 
+    height: 10px;
     position: absolute;
-    top: 102%;
+    top: -6px;
+    left: 80%;
+    border: 1px solid lightgrey;
+    background-color: #fff;
+    transform: rotateY(0deg) rotate(45deg);
+    border-bottom: none;
+    border-right: none;
+}
+
+:host ::ng-deep .filter-options-container {
+    position: absolute;
+    top: 80%;
     right: 0;
     background: #fff;
     border: 1px solid lightgrey;
-    width: max-content;
+    width: 200px;
     min-width: 190px;
     border-radius: 5px;
     max-width: 500px;
@@ -211,22 +200,10 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
     margin-right: 10px;
 }
 
-.filter-options-container {
-    position: absolute;
-    top: 102%;
-    right: 0;
-    background: #fff;
-    border: 1px solid lightgrey;
-    width: max-content;
-    min-width: 190px;
-    border-radius: 5px;
-    max-width: 500px;
-    z-index: 1002;
-}
-
 .filter-options {
-    margin: 15px 15px 45px 15px;
-    overflow-y: auto;
+    margin: 0 0 40px 0;
+    overflow-y: visible;
+    width: 100%;
 }
 
 .filter-options label {
@@ -236,4 +213,38 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 
 .filter-options input {
     display: inline-block;
+}
+
+.scrum-kanban-switch {
+    width: 250px;
+}
+
+.additional-filter-container {
+    width: 450px;
+}
+
+.primary-filter-container {
+    width: calc(100% - 250px - 450px);
+}
+
+.date-filter-btn {
+    background-color: #fff;
+    border: 1px solid #D7DADE;
+    border-radius: 5px;
+    color: #52595C;
+    font-size: 12px;
+}
+
+:host ::ng-deep .date-filter-ddn {
+    height: 30px;
+    width: 80px;
+}
+
+:host ::ng-deep .date-filter-ddn .p-dropdown-label {
+    padding: 7px 5px;
+    font-size: 12px;
+}
+
+.btn-apply {
+    background-color: #0B4BC8;
 }

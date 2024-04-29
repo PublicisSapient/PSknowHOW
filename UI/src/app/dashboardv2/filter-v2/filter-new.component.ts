@@ -57,33 +57,20 @@ export class FilterNewComponent implements OnInit {
               }
               this.processBoardData(this.boardData);
 
-              if (this.selectedTab.toLowerCase() === 'developer') {
-                this.selectedDayType = 'Days';
-                // different date filter for developer tab
-                this.dateRangeFilter = {
-                  "types": [
-                    "Days",
-                    "Weeks",
-                  ],
-                  "counts": [
-                    5,
-                    10
-                  ]
-                }
-              } else {
-                this.selectedDayType = 'Weeks';
-                this.dateRangeFilter = {
-                  "types": [
-                    "Days",
-                    "Weeks",
-                    "Months"
-                  ],
-                  "counts": [
-                    5,
-                    10,
-                    15
-                  ]
-                }
+              this.selectedDayType = 'Weeks';
+              this.dateRangeFilter = {
+                "types": [
+                  "Days",
+                  "Weeks",
+                  "Months"
+                ],
+                "counts": [
+                  5,
+                  7,
+                  10,
+                  12,
+                  15
+                ]
               };
 
               this.service.setSelectedDateFilter(this.selectedDayType);
