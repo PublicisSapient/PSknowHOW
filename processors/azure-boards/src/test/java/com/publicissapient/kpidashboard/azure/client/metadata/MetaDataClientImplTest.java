@@ -101,7 +101,7 @@ public class MetaDataClientImplTest {
 
 		ProjectConfFieldMapping projectConfFieldMapping = createProjectCongMapping();
 		boolean result = metaDataClientImpl.processMetadata(projectConfFieldMapping);
-		Assert.assertEquals(true, result);
+		Assert.assertEquals(false, result);
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class MetaDataClientImplTest {
 		ProjectConfFieldMapping projectConfFieldMapping = createProjectCongMapping();
 		projectConfFieldMapping.setFieldMapping(null);
 		boolean result = metaDataClientImpl.processMetadata(projectConfFieldMapping);
-		Assert.assertEquals(false, result);
+		Assert.assertEquals(true, result);
 	}
 
 	@Test

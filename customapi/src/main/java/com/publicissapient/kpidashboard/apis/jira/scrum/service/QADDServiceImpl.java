@@ -30,6 +30,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -88,6 +90,12 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
+
+	@Autowired
+	private CacheService cacheService;
+
+	@Autowired
+	private FilterHelperService flterHelperService;
 
 	@Override
 	public String getQualifierType() {
@@ -224,7 +232,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 		});
 
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_DENSITY.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_DENSITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 
 	}
 

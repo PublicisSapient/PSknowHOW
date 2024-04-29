@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -96,6 +97,10 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 
 	@Autowired
 	private FilterHelperService flterHelperService;
+
+	@Autowired
+	private CacheService cacheService;
+
 
 	/**
 	 * {@inheritDoc}
@@ -350,7 +355,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		});
 
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 
 	}
 
