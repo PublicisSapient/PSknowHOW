@@ -5,7 +5,7 @@
 	<packaging>pom</packaging>
 	<groupId>com.publicissapient.kpidashboard.apis</groupId>
 	<artifactId>auth</artifactId>
-	<version>develop</version>
+	<version>1.0.0</version>
 	<name>authNauth</name>
 	<description>Authentication service</description>
 	<dependencies>
