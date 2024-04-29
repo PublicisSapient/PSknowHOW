@@ -1,4 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
+##ignore pom.xml
+pom.xml
+**/pom.xml
+
 ### Gradle template
 .gradle
 build/
