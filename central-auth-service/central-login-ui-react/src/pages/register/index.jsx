@@ -8,9 +8,8 @@ import { Img } from "../../components/Img";
 import { FloatingInput } from "../../components/FloatingInput";
 import { useNavigate } from 'react-router-dom';
 import '../../App.css';
-import BgItem from '../../components/BgItem';
-
-const bg = ['KnowHOWGroup', 'RetrosGroup', 'APGroup'];
+import SuiteLogos from '../../components/SuiteLogos';
+import PSLogo from '../../components/PSLogo';
 
 const RegisterPage = () => {
 
@@ -59,21 +58,9 @@ const RegisterPage = () => {
 
     return (
         <div className="componentContainer flex h-screen w-full">
-            <div className="w-3/5 h-screen gradient-container">
-                <div className="h-3/4 w-1/2 mt-36 m-auto">
-                    {bg.map((item, index) => (
-                        <BgItem key={index} item={item} />
-                    ))}
-                </div>
-                <div className="bg-image absolute h-[150px] w-[150px] bottom-0 left-0"></div>
-            </div>
+            <SuiteLogos />
             <div className="w-2/5 p-12 h-screen bg-white-A700">
-                <div className='flex items-center'>
-                    <div className='h-[48px] w-1/3 ps-logo'></div>
-                    <div className='w-2/3 speed-suit-logo'><span>SPEED</span> <span>SUITE</span></div>
-
-                </div>
-                <div className='w-full mt-8 accelerate-container'>Accelerate your next.</div>
+                <PSLogo />
 
                 <Text className='text-left mt-4' size='txtPoppinsSemiBold20'>Create an account</Text>
                 <FormProvider {...methods}>
