@@ -117,13 +117,12 @@ public class ConnectionServiceImpl implements ConnectionService {
 	 */
 	@Override
 	public ServiceResponse getAllConnection() {
-		final List<Connection> data = connectionRepository.findAllWithoutSecret();
-		if (CollectionUtils.isEmpty(data)) {
+		final List<Connection> connectionData = connectionRepository.findAllWithoutSecret();
+		if (CollectionUtils.isEmpty(connectionData)) {
 			log.info("Db has no connectionData");
-			return new ServiceResponse(false, "No connectionData in connection db", data);
+			return new ServiceResponse(false, "No connectionData in connection db", connectionData);
 		}
 
-		List<Connection> connectionData = new ArrayList<>(data);
 		if (authorizedProjectsService.ifSuperAdminUser()) {
 			maskConnectionDetails(connectionData);
 			log.info("Successfully fetched all connectionData");
