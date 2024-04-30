@@ -97,6 +97,9 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 	private GitLabClient gitLabClient;
 	private MergeRequestRepository mergReqRepo;
 
+	@Autowired
+	private ProjectToolConfigRepository projectToolConfigRepository;
+
 	private ProjectBasicConfigRepository projectConfigRepository;
 
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
@@ -358,6 +361,14 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 					try {
 						processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 						if (gitRepo.getToolConfigId().equals(entry.getId())) {
+//							save repository name by project id
+							Optional<ProjectToolConfig> projectToolConfigOptional = projectToolConfigRepository.findById(
+									gitRepo.getToolConfigId());
+							if (projectToolConfigOptional.isPresent()) {
+								ProjectToolConfig projectToolConfig = projectToolConfigOptional.get();
+								gitLabClient.setRepositoryNameByProjectId(projectToolConfig, entry, gitRepo);
+								projectToolConfigRepository.save(projectToolConfig);
+							}
 							setLastCommitTime(proBasicConfig, gitRepo, processorExecutionTraceLog);
 							MDC.put("GitLabReposDataCollectionStarted",
 									"GitLab Processor started collecting data for Url: " + entry.getUrl()

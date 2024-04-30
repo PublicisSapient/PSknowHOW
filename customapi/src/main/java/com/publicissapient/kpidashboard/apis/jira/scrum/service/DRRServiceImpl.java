@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.Feature;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -104,6 +105,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 	@Autowired
 	private FilterHelperService flterHelperService;
+	@Autowired
+	private CacheService cacheService;
 	@Autowired
 	private SprintRepository sprintRepository;
 	@Autowired
@@ -348,7 +351,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					.filter(element -> dodAndDefectRejStatus.contains(element.getStatus().toLowerCase())).collect(Collectors.toList());
 
 			sprintCompletedDefects.addAll(
-					KpiDataHelper.getCompletedSubTasksByHistory(sprintSubtask, totalSubtaskHistory, sd, dodAndDefectRejStatus));
+					KpiDataHelper.getCompletedSubTasksByHistory(sprintSubtask, totalSubtaskHistory, sd, dodAndDefectRejStatus, new HashMap<>()));
 
 			List<JiraIssue> sprintWiseRejectedDefectList = new ArrayList<>();
 			List<JiraIssue> sprintWiseCompletedDefectList = new ArrayList<>();
@@ -417,7 +420,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_REJECTION_RATE.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_REJECTION_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 	}
 
 	/**

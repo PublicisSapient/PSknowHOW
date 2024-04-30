@@ -30,11 +30,12 @@ public enum FieldMappingEnum {
 
 	KPI0("Processor", KPISource.JIRA.name(),
 			Arrays.asList("jiradefecttype", "jiraIssueTypeNames", "jiraIterationCompletionStatusCustomField",
-					"rootCauseIdentifier", "sprintName", "estimationCriteria", "jiraStoryPointsCustomField",
-					"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
-					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField",
-					"jiraDevDueDateField", "jiraIssueEpicType", "storyFirstStatus", "notificationEnabler",
-					"epicLink", "jiraSubTaskDefectType", "jiraSubTaskIdentification")),
+					"rootCauseIdentifier", "rootCause", "rootCauseValues", "sprintName", "estimationCriteria",
+					"storyPointToHourMapping", "jiraStoryPointsCustomField", "epicCostOfDelay", "epicRiskReduction",
+					"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize", "additionalFilterConfig",
+					"jiraDueDateField", "jiraDueDateCustomField", "jiraDevDueDateField", "jiraIssueEpicType",
+					"storyFirstStatus", "notificationEnabler", "epicLink", "jiraSubTaskDefectType",
+					"jiraSubTaskIdentification")),
 
 	KPI1("Processor (Kanban)", KPISource.JIRA.name(),
 			Arrays.asList("jiraIssueTypeNames", "storyFirstStatus", "rootCauseIdentifier", "epicCostOfDelay",
@@ -148,7 +149,7 @@ public enum FieldMappingEnum {
 	KPI119("Work Remaining", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKPI119",
 			"jiraIterationIssuetypeKPI119", "jiraDevDoneStatusKPI119", "jiraStatusForInProgressKPI119")),
 
-	KPI131("Wastage", KPISource.JIRA.name(), Arrays.asList("jiraIncludeBlockedStatusKPI131",
+	KPI131("Wastage", KPISource.JIRA.name(), Arrays.asList("jiraIncludeBlockedStatusKPI131", "jiraBlockedStatusKPI131",
 			"jiraIterationCompletionStatusKPI131", "jiraIterationIssuetypeKPI131", "jiraWaitStatusKPI131")),
 
 	KPI138("Backlog Readiness Efficiency", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKPI138",

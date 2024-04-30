@@ -27,6 +27,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.publicissapient.kpidashboard.common.repository.azure.AzureStateCategoryRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,8 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	private ConnectionRepository connectionRepository;
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
+	@Autowired
+	private AzureStateCategoryRepository azureStateCategoryRepository;
 
 	/**
 	 * Validates and collects Azure issues using JIA API for projects with
@@ -113,7 +116,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 				Runnable worker = new AzureOnlineRunnable(latch, azureAdapter, entry.getValue(),
 						entry.getValue().getProjectKey(), azureIssueClientFactory, azureProcessorConfig,
 						boardMetadataRepository, metadataIdentifierRepository, fieldMappingRepository,
-						azureRestClientFactory);// NOPMD
+						azureRestClientFactory, azureStateCategoryRepository);// NOPMD
 				executor.execute(worker);
 			}
 

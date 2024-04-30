@@ -95,8 +95,8 @@
                 <span *ngIf="showProcessorLastState(processor.processorName) === 'NA'">NA</span>
               </td>
               <td class='custom-table-cell p-d-flex p-align-center column-width'>
-                <button pButton pRipple label="Run Now" icon="pi pi-forward"
-                  [disabled]="shouldDisableRunProcessor()"
+                <button pButton pRipple label="Run Now" icon="{{processor.loader === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
+                  [disabled]="shouldDisableRunProcessor() || processor.loader === true"
                   class="p-button-sm p-button-success p-button-raised"
                   (click)="runProcessor(processor.processorName)"></button>
 

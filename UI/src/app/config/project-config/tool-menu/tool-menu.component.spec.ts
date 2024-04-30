@@ -95,6 +95,9 @@ describe('ToolMenuComponent', () => {
 
   it('should fetch fetch all tool configs', () => {
     component.isAssigneeSwitchChecked = true;
+    component.selectedProject = {
+      Type : 'Scrum'
+    }
     spyOn(httpService, 'getAllToolConfigs').and.callThrough();
     spyOn(component, 'setGaData');
     component.ngOnInit();
@@ -106,7 +109,7 @@ describe('ToolMenuComponent', () => {
 
     const jiraOrAzure = toolsData['data'].filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
     if (jiraOrAzure.length) {
-      const mappingsReq = httpMock.expectOne(`${baseUrl}/api/tools/${jiraOrAzure[0].id}/fieldMapping`);
+      const mappingsReq = httpMock.expectOne(`${baseUrl}/api/tools/fieldMapping/${jiraOrAzure[0].id}/kpi0`);
       expect(mappingsReq.request.method).toBe('GET');
       mappingsReq.flush(mappingData);
       expect(component.disableSwitch).toBeTrue();
