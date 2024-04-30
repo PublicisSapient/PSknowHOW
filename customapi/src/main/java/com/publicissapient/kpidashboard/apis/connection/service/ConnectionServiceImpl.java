@@ -41,20 +41,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
-import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -66,6 +66,8 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 /**
  * This class provides various methods related to operations on Connections
@@ -100,7 +102,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	@Autowired
 	private AuthenticationService authenticationService;
-
+	
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
@@ -115,25 +117,14 @@ public class ConnectionServiceImpl implements ConnectionService {
 	 */
 	@Override
 	public ServiceResponse getAllConnection() {
-		final List<Connection> data = connectionRepository.findAllWithoutSecret();
-		if (CollectionUtils.isEmpty(data)) {
+		final List<Connection> connectionData = connectionRepository.findAllWithoutSecret();
+		if (CollectionUtils.isEmpty(connectionData)) {
 			log.info("Db has no connectionData");
-			return new ServiceResponse(false, "No connectionData in connection db", data);
+			return new ServiceResponse(false, "No connectionData in connection db", connectionData);
 		}
-		List<Connection> connectionData = new ArrayList<>(data);
-		connectionData.forEach(original -> {
-			original.setCreatedBy(maskStrings(original.getCreatedBy()));
-			original.setUsername(maskStrings(original.getUsername()));
-			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
-			if (CollectionUtils.isNotEmpty(original.getConnectionUsers())) {
-				List<String> connectionUsers = new ArrayList<>();
-				original.getConnectionUsers()
-						.forEach(connectionUser -> connectionUsers.add(maskStrings(connectionUser)));
-				original.setConnectionUsers(connectionUsers);
-			}
-		});
 
 		if (authorizedProjectsService.ifSuperAdminUser()) {
+			maskConnectionDetails(connectionData);
 			log.info("Successfully fetched all connectionData");
 			return new ServiceResponse(true, "Found all connectionData", connectionData);
 		}
@@ -147,9 +138,28 @@ public class ConnectionServiceImpl implements ConnectionService {
 		if (CollectionUtils.isNotEmpty(nonAuthConnection)) {
 			connectionData.removeAll(nonAuthConnection);
 		}
-
+		maskConnectionDetails(connectionData);
 		log.info("Successfully fetched all connectionData");
 		return new ServiceResponse(true, "Found all connectionData", connectionData);
+	}
+
+	/**
+	 * Mask user info from connection details
+	 *
+	 * @param connectionData
+	 *            list of connections
+	 */
+	public void maskConnectionDetails(List<Connection> connectionData) {
+		connectionData.forEach(original -> {
+			original.setCreatedBy(maskStrings(original.getCreatedBy()));
+			original.setUsername(maskStrings(original.getUsername()));
+			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
+			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
+				List<String> connectionUsers=new ArrayList<>();
+				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(maskStrings(connectionUser)));
+				original.setConnectionUsers(connectionUsers);
+			}
+		});
 	}
 
 	private String maskStrings(String username) {
@@ -213,20 +223,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 			return new ServiceResponse(false, "No type in this collection", type);
 		}
 		List<Connection> typeList = connectionRepository.findAllWithoutSecret().stream()
-				.filter(connection -> StringUtils.isNotEmpty(connection.getType())
-						&& connection.getType().equalsIgnoreCase(type))
-				.collect(Collectors.toList());
-		typeList.forEach(original -> {
-			original.setCreatedBy(maskStrings(original.getCreatedBy()));
-			original.setUsername(maskStrings(original.getUsername()));
-			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
-			if (CollectionUtils.isNotEmpty(original.getConnectionUsers())) {
-				List<String> connectionUsers = new ArrayList<>();
-				original.getConnectionUsers()
-						.forEach(connectionUser -> connectionUsers.add(maskStrings(connectionUser)));
-				original.setConnectionUsers(connectionUsers);
-			}
-		});
+				.filter(connection -> StringUtils.isNotEmpty(connection.getType()) && connection.getType()
+						.equalsIgnoreCase(type)).collect(Collectors.toList());
 
 		if (CollectionUtils.isEmpty(typeList)) {
 			log.info("connection Db returned null");
@@ -234,6 +232,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 
 		if (authorizedProjectsService.ifSuperAdminUser()) {
+			maskConnectionDetails(typeList);
 			log.info("Successfully found type@{}", type);
 			return new ServiceResponse(true, "Found type@" + type, typeList);
 		}
@@ -246,6 +245,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		if (CollectionUtils.isNotEmpty(nonAuthConnection)) {
 			typeList.removeAll(nonAuthConnection);
 		}
+		maskConnectionDetails(typeList);
 		log.info("Successfully found type@{}", type);
 
 		return new ServiceResponse(true, "Found type@" + type, typeList);
@@ -311,6 +311,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		return new ServiceResponse(false, "Connection already exists with same name. Please choose a different name",
 				null);
 	}
+
 
 	/*
 	 *
@@ -829,7 +830,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	/**
 	 * update breaking connection flag
-	 * 
+	 *
 	 * @param connection
 	 * @param conErrorMsg
 	 */

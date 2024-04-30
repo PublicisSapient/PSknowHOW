@@ -490,7 +490,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.selectedTestExecutionFilterData = {};
         this.loaderZypher = false;
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
-            if(this.filterApplyData['label'] === 'project'){
+            if(this.filterApplyData['label'] !== 'sprint'){ 
                 this.getLastConfigurableTrendingListData(getData);
             }
             // creating array into object where key is kpi id
@@ -604,9 +604,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             .subscribe(getData => {
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
                     const releaseFrequencyInd = getData.findIndex(de=>de.kpiId === 'kpi73')
-                    if(this.filterApplyData['label'] === 'project'){
+                    if(this.filterApplyData['label'] !== 'sprint'){
                         this.getLastConfigurableTrendingListData(getData);
-                    }else if(this.filterApplyData['label'] === 'sprint' && releaseFrequencyInd !== -1){
+                    }
+                    if(releaseFrequencyInd !== -1){
                         getData[releaseFrequencyInd].trendValueList?.map(trendData=>{
                             const valueLength = trendData.value.length;
                             if(valueLength > this.tooltip.sprintCountForKpiCalculation){
@@ -1503,6 +1504,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
       }
 
       getLastConfigurableTrendingListData(KpiData){
+        if(this.tooltip && this.tooltip.sprintCountForKpiCalculation !== undefined) {
+        if(!(this.filterApplyData['label'] === 'sqd' && this.filterApplyData['selectedMap']['sprint'].length !== 0)){
         KpiData.map(kpiList=>{
             kpiList.trendValueList?.map(trendData=>{
                 if(trendData.hasOwnProperty('filter') || trendData.hasOwnProperty('filter1') ){
@@ -1521,5 +1524,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                
             })
         })
+       }
       }
+    }
 }
