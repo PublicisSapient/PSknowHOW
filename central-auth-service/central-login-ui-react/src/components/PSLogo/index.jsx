@@ -1,7 +1,7 @@
 import React from 'react';
 
 const PSLogo = () => {
-    const isSpeedSuite = process.env['REACT_APP_SPEED_SUITE'] ? process.env?.['REACT_APP_SPEED_SUITE'] : false;
+    const isSpeedSuite = process.env['REACT_APP_SPEED_SUITE'] === 'true' ? true : false;
 
     return(
         <>

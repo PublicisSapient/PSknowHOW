@@ -4,7 +4,7 @@ import BgItem from "../../components/BgItem";
 const bg = ['KnowHOWGroup', 'RetrosGroup', 'APGroup'];
 
 const SuiteLogos = () => {
-    const isSpeedSuite = process.env['REACT_APP_SPEED_SUITE'] ? process.env?.['REACT_APP_SPEED_SUITE'] : false;
+    const isSpeedSuite = process.env['REACT_APP_SPEED_SUITE'] === 'true' ? true : false;
     
     return (
         <div className="w-3/5 h-screen gradient-container">
