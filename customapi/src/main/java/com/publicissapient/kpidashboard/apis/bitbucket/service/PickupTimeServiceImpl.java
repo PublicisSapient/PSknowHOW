@@ -171,7 +171,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 				setWeekWisePickupTime(dateWisePickupTime, dateWiseMRCount, excelDataLoader, branchName, projectName,
 						aggDataMap, kpiRequest);
 				repoWisePickupTimeList.add(excelDataLoader);
-				repoList.add(repo.getUrl());
+				repoList.add(repo.getRepositoryName());
 				branchList.add(repo.getBranch());
 
 			}

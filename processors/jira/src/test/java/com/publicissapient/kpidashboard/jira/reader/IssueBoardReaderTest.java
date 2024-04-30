@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,7 +73,7 @@ public class IssueBoardReaderTest {
 	private FetchProjectConfigurationImpl fetchProjectConfiguration;
 
 	@Mock
-	private JiraClient jiraClient;
+	private JiraClientService jiraClientService;
 
 	@Mock
 	private JiraCommonService jiraCommonService;
@@ -144,7 +145,8 @@ public class IssueBoardReaderTest {
 		issueIterator = issues.iterator();
 		when(jiraProcessorConfig.getPageSize()).thenReturn(1);
 		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
-
+		when(jiraClientService.getRestClientMap(null)).thenReturn(client);
+		when(jiraClientService.getKerberosClientMap(null)).thenReturn(krb5Client);
 	}
 
 	@Test

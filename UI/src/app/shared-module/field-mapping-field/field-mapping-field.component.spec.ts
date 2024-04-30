@@ -101,5 +101,40 @@ describe('FieldMappingFieldComponent', () => {
     component.setDisabledState(true);
     expect(component.isDisabled).toBeTruthy();
   })
-  
+
+  it('should set fields values when value is number',()=>{
+    const spyObj = spyOn(component,'onChange')
+    component.setValue();
+    expect(spyObj).toHaveBeenCalled();
+  })
+
+  it('should set fields values when value is string',()=>{
+    component.value = "TestValue "
+    const spyObj = spyOn(component,'onChange')
+    component.setValue();
+    expect(spyObj).toHaveBeenCalled();
+  })
+
+  it('should set fields values when value is array',()=>{
+    component.value = ["test ",'test2 ']
+    const spyObj = spyOn(component,'onChange')
+    component.setValue(false);
+    expect(spyObj).toHaveBeenCalled();
+  })
+
+  it('should format value for condtional input', () => {
+    const spyObj = spyOn(component, 'onChange')
+    component.setValueConditionalInput([{
+      'labelValue': 'testValue',
+      'countValue': 123
+    }])
+    expect(spyObj).toHaveBeenCalled();
+  })
+
+  it('should rest radio button',()=>{
+    const spyObj = spyOn(component, 'setValue')
+    component.resetRadioButton('test')
+    expect(spyObj).toHaveBeenCalled();
+  })
+ 
 });

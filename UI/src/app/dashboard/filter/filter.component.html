@@ -98,7 +98,7 @@
                      </ng-select>
                   </div>
                   </div>
-                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release'">
+                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'backlog'  && selectedTab?.toLowerCase() !== 'release'">
                      <!-- Date filter start -->
                      <div *ngIf="(kanban && selectedDateFilter !== '') || this.selectedTab?.toLowerCase() === 'developer'"
                         class="selected-date p-ml-auto p-mr-2 p-mt-auto p-align-end">
@@ -139,7 +139,7 @@
                      <div class="p-d-flex"
                         *ngIf="selectedTab?.toLowerCase() !== 'value' && selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'dora' && selectedTab?.toLowerCase() !== 'developer'">
                         <div *ngFor="let item of additionalFiltersArr; let i = index;" class="position-relative">
-                           <div *ngIf="item?.hierarchyLevelId !== 'release'"
+                           <div *ngIf="item?.hierarchyLevelId !== 'release' && !(item?.hierarchyLevelId === 'sprint' && selectedTab?.toLowerCase() === 'iteration')"
                               class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"
                               [ngClass]="{'active': toggleDropdownObj[item?.hierarchyLevelId], 'disabled': isAddFilterDisabled(item?.hierarchyLevelId)}"
                               (click)="toggleDropdownObj[item.hierarchyLevelId] = !toggleDropdownObj[item.hierarchyLevelId]"
@@ -157,9 +157,7 @@
                                  </div>
                                  <label class="checkbox-modified"
                                     *ngFor="let key of copyFilteredAddFilters[item.hierarchyLevelId]; let i = index">
-                                    <input type="radio" *ngIf="item?.hierarchyLevelId !== 'sprint'"
-                                       [formControlName]="item?.hierarchyLevelId" [value]="key.nodeId" class="p-mr-1" />
-                                    <div *ngIf="item?.hierarchyLevelId === 'sprint'"
+                                   <div
                                        [formGroupName]="item?.hierarchyLevelId">
                                        <input type="checkbox" [formControlName]="key.nodeId"
                                           [checked]="filterForm?.get(item?.hierarchyLevelId)?.value[key.nodeId]"
@@ -177,7 +175,7 @@
                                     (click)="toggleDropdownObj[item?.hierarchyLevelId] = false"></button>
                                  <button pButton pRipple label="Apply" icon="pi pi-save"
                                     class="p-button-secondary p-button-sm"
-                                    (click)="applyChanges(item?.hierarchyLevelId)"
+                                    (click)=" selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('sqd', true) : applyChanges(item?.hierarchyLevelId)"
                                     [attr.disabled]="checkIfBtnDisabled(item?.hierarchyLevelId)"></button>
                               </div>
                            </div>
@@ -190,20 +188,6 @@
          </div>
 
          <div class="p-d-flex p-align-center">
-            <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
-               <div class="p-d-flex p-align-center p-jc-end">
-                  <img *ngIf="selectedProjectLastSyncStatus === 'SUCCESS'" src="../../../assets/img/icon-success.svg" alt="Success" class="p-mr-1"/>
-                  <img *ngIf="selectedProjectLastSyncStatus === 'NA' && !lastSyncData?.fetchSuccessful" src="../../../assets/img/icon-time.svg" alt="Time" class="p-mr-1" />
-                  <img *ngIf="selectedProjectLastSyncStatus === 'FAILURE'" src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />
-                  <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
-                     Last Sync
-                  </h4>
-
-               </div>
-               <p class="last-sync-date p-m-0 p-text-right">
-                  {{selectedProjectLastSyncStatus != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
-               </p>
-            </div>
 
             <!-- SHow/Hide start for iteration and backlog -->
 
@@ -305,8 +289,8 @@
 
    <div class="p-d-flex">
       <div class="back-btn-wraper">
-         <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3 cursor-pointer">
-            <button class="back-btn" routerLinkActive="active" (click)="navigateToDashboard()">BACK TO DASHBOARD</button>
+         <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3">
+            <button pButton pRipple class="back-btn" [disabled] = "backToDashboardLoader" routerLinkActive="active" icon="{{ backToDashboardLoader ? 'pi pi-spin pi-spinner' : '' }}" iconPos="left" label="BACK TO DASHBOARD" (click)="navigateToDashboard()"></button>
          </div>
       </div>
       <div class="username-btn-wraper" role="button">
@@ -452,8 +436,56 @@
                   {{iterationConfigData.capacity?.value?.value ? iterationConfigData.capacity?.value?.value + ' Hours' :
                   'NA'}}</p>
             </span>
+            <span *ngIf="selectedTab?.toLowerCase() === 'iteration' && selectedProjectForIteration && selectedProjectForIteration[0]?.additionalFilters?.length">
+               <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
+                  <ng-container *ngFor="let item of selectedProjectForIteration; let i = index;">
+                     <li class="selectedfilter p-mr-3">
+                        <div class="selected-node">
+                           <div class="selected-node-label p-pl-0"><span class="align-list-marker" [title]="item?.nodeName" [ngStyle]="{'background':colorObj[item.nodeId]?.color}"></span>{{item?.nodeName?.length
+                              <= 20 ? item?.nodeName : item?.nodeName?.slice(0,20)+'...'}} <span class="remove-node p-l-1"
+                                 (click)="removeNode(item.nodeId)" *ngIf="selectedProjectForIteration.length > 1">x</span>
+                           </div>
+                           <div class="p-d-flex" *ngIf="item?.additionalFilters?.length > 0">
+                              <div class="p-d-flex p-align-center" (mouseover)="showDropdown[item?.nodeId] = true"
+                                 (mouseleave)="showDropdown[item?.nodeId] = false">
+                                 <img src="../../../assets/img/ico-filter.svg" alt="Filter" class="p-mr-1" />
+                                 <span class="text-underline">{{item?.additionalFilters?.length + " Filters Selected"}}</span>
+                                 <div class="itemsDropdown border p-p-2" *ngIf="showDropdown[item?.nodeId]"
+                                    (mouseleave)="showDropdown[item?.nodeId] = false">
+                                    <div *ngFor="let key of item?.additionalFilters" class="p-d-flex p-align-center">
+                                       <img *ngIf="key?.labelName?.toLowerCase() !== 'sprint'"
+                                          src="../../../assets/img/ico-square.svg" [alt]="key?.labelName" class="p-mr-1" />
+                                       <img *ngIf="key?.labelName?.toLowerCase() === 'sprint'"
+                                          src="../../../assets/img/arrow-right.svg" alt="sprint" class="p-mr-1" />
+                                       <div class="nodeName p-mr-2">{{key?.nodeName}}</div>
+                                       <div class="btn-remove" (click)="removeItem(key?.labelName, key?.nodeId)">x</div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </li>
+                  </ng-container>
+               </ul>
+            </span>
          </div>
          <div class="p-d-flex p-align-center">
+
+            <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
+               <div class="p-d-flex p-align-center p-jc-end">
+                  <img *ngIf="selectedProjectLastSyncStatus === 'SUCCESS'" src="../../../assets/img/icon-success.svg" alt="Success" class="p-mr-1"/>
+                  <img *ngIf="selectedProjectLastSyncStatus === 'NA' && !lastSyncData?.fetchSuccessful" src="../../../assets/img/icon-time.svg" alt="Time" class="p-mr-1" />
+                  <img *ngIf="selectedProjectLastSyncStatus === 'FAILURE'" src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />
+                  <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
+                     Last Sync
+                  </h4>
+
+               </div>
+               <p class="last-sync-date p-m-0 p-text-right">
+                  {{selectedProjectLastSyncStatus != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
+               </p>
+            </div>
+
             <div class="p-mr-2" *ngIf="this.selectedSprint?.['sprintState']?.toLowerCase() === 'active' && !isGuest && selectedTab?.toLowerCase() === 'iteration'">
                <span class="refresh-state p-p-2" (click)="displayModal = true"
                *ngIf=" (lastSyncData | json) == '{}' || lastSyncData.errorInFetch">
@@ -488,7 +520,7 @@
 </p-dialog>
 <p-dialog header="Access Denied" [(visible)]="displayMessage" [modal]="true">
    <p>
-      Sorry! You do not have access to this project in KnowHOW. 
+      Sorry! You do not have access to this project in KnowHOW.
       Click <a class="link" routerLink="/dashboard/Config/Profile/RaiseRequest" (click)="displayMessage = false">here</a> to request for project access.
    </p>
 </p-dialog>

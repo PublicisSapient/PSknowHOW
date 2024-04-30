@@ -64,6 +64,8 @@ public class OnlineAdapter implements AzureAdapter {
 	private ProcessorAzureRestClient client;
 
 	private AzureServer azureServerObj;
+	
+	private static JSONObject workItemTypeJson = new JSONObject();
 
 	public OnlineAdapter() {
 	}
@@ -185,10 +187,10 @@ public class OnlineAdapter implements AzureAdapter {
 		if (client == null) {
 			log.warn(MSG_AZURE_CLIENT_SETUP_FAILED);
 		} else {
-
+			
 			try {
-				issueType = parseWorkItemTypes(client.getMetadataJson(azureServerObj,
-						azureProcessorConfig.getApiWorkItemTypesEndPoint(), false));
+				workItemTypeJson = getWorkItemTypeJson();
+				issueType = parseWorkItemTypes(workItemTypeJson);
 
 			} catch (RestClientException rce) {
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
@@ -196,6 +198,11 @@ public class OnlineAdapter implements AzureAdapter {
 			}
 		}
 		return issueType;
+	}
+
+	private JSONObject getWorkItemTypeJson() {
+		return client.getMetadataJson(azureServerObj,
+				azureProcessorConfig.getApiWorkItemTypesEndPoint(), false);
 	}
 
 	/**
@@ -278,8 +285,7 @@ public class OnlineAdapter implements AzureAdapter {
 			log.warn(MSG_AZURE_CLIENT_SETUP_FAILED);
 		} else {
 			try {
-				status = parseStatus(
-						client.getMetadataJson(azureServerObj, azureProcessorConfig.getApiStatusEndPoint(), false));
+				status = parseStatus(workItemTypeJson);
 
 			} catch (RestClientException rce) {
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
@@ -292,18 +298,22 @@ public class OnlineAdapter implements AzureAdapter {
 	/**
 	 * @return parsed status list
 	 */
-	private List<Status> parseStatus(JSONObject statusJsonObject) {
+	private List<Status> parseStatus(JSONObject workItemTypeJson) {
 		List<Status> statusList = null;
 
-		if (statusJsonObject != null) {
+		if (workItemTypeJson != null) {
 			statusList = Lists.newArrayList();
-			JSONArray jsonArray = (JSONArray) statusJsonObject.get(AzureConstants.STATES);
-			for (int i = 0; i < jsonArray.size(); i++) {
-				JSONObject innerObject = (JSONObject) jsonArray.get(i);
-				Status field = new Status(null, 0L, innerObject.get(AzureConstants.NAME).toString(),
-						innerObject.get(AzureConstants.CATEGORY).toString(), null);
-				statusList.add(field);
+			JSONArray valueArray = (JSONArray) workItemTypeJson.get(AzureConstants.VALUE);
+			for (int i = 0; i < valueArray.size(); i++) {
+				JSONObject statusJsonObject = (JSONObject) valueArray.get(i);
+				JSONArray jsonArray = (JSONArray) statusJsonObject.get(AzureConstants.STATES);
+				for (int j = 0; j < jsonArray.size(); j++) {
+					JSONObject innerObject = (JSONObject) jsonArray.get(j);
+					Status field = new Status(null, 0L, innerObject.get(AzureConstants.NAME).toString(),
+							innerObject.get(AzureConstants.CATEGORY).toString(), null);
+					statusList.add(field);
 
+				}
 			}
 		}
 
