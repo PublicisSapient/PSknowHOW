@@ -50,7 +50,7 @@
                     <ng-template pTemplate="body" let-item>
                         <tr>
                             <td>{{ item.kpiName }}</td>
-                            <td>{{ "M"+item.maturity }}</td>
+                            <td [ngClass]="{'m1': item.maturity == 1, 'm2': item.maturity}">{{ "M"+item.maturity }}</td>
                             <td>{{ item.recommendationSummary }}</td>
                             <td>{{ item.recommendationDetails }}</td>
                         </tr>
