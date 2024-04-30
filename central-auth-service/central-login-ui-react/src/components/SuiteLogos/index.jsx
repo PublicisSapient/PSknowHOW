@@ -4,6 +4,7 @@ import BgItem from "../../components/BgItem";
 const bg = ['KnowHOWGroup', 'RetrosGroup', 'APGroup'];
 
 const SuiteLogos = () => {
+    console.log("REACT_APP_SPEED_SUITE", process.env['REACT_APP_SPEED_SUITE'], typeof process.env['REACT_APP_SPEED_SUITE']);
     const isSpeedSuite = process.env['REACT_APP_SPEED_SUITE'] === 'true' ? true : false;
     
     return (
