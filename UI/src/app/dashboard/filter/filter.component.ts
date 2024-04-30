@@ -723,6 +723,8 @@ this.resetAddtionalFIlters();
                 }
                 if(Object.keys(this.additionalFiltersDdn)[i] != 'sprint' && selectedAdditionalFilter?.length > 0){
                   this.isAdditionalFilter = true;
+                }else{
+                  this.isAdditionalFilter = false;
                 }
               }else{
                 this.isAdditionalFilter = false;
