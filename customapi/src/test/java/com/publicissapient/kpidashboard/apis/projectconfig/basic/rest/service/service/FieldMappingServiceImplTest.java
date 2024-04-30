@@ -599,7 +599,6 @@ public class FieldMappingServiceImplTest {
 		when(processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigIdIn(Mockito.any(String.class), any()))
 						.thenReturn(Arrays.asList(createProcessorExecutionTraceLog()));
-		when(authenticationService.getLoggedInUser()).thenReturn("currentUser");
 	}
 
 	private void mockRepositoriesForKanban() {
