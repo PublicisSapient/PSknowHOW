@@ -322,12 +322,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			// Map to store fieldName and corresponding object
 			Map<String, FieldMappingResponse> responseHashMap = new HashMap<>();
 			// Iterate over responses
-			for (FieldMappingResponse response : originalFieldMappingResponseList) {
-				responseHashMap.computeIfPresent(response.getFieldName(),
-						(k, existingResponse) -> (existingResponse.getPreviousValue() == null
-								&& response.getPreviousValue() != null) ? response : existingResponse);
-				responseHashMap.putIfAbsent(response.getFieldName(), response);
-			}
+			removeDuplicateFieldsFromResponse(originalFieldMappingResponseList, responseHashMap);
 			List<FieldMappingResponse> fieldMappingResponseList = new ArrayList<>(responseHashMap.values());
 			boolean cleanTraceLog = false;
 			for (FieldMappingResponse fieldMappingResponse : fieldMappingResponseList) {
@@ -361,6 +356,15 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				removeTraceLog(projectBasicConfig.getId());
 			cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 			clearCache();
+		}
+	}
+
+	private void removeDuplicateFieldsFromResponse(List<FieldMappingResponse> originalFieldMappingResponseList, Map<String, FieldMappingResponse> responseHashMap) {
+		for (FieldMappingResponse response : originalFieldMappingResponseList) {
+			responseHashMap.computeIfPresent(response.getFieldName(),
+					(k, existingResponse) -> (existingResponse.getPreviousValue() == null
+							&& response.getPreviousValue() != null) ? response : existingResponse);
+			responseHashMap.putIfAbsent(response.getFieldName(), response);
 		}
 	}
 
