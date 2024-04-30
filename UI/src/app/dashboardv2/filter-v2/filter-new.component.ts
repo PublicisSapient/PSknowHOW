@@ -66,9 +66,15 @@ export class FilterNewComponent implements OnInit {
                 ],
                 "counts": [
                   5,
+                  6,
                   7,
+                  8,
+                  9,
                   10,
+                  11,
                   12,
+                  13,
+                  14,
                   15
                 ]
               };
@@ -167,7 +173,7 @@ export class FilterNewComponent implements OnInit {
   }
 
   setColors(data) {
-    let colorsArr = ['#6079C5', '#A4F6A5', '#FBCF5F', '#9FECFF', '#FFB587', '#D48DEF']
+    let colorsArr = ['#6079C5', '#FFB587', '#D48DEF', '#A4F6A5', '#FBCF5F', '#9FECFF']
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
       if (data[i]?.nodeId) {

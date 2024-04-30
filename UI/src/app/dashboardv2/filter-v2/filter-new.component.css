@@ -242,7 +242,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 
 :host ::ng-deep .date-filter-ddn .p-dropdown-label {
     padding: 7px 5px;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .btn-apply {
