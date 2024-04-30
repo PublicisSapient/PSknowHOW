@@ -258,19 +258,19 @@ describe('AdvancedSettingsComponent', () => {
       data : [
         {
           processorName : 'Jira',
-          loader : true,
+          executionOngoing : true,
           errorMessage : "test"
         },
         {
           processorName : 'Github',
-          loader : true
+          executionOngoing : true
         }
       ]
     }
     component.processorsTracelogs = [
       {
         processorName : 'Jira',
-        loader : true,
+        executionOngoing : true,
         errorMessage : "test"
       }
     ]
@@ -285,19 +285,19 @@ describe('AdvancedSettingsComponent', () => {
       data : [
         {
           processorName : 'Jira',
-          loader : true,
+          executionOngoing : true,
           errorMessage : "test"
         },
         {
           processorName : 'Github',
-          loader : true
+          executionOngoing : true
         }
       ]
     }
     component.processorsTracelogs = [
       {
         processorName : 'Jira',
-        loader : true,
+        executionOngoing : true,
         errorMessage : "test"
       }
     ]
@@ -324,19 +324,19 @@ describe('AdvancedSettingsComponent', () => {
       data : [
         {
           processorName : 'Jira',
-          loader : true,
+          executionOngoing : true,
           errorMessage : "test"
         },
         {
           processorName : 'Github',
-          loader : true
+          executionOngoing : true
         }
       ]
     }
     component.processorsTracelogs = [
       {
         processorName : 'Jira',
-        loader : true,
+        executionOngoing : true,
         errorMessage : "test"
       }
     ]
@@ -362,11 +362,11 @@ describe('AdvancedSettingsComponent', () => {
       data : [
         {
           processorName : 'Jira',
-          loader : true
+          executionOngoing : true
         },
         {
           processorName : 'Github',
-          loader : true
+          executionOngoing : true
         }
       ]
     }
@@ -390,17 +390,48 @@ describe('AdvancedSettingsComponent', () => {
       data : [
         {
           processorName : 'Jira',
-          loader : true
+          executionOngoing : true
         },
         {
           processorName : 'Github',
-          loader : true
+          executionOngoing : true
+        }
+      ]
+    }
+    component.processorsTracelogs = [
+      {
+        processorName : 'Jira',
+        executionOngoing : true
+      },
+      {
+        processorName : 'Github',
+        executionOngoing : true
+      }
+    ]
+    const fakeProcessorsTracelog = {
+      success : true,
+      data :[
+        {
+          processorName : 'Jira',
+          executionOngoing : true
         }
       ]
     }
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(fakeProcessorsTracelog));
-    component.getProcessorsTraceLogsForProject(basicProjectConfigId);
-    tick();
+    const response = { success: true, data: [{ executionOngoing: true, errorMessage: null }] };
+    spyOn(httpService,'runProcessor').and.returnValue(of(response));
+     let jiraStatusContinuePulling = true;
+     const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: true }] };
+     const continueCall = spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
+       return of(mockProgressStatusResponse).pipe(
+         takeWhile(() => jiraStatusContinuePulling)
+       );
+     });
+     component.getProcessorsTraceLogsForProject(basicProjectConfigId);
+     tick(3000);
+     jiraStatusContinuePulling = false
+     discardPeriodicTasks()
+     expect(component.processorsTracelogs).toBeDefined();
     expect(component.processorsTracelogs.length).toEqual(fakeProcessorsTracelog.data.length);
   }));
 
@@ -572,14 +603,25 @@ describe('AdvancedSettingsComponent', () => {
       data : [
         {
           processorName : 'Jira',
-          loader : true
+          executionOngoing : true
         },
         {
           processorName : 'Github',
-          loader : true
+          executionOngoing : true
         }
       ]
     }
+    component.processorsTracelogs = [
+        {
+          processorName : 'Jira',
+          executionOngoing : true
+        },
+        {
+          processorName : 'Github',
+          executionOngoing : true
+        }
+      ]
+    
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(errResponse));
     const spy = spyOn(messageService, 'add')
     component.getProcessorsTraceLogsForProject(basicProjectConfigId);
@@ -605,12 +647,12 @@ describe('AdvancedSettingsComponent', () => {
       data : [
         {
           processorName : 'Jira',
-          loader : true,
+          executionOngoing : true,
           errorMessage : ''
         },
         {
           processorName : 'Github',
-          loader : true
+          executionOngoing : true
         }
       ]
     }
@@ -620,7 +662,7 @@ describe('AdvancedSettingsComponent', () => {
     component.processorsTracelogs = [
       {
         processorName : 'Jira',
-        loader : true,
+        executionOngoing : true,
         errorMessage : ''
       },
     ]
@@ -640,11 +682,11 @@ describe('AdvancedSettingsComponent', () => {
       data : [
         {
           processorName : 'Jira',
-          loader : true
+          executionOngoing : true
         },
         {
           processorName : 'Github',
-          loader : true
+          executionOngoing : true
         }
       ]
     }
