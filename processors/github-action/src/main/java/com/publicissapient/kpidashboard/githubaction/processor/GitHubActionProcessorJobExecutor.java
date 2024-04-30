@@ -40,6 +40,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -158,14 +159,15 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 
 					GitHubActionClient gitHubActionClient = gitHubActionClientFactory.getGitHubActionClient(jobType);
 					if (BUILD.equalsIgnoreCase(jobType)) {
-						count = processBuildJob(gitHubActionClient, gitHubActions, processor, processorExecutionTraceLog,
-								proBasicConfig);
+						count = processBuildJob(gitHubActionClient, gitHubActions, processor,
+								processorExecutionTraceLog, proBasicConfig);
 						MDC.put("totalUpdatedCount", String.valueOf(count));
 					} else {
 						processDeployJob(gitHubActionClient, gitHubActions, processor, proBasicConfig, deploymentJobs,
 								processorExecutionTraceLog);
 					}
 				} catch (RestClientException | FetchingBuildException exception) {
+					isClientException(gitHubActions, exception);
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -188,6 +190,20 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 		MDC.clear();
 		return executionStatus;
 
+	}
+
+	/**
+	 * to check for client exception and update the flag if related to connection
+	 * 
+	 * @param gitHubActions
+	 * @param exception
+	 */
+	private void isClientException(ProcessorToolConnection gitHubActions, Exception exception) {
+		if (exception instanceof HttpClientErrorException
+				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			processorToolConnectionService.updateBreakingConnection(gitHubActions, errMsg);
+		}
 	}
 
 	@Override

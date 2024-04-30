@@ -38,6 +38,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -394,6 +395,8 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 							processorExecutionTraceLogService.save(processorExecutionTraceLog);
 						}
 					} catch (FetchingCommitException exception) {
+						Throwable cause = exception.getCause();
+						isClientException(entry, cause);
 						executionStatus = false;
 						processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 						processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -419,6 +422,19 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 		MDC.put("executionStatus", String.valueOf(executionStatus));
 		MDC.clear();
 		return executionStatus;
+	}
+
+	/**
+	 * to check client exception
+	 * 
+	 * @param entry
+	 * @param cause
+	 */
+	private void isClientException(ProcessorToolConnection entry, Throwable cause) {
+		if (cause != null && ((HttpClientErrorException) cause).getStatusCode().is4xxClientError()) {
+			String errMsg = ((HttpClientErrorException) cause).getStatusCode().toString();
+			processorToolConnectionService.updateBreakingConnection(entry, errMsg);
+		}
 	}
 
 	@Override

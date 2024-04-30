@@ -37,6 +37,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -214,6 +215,8 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 					processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				} catch (FetchingCommitException exception) {
+					Throwable cause = exception.getCause();
+					isClientException(tool, cause);
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -244,6 +247,19 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 		MDC.clear();
 		return executionStatus;
 	}
+
+	/**
+	 *
+	 * @param tool
+	 * @param cause
+	 */
+	private void isClientException(ProcessorToolConnection tool, Throwable cause) {
+		if (cause != null && ((HttpClientErrorException) cause).getStatusCode().is4xxClientError()) {
+			String errMsg = ((HttpClientErrorException) cause).getStatusCode().toString();
+			processorToolConnectionService.updateBreakingConnection(tool, errMsg);
+		}
+	}
+
 	@Override
 	public boolean executeSprint(String sprintId) {
 		return false;

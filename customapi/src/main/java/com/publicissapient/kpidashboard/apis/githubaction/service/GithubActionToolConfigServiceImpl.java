@@ -14,9 +14,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.githubaction.model.GithubActionWorkflowsDTO;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -43,6 +45,8 @@ public class GithubActionToolConfigServiceImpl {
 	private AesEncryptionService aesEncryptionService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private ConnectionService connectionService;
 
 	public List<GithubActionWorkflowsDTO> getGitHubWorkFlowList(String connectionId, String repoName) {
 
@@ -85,9 +89,24 @@ public class GithubActionToolConfigServiceImpl {
 				}
 
 			} catch (Exception exception) {
+				isClientException(connection, exception);
 				log.error("Error while fetching getJenkinsJobNameList from {}:  {}", url, exception.getMessage());
 			}
 		}
 		return responseDTOList;
+	}
+
+	/**
+	 * 
+	 * @param connection
+	 * @param exception
+	 */
+	private void isClientException(Connection connection, Exception exception) {
+		if (exception instanceof HttpClientErrorException
+				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			connectionService.updateBreakingConnection(connection, errMsg);
+
+		}
 	}
 }

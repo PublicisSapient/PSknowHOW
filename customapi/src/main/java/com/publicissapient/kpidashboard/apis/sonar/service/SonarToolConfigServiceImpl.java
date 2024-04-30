@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
@@ -24,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.sonar.utiils.SonarAPIUtils;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -177,8 +177,6 @@ public class SonarToolConfigServiceImpl {
 			} while (hasNextPage(paging));
 
 		} catch (Exception exception) {
-			String errMsg = ((HttpClientErrorException.Unauthorized) exception).getStatusCode().toString();
-			connectionService.updateBreakingConnection(connection, errMsg);
 			log.error("Error while fetching projects {}", exception.getMessage());
 		}
 
@@ -203,12 +201,12 @@ public class SonarToolConfigServiceImpl {
 					new StringBuilder(baseUrl).append(RESOURCE_CLOUD_PROJECT_ENDPOINT).toString(), organizationKey,
 					nextPageIndex, paging.getPageSize());
 			HttpEntity<?> httpEntity = createHeaders(connection);
-			response = searchProjects(sonarCloudUrl, httpEntity);
+			response = searchProjects(sonarCloudUrl, httpEntity, connection);
 		} else {
 			String sonarUrl = String.format(new StringBuilder(baseUrl).append(RESOURCE_PROJECT_ENDPOINT).toString(),
 					nextPageIndex, paging.getPageSize());
 			HttpEntity<?> httpEntity = createHeaders(connection);
-			response = searchProjects(sonarUrl, httpEntity);
+			response = searchProjects(sonarUrl, httpEntity, connection);
 		}
 		return response;
 	}
@@ -240,9 +238,10 @@ public class SonarToolConfigServiceImpl {
 	 *
 	 * @param sonarUrl
 	 * @param httpEntity
+	 * @param connection
 	 * @return
 	 */
-	private SearchProjectsResponse searchProjects(String sonarUrl, HttpEntity<?> httpEntity) {
+	private SearchProjectsResponse searchProjects(String sonarUrl, HttpEntity<?> httpEntity, Connection connection) {
 
 		SearchProjectsResponse searchProjectsResponse = null;
 		try {
@@ -254,11 +253,25 @@ public class SonarToolConfigServiceImpl {
 				log.error("Error while fetching projects from {}. with status {}", sonarUrl, statusCode);
 			}
 		} catch (RestClientException exception) {
+			isClientException(connection, exception);
 			log.error("Error while fetching projects from {}:  {}", sonarUrl, exception.getMessage());
 		} catch (JsonProcessingException e) {
 			log.error("Error while fetching projects from {}:  {}", sonarUrl, e.getMessage());
 		}
 		return searchProjectsResponse;
+	}
+
+	/**
+	 * 
+	 * @param connection
+	 * @param exception
+	 */
+	private void isClientException(Connection connection, RestClientException exception) {
+		if (exception instanceof HttpClientErrorException
+				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			connectionService.updateBreakingConnection(connection, errMsg);
+		}
 	}
 
 	public List<String> getSonarProjectBranchList(Connection connection, String projectKey) {

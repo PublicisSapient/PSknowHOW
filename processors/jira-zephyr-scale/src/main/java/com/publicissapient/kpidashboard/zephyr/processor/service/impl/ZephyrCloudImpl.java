@@ -22,6 +22,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -136,12 +137,29 @@ public class ZephyrCloudImpl implements ZephyrClient {
 					}
 				}
 			} catch (Exception exception) {
+				isClientException(toolInfo, exception);
 				log.error("Error while fetching projects from {}", exception.getMessage());
 				throw new RestClientException("Error while fetching projects from {}", exception);
 			}
 
 		}
 		return testCaseList;
+	}
+
+	/**
+	 * to check client exception
+	 * 
+	 * @param toolInfo
+	 *            toolInfo
+	 * @param exception
+	 *            exception
+	 */
+	private void isClientException(ProcessorToolConnection toolInfo, Exception exception) {
+		if (exception instanceof HttpClientErrorException
+				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			processorToolConnectionService.updateBreakingConnection(toolInfo, errMsg);
+		}
 	}
 
 	/**

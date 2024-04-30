@@ -33,6 +33,7 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -191,6 +192,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
 				} catch (RestClientException exception) {
+					isClientException(teamcityServer, exception);
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -210,6 +212,22 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		log.info("Processor execution finished");
 		MDC.clear();
 		return executionStatus;
+	}
+
+	/**
+	 * to check client exception
+	 * 
+	 * @param teamcityServer
+	 *            teamcityServer
+	 * @param exception
+	 *            exception
+	 */
+	private void isClientException(ProcessorToolConnection teamcityServer, RestClientException exception) {
+		if (exception instanceof HttpClientErrorException
+				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			processorToolConnectionService.updateBreakingConnection(teamcityServer, errMsg);
+		}
 	}
 
 	@Override

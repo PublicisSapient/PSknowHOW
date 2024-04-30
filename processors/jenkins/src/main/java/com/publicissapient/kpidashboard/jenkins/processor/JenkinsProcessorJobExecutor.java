@@ -39,6 +39,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -187,6 +188,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 						MDC.put("totalUpdatedCount", String.valueOf(count));
 					}
 				} catch (RestClientException exception) {
+					isClientException(jenkinsServer, exception);
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -207,6 +209,21 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		MDC.clear();
 		return executionStatus;
 	}
+
+	/**
+	 * to check the client exception
+	 * 
+	 * @param jenkinsServer
+	 * @param exception
+	 */
+	private void isClientException(ProcessorToolConnection jenkinsServer, RestClientException exception) {
+		if (exception instanceof HttpClientErrorException
+				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			processorToolConnectionService.updateBreakingConnection(jenkinsServer, errMsg);
+		}
+	}
+
 	@Override
 	public boolean executeSprint(String sprintId) {
 		return false;

@@ -827,17 +827,26 @@ public class ConnectionServiceImpl implements ConnectionService {
 		return projectInUseList;
 	}
 
+	/**
+	 * update breaking connection flag
+	 * 
+	 * @param connection
+	 * @param conErrorMsg
+	 */
 	@Override
 	public void updateBreakingConnection(Connection connection, String conErrorMsg) {
 
-		Optional<Connection> existingConnOpt = connectionRepository.findById(connection.getId());
-		if (existingConnOpt.isPresent()) {
-			Connection existingConnection = existingConnOpt.get();
-			existingConnection.setBrokenConnection(true);
-			existingConnection.setConnectionErrorMsg(conErrorMsg);
-			connectionRepository.save(existingConnection);
-		}
+		if (connection != null) {
 
+			Optional<Connection> existingConnOpt = connectionRepository.findById(connection.getId());
+			if (existingConnOpt.isPresent()) {
+				Connection existingConnection = existingConnOpt.get();
+				existingConnection.setBrokenConnection(true);
+				existingConnection.setConnectionErrorMsg(conErrorMsg);
+				connectionRepository.save(existingConnection);
+			}
+
+		}
 	}
 
 }

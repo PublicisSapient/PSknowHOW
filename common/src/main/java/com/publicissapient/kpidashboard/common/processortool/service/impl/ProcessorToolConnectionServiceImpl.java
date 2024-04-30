@@ -184,4 +184,25 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 		return processorToolConnection;
 	}
 
+	/**
+	 * 
+	 * @param connection
+	 * @param conErrorMsg
+	 */
+	@Override
+	public void updateBreakingConnection(ProcessorToolConnection connection, String conErrorMsg) {
+
+		if (connection != null) {
+
+			Optional<Connection> existingConnOpt = connectionRepository.findById(connection.getConnectionId());
+			if (existingConnOpt.isPresent()) {
+				Connection existingConnection = existingConnOpt.get();
+				existingConnection.setBrokenConnection(true);
+				existingConnection.setConnectionErrorMsg(conErrorMsg);
+				connectionRepository.save(existingConnection);
+			}
+
+		}
+	}
+
 }
