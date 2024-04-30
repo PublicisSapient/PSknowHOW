@@ -66,6 +66,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.azure.AzureStateCategory;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
@@ -74,6 +75,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.repository.azure.AzureStateCategoryRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
@@ -102,6 +104,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 	private static final String ISSUES = "issues";
 	private static final String CLOSE_STATUS = "close status";
 	private static final String STATUS_CATEGORY = "status category";
+	private static final String STATE_CATEGORY = "state category";
 	public static final String NOT_COMPLETED_JIRAISSUE = "notCompletedJiraIssue";
 	public static final String ASSIGNEE_DETAILS = "AssigneeDetails";
 	public static final String REMAINING_CAPACITY = "Remaining Capacity";
@@ -113,10 +116,14 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 	private static final String HISTORY_ISSUES = "historyIssue";
 	private static final String EPICS = "epics";
 	private static final String FILTER_BUTTON = "button";
-	private static final String FILTER_INPROGRESS_SCR2 = "In Progress";
+	private static final String FILTER_INPROGRESS_SCR2 = "In Progress";// FOR BOTH JIRA AND AZURE
 	private static final String FILTER_CLOSED_SCR2 = "Done";
 	private static final String FILTER_OPEN_SCR2 = "Open";
 	private static final String FILTER_ONHOLD_SCR2 = "On Hold";
+	private static final String FILTER_COMPLETED_SCR2 = "Completed"; // for azure
+	private static final String FILTER_RESOLVED_SCR2 = "Resolved"; // for azure
+	private static final String FILTER_PROPOSED_SCR2 = "Proposed"; // for azure
+	private static final String FILTER_REMOVED_SCR2 = "Removed"; // for azure
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -135,6 +142,11 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 
 	@Autowired
 	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+
+	@Autowired
+	private AzureStateCategoryRepository azureStateCategoryRepository;
+
+	private String tool;
 
 	/**
 	 * {@inheritDoc}
@@ -156,6 +168,10 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 				.getBasicProjectConfigId();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 		List<UserWiseCardDetail> userWiseCardDetails = new ArrayList<>();
+		tool = CollectionUtils
+				.isEmpty(configHelperService.getToolItemMap().get(basicProjectConfigId).get(Constant.TOOL_AZURE))
+						? Constant.TOOL_JIRA
+						: Constant.TOOL_AZURE;
 
 		// fetch from db
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNode, null, null, kpiRequest);
@@ -164,7 +180,14 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 			List<JiraIssue> notCompletedJiraIssue = (List<JiraIssue>) resultMap.get(NOT_COMPLETED_JIRAISSUE);
 			CapacityKpiData capacityKpiData = (CapacityKpiData) resultMap.get(ASSIGNEE_DETAILS);
 			List<JiraIssue> totalIssueList = new ArrayList<>((Set<JiraIssue>) resultMap.get(ISSUES));
-			JiraIssueReleaseStatus statusCategory = (JiraIssueReleaseStatus) resultMap.get(STATUS_CATEGORY);
+			JiraIssueReleaseStatus statusCategory = null;
+			AzureStateCategory azureStateCategory = null;
+			if (tool.equalsIgnoreCase(Constant.TOOL_AZURE)) {
+				azureStateCategory = (AzureStateCategory) resultMap.get(STATE_CATEGORY);
+			} else {
+				statusCategory = (JiraIssueReleaseStatus) resultMap.get(STATUS_CATEGORY);
+			}
+
 			resultMap.put(CLOSE_STATUS, getClosedStatus(fieldMapping, sprintDetails));
 			Map<String, Set<String>> parentChildRelation = findLinkedSubTasks(totalIssueList, fieldMapping);
 
@@ -193,11 +216,11 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 					estimationCriteria);
 
 			// Calculate Delay
-			List<IterationPotentialDelay> iterationPotentialDelayList = CalculatePCDHelper.calculatePotentialDelay(
-					sprintDetails, notCompletedJiraIssue, fieldMapping.getInProgress154());
+			List<IterationPotentialDelay> iterationPotentialDelayList = CalculatePCDHelper
+					.calculatePotentialDelay(sprintDetails, notCompletedJiraIssue, fieldMapping.getInProgress154());
 
-			Map<String, IterationPotentialDelay> issueWiseDelay = CalculatePCDHelper.checkMaxDelayAssigneeWise(
-					iterationPotentialDelayList, fieldMapping.getInProgress154());
+			Map<String, IterationPotentialDelay> issueWiseDelay = CalculatePCDHelper
+					.checkMaxDelayAssigneeWise(iterationPotentialDelayList, fieldMapping.getInProgress154());
 			calculateAssigneeWiseMaxDelay(issueWiseDelay, assigneeWiseMaxDelay);
 
 			// Calculate Remaining Capacity
@@ -237,7 +260,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 				userWiseCardDetails.add(userWiseCardDetail);
 			}
 			// set filter on Second Screen
-			setFilters(kpiElement, fieldMapping, allRoles, statusCategory);
+			setFilters(kpiElement, fieldMapping, allRoles, statusCategory, azureStateCategory);
 			kpiElement.setIssueData(new HashSet<>(mapOfModalObject.values()));
 			userWiseCardDetails.sort(Comparator.comparing(UserWiseCardDetail::getAssigneeName));
 			kpiElement.setModalHeads(KPIExcelColumn.DAILY_STANDUP_VIEW.getColumns());
@@ -289,8 +312,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 							.getFilteredJiraIssue(notCompletedIssues, new ArrayList<>(totalIssueList));
 
 					List<JiraIssueCustomHistory> issueHistoryList = IterationKpiHelper.getFilteredJiraIssueHistory(
-							totalIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
-							totalHistoryList);
+							totalIssueList.stream().map(JiraIssue::getNumber).toList(), totalHistoryList);
 
 					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())) {
 						List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
@@ -299,7 +321,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 					}
 
 					Set<JiraIssue> epics = jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(
-							totalIssueList.stream().map(JiraIssue::getEpicLinked).collect(Collectors.toList()),
+							totalIssueList.stream().map(JiraIssue::getEpicLinked).toList(),
 							leafNode.getProjectFilter().getBasicProjectConfigId().toString(),
 							NormalizedJira.ISSUE_TYPE.getValue());
 
@@ -317,8 +339,13 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 					resultListMap.put(ASSIGNEE_DETAILS, capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(
 							sprintDetails.getSprintID(), sprintDetails.getBasicProjectConfigId()));
 					// release status category for status filters
-					resultListMap.put(STATUS_CATEGORY, jiraIssueReleaseStatusRepository
-							.findByBasicProjectConfigId(basicProjectConfigId.toString()));
+					if (tool.equalsIgnoreCase(Constant.TOOL_AZURE)) {
+						resultListMap.put(STATE_CATEGORY, azureStateCategoryRepository
+								.findByBasicProjectConfigId(basicProjectConfigId.toString()));
+					} else {
+						resultListMap.put(STATUS_CATEGORY, jiraIssueReleaseStatusRepository
+								.findByBasicProjectConfigId(basicProjectConfigId.toString()));
+					}
 
 				}
 			}
@@ -473,12 +500,12 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 								.equalsIgnoreCase(jiraIssue.getNumber()))
 						.findFirst().orElse(new JiraIssueCustomHistory());
 
-				List<JiraHistoryChangeLog> inSprintStatusLogs = IterationKpiHelper.getInSprintStatusLogs(
-						issueHistory.getStatusUpdationLog(), sprintStartDate, sprintEndDate);
-				List<JiraHistoryChangeLog> inSprintAssigneeLogs = IterationKpiHelper.getInSprintStatusLogs(
-						issueHistory.getAssigneeUpdationLog(), sprintStartDate, sprintEndDate);
-				List<JiraHistoryChangeLog> inSprintWorkLogs = IterationKpiHelper.getInSprintStatusLogs(issueHistory.getWorkLog(),
-						sprintStartDate, sprintEndDate);
+				List<JiraHistoryChangeLog> inSprintStatusLogs = IterationKpiHelper
+						.getInSprintStatusLogs(issueHistory.getStatusUpdationLog(), sprintStartDate, sprintEndDate);
+				List<JiraHistoryChangeLog> inSprintAssigneeLogs = IterationKpiHelper
+						.getInSprintStatusLogs(issueHistory.getAssigneeUpdationLog(), sprintStartDate, sprintEndDate);
+				List<JiraHistoryChangeLog> inSprintWorkLogs = IterationKpiHelper
+						.getInSprintStatusLogs(issueHistory.getWorkLog(), sprintStartDate, sprintEndDate);
 
 				IterationKpiModalValue iterationKpiModalValue = mapOfModalObject.get(jiraIssue.getNumber());
 				// getDevCompletion Date
@@ -645,13 +672,12 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		if (StringUtils.isNotEmpty(actualCompletionTime)) {
 			LocalDateTime endLocalTime = LocalDateTime.parse(actualCompletionTime);
 			historyLog = historyLog.stream().filter(log -> DateUtil.equalAndBeforTime(log.getUpdatedOn(), endLocalTime))
-					.collect(Collectors.toList());
+					.toList();
 		}
 		if (StringUtils.isNotEmpty(actualStartDateInTime)) {
 			LocalDateTime startLocalTime = LocalDateTime.parse(actualStartDateInTime);
 			historyLog = historyLog.stream()
-					.filter(log -> DateUtil.equalAndAfterTime(log.getUpdatedOn(), startLocalTime))
-					.collect(Collectors.toList());
+					.filter(log -> DateUtil.equalAndAfterTime(log.getUpdatedOn(), startLocalTime)).toList();
 		}
 		return createDateWiseLogs(historyLog);
 	}
@@ -721,57 +747,112 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 	 * filter Status on Second Screen
 	 */
 	private void setFilters(KpiElement kpiElement, FieldMapping fieldMapping, Set<String> allRoles,
-			JiraIssueReleaseStatus statusCategory) {
+			JiraIssueReleaseStatus statusCategory, AzureStateCategory azureStateCategory) {
 
 		List<Filter> firstScreenFilter = new ArrayList<>();
 		// Role Filter on First Screen
 		// Filters on Second Screen in the order on hold->inprogress->open->done
 		List<Filter> secondScreenFilters = new ArrayList<>();
-		List<String> values = allRoles.stream().sorted().collect(Collectors.toList());
+		List<String> values = allRoles.stream().sorted().toList();
 		Filter filter = new Filter("role", "singleSelect", values);
 		firstScreenFilter.add(filter);
 
 		if (ObjectUtils.isNotEmpty(statusCategory)) {
-			List<String> inProgressStatus = new ArrayList<>();
+			jiraSecondScreenFilter(fieldMapping, statusCategory, secondScreenFilters);
+		} else if (ObjectUtils.isNotEmpty(azureStateCategory)) {
+			azureSecondScreenFilter(fieldMapping, azureStateCategory, secondScreenFilters);
 
-			// On Hold Status configured
-			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraOnHoldStatusKPI154())) {
-				secondScreenFilters.add(new Filter(FILTER_ONHOLD_SCR2, fieldMapping.getJiraOnHoldStatusKPI154(),
-						FILTER_BUTTON, false, 3));
-			}
-			// In progress Filters
-			if (CollectionUtils.isNotEmpty(statusCategory.getInProgressList().values())) {
-				inProgressStatus = new ArrayList<>(statusCategory.getInProgressList().values());
-				secondScreenFilters.add(new Filter(FILTER_INPROGRESS_SCR2, inProgressStatus, FILTER_BUTTON, true, 1));
-			}
-
-			// Open Filters
-			Filter openFilter;
-			List<String> openStatus = new ArrayList<>(statusCategory.getToDoList().values());
-			if (CollectionUtils.isNotEmpty(fieldMapping.getStoryFirstStatusKPI154())) {
-				openStatus.addAll(fieldMapping.getStoryFirstStatusKPI154());
-			} else {
-				openStatus.addAll(Arrays.asList(fieldMapping.getStoryFirstStatus()));
-			}
-			openFilter = new Filter(FILTER_OPEN_SCR2, openStatus, FILTER_BUTTON, false, null);
-			secondScreenFilters.add(openFilter);
-
-			// closed filters
-			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusKPI154())) {
-				List<String> jiraIterationCompletionStatusKPI154 = fieldMapping
-						.getJiraIterationCompletionStatusKPI154();
-				inProgressStatus.removeAll(jiraIterationCompletionStatusKPI154);
-				secondScreenFilters.add(
-						new Filter(FILTER_CLOSED_SCR2, jiraIterationCompletionStatusKPI154, FILTER_BUTTON, true, 2));
-
-			} else if (CollectionUtils.isNotEmpty(statusCategory.getClosedList().values())) {
-				List<String> closedList = new ArrayList<>(statusCategory.getClosedList().values());
-				inProgressStatus.removeAll(closedList);
-				secondScreenFilters.add(new Filter(FILTER_CLOSED_SCR2, closedList, FILTER_BUTTON, true, 2));
-			}
 		}
 		kpiElement.setFilterData(firstScreenFilter);
 		kpiElement.setStandUpStatusFilter(secondScreenFilters);
+	}
+
+	private void jiraSecondScreenFilter(FieldMapping fieldMapping, JiraIssueReleaseStatus statusCategory,
+			List<Filter> secondScreenFilters) {
+		List<String> inProgressStatus = new ArrayList<>();
+
+		// On Hold Status configured
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraOnHoldStatusKPI154())) {
+			secondScreenFilters.add(
+					new Filter(FILTER_ONHOLD_SCR2, fieldMapping.getJiraOnHoldStatusKPI154(), FILTER_BUTTON, false, 3));
+		}
+		// In progress Filters
+		if (CollectionUtils.isNotEmpty(statusCategory.getInProgressList().values())) {
+			inProgressStatus = new ArrayList<>(statusCategory.getInProgressList().values());
+			secondScreenFilters.add(new Filter(FILTER_INPROGRESS_SCR2, inProgressStatus, FILTER_BUTTON, true, 1));
+		}
+
+		// Open Filters
+		Filter openFilter;
+		List<String> openStatus = new ArrayList<>(statusCategory.getToDoList().values());
+		if (CollectionUtils.isNotEmpty(fieldMapping.getStoryFirstStatusKPI154())) {
+			openStatus.addAll(fieldMapping.getStoryFirstStatusKPI154());
+		} else {
+			openStatus.addAll(Arrays.asList(fieldMapping.getStoryFirstStatus()));
+		}
+		openFilter = new Filter(FILTER_OPEN_SCR2, openStatus, FILTER_BUTTON, false, null);
+		secondScreenFilters.add(openFilter);
+
+		// closed filters
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusKPI154())) {
+			List<String> jiraIterationCompletionStatusKPI154 = fieldMapping.getJiraIterationCompletionStatusKPI154();
+			inProgressStatus.removeAll(jiraIterationCompletionStatusKPI154);
+			secondScreenFilters
+					.add(new Filter(FILTER_CLOSED_SCR2, jiraIterationCompletionStatusKPI154, FILTER_BUTTON, true, 2));
+
+		} else if (CollectionUtils.isNotEmpty(statusCategory.getClosedList().values())) {
+			List<String> closedList = new ArrayList<>(statusCategory.getClosedList().values());
+			inProgressStatus.removeAll(closedList);
+			secondScreenFilters.add(new Filter(FILTER_CLOSED_SCR2, closedList, FILTER_BUTTON, true, 2));
+		}
+	}
+
+	private void azureSecondScreenFilter(FieldMapping fieldMapping, AzureStateCategory azureStateCategory,
+			List<Filter> secondScreenFilters) {
+		List<String> inProgressStatus = new ArrayList<>();
+		// On Hold Status configured
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraOnHoldStatusKPI154())) {
+			secondScreenFilters.add(
+					new Filter(FILTER_ONHOLD_SCR2, fieldMapping.getJiraOnHoldStatusKPI154(), FILTER_BUTTON, false, 3));
+		}
+		// In progress Filters
+		if (CollectionUtils.isNotEmpty(azureStateCategory.getInProgressList())) {
+			inProgressStatus = new ArrayList<>(azureStateCategory.getInProgressList());
+			secondScreenFilters.add(new Filter(FILTER_INPROGRESS_SCR2, inProgressStatus, FILTER_BUTTON, true, 1));
+		}
+
+		// Open Filters
+		Filter openFilter;
+		List<String> openStatus = new ArrayList<>(azureStateCategory.getProposedList());
+		if (CollectionUtils.isNotEmpty(fieldMapping.getStoryFirstStatusKPI154())) {
+			openStatus.addAll(fieldMapping.getStoryFirstStatusKPI154());
+		} else {
+			openStatus.addAll(Arrays.asList(fieldMapping.getStoryFirstStatus()));
+		}
+		openFilter = new Filter(FILTER_PROPOSED_SCR2, openStatus, FILTER_BUTTON, false, null);
+		secondScreenFilters.add(openFilter);
+
+		// closed filters
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusKPI154())) {
+			List<String> jiraIterationCompletionStatusKPI154 = fieldMapping.getJiraIterationCompletionStatusKPI154();
+			inProgressStatus.removeAll(jiraIterationCompletionStatusKPI154);
+			secondScreenFilters.add(
+					new Filter(FILTER_COMPLETED_SCR2, jiraIterationCompletionStatusKPI154, FILTER_BUTTON, true, 2));
+
+		} else if (CollectionUtils.isNotEmpty(azureStateCategory.getCompletedList())) {
+			List<String> closedList = new ArrayList<>(azureStateCategory.getCompletedList());
+			inProgressStatus.removeAll(closedList);
+			secondScreenFilters.add(new Filter(FILTER_COMPLETED_SCR2, closedList, FILTER_BUTTON, true, 2));
+		}
+
+		if (CollectionUtils.isNotEmpty(azureStateCategory.getRemovedList())) {
+			secondScreenFilters.add(new Filter(FILTER_REMOVED_SCR2,
+					new ArrayList<>(azureStateCategory.getRemovedList()), FILTER_BUTTON, true, 2));
+		}
+		if (CollectionUtils.isNotEmpty(azureStateCategory.getResolvedList())) {
+			secondScreenFilters.add(new Filter(FILTER_RESOLVED_SCR2,
+					new ArrayList<>(azureStateCategory.getResolvedList()), FILTER_BUTTON, true, 2));
+		}
 	}
 
 	/**

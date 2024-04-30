@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
@@ -32,6 +33,8 @@ import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+
 @Component
 @Slf4j
 @JobScope
@@ -43,12 +46,11 @@ public class JiraIssueSprintJobListener implements JobExecutionListener {
 	@Autowired
 	JiraProcessorCacheEvictor processorCacheEvictor;
 
-	private String sprintId;
-
 	@Autowired
-	public JiraIssueSprintJobListener(@Value("#{jobParameters['sprintId']}") String sprintId) {
-		this.sprintId = sprintId;
-	}
+	JiraClientService jiraClientService;
+
+	@Value("#{jobParameters['sprintId']}")
+	private String sprintId;
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
@@ -82,6 +84,15 @@ public class JiraIssueSprintJobListener implements JobExecutionListener {
 		}
 		log.info("Saving sprint Trace Log for sprintId: {}", sprintId);
 		sprintTraceLogRepository.save(sprintTrace);
+		if (jiraClientService.isContainRestClient(sprintId)){
+			try {
+				jiraClientService.getRestClientMap(sprintId).close();
+			} catch (IOException e) {
+				throw new RuntimeException("Failed to close rest client",e);// NOSONAR
+			}
+			jiraClientService.removeRestClientMapClientForKey(sprintId);
+			jiraClientService.removeKerberosClientMapClientForKey(sprintId);
+		}
 
 	}
 }

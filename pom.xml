@@ -22,7 +22,7 @@
     <packaging>pom</packaging>
     <groupId>com.publicissapient.kpidashboard</groupId>
     <artifactId>Kpidashboard</artifactId>
-    <version>11.0.0-SNAPSHOT</version>
+    <version>9.1.0-SNAPSHOT</version>
 
     <properties>
         <docker.useConfigFile>false</docker.useConfigFile>
@@ -58,6 +58,7 @@
                 <module>processors/azure-pipeline</module>
                 <module>processors/azure-repo</module>
                 <module>processors/azure-boards</module>
+                <module>processors/argocd</module>
                 <module>kafka-consumers/notification-consumer</module>
             </modules>
             <build>
@@ -106,6 +107,7 @@
                 <module>processors/jenkins</module>
                 <module>processors/bamboo</module>
                 <module>processors/teamcity</module>
+                <module>processors/argocd</module>
             </modules>
             <build>
                 <plugins>
@@ -138,6 +140,7 @@
                                         <JENKINS_JAR_FILE>processors/jenkins/target/jenkins-processor-exec.jar</JENKINS_JAR_FILE>
                                         <BAMBOO_JAR_FILE>processors/bamboo/target/bamboo-processor-exec.jar</BAMBOO_JAR_FILE>
                                         <TEAMCITY_JAR_FILE>processors/teamcity/target/teamcity-processor-exec.jar</TEAMCITY_JAR_FILE>
+                                        <ARGOCD_JAR_FILE>processors/argocd/target/argocd-processor-exec.jar</ARGOCD_JAR_FILE>
                                     </buildArgs>
                                 </configuration>
                             </execution>
