@@ -1335,6 +1335,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
       checkLatestAndTrendValue(kpiData, item){
         let latest:string = '';
         let trend:string = '';
+        let unit = '';
         if(item?.value?.length > 0){
             let tempVal;
             if(item?.value[item?.value?.length - 1]?.dataValue){
@@ -1342,7 +1343,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             }else{
                 tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
             }
-            var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
+            unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
             latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
         }
         if(item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
