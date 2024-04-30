@@ -37,17 +37,23 @@ services:
       - /etc/hosts:/etc/hosts
     environment:
       - CONFIG_LOCATION=file:/app/properties/customapi.properties
-      - forgotPassword.uiHost=<Your-Public-IP>or<Your-DNS>
-      - corsFilterValidOrigin=<Your-Public-IP>,localhost,<Your-DNS>
-      - versionnumber=7.0.0
+      - forgotPassword.uiHost=<Your-DNS>
+      - corsFilterValidOrigin=<Your-DNS>
+      - versionnumber=<Current version installed>
       - JAVA_OPTS-XX:+HeapDumpOnOutOfMemoryError
       - spring.data.mongodb.uri=mongodb://<DB USER NAME>:<DB PASSWORD>@mongodb:27017/kpidashboard
       # If your DB is hosted on atlas pass the Connection string in spring.data.mongodb.atlas.uri and mongodb.connection.atlas to "true"
-      - spring.data.mongodb.atlas.uri=mongodb+srv://<USER NAME>:<TOKEN>@<CLUSTER URL>.mongodb.net/kpidashboard
+      #- spring.data.mongodb.atlas.uri=mongodb+srv://<USER NAME>:<TOKEN>@<CLUSTER URL>.mongodb.net/kpidashboard
       # mongodb.connection.atlas Toggle to determine whether to use local MongoDB or MongoDB Atlas
       - mongodb.connection.atlas=false
-      - aesEncryptionKey=<Your AES Encryption KEY here>
-      - auth.secret=<Your Auth Secret>
+      - isRepoToolEnable=true
+      - aesEncryptionKey=
+      - auth.secret=
+      - auth.subDomainCookie=
+      - auth.domain=
+      - auth.centralAuthBaseURL=
+      - exposed_api_key=
+      - auth.resourceAPIKey=
     links:
       - MongoDB:mongodb
     networks:
