@@ -1428,7 +1428,7 @@ this.resetAddtionalFIlters();
   removeItem(hierarchyLevelId, nodeId) {
     const hierarchy = this.filterForm.get(hierarchyLevelId);
     if (typeof hierarchy?.value === 'object' && Object.keys(hierarchy?.value)?.length > 0) {
-      this.filterForm.get(hierarchyLevelId).get(nodeId).setValue(false);
+      this.filterForm.get(hierarchyLevelId)?.['controls']?.[nodeId].setValue(false);
     } else {
       this.filterForm.get(hierarchyLevelId).setValue('');
     }
