@@ -19,7 +19,7 @@ data:
   forgotPassword.uiHost: "stage-psknowhow.tools.publicis.sapient.com"
   corsFilterValidOrigin: "stage-psknowhow.tools.publicis.sapient.com"
   isRepoToolEnable: "true"
-  versionnumber: "9.0.0-SNAPSHOT"
+  versionnumber: "9.0.0"
   analytics.switch: "true"
 
   # UI Config
@@ -30,6 +30,7 @@ data:
   RETROS_URL: "https://stage-retrospective.tools.publicis.sapient.com"
   AUTHENTICATION_SERVICE: "true"
   ENVIRONMENT: "prod"
+  SPEED_SUITE: "true"
 
   #kafka-consumer-config
   spring.kafka.consumer.bootstrap-servers: kafka-0.kafka-cluster.stage-knowhow.svc.cluster.local:9092

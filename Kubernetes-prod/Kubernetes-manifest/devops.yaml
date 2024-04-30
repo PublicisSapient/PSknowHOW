@@ -24,7 +24,7 @@ spec:
       #   command: ['sh', '-c', "until nslookup customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for customapi; sleep 2; done"]
       containers:
       - name: devops-processor
-        image: speedtools.azurecr.io/knowhow-devops-processor:9.0.0-SNAPSHOT
+        image: speedtools.azurecr.io/knowhow-devops-processor:9.0.0
         imagePullPolicy: Always
         env:
             - name: spring.data.mongodb.uri
