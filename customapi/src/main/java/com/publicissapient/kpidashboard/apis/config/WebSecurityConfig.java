@@ -110,7 +110,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         setAuthenticationProvider(authenticationManagerBuilder);
         http.headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable));
-        http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(authz -> authz
                         .requestMatchers("/appinfo").permitAll().requestMatchers("/registerUser")
                         .permitAll().requestMatchers("/changePassword").permitAll().requestMatchers("/login/captcha").permitAll()

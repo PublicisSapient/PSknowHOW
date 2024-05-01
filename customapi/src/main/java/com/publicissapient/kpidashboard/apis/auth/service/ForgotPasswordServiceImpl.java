@@ -141,7 +141,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 */
 	@Override
 	public Authentication resetPassword(ResetPasswordRequest resetPasswordRequest) throws ApplicationException {
-		log.info("ForgotPasswordServiceImpl: Reset token is {}", resetPasswordRequest.getResetToken());
 		ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenRepository
 				.findByToken(resetPasswordRequest.getResetToken());
 		ResetPasswordTokenStatusEnum tokenStatus = checkTokenValidity(forgotPasswordToken);
@@ -156,7 +155,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				return authentication;
 			}
 		} else {
-			log.error("Token is {}", resetPasswordRequest.getResetToken());
 			throw new ApplicationException("Token is " + tokenStatus.name(), ApplicationException.BAD_DATA);
 		}
 	}
