@@ -40,3 +40,34 @@
 :host ::ng-deep  .p-datatable .p-datatable-thead > tr.table-heading  > th{
     background: #eee;
 }
+.maturity-level{
+    border: 1px solid #aaa;
+    padding: 3px 8px;
+    border-radius: 3px;
+}
+.maturity-indicator{
+    width: 10px;
+    height: 10px;
+    background: #FE414D;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 5px 0 0;
+}
+.m1{
+
+}
+.m2 .maturity-indicator{
+    background: #FBCF5F;
+}
+.m3 .maturity-indicator{
+    background: #F68605;
+}
+.m4 .maturity-indicator{
+    background: #15BA40;
+}   
+.m5 .maturity-indicator{
+    background: #D38EEC;
+}
+:host ::ng-deep .p-tabview .p-tabview-nav li .p-tabview-nav-link{
+    background: #DF97B1;
+}
