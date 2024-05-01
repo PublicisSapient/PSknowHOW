@@ -70,7 +70,7 @@
     border-radius: 2px;
 }
 
-::ng-deep .pi{
+:host ::ng-deep .pi{
     font-size: 9px;
 }
 

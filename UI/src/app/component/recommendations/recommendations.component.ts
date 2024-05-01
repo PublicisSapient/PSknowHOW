@@ -17,6 +17,7 @@ export class RecommendationsComponent implements OnInit {
   tabs: Array<string> = []
   tabsContent: object = {};
   maturities: Array<string> = [];
+  filteredMaturity;
 
   constructor(private httpService: HttpService) { }
 
@@ -52,12 +53,39 @@ export class RecommendationsComponent implements OnInit {
               "recommendationDetails": "The team did a great job during the last sprints!",
               "recommendationType": "Good Practices",
               "filter": "Overall"
+          },
+          {
+            "kpiId": "kpi11",
+            "kpiName": "KPI name for kpi11",
+            "maturity": 5,
+            "recommendationSummary": "Nice job!",
+            "recommendationDetails": "The team did a great job during the last sprints!",
+            "recommendationType": "Good Practices",
+            "filter": "Overall"
+          },
+          {
+            "kpiId": "kpi22",
+            "kpiName": "KPI name for kpi22",
+            "maturity": 4,
+            "recommendationSummary": "Nice job!",
+            "recommendationDetails": "The team did a great job during the last sprints!",
+            "recommendationType": "Good Practices",
+            "filter": "Overall"
+          },
+          {
+            "kpiId": "kpi5",
+            "kpiName": "KPI name for kpi5",
+            "maturity": 1,
+            "recommendationSummary": "Nice job!",
+            "recommendationDetails": "The team did a great job during the last sprints!",
+            "recommendationType": "Good Practices",
+            "filter": "Overall"
           }
         ] 
     }
     this.recommendationsData = response.recommendations;
     this.recommendationsData.forEach((item) => {
-      this.maturities = !this.maturities.includes(item['maturity']) ? [...this.maturities, "M"+item['maturity']] : [...this.maturities];
+      this.maturities = !this.maturities.includes("M" + item['maturity']) ? [...this.maturities, "M"+item['maturity']] : [...this.maturities];
       this.tabs = !this.tabs.includes(item['recommendationType']) ? [...this.tabs, item['recommendationType']] : [...this.tabs];
       this.tabsContent[item['recommendationType']] = [];
     });
@@ -66,7 +94,7 @@ export class RecommendationsComponent implements OnInit {
       this.tabsContent[item['recommendationType']] = [...this.tabsContent[item['recommendationType']], item]
     });
     
-    console.log("tabs", this.tabs);
+    console.log("this.tabsContent", this.tabsContent);
     console.log("maturities", this.maturities);
   }
 }

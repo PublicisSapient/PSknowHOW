@@ -13,8 +13,8 @@
     <div class="dialog-body p-mb-4">
         <p-tabView>
             <p-tabPanel *ngFor="let tab of tabs" [header]="tab">
-                <p-table [value]="tabsContent[tab]" [tableStyle]="{ 'min-width': '50rem' }"
-                [globalFilterFields]="['maturity']">
+                <p-table #dt1 [value]="tabsContent[tab]" dataKey="kpiId" [tableStyle]="{ 'min-width': '50rem' }"
+                [globalFilterFields]="['kpiName', 'maturity']">
                     <ng-template pTemplate="header">
                         <tr class="table-heading">
                             <th id="kpiName">KPI Name</th>
@@ -24,12 +24,16 @@
                         </tr>
                         <tr>
                             <th>
-                                <p-columnFilter type="text" field="kpiName"></p-columnFilter>
+                                <input pInputText [id]="kpiName" type="text"
+                                (input)="dt1.filter($event.target.value, 'kpiName', 'contains')" class="p-column-filter"
+                                [style]="{'width':'100%'}" placeholder="Search" />
+                                <label [for]="'kpiName'"></label>
                             </th>
                             <th>
                                 <p-columnFilter field="maturity" matchMode="in" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                        <p-multiSelect [ngModel]="value" [options]="maturities" placeholder="Select maturity" (onChange)="filter($event)">
+                                        <p-multiSelect [ngModel]="value" [options]="maturities" placeholder="Select maturity"
+                                        [showClear]="true">
                                             <ng-template let-option pTemplate="item">
                                                 <div class="inline-block vertical-align-middle">
                                                     <span class="ml-1 mt-1">{{ option }}</span>

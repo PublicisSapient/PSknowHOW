@@ -68,6 +68,6 @@
 .m5 .maturity-indicator{
     background: #D38EEC;
 }
-:host ::ng-deep .p-tabview .p-tabview-nav li .p-tabview-nav-link{
+/* :host ::ng-deep .p-tabview .p-tabview-nav li .p-tabview-nav-link{
     background: #DF97B1;
-}
+} */
