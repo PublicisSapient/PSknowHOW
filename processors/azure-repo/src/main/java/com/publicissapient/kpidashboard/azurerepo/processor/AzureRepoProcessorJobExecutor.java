@@ -440,7 +440,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	private void isClientException(ProcessorToolConnection entry, Throwable cause) {
 		if (cause != null && ((HttpClientErrorException) cause).getStatusCode().is4xxClientError()) {
 			String errMsg = ((HttpClientErrorException) cause).getStatusCode().toString();
-			processorToolConnectionService.updateBreakingConnection(entry, errMsg);
+			processorToolConnectionService.updateBreakingConnection(entry.getConnectionId(), errMsg);
 		}
 	}
 

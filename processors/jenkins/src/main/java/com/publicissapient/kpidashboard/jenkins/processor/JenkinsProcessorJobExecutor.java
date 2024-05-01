@@ -220,7 +220,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
 			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
-			processorToolConnectionService.updateBreakingConnection(jenkinsServer, errMsg);
+			processorToolConnectionService.updateBreakingConnection(jenkinsServer.getConnectionId(), errMsg);
 		}
 	}
 

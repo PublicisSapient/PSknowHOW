@@ -229,7 +229,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
 			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
-			processorToolConnectionService.updateBreakingConnection(argoCDJob, errMsg);
+			processorToolConnectionService.updateBreakingConnection(argoCDJob.getConnectionId(), errMsg);
 		}
 	}
 

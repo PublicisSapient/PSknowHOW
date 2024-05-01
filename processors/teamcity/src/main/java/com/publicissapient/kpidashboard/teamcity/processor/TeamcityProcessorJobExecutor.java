@@ -226,7 +226,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
 			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
-			processorToolConnectionService.updateBreakingConnection(teamcityServer, errMsg);
+			processorToolConnectionService.updateBreakingConnection(teamcityServer.getConnectionId(), errMsg);
 		}
 	}
 

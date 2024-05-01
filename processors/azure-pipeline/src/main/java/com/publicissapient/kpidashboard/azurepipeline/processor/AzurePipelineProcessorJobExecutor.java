@@ -236,7 +236,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
 			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
-			processorToolConnectionService.updateBreakingConnection(azurePipelineServer, errMsg);
+			processorToolConnectionService.updateBreakingConnection(azurePipelineServer.getConnectionId(), errMsg);
 		}
 	}
 

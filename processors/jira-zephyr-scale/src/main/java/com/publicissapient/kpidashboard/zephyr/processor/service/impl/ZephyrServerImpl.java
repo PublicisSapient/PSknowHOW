@@ -130,7 +130,7 @@ public class ZephyrServerImpl implements ZephyrClient {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
 			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
-			processorToolConnectionService.updateBreakingConnection(toolInfo, errMsg);
+			processorToolConnectionService.updateBreakingConnection(toolInfo.getConnectionId(), errMsg);
 		}
 	}
 }

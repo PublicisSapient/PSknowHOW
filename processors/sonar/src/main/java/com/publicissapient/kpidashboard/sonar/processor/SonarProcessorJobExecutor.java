@@ -262,7 +262,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 		if (ex instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) ex).getStatusCode().is4xxClientError()) {
 			String errMsg = ((HttpClientErrorException) ex).getStatusCode().toString();
-			processorToolConnectionService.updateBreakingConnection(sonar, errMsg);
+			processorToolConnectionService.updateBreakingConnection(sonar.getConnectionId(), errMsg);
 		}
 	}
 

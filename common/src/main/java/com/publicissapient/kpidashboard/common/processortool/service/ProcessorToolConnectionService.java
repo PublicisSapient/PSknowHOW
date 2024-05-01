@@ -63,5 +63,5 @@ public interface ProcessorToolConnectionService {
 	 * @param connection
 	 * @param connectionErrorMsg
 	 */
-	void updateBreakingConnection(ProcessorToolConnection connection, String connectionErrorMsg);
+	void updateBreakingConnection(ObjectId connection, String connectionErrorMsg);
 }

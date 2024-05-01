@@ -282,7 +282,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	private void isClientException(ProcessorToolConnection tool, HttpClientErrorException cause) {
 		if (cause != null && cause.getStatusCode().is4xxClientError()) {
 			String errMsg = cause.getStatusCode().toString();
-			processorToolConnectionService.updateBreakingConnection(tool, errMsg);
+			processorToolConnectionService.updateBreakingConnection(tool.getConnectionId(), errMsg);
 		}
 	}
 

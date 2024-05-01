@@ -308,7 +308,7 @@ public class BambooClientBuildImpl implements BambooClient {
 		if (HttpStatus.OK != response.getStatusCode()) {
 			if (response.getStatusCode().is4xxClientError()) {
 				String errMsg = response.getStatusCode().toString();
-				processorToolConnectionService.updateBreakingConnection(bambooServer, errMsg);
+				processorToolConnectionService.updateBreakingConnection(bambooServer.getConnectionId(), errMsg);
 			}
 			log.error("Got response code: {} from URL call: {} ", response.getStatusCode(), sUrl);
 			throw new RestClientException("Got response" + response.toString() + " from URL :" + sUrl);
