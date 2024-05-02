@@ -7,7 +7,7 @@
     border: 2px solid #000;
     border-radius: 50px;
     background: #fff;
-    
+    box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.8);
     text-align: center;
     display: flex;
     align-items: center;
@@ -15,8 +15,29 @@
     cursor: pointer;
     z-index: 2;
 }
-.img-container img{
+:host ::ng-deep .p-tabview-panel{
+    margin: 1rem 0 0 0;
 }
+:host ::ng-deep .p-tabview .p-tabview-nav li .p-tabview-nav-link{
+    border-radius: 10px;
+    padding: .8rem 1rem;
+    color: #000;
+}
+:host ::ng-deep .p-tabview .p-tabview-nav li.tab-warnings .p-tabview-nav-link:hover, :host ::ng-deep .p-tabview .p-tabview-nav li.tab-warnings.p-highlight .p-tabview-nav-link{
+    background: #F68605;
+}
+:host ::ng-deep .p-tabview .p-tabview-nav li.tab-good-practices .p-tabview-nav-link:hover, :host ::ng-deep .p-tabview .p-tabview-nav li.tab-good-practices.p-highlight .p-tabview-nav-link{
+    background: #15BA40;
+}
+:host ::ng-deep .p-tabview .p-tabview-nav li.tab-critical .p-tabview-nav-link:hover, :host ::ng-deep .p-tabview .p-tabview-nav li.tab-critical.p-highlight .p-tabview-nav-link{
+    background: #FE414D;
+}
+/* :host ::ng-deep .p-tabview .p-tabview-nav li.tab-good-practices .p-tabview-nav-link{
+    background: #15BA40;
+}
+:host ::ng-deep .p-tabview .p-tabview-nav li.tab-critical .p-tabview-nav-link{
+    background: #FE414D;
+} */
 .text-recommendations{
     position: absolute;
     display: none;
@@ -40,11 +61,11 @@
 :host ::ng-deep  .p-datatable .p-datatable-thead > tr.table-heading  > th{
     background: #eee;
 }
-.maturity-level{
+/* .maturity-level{
     border: 1px solid #aaa;
     padding: 3px 8px;
     border-radius: 3px;
-}
+} */
 .maturity-indicator{
     width: 10px;
     height: 10px;

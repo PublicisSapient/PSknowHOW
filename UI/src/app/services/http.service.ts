@@ -172,7 +172,7 @@ export class HttpService {
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
   private validateResourceUrl = this.baseUrl + '/api/validateResource';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
-  private recommendationsUrl = 'https://rr.tools.publicis.sapient.com/api/health-dashboard/recommendations';
+  private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
   constructor(
     private router: Router,
     private http: HttpClient,

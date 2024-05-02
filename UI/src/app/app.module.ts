@@ -103,7 +103,7 @@ import { CommentsComponent } from './component/comments/comments.component';
 import { MilestoneComponent } from './dashboard/milestone/milestone.component';
 import { HorizontalPercentBarChartComponent } from './component/horizontal-percent-bar-chart/horizontal-percent-bar-chart.component';
 import { CumulativeLineChartComponent } from './component/cumulative-line-chart/cumulative-line-chart.component';
-
+import { InputTextModule } from 'primeng/inputtext';
 import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
 import { FeedbackComponent } from './feedback/feedback.component';
 import { KpiTableComponent } from './dashboard/kpi-table/kpi-table.component';
@@ -220,7 +220,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         OverlayPanelModule,
         MenuModule,
         SkeletonModule,
-        SharedModuleModule
+        SharedModuleModule,
+        InputTextModule
     ],
     providers: [
         ExcelService,

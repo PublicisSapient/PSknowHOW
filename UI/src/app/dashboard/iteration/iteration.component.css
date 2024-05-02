@@ -174,7 +174,7 @@ padding: 0.75rem !important;
     min-width: 100px;
 }
 
-:host ::ng-deep th .p-multiselect-panel{
+:host ::ng-deep th .custom-select .p-multiselect-panel{
     left:-200px !important;
     max-width: 250px;
 }

@@ -107,6 +107,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   kpiThresholdObj = {};
   dailyStandupData: object = {};
   selectedProjectId: string;
+  kpiList:Array<string> = [];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService,
     private featureFlagService: FeatureFlagsService) {
@@ -156,7 +157,9 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item?.shown);
     this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
-
+    this.kpiList = this.configGlobalData.map((kpi) => kpi.kpiId)
+    console.log(this.kpiList);
+        
     /**reset the kpi count */
     this.navigationTabs = this.navigationTabs.map((x) => {
       if (x['label'] === 'Daily Standup') {

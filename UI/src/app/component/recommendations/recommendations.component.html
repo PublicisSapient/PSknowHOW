@@ -1,7 +1,7 @@
 <div class="container-recommendations">
     <div class="img-container" (click)="handleClick()">
         <img src="../../../assets/img/ico-recommendations.svg" alt="Recommendations" />
-        <p class="text-recommendations">Recommendations</p>
+        <!-- <p class="text-recommendations">Recommendations</p> -->
     </div>
 </div>
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
@@ -12,9 +12,10 @@
     </p-header>
     <div class="dialog-body p-mb-4">
         <p-tabView>
-            <p-tabPanel *ngFor="let tab of tabs" [header]="tab">
-                <p-table #dt1 [value]="tabsContent[tab]" dataKey="kpiId" [tableStyle]="{ 'min-width': '50rem' }"
-                [globalFilterFields]="['kpiName', 'maturity']">
+            <p-tabPanel *ngFor="let tab of tabs" [header]="tab" [headerStyleClass]="'tab-'+tab.split(' ').join('-')?.toLowerCase()">
+            
+                <p-table #dt1 [value]="tabsContent[tab]" dataKey="kpiId" [tableStyle]="{ 'min-width': '60rem', 'max-width': '60rem' }"
+                [globalFilterFields]="['kpiName', 'maturity']" class="p-mt-3">
                     <ng-template pTemplate="header">
                         <tr class="table-heading">
                             <th id="kpiName">KPI Name</th>
@@ -24,7 +25,7 @@
                         </tr>
                         <tr>
                             <th>
-                                <input pInputText [id]="kpiName" type="text"
+                                <input pInputText [id]="kpiName" type="text" class="p-column-filter"
                                 (input)="dt1.filter($event.target.value, 'kpiName', 'contains')" 
                                 [style]="{'width':'100%'}" placeholder="Search" />
                             </th>
@@ -54,7 +55,10 @@
                         <tr>
                             <td>{{ item.kpiName }}</td>
                             <td [ngClass]="{'m1': item.maturity == 1, 'm2': item.maturity == 2, 'm3': item.maturity == 3, 'm4': item.maturity == 4, 'm5': item.maturity == 5}">
-                                <span class="maturity-level"><span class="maturity-indicator"></span>{{ "M"+item.maturity }}</span>
+                                <span class="maturity-level">
+                                    <!-- <span class="maturity-indicator"></span> -->
+                                    {{ "M"+item.maturity }}
+                                </span>
                             </td>
                             <td>{{ item.recommendationSummary }}</td>
                             <td>{{ item.recommendationDetails }}</td>
