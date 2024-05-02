@@ -2,9 +2,11 @@ package com.publicissapient.kpidashboard.apis.comments.rest;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import com.publicissapient.kpidashboard.common.model.comments.CommentRequestDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentViewRequestDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentViewResponseDTO;
+import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,7 +72,7 @@ public class CommentsController {
 	 */
 	@PostMapping("/submitComments")
 	public ResponseEntity<ServiceResponse> submitComments(@Valid @RequestBody CommentSubmitDTO comment) {
-
+		setCommentByUser(comment);
 		boolean responseStatus = commentsService.submitComment(comment);
 		if (responseStatus) {
 			return ResponseEntity.status(HttpStatus.OK)
@@ -78,6 +81,20 @@ public class CommentsController {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(responseStatus, "Issue occurred while saving the comment.", comment));
 		}
+	}
+
+	/**
+	 * Sets the comment by the current user in the provided CommentSubmitDTO object.
+	 *
+	 * @param comment The CommentSubmitDTO object containing the comments information.
+	 */
+	private void setCommentByUser(CommentSubmitDTO comment) {
+		String userName = AuthenticationUtil.getUsernameFromContext();
+		Optional<CommentsInfo> firstComment = comment.getCommentsInfo().stream().findFirst();
+		firstComment.ifPresent(commentsInfo -> {
+			commentsInfo.setCommentBy(userName);
+			comment.setCommentsInfo(List.of(commentsInfo));
+		});
 	}
 
 	/**

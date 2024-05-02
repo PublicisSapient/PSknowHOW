@@ -161,16 +161,12 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException(EXCEPTION_MSG);
 		} else {
-			String token = userTokenAuthenticationDTO.getAuthToken();
-			if (StringUtils.isBlank(token)) {
-				Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
-				if (Objects.nonNull(authCookieToken)) {
-					token = authCookieToken.getValue();
-				} else {
-					return null;
-				}
+			Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
+			if (Objects.nonNull(authCookieToken)) {
+				return authCookieToken.getValue();
+			} else {
+				return null;
 			}
-			return token;
 		}
 	}
 
