@@ -153,6 +153,7 @@ public class AutomationPercentageServiceImplTest {
 			test.setAutomatedTestCases(1);
 		});
 		when(testExecutionRepository.findTestExecutionDetailByFilters(anyMap(),anyMap())).thenReturn(testExecutionList);
+		when(customApiConfig.getSprintCountForKpiCalculation()).thenReturn(5);
 	}
 
 	@Test

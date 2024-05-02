@@ -33,7 +33,14 @@
         
         <div class="p-text-center">
             <div class="indicator-heading">Maturity</div>
-            <p class="average-data-primary">{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' ? dataTrend?.maturityValue : ''}}{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' && dataTrend?.kpiUnit ? ' '+dataTrend?.kpiUnit.charAt(0).toUpperCase() : ''}} {{dataTrend?.maturityValue && dataTrend?.maturity !== '--' ? '('+dataTrend?.maturity+')'  : dataTrend?.maturity}}</p>
+            <p class="average-data-primary">{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' ? dataTrend?.maturityValue : ''}}{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' && dataTrend?.kpiUnit ? ' '+dataTrend?.kpiUnit.charAt(0).toUpperCase() : ''}} {{dataTrend?.maturityValue && dataTrend?.maturity !== '--' ? '('+dataTrend?.maturity+')'  : dataTrend?.maturity}}
+            <span *ngIf="dataTrend?.maturityDenominator && dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA'" class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
+                        (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(false)"
+                        [style]="{'position': 'relative'}" pTooltip='<div class="inner-content">
+                             Average maturity for {{dataTrend?.maturityDenominator}} data points.
+                        </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper">
+                    </span>
+                </p>
         </div>
     </div>
 

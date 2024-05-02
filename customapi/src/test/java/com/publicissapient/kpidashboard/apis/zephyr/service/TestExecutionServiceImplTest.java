@@ -152,6 +152,7 @@ public class TestExecutionServiceImplTest {
 		String kpiRequestTrackerId = "Zephyr-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name()))
 				.thenReturn(kpiRequestTrackerId);
+		when(customApiConfig.getSprintCountForKpiCalculation()).thenReturn(5);
 
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put("testExecutionPercentage", Arrays.asList("-20", "20-40", "40-60", "60-79", "80-"));

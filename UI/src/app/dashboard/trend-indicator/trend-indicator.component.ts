@@ -11,6 +11,7 @@ export class TrendIndicatorComponent implements OnInit {
   @Input() kpiData: object;
   @Input() noOfBox: number;
   @Input() cols?: Array<object> = [];
+  isTooltip = false;
 
 
   ngOnInit(): void {
@@ -50,6 +51,10 @@ export class TrendIndicatorComponent implements OnInit {
     this.dataTrend = {};
     this.color = '';
     this.noOfBox = 0;
+  }
+
+  showTooltip(val) {
+    this.isTooltip = val;
   }
 
 }

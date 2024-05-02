@@ -147,6 +147,7 @@ public class TicketVelocityServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name()))
 				.thenReturn(kpiRequestTrackerId);
+		when(customApiConfig.getSprintCountForKpiCalculation()).thenReturn(5);
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 
@@ -155,7 +156,7 @@ public class TicketVelocityServiceImplTest {
 					treeAggregatorDetail);
 			assertThat("Velocity Value :",
 					((List<DataCount>) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(),
-					equalTo(7));
+					equalTo(5));
 		} catch (ApplicationException enfe) {
 
 		}
