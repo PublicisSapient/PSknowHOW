@@ -277,7 +277,9 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	 * this method check for the client exception
 	 * 
 	 * @param tool
+	 *            tool
 	 * @param cause
+	 *            cause
 	 */
 	private void isClientException(ProcessorToolConnection tool, HttpClientErrorException cause) {
 		if (cause != null && cause.getStatusCode().is4xxClientError()) {

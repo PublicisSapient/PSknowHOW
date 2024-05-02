@@ -223,7 +223,9 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	/**
 	 * 
 	 * @param argoCDJob
+	 *            argoCDJob
 	 * @param exception
+	 *            exception
 	 */
 	private void isClientException(ProcessorToolConnection argoCDJob, RestClientException exception) {
 		if (exception instanceof HttpClientErrorException

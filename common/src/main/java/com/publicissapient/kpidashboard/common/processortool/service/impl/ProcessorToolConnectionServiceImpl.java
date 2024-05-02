@@ -185,9 +185,12 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 	}
 
 	/**
+	 * update breaking connection detail
 	 * 
 	 * @param connection
+	 *            connection
 	 * @param conErrorMsg
+	 *            conErrorMsg
 	 */
 	@Override
 	public void updateBreakingConnection(ObjectId connection, String conErrorMsg) {

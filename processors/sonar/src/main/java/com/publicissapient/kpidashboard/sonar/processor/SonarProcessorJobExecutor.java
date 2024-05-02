@@ -256,7 +256,9 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	 * to check exception happening due to client Server
 	 * 
 	 * @param sonar
+	 *            sonar
 	 * @param ex
+	 *            ex
 	 */
 	private void isClientException(ProcessorToolConnection sonar, Exception ex) {
 		if (ex instanceof HttpClientErrorException

@@ -264,7 +264,9 @@ public class SonarToolConfigServiceImpl {
 	/**
 	 * 
 	 * @param connection
+	 *            connection
 	 * @param exception
+	 *            exception
 	 */
 	private void isClientException(Connection connection, RestClientException exception) {
 		if (exception instanceof HttpClientErrorException

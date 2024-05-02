@@ -196,7 +196,9 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 	 * to check for client exception and update the flag if related to connection
 	 * 
 	 * @param gitHubActions
+	 *            gitHubActions
 	 * @param exception
+	 *            exception
 	 */
 	private void isClientException(ProcessorToolConnection gitHubActions, Exception exception) {
 		if (exception instanceof HttpClientErrorException

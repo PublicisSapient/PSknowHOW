@@ -251,7 +251,9 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 	/**
 	 *
 	 * @param tool
+	 *            tool
 	 * @param cause
+	 *            cause
 	 */
 	private void isClientException(ProcessorToolConnection tool, Throwable cause) {
 		if (cause != null && ((HttpClientErrorException) cause).getStatusCode().is4xxClientError()) {

@@ -139,7 +139,9 @@ public class BambooToolConfigServiceImpl {
 	 * this method check for the client exception
 	 * 
 	 * @param connection
+	 *            connection
 	 * @param exception
+	 *            exception
 	 */
 	private void isClientException(Connection connection, Exception exception) {
 		if (exception instanceof HttpClientErrorException

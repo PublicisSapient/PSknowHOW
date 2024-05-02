@@ -435,7 +435,9 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	 * this method check for the client exception
 	 * 
 	 * @param entry
+	 *            entry
 	 * @param cause
+	 *            cause
 	 */
 	private void isClientException(ProcessorToolConnection entry, Throwable cause) {
 		if (cause != null && ((HttpClientErrorException) cause).getStatusCode().is4xxClientError()) {

@@ -232,6 +232,13 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 		return executionStatus;
 	}
 
+	/**
+	 * 
+	 * @param azurePipelineServer
+	 *            azurePipelineServer
+	 * @param exception
+	 *            exception
+	 */
 	private void isClientException(ProcessorToolConnection azurePipelineServer, RestClientException exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
@@ -418,8 +425,8 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				count++;
 			}
 
-			if (proBasicConfig.isSaveAssigneeDetails() && deploymentData != null && deploymentData.getDeployedBy() == null
-					&& job.getDeployedBy() != null) {
+			if (proBasicConfig.isSaveAssigneeDetails() && deploymentData != null
+					&& deploymentData.getDeployedBy() == null && job.getDeployedBy() != null) {
 				deploymentData.setDeployedBy(job.getDeployedBy());
 				newJobs.add(deploymentData);
 			}

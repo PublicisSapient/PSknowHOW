@@ -214,7 +214,9 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	 * to check the client exception
 	 * 
 	 * @param jenkinsServer
+	 *            jenkinsServer
 	 * @param exception
+	 *            exception
 	 */
 	private void isClientException(ProcessorToolConnection jenkinsServer, RestClientException exception) {
 		if (exception instanceof HttpClientErrorException
