@@ -584,8 +584,8 @@ public abstract class ToolsKPIService<R, S> {
 	}
 
 	/**
-	 * filter initial data points by property for maturity
-	 * 
+	 * filter initial data points by property to get latest for maturity
+	 *
 	 * @param kpiRequest
 	 *            kpi request
 	 * @param dataCounts
