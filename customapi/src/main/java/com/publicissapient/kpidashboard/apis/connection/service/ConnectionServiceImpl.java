@@ -117,24 +117,14 @@ public class ConnectionServiceImpl implements ConnectionService {
 	 */
 	@Override
 	public ServiceResponse getAllConnection() {
-		final List<Connection> data = connectionRepository.findAllWithoutSecret();
-		if (CollectionUtils.isEmpty(data)) {
+		final List<Connection> connectionData = connectionRepository.findAllWithoutSecret();
+		if (CollectionUtils.isEmpty(connectionData)) {
 			log.info("Db has no connectionData");
-			return new ServiceResponse(false, "No connectionData in connection db", data);
+			return new ServiceResponse(false, "No connectionData in connection db", connectionData);
 		}
-		List<Connection> connectionData = new ArrayList<>(data);
-		connectionData.forEach(original -> {
-			original.setCreatedBy(maskStrings(original.getCreatedBy()));
-			original.setUsername(maskStrings(original.getUsername()));
-			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
-			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
-				List<String> connectionUsers=new ArrayList<>();
-				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(maskStrings(connectionUser)));
-				original.setConnectionUsers(connectionUsers);
-			}
-		});
 
 		if (authorizedProjectsService.ifSuperAdminUser()) {
+			maskConnectionDetails(connectionData);
 			log.info("Successfully fetched all connectionData");
 			return new ServiceResponse(true, "Found all connectionData", connectionData);
 		}
@@ -148,9 +138,28 @@ public class ConnectionServiceImpl implements ConnectionService {
 		if (CollectionUtils.isNotEmpty(nonAuthConnection)) {
 			connectionData.removeAll(nonAuthConnection);
 		}
-
+		maskConnectionDetails(connectionData);
 		log.info("Successfully fetched all connectionData");
 		return new ServiceResponse(true, "Found all connectionData", connectionData);
+	}
+
+	/**
+	 * Mask user info from connection details
+	 *
+	 * @param connectionData
+	 *            list of connections
+	 */
+	public void maskConnectionDetails(List<Connection> connectionData) {
+		connectionData.forEach(original -> {
+			original.setCreatedBy(maskStrings(original.getCreatedBy()));
+			original.setUsername(maskStrings(original.getUsername()));
+			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
+			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
+				List<String> connectionUsers=new ArrayList<>();
+				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(maskStrings(connectionUser)));
+				original.setConnectionUsers(connectionUsers);
+			}
+		});
 	}
 
 	private String maskStrings(String username) {
@@ -216,16 +225,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 		List<Connection> typeList = connectionRepository.findAllWithoutSecret().stream()
 				.filter(connection -> StringUtils.isNotEmpty(connection.getType()) && connection.getType()
 						.equalsIgnoreCase(type)).collect(Collectors.toList());
-		typeList.forEach(original -> {
-			original.setCreatedBy(maskStrings(original.getCreatedBy()));
-			original.setUsername(maskStrings(original.getUsername()));
-			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
-			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
-				List<String> connectionUsers=new ArrayList<>();
-				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(maskStrings(connectionUser)));
-				original.setConnectionUsers(connectionUsers);
-			}
-		});
 
 		if (CollectionUtils.isEmpty(typeList)) {
 			log.info("connection Db returned null");
@@ -233,6 +232,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 
 		if (authorizedProjectsService.ifSuperAdminUser()) {
+			maskConnectionDetails(typeList);
 			log.info("Successfully found type@{}", type);
 			return new ServiceResponse(true, "Found type@" + type, typeList);
 		}
@@ -245,6 +245,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		if (CollectionUtils.isNotEmpty(nonAuthConnection)) {
 			typeList.removeAll(nonAuthConnection);
 		}
+		maskConnectionDetails(typeList);
 		log.info("Successfully found type@{}", type);
 
 		return new ServiceResponse(true, "Found type@" + type, typeList);
