@@ -577,6 +577,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		existingConnection.setSamlEndPoint(connection.getSamlEndPoint());
 		existingConnection.setKrb5ConfigFilePath(connection.getKrb5ConfigFilePath());
 		existingConnection.setEmail(connection.getEmail());
+		existingConnection.setBrokenConnection(false);
 	}
 
 	private void saveConnection(Connection conn) {
