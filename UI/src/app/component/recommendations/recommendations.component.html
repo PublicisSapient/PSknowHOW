@@ -12,10 +12,12 @@
     </p-header>
     <div class="dialog-body p-mb-4">
         <p-tabView>
-            <p-tabPanel *ngFor="let tab of tabs" [header]="tab" [headerStyleClass]="'tab-'+tab.split(' ').join('-')?.toLowerCase()">
-            
-                <p-table #dt1 [value]="tabsContent[tab]" dataKey="kpiId" [tableStyle]="{ 'min-width': '60rem', 'max-width': '60rem' }"
-                [globalFilterFields]="['kpiName', 'maturity']" class="p-mt-3">
+            <p-tabPanel *ngFor="let tab of tabs" [header]="tab"
+                [headerStyleClass]="'tab-'+tab.split(' ').join('-')?.toLowerCase()">
+
+                <p-table #dt1 [value]="tabsContent[tab]" dataKey="kpiId"
+                    [tableStyle]="{ 'min-width': '60rem', 'max-width': '60rem' }"
+                    [globalFilterFields]="['kpiName', 'maturity']" class="p-mt-3">
                     <ng-template pTemplate="header">
                         <tr class="table-heading">
                             <th id="kpiName">KPI Name</th>
@@ -26,14 +28,14 @@
                         <tr>
                             <th>
                                 <input pInputText [id]="kpiName" type="text" class="p-column-filter"
-                                (input)="dt1.filter($event.target.value, 'kpiName', 'contains')" 
-                                [style]="{'width':'100%'}" placeholder="Search" />
+                                    (input)="dt1.filter($event.target.value, 'kpiName', 'contains')"
+                                    [style]="{'width':'100%'}" placeholder="Search" />
                             </th>
                             <th>
                                 <p-columnFilter [field]="maturity" matchMode="in" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                        <p-multiSelect [ngModel]="value" [options]="maturities" placeholder="Select maturity"
-                                        (onChange)="filter($event.value)">
+                                        <p-multiSelect [ngModel]="value" [options]="maturities"
+                                            placeholder="Select maturity" (onChange)="filter($event.value)">
                                             <ng-template let-option pTemplate="item">
                                                 <div class="inline-block vertical-align-middle">
                                                     <span class="ml-1 mt-1">{{option }}</span>
@@ -44,17 +46,18 @@
                                 </p-columnFilter>
                             </th>
                             <th>
-                                
+
                             </th>
                             <th>
-                                
+
                             </th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-item>
                         <tr>
                             <td>{{ item.kpiName }}</td>
-                            <td [ngClass]="{'m1': item.maturity == 1, 'm2': item.maturity == 2, 'm3': item.maturity == 3, 'm4': item.maturity == 4, 'm5': item.maturity == 5}">
+                            <td
+                                [ngClass]="{'m1': item.maturity == 1, 'm2': item.maturity == 2, 'm3': item.maturity == 3, 'm4': item.maturity == 4, 'm5': item.maturity == 5}">
                                 <span class="maturity-level">
                                     <!-- <span class="maturity-indicator"></span> -->
                                     {{ "M"+item.maturity }}
