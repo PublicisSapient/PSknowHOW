@@ -170,6 +170,7 @@ label.btn-import-label {
 }
 
 .commentSummaryDdn{
+  max-width: 70vw;
   width: max-content;
   min-width: 300px;
   position: absolute;
