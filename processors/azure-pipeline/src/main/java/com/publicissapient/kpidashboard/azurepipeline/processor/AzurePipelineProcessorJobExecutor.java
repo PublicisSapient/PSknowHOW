@@ -39,6 +39,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -206,6 +207,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
 				} catch (RestClientException exception) {
+					isClientException(azurePipelineServer, exception);
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -228,6 +230,21 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 		log.info("AzurePipeline Processor execution finished");
 		MDC.clear();
 		return executionStatus;
+	}
+
+	/**
+	 * 
+	 * @param azurePipelineServer
+	 *            azurePipelineServer
+	 * @param exception
+	 *            exception
+	 */
+	private void isClientException(ProcessorToolConnection azurePipelineServer, RestClientException exception) {
+		if (exception instanceof HttpClientErrorException
+				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			processorToolConnectionService.updateBreakingConnection(azurePipelineServer.getConnectionId(), errMsg);
+		}
 	}
 
 	@Override
@@ -408,8 +425,8 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				count++;
 			}
 
-			if (proBasicConfig.isSaveAssigneeDetails() && deploymentData != null && deploymentData.getDeployedBy() == null
-					&& job.getDeployedBy() != null) {
+			if (proBasicConfig.isSaveAssigneeDetails() && deploymentData != null
+					&& deploymentData.getDeployedBy() == null && job.getDeployedBy() != null) {
 				deploymentData.setDeployedBy(job.getDeployedBy());
 				newJobs.add(deploymentData);
 			}

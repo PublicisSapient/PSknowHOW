@@ -577,6 +577,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		existingConnection.setSamlEndPoint(connection.getSamlEndPoint());
 		existingConnection.setKrb5ConfigFilePath(connection.getKrb5ConfigFilePath());
 		existingConnection.setEmail(connection.getEmail());
+		existingConnection.setBrokenConnection(false);
 	}
 
 	private void saveConnection(Connection conn) {
@@ -826,6 +827,28 @@ public class ConnectionServiceImpl implements ConnectionService {
 		projectBasicConfigRepository.findByIdIn(basicProjectConfigIds)
 				.forEach(e -> projectInUseList.add(e.getProjectName()));
 		return projectInUseList;
+	}
+
+	/**
+	 * update breaking connection flag
+	 *
+	 * @param connection
+	 * @param conErrorMsg
+	 */
+	@Override
+	public void updateBreakingConnection(Connection connection, String conErrorMsg) {
+
+		if (connection != null) {
+
+			Optional<Connection> existingConnOpt = connectionRepository.findById(connection.getId());
+			if (existingConnOpt.isPresent()) {
+				Connection existingConnection = existingConnOpt.get();
+				existingConnection.setBrokenConnection(true);
+				existingConnection.setConnectionErrorMsg(conErrorMsg);
+				connectionRepository.save(existingConnection);
+			}
+
+		}
 	}
 
 }
