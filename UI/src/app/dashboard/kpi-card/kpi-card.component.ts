@@ -312,7 +312,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
 
   getFieldMapping() {
     this.http.getFieldMappingsWithHistory(this.selectedToolConfig[0].id,this.kpiData.kpiId).subscribe(mappings => {
-      if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 2) {
+      if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 1) {
         this.selectedFieldMapping = mappings['data'].fieldMappingResponses;
         this.metaDataTemplateCode = mappings['data']?.metaTemplateCode
         this.displayConfigModel = true;
