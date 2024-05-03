@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,6 +86,8 @@ public class RegressionPercentageKanbanServiceImplTest {
 	RegressionPercentageKanbanServiceImpl regressionPercentageKanbanServiceImpl;
 	@Mock
 	TestCaseDetailsRepository testCaseDetailsRepository;
+	@Mock
+	CustomApiConfig customApiConfig;
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;

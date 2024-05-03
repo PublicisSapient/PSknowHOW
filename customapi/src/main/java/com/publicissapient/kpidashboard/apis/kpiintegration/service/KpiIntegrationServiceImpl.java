@@ -158,7 +158,7 @@ public class KpiIntegrationServiceImpl {
 	 */
 	public void setKpiRequest(KpiRequest kpiRequest) {
 		String[] hierarchyIdList = kpiRequest.getIds();
-		Optional<HierarchyLevel> optionalHierarchyLevel = hierarchyLevelService.getFullHierarchyLevels(true).stream()
+		Optional<HierarchyLevel> optionalHierarchyLevel = hierarchyLevelService.getFullHierarchyLevels(false).stream()
 				.filter(hierarchyLevel -> hierarchyLevel.getLevel() == kpiRequest.getLevel()).findFirst();
 		if (optionalHierarchyLevel.isPresent()) {
 			HierarchyLevel hierarchyLevel = optionalHierarchyLevel.get();
