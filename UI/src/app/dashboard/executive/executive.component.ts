@@ -490,7 +490,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.selectedTestExecutionFilterData = {};
         this.loaderZypher = false;
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
-            if(this.filterApplyData['label'] !== 'sprint'){ 
+            if(this.filterApplyData['label'] !== 'sprint'){
                 this.getLastConfigurableTrendingListData(getData);
             }
             // creating array into object where key is kpi id
@@ -844,7 +844,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
               this.kpiChartData[kpiId] = [];
               if (trendValueList &&  trendValueList?.length > 0) {
                 this.kpiChartData[kpiId]?.push(trendValueList?.filter((x) => x['filter'] == 'Overall')[0]);
-              } 
+              }
               else {
                 this.kpiChartData[kpiId]?.push(trendValueList);
               }
@@ -1319,14 +1319,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         if (maturity == undefined) {
           return 'NA';
         }
-        if (item.value.length >= 5) {
-          const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
-          const tempArr = last5ArrItems.filter(x => x.data != 0);
-          if (tempArr.length == 0) {
-            maturity = '--';
-          }
-        } else {
-          maturity = '--';
+        const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
+        const tempArr = last5ArrItems.filter(x => x.data != 0);
+        if (tempArr.length == 0) {
+        maturity = '--';
         }
         maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M'+maturity : maturity;
         return maturity;
@@ -1404,7 +1400,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                                         this.checkMaturity(this.kpiChartData[kpiId][i])
                                         : 'M'+this.kpiChartData[kpiId][i]?.maturity,
                             "maturityValue":this.kpiChartData[kpiId][i]?.maturityValue,
-                            "kpiUnit" : unit
+                            "kpiUnit" : unit,
+                            "maturityDenominator" : this.kpiChartData[kpiId][i]?.value.length
                         };
                         if(kpiId === 'kpi997'){
                             trendObj['value'] = 'NA';
@@ -1437,7 +1434,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         const nodes = [...this.filterApplyData?.['selectedMap']['project']];
         const level = this.filterApplyData?.level;
         const nodeChildId = '';
-        this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)     
+        this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
     }
 
     reloadKPI(event) {
@@ -1522,7 +1519,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
                     }
                 }
-               
+
             })
         })
        }

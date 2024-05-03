@@ -385,7 +385,7 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyleadTimeConfigRepoTool;
 
 	private List<ConfigurationHistoryChangeLog> historytoBranchForMRKPI156;
-	private Integer historystartDateCountKPI150;
+	private List<ConfigurationHistoryChangeLog> historystartDateCountKPI150;
 	private List<ConfigurationHistoryChangeLog> historyjiraDevDoneStatusKPI150;
 	private List<ConfigurationHistoryChangeLog> historypopulateByDevDoneKPI150;
 
