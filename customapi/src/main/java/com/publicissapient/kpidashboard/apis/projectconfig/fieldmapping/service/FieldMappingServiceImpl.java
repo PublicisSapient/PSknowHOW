@@ -128,7 +128,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	@Override
-	public FieldMapping addFieldMapping(String projectToolConfigId, FieldMapping fieldMapping) {
+	public FieldMapping addFieldMapping(String projectToolConfigId, FieldMapping fieldMapping, ObjectId basicProjectConfigId) {
 
 		if (!ObjectId.isValid(projectToolConfigId)) {
 			throw new IllegalArgumentException(INVALID_PROJECT_TOOL_CONFIG_ID);
@@ -139,6 +139,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 
 		fieldMapping.setProjectToolConfigId(new ObjectId(projectToolConfigId));
+		fieldMapping.setBasicProjectConfigId(basicProjectConfigId);
 
 		FieldMapping existingFieldMapping = fieldMappingRepository
 				.findByProjectToolConfigId(new ObjectId(projectToolConfigId));
@@ -434,7 +435,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			previousValue = String.valueOf(configurationHistoryChangeLog.getChangedTo());
 
 		}
-		fieldMappingResponse.setOriginalValue(originalValue.deleteCharAt(originalValue.length() - 1).toString());
+		if(ObjectUtils.isNotEmpty(originalValue)) {
+			fieldMappingResponse.setOriginalValue(originalValue.deleteCharAt(originalValue.length() - 1).toString());
+		}
 		fieldMappingResponse.setPreviousValue(previousValue);
 	}
 
@@ -453,7 +456,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				}
 				originalValue.append(value.get("filterId")).append("-").append(identificationButton).append(":").append(identificationValue).append(" ,");
 			}
-			return originalValue;
+			return originalValue.toString();
 		}
 		return null;
 	}
@@ -463,7 +466,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		Object additonalFilter = generateAdditionalFilters(fieldMappingResponse.getOriginalValue(),
 				fieldMappingResponse.getFieldName());
 		if (additonalFilter != null) {
-			setFieldMappingResponse(fieldMappingResponse, fieldMapping, (StringBuilder) additonalFilter);
+			setFieldMappingResponse(fieldMappingResponse, fieldMapping, new StringBuilder((String) additonalFilter));
 		}
 	}
 
