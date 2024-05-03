@@ -292,7 +292,7 @@ private setting = {
       }
     });
 
-     if(this.selectedToolConfig[0].toolName.toLowerCase() === 'jira'){
+     if(this.selectedToolConfig[0].toolName.toLowerCase() === 'jira' || this.selectedToolConfig[0].toolName.toLowerCase() === 'azure'){
           if (!(this.metaDataTemplateCode && this.metaDataTemplateCode === '9' || this.metaDataTemplateCode === '10' )) {
             this.confirmationService.confirm({
               message: `Please note that change in mappings is a deviation from initially configured template.
