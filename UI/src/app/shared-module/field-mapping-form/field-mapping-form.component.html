@@ -37,7 +37,7 @@
                                 tooltipStyleClass="tooltiptext" [escape]="false"></span>
                         </label>
                     </div>
-                    <div class="position-relative p-pt-2px" (mouseout)="onMouseOut(field.fieldName)">
+                    <div class="position-relative" (mouseout)="onMouseOut(field.fieldName)">
                         <div id="comment-summary" class="btn-custom rounded p-p-0 filter-btn">
                             <img #commentSummary class="p-p-2 h-40 cursor-pointer" (mouseover)="handleBtnClick(field.fieldName);"
                                 src="../../../assets/img/RequiresSyncIcon.svg" alt="Comments" />
