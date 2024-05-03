@@ -17,7 +17,7 @@ export class RecommendationsComponent implements OnInit {
   recommendationsData: Array<object> = [];
   tabs: Array<string> = []
   tabsContent: object = {};
-  maturities: Array<string> = [];
+  maturities: Array<object> = [];
   filteredMaturity;
   @Input() filterData = {}
   @Input() kpiList = [];
@@ -33,7 +33,9 @@ export class RecommendationsComponent implements OnInit {
     console.log(this.filterData);
     
     this.httpService.getRecommendations(this.filterData).subscribe((response) => {
-      if(response && response['success']){
+      console.log("response", response);
+  
+      if(response){
         // let res = {
         //   "projectId": "AA Data and Reporting_649c00cd1734471c30843d2d",
         //   "lastSprintId": "284d41ca-0ed6-470e-a664-66983a28eeb4_AA Data and Reporting_649c00cd1734471c30843d2d",
@@ -87,7 +89,7 @@ export class RecommendationsComponent implements OnInit {
         // }
         this.recommendationsData = response['recommendations'];
         this.recommendationsData.forEach((item) => {
-          this.maturities = !this.maturities.includes("M" + item['maturity']) ? [...this.maturities, "M"+item['maturity']] : [...this.maturities];
+          this.maturities = this.maturities?.findIndex((x) => x['value'] == item['maturity']) == -1 ? [...this.maturities, {name: 'M'+item['maturity'], value:item['maturity']}] : [...this.maturities];
           this.tabs = !this.tabs.includes(item['recommendationType']) ? [...this.tabs, item['recommendationType']] : [...this.tabs];
           this.tabsContent[item['recommendationType']] = [];
         });
@@ -95,12 +97,23 @@ export class RecommendationsComponent implements OnInit {
         this.recommendationsData.forEach((item) => {
           this.tabsContent[item['recommendationType']] = [...this.tabsContent[item['recommendationType']], item]
         });
+        console.log(this.tabs);
+        console.log(this.maturities);
+        
+        console.log(this.tabsContent);
+        
+        // console.log(this.recommendationsData);
+        
       }
     }, error => {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error in Kpi Column Configurations. Please try after sometime!' });
       
     })
+  }
+  
+  checkSelected(e){
+    console.log(e);
     
   }
 }
