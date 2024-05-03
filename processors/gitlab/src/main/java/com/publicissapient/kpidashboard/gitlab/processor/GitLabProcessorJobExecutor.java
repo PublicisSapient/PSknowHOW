@@ -38,7 +38,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -361,9 +360,9 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 					try {
 						processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 						if (gitRepo.getToolConfigId().equals(entry.getId())) {
-							// save repository name by project id
-							Optional<ProjectToolConfig> projectToolConfigOptional = projectToolConfigRepository
-									.findById(gitRepo.getToolConfigId());
+//							save repository name by project id
+							Optional<ProjectToolConfig> projectToolConfigOptional = projectToolConfigRepository.findById(
+									gitRepo.getToolConfigId());
 							if (projectToolConfigOptional.isPresent()) {
 								ProjectToolConfig projectToolConfig = projectToolConfigOptional.get();
 								gitLabClient.setRepositoryNameByProjectId(projectToolConfig, entry, gitRepo);
@@ -406,8 +405,6 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 							processorExecutionTraceLogService.save(processorExecutionTraceLog);
 						}
 					} catch (FetchingCommitException exception) {
-						Throwable cause = exception.getCause();
-						isClientException(entry, cause);
 						executionStatus = false;
 						processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 						processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -433,21 +430,6 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 		MDC.put("executionStatus", String.valueOf(executionStatus));
 		MDC.clear();
 		return executionStatus;
-	}
-
-	/**
-	 * to check client exception
-	 * 
-	 * @param entry
-	 *            entry
-	 * @param cause
-	 *            cause
-	 */
-	private void isClientException(ProcessorToolConnection entry, Throwable cause) {
-		if (cause != null && ((HttpClientErrorException) cause).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) cause).getStatusCode().toString();
-			processorToolConnectionService.updateBreakingConnection(entry.getConnectionId(), errMsg);
-		}
 	}
 
 	@Override

@@ -49,7 +49,6 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
@@ -95,8 +94,6 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	private JiraCommonService jiraCommonService;
 	@Autowired
 	private JiraProcessorRepository jiraProcessorRepository;
-	@Autowired
-	private ProcessorToolConnectionService processorToolConnectionService;
 
 	@Override
 	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
@@ -510,12 +507,6 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 			}
 		} catch (RestClientException rce) {
-			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 401
-					&& rce.getStatusCode().get() < 500) {
-				String errMsg = rce.getStatusCode().toString();
-				processorToolConnectionService
-						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
-			}
 			log.error("Client exception when fetching sprints for board", rce);
 			throw rce;
 		} catch (MalformedURLException mfe) {

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -68,7 +69,8 @@ public class ZephyrServerImpl implements ZephyrClient {
 			queryBuilder.append(QUERY_PARAM).append(PROJECT_KEY);
 			queryBuilder.append(projectConfig.getProjectKey());
 			queryBuilder.append(INVERTED_COMMA);
-			if (ObjectUtils.isNotEmpty(projectConfig.getProcessorToolConnection().getProjectComponent())) {
+			if(ObjectUtils.isNotEmpty(projectConfig.getProcessorToolConnection().getProjectComponent()))
+			{
 				queryBuilder.append(AND);
 				queryBuilder.append(COMPONENT).append(projectConfig.getProcessorToolConnection().getProjectComponent());
 				queryBuilder.append(INVERTED_COMMA);
@@ -76,26 +78,23 @@ public class ZephyrServerImpl implements ZephyrClient {
 
 			log.info("ZEPHYR query executed {} ....", queryBuilder);
 			if (StringUtils.isNotBlank(queryBuilder)) {
-				ResponseEntity<ZephyrTestCaseDTO[]> response = null;
+				ResponseEntity<ZephyrTestCaseDTO[]> response=null;
 				try {
 					if (!toolInfo.isBearerToken()) {
-						response = makeRestCall(queryBuilder.toString(), ZephyrTestCaseDTO[].class, HttpMethod.GET,
-								zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(),
-										toolInfo.getPassword()));
+						response = makeRestCall(queryBuilder.toString(),
+								ZephyrTestCaseDTO[].class, HttpMethod.GET,
+								zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(), toolInfo.getPassword()));
 					} else {
-						response = restTemplate.exchange(queryBuilder.toString(), HttpMethod.GET,
-								zephyrUtil.buildBearerHeader(toolInfo.getPatOAuthToken()), ZephyrTestCaseDTO[].class);
+						response = restTemplate.exchange(queryBuilder.toString(), HttpMethod.GET, zephyrUtil.buildBearerHeader(toolInfo.getPatOAuthToken()), ZephyrTestCaseDTO[].class);
 					}
 					if (response.getStatusCode() == HttpStatus.OK && Objects.nonNull(response.getBody())) {
 						testCaseList = Arrays.asList(response.getBody());
 					} else {
 						String statusCode = response.getStatusCode().toString();
 						log.error("Error while fetching projects from {}. with status {}", queryBuilder, statusCode);
-						throw new RestClientException(
-								"Got different status code: " + statusCode + " : " + response.getBody());
+						throw new RestClientException("Got different status code: " + statusCode + " : " + response.getBody());
 					}
 				} catch (Exception exception) {
-					isClientException(toolInfo, exception);
 					log.error("Error while fetching projects from {}", exception.getMessage());
 					throw new RestClientException("Error while fetching projects from {}", exception);
 				}
@@ -116,21 +115,5 @@ public class ZephyrServerImpl implements ZephyrClient {
 	private <T extends Object> ResponseEntity<T> makeRestCall(final String url, final Class<T> type,
 			HttpMethod httpMethod, final String credentials) {
 		return restTemplate.exchange(url, httpMethod, zephyrUtil.buildAuthenticationHeader(credentials), type);
-	}
-
-	/**
-	 * to check client exception
-	 *
-	 * @param toolInfo
-	 *            toolInfo
-	 * @param exception
-	 *            exception
-	 */
-	private void isClientException(ProcessorToolConnection toolInfo, Exception exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
-			processorToolConnectionService.updateBreakingConnection(toolInfo.getConnectionId(), errMsg);
-		}
 	}
 }

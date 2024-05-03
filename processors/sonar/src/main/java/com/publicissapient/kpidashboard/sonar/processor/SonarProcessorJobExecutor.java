@@ -36,7 +36,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -225,7 +224,6 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 					processorExecutionTraceLog.setExecutionSuccess(true);
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				} catch (Exception ex) {
-					isClientException(sonar, ex);
 					String errorMessage = "Exception in sonar project: url - " + sonar.getUrl() + ", user - "
 							+ sonar.getUsername() + ", toolId - " + sonar.getId() + ", Exception is - "
 							+ ex.getMessage();
@@ -250,22 +248,6 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 		log.info("Sonar Processor execution completed");
 		MDC.clear();
 		return executionStatus;
-	}
-
-	/**
-	 * to check exception happening due to client Server
-	 * 
-	 * @param sonar
-	 *            sonar
-	 * @param ex
-	 *            ex
-	 */
-	private void isClientException(ProcessorToolConnection sonar, Exception ex) {
-		if (ex instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) ex).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) ex).getStatusCode().toString();
-			processorToolConnectionService.updateBreakingConnection(sonar.getConnectionId(), errMsg);
-		}
 	}
 
 	@Override

@@ -53,7 +53,6 @@ import com.publicissapient.kpidashboard.common.model.azureboards.AzureBoardsWIMo
 import com.publicissapient.kpidashboard.common.model.azureboards.iterations.AzureIterationsModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.AzureUpdatesModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlModel;
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 
 import lombok.extern.slf4j.Slf4j;
@@ -72,9 +71,6 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	private final AzureProcessorConfig azureProcessorConfig;
 
 	ObjectMapper mapper;
-
-	@Autowired
-	private ProcessorToolConnectionService processorToolConnectionService;
 
 	@Autowired
 	public ProcessorAsyncAzureRestClientImpl(RestOperationsFactory<RestOperations> restOperationsFactory,
@@ -292,8 +288,7 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 		AzureWiqlModel azureWiqlModel = new AzureWiqlModel();
 		StringBuilder url = new StringBuilder(azureServer.getUrl());
 
-		if (projectConfig.getProjectToolConfig() != null
-				&& StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getTeam())) {
+		if (projectConfig.getProjectToolConfig() != null && StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getTeam())) {
 			url.append(AzureConstants.FORWARD_SLASH);
 			url.append(AzureProcessorUtil.encodeSpaceInUrl(projectConfig.getProjectToolConfig().getTeam()));
 		}
@@ -338,12 +333,6 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 			}
 
 		} else {
-			if (responseEntity.getStatusCode().is4xxClientError()) {
-				String errMsg = responseEntity.getStatusCode().toString();
-				processorToolConnectionService
-						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
-			}
-
 			log.error("Response Error for Wiql API call ");
 		}
 		return azureWiqlModel;

@@ -32,13 +32,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.JiraBoardListResponse;
@@ -93,8 +91,6 @@ public class JiraToolConfigServiceImpl {
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
-	@Autowired
-	private ConnectionService connectionService;
 
 	public List<BoardDetailsDTO> getJiraBoardDetailsList(BoardRequestDTO boardRequestDTO) {
 
@@ -106,32 +102,17 @@ public class JiraToolConfigServiceImpl {
 				Connection connection = optConnection.get();
 				String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 				HttpEntity<?> httpEntity = getHttpEntity(connection);
-				fetchBoardDetailsRestAPICall(boardRequestDTO, responseList, baseUrl, httpEntity, connection);
+				fetchBoardDetailsRestAPICall(boardRequestDTO, responseList, baseUrl, httpEntity);
 				return responseList;
 			}
 		} catch (RestClientException exception) {
-			isClientException(optConnection, exception);
 			log.error("exception occured while trying to hit api.");
 		}
 		return responseList;
 	}
 
-	/**
-	 * update if connection is broken or unable to connect to client server.
-	 * 
-	 * @param optConnection
-	 * @param exception
-	 */
-	private void isClientException(Optional<Connection> optConnection, RestClientException exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
-			optConnection.ifPresent(connection -> connectionService.updateBreakingConnection(connection, errMsg));
-		}
-	}
-
 	public void fetchBoardDetailsRestAPICall(BoardRequestDTO boardRequestDTO, List<BoardDetailsDTO> responseList,
-			String baseUrl, HttpEntity<?> httpEntity, Connection connection) {
+			String baseUrl, HttpEntity<?> httpEntity) {
 		long startAt = 0;
 		long nextPageIndex = startAt;
 		boolean isLast = false;
@@ -158,11 +139,6 @@ public class JiraToolConfigServiceImpl {
 				}
 
 			} catch (Exception exception) {
-				if (exception instanceof HttpClientErrorException
-						&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-					String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
-					connectionService.updateBreakingConnection(connection, errMsg);
-				}
 				log.error("Error while fetching boardList for projectKey Id {}:  {}", boardRequestDTO.getProjectKey(),
 						exception.getMessage());
 			}

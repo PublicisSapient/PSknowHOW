@@ -86,6 +86,4 @@ public interface ConnectionService {
 
 	ServiceResponse deleteConnection(String id);
 
-	void  updateBreakingConnection(Connection connection, String connectionErrorMsg);
-
 }

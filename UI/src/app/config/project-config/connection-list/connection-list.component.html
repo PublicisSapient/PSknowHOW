@@ -74,7 +74,7 @@
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-connection>
-                        <tr [ngClass]="{'broken-conn-row': connection.brokenConnection}" tooltipPosition="top" [pTooltip]="connection.connectionErrorMsg">        
+                        <tr>
                             <td style="display: none;">
                                 <p-tableCheckbox [value]="connection"></p-tableCheckbox>
                             </td>

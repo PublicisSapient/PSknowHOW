@@ -48,7 +48,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
@@ -72,8 +71,7 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 
 	@Autowired
 	JiraProcessorConfig jiraProcessorConfig;
-	@Autowired
-	private ProcessorToolConnectionService processorToolConnectionService;
+
 	@Autowired
 	SprintRepository sprintRepository;
 
@@ -145,8 +143,6 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 			} catch (RestClientException e) {
 				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-					processorToolConnectionService.updateBreakingConnection(
-							projectConfig.getProjectToolConfig().getConnectionId(), ERROR_MSG_401);
 					log.error(ERROR_MSG_401);
 				} else {
 					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e);

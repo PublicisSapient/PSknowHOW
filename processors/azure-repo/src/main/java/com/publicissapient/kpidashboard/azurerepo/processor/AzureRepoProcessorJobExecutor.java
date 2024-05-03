@@ -38,7 +38,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -419,8 +418,6 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 						reposCount++;
 					}
 				} catch (FetchingCommitException exception) {
-					Throwable cause = exception.getCause();
-					isClientException(entry, cause);
 					log.error(String.format("Error in processing %s", entry.getUrl()), exception);
 					executionStatus = false;
 				}
@@ -429,21 +426,6 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 		}
 		return commitsCount;
 
-	}
-
-	/**
-	 * this method check for the client exception
-	 * 
-	 * @param entry
-	 *            entry
-	 * @param cause
-	 *            cause
-	 */
-	private void isClientException(ProcessorToolConnection entry, Throwable cause) {
-		if (cause != null && ((HttpClientErrorException) cause).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) cause).getStatusCode().toString();
-			processorToolConnectionService.updateBreakingConnection(entry.getConnectionId(), errMsg);
-		}
 	}
 
 	private int processMergeRequestData(List<AzureRepoModel> azurerepoRepos,
@@ -491,8 +473,6 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 						reposCount++;
 					}
 				} catch (FetchingCommitException exception) {
-					Throwable cause = exception.getCause();
-					isClientException(entry, cause);
 					log.error(String.format("Error in processing %s", entry.getUrl()), exception);
 					executionStatus = false;
 				}
