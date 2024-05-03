@@ -16,12 +16,13 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -48,9 +49,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
@@ -79,6 +82,8 @@ public class JiraToolConfigServiceImplTest {
 	private RestTemplate restTemplate;
 	@Mock
 	private RestAPIUtils restAPIUtils;
+	@Mock
+	private ConnectionService connectionService;
 	@Mock
 	private ConnectionRepository connectionRepository;
 	@Mock
@@ -187,6 +192,21 @@ public class JiraToolConfigServiceImplTest {
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 		AssigneeResponseDTO assigneeResponseDTO = jiraToolConfigService.getProjectAssigneeDetails(basicConfigId);
 		assertEquals(2, assigneeResponseDTO.getAssigneeDetailsList().size());
+	}
+
+	@Test
+	public void getJiraBoardDetailsListTestException() {
+		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
+		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
+		assertEquals(optConnection, testConnectionOpt);
+		when(restAPIUtils.decryptPassword(connection1.getPassword())).thenReturn("decryptKey");
+		HttpHeaders header = new HttpHeaders();
+		header.add("Authorization", "Basic base64str");
+		when(restAPIUtils.getHeaders(connection1.getUsername(), "decryptKey")).thenReturn(header);
+		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
+				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+		doNothing().when(connectionService).updateBreakingConnection(eq(connection1), anyString());
+		jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO);
 	}
 
 }

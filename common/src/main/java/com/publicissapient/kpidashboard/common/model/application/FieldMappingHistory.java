@@ -100,7 +100,7 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraDefectRejectionStatusKPI133;
 	private List<ConfigurationHistoryChangeLog> historyjiraDefectRejectionStatusRCAKPI36;
 	private List<ConfigurationHistoryChangeLog> historyjiraDefectRejectionStatusKPI14;
-	private List<ConfigurationHistoryChangeLog> historyJiraDefectRejectionStatusQAKPI111;
+	private List<ConfigurationHistoryChangeLog> historyjiraDefectRejectionStatusQAKPI111;
 
 	private List<ConfigurationHistoryChangeLog> historyjiraBugRaisedByIdentification;
 	private List<ConfigurationHistoryChangeLog> historyjiraBugRaisedByValue;
