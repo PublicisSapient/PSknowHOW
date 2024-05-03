@@ -170,7 +170,6 @@ label.btn-import-label {
 }
 
 .commentSummaryDdn{
-  max-width: 70vw;
   width: max-content;
   min-width: 300px;
   position: absolute;
@@ -179,7 +178,7 @@ label.btn-import-label {
   box-shadow: 0px 1px 10px #00000045;
   z-index: 2000;
   border-radius: 5px;
-  left: 20px;
+  left: 10px;
   background-color: #686868;
   color: #fff;
 }
@@ -198,7 +197,11 @@ label.btn-import-label {
 }
 
 .h-40{
-  height :29px;
+  height :28px;
+}
+
+.p-pt-2px{
+  padding-top: 2px;
 }
 
 
