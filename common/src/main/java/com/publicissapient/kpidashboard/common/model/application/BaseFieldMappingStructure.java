@@ -54,6 +54,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	private List<Options> options;
 	private List<String> filterGroup;
 	private String readOnly;
+	private boolean nodeSpecific;
 
 	@Data
 	@Getter

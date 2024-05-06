@@ -377,8 +377,9 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 					: LocalDate.parse(endDate.split("T")[0], DATE_TIME_FORMATTER);
 			// increment the startDate w.r.t Count of days field for plotting to start from
 			// updated start date
+			Map<String, Integer> startDateCountKPI150 = Optional.ofNullable(fieldMapping.getStartDateCountKPI150()).orElse(new HashMap<>());
 			startLocalDate = Objects.requireNonNull(startLocalDate)
-					.plusDays(Optional.ofNullable(fieldMapping.getStartDateCountKPI150()).orElse(0));
+					.plusDays(startDateCountKPI150.getOrDefault(latestRelease.getId(), 0));
 			Map<String, Long> durationRangeMap = getDurationRangeMap(startLocalDate, endLocalDate);
 			duration = durationRangeMap.keySet().stream().findFirst().orElse("");
 			range = durationRangeMap.values().stream().findFirst().orElse(0L);

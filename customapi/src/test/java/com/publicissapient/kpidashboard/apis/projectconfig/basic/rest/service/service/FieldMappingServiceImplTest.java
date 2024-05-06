@@ -42,6 +42,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingMeta;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -381,7 +382,7 @@ public class FieldMappingServiceImplTest {
 		when(fieldMappingRepository.findByProjectToolConfigId(any(ObjectId.class))).thenReturn(this.scrumFieldMapping);
 		List<FieldMappingResponse> fieldMappingResponses = fieldMappingService.getKpiSpecificFieldsAndHistory(
 				KPICode.getKPI("kpi36"),
-				createProjectToolConfigOpt(scrumFieldMapping.getBasicProjectConfigId()).get().getId().toString());
+				createProjectToolConfigOpt(scrumFieldMapping.getBasicProjectConfigId()).get().getId().toString(), new FieldMappingMeta());
 		assertNotNull(fieldMappingResponses);
 		Map<String, Object> collect = fieldMappingResponses.stream()
 				.filter(response -> Objects.nonNull(response.getOriginalValue()))
@@ -410,7 +411,7 @@ public class FieldMappingServiceImplTest {
 		when(fieldMappingRepository.findByProjectToolConfigId(any(ObjectId.class))).thenReturn(this.scrumFieldMapping2);
 		List<FieldMappingResponse> fieldMappingResponses = fieldMappingService.getKpiSpecificFieldsAndHistory(
 				KPICode.getKPI("kpi36"),
-				createProjectToolConfigOpt(scrumFieldMapping.getBasicProjectConfigId()).get().getId().toString());
+				createProjectToolConfigOpt(scrumFieldMapping.getBasicProjectConfigId()).get().getId().toString(), new FieldMappingMeta());
 		assertNotNull(fieldMappingResponses);
 		Map<String, Object> collect = fieldMappingResponses.stream().filter(
 				response -> Objects.nonNull(response.getOriginalValue()) && Objects.nonNull(response.getHistory()))
@@ -423,9 +424,17 @@ public class FieldMappingServiceImplTest {
 
 	@Test
 	public void updateKpiField() throws NoSuchFieldException, IllegalAccessException {
-		when(configHelperService.loadFieldMappingStructure()).thenReturn(Arrays.asList(new FieldMappingStructure()));
+		FieldMappingStructure fieldMappingStructure = new FieldMappingStructure();
+		fieldMappingStructure.setFieldName("rootCauseIdentifier");
+		BaseFieldMappingStructure baseFieldMappingStructure = new BaseFieldMappingStructure();
+		baseFieldMappingStructure.setFieldName("rootCause");
+		baseFieldMappingStructure.setFilterGroup(Arrays.asList("CustomField"));
+		fieldMappingStructure.setNestedFields(Arrays.asList(baseFieldMappingStructure));
+		fieldMappingStructure.setProcessorCommon(true);
+		fieldMappingStructure.setNodeSpecific(false);
+		when(configHelperService.loadFieldMappingStructure()).thenReturn(Arrays.asList(fieldMappingStructure));
 		when(kpiHelperService.getFieldMappingStructure(anyList(), anyList()))
-				.thenReturn(Arrays.asList(new FieldMappingStructure()));
+				.thenReturn(Arrays.asList(fieldMappingStructure));
 
 		Optional<ProjectBasicConfig> projectBasicConfigOpt = createProjectBasicConfig(false,
 				scrumFieldMapping.getBasicProjectConfigId());
@@ -440,9 +449,11 @@ public class FieldMappingServiceImplTest {
 		response.setFieldName("resolutionTypeForRejectionRCAKPI36");
 		response.setOriginalValue(Arrays.asList("1", "2"));
 		response.setPreviousValue(Arrays.asList("1"));
+		FieldMappingMeta fieldMappingMeta = new FieldMappingMeta();
+		fieldMappingMeta.setFieldMappingRequests(Arrays.asList(response));
 
 		fieldMappingService.updateSpecificFieldsAndHistory(KPICode.getKPI("kpi36"), projectToolConfig,
-				Arrays.asList(response));
+				fieldMappingMeta );
 	}
 
 	@Test
@@ -468,8 +479,11 @@ public class FieldMappingServiceImplTest {
 		response.setOriginalValue(Arrays.asList("1", "2"));
 		response.setPreviousValue(Arrays.asList("1"));
 
+		FieldMappingMeta fieldMappingMeta = new FieldMappingMeta();
+		fieldMappingMeta.setFieldMappingRequests(Arrays.asList(response));
+
 		fieldMappingService.updateSpecificFieldsAndHistory(KPICode.getKPI("kpi36"), projectToolConfig,
-				Arrays.asList(response));
+				fieldMappingMeta);
 	}
 
 	@Test
@@ -481,6 +495,7 @@ public class FieldMappingServiceImplTest {
 		baseFieldMappingStructure.setFilterGroup(Arrays.asList("CustomField"));
 		fieldMappingStructure.setNestedFields(Arrays.asList(baseFieldMappingStructure));
 		fieldMappingStructure.setProcessorCommon(true);
+		fieldMappingStructure.setNodeSpecific(false);
 		when(configHelperService.loadFieldMappingStructure()).thenReturn(Arrays.asList(fieldMappingStructure));
 		when(kpiHelperService.getFieldMappingStructure(anyList(), anyList()))
 				.thenReturn(Arrays.asList(fieldMappingStructure));
@@ -508,9 +523,11 @@ public class FieldMappingServiceImplTest {
 		response2.setFieldName("rootCause");
 		response2.setOriginalValue("CustomField_123");
 		response2.setPreviousValue("");
+		FieldMappingMeta fieldMappingMeta = new FieldMappingMeta();
+		fieldMappingMeta.setFieldMappingRequests(Arrays.asList(response, response2));
 
 		fieldMappingService.updateSpecificFieldsAndHistory(KPICode.getKPI("kpi0"), projectToolConfig,
-				Arrays.asList(response, response2));
+				fieldMappingMeta);
 	}
 
 	@Test
@@ -538,8 +555,11 @@ public class FieldMappingServiceImplTest {
 		response.setOriginalValue(Arrays.asList("1", "2"));
 		response.setPreviousValue(Arrays.asList("1"));
 
+		FieldMappingMeta fieldMappingMeta = new FieldMappingMeta();
+		fieldMappingMeta.setFieldMappingRequests(Arrays.asList(response));
+
 		fieldMappingService.updateSpecificFieldsAndHistory(KPICode.getKPI("kpi0"), projectToolConfig,
-				Arrays.asList(response));
+				fieldMappingMeta);
 	}
 
 	@Test

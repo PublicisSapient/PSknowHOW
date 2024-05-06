@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -60,6 +61,7 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.BaseFieldMappingStructure;
 import com.publicissapient.kpidashboard.common.model.application.ConfigurationHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingMeta;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -139,7 +141,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 
 		fieldMapping.setProjectToolConfigId(new ObjectId(projectToolConfigId));
-		fieldMapping.setBasicProjectConfigId(basicProjectConfigId);
 
 		FieldMapping existingFieldMapping = fieldMappingRepository
 				.findByProjectToolConfigId(new ObjectId(projectToolConfigId));
@@ -253,20 +254,22 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 * first from fieldmapping table
 	 */
 	@Override
-	public List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId)
+	public List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId, FieldMappingMeta requestData)
 			throws NoSuchFieldException, IllegalAccessException {
 		FieldMappingEnum fieldMappingEnum = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase());
 		List<String> fields = fieldMappingEnum.getFields();
+		String releaseNodeId = requestData.getReleaseNodeId();
+		List<String> nodeSpecifFields = getNodeSpecificFields();
 		FieldMapping fieldMapping = getFieldMapping(projectToolConfigId);
 		List<FieldMappingResponse> fieldMappingResponses = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(fields) && fieldMapping != null) {
 			Class<FieldMapping> fieldMappingClass = FieldMapping.class;
 			for (String field : fields) {
 				FieldMappingResponse mappingResponse = new FieldMappingResponse();
-				Object value = getFieldMappingField(fieldMapping, fieldMappingClass, field);
+				Object value= getFieldMappingData(fieldMapping, fieldMappingClass, field, releaseNodeId , nodeSpecifFields.contains(field));
 				mappingResponse.setFieldName(field);
 				mappingResponse.setOriginalValue(value);
-				List<ConfigurationHistoryChangeLog> changeLogs = getAccessibleFieldHistory(fieldMapping, field);
+				List<ConfigurationHistoryChangeLog> changeLogs = getFieldMappingHistory(fieldMapping, field, releaseNodeId, nodeSpecifFields.contains(field));
 				if (CollectionUtils.isNotEmpty(changeLogs)) {
 					mappingResponse.setHistory(changeLogs.stream()
 							.sorted(Comparator.comparing(ConfigurationHistoryChangeLog::getUpdatedOn).reversed())
@@ -276,6 +279,43 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			}
 		}
 		return fieldMappingResponses;
+	}
+
+	private List<String> getNodeSpecificFields() {
+		return ((List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure()).stream().filter(
+				BaseFieldMappingStructure::isNodeSpecific).map(BaseFieldMappingStructure::getFieldName).toList();
+	}
+
+	private List<ConfigurationHistoryChangeLog> getFieldMappingHistory(FieldMapping fieldMapping, String field,
+			String nodeId, boolean nodeSpecificField) throws NoSuchFieldException, IllegalAccessException {
+		List<ConfigurationHistoryChangeLog> accessibleFieldHistory = getAccessibleFieldHistory(fieldMapping, field);
+		if (nodeSpecificField && StringUtils.isNotEmpty(nodeId) && CollectionUtils.isNotEmpty(accessibleFieldHistory)) {
+			return accessibleFieldHistory.stream().filter(
+					configurationHistoryChangeLog -> StringUtils.isNotEmpty(configurationHistoryChangeLog.getNodeId())
+							&& configurationHistoryChangeLog.getNodeId().equalsIgnoreCase(nodeId))
+					.toList();
+		}
+		return accessibleFieldHistory;
+	}
+
+	private Object getFieldMappingData(FieldMapping fieldMapping, Class<FieldMapping> fieldMappingClass, String field, String nodeId, boolean nodeSpecificField) throws NoSuchFieldException, IllegalAccessException {
+		Object fieldMappingField = getFieldMappingField(fieldMapping, fieldMappingClass, field);
+		if(nodeSpecificField && StringUtils.isNotEmpty(nodeId)){
+			if(ObjectUtils.isNotEmpty(fieldMappingField)) {
+				Map<String, Integer> mappingField = (Map<String, Integer>) fieldMappingField;
+				return mappingField.getOrDefault(nodeId, 0);
+			}
+			else{
+				return 0;
+			}
+		}
+		else{
+			return fieldMappingField;
+		}
+		
+		
+		
+		
 	}
 
 	/**
@@ -294,21 +334,22 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 *            kpiCode
 	 * @param projectToolConfig
 	 *            projectToolConfig
-	 * @param originalFieldMappingResponseList
-	 *            originalFieldMappingResponseList
+	 * @param fieldMappingMeta
+	 *            fieldMappingMeta
 	 */
 	@Override
 	public void updateSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfig,
-			List<FieldMappingResponse> originalFieldMappingResponseList)
-			throws NoSuchFieldException, IllegalAccessException {
+			FieldMappingMeta fieldMappingMeta) throws NoSuchFieldException, IllegalAccessException {
+		List<FieldMappingResponse> originalFieldMappingRequestList = fieldMappingMeta.getFieldMappingRequests();
 		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService
 				.loadFieldMappingStructure();
-		if (projectToolConfig != null && CollectionUtils.isNotEmpty(originalFieldMappingResponseList)
+		if (projectToolConfig != null && CollectionUtils.isNotEmpty(originalFieldMappingRequestList)
 				&& CollectionUtils.isNotEmpty(fieldMappingStructureList)) {
 			FieldMappingEnum fieldMappingEnum = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase());
 			List<String> fieldList = fieldMappingEnum.getFields();
 			List<FieldMappingStructure> fieldMappingStructure = kPIHelperService
 					.getFieldMappingStructure(fieldMappingStructureList, fieldList);
+
 			Map<String, FieldMappingStructure> fieldMappingStructureMap = fieldMappingStructure.stream()
 					.collect(Collectors.toMap(FieldMappingStructure::getFieldName, Function.identity()));
 
@@ -318,45 +359,101 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 			Query query = new Query(Criteria.where("projectToolConfigId").is(projectToolConfigId));
 			Update update = new Update();
-			final String loggedInUser = authenticationService.getLoggedInUser();
-
 			// Map to store fieldName and corresponding object
 			Map<String, FieldMappingResponse> responseHashMap = new HashMap<>();
 			// Iterate over responses
-			removeDuplicateFieldsFromResponse(originalFieldMappingResponseList, responseHashMap);
+			removeDuplicateFieldsFromResponse(originalFieldMappingRequestList, responseHashMap);
 			List<FieldMappingResponse> fieldMappingResponseList = new ArrayList<>(responseHashMap.values());
-			boolean cleanTraceLog = false;
+			String cleanTraceLog = "false";
 			for (FieldMappingResponse fieldMappingResponse : fieldMappingResponseList) {
-				update.set(fieldMappingResponse.getFieldName(), fieldMappingResponse.getOriginalValue());
 				FieldMappingStructure mappingStructure = fieldMappingStructureMap
 						.get(fieldMappingResponse.getFieldName());
-				if (null != mappingStructure) {
-					// for nested fields
-					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-							.get(projectToolConfig.getBasicProjectConfigId());
-					generateHistoryForNestedFields(fieldMappingResponseList, fieldMappingResponse, mappingStructure,
-							fieldMapping);
-					// for additionalfilters
-					setMappingResponseWithGeneratedField(fieldMappingResponse, fieldMapping);
-
-					if (!cleanTraceLog) {
-						cleanTraceLog = mappingStructure.isProcessorCommon();
-					}
-				}
+				cleanTraceLog = createSpecialFieldsAndUpdateFieldMapping(projectToolConfig, fieldMappingMeta, update,
+						fieldMappingResponseList, cleanTraceLog, fieldMappingResponse, mappingStructure);
 				updateFields(fieldMappingResponse.getFieldName(), projectToolConfig, projectBasicConfig);
-				ConfigurationHistoryChangeLog configurationHistoryChangeLog = new ConfigurationHistoryChangeLog();
-				configurationHistoryChangeLog.setChangedTo(fieldMappingResponse.getOriginalValue());
-				configurationHistoryChangeLog.setChangedFrom(fieldMappingResponse.getPreviousValue());
-				configurationHistoryChangeLog.setChangedBy(loggedInUser);
-				configurationHistoryChangeLog.setUpdatedOn(LocalDateTime.now().toString());
+				ConfigurationHistoryChangeLog configurationHistoryChangeLog = createHistoryChangeLog(fieldMappingMeta,
+						fieldMappingResponse, mappingStructure);
 				update.addToSet(HISTORY + fieldMappingResponse.getFieldName(), configurationHistoryChangeLog);
 			}
 			operations.updateFirst(query, update, "field_mapping");
 			saveTemplateCode(projectBasicConfig, projectToolConfig);
-			if (cleanTraceLog)
+			if (cleanTraceLog.equalsIgnoreCase("True"))
 				removeTraceLog(projectBasicConfig.getId());
 			cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 			clearCache();
+		}
+	}
+
+	private String createSpecialFieldsAndUpdateFieldMapping(ProjectToolConfig projectToolConfig, FieldMappingMeta fieldMappingMeta, Update update, List<FieldMappingResponse> fieldMappingResponseList, String cleanTraceLog, FieldMappingResponse fieldMappingResponse, FieldMappingStructure mappingStructure) throws NoSuchFieldException, IllegalAccessException {
+		if (null != mappingStructure) {
+			if (!mappingStructure.isNodeSpecific()) {
+				update.set(fieldMappingResponse.getFieldName(), fieldMappingResponse.getOriginalValue());
+			}
+			// for nested fields
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(projectToolConfig.getBasicProjectConfigId());
+			generateHistoryForNestedFields(fieldMappingResponseList, fieldMappingResponse, mappingStructure,
+					fieldMapping);
+			// for additionalfilters
+			setMappingResponseWithGeneratedField(fieldMappingResponse, fieldMapping);
+			//for nodeSpecific
+			setNodeSpecificFields(mappingStructure, fieldMappingResponse, fieldMapping, fieldMappingMeta.getReleaseNodeId(), update);
+
+			if (cleanTraceLog.equalsIgnoreCase("False")) {
+				cleanTraceLog= mappingStructure.isProcessorCommon()? "True":"False";
+			}
+		}
+		return cleanTraceLog;
+	}
+
+	private ConfigurationHistoryChangeLog createHistoryChangeLog(FieldMappingMeta fieldMappingMeta,
+			FieldMappingResponse fieldMappingResponse, FieldMappingStructure mappingStructure) {
+		final String loggedInUser = authenticationService.getLoggedInUser();
+		ConfigurationHistoryChangeLog configurationHistoryChangeLog = new ConfigurationHistoryChangeLog();
+		configurationHistoryChangeLog.setChangedTo(fieldMappingResponse.getOriginalValue());
+		configurationHistoryChangeLog.setChangedFrom(fieldMappingResponse.getPreviousValue());
+		configurationHistoryChangeLog.setChangedBy(loggedInUser);
+		configurationHistoryChangeLog.setUpdatedOn(LocalDateTime.now().toString());
+		if (mappingStructure.isNodeSpecific()) {
+			configurationHistoryChangeLog.setNodeId(fieldMappingMeta.getReleaseNodeId());
+		}
+		return configurationHistoryChangeLog;
+	}
+
+	private void setNodeSpecificFields(FieldMappingStructure mappingStructure,
+									   FieldMappingResponse fieldMappingResponse, FieldMapping fieldMapping, String nodeId, Update update)
+			throws NoSuchFieldException, IllegalAccessException {
+		if (mappingStructure.isNodeSpecific() && StringUtils.isNotEmpty(nodeId)) {
+			Object fieldMappingField = getFieldMappingField(fieldMapping, FieldMapping.class,
+					fieldMappingResponse.getFieldName());
+			Object originalValue = fieldMappingResponse.getOriginalValue();
+			if (ObjectUtils.isNotEmpty(originalValue)) {
+				Map<String, Integer> map = new HashMap<>();
+				if (ObjectUtils.isNotEmpty(fieldMappingField)) {
+					map = (Map<String, Integer>) fieldMappingField;
+				}
+				map.put(nodeId, (Integer) originalValue);
+				update.set(fieldMappingResponse.getFieldName(), map);
+			}
+
+			List<ConfigurationHistoryChangeLog> getNodeSpecificFieldHistory = getAccessibleFieldHistory(fieldMapping,
+					fieldMappingResponse.getFieldName());
+			String previousValue = "";
+			if (CollectionUtils.isNotEmpty(getNodeSpecificFieldHistory)) {
+				List<ConfigurationHistoryChangeLog> changeLogs = getNodeSpecificFieldHistory.stream()
+						.filter(configurationHistoryChangeLog -> configurationHistoryChangeLog.getNodeId()
+								.equalsIgnoreCase(nodeId))
+						.toList();
+				if (CollectionUtils.isNotEmpty(changeLogs)) {
+					ConfigurationHistoryChangeLog configurationHistoryChangeLog = changeLogs.get(changeLogs.size() - 1);
+					previousValue = String.valueOf(configurationHistoryChangeLog.getChangedTo());
+				}
+			}
+			if (ObjectUtils.isNotEmpty(originalValue)) {
+				fieldMappingResponse.setOriginalValue(originalValue);
+			}
+			fieldMappingResponse.setPreviousValue(previousValue);
+
 		}
 	}
 
@@ -701,10 +798,11 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	public boolean convertToFieldMappingAndCheckIsFieldPresent(List<FieldMappingResponse> fieldMappingResponseList, FieldMapping fieldMapping) throws IllegalAccessException {
 		// this function checks if Fields are Present in FieldMapping or not and converts fieldMappingResponseList to FieldMapping.
 		boolean allfieldFound=false;
+		List<String> nodeSpecificFields = getNodeSpecificFields();
 		for (FieldMappingResponse response : fieldMappingResponseList) {
 			String fieldName = response.getFieldName();
 
-			if (fieldName.contains(HISTORY) || fieldName.equalsIgnoreCase("id")){
+			if (fieldName.contains(HISTORY) || fieldName.equalsIgnoreCase("id") || nodeSpecificFields.contains(fieldName)){
 				continue;
 			}
 			if (isFieldPresent(fieldMapping.getClass(), fieldName)) {
