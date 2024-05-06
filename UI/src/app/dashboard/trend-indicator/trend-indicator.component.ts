@@ -45,6 +45,14 @@ export class TrendIndicatorComponent implements OnInit {
 
   }
 
+  getTooltipContent(): string {
+    if ((this.dataTrend as any).isCumulative) {
+        return '<div class="inner-content">Latest Trend as Maturity</div>';
+    } else {
+        return '<div class="inner-content">Average maturity for ' + (this.dataTrend as any).maturityDenominator + ' data points.</div>';
+    }
+  }
+
   ngOnDestroy() {
     this.kpiData = {};
     this.dataTrend = {};

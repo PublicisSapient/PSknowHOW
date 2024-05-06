@@ -457,6 +457,7 @@ export class DeveloperComponent implements OnInit {
             "trend": trend,
             "maturity": 'M' + this.kpiChartData[kpiId][i]?.maturity,
             "maturityValue": this.kpiChartData[kpiId][i]?.maturityValue,
+            "maturityDenominator": this.kpiChartData[kpiId][i]?.value?.length,
             "kpiUnit": unit
           };
 
