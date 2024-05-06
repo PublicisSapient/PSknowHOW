@@ -916,7 +916,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
   getFieldMapping() {
     this.http.getFieldMappingsWithHistory(this.selectedToolConfig[0].id,this.kpiData[0].kpiId).subscribe(mappings => {
-      if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 2) {
+      if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 1) {
         this.selectedFieldMapping = mappings['data'].fieldMappingResponses;
         this.metaDataTemplateCode = mappings['data']?.metaTemplateCode
         this.displayConfigModel = true;
