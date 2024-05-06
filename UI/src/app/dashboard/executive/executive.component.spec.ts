@@ -2680,6 +2680,19 @@ describe('ExecutiveComponent', () => {
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
     }];
+    component.updatedConfigGlobalData= [{
+      kpiId: 'kpi17',
+      kpiName: 'Unit Test Coverage',
+      isEnabled: true,
+      order: 23,
+      kpiDetail: {
+          kanban: false,
+          kpiSource: 'Jira',
+          kpiCategory: 'Iteration',
+          groupId: 1
+      },
+      shown: true
+    }];
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListSonar });
     const postSonarSpy = spyOn(component, 'postSonarKpi');
     component.groupSonarKpi(['kpi17']);
@@ -2692,6 +2705,19 @@ describe('ExecutiveComponent', () => {
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
+    }];
+    component.updatedConfigGlobalData= [{
+      kpiId: 'kpi17',
+      kpiName: 'Unit Test Coverage',
+      isEnabled: true,
+      order: 23,
+      kpiDetail: {
+          kanban: false,
+          kpiSource: 'Jira',
+          kpiCategory: 'Iteration',
+          groupId: 1
+      },
+      shown: true
     }];
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJenkins });
     const postJenkinsSpy = spyOn(component, 'postJenkinsKpi');
@@ -2707,9 +2733,16 @@ describe('ExecutiveComponent', () => {
     }];
     component.updatedConfigGlobalData= [{
       kpiId: 'kpi17',
-      kanban: false,
-      kpiSource: 'Jira',
-      groupId: 1
+      kpiName: 'Unit Test Coverage',
+      isEnabled: true,
+      order: 23,
+      kpiDetail: {
+          kanban: false,
+          kpiSource: 'Jira',
+          kpiCategory: 'Iteration',
+          groupId: 1
+      },
+      shown: true
     }];
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListZypher });
     const postZypherSpy = spyOn(component, 'postZypherKpi');
@@ -2724,10 +2757,17 @@ describe('ExecutiveComponent', () => {
       kpiName: 'Unit Test Coverage'
     }];
     component.updatedConfigGlobalData= [{
-        kpiId: 'kpi17',
-        kanban: false,
-        kpiSource: 'Jira',
-        groupId: 1
+      kpiId: 'kpi17',
+      kpiName: 'Unit Test Coverage',
+      isEnabled: true,
+      order: 23,
+      kpiDetail: {
+          kanban: false,
+          kpiSource: 'Jira',
+          kpiCategory: 'Iteration',
+          groupId: 1
+      },
+      shown: true
     }];
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
     const postJiraSpy = spyOn(component, 'postJiraKpi');
@@ -2744,9 +2784,16 @@ describe('ExecutiveComponent', () => {
     }];
     component.updatedConfigGlobalData= [{
       kpiId: 'kpi17',
-      kanban: false,
-      kpiSource: 'Jira',
-      groupId: 1
+      kpiName: 'Unit Test Coverage',
+      isEnabled: true,
+      order: 23,
+      kpiDetail: {
+          kanban: false,
+          kpiSource: 'Jira',
+          kpiCategory: 'Iteration',
+          groupId: 1
+      },
+      shown: true
     }];
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListBitBucket });
     const postBitBucketSpy = spyOn(component, 'postBitBucketKpi');
