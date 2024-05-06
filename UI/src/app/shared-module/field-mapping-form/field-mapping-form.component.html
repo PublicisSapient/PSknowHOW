@@ -128,7 +128,7 @@
     <div class="comment-inner-section">
     <i *ngIf="showSpinner" class="fas fa-circle-notch icon-spinner"></i>
     <ng-container *ngIf="individualFieldHistory?.length > 0 && !showSpinner; else noComments">
-        <h5 class="p-m-0 dateAndName">Changes Log</h5>
+        <h5 class="p-m-0 dateAndName">Change Log</h5>
         <div *ngFor="let history of individualFieldHistory">
             <div class="p-p-2">
                 <div class="dateAndName">{{history['Changed At'] | date:'MM.dd.yyyy - hh:mmaaa'}} {{history['Changed By']}}</div>
