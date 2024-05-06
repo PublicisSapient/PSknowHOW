@@ -298,22 +298,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
         this.fullPageLoader = false;
       });
   }
-
-  // Used for grouping all Sonar kpi from master data and calling Sonar kpi.
-  // Return boolean flag based on link is available and video is enabled
-  isVideoLinkAvailable(kpiId) {
-    let kpiData;
-    try {
-      kpiData = this.masterData?.kpiList?.find(kpiObj => kpiObj.kpiId === kpiId);
-      if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch {
-      return false;
-    }
-  }
+  
   getSelectedType(sharedobject) {
     this.selectedtype = sharedobject;
   }

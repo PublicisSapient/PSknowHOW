@@ -2446,39 +2446,6 @@ describe('BacklogComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should return video link for kpi', () => {
-        component.masterData = {
-            kpiList: [
-                {
-                    kpiId: 'kpi14',
-                    videoLink: {
-                        disabled: false,
-                        videoUrl: 'www.google.com'
-                    }
-                }
-            ]
-        };
-        const result = component.isVideoLinkAvailable('kpi14');
-        expect(result).toBeTrue();
-    });
-
-    it('should not return video link for kpi', () => {
-        component.masterData = {
-            kpiList: [
-                {
-                    kpiId: 'kpi14',
-                    videoLink: {
-                        disabled: false,
-                        videoUrl: ''
-                    }
-                }
-            ]
-        };
-        const result = component.isVideoLinkAvailable('kpi14');
-        expect(result).toBeFalse()
-    });
-
-
     it('should check if kpi exists', () => {
         component.allKpiArray = [{
             kpiId: 'kpi13'

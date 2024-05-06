@@ -402,31 +402,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, this.filterApplyData, this.filterData, false);
   }
 
-  // Return video link if video link present
-  getVideoLink(kpiId) {
-    const kpiData = this.masterData.kpiList.find(kpiObj => kpiObj.kpiId === kpiId);
-    if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
-      return kpiData?.videoLink?.videoUrl;
-    } else {
-      // Show message that video is not available
-    }
-  }
-
-  // Return boolean flag based on link is available and video is enabled
-  isVideoLinkAvailable(kpiId) {
-    let kpiData;
-    try {
-      kpiData = this.masterData?.kpiList?.find(kpiObj => kpiObj.kpiId === kpiId);
-      if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch {
-      return false;
-    }
-  }
-
   sortAlphabetically(objArray) {
     if (objArray && objArray?.length > 1) {
       objArray?.sort((a, b) => a.data.localeCompare(b.data));
