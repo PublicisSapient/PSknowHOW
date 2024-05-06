@@ -616,13 +616,13 @@ public class JiraTestServiceImpl implements JiraTestService {
 	private void setStoryLinkWithDefect(Issue issue, TestCaseDetails testCaseDetail) {
 		if (null != issue.getIssueLinks()) {
 			Set<String> defectStorySet = new HashSet<>();
-			for (IssueLink issueLink : issue.getIssueLinks()) {
-				if (CollectionUtils.isNotEmpty(jiraTestProcessorConfig.getExcludeLinks())
-						&& jiraTestProcessorConfig.getExcludeLinks().stream()
-								.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
-					break;
+			if (CollectionUtils.isNotEmpty(jiraTestProcessorConfig.getExcludeLinks())) {
+				for (IssueLink issueLink : issue.getIssueLinks()) {
+					if (jiraTestProcessorConfig.getExcludeLinks().stream()
+							.noneMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
+						defectStorySet.add(issueLink.getTargetIssueKey());
+					}
 				}
-				defectStorySet.add(issueLink.getTargetIssueKey());
 			}
 			testCaseDetail.setDefectStoryID(defectStorySet);
 		}

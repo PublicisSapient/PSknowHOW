@@ -23,7 +23,6 @@ import java.util.List;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,9 +63,6 @@ public class ProcessorController {
 
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
-	@Autowired
-	private RestAPIUtils restAPIUtils;
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -158,8 +154,7 @@ public class ProcessorController {
 	public ResponseEntity<ServiceResponse> saveRepoToolsStatus(HttpServletRequest request,
 			@NonNull @RequestBody RepoToolsStatusResponse repoToolsStatusResponse) {
 		log.info("Received {} request for /saveRepoToolsStatus", request.getMethod());
-		Boolean isApiAuth = restAPIUtils.decryptPassword(customApiConfig.getxApiKey())
-				.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
+		Boolean isApiAuth = customApiConfig.getxApiKey().equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (Boolean.FALSE.equals(isApiAuth)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		}
