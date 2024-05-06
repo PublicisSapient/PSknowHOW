@@ -157,7 +157,7 @@ private setting = {
                  const originalVal = this.selectedFieldMapping[fieldName];
              finalList.push({ fieldName: fieldName, originalValue: originalVal })
      });
-     this.saveFieldMapping(finalList);
+     this.saveFieldMapping(finalList,true);
     }
   }
 

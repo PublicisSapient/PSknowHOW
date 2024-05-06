@@ -187,6 +187,7 @@ export class AppInitializerService {
                     environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
                     environment['MAP_URL'] = env['MAP_URL'] || '';
                     environment['RETROS_URL'] = env['RETROS_URL'] || '';
+                    environment['SPEED_SUITE'] = env['SPEED_SUITE'] === 'true' ? true : false;
                     this.validateToken(loc);
                 }));
             env$.toPromise().then(async res => {

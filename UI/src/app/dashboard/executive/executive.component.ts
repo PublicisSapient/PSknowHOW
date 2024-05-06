@@ -490,7 +490,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.selectedTestExecutionFilterData = {};
         this.loaderZypher = false;
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
-            if(this.filterApplyData['label'] !== 'sprint'){ 
+            if(this.filterApplyData['label'] !== 'sprint'){
                 this.getLastConfigurableTrendingListData(getData);
             }
             // creating array into object where key is kpi id
@@ -841,13 +841,13 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
             }
             else {
-                this.kpiChartData[kpiId] = [];
-                if (trendValueList && trendValueList?.length > 0) {
-                    this.kpiChartData[kpiId]?.push(trendValueList?.filter((x) => x['filter'] == 'Overall')[0]);
-                }
-                else {
-                    this.kpiChartData[kpiId]?.push(trendValueList);
-                }
+              this.kpiChartData[kpiId] = [];
+              if (trendValueList &&  trendValueList?.length > 0) {
+                this.kpiChartData[kpiId]?.push(trendValueList?.filter((x) => x['filter'] == 'Overall')[0]);
+              }
+              else {
+                this.kpiChartData[kpiId]?.push(trendValueList);
+              }
             }
         }
         else {
@@ -1305,37 +1305,34 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
         // Merge Cells
         worksheet.mergeCells(`A${footerRow.number}:F${footerRow.number}`);
-        // Generate Excel File with given name
+       // Generate Excel File with given name
         workbook.xlsx.writeBuffer().then((data) => {
-            const blob = new Blob([data as BlobPart], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            });
-            fs.saveAs(blob, 'Kpi Data' + '.xlsx');
+        const blob = new Blob([data as BlobPart], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         });
+        fs.saveAs(blob, 'Kpi Data' + '.xlsx');
+    });
     }
 
     checkMaturity(item) {
         let maturity = item.maturity;
         if (maturity == undefined) {
-            return 'NA';
+          return 'NA';
         }
-        if (item.value.length >= 5) {
-            const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
-            const tempArr = last5ArrItems.filter(x => x.data != 0);
-            if (tempArr.length == 0) {
-                maturity = '--';
-            }
-        } else {
-            maturity = '--';
+        const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
+        const tempArr = last5ArrItems.filter(x => x.data != 0);
+        if (tempArr.length == 0) {
+        maturity = '--';
         }
-        maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M' + maturity : maturity;
+        maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M'+maturity : maturity;
         return maturity;
-    }
+      }
 
-    checkLatestAndTrendValue(kpiData, item) {
-        let latest: string = '';
-        let trend: string = '';
-        if (item?.value?.length > 0) {
+      checkLatestAndTrendValue(kpiData, item){
+        let latest:string = '';
+        let trend:string = '';
+        let unit = '';
+        if(item?.value?.length > 0){
             let tempVal;
             if (item?.value[item?.value?.length - 1]?.dataValue) {
                 tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
@@ -1343,6 +1340,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
             }
             var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
+            unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
             latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
         }
         if (item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
@@ -1400,10 +1398,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             "value": latest,
                             "trend": trend,
                             "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
-                                this.checkMaturity(this.kpiChartData[kpiId][i])
-                                : 'M' + this.kpiChartData[kpiId][i]?.maturity,
-                            "maturityValue": this.kpiChartData[kpiId][i]?.maturityValue,
-                            "kpiUnit": unit
+                                        this.checkMaturity(this.kpiChartData[kpiId][i])
+                                        : 'M'+this.kpiChartData[kpiId][i]?.maturity,
+                            "maturityValue":this.kpiChartData[kpiId][i]?.maturityValue,
+                            "kpiUnit" : unit,
+                            "maturityDenominator" : this.kpiChartData[kpiId][i]?.value.length
                         };
                         if (kpiId === 'kpi997') {
                             trendObj['value'] = 'NA';
@@ -1437,6 +1436,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         const level = this.filterApplyData?.level;
         const nodeChildId = '';
         this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj, nodes, level, nodeChildId, this.updatedConfigGlobalData, kpiId)
+        this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
     }
 
     reloadKPI(event) {
@@ -1521,7 +1521,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
                     }
                 }
-               
+
             })
         })
        }

@@ -35,7 +35,7 @@ public interface FieldMappingService {
 
 	FieldMapping getFieldMapping(String projectToolConfigId);
 
-	FieldMapping addFieldMapping(String projectToolConfigId, FieldMapping fieldMapping);
+	FieldMapping addFieldMapping(String projectToolConfigId, FieldMapping fieldMapping, ObjectId basicProjectConfigId);
 
 	/**
 	 * Gets ProjectBasicConfig object by its id.

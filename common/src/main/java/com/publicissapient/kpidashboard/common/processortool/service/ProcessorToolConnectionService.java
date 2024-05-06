@@ -56,4 +56,12 @@ public interface ProcessorToolConnectionService {
 	 * @return list of {@link ProcessorToolConnection}
 	 */
 	List<ProcessorToolConnection> findByToolAndBasicProjectConfigId(String toolName, ObjectId configId);
+
+	/**
+	 * Method to update the flag of breaking connection
+	 * 
+	 * @param connection
+	 * @param connectionErrorMsg
+	 */
+	void updateBreakingConnection(ObjectId connection, String connectionErrorMsg);
 }

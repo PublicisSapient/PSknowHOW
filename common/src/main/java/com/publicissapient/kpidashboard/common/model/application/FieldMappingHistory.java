@@ -100,7 +100,7 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraDefectRejectionStatusKPI133;
 	private List<ConfigurationHistoryChangeLog> historyjiraDefectRejectionStatusRCAKPI36;
 	private List<ConfigurationHistoryChangeLog> historyjiraDefectRejectionStatusKPI14;
-	private List<ConfigurationHistoryChangeLog> historyJiraDefectRejectionStatusQAKPI111;
+	private List<ConfigurationHistoryChangeLog> historyjiraDefectRejectionStatusQAKPI111;
 
 	private List<ConfigurationHistoryChangeLog> historyjiraBugRaisedByIdentification;
 	private List<ConfigurationHistoryChangeLog> historyjiraBugRaisedByValue;
@@ -385,7 +385,7 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyleadTimeConfigRepoTool;
 
 	private List<ConfigurationHistoryChangeLog> historytoBranchForMRKPI156;
-	private Integer historystartDateCountKPI150;
+	private List<ConfigurationHistoryChangeLog> historystartDateCountKPI150;
 	private List<ConfigurationHistoryChangeLog> historyjiraDevDoneStatusKPI150;
 	private List<ConfigurationHistoryChangeLog> historypopulateByDevDoneKPI150;
 

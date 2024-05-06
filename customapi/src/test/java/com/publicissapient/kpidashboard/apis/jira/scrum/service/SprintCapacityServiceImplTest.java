@@ -171,7 +171,7 @@ public class SprintCapacityServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintCapacityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any())).thenReturn(dataList);
-
+		when(customApiConfig.getSprintCountForKpiCalculation()).thenReturn(5);
 		try {
 			KpiElement kpiElement = sprintCapacityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

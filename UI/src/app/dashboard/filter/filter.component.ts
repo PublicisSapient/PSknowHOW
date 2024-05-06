@@ -129,6 +129,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedRelease = {};
   ssoLogin = environment.SSO_LOGIN;
   auth_service = environment.AUTHENTICATION_SERVICE;
+  isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
   lastSyncData: object = {};
   commentList: Array<object> = [];
   showCommentPopup: boolean = false;
@@ -822,6 +823,7 @@ this.resetAddtionalFIlters();
     if (this.selectedTab !== 'Config' && Object.keys(this.kpiListData)?.length > 0) {
       if (this.selectedTab === 'Maturity') {
         if (!this.checkIfMaturityTabHidden()) {
+          this.backToDashboardLoader = false
           this.router.navigateByUrl(
             `/dashboard/Maturity`,
           );
@@ -838,6 +840,7 @@ this.resetAddtionalFIlters();
       }
       this.selectedTab = boardDetails?.boardName;
       this.changeSelectedTab();
+      this.backToDashboardLoader = false
       this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`], {queryParamsHandling: 'merge'});
     }
   }
@@ -860,6 +863,7 @@ this.resetAddtionalFIlters();
         this.service.setSelectedTab(this.selectedTab);
         // const selectedTab = this.selectedTab;
         // const selectedType = this.kanban ? 'kanban' : 'scrum';
+        this.backToDashboardLoader = false
         this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
         // this.service.onTypeOrTabRefresh.next({ selectedTab, selectedType });
       }
@@ -1647,7 +1651,6 @@ this.resetAddtionalFIlters();
       this.service.setSelectedDateFilter(this.selectedDayType);
       this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
       this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
-      this.backToDashboardLoader = false
   }
 
   /** when user clicks on Back to dashboard or logo*/

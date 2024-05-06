@@ -36,6 +36,8 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +48,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
@@ -55,6 +58,7 @@ import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -85,6 +89,8 @@ public class JiraCommonService {
 
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
+	@Autowired
+	private ProcessorToolConnectionService processorToolConnectionService;
 
 	/**
 	 * @param projectConfig
@@ -150,7 +156,7 @@ public class JiraCommonService {
 		request.connect();
 		StringBuilder sb = new StringBuilder();
 		try (InputStream in = (InputStream) request.getContent();
-			 BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
 			int cp;
 			while ((cp = inReader.read()) != -1) {
 				sb.append((char) cp);
@@ -158,9 +164,32 @@ public class JiraCommonService {
 			request.disconnect();
 		} catch (IOException ie) {
 			log.error("Read exception when connecting to server {}", ie);
+			String errorMessage = ie.getMessage();
+			// Regular expression pattern to extract the status code
+			Pattern pattern = Pattern.compile("\\b(\\d{3})\\b");
+			Matcher matcher = pattern.matcher(errorMessage);
+			isClientException(connectionOptional, matcher);
 			request.disconnect();
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * 
+	 * @param connectionOptional
+	 *            connectionOptional
+	 * @param matcher
+	 *            matcher
+	 */
+	private void isClientException(Optional<Connection> connectionOptional, Matcher matcher) {
+		if (matcher.find()) {
+			String statusCodeString = matcher.group(1);
+			int statusCode = Integer.parseInt(statusCodeString);
+			if (statusCode >= 401 && statusCode < 500 && connectionOptional.isPresent()) {
+				processorToolConnectionService.updateBreakingConnection(connectionOptional.get().getId(),
+						HttpStatus.valueOf(statusCode).getReasonPhrase());
+			}
+		}
 	}
 
 	/**
@@ -290,7 +319,7 @@ public class JiraCommonService {
 	 * @throws InterruptedException
 	 *             InterruptedException
 	 * @throws IOException
-	 *             throws IOException	 *
+	 *             throws IOException *
 	 */
 	public List<Issue> fetchIssueBasedOnBoard(ProjectConfFieldMapping projectConfig,
 			ProcessorJiraRestClient clientIncoming, int pageNumber, String boardId, String deltaDate)
@@ -445,7 +474,6 @@ public class JiraCommonService {
 		}
 		return res.toString();
 	}
-
 
 	/**
 	 * * Gets api host

@@ -85,6 +85,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.client.CustomAsynchronousIssueRestClient;
@@ -137,6 +138,8 @@ public class JiraCommonServiceTest {
 	private ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 	@Mock
 	private ProjectConfFieldMapping projectConfFieldMapping1;
+	@Mock
+	private ProcessorToolConnectionService processorToolConnectionService;
 
 	List<ProjectBasicConfig> projectConfigsList;
 	List<ProjectToolConfig> projectToolConfigsJQL;
@@ -146,8 +149,8 @@ public class JiraCommonServiceTest {
 
 	List<Issue> issues = new ArrayList<>();
 
-//	@Rule
-//	public ExpectedException expectedException = ExpectedException.none();
+	// @Rule
+	// public ExpectedException expectedException = ExpectedException.none();
 
 	@Before
 	public void setUp() throws Exception {
@@ -438,7 +441,7 @@ public class JiraCommonServiceTest {
 		parseVersionData.setAccessible(true);
 
 		assertThrows(Exception.class,
-				()->parseVersionData.invoke(jiraCommonService, dataFromServer, projectVersionDetailList));
+				() -> parseVersionData.invoke(jiraCommonService, dataFromServer, projectVersionDetailList));
 
 	}
 
