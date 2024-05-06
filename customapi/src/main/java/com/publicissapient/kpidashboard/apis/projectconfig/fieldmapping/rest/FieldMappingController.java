@@ -77,24 +77,32 @@ public class FieldMappingController {
 
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
 
-		ProjectBasicConfig projectBasicConfig = fieldMappingService
-				.getBasicProjectConfigById(new ObjectId(projectToolConfigId));
-		policy.checkPermission(projectBasicConfig, "UPDATE_PROJECT");
-		ServiceResponse response;
-		try {
-			FieldMapping fieldMapping = new FieldMapping();
-			boolean allfieldFound=fieldMappingService.convertToFieldMappingAndCheckIsFieldPresent(fieldMappingResponseList,fieldMapping);
-			fieldMappingService.addFieldMapping(projectToolConfigId, fieldMapping);
-			if (!allfieldFound) {
-				response = new ServiceResponse(true, "field mappings added successfully", null);
-			} else {
-				response = new ServiceResponse(false, "field mappings added successfully but some fields are missing, please verify your imported fields", null);
-			}
-		} catch (Exception ex) {
-			response = new ServiceResponse(false, "failed to add field mappings", null);
-		}
+		Optional<ProjectToolConfig> projectToolConfigOptional = getProjectToolConfig(projectToolConfigId);
 
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		if (projectToolConfigOptional.isPresent()) {
+			// checking the permission to update the fieldmapping
+			ProjectToolConfig projectToolConfig = projectToolConfigOptional.get();
+			ProjectBasicConfig projectBasicConfig = fieldMappingService
+					.getBasicProjectConfigById(projectToolConfig.getBasicProjectConfigId());
+			policy.checkPermission(projectBasicConfig, "UPDATE_PROJECT");
+
+			ServiceResponse response;
+			try {
+				FieldMapping fieldMapping = new FieldMapping();
+				boolean allfieldFound = fieldMappingService.convertToFieldMappingAndCheckIsFieldPresent(fieldMappingResponseList, fieldMapping);
+				fieldMappingService.addFieldMapping(projectToolConfigId, fieldMapping, projectToolConfig.getBasicProjectConfigId());
+				if (!allfieldFound) {
+					response = new ServiceResponse(true, "field mappings added successfully", null);
+				} else {
+					response = new ServiceResponse(false, "field mappings added successfully but some fields are missing, please verify your imported fields", null);
+				}
+			} catch (Exception ex) {
+				response = new ServiceResponse(false, "failed to add field mappings", null);
+			}
+
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "No Tool Configuration Found", ""));
 	}
 
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR

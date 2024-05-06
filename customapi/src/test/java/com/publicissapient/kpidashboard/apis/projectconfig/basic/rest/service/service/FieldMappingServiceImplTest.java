@@ -177,7 +177,7 @@ public class FieldMappingServiceImplTest {
 		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class))).thenReturn(null);
 		when(fieldMappingRepository.save(Mockito.any(FieldMapping.class))).thenReturn(fieldMapping);
 
-		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping);
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping, new ObjectId("6335363749794a18e8a4479b"));
 
 		assertNotNull(result);
 
@@ -190,7 +190,7 @@ public class FieldMappingServiceImplTest {
 	public void addFieldMappingSuccess2() {
 		mockRepositoriesForScrum();
 		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618",
-				fieldMappingDataFactory.getFieldMappings().get(1));
+				fieldMappingDataFactory.getFieldMappings().get(1), new ObjectId("6335363749794a18e8a4479b"));
 		assertNotNull(result);
 	}
 
@@ -198,7 +198,7 @@ public class FieldMappingServiceImplTest {
 	public void addFieldMappingSuccess_History() {
 		mockRepositoriesForScrum();
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(1);
-		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping);
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping, new ObjectId("6335363749794a18e8a4479b"));
 		assertNotNull(result);
 	}
 
@@ -211,7 +211,7 @@ public class FieldMappingServiceImplTest {
 
 		FieldMapping fieldMapping1 = scrumFieldMapping;
 		fieldMapping1.setEpicJobSize("8");
-		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1);
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1, new ObjectId("6335363749794a18e8a4479b"));
 
 		assertNotNull(result);
 
@@ -226,7 +226,7 @@ public class FieldMappingServiceImplTest {
 
 		FieldMapping fieldMapping1 = scrumFieldMapping;
 		fieldMapping1.setRootCause(null);
-		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1);
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1, new ObjectId("6335363749794a18e8a4479b"));
 
 		assertNotNull(result);
 
@@ -242,7 +242,7 @@ public class FieldMappingServiceImplTest {
 		FieldMapping fieldMapping1 = scrumFieldMapping;
 		fieldMapping1.setJiraIssueTypeNames(new String[] { "Story", "Feature" });
 
-		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1);
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1, new ObjectId("6335363749794a18e8a4479b"));
 
 		assertNotNull(result);
 
@@ -259,7 +259,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping1.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
 		fieldMapping1.setJiraTechDebtValue(Arrays.asList("Story", "Feature"));
 
-		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1);
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1, new ObjectId("6335363749794a18e8a4479b"));
 
 		assertNotNull(result);
 
@@ -276,7 +276,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping1.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
 		fieldMapping1.setJiraTechDebtValue(Arrays.asList("Feature"));
 
-		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1);
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1, new ObjectId("6335363749794a18e8a4479b"));
 
 		assertNotNull(result);
 
@@ -293,7 +293,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping1.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
 		fieldMapping1.setJiraTechDebtValue(Arrays.asList("Story"));
 
-		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1);
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1, new ObjectId("6335363749794a18e8a4479b"));
 
 		assertNotNull(result);
 
@@ -310,7 +310,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping1.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
 		fieldMapping1.setJiraTechDebtValue(Arrays.asList("Feature"));
 
-		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1);
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1, new ObjectId("6335363749794a18e8a4479b"));
 
 		assertNotNull(result);
 
@@ -325,7 +325,7 @@ public class FieldMappingServiceImplTest {
 
 		FieldMapping fieldMapping1 = scrumFieldMapping;
 
-		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1);
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping1, new ObjectId("6335363749794a18e8a4479b"));
 
 		assertNotNull(result);
 
@@ -336,19 +336,19 @@ public class FieldMappingServiceImplTest {
 		FieldMapping fieldMapping = scrumFieldMapping;
 		mockRepositoriesForScrum();
 
-		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping);
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", fieldMapping, new ObjectId("6335363749794a18e8a4479b"));
 		assertNotNull(result);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void addFieldMappingValueNull() {
-		fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", null);
+		fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", null, new ObjectId("6335363749794a18e8a4479b"));
 
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void addFieldMappingInvalidId() {
-		fieldMappingService.addFieldMapping("5d0533b0ff40bb618", null);
+		fieldMappingService.addFieldMapping("5d0533b0ff40bb618", null, new ObjectId("6335363749794a18e8a4479b"));
 
 	}
 
@@ -564,7 +564,7 @@ public class FieldMappingServiceImplTest {
 				scrumFieldMapping.getBasicProjectConfigId());
 		projectToolConfigOpt.get().setToolName(ProcessorConstants.AZURE);
 		when(projectToolConfigRepository.findById(any(ObjectId.class))).thenReturn(projectToolConfigOpt);
-		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", scrumFieldMapping2);
+		FieldMapping result = fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", scrumFieldMapping2, new ObjectId("6335363749794a18e8a4479b"));
 
 		assertNotNull(result);
 

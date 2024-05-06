@@ -16,10 +16,12 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -44,6 +46,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -196,6 +199,16 @@ public class SonarToolConfigServiceImplTest {
 		assertEquals(optConnection, testConnectionOpt);
 		List<String> projectList = sonarToolConfigService.getSonarProjectKeyList(connectionId, "");
 		Assert.assertEquals(projectList.size(), responseProjectList.size());
+	}
+
+	@Test
+	public void getSonarProjectKeyListTestException() {
+		String projectsUrl = SONAR_URL + RESOURCE_PROJECT_ENDPOINT;
+		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
+				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
+		sonarToolConfigService.getSonarProjectKeyList(connectionId, "");
+
 	}
 
 	@Test
