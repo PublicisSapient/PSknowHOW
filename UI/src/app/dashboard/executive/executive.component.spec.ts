@@ -2687,8 +2687,8 @@ describe('ExecutiveComponent', () => {
       order: 23,
       kpiDetail: {
           kanban: false,
-          kpiSource: 'Jira',
-          kpiCategory: 'Iteration',
+          kpiSource: 'Sonar',
+          kpiCategory: 'Speed',
           groupId: 1
       },
       shown: true
@@ -2713,8 +2713,8 @@ describe('ExecutiveComponent', () => {
       order: 23,
       kpiDetail: {
           kanban: false,
-          kpiSource: 'Jira',
-          kpiCategory: 'Iteration',
+          kpiSource: 'Jenkins',
+          kpiCategory: 'Speed',
           groupId: 1
       },
       shown: true
@@ -2738,8 +2738,8 @@ describe('ExecutiveComponent', () => {
       order: 23,
       kpiDetail: {
           kanban: false,
-          kpiSource: 'Jira',
-          kpiCategory: 'Iteration',
+          kpiSource: 'Zypher',
+          kpiCategory: 'Speed',
           groupId: 1
       },
       shown: true
@@ -2764,7 +2764,7 @@ describe('ExecutiveComponent', () => {
       kpiDetail: {
           kanban: false,
           kpiSource: 'Jira',
-          kpiCategory: 'Iteration',
+          kpiCategory: 'Speed',
           groupId: 1
       },
       shown: true
@@ -2790,7 +2790,7 @@ describe('ExecutiveComponent', () => {
       kpiDetail: {
           kanban: false,
           kpiSource: 'Jira',
-          kpiCategory: 'Iteration',
+          kpiCategory: 'Speed',
           groupId: 1
       },
       shown: true
@@ -2887,7 +2887,7 @@ describe('ExecutiveComponent', () => {
         kpiList: [
           {
             id: '633ed17f2c2d5abef2451fd8',
-            kpiId: 'kpi14',
+            kpiId: 'kpi17',
             kpiName: 'Defect Injection Rate',
             isDeleted: 'False',
             defaultOrder: 1,
@@ -2944,6 +2944,19 @@ describe('ExecutiveComponent', () => {
       isAdditionalFilters: false,
       makeAPICall: true
     };
+    component.updatedConfigGlobalData= [{
+      kpiId: 'kpi17',
+      kpiName: 'Unit Test Coverage',
+      isEnabled: true,
+      order: 23,
+      kpiDetail: {
+          kanban: false,
+          kpiSource: 'Jira',
+          kpiCategory: 'Speed',
+          groupId: 1
+      },
+      shown: true
+    }];
     component.kanbanActivated = false;
     component.selectedtype = 'Scrum';
 

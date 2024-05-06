@@ -350,7 +350,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     groupZypherKpi(kpiIdsForCurrentBoard) {
         // creating a set of unique group Ids
         const groupIdSet = new Set();
-        this.updatedConfigGlobalData.forEach((obj) => {
+        this.updatedConfigGlobalData?.forEach((obj) => {
             if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Zypher') {
                 groupIdSet.add(obj['kpiDetail'].groupId);
             }
@@ -372,7 +372,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.jiraKpiData = {};
         // creating a set of unique group Ids
         const groupIdSet = new Set();
-        this.updatedConfigGlobalData.forEach((obj) => {
+        this.updatedConfigGlobalData?.forEach((obj) => {
             if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira') {
                 groupIdSet.add(obj['kpiDetail'].groupId);
             }
@@ -395,7 +395,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.jiraKpiData = {};
         // creating a set of unique group Ids
         const groupIdSet = new Set();
-        this.updatedConfigGlobalData.forEach((obj) => {
+        this.updatedConfigGlobalData?.forEach((obj) => {
             if (obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira') {
                 groupIdSet.add(obj['kpiDetail'].groupId);
             }
