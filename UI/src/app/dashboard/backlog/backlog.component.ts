@@ -64,6 +64,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
   kpiThresholdObj: any = [];
   fullPageLoader: boolean = true;
   kpiTrendObject = {};
+  kpiList:Array<string> = [];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -144,7 +145,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown);
-
+    this.kpiList = this.configGlobalData.map((kpi) => kpi.kpiId)
+    console.log(this.kpiList);
     const kpi3Index = this.updatedConfigGlobalData.findIndex(kpi => kpi.kpiId === 'kpi3');
     const kpi3 = this.updatedConfigGlobalData.splice(kpi3Index, 1);
     this.updatedConfigGlobalData.splice(0, 0, kpi3[0]);

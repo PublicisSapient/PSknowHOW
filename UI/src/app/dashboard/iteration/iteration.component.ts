@@ -157,8 +157,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item?.shown);
     this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
-    this.kpiList = this.configGlobalData.map((kpi) => kpi.kpiId)
-    console.log(this.kpiList);
         
     /**reset the kpi count */
     this.navigationTabs = this.navigationTabs.map((x) => {

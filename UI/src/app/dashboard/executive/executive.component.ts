@@ -116,6 +116,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     kpiTableDataObj:object={};
     noOfDataPoints:number = 5;
     maturityTableKpiList = [];
+    kpiList:Array<string> = [];
 
     constructor(public service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -194,6 +195,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         // user can enable kpis from show/hide filter, added below flag to show different message to the user
         this.enableByUser = disabledKpis?.length ? true : false;
         // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
+        this.kpiList = this.configGlobalData.map((kpi) => kpi.kpiId)
         this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
         if (this.updatedConfigGlobalData?.length === 0) {
             this.noKpis = true;
