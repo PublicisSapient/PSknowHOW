@@ -328,6 +328,12 @@ public final class CommonConstant {
 	//-- auth-N-auth changes starts here --
 	public static final String ACTION_POLICY_RULES_CACHE = "actionPolicyRules";
 
+	public static final String USERNAME_PATTERN = "^[a-zA-Z0-9]{4,30}$";//Username can only contain letters and numbers Maximum length is 30 and min is 4 characters
+
+	public static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+
+	public static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; // NOSONAR
+
 	//-- auth-N-auth changes ends here --
 
 

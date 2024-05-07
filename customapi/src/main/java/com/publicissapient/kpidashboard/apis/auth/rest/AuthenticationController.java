@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.springframework.dao.DuplicateKeyException;
@@ -78,7 +79,7 @@ public class AuthenticationController {
 
     private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
     private static final String STATUS = "Success";
-    private static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; // NOSONAR
+
     private final AuthenticationService authenticationService;
     private final AuthenticationResponseService authenticationResponseService;
     private final AuthProperties authProperties;
@@ -108,11 +109,21 @@ public class AuthenticationController {
                 return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
                         "Cannot complete the registration process. Standard authentication is disabled", null));
             }
-            Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
+
+			if (!Pattern.matches(CommonConstant.USERNAME_PATTERN, request.getUsername())) {
+				return ResponseEntity.status(HttpStatus.OK).body(
+						new ServiceResponse(false, "Cannot complete the registration process, Invalid Username", null));
+			}
+			if (!Pattern.matches(CommonConstant.EMAIL_PATTERN, request.getEmail())) {
+				return ResponseEntity.status(HttpStatus.OK).body(
+						new ServiceResponse(false, "Cannot complete the registration process, Invalid Email", null));
+			}
+            Pattern pattern = Pattern.compile(CommonConstant.PASSWORD_PATTERN);
             Matcher matcher = pattern.matcher(request.getPassword());
             boolean flag = matcher.matches();
             boolean isEmailExist = authenticationService.isEmailExist(request.getEmail());
             boolean isUsernameExists = authenticationService.isUsernameExists(request.getUsername());
+
             boolean isUsernameExistsInUserInfo = authenticationService
                     .isUsernameExistsInUserInfo(request.getUsername());
 
@@ -200,7 +211,7 @@ public class AuthenticationController {
                                                           HttpServletResponse httpServletResponse, @Valid @RequestBody ChangePasswordRequest request)
             throws IOException, ServletException { // NOSONAR
         try {
-            Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
+            Pattern pattern = Pattern.compile(CommonConstant.PASSWORD_PATTERN);
             Matcher matcher = pattern.matcher(request.getPassword());
             boolean flag = matcher.matches();
             boolean isEmailExist = authenticationService.isEmailExist(request.getEmail());

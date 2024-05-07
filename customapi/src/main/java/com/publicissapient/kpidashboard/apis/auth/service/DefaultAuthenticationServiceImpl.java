@@ -25,7 +25,9 @@ import static com.publicissapient.kpidashboard.apis.common.service.impl.UserInfo
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -219,24 +221,28 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		Authentication authentication = authenticationRepository.findByUsername(username);
 		DateTime now = DateTime.now(DateTimeZone.UTC);
 
+		if (!Pattern.matches(CommonConstant.USERNAME_PATTERN, username) || authentication == null) {
+			throw new BadCredentialsException("Login Failed: The Username entered is Invalid");
+		}
+
 		if (checkForResetFailAttempts(authentication, now)) {
 			resetFailAttempts(username);
 		} else if (checkForLockedUser(authentication)) {
 			throw new LockedException("Account Locked: Invalid Login Limit Reached " + username);
 		}
 
-		if (authentication != null && !authentication.isApproved()) {
+		if (!authentication.isApproved()) {
 			throw new PendingApprovalException("Login Failed: Your access request is pending for approval");
 		}
 
-		if (authentication != null && authentication.checkPassword(password)) {
+		if (authentication.checkPassword(password)) {
 			return new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword(),
 					new ArrayList<>());
 		}
 		// commented code to fix the security issues
 		// throw new BadCredentialsException("Login Failed: Invalid credentials
 		// for user
-		throw new BadCredentialsException("Login Failed: The username or password entered is incorrect");
+		throw new BadCredentialsException("Login Failed: The password entered is incorrect");
 	}
 
 	/**
