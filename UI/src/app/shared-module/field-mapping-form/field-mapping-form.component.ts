@@ -59,6 +59,7 @@ export class FieldMappingFormComponent implements OnInit {
   @Input() metaDataTemplateCode : any;
   @Input() parentComp : string;
   nestedFieldANDParent = {}
+  @Input() nodeId: string = '';
 
 private setting = {
   element: {
@@ -418,7 +419,10 @@ compareValues(originalValue: any, previousValue: any): boolean {
   }
 
   refreshFieldMapppingValueANDHistory(){
-    this.http.getFieldMappingsWithHistory(this.selectedToolConfig[0].id,this.kpiId).subscribe(mappings => {
+    let obj = {
+      "releaseNodeId": this.nodeId || null
+    }
+    this.http.getFieldMappingsWithHistory(this.selectedToolConfig[0].id,this.kpiId, obj).subscribe(mappings => {
       if (mappings && mappings['success']) {
         this.formData = mappings['data'].fieldMappingResponses;
         this.metaDataTemplateCode = mappings['data'].metaTemplateCode;
