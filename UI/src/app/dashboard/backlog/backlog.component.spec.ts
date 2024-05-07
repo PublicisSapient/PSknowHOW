@@ -3079,6 +3079,7 @@ describe('BacklogComponent', () => {
             trend: 'NA',
             maturity: 'M1',
             maturityValue: 'Low',
+            maturityDenominator: 3,
             kpiUnit: '%'
           }
         ]);
