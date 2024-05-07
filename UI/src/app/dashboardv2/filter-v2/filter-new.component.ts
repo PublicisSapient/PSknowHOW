@@ -245,7 +245,7 @@ export class FilterNewComponent implements OnInit {
     if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
       this.previousFilterEvent = [].concat(event);
       // remove the last 2 elements from event
-      event.splice(-2);
+      // event.splice(-2);
       this.setColors(event);
       this.filterApplyData['level'] = event[0].level;
       this.filterApplyData['label'] = event[0].labelName;
