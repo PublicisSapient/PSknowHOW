@@ -291,8 +291,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		List<ConfigurationHistoryChangeLog> accessibleFieldHistory = getAccessibleFieldHistory(fieldMapping, field);
 		if (nodeSpecificField && StringUtils.isNotEmpty(nodeId) && CollectionUtils.isNotEmpty(accessibleFieldHistory)) {
 			return accessibleFieldHistory.stream().filter(
-					configurationHistoryChangeLog -> StringUtils.isNotEmpty(configurationHistoryChangeLog.getNodeId())
-							&& configurationHistoryChangeLog.getNodeId().equalsIgnoreCase(nodeId))
+					configurationHistoryChangeLog -> StringUtils.isNotEmpty(configurationHistoryChangeLog.getReleaseNodeId())
+							&& configurationHistoryChangeLog.getReleaseNodeId().equalsIgnoreCase(nodeId))
 					.toList();
 		}
 		return accessibleFieldHistory;
@@ -415,7 +415,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		configurationHistoryChangeLog.setChangedBy(loggedInUser);
 		configurationHistoryChangeLog.setUpdatedOn(LocalDateTime.now().toString());
 		if (mappingStructure.isNodeSpecific()) {
-			configurationHistoryChangeLog.setNodeId(fieldMappingMeta.getReleaseNodeId());
+			configurationHistoryChangeLog.setReleaseNodeId(fieldMappingMeta.getReleaseNodeId());
 		}
 		return configurationHistoryChangeLog;
 	}
@@ -441,7 +441,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			String previousValue = "";
 			if (CollectionUtils.isNotEmpty(getNodeSpecificFieldHistory)) {
 				List<ConfigurationHistoryChangeLog> changeLogs = getNodeSpecificFieldHistory.stream()
-						.filter(configurationHistoryChangeLog -> configurationHistoryChangeLog.getNodeId()
+						.filter(configurationHistoryChangeLog -> configurationHistoryChangeLog.getReleaseNodeId()
 								.equalsIgnoreCase(nodeId))
 						.toList();
 				if (CollectionUtils.isNotEmpty(changeLogs)) {
