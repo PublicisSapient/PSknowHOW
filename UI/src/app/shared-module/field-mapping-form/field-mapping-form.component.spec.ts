@@ -366,7 +366,8 @@ describe('FieldMappingFormComponent', () => {
     component.selectedToolConfig = [{id:'123',toolName:'JIRA'}];
     spyOn(httpService,'setFieldMappings').and.returnValue(of(successResponse));
     component.ngOnInit();
-    component.saveFieldMapping({jiraconfig : "123"});
+    let mappingObj =  [{jiraconfig : "123"}];
+    component.saveFieldMapping(mappingObj);
     expect(component.form.valid).toBeTruthy();
   });
 
@@ -597,10 +598,10 @@ describe('FieldMappingFormComponent', () => {
 
 
   it('should handle error on save field filed mapping api call', () => {
-    const mappingData = {
+    const mappingData = [{
       id: 'xxxxxxxxxxxxx',
       basicProjectConfigId: 'xxxxxxxxxxxxxxxxxx'
-    };
+    }];
     const errResponse = {
       error: 'Something went wrong',
       success: false
