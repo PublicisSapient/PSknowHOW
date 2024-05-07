@@ -74,7 +74,7 @@
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-connection>
-                        <tr [ngClass]="{'broken-conn-row': connection.brokenConnection}" tooltipPosition="top" [pTooltip]="connection.connectionErrorMsg">        
+                        <tr [ngClass]="{'broken-conn-row': connection.brokenConnection}" tooltipPosition="top" [pTooltip]="connection.brokenConnection ? connection.connectionErrorMsg : null">
                             <td style="display: none;">
                                 <p-tableCheckbox [value]="connection"></p-tableCheckbox>
                             </td>
@@ -145,7 +145,7 @@
                                 formControlName="{{ connectionFieldLabels.inputFields[i] }}">
                         </div>
 
-                        <div class="p-field" 
+                        <div class="p-field"
                             *ngIf="connectionFieldLabels.inputFields[i] === 'repoToolProvider'">
                                 <label for="platformDdwn">Select Platform Type</label>
                                 <p-dropdown [options]="platformDdwn" id="platformDdwn" formControlName="repoToolProvider"
@@ -244,7 +244,7 @@
             </div>
             <div class="p-field" *ngIf="jiraForm.controls['jaasKrbAuth']?.value">
                 <label for="jaasConfigFilePath">Jaas Config File Path</label>
-                <input class="ml-2" type="text" id="jaasConfigFilePath" pInputText 
+                <input class="ml-2" type="text" id="jaasConfigFilePath" pInputText
                     formControlName="jaasConfigFilePath" (change)="updateForm()"/>
             </div>
             <div class="p-field" *ngIf="jiraForm.controls['jaasKrbAuth']?.value">
