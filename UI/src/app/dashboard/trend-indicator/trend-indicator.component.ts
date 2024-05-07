@@ -47,7 +47,7 @@ export class TrendIndicatorComponent implements OnInit {
 
   getTooltipContent(): string {
     if ((this.dataTrend as any).isCumulative) {
-        return '<div class="inner-content">Latest Trend as Maturity</div>';
+        return '<div class="inner-content">Maturity based on latest trend on Cumulative data series</div>';
     } else {
         return '<div class="inner-content">Average maturity for ' + (this.dataTrend as any).maturityDenominator + ' data points.</div>';
     }
