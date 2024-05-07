@@ -47,7 +47,7 @@ public class ConfigurationHistoryChangeLog {
 	private String changedBy;
 	@JsonProperty("Changed At")
 	private String updatedOn;
-	private String nodeId;
+	private String  releaseNodeId;
 
 	public ConfigurationHistoryChangeLog(Object changedFrom, Object changedTo, String changedBy, String updatedOn) {
 		this.changedFrom = changedFrom;

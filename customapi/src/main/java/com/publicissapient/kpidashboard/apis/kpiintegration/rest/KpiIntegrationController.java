@@ -28,7 +28,6 @@ import javax.validation.constraints.NotNull;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
-import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,9 +55,6 @@ public class KpiIntegrationController {
 	@Autowired
 	private CustomApiConfig customApiConfig;
 
-	@Autowired
-	private RestAPIUtils restAPIUtils;
-
     /**
      * This method handles Scrum KPIs request.
      *
@@ -69,8 +65,7 @@ public class KpiIntegrationController {
 	public ResponseEntity<List<KpiElement>> getMaturityValues(HttpServletRequest request,
 			@NotNull @RequestBody KpiRequest kpiRequest) {
 		log.info("Received {} request for /kpiIntegrationValues", request.getMethod());
-		Boolean isApiAuth = restAPIUtils.decryptPassword(customApiConfig.getxApiKey())
-				.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
+		Boolean isApiAuth = customApiConfig.getxApiKey().equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (Boolean.FALSE.equals(isApiAuth)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
 		}
