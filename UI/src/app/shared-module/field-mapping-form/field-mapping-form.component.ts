@@ -317,7 +317,11 @@ private setting = {
 
   /** Responsible for handle save */
   saveFieldMapping(mappingData,isImport?) {
-    this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingData,this.kpiId,isImport).subscribe(response => {
+    let mappingObj = {
+      "releaseNodeId": this.nodeId || null,
+      "fieldMappingRequests": [...mappingData]
+    }
+    this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingObj,this.kpiId,isImport).subscribe(response => {
       if (response && response['success']) {
         this.messenger.add({
           severity: 'success',
