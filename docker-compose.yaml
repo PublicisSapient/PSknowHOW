@@ -1,5 +1,6 @@
 version: "2"
 services:
+#remove MongoDB container, if you are using managed database
   MongoDB:
     image: psknowhow/mongo-base:5.0.18
     tty: true
@@ -11,16 +12,13 @@ services:
       - mongodbvol:/data/db
       - mongodbvol:/data/logs
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=<DB ROOT USERNAME>
-      - MONGO_INITDB_ROOT_PASSWORD=<DB ROOT PASSWORD>
-      - MONGODB_APPLICATION_USER=<DB APPLICATION USERNAME>
-      - MONGODB_APPLICATION_PASS=<DB APPLICATION PASSWORD>
+                             #add env variable as mentioned @ https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables
     networks:
       - Network_apps
-
+#This is a mandatrory container
   CustomAPI:
     image: psknowhow/customapi:latest
-    depends_on:
+    depends_on: #remove this tag, if you are using managed database
       - MongoDB
     restart: on-failure
     tty: true
@@ -36,29 +34,12 @@ services:
       - customapivol:/app/certs/
       - /etc/hosts:/etc/hosts
     environment:
-      - CONFIG_LOCATION=file:/app/properties/customapi.properties
-      - forgotPassword.uiHost=<Your-DNS>
-      - corsFilterValidOrigin=<Your-DNS>
-      - versionnumber=<Current version installed>
-      - JAVA_OPTS-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.uri=mongodb://<DB USER NAME>:<DB PASSWORD>@mongodb:27017/kpidashboard
-      # If your DB is hosted on atlas pass the Connection string in spring.data.mongodb.atlas.uri and mongodb.connection.atlas to "true"
-      #- spring.data.mongodb.atlas.uri=mongodb+srv://<USER NAME>:<TOKEN>@<CLUSTER URL>.mongodb.net/kpidashboard
-      # mongodb.connection.atlas Toggle to determine whether to use local MongoDB or MongoDB Atlas
-      - mongodb.connection.atlas=false
-      - isRepoToolEnable=true
-      - aesEncryptionKey=
-      - auth.secret=
-      - auth.subDomainCookie=
-      - auth.domain=
-      - auth.centralAuthBaseURL=
-      - exposed_api_key=
-      - auth.resourceAPIKey=
-    links:
+    #add env variable as mentioned @ https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables
+    links: #remove this tag, if you are using managed database
       - MongoDB:mongodb
     networks:
       - Network_apps
-
+#Mandatory container
   UI:
     image: psknowhow/ui:latest
     depends_on:
@@ -69,23 +50,21 @@ services:
     mem_limit: 1024m
     mem_reservation: 256m
     ports:
-      - 82:80
-      - 445:443
+      - 80:80
+      - 443:443
     volumes:
       - uivol:/var/log/nginx
       #- uivol:/etc/ssl/certs/ # If you have your SSL certificate uncomment it and copy to /app/apps/certs directory 
     links:
       - CustomAPI:customapi
     environment:
-      - API_HOST=customapi
-      - API_PORT=8080
-      - DNS_SSL=<Your-IP>
+      #add env variable as mentioned @ https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables
     networks:
       - Network_apps
-
+#remove this container, if deployment is not going to use Jira as PM tools datasource
   jira-processor:
     image: psknowhow/jira-processor:latest
-    depends_on:
+    depends_on: #remove this tag, if you are using managed database
       - MongoDB
     restart: on-failure
     tty: true
@@ -98,21 +77,16 @@ services:
       - jira-processorvol:/app/offline_data
       - /etc/hosts:/etc/hosts
     environment:
-      - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.uri=mongodb://<DB USER NAME>:<DB PASSWORD>@mongodb:27017/kpidashboard
-      # If your DB is hosted on atlas pass the Connection string in spring.data.mongodb.atlas.uri and mongodb.connection.atlas to "true"
-      - spring.data.mongodb.atlas.uri=mongodb+srv://<USER NAME>:<TOKEN>@<CLUSTER URL>.mongodb.net/kpidashboard
-      # mongodb.connection.atlas Toggle to determine whether to use local MongoDB or MongoDB Atlas
-      - mongodb.connection.atlas=false
-      - aesEncryptionKey=<Your AES Encryption KEY here>
+      #add env variable as mentioned @ https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables
     links:
-      - MongoDB:mongodb
+      - MongoDB:mongodb #remove this tag, if you are using managed database
     networks:
       - Network_apps
-
+#Remove this container, if build or repo or Sonar is not going to be used as data source
+#for details, refer the documents
   devops-processor:
     image: psknowhow/devops-processor:latest
-    depends_on:
+    depends_on: #remove this tag, if you are using managed database
       - MongoDB
     restart: on-failure
     tty: true
@@ -126,22 +100,16 @@ services:
       - devops-processorvol:/app/certs/
       - /etc/hosts:/etc/hosts
     environment:
-      - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.uri=mongodb://<DB USER NAME>:<DB PASSWORD>@mongodb:27017/kpidashboard
-      # If your DB is hosted on atlas pass the Connection string in spring.data.mongodb.atlas.uri and mongodb.connection.atlas to "true"
-      - spring.data.mongodb.atlas.uri=mongodb+srv://<USER NAME>:<TOKEN>@<CLUSTER URL>.mongodb.net/kpidashboard
-      # mongodb.connection.atlas Toggle to determine whether to use local MongoDB or MongoDB Atlas
-      - mongodb.connection.atlas=false
-      - aesEncryptionKey=<Your AES Encryption KEY here>
-    links:
+      #add env variable as mentioned @ https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables
+    links: #remove this tag, if you are using managed database
       - MongoDB:mongodb
     networks:
       - Network_apps
-
+#remove this container, if Azure boards is not going to be used as data source
   azure-board-processor:
     image: psknowhow/azure-board-processor:latest
     restart: on-failure
-    depends_on:
+    depends_on: #remove this tag, if you are using managed database
       - MongoDB
     tty: true
     container_name: azure-board-processor
@@ -153,22 +121,16 @@ services:
       - azure-board-processorvol:/app/offline_data
       - /etc/hosts:/etc/hosts
     environment:
-      - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.uri=mongodb://<DB USER NAME>:<DB PASSWORD>@mongodb:27017/kpidashboard
-      # If your DB is hosted on atlas pass the Connection string in spring.data.mongodb.atlas.uri and mongodb.connection.atlas to "true"
-      - spring.data.mongodb.atlas.uri=mongodb+srv://<USER NAME>:<TOKEN>@<CLUSTER URL>.mongodb.net/kpidashboard
-      # mongodb.connection.atlas Toggle to determine whether to use local MongoDB or MongoDB Atlas
-      - mongodb.connection.atlas=false
-      - aesEncryptionKey=<Your AES Encryption KEY here>
+     #add env variable as mentioned @ https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables
     links:
-      - MongoDB:mongodb
+      - MongoDB:mongodb #remove this tag, if you are using managed database
     networks:
       - Network_apps
-
+#remove this container, if Azure boards is not going to be used as data source
   azure-pipeline-repo:
     image: psknowhow/azure-pipeline-repo:latest
     restart: on-failure
-    depends_on:
+    depends_on: #remove this tag, if you are using managed database
       - MongoDB
     tty: true
     container_name: azure-pipeline-repo
@@ -181,18 +143,12 @@ services:
       - azure-pipeline-repovol:/app/certs/
       - /etc/hosts:/etc/hosts
     environment:
-      - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.uri=mongodb://<DB USER NAME>:<DB PASSWORD>@mongodb:27017/kpidashboard
-      # If your DB is hosted on atlas pass the Connection string in spring.data.mongodb.atlas.uri and mongodb.connection.atlas to "true"
-      - spring.data.mongodb.atlas.uri=mongodb+srv://<USER NAME>:<TOKEN>@<CLUSTER URL>.mongodb.net/kpidashboard
-      # mongodb.connection.atlas Toggle to determine whether to use local MongoDB or MongoDB Atlas
-      - mongodb.connection.atlas=false
-      - aesEncryptionKey=<Your AES Encryption KEY here>
+     #add env variable as mentioned @ https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables
     links:
-      - MongoDB:mongodb
+      - MongoDB:mongodb #remove this tag, if you are using managed database
     networks:
       - Network_apps
-
+#using Kafka is optional, remove kafka-consumers, kafka container and zookeeper, if kafka is is not going to be used for notifications
   kafka-consumers:
     image: psknowhow/kafka-consumers:latest
     restart: on-failure
@@ -220,14 +176,14 @@ services:
     mem_limit: 2048m
     mem_reservation: 1024m
     environment:
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+        #add env variable as mentioned @ https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables
     ports:
       - 9092:9092
     links:
       - MongoDB:mongodb
     networks:
       - Network_apps
+
   zookeeper:
     image: zookeeper:3.8.0
     container_name: zookeeper
@@ -247,64 +203,6 @@ volumes:
   uivol:
   customapivol:
   mongodbvol:
-
-debbie-postgres:
-    container_name: debbie-postgres
-    image: postgres:11.1
-    env_file:
-      - '.env'
-    volumes:
-      - /app/apps/debbie/debbie-postgres-data:/var/lib/postgresql/data
-    restart: always
-    ports:
-      - '8001:5432'
-    networks:
-      - Network_apps
-
-debbie-rabbitmq:
-    container_name: debbie-rabbitmq
-    image: rabbitmq:3.8-management
-    env_file:
-      - '.env'
-    ports:
-      - "8002:5672"
-      - "8003:15672"
-    cpus: 0.1
-    networks:
-      - Network_apps
-
-debbie-django:
-    container_name: debbie-django
-    image: psknowhow/debbie-django:latest
-    ports:
-      - '8000:8000'
-    env_file:
-      - '.env'
-    depends_on:
-      - debbie-postgres
-      - debbie-rabbitmq
-    restart: always
-    networks:
-      - Network_apps
-
-debbie-knowhow:
-    container_name: debbie-knowhow
-    image: psknowhow/debbie-knowhow:latest
-    restart: always
-    env_file:
-      - '.env'
-    environment:
-      - GIT_PROCESS_ONLY_ONE_COMMIT=false
-      - GIT_WITHOUT_MODIFICATIONS=true
-      - GITLAB_URL=https://gitlab.tremend.com
-    volumes:
-      - /app/apps/debbie/debbie-scanner-storage:/debbie-storage
-    depends_on:
-      - debbie-postgres
-      - debbie-rabbitmq
-    networks:
-      - Network_apps
-
 
 networks:
   Network_apps:
