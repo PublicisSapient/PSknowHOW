@@ -8,7 +8,7 @@ data:
   keystorefile: "/usr/lib/jvm/java-17-amazon-corretto/lib/security/cacerts"
   spring.data.mongodb.database: "kpidashboard"
   flag.mailWithoutKafka: "false"
-  notification.switch: "true"
+  notification.switch: "false"
   sendGridEnabled: "false"
 
   # customapi Config
