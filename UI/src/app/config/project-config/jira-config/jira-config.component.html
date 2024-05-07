@@ -58,7 +58,7 @@
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-connection let-columns="columns">
-                <tr [ngClass]="{'broken-conn-row': connection.brokenConnection}" tooltipPosition="top" [pTooltip]="connection.connectionErrorMsg">        
+                <tr [ngClass]="{'broken-conn-row': connection.brokenConnection}" tooltipPosition="top" [pTooltip]="connection.brokenConnection ? connection.connectionErrorMsg : null">
                     <td>
                         <p-tableRadioButton [value]="connection" (click)="onConnectionSelect(connection)">
                         </p-tableRadioButton>
