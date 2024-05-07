@@ -116,6 +116,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     kpiTableDataObj:object={};
     noOfDataPoints:number = 5;
     maturityTableKpiList = [];
+    cumulativeTrend = ['kpi17', 'kpi62', 'kpi67', 'kpi27', 'kpi66', 'kpi71', 'kpi42'];
 
     constructor(public service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -1401,7 +1402,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                                         : 'M'+this.kpiChartData[kpiId][i]?.maturity,
                             "maturityValue":this.kpiChartData[kpiId][i]?.maturityValue,
                             "kpiUnit" : unit,
-                            "maturityDenominator" : this.kpiChartData[kpiId][i]?.value.length
+                            "maturityDenominator" : this.kpiChartData[kpiId][i]?.value.length,
+                            "isCumulative" : this.cumulativeTrend.includes(kpiId)
                         };
                         if(kpiId === 'kpi997'){
                             trendObj['value'] = 'NA';

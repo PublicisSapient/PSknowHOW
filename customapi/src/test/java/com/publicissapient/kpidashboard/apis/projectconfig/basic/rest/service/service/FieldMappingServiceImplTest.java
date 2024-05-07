@@ -42,6 +42,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
+import com.publicissapient.kpidashboard.apis.data.FieldMappingStructureDataFactory;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingMeta;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -122,6 +124,7 @@ public class FieldMappingServiceImplTest {
 	private FieldMapping scrumFieldMapping;
 	private FieldMapping scrumFieldMapping2;
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	private List<FieldMappingStructure> fieldMappingStructureList;
 
 	@Before
 	public void setUp() {
@@ -141,7 +144,11 @@ public class FieldMappingServiceImplTest {
 		scrumFieldMapping2 = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(scrumFieldMapping.getBasicProjectConfigId(), scrumFieldMapping);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(configHelperService.loadFieldMappingStructure()).thenReturn(Arrays.asList(new FieldMappingStructure()));
+		FieldMappingStructureDataFactory fieldMappingStructureDataFactory = FieldMappingStructureDataFactory.newInstance();
+		fieldMappingStructureList = fieldMappingStructureDataFactory.getFieldMappingStructureList();
+		when(configHelperService.loadFieldMappingStructure()).thenReturn(fieldMappingStructureList);
+		when(kpiHelperService.getFieldMappingStructure(anyList(), anyList()))
+				.thenReturn(fieldMappingStructureList);
 
 	}
 
@@ -432,9 +439,8 @@ public class FieldMappingServiceImplTest {
 		fieldMappingStructure.setNestedFields(Arrays.asList(baseFieldMappingStructure));
 		fieldMappingStructure.setProcessorCommon(true);
 		fieldMappingStructure.setNodeSpecific(false);
-		when(configHelperService.loadFieldMappingStructure()).thenReturn(Arrays.asList(fieldMappingStructure));
 		when(kpiHelperService.getFieldMappingStructure(anyList(), anyList()))
-				.thenReturn(Arrays.asList(fieldMappingStructure));
+				.thenReturn(fieldMappingStructureList);
 
 		Optional<ProjectBasicConfig> projectBasicConfigOpt = createProjectBasicConfig(false,
 				scrumFieldMapping.getBasicProjectConfigId());
@@ -458,13 +464,6 @@ public class FieldMappingServiceImplTest {
 
 	@Test
 	public void updateKpiFieldRemoveTraceLog() throws NoSuchFieldException, IllegalAccessException {
-		FieldMappingStructure fieldMappingStructure = new FieldMappingStructure();
-		fieldMappingStructure.setFieldName("resolutionTypeForRejectionRCAKPI36");
-		fieldMappingStructure.setProcessorCommon(true);
-		when(configHelperService.loadFieldMappingStructure()).thenReturn(Arrays.asList(fieldMappingStructure));
-		when(kpiHelperService.getFieldMappingStructure(anyList(), anyList()))
-				.thenReturn(Arrays.asList(fieldMappingStructure));
-
 		Optional<ProjectBasicConfig> projectBasicConfigOpt = createProjectBasicConfig(false,
 				scrumFieldMapping.getBasicProjectConfigId());
 		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
@@ -488,18 +487,6 @@ public class FieldMappingServiceImplTest {
 
 	@Test
 	public void updateKpiCustomField() throws NoSuchFieldException, IllegalAccessException {
-		FieldMappingStructure fieldMappingStructure = new FieldMappingStructure();
-		fieldMappingStructure.setFieldName("rootCauseIdentifier");
-		BaseFieldMappingStructure baseFieldMappingStructure = new BaseFieldMappingStructure();
-		baseFieldMappingStructure.setFieldName("rootCause");
-		baseFieldMappingStructure.setFilterGroup(Arrays.asList("CustomField"));
-		fieldMappingStructure.setNestedFields(Arrays.asList(baseFieldMappingStructure));
-		fieldMappingStructure.setProcessorCommon(true);
-		fieldMappingStructure.setNodeSpecific(false);
-		when(configHelperService.loadFieldMappingStructure()).thenReturn(Arrays.asList(fieldMappingStructure));
-		when(kpiHelperService.getFieldMappingStructure(anyList(), anyList()))
-				.thenReturn(Arrays.asList(fieldMappingStructure));
-
 		Optional<ProjectBasicConfig> projectBasicConfigOpt = createProjectBasicConfig(false,
 				scrumFieldMapping.getBasicProjectConfigId());
 		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
@@ -532,13 +519,6 @@ public class FieldMappingServiceImplTest {
 
 	@Test
 	public void updateKpiFieldAzure() throws NoSuchFieldException, IllegalAccessException {
-		FieldMappingStructure fieldMappingStructure = new FieldMappingStructure();
-		fieldMappingStructure.setFieldName("jiraIterationCompletionStatusCustomField");
-		fieldMappingStructure.setProcessorCommon(true);
-		when(configHelperService.loadFieldMappingStructure()).thenReturn(Arrays.asList(fieldMappingStructure));
-		when(kpiHelperService.getFieldMappingStructure(anyList(), anyList()))
-				.thenReturn(Arrays.asList(fieldMappingStructure));
-
 		Optional<ProjectBasicConfig> projectBasicConfigOpt = createProjectBasicConfig(false,
 				scrumFieldMapping.getBasicProjectConfigId());
 		projectBasicConfigOpt.get();
@@ -561,6 +541,66 @@ public class FieldMappingServiceImplTest {
 		fieldMappingService.updateSpecificFieldsAndHistory(KPICode.getKPI("kpi0"), projectToolConfig,
 				fieldMappingMeta);
 	}
+
+	@Test
+	public void updateKpiFieldAzure_NoTemplateCode() throws NoSuchFieldException, IllegalAccessException {
+
+
+		Optional<ProjectBasicConfig> projectBasicConfigOpt = createProjectBasicConfig(false,
+				scrumFieldMapping.getBasicProjectConfigId());
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(scrumFieldMapping.getBasicProjectConfigId().toString(), projectBasicConfigOpt.get());
+		when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
+
+		when(authenticationService.getLoggedInUser()).thenReturn("currentUser");
+
+		ProjectToolConfig projectToolConfig = createProjectToolConfig(scrumFieldMapping.getBasicProjectConfigId());
+		projectToolConfig.setToolName(ProcessorConstants.AZURE);
+		projectToolConfig.setMetadataTemplateCode(null);
+		FieldMappingResponse response = new FieldMappingResponse();
+		response.setFieldName("jiraIterationCompletionStatusCustomField");
+		response.setOriginalValue(Arrays.asList("1", "2"));
+		response.setPreviousValue(Arrays.asList("1"));
+
+		FieldMappingMeta fieldMappingMeta = new FieldMappingMeta();
+		fieldMappingMeta.setFieldMappingRequests(Arrays.asList(response));
+
+		fieldMappingService.updateSpecificFieldsAndHistory(KPICode.getKPI("kpi0"), projectToolConfig,
+				fieldMappingMeta);
+	}
+
+
+
+	@Test
+	public void updateKpiFieldAzure_Kanban() throws NoSuchFieldException, IllegalAccessException {
+		FieldMappingStructure fieldMappingStructure = new FieldMappingStructure();
+		fieldMappingStructure.setFieldName("jiraIterationCompletionStatusCustomField");
+		fieldMappingStructure.setProcessorCommon(true);
+
+
+		Optional<ProjectBasicConfig> projectBasicConfigOpt = createProjectBasicConfig(true,
+				scrumFieldMapping.getBasicProjectConfigId());
+		projectBasicConfigOpt.get();
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(scrumFieldMapping.getBasicProjectConfigId().toString(), projectBasicConfigOpt.get());
+		when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
+
+		when(authenticationService.getLoggedInUser()).thenReturn("currentUser");
+
+		ProjectToolConfig projectToolConfig = createProjectToolConfig(scrumFieldMapping.getBasicProjectConfigId());
+		projectToolConfig.setToolName(ProcessorConstants.AZURE);
+		FieldMappingResponse response = new FieldMappingResponse();
+		response.setFieldName("jiraIterationCompletionStatusCustomField");
+		response.setOriginalValue(Arrays.asList("1", "2"));
+		response.setPreviousValue(Arrays.asList("1"));
+
+		FieldMappingMeta fieldMappingMeta = new FieldMappingMeta();
+		fieldMappingMeta.setFieldMappingRequests(Arrays.asList(response));
+
+		fieldMappingService.updateSpecificFieldsAndHistory(KPICode.getKPI("kpi0"), projectToolConfig,
+				fieldMappingMeta);
+	}
+
 
 	@Test
 	public void addFieldMappingForAzure() {

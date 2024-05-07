@@ -59,7 +59,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	@Data
 	@Getter
 	@Setter
-	class MappingToolTip {
+	public static class MappingToolTip {
 		String definition;
 		String kpiImpacted;
 		String toggleDefinition;
@@ -68,7 +68,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	@Data
 	@Getter
 	@Setter
-	class Options {
+	public static class Options {
 		String label;
 		Object value;
 		String labelValue;
