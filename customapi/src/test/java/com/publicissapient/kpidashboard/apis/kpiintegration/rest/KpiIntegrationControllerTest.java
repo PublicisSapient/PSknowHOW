@@ -31,7 +31,6 @@ import java.util.List;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
-import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +43,6 @@ import org.springframework.http.ResponseEntity;
 
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
 
 /**
  * @author kunkambl
@@ -59,12 +57,6 @@ public class KpiIntegrationControllerTest {
     KpiIntegrationServiceImpl maturityService;
 
     @Mock
-    AuthExposeAPIService authExposeAPIService;
-
-    @Mock
-    RestAPIUtils restAPIUtils;
-
-    @Mock
     CustomApiConfig customApiConfig;
 
     @Mock
@@ -72,8 +64,7 @@ public class KpiIntegrationControllerTest {
 
     @Before
     public void setUp() {
-        when(customApiConfig.getxApiKey()).thenReturn("testKey");
-        when(restAPIUtils.decryptPassword("testKey")).thenReturn("valid-token");
+        when(customApiConfig.getxApiKey()).thenReturn("valid-token");
     }
 
     @Test
