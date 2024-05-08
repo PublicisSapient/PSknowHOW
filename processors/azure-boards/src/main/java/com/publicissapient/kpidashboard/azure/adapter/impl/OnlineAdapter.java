@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -73,6 +74,7 @@ public class OnlineAdapter implements AzureAdapter {
 
 	public OnlineAdapter() {
 	}
+
 	/**
 	 * @param azureProcessorConfig
 	 *            azure processor configuration
@@ -115,7 +117,8 @@ public class OnlineAdapter implements AzureAdapter {
 			} catch (RestClientException rce) {
 				if (rce instanceof HttpClientErrorException
 						&& ((HttpClientErrorException) rce).getStatusCode().is4xxClientError()) {
-					String errMsg = ((HttpClientErrorException) rce).getStatusCode().toString();
+					String errMsg = ((HttpClientErrorException) rce).getStatusCode().value() + " " + HttpStatus
+							.valueOf(((HttpClientErrorException) rce).getStatusCode().value()).getReasonPhrase();
 					processorToolConnectionService
 							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 				}

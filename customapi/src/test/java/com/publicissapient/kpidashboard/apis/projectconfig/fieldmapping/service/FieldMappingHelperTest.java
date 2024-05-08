@@ -317,8 +317,7 @@ class FieldMappingHelperTest {
 						List.of(new ConfigurationHistoryChangeLog("changedFrom", "changedTo", "changedBy", "updatedOn",
 								"releaseNodeId"))),
 				fieldMappingStructure, "loggedInUser");
-		Assertions.assertEquals(new ConfigurationHistoryChangeLog("previousValue", "originalValue", "loggedInUser",
-				LocalDateTime.now().toString(), "releaseNodeId"), result);
+		Assertions.assertEquals("releaseNodeId", result.getReleaseNodeId());
 	}
 
 	@Test

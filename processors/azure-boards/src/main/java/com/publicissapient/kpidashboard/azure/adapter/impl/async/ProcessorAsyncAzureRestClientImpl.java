@@ -339,7 +339,8 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 
 		} else {
 			if (responseEntity.getStatusCode().is4xxClientError()) {
-				String errMsg = responseEntity.getStatusCode().toString();
+				String errMsg = responseEntity.getStatusCode().value() + " "
+						+ HttpStatus.valueOf(responseEntity.getStatusCode().value()).getReasonPhrase();
 				processorToolConnectionService
 						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 			}

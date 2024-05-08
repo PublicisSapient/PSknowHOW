@@ -97,7 +97,8 @@ public class JenkinsToolConfigServiceImpl {
 	private void isClientException(Connection connection, Exception exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			String errMsg = ((HttpClientErrorException) exception).getStatusCode().value() + " " + HttpStatus
+					.valueOf(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
 			connectionService.updateBreakingConnection(connection, errMsg);
 		}
 	}
