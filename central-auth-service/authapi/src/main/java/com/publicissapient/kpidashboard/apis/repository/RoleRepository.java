@@ -24,7 +24,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.publicissapient.kpidashboard.apis.entity.Role;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
 	@Query(value = "select * from auth.role r where r.resource_id = (select rs.id from auth.resource rs where rs.name = :name )", nativeQuery = true)

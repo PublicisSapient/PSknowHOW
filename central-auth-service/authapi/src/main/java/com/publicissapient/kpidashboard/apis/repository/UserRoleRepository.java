@@ -25,7 +25,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.publicissapient.kpidashboard.apis.entity.UserRole;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
 	List<UserRole> findByUsername(String name);
 

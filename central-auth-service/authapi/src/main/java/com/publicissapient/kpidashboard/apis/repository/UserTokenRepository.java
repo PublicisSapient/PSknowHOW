@@ -20,7 +20,7 @@ package com.publicissapient.kpidashboard.apis.repository;
 
 import java.util.List;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.apis.entity.UserToken;
@@ -29,7 +29,7 @@ import com.publicissapient.kpidashboard.apis.entity.UserToken;
  * Repository for {@link UserToken}.
  */
 @Repository
-public interface UserTokenRepository extends CrudRepository<UserToken, Long> {
+public interface UserTokenRepository extends JpaRepository<UserToken, Long> {
 
 	/**
 	 * Finds by user token.

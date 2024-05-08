@@ -18,16 +18,17 @@
 
 package com.publicissapient.kpidashboard.apis.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
+import com.publicissapient.kpidashboard.common.model.GenerateAPIKeyRequestDTO;
 import com.publicissapient.kpidashboard.common.model.ServiceResponse;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,22 +39,23 @@ import lombok.extern.slf4j.Slf4j;
  * @author hirenkumar Babariya
  */
 @RestController
+@AllArgsConstructor
 @Slf4j
 public class APITokenController {
 
-	@Autowired
-	TokenAuthenticationService tokenAuthenticationService;
+	private final TokenAuthenticationService tokenAuthenticationService;
 
 	/**
 	 * API to generate token for Action Policy Rule push by resource and generate
 	 * token has permission only root user
 	 *
-	 * @param resource
+	 * @param generateAPIKeyRequestDTO
 	 * @return
 	 */
-	@GetMapping(value = "/generateAPIKey/{resource}") // NOSONAR
-	public ResponseEntity<ServiceResponse> generateAndSaveToken(@PathVariable String resource,
-			HttpServletRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(tokenAuthenticationService.generateAndSaveToken(resource));
+	@RequestMapping(value = "/generateAPIKey", method = RequestMethod.POST) // NOSONAR
+	public ResponseEntity<ServiceResponse> generateAndSaveToken(
+			@RequestBody GenerateAPIKeyRequestDTO generateAPIKeyRequestDTO) {
+		return ResponseEntity.status(HttpStatus.OK)
+							 .body(tokenAuthenticationService.generateAndSaveToken(generateAPIKeyRequestDTO.getResource()));
 	}
 }

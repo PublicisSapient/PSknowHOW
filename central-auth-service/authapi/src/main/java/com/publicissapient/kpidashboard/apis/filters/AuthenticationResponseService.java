@@ -18,18 +18,18 @@
 
 package com.publicissapient.kpidashboard.apis.filters;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.security.core.Authentication;
-
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.common.model.LoginResponse;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
 
 /**
  * Interface to handle authentication service response.
  *
  * @author Hiren Babariya
  */
+@Service
 public interface AuthenticationResponseService {
 
 	/**

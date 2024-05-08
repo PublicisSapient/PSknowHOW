@@ -18,10 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
+import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import com.publicissapient.kpidashboard.apis.enums.AuthType;
 
 /**
  * This class provides utility methods for authentication.

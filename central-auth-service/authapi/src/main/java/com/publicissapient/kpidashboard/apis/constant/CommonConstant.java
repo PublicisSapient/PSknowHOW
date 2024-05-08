@@ -18,6 +18,9 @@
 package com.publicissapient.kpidashboard.apis.constant;
 
 public final class CommonConstant {
+	private CommonConstant() {
+	}
+
 	public static final String ROOT = "Root";
 	public static final String PATH_SEPARATOR = ".";
 	public static final String SUPER_ADMIN = "SUPERADMIN";

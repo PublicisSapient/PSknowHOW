@@ -17,24 +17,18 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.*;
+
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 /**
  * This class serves as the model for storing credential used for login and
- * Signup.
+ * Signup verify mail token.
  *
  * @author akshat shrivastav
  */

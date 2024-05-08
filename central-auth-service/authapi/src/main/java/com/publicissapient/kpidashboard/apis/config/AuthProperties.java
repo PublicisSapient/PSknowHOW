@@ -25,7 +25,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 
@@ -36,7 +36,7 @@ import lombok.Data;
  */
 
 @Data
-@Component
+@Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "auth")
 public class AuthProperties {
@@ -47,19 +47,17 @@ public class AuthProperties {
 	private String providers;
 	private Integer accountLockedThreshold;
 	private int accountLockedPeriod;
-	@Value("${auth.samlMaxAuthenticationAgeMillis:300000}")
 	private int samlMaxAuthenticationAgeMillis;
 	private String baseUrl;
 	private String baseUiUrl;
+	private String holdingEntityId;
+	private String assertingEntityId;
 	private String nameId;
 	private String logoutEmailQueryParam;
 	private String loginCallback;
 	private String logoutCallback;
-
-	private String holdingEntityId;
-	private String assertingEntityId;
-	private String alias;
-	private String samlLoginUrl;
+	private String loginView;
+	private String logoutView;
 
 	private String loginSuccessPageFormat;
 	private String defaultRedirectToAfterLogout;
@@ -67,7 +65,7 @@ public class AuthProperties {
 
 	private List<String> corsFilterValidOrigin;
 	private boolean ssoLogin;
-	private int authCookieDuration;
+	private Integer authCookieDuration;
 	private boolean authCookieSecured;
 	private boolean authCookieHttpOnly;
 	private String authCookieSameSite;
@@ -116,5 +114,6 @@ public class AuthProperties {
 	private String registerPath;
 	@Value("${ui.validateUser}")
 	private String validateUser;
+
 
 }

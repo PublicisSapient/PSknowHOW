@@ -18,55 +18,76 @@
 
 package com.publicissapient.kpidashboard.apis.filters;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.publicissapient.kpidashboard.apis.config.AuthProperties;
+import com.publicissapient.kpidashboard.apis.config.AuthEndpointsProperties;
 import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.util.CookieUtil;
-
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
+import java.util.Arrays;
+import java.util.Optional;
+
+
 @Slf4j
+@AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+	private static final String NO_JWT_EXCEPTION = "No JWT session token found on request.";
+	private static final String JWT_FILTER_GENERIC_EXCEPTION = "JWT filtering failed for URI {} with message: {}.";
+	private final TokenAuthenticationService tokenAuthenticationService;
 
-	@Autowired
-	private TokenAuthenticationService tokenAuthenticationService;
+	private final AuthEndpointsProperties authEndpointsProperties;
 
-	@Autowired
-	private CookieUtil cookieUtil;
+	private static boolean isRequestForURI(@NonNull HttpServletRequest request, @NotNull String uri) {
+		return new AntPathRequestMatcher(uri).matches(request);
+	}
 
-	@Autowired
-	private AuthProperties customApiConfig;
+	private static boolean isRequestForAnyURI(@NonNull HttpServletRequest request, @NotNull String[] uris) {
+		return Arrays.stream(uris).anyMatch(uri -> isRequestForURI(request, uri));
+	}
+
+	private boolean isRequestForPublicURI(@NonNull HttpServletRequest request) {
+		return isRequestForAnyURI(request, authEndpointsProperties.getPublicEndpoints());
+	}
 
 	@Override
-	public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws IOException, ServletException {
-
-		if (request != null) {
-			Cookie authCookie = cookieUtil.getAuthCookie(request);
-
-			if (authCookie == null) {
+	public void doFilterInternal(
+		@NotNull HttpServletRequest request,
+		@NotNull HttpServletResponse response,
+		@NotNull FilterChain filterChain
+	) {
+		try {
+			log.info("entering request url: " + request.getRequestURI());
+			if (isRequestForPublicURI(request)) {
+				// * public endpoints should just pass without any authentication.
 				filterChain.doFilter(request, response);
-				return;
-			}
+			} else {
+				Optional<Cookie> authCookie = CookieUtil.getCookie(request, CookieUtil.COOKIE_NAME);
 
+				if (authCookie.isEmpty()) {
+					throw new BadCredentialsException(NO_JWT_EXCEPTION);
+				} else {
+					// TODO: Check if we really need to store the authentication in the security context
+					// for saml may be autocompleted, but for user and passwd accounts we might need to set it.
+//					Authentication authentication = tokenAuthenticationService.getAuthentication(request, response);
+//					SecurityContextHolder.getContext().setAuthentication(authentication);
+
+					filterChain.doFilter(request, response);
+				}
+			}
+		} catch (Exception exception) {
+			log.error(JWT_FILTER_GENERIC_EXCEPTION, request.getRequestURI(), exception.getMessage());
+			response.setStatus(HttpStatus.FORBIDDEN.value());
 		}
 
-		Authentication authentication = tokenAuthenticationService.getAuthentication(request, response);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		filterChain.doFilter(request, response);
 	}
 }

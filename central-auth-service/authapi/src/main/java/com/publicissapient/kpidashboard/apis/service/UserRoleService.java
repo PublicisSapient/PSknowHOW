@@ -17,14 +17,13 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.service;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-
 import com.publicissapient.kpidashboard.apis.entity.Role;
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.entity.UserRole;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * 

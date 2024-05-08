@@ -18,23 +18,27 @@
 
 package com.publicissapient.kpidashboard.apis.service;
 
+import com.publicissapient.kpidashboard.apis.entity.UserToken;
+import com.publicissapient.kpidashboard.apis.enums.AuthType;
+import com.publicissapient.kpidashboard.common.model.ServiceResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
+
 import java.util.Date;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.security.core.Authentication;
-
-import com.publicissapient.kpidashboard.apis.entity.UserToken;
-import com.publicissapient.kpidashboard.common.model.ServiceResponse;
 
 /**
  * A Contract to add and get authentication.
  *
- * @author Hiren Babariya
+ * @author anisingh4
  */
 public interface TokenAuthenticationService {
+	String saveSamlData(Saml2AuthenticatedPrincipal principal, HttpServletResponse response);
+
+	String createApplicationJWT(@NotNull String subject, AuthType authType);
 
 	/**
 	 * Add authentication.

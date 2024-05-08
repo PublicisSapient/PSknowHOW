@@ -17,128 +17,105 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.util;
 
-import java.io.Serializable;
+import com.publicissapient.kpidashboard.apis.config.AuthProperties;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
+
+import javax.validation.constraints.NotNull;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Optional;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang3.SerializationUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
-import org.springframework.stereotype.Component;
-import org.springframework.web.util.WebUtils;
-
-import com.publicissapient.kpidashboard.apis.config.AuthProperties;
 
 /**
  * Provides Cookie utils.
  *
  * @author Hiren Babariya
  */
-@Component
+@NoArgsConstructor
 public class CookieUtil {
-	public static final int AUTH_COOKIE_MAX_AGE = 60;
-	public static final String AUTH_COOKIE = "authCookie";
-	private static final String DEFAULT_COOKIE_PATH = "/";
-	@Autowired
-	private AuthProperties customApiConfig;
+    public static final String DEFAULT_COOKIE_PATH = "/";
 
-	public static void addCookie(@NotNull HttpServletResponse response, @NotNull String name, @NotNull String path,
-			@NotNull String value, boolean httpOnly, int maxAge) {
-		Cookie cookie = new Cookie(name, value);
-		cookie.setPath(path);
-		cookie.setHttpOnly(httpOnly);
-		cookie.setMaxAge(maxAge);
-		response.addCookie(cookie);
-	}
+    public static final String API_COOKIE_PATH = "/api";
 
-	public static void addCookie(@NotNull HttpServletResponse response, @NotNull String name, @NotNull String value,
-			boolean httpOnly, int maxAge) {
-		addCookie(response, name, "/", value, httpOnly, maxAge);
-	}
+    public static final String COOKIE_NAME = "authCookie";
 
-	public static void addCookie(@NotNull HttpServletResponse response, @NotNull String name, @NotNull String value,
-			int maxAge) {
-		addCookie(response, name, "/", value, Boolean.TRUE, maxAge);
-	}
+    public static final String EXPIRY_COOKIE_NAME = COOKIE_NAME + "_EXPIRY";
 
-	public static <T extends Serializable> String serializeForCookie(@NotNull T toSerialize) {
-		return Base64.getUrlEncoder().encodeToString(SerializationUtils.serialize(toSerialize));
-	}
+    public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            return Arrays.stream(cookies).filter(cookie -> cookie.getName().equals(name)).findFirst();
+        } else {
+            return Optional.empty();
+        }
+    }
 
-	public static <T> T deserializeCookie(@NotNull Cookie cookie, @NotNull Class<T> deserializedClass) {
-		return deserializedClass.cast(SerializationUtils.deserialize(Base64.getUrlDecoder().decode(cookie.getValue())));
-	}
+    public static Optional<String> getCookieValue(@NotNull HttpServletRequest request, @NotNull String name) {
+        return getCookie(request, name).map(Cookie::getValue);
+    }
 
-	public Optional<Cookie> getCookie(HttpServletRequest request, String name) {
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			return Arrays.stream(cookies).filter(cookie -> cookie.getName().equals(name)).findFirst();
-		} else {
-			return Optional.empty();
-		}
-	}
+    public static void addCookie(
+            @NotNull HttpServletResponse response,
+            @NotNull String name,
+            @NotNull String path,
+            @NotNull String value,
+            boolean httpOnly,
+            int maxAge,
+            String domain
+    ) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setPath(path);
+        cookie.setHttpOnly(httpOnly);
+        cookie.setMaxAge(maxAge);
+        cookie.setDomain(domain);
+        response.addCookie(cookie);
+    }
 
-	public Optional<String> getCookieValue(@NotNull HttpServletRequest request, @NotNull String name) {
-		return getCookie(request, name).map(Cookie::getValue);
-	}
+    public static void addCookie(
+            @NotNull HttpServletResponse response,
+            @NotNull String name,
+            @NotNull String value,
+            boolean httpOnly,
+            int maxAge,
+            String domain
+    ) {
+        addCookie(response, name, DEFAULT_COOKIE_PATH, value, httpOnly, maxAge, domain);
+    }
 
-	public void deleteCookie(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
-			@NotNull String name) {
-		getCookie(request, name).ifPresent(foundCookie -> {
-			foundCookie.setMaxAge(-100);
-			foundCookie.setValue("");
-			foundCookie.setPath("/api");
-			if (customApiConfig.isSubDomainCookie()) {
-				foundCookie.setDomain(customApiConfig.getDomain());
-			}
-			response.addCookie(foundCookie);
-		});
-	}
+    public static void addCookie(
+            @NotNull HttpServletResponse response,
+            @NotNull String name,
+            @NotNull String value,
+            int maxAge,
+            String domain
+    ) {
+        addCookie(response, name, API_COOKIE_PATH, value, Boolean.TRUE, maxAge, domain);
+    }
 
-	public Cookie createAccessTokenCookie(String token) {
-		Cookie cookie = new Cookie(AUTH_COOKIE, token);
+    public static void deleteCookie(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull String name) {
+        getCookie(request, name).ifPresent(foundCookie -> {
+            foundCookie.setMaxAge(0);
+            foundCookie.setValue(StringUtils.EMPTY);
+            response.addCookie(foundCookie);
+        });
+    }
 
-		cookie.setMaxAge(customApiConfig.getAuthCookieDuration());
-		cookie.setSecure(customApiConfig.isAuthCookieSecured());
-		cookie.setHttpOnly(true);
-		cookie.setPath("/api");
-		if (customApiConfig.isSubDomainCookie()) {
-			cookie.setDomain(customApiConfig.getDomain());
-		}
-		return cookie;
-
-	}
-
-	public ResponseCookie deleteAccessTokenCookie() {
-		return ResponseCookie.from(AUTH_COOKIE, "").build();
-
-	}
-
-	public Cookie getAuthCookie(HttpServletRequest request) {
-		return WebUtils.getCookie(request, AUTH_COOKIE);
-	}
-
-	public void addSameSiteCookieAttribute(HttpServletResponse response) {
-		Collection<String> headers = response.getHeaders(HttpHeaders.SET_COOKIE);
-		boolean firstHeader = true;
-		for (String header : headers) { // there can be multiple Set-Cookie attributes
-			if (firstHeader) {
-				response.setHeader(HttpHeaders.SET_COOKIE,
-						String.format("%s; %s", header, customApiConfig.getAuthCookieSameSite()));
-				firstHeader = false;
-				continue;
-			}
-			response.addHeader(HttpHeaders.SET_COOKIE,
-					String.format("%s; %s", header, customApiConfig.getAuthCookieSameSite()));
-		}
-	}
+    // TODO: delete if not needed.
+    public static void addSameSiteCookieAttribute(HttpServletResponse response, AuthProperties authProperties) {
+        Collection<String> headers = response.getHeaders(HttpHeaders.SET_COOKIE);
+        boolean firstHeader = true;
+        for (String header : headers) { // there can be multiple Set-Cookie attributes
+            if (firstHeader) {
+                response.setHeader(HttpHeaders.SET_COOKIE, String.format("%s; %s", header, authProperties.getAuthCookieSameSite()));
+                firstHeader = false;
+                continue;
+            }
+            response.addHeader(HttpHeaders.SET_COOKIE, String.format("%s; %s", header, authProperties.getAuthCookieSameSite()));
+        }
+    }
 
 }

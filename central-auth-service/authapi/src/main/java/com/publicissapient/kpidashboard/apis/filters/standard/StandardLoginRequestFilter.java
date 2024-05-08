@@ -18,19 +18,17 @@
 
 package com.publicissapient.kpidashboard.apis.filters.standard;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.publicissapient.kpidashboard.apis.config.AuthProperties;
+import com.publicissapient.kpidashboard.apis.enums.AuthType;
+import com.publicissapient.kpidashboard.apis.filters.CustomAuthenticationFailureHandler;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.publicissapient.kpidashboard.apis.config.AuthProperties;
-import com.publicissapient.kpidashboard.apis.enums.AuthType;
-import com.publicissapient.kpidashboard.apis.filters.CustomAuthenticationFailureHandler;
 
 /**
  * Provides Standard Login Request Filter .
@@ -41,16 +39,18 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 	private AuthProperties authProperties;
 
 	/**
-	 * 
 	 * @param path
-	 * @param authManager
 	 * @param standardAuthenticationResultHandler
 	 */
-	public StandardLoginRequestFilter(String path, AuthenticationManager authManager,
+	public StandardLoginRequestFilter(
+			String path,
+			AuthenticationManager authenticationManager,
 			AuthenticationResultHandler standardAuthenticationResultHandler,
-			CustomAuthenticationFailureHandler authenticationFailureHandler, AuthProperties authProperties) {
+			CustomAuthenticationFailureHandler authenticationFailureHandler,
+			AuthProperties authProperties
+	) {
 		super();
-		super.setAuthenticationManager(authManager);
+		super.setAuthenticationManager(authenticationManager);
 		setAuthenticationSuccessHandler(standardAuthenticationResultHandler);
 		setAuthenticationFailureHandler(authenticationFailureHandler);
 		setFilterProcessesUrl(path);
@@ -59,42 +59,56 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 
 	/**
 	 * Attempts Authentication
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @return Authentication
 	 * @throws AuthenticationException
 	 */
 	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException {
+	public Authentication attemptAuthentication(
+			HttpServletRequest request,
+			HttpServletResponse response
+	) throws AuthenticationException {
 
-		if (!authProperties.getAuthenticationProviders().contains(AuthType.STANDARD)) {
+		if (!authProperties
+				.getAuthenticationProviders()
+				.contains(AuthType.STANDARD)) {
 			throw new AuthenticationServiceException("Standard login is disabled");
 		}
 
-		if (!request.getMethod().equals("POST")) {
-			throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
+		if (!request
+				.getMethod()
+				.equals("POST")) {
+			throw new AuthenticationServiceException("Authentication method not supported: " +
+													 request.getMethod());
 		}
 
 		String username = obtainUsername(request);
 		String password = obtainPassword(request);
 
-		if (username == null) {
+		if (username ==
+			null) {
 			username = "";
 		}
 
-		if (password == null) {
+		if (password ==
+			null) {
 			password = StringUtils.EMPTY;
 		}
 
 		username = username.trim();
 
-		StandardAuthenticationToken authRequest = new StandardAuthenticationToken(username, password);
+		StandardAuthenticationToken authRequest = new StandardAuthenticationToken(
+				username,
+				password
+		);
 
 		authRequest.setDetails(AuthType.STANDARD);
 
-		return this.getAuthenticationManager().authenticate(authRequest);
+		return this
+				.getAuthenticationManager()
+				.authenticate(authRequest);
 	}
 
 }

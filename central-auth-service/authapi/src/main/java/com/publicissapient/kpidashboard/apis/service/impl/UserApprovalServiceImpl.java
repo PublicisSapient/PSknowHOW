@@ -17,57 +17,37 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.service.impl;
 
-import java.net.UnknownHostException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.enums.NotificationCustomDataEnum;
 import com.publicissapient.kpidashboard.apis.errors.GenericException;
 import com.publicissapient.kpidashboard.apis.repository.UserRepository;
-import com.publicissapient.kpidashboard.apis.repository.UserRoleRepository;
-import com.publicissapient.kpidashboard.apis.service.CommonService;
-import com.publicissapient.kpidashboard.apis.service.MessageService;
-import com.publicissapient.kpidashboard.apis.service.RoleService;
-import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
-import com.publicissapient.kpidashboard.apis.service.UserApprovalService;
-import com.publicissapient.kpidashboard.apis.service.UserRoleService;
-import com.publicissapient.kpidashboard.apis.service.UserService;
+import com.publicissapient.kpidashboard.apis.service.*;
 import com.publicissapient.kpidashboard.common.model.UserAccessRequest;
-
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.net.UnknownHostException;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * @author hargupta15
  */
 @Slf4j
+@AllArgsConstructor
 @Service
 public class UserApprovalServiceImpl implements UserApprovalService {
-	@Autowired
-	private UserRoleService userRoleService;
-	@Autowired
-	private UserService userService;
-	@Autowired
-	private RoleService roleService;
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private UserRoleRepository userRoleRepository;
-	@Autowired
-	private TokenAuthenticationService tokenAuthenticationService;
-	@Autowired
-	private CommonService commonService;
+	private final UserService userService;
 
-	@Autowired
-	private MessageService messageService;
+	private final UserRepository userRepository;
+
+	private final TokenAuthenticationService tokenAuthenticationService;
+
+	private final CommonService commonService;
+
+	private final MessageService messageService;
 
 	/**
 	 * Method To fetch Details of all unapproved users

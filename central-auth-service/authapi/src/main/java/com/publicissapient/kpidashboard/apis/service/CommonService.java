@@ -29,7 +29,6 @@ public interface CommonService {
 	 */
 	void sendEmailNotification(List<String> emailAddresses, Map<String, String> customData, String subjectKey,
 			String notKey);
-
 	/**
 	 *
 	 * @return String
