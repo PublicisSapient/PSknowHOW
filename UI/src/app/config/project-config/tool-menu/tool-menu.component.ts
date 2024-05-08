@@ -98,7 +98,10 @@ export class ToolMenuComponent implements OnInit {
             this.projectTypeChange(fakeEvent, false);
             this.selectedType = jiraOrAzure[0].toolName === 'Azure';
             const kpiID = this.selectedProject['Type'] === 'Kanban' ? 'kpi1' : 'kpi0' ;
-            this.http.getFieldMappingsWithHistory(jiraOrAzure[0].id,kpiID).subscribe(mappings => {
+            let obj = {
+              "releaseNodeId": null
+            }
+            this.http.getFieldMappingsWithHistory(jiraOrAzure[0].id,kpiID, obj).subscribe(mappings => {
               if (mappings && mappings['success']) {
                 this.sharedService.setSelectedFieldMapping(mappings['data']);
                 this.disableSwitch = true;
