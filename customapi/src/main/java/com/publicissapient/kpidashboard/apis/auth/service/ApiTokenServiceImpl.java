@@ -117,7 +117,7 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 			}
 		}
 
-		throw new BadCredentialsException("Login Failed: The password entered is incorrect");
+		throw new BadCredentialsException("Login Failed: The username or password entered is incorrect");
 	}
 
 	/**

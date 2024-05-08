@@ -222,7 +222,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		DateTime now = DateTime.now(DateTimeZone.UTC);
 
 		if (!Pattern.matches(CommonConstant.USERNAME_PATTERN, username) || authentication == null) {
-			throw new BadCredentialsException("Login Failed: The Username entered is Invalid");
+			throw new BadCredentialsException("Login Failed: The username or password entered is incorrect");
 		}
 
 		if (checkForResetFailAttempts(authentication, now)) {
@@ -242,7 +242,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		// commented code to fix the security issues
 		// throw new BadCredentialsException("Login Failed: Invalid credentials
 		// for user
-		throw new BadCredentialsException("Login Failed: The password entered is incorrect");
+		throw new BadCredentialsException("Login Failed: The username or password entered is incorrect");
 	}
 
 	/**

@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
-	private static final String WRONGCREDENTIALS = "Login Failed: The password entered is incorrect";
+	private static final String WRONGCREDENTIALS = "Login Failed: The username or password entered is incorrect";
 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,

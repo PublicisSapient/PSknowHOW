@@ -227,7 +227,7 @@ public class AuthenticationServiceTest {
 
 	@Test
 	public void authenticateForWrongPassword() {
-		String failed_LoginMsg = "Login Failed: The password entered is incorrect";
+		String failed_LoginMsg = "Login Failed: The username or password entered is incorrect";
 		authentication.setApproved(true);
 		authentication.setPassword("WrongPassword");
 		when(authRepo.findByUsername("Test")).thenReturn(authentication);

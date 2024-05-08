@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService {
 		User dbUsers = getUserObject(authentication, authType, username);
 
 		if (!Pattern.matches(CommonConstant.USERNAME_PATTERN, username) || dbUsers == null) {
-			throw new BadCredentialsException("Login Failed: The Username entered is incorrect");
+			throw new BadCredentialsException("Login Failed: The username or password entered is incorrect");
 		}
 		if (checkForResetFailAttempts(dbUsers, LocalDateTime.now())) {
 			resetFailAttempts(username);
@@ -188,7 +188,7 @@ public class UserServiceImpl implements UserService {
 				if (dbUsers.getPassword() != null && dbUsers.checkPassword(password)) {
 					return new UsernamePasswordAuthenticationToken(userDTO, dbUsers.getPassword(), new ArrayList<>());
 				} else {
-					throw new BadCredentialsException("Login Failed: The password entered is incorrect");
+					throw new BadCredentialsException("Login Failed: The username or password entered is incorrect");
 				}
 			}
 

@@ -44,7 +44,7 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
-	private static final String WRONGCREDENTIALS = "Login Failed: The password entered is incorrect";
+	private static final String WRONGCREDENTIALS = "Login Failed: The username or password entered is incorrect";
 	public static final String USERNAME = "username";
 	public static final String FAIL = "FAIL";
 	@Autowired
