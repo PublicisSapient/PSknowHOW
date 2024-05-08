@@ -148,7 +148,7 @@
                                     <div 
                                        [formGroupName]="item?.hierarchyLevelId">
                                        <input type="checkbox" [formControlName]="key.nodeId"
-                                          [checked]="filterForm?.get(item?.hierarchyLevelId)?.value[key.nodeId]" (change)="checkedState($event, item?.hierarchyLevelId)"
+                                          [checked]="filterForm?.get(item?.hierarchyLevelId)?.value[key.nodeId]" 
                                           class="p-mr-1" />
                                     </div>
                                     {{key.nodeName}}
