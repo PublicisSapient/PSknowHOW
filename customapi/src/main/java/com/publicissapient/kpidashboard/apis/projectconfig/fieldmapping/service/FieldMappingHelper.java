@@ -305,7 +305,7 @@ public final class FieldMappingHelper {
 
 			List<ConfigurationHistoryChangeLog> getNodeSpecificFieldHistory = FieldMappingHelper
 					.getAccessibleFieldHistory(fieldMapping, fieldMappingResponse.getFieldName());
-			String previousValue = "";
+			Integer previousValue = 0;
 			if (CollectionUtils.isNotEmpty(getNodeSpecificFieldHistory)) {
 				List<ConfigurationHistoryChangeLog> changeLogs = getNodeSpecificFieldHistory.stream()
 						.filter(configurationHistoryChangeLog -> configurationHistoryChangeLog.getReleaseNodeId()
@@ -313,7 +313,7 @@ public final class FieldMappingHelper {
 						.toList();
 				if (CollectionUtils.isNotEmpty(changeLogs)) {
 					ConfigurationHistoryChangeLog configurationHistoryChangeLog = changeLogs.get(changeLogs.size() - 1);
-					previousValue = String.valueOf(configurationHistoryChangeLog.getChangedTo());
+					previousValue = (Integer) configurationHistoryChangeLog.getChangedTo();
 				}
 			}
 			if (ObjectUtils.isNotEmpty(originalValue)) {
