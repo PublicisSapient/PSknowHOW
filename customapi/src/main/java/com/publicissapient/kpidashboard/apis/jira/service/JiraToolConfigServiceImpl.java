@@ -125,7 +125,8 @@ public class JiraToolConfigServiceImpl {
 	private void isClientException(Optional<Connection> optConnection, RestClientException exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			String errMsg = ((HttpClientErrorException) exception).getStatusCode().value() + " " + HttpStatus
+					.valueOf(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
 			optConnection.ifPresent(connection -> connectionService.updateBreakingConnection(connection, errMsg));
 		}
 	}
@@ -160,7 +161,8 @@ public class JiraToolConfigServiceImpl {
 			} catch (Exception exception) {
 				if (exception instanceof HttpClientErrorException
 						&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-					String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+					String errMsg = ((HttpClientErrorException) exception).getStatusCode().value() + " " + HttpStatus
+							.valueOf(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
 					connectionService.updateBreakingConnection(connection, errMsg);
 				}
 				log.error("Error while fetching boardList for projectKey Id {}:  {}", boardRequestDTO.getProjectKey(),
