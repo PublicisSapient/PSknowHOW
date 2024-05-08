@@ -46,6 +46,7 @@ div.speed-suit-logo {
   padding: 14px;
   box-shadow: 0 5px 5px 0px rgba(0, 0, 0, 0.5);
   border-radius: 3px;
+  margin: 0 0 0 2rem;
 }
 
 .accelerate-container {
@@ -59,6 +60,10 @@ div.speed-suit-logo {
 .spinner{
   height: 20px;
   animation: spin 1s infinite;
+}
+
+.bg-blue-80{
+  background-color: #547ED1;
 }
 
 @keyframes spin {
