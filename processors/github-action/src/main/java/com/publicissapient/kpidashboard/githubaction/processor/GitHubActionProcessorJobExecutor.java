@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
@@ -203,7 +204,8 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 	private void isClientException(ProcessorToolConnection gitHubActions, Exception exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			String errMsg = ((HttpClientErrorException) exception).getStatusCode().value() + " " + HttpStatus
+					.valueOf(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(gitHubActions.getConnectionId(), errMsg);
 		}
 	}
