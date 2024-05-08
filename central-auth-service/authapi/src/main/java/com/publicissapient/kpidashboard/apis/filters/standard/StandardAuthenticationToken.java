@@ -18,11 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.filters.standard;
 
-import java.util.Collection;
-import java.util.Objects;
-
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Provides Standard Login Authentication Token.

@@ -18,74 +18,76 @@
 
 package com.publicissapient.kpidashboard.apis.filters.standard;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Objects;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
-
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.entity.UserToken;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.filters.AuthenticationResponseService;
 import com.publicissapient.kpidashboard.apis.repository.UserRepository;
-import com.publicissapient.kpidashboard.apis.repository.UserTokenRepository;
+import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.service.UserService;
-import com.publicissapient.kpidashboard.apis.service.impl.TokenAuthenticationServiceImpl;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import org.json.simple.JSONObject;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Objects;
+
+/**
+ * Provides Standard Login Authentication Result Handler.
+ *
+ * @author Hiren Babariya
+ */
 @Component
+@AllArgsConstructor
 public class AuthenticationResultHandler implements AuthenticationSuccessHandler {
+    private static final String USER_NAME = "user_name";
+    private static final String USER_EMAIL = "user_email";
+    private static final String USER_ID = "user_id";
+    private static final String USER_TYPE = "user_type";
+    private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 
-	private static final String USER_NAME = "user_name";
-	private static final String USER_EMAIL = "user_email";
-	private static final String USER_ID = "user_id";
-	private static final String USER_TYPE = "user_type";
-	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
-	@Autowired
-	UserRepository userRepository;
-	@Autowired
-	UserTokenRepository userTokenRepository;
-	@Autowired
-	private AuthenticationResponseService authenticationResponseService;
-	@Autowired
-	private TokenAuthenticationServiceImpl tokenAuthenticationService;
-	@Autowired
-	private UserService userService;
+    private final AuthenticationResponseService authenticationResponseService;
+    private final TokenAuthenticationService tokenAuthenticationService;
 
-	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-			Authentication authentication) throws IOException, ServletException {
-		authenticationResponseService.handle(response, authentication, AuthType.STANDARD);
-		String username = userService.getUsername(authentication);
-		UserToken userToken = tokenAuthenticationService.getLatestTokenByUser(username);
-		JSONObject json = loginJsonData(response, username, userToken);
-		response.setCharacterEncoding("UTF-8");
-		PrintWriter out = response.getWriter();
-		out.print(json.toJSONString());
-	}
+    private final UserRepository userRepository;
 
-	public JSONObject loginJsonData(HttpServletResponse httpServletResponse, String username, UserToken userToken) {
-		JSONObject json = new JSONObject();
-		httpServletResponse.setContentType("application/json");
-		httpServletResponse.setCharacterEncoding("UTF-8");
-		User userinfo = userRepository.findByUsername(username);
-		json.put(USER_NAME, username);
-		if (Objects.nonNull(userinfo) && Objects.nonNull(userToken)) {
-			json.put(USER_EMAIL, userinfo.getEmail());
-			json.put(USER_TYPE, userinfo.getAuthType());
-			json.put(USER_ID, userinfo.getId().toString());
-			json.put(AUTH_RESPONSE_HEADER, userToken.getToken());
-		}
-		return json;
+    private final UserService userService;
 
-	}
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
+        authenticationResponseService.handle(response, authentication, AuthType.STANDARD);
+        // sgu106: Google Analytics data population starts
+        String username = userService.getUsername(authentication);
+        UserToken userToken = tokenAuthenticationService.getLatestTokenByUser(username);
+        JSONObject json = loginJsonData(response, username, userToken);
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+        out.print(json.toJSONString());
+        // sgu106: Google Analytics data population ends
+
+    }
+
+    public JSONObject loginJsonData(HttpServletResponse httpServletResponse, String username, UserToken userToken) {
+        JSONObject json = new JSONObject();
+        httpServletResponse.setContentType("application/json");
+        httpServletResponse.setCharacterEncoding("UTF-8");
+        User userinfo = userRepository.findByUsername(username);
+        json.put(USER_NAME, username);
+        if (Objects.nonNull(userinfo) && Objects.nonNull(userToken)) {
+            json.put(USER_EMAIL, userinfo.getEmail());
+            json.put(USER_TYPE, userinfo.getAuthType());
+            json.put(USER_ID, userinfo.getId().toString());
+            json.put(AUTH_RESPONSE_HEADER, userToken.getToken());
+        }
+        return json;
+
+    }
 
 }

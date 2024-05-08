@@ -18,72 +18,44 @@
 
 package com.publicissapient.kpidashboard.apis.controller;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.view.RedirectView;
-
 import com.publicissapient.kpidashboard.apis.config.AuthProperties;
 import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
 import com.publicissapient.kpidashboard.apis.entity.User;
-import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filters.AuthenticationResponseService;
-import com.publicissapient.kpidashboard.apis.repository.UserRoleRepository;
-import com.publicissapient.kpidashboard.apis.repository.UserVerificationTokenRepository;
-import com.publicissapient.kpidashboard.apis.service.CommonService;
-import com.publicissapient.kpidashboard.apis.service.ForgotPasswordService;
-import com.publicissapient.kpidashboard.apis.service.MessageService;
-import com.publicissapient.kpidashboard.apis.service.ResourceService;
-import com.publicissapient.kpidashboard.apis.service.RoleService;
-import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
-import com.publicissapient.kpidashboard.apis.service.UserApprovalService;
-import com.publicissapient.kpidashboard.apis.service.UserRoleService;
-import com.publicissapient.kpidashboard.apis.service.UserService;
-import com.publicissapient.kpidashboard.apis.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.service.*;
 import com.publicissapient.kpidashboard.apis.util.CookieUtil;
-import com.publicissapient.kpidashboard.common.model.ChangePasswordRequestDTO;
-import com.publicissapient.kpidashboard.common.model.ForgotPasswordRequestDTO;
-import com.publicissapient.kpidashboard.common.model.LoginResponse;
-import com.publicissapient.kpidashboard.common.model.ResetPasswordRequestDTO;
-import com.publicissapient.kpidashboard.common.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.UserDTO;
-import com.publicissapient.kpidashboard.common.model.UserTokenAuthenticationDTO;
-
+import com.publicissapient.kpidashboard.common.model.*;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.modelmapper.ModelMapper;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * Rest Controller to handle authentication requests
@@ -91,6 +63,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author hirenkumar Babariya
  */
 @RestController
+@AllArgsConstructor
 @Slf4j
 @SuppressWarnings("java:S3740")
 public class UserController {
@@ -103,56 +76,23 @@ public class UserController {
 	public static final String ERROR_REGISTER_AGAIN = "error_register_again";
 
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
-	@Autowired
-	private AuthProperties authConfigurationProperties;
 
-	@Autowired
-	private UserService userService;
-	@Autowired
-	private UserVerificationTokenRepository userVerificationTokenRepository;
+	private final AuthProperties authConfigurationProperties;
 
-	@Autowired
-	private CookieUtil cookieUtil;
-	@Autowired
-	private UserTokenDeletionService userTokenDeletionService;
+	private final UserService userService;
+	private final UserTokenDeletionService userTokenDeletionService;
 
-	@Autowired
-	private TokenAuthenticationService tokenAuthenticationService;
+	private final TokenAuthenticationService tokenAuthenticationService;
 
-	@Autowired
-	private UserRoleService userRoleService;
-	@Autowired
-	private UserApprovalService userApprovalService;
+	private final UserApprovalService userApprovalService;
 
-	@Autowired
-	private ResourceService resourceService;
+	private final MessageService messageService;
 
-	@Autowired
-	private RoleService roleService;
+	private final ForgotPasswordService forgotPasswordService;
 
-	@Autowired
-	private MessageService messageService;
+	private final CommonService commonService;
 
-	@Autowired
-	private ForgotPasswordService forgotPasswordService;
-
-	@Autowired
-	private CommonService commonService;
-
-	@Autowired
-	private AuthenticationResponseService authenticationResponseService;
-	@Autowired
-	private UserRoleRepository userRoleRepository;
-
-	@GetMapping("/saml/login")
-	public RedirectView login() {
-		// Assuming authConfigurationProperties.getLoginCallback() provides the SAML
-		// login callback URL
-		String samlLoginCallback = authConfigurationProperties.getLoginCallback();
-		// Build the final SAML login URL by appending the original URL as a query
-		// parameter
-		return new RedirectView(samlLoginCallback, true);
-	}
+	private final AuthenticationResponseService authenticationResponseService;
 
 	@GetMapping("/login/status/{authToken}")
 	public ResponseEntity<?> loginStatusCheck(@PathVariable String authToken, HttpServletResponse response) {
@@ -162,9 +102,9 @@ public class UserController {
 				User user = userService.getAuthentication(userName);
 				ModelMapper mapper = new ModelMapper();
 				LoginResponse loginResponse = mapper.map(user, LoginResponse.class);
-				Cookie cookie = cookieUtil.createAccessTokenCookie(authToken);
-				response.addCookie(cookie);
-				cookieUtil.addSameSiteCookieAttribute(response);
+//				Cookie cookie = cookieUtil.createAuthCookie(authToken);
+//				response.addCookie(cookie);
+//				cookieUtil.addSameSiteCookieAttribute(response);
 				ServiceResponse serviceResponse = new ServiceResponse(true,
 						messageService.getMessage(SUCCESS_VALID_TOKEN), loginResponse);
 				return ResponseEntity.ok(serviceResponse);
@@ -183,18 +123,17 @@ public class UserController {
 	@GetMapping("/login/status/standard")
 	public ResponseEntity<?> loginStatusCheck(HttpServletRequest request, HttpServletResponse response) {
 		try {
-			Cookie authCookie = cookieUtil.getAuthCookie(request);
-			if (Objects.nonNull(authCookie) && StringUtils.isNotEmpty(authCookie.getValue())) {
-				String authToken = authCookie.getValue();
-				String userName = (String) tokenAuthenticationService.getClaim(authToken, CommonConstant.SUB);
+			Optional<String> authToken = CookieUtil.getCookieValue(request, CookieUtil.COOKIE_NAME);
+			if (authToken.isPresent() && StringUtils.isNotEmpty(authToken.get())) {
+				String userName = (String) tokenAuthenticationService.getClaim(authToken.get(), CommonConstant.SUB);
 				User user = userService.getAuthentication(userName);
 				UserTokenAuthenticationDTO userTokenAuthenticationDTO = new UserTokenAuthenticationDTO();
 				userTokenAuthenticationDTO.setUsername(userName);
 				userTokenAuthenticationDTO.setEmail(user.getEmail());
-				Cookie cookie = cookieUtil.createAccessTokenCookie(authToken);
-				response.addCookie(cookie);
-				userTokenAuthenticationDTO.setAuthToken(cookie.getValue());
-				cookieUtil.addSameSiteCookieAttribute(response);
+//				Cookie cookie = cookieUtil.createAuthCookie(authToken);
+//				response.addCookie(cookie);
+//				userTokenAuthenticationDTO.setAuthToken(cookie.getValue());
+//				cookieUtil.addSameSiteCookieAttribute(response);
 				ServiceResponse serviceResponse = new ServiceResponse(true,
 						messageService.getMessage(SUCCESS_VALID_TOKEN), userTokenAuthenticationDTO);
 				return ResponseEntity.ok(serviceResponse);
@@ -211,6 +150,26 @@ public class UserController {
 	}
 
 	/**
+	 * Validate Token
+	 *
+	 * @param request
+	 *            request
+	 * @param response
+	 *            response
+	 * @return ResponseEntity
+	 */
+	@PostMapping(value = "/validateToken")
+	public ResponseEntity<ServiceResponse> validateToken(HttpServletRequest request, HttpServletResponse response) {
+		Authentication authentication = tokenAuthenticationService.getAuthentication(request, response);
+		ServiceResponse serviceResponse = new ServiceResponse(false, messageService.getMessage(ERROR_UNAUTHORIZED_USER),
+				null);
+		if (null != authentication) {
+			serviceResponse = new ServiceResponse(true, messageService.getMessage(SUCCESS_VALID_TOKEN), null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
+	}
+
+	/**
 	 * @param authToken
 	 *            authToken
 	 * @return ResponseEntity
@@ -219,11 +178,16 @@ public class UserController {
 	public ResponseEntity deleteUserToken(@PathVariable String authToken, HttpServletRequest request,
 			HttpServletResponse response) {
 		log.info("UserTokenDeletionController::deleteUserToken start");
+
+		// TODO: create the business logic in the UserServiceImpl:
+		// - extract authCookie directly from request
+		// - extract the username from the authCookie
+		// ! - remove the two cookies: authCookie and authCookie_EXPIRY
 		if (null != authToken) {
 			String userName = (String) tokenAuthenticationService.getClaim(authToken, CommonConstant.SUB);
 			if (null != userName) {
 				userTokenDeletionService.invalidateSession(userName);
-				cookieUtil.deleteCookie(request, response, CookieUtil.AUTH_COOKIE);
+				CookieUtil.deleteCookie(request, response, CookieUtil.COOKIE_NAME);
 				HttpSession session;
 				SecurityContextHolder.clearContext();
 
@@ -232,7 +196,7 @@ public class UserController {
 					session.invalidate();
 				}
 				Cookie authCookieRemove = new Cookie("authCookie", "");
-				resetHeader(response, "", authCookieRemove);
+//				resetHeader(response, "", authCookieRemove);
 				log.info("UserTokenDeletionController::deleteUserToken end");
 				return ResponseEntity.ok()
 						.body(new ServiceResponse(true, messageService.getMessage(SUCCESS_DELETE_TOKEN), true));
@@ -243,13 +207,6 @@ public class UserController {
 		} else {
 			return ResponseEntity.notFound().build();
 		}
-	}
-
-	private void resetHeader(HttpServletResponse response, String authToken, Cookie cookie) {
-		response.addHeader(AUTH_RESPONSE_HEADER, authToken);
-		response.addHeader("CLEAR_VIA_CENTRAL", "true");
-		response.addCookie(cookie);
-		cookieUtil.addSameSiteCookieAttribute(response);
 	}
 
 	/**
@@ -265,27 +222,6 @@ public class UserController {
 			response = new ServiceResponse(true, messageService.getMessage(SUCCESS_LOGIN), userDTO);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
-	}
-
-	/**
-	 * @param httpServletRequest
-	 *            httpServletRequest
-	 * @param httpServletResponse
-	 *            httpServletResponse
-	 * @return ServiceResponse
-	 */
-	@GetMapping("/saml/logout")
-	public RedirectView samlLogout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-		Cookie cookie = cookieUtil.getAuthCookie(httpServletRequest);
-		String token = cookie.getValue();
-		userTokenDeletionService.deleteUserDetailsByToken(token);
-		String subject = tokenAuthenticationService.getSubject(token);
-		String afterLogout = (StringUtils.isNotEmpty(subject))
-				? String.format(authConfigurationProperties.getLogoutCallback(), subject)
-				: authConfigurationProperties.getDefaultRedirectToAfterLogout();
-		ResponseCookie authCookie = cookieUtil.deleteAccessTokenCookie();
-		httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, authCookie.toString());
-		return new RedirectView(afterLogout);
 	}
 
 	/**
@@ -316,13 +252,11 @@ public class UserController {
 	@GetMapping(value = "/user-info", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> fetchUserInfoFromAuthCookie(HttpServletRequest request) {
 		try {
-			ServiceResponse response = new ServiceResponse(false, messageService.getMessage(ERROR_UNAUTHORIZED_USER),
-					null);
+			ServiceResponse response = new ServiceResponse(false, messageService.getMessage(ERROR_UNAUTHORIZED_USER), null);
 
-			Cookie authCookie = cookieUtil.getAuthCookie(request);
-			if (Objects.nonNull(authCookie) && StringUtils.isNotEmpty(authCookie.getValue())) {
-				String authToken = authCookie.getValue();
-				String userName = (String) tokenAuthenticationService.getClaim(authToken, CommonConstant.SUB);
+			Optional<String> authToken = CookieUtil.getCookieValue(request, CookieUtil.COOKIE_NAME);
+			if (authToken.isPresent() && StringUtils.isNotEmpty(authToken.get())) {
+				String userName = (String) tokenAuthenticationService.getClaim(authToken.get(), CommonConstant.SUB);
 
 				User user = userService.getAuthentication(userName);
 				UserDTO userDTO = userService.getUserDTO(user);
@@ -330,7 +264,7 @@ public class UserController {
 				response = new ServiceResponse(true, messageService.getMessage(SUCCESS_VALID_TOKEN), userDTO);
 
 				return ResponseEntity.status(HttpStatus.OK).body(response);
-			} else {
+			}  else {
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
 			}
 		} catch (Exception e) {
@@ -466,7 +400,7 @@ public class UserController {
 	 * @throws ServletException
 	 *             the servlet exception
 	 */
-	@PostMapping(value = "/changePassword", produces = APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/changePassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	// NOSONAR
 	public ResponseEntity<ServiceResponse> changePassword(HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, @Valid @RequestBody ChangePasswordRequestDTO request)
@@ -554,13 +488,20 @@ public class UserController {
 	private ResponseEntity<ServiceResponse> isValidUser(boolean isValidUser, @Valid ChangePasswordRequestDTO request,
 			HttpServletResponse httpServletResponse) {
 		if (isValidUser) {
-			userService.changePassword(request.getEmail(), request.getPassword());
-			return ResponseEntity.ok().body(new ServiceResponse(true,
-					messageService.getMessage("success_change_password"), request.getUser()));
+			Authentication authentication = userService.changePassword(request.getEmail(), request.getPassword());
+			authenticationResponseService.handle(httpServletResponse, authentication, AuthType.STANDARD);
+			return ResponseEntity.ok().body(new ServiceResponse(true, getResponse(httpServletResponse), null));
 		} else {
 			return ResponseEntity.ok()
 					.body(new ServiceResponse(false, messageService.getMessage("error_wrong_password"), null));
 		}
+	}
+
+	private String getResponse(HttpServletResponse response) {
+		JSONObject json = new JSONObject();
+		json.put(CommonConstant.AUTH_RESPONSE_HEADER, response.getHeader(CommonConstant.AUTH_RESPONSE_HEADER));
+		json.put(CommonConstant.STATUS, CommonConstant.STATUS);
+		return json.toJSONString();
 	}
 
 	@GetMapping(value = "/validateEmailToken", produces = APPLICATION_JSON_VALUE) // NOSONAR
@@ -593,9 +534,7 @@ public class UserController {
 		if (tokenStatus != null && tokenStatus.equals(ResetPasswordTokenStatusEnum.VALID)) {
 			return new RedirectView(serverPath);
 		} else {
-			UserVerificationToken userVerificationToken = userVerificationTokenRepository.findByToken(token.toString());
-			log.info("UserController: User ", token);
-			userService.deleteUnVerifiedUser(userVerificationToken);
+			userService.deleteUnVerifiedUser(token);
 			return new RedirectView(serverPath + authConfigurationProperties.getRegisterPath());
 		}
 	}

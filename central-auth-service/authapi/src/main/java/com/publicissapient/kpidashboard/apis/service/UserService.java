@@ -17,13 +17,13 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import com.publicissapient.kpidashboard.apis.entity.User;
-import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.common.model.UserDTO;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * An Interface to provide authentication service.
@@ -69,14 +69,13 @@ public interface UserService {
 	boolean isUsernameExists(String username);
 
 	User findByUserName(String userName);
-
 	boolean deleteByUserName(String userName);
 
 	List<User> findAllUnapprovedUsers();
 
 	boolean registerUser(UserDTO request);
 
-	void deleteUnVerifiedUser(UserVerificationToken request);
+	void deleteUnVerifiedUser(UUID token);
 
 	/**
 	 * Validate User Details

@@ -18,9 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.filters.standard;
 
-import java.time.LocalDateTime;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.publicissapient.kpidashboard.apis.config.AuthProperties;
+import com.publicissapient.kpidashboard.apis.enums.AuthType;
+import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
+import com.publicissapient.kpidashboard.apis.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
@@ -28,10 +30,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.apis.config.AuthProperties;
-import com.publicissapient.kpidashboard.apis.enums.AuthType;
-import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
-import com.publicissapient.kpidashboard.apis.service.UserService;
+import java.time.LocalDateTime;
 
 /**
  * Provides Standard Login Authentication Provider.
@@ -39,16 +38,11 @@ import com.publicissapient.kpidashboard.apis.service.UserService;
  * @author Hiren Babariya
  */
 @Component
+@AllArgsConstructor
 public class StandardAuthenticationProvider implements AuthenticationProvider {
 
-	private final UserService userService;
+	private final UserService authService;
 	private final AuthProperties authProperties;
-
-	@Autowired
-	public StandardAuthenticationProvider(UserService userService, AuthProperties authProperties) {
-		this.userService = userService;
-		this.authProperties = authProperties;
-	}
 
 	/**
 	 * Performs Authentication
@@ -59,11 +53,11 @@ public class StandardAuthenticationProvider implements AuthenticationProvider {
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		try {
-			Authentication auth = userService.authenticate(authentication, AuthType.STANDARD.name());
-			userService.resetFailAttempts(authentication.getName());
+			Authentication auth = authService.authenticate(authentication, AuthType.STANDARD.name());
+			authService.resetFailAttempts(authentication.getName());
 			return auth;
 		} catch (BadCredentialsException e) {
-			userService.updateFailAttempts(authentication.getName(), LocalDateTime.now());
+			authService.updateFailAttempts(authentication.getName(), LocalDateTime.now());
 			throw e;
 		} catch (LockedException e) {
 			String error = "User account is locked for " + authProperties.getAccountLockedPeriod() + " minutes";

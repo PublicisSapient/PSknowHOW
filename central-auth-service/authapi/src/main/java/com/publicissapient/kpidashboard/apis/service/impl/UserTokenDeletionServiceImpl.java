@@ -18,42 +18,28 @@
 
 package com.publicissapient.kpidashboard.apis.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.publicissapient.kpidashboard.apis.repository.UserTokenRepository;
 import com.publicissapient.kpidashboard.apis.service.UserTokenDeletionService;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of {@link UserTokenDeletionService}
  * 
- * @author Hiren Babariya
+ * @author anisingh4
  */
 @Service
+@Slf4j
+@AllArgsConstructor
 public class UserTokenDeletionServiceImpl implements UserTokenDeletionService {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(UserTokenDeletionServiceImpl.class);
-
-	@Autowired
-	private UserTokenRepository userTokenRepository;
+	private final UserTokenRepository userTokenRepository;
 
 	@Override
 	@Transactional
 	public void invalidateSession(String userName) {
 		userTokenRepository.deleteAllByUsername(userName);
-		LOGGER.info("UserTokenDeletionServiceImpl::All tokens are deleted for given User.");
-
+		log.info("UserTokenDeletionServiceImpl::All tokens are deleted for given User.");
 	}
-
-	@Override
-	@Transactional
-	public void deleteUserDetailsByToken(String userToken) {
-		userTokenRepository.deleteByToken(userToken);
-		LOGGER.info("UserTokenDeletionServiceImpl::deleteUserDetails end");
-
-	}
-
 }

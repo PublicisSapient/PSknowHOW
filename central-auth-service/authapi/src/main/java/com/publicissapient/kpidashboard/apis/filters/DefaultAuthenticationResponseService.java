@@ -18,44 +18,39 @@
 
 package com.publicissapient.kpidashboard.apis.filters;
 
-import java.util.Collection;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Component;
-
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.service.UserRoleService;
 import com.publicissapient.kpidashboard.common.model.LoginResponse;
 import com.publicissapient.kpidashboard.common.model.UserDTO;
-
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
 
 /**
  * This class call repository method to save the user authentication.
  *
  */
-@Component
+@Service
+@AllArgsConstructor
 @Slf4j
 public class DefaultAuthenticationResponseService implements AuthenticationResponseService {
+	private final TokenAuthenticationService tokenAuthenticationService;
 
-	@Autowired
-	private TokenAuthenticationService tokenAuthenticationService;
-
-	@Autowired
-	private UserRoleService userRoleService;
+	private final UserRoleService userRoleService;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String handle(HttpServletResponse response, org.springframework.security.core.Authentication authentication,
-			AuthType authType) {
+						 AuthType authType) {
 
 		UserDTO auth = (UserDTO) authentication.getPrincipal();
 		Collection<GrantedAuthority> authorities = userRoleService.getAuthorities(auth.getUsername());

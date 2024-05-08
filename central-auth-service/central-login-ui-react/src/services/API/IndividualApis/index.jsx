@@ -11,11 +11,13 @@ const apiProvider = {
         return axios.post(`${API_BASE_URL}/api/login`, data);
     },
 
+    handleSamlLogin: `${API_BASE_URL}/api/sso-login`,
+
     handleUserRegistration: (data) => {
         return axios.post(`${API_BASE_URL}/api/registerUser`, data);
     },
 
-    handleSamlLogin: `${API_BASE_URL}/api/saml/login`,
+    handleSamlLogout: `${API_BASE_URL}/api/sso-logout-view`,
 
     handleForgotPassword: (data) => {
         return axios.post(`${API_BASE_URL}/api/forgotPassword`, data);

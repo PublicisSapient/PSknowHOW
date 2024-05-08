@@ -24,7 +24,7 @@ package com.publicissapient.kpidashboard.apis.enums;
  * @author Hiren Babariya
  */
 public enum AuthType {
-
-	STANDARD, SAML, SSO, APIKEY;
+	// TODO: remove SSO?
+	STANDARD, SAML, SSO;
 
 }

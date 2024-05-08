@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {NavLink} from 'react-router-dom';
 import apiProvider from '../../services/API/IndividualApis';
-import { useForm, FormProvider } from "react-hook-form";
-import { Text } from "../../components/Text";
-import { Button } from "../../components/Button";
-import { Img } from "../../components/Img";
-import { FloatingInput } from "../../components/FloatingInput";
+import {useForm, FormProvider} from "react-hook-form";
+import {Text} from "../../components/Text";
+import {Button} from "../../components/Button";
+import {Img} from "../../components/Img";
+import {FloatingInput} from "../../components/FloatingInput";
 import '../../App.css';
 import SuiteLogos from '../../components/SuiteLogos';
 import PSLogo from '../../components/PSLogo';
@@ -19,9 +19,17 @@ const LoginPage = ({search}) => {
     const [showSAMLLoader, setShowSAMLLoader] = useState(false);
     const methods = useForm({ mode: 'all' });
 
+    const currentUserEmail = localStorage.getItem('email');
+
     const PerformSAMLLogin = () => {
         setShowSAMLLoader(true);
         window.location.href = apiProvider.handleSamlLogin;
+    }
+
+    const PerformSAMLLogout = async () => {
+        setShowSAMLLoader(true);
+
+        window.location.href = apiProvider.handleSamlLogout
     }
 
     const PerformCredentialLogin = (data) => {
@@ -109,33 +117,58 @@ const LoginPage = ({search}) => {
                     } clickFn={PerformSAMLLogin}
                 >
                     <Text className="text-white text-left">
-                        Login with SSO
+                        {currentUserEmail ? `Continue as ${currentUserEmail}` : 'Login with SSO'}
                     </Text>
                 </Button>
+                {currentUserEmail && <Button
+                    className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[18px] w-full"
+                    rightIcon={
+                        <>
+                            <Img
+                                className="h-5 mb-px ml-2"
+                                src="images/img_arrowright.svg"
+                                alt="arrow_right"
+                            />
+                            {showSAMLLoader && <Img
+                                src={`${process.env.PUBLIC_URL}/images/spinner.png`} height='20'
+                                className="spinner mb-px ml-2"
+                                alt={`Spinner`}
+                            />}
+                        </>
+                    } clickFn={PerformSAMLLogout}
+                >
+                    <Text className="text-white text-left">
+                        Logout of Microsoft and use another account
+                    </Text>
+                </Button>}
                 <Text className='text-left mt-4' size='txtPoppinsRegular16'>Or login with credentials</Text>
                 <FormProvider {...methods}>
                     <form noValidate autoComplete='off'>
-                        <FloatingInput type="text" placeHolder="User Name" id="userName" className={`mt-4 ${(methods.formState.errors['userName']) ? 'Invalid' : ''}`}
-                            validationRules={{
-                                "required": "Field is required",
-                                "minLength": {
-                                    "value": 6,
-                                    "message": "Field should contain at least 6 characters"
-                                }
-                            }}>
+                        <FloatingInput type="text" placeHolder="User Name" id="userName"
+                                       className={`mt-4 ${(methods.formState.errors['userName']) ? 'Invalid' : ''}`}
+                                       validationRules={{
+                                           "required": "Field is required",
+                                           "minLength": {
+                                               "value": 6,
+                                               "message": "Field should contain at least 6 characters"
+                                           }
+                                       }}>
                         </FloatingInput>
-                        {(methods.formState.errors['userName']) && <p className='errMsg'>{methods.formState.errors['userName'].message}</p>}
-                        <FloatingInput type="password" placeHolder="Password" id="password" className={`mt-4 ${(methods.formState.errors['password']) ? 'Invalid' : ''}`}
-                            validationRules={{
-                                "required": "Field is required",
-                                "minLength": {
-                                    "value": 6,
-                                    "message": "Field should contain at least 6 characters"
-                                }
-                            }}>
+                        {(methods.formState.errors['userName']) &&
+                            <p className='errMsg'>{methods.formState.errors['userName'].message}</p>}
+                        <FloatingInput type="password" placeHolder="Password" id="password"
+                                       className={`mt-4 ${(methods.formState.errors['password']) ? 'Invalid' : ''}`}
+                                       validationRules={{
+                                           "required": "Field is required",
+                                           "minLength": {
+                                               "value": 6,
+                                               "message": "Field should contain at least 6 characters"
+                                           }
+                                       }}>
                         </FloatingInput>
-                        {(methods.formState.errors['password']) && <p className='errMsg'>{methods.formState.errors['password'].message}</p>}
-                        
+                        {(methods.formState.errors['password']) &&
+                            <p className='errMsg'>{methods.formState.errors['password'].message}</p>}
+                        {error && error.length > 0 && <p className='errMsg'>{error}</p>}
                         <Button
                             color='blue_80'
                             variant='fill'
@@ -160,11 +193,10 @@ const LoginPage = ({search}) => {
                                 Login
                             </Text>
                         </Button>
-                        {error && error.length > 0 && <p className='errMsg'>{error}</p>}
                     </form>
                 </FormProvider>
                 <div className="routeContainer mt-4">
-                    <NavLink to="/forgot-password">Forgot Password?</NavLink><br />
+                    <NavLink to="/forgot-password">Forgot Password?</NavLink><br/>
                     <p className='inline'>Dont have an account? </p>
                     <NavLink to="/register">Sign up here.</NavLink>
                 </div>

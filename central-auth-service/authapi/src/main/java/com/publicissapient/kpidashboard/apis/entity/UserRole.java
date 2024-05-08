@@ -17,17 +17,17 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+/**
+ * this class for user role
+ *
+ * @author Hiren Babariya
+ */
 @Builder
 @Getter
 @Setter

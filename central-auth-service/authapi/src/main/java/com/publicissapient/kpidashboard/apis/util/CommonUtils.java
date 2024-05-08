@@ -18,12 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-
-import javax.validation.constraints.NotNull;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -31,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author Hiren Babariya
  */
+// TODO: delete if not needed
 @Slf4j
 public final class CommonUtils {
 
@@ -43,13 +38,5 @@ public final class CommonUtils {
 	 */
 	public static String handleCrossScriptingTaintedValue(String value) {
 		return null == value ? null : value.replaceAll("[\\n|\\r\\t]", "");
-	}
-
-	public static String decode(@NotNull String toDecode) throws UnsupportedEncodingException {
-		try {
-			return URLDecoder.decode(toDecode, StandardCharsets.UTF_8.displayName());
-		} catch (Throwable var2) {
-			throw var2;
-		}
 	}
 }

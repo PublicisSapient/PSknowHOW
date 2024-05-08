@@ -18,22 +18,21 @@
 
 package com.publicissapient.kpidashboard.apis.service.impl;
 
-import java.util.Locale;
-
+import com.publicissapient.kpidashboard.apis.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.apis.service.MessageService;
+import java.util.Locale;
 
 /**
  * this service uses for one single Properties Configuration file message to
  * every class Use @Lazy Annotation in Your Service Class and Inject MyService
  * into Other Classes ex class UserServiceImpl
  */
-@Component
+@Service
 public class MessageServiceImpl implements MessageService {
 
 	@Autowired

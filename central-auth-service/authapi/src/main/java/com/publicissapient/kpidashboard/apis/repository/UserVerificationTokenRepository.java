@@ -18,16 +18,17 @@
 
 package com.publicissapient.kpidashboard.apis.repository;
 
-import org.springframework.data.repository.CrudRepository;
-
+import org.springframework.data.jpa.repository.JpaRepository;
 import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
+import org.springframework.stereotype.Repository;
 
 /**
  * The interface User Verification Token Repository
  *
  * @author aksshriv1
  */
-public interface UserVerificationTokenRepository extends CrudRepository<UserVerificationToken, Long> {
+@Repository
+public interface UserVerificationTokenRepository extends JpaRepository<UserVerificationToken, Long> {
 
 	/**
 	 * Find by user verification token.

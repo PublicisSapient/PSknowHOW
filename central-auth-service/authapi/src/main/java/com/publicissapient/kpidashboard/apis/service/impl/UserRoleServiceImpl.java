@@ -17,72 +17,49 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.service.impl;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Service;
-
 import com.publicissapient.kpidashboard.apis.entity.Role;
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.entity.UserRole;
 import com.publicissapient.kpidashboard.apis.repository.RoleRepository;
 import com.publicissapient.kpidashboard.apis.repository.UserRoleRepository;
-import com.publicissapient.kpidashboard.apis.service.MessageService;
-import com.publicissapient.kpidashboard.apis.service.RoleService;
 import com.publicissapient.kpidashboard.apis.service.UserRoleService;
 import com.publicissapient.kpidashboard.apis.service.UserService;
-
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author hargupta15
  */
 @Slf4j
 @Service
+@AllArgsConstructor
 public class UserRoleServiceImpl implements UserRoleService {
+	private final UserRoleRepository userRoleRepository;
 
-	@Autowired
-	private UserRoleRepository userRoleRepository;
-
-	@Autowired
-	private RoleService roleService;
-
-	@Autowired
-	private RoleRepository roleRepository;
-	@Autowired
-	private UserService userService;
-	private MessageService messageService;
-
-	@Autowired
-	public UserRoleServiceImpl(@Lazy MessageService messageService) {
-		this.messageService = messageService;
-	}
+	private final RoleRepository roleRepository;
+	private final UserService userService;
 
 	public Collection<GrantedAuthority> getAuthorities(String username) {
 		List<UserRole> userPermissionList = userRoleRepository.findByUsername(username);
-		if (CollectionUtils.isNotEmpty(userPermissionList)) {
-			userPermissionList = userPermissionList.stream().filter(userRole -> userRole.getRole() != null)
-					.collect(Collectors.toList());
+		if(CollectionUtils.isNotEmpty(userPermissionList)) {
+			userPermissionList = userPermissionList.stream().filter(userRole -> userRole.getRole() != null).collect(Collectors.toList());
 			return createAuthorities(CollectionUtils.emptyIfNull(userPermissionList).stream()
 					.map(userPermission -> userPermission.getRole().getName()).collect(Collectors.toList()));
 		} else {
 			List<UserRole> userPermissionDummy = new ArrayList<>();
 			UserRole dummyRole = new UserRole();
 			dummyRole.setUsername(username);
-			Role naRole = roleRepository.findByNameAndResourceId("ROLE_NA", 1L);
+			Role naRole = roleRepository.findByNameAndResourceId("ROLE_NA" , 1L);
 			dummyRole.setRole(naRole);
-			userPermissionDummy = userPermissionDummy.stream().filter(userRole -> userRole.getRole() != null)
-					.collect(Collectors.toList());
+			userPermissionDummy = userPermissionDummy.stream().filter(userRole -> userRole.getRole() != null).collect(Collectors.toList());
 			return createAuthorities(CollectionUtils.emptyIfNull(userPermissionDummy).stream()
 					.map(userPermission -> userPermission.getRole().getName()).collect(Collectors.toList()));
 		}
