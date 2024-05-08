@@ -40,6 +40,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
@@ -512,7 +513,8 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 		} catch (RestClientException rce) {
 			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 401
 					&& rce.getStatusCode().get() < 500) {
-				String errMsg = rce.getStatusCode().toString();
+				String errMsg = rce.getStatusCode().get() + " "
+						+ HttpStatus.valueOf((rce.getStatusCode().get())).getReasonPhrase();
 				processorToolConnectionService
 						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 			}

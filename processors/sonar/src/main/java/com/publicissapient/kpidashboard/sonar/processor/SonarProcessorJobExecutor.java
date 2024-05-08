@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
@@ -263,7 +264,8 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	private void isClientException(ProcessorToolConnection sonar, Exception ex) {
 		if (ex instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) ex).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) ex).getStatusCode().toString();
+			String errMsg = ((HttpClientErrorException) ex).getStatusCode().value() + " "
+					+ HttpStatus.valueOf(((HttpClientErrorException) ex).getStatusCode().value()).getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(sonar.getConnectionId(), errMsg);
 		}
 	}
