@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
@@ -154,7 +155,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 				}
 			} catch (RestClientException e) {
 				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 401 && e.getStatusCode().get() < 500) {
-					String errMsg = e.getStatusCode().toString();
+					String errMsg = e.getStatusCode().get() + " "
+							+ HttpStatus.valueOf(e.getStatusCode().get()).getReasonPhrase();
 					processorToolConnectionService
 							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 				}

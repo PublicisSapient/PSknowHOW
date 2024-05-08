@@ -31,6 +31,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -225,7 +226,8 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 	private void isClientException(ProcessorToolConnection teamcityServer, RestClientException exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			String errMsg = ((HttpClientErrorException) exception).getStatusCode().value() + " " + HttpStatus
+					.valueOf(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(teamcityServer.getConnectionId(), errMsg);
 		}
 	}

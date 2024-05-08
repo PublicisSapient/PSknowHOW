@@ -186,8 +186,8 @@ public class JiraCommonService {
 			String statusCodeString = matcher.group(1);
 			int statusCode = Integer.parseInt(statusCodeString);
 			if (statusCode >= 401 && statusCode < 500 && connectionOptional.isPresent()) {
-				processorToolConnectionService.updateBreakingConnection(connectionOptional.get().getId(),
-						HttpStatus.valueOf(statusCode).getReasonPhrase());
+				String errMsg = statusCode + " " + HttpStatus.valueOf(statusCode).getReasonPhrase();
+				processorToolConnectionService.updateBreakingConnection(connectionOptional.get().getId(), errMsg);
 			}
 		}
 	}
