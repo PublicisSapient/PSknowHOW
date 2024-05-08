@@ -67,7 +67,6 @@ export class CommentsComponent implements OnInit {
       kpiId: this.kpiId,
       commentsInfo: [
         {
-          commentBy: this.service.getCurrentUserDetails('user_name'),
           comment: this.commentText
         }
       ]
