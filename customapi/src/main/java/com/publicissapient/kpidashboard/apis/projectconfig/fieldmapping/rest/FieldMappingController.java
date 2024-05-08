@@ -73,7 +73,7 @@ public class FieldMappingController {
 
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> addFieldMapping(@PathVariable String projectToolConfigId,
-			@RequestBody List<FieldMappingResponse> fieldMappingResponseList) {
+			@RequestBody FieldMappingMeta fieldMappingMeta) {
 
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
 
@@ -90,7 +90,7 @@ public class FieldMappingController {
 			try {
 				FieldMapping fieldMapping = new FieldMapping();
 				boolean allfieldFound = fieldMappingService
-						.convertToFieldMappingAndCheckIsFieldPresent(fieldMappingResponseList, fieldMapping);
+						.convertToFieldMappingAndCheckIsFieldPresent(fieldMappingMeta.getFieldMappingRequests(), fieldMapping);
 				fieldMappingService.addFieldMapping(projectToolConfigId, fieldMapping,
 						projectToolConfig.getBasicProjectConfigId());
 				if (!allfieldFound) {
