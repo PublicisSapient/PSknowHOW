@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
@@ -46,6 +45,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -446,8 +446,8 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 	 */
 	private void isClientException(ProcessorToolConnection entry, Throwable cause) {
 		if (cause != null && ((HttpClientErrorException) cause).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) cause).getStatusCode().value() + " "
-					+ HttpStatus.valueOf(((HttpClientErrorException) cause).getStatusCode().value()).getReasonPhrase();
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) cause).getStatusCode().value())
+					.getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(entry.getConnectionId(), errMsg);
 		}
 	}

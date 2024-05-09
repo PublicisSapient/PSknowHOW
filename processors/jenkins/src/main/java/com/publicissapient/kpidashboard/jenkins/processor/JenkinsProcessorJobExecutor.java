@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
@@ -47,6 +46,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.Build;
@@ -222,8 +222,8 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 	private void isClientException(ProcessorToolConnection jenkinsServer, RestClientException exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) exception).getStatusCode().value() + " " + HttpStatus
-					.valueOf(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+			String errMsg = ClientErrorMessageEnum
+					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(jenkinsServer.getConnectionId(), errMsg);
 		}
 	}

@@ -23,6 +23,7 @@ import com.publicissapient.kpidashboard.apis.bamboo.model.BambooDeploymentProjec
 import com.publicissapient.kpidashboard.apis.bamboo.model.BambooPlansResponseDTO;
 import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 
@@ -146,8 +147,8 @@ public class BambooToolConfigServiceImpl {
 	private void isClientException(Connection connection, Exception exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) exception).getStatusCode().value() + " " + HttpStatus
-					.valueOf(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+			String errMsg = ClientErrorMessageEnum
+					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
 			connectionService.updateBreakingConnection(connection, errMsg);
 		}
 	}
