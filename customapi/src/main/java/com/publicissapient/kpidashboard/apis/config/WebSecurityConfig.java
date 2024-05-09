@@ -109,7 +109,9 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         // Configure AuthenticationManagerBuilder
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         setAuthenticationProvider(authenticationManagerBuilder);
-        http.headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable));
+        http.headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable)
+				.httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(customApiConfig.isIncludeSubDomains())
+						.maxAgeInSeconds(customApiConfig.getMaxAgeInSeconds())));
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(authz -> authz
                         .requestMatchers("/appinfo").permitAll().requestMatchers("/registerUser")
