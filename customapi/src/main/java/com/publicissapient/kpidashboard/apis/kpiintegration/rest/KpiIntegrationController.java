@@ -89,14 +89,11 @@ public class KpiIntegrationController {
 	 * 			kpi request
 	 * @return kpi recommendation
 	 */
-	@PostMapping(value="/kpiRecommendation", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ProjectWiseKpiRecommendation> getKpiRecommendation(@NotNull @RequestBody KpiRequest kpiRequest) {
+	@PostMapping(value = "/kpiRecommendation", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProjectWiseKpiRecommendation> getKpiRecommendation(
+			@NotNull @RequestBody KpiRequest kpiRequest) {
 		ProjectWiseKpiRecommendation response = kpiIntegrationService.getProjectWiseKpiRecommendation(kpiRequest);
-		if (response == null) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-		} else {
-			return ResponseEntity.ok().body(response);
-		}
+		return ResponseEntity.ok().body(response);
 	}
 
 }

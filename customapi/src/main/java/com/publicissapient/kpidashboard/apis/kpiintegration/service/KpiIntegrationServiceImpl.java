@@ -313,7 +313,6 @@ public class KpiIntegrationServiceImpl {
 	}
 
 	public ProjectWiseKpiRecommendation getProjectWiseKpiRecommendation(KpiRequest kpiRequest) {
-
 		try {
 			String recommendationUrl = String.format(customApiConfig.getRnrRecommendationUrl(),
 					URLEncoder.encode(kpiRequest.getIds()[0], StandardCharsets.UTF_8),
@@ -327,7 +326,7 @@ public class KpiIntegrationServiceImpl {
 			return response.getBody();
 		} catch (Exception ex) {
 			log.error("Exception hitting recommendation api ", ex);
-			return null;
+			return new ProjectWiseKpiRecommendation();
 		}
 	}
 
