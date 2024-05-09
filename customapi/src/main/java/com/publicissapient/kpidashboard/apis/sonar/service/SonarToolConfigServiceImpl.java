@@ -246,7 +246,7 @@ public class SonarToolConfigServiceImpl {
 
 		SearchProjectsResponse searchProjectsResponse = null;
 		try {
-			connectionService.updateBreakingConnection(connection, null);
+			connectionService.validateConnectionFlag(connection);
 			ResponseEntity<String> response = restTemplate.exchange(sonarUrl, HttpMethod.GET, httpEntity, String.class);
 			if (response.getStatusCode() == HttpStatus.OK) {
 				searchProjectsResponse = mapper.readValue(response.getBody(), SearchProjectsResponse.class);

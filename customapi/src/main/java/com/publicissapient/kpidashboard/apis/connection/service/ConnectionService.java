@@ -86,6 +86,22 @@ public interface ConnectionService {
 
 	ServiceResponse deleteConnection(String id);
 
-	void  updateBreakingConnection(Connection connection, String connectionErrorMsg);
+	/**
+	 * 
+	 * @param connection
+	 *            connection
+	 * @param connectionErrorMsg
+	 *            connectionErrorMsg
+	 */
+	void updateBreakingConnection(Connection connection, String connectionErrorMsg);
+
+	/**
+	 * Method to validate the broken connection and update the flag for all tools
+	 * except Jira and Azure
+	 *
+	 * @param connection
+	 *            connection
+	 */
+	void validateConnectionFlag(Connection connection);
 
 }

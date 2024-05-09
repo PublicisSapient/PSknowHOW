@@ -855,4 +855,15 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 	}
 
+	/**
+	 *
+	 * @param connection
+	 *            connection
+	 */
+	public void validateConnectionFlag(Connection connection) {
+		if (connection.isBrokenConnection()) {
+			updateBreakingConnection(connection, null);
+		}
+	}
+
 }

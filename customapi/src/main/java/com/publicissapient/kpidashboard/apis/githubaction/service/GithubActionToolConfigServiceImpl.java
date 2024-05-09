@@ -65,7 +65,7 @@ public class GithubActionToolConfigServiceImpl {
 
 			HttpEntity<?> httpEntity = new HttpEntity<>(RestAPIUtils.getHeaders(accessToken, true));
 			try {
-				connectionService.updateBreakingConnection(connection, null);
+				connectionService.validateConnectionFlag(connection);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONParser respParser = new JSONParser();
