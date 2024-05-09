@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
@@ -40,6 +39,7 @@ import com.atlassian.jira.rest.client.api.domain.Status;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.MetadataType;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.model.jira.Identifier;
@@ -155,8 +155,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 				}
 			} catch (RestClientException e) {
 				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 401 && e.getStatusCode().get() < 500) {
-					String errMsg = e.getStatusCode().get() + " "
-							+ HttpStatus.valueOf(e.getStatusCode().get()).getReasonPhrase();
+					String errMsg = ClientErrorMessageEnum.fromValue(e.getStatusCode().get()).getReasonPhrase();
 					processorToolConnectionService
 							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 				}

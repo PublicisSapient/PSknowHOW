@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
@@ -44,6 +43,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
@@ -264,8 +264,8 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	private void isClientException(ProcessorToolConnection sonar, Exception ex) {
 		if (ex instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) ex).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) ex).getStatusCode().value() + " "
-					+ HttpStatus.valueOf(((HttpClientErrorException) ex).getStatusCode().value()).getReasonPhrase();
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) ex).getStatusCode().value())
+					.getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(sonar.getConnectionId(), errMsg);
 		}
 	}

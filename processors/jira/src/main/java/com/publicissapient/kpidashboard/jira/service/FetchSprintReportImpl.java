@@ -40,12 +40,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -513,8 +513,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 		} catch (RestClientException rce) {
 			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 401
 					&& rce.getStatusCode().get() < 500) {
-				String errMsg = rce.getStatusCode().get() + " "
-						+ HttpStatus.valueOf((rce.getStatusCode().get())).getReasonPhrase();
+				String errMsg = ClientErrorMessageEnum.fromValue(rce.getStatusCode().get()).getReasonPhrase();
 				processorToolConnectionService
 						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 			}

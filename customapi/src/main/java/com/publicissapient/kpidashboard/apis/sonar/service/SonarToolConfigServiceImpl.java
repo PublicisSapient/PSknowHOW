@@ -26,6 +26,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.sonar.utiils.SonarAPIUtils;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.sonar.Paging;
 import com.publicissapient.kpidashboard.common.model.sonar.SearchProjectsResponse;
@@ -271,8 +272,8 @@ public class SonarToolConfigServiceImpl {
 	private void isClientException(Connection connection, RestClientException exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) exception).getStatusCode().value() + " " + HttpStatus
-					.valueOf(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+			String errMsg = ClientErrorMessageEnum
+					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
 			connectionService.updateBreakingConnection(connection, errMsg);
 		}
 	}
