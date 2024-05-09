@@ -20085,6 +20085,7 @@ describe('DoraComponent', () => {
     };
     component.selectedtype = 'scrum'
     const lstotage = {'scrum' : []}
+    spyOn(component, 'processKpiConfigData');
     localStorage.setItem('completeHierarchyData',JSON.stringify(lstotage))
     component.receiveSharedData(event);
     expect(component.noTabAccess).toBe(true);
@@ -20157,7 +20158,7 @@ describe('DoraComponent', () => {
     };
     component.kanbanActivated = false;
     component.selectedtype = 'Scrum';
-
+    spyOn(component, 'processKpiConfigData');
     const spyJenkins = spyOn(component, 'groupJenkinsKpi');
     localStorage.setItem('hierarchyData', JSON.stringify(hierarchyData));
     spyOn(component, 'getKpiCommentsCount');

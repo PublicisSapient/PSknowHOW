@@ -157,8 +157,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item?.shown);
     this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
-    this.kpiList = this.configGlobalData.map((kpi) => kpi.kpiId)
-    console.log(this.kpiList);
         
     /**reset the kpi count */
     this.navigationTabs = this.navigationTabs.map((x) => {
@@ -402,31 +400,6 @@ export class IterationComponent implements OnInit, OnDestroy {
   // download excel functionality
   downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport) {
     this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, this.filterApplyData, this.filterData, false);
-  }
-
-  // Return video link if video link present
-  getVideoLink(kpiId) {
-    const kpiData = this.masterData.kpiList.find(kpiObj => kpiObj.kpiId === kpiId);
-    if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
-      return kpiData?.videoLink?.videoUrl;
-    } else {
-      // Show message that video is not available
-    }
-  }
-
-  // Return boolean flag based on link is available and video is enabled
-  isVideoLinkAvailable(kpiId) {
-    let kpiData;
-    try {
-      kpiData = this.masterData?.kpiList?.find(kpiObj => kpiObj.kpiId === kpiId);
-      if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch {
-      return false;
-    }
   }
 
   sortAlphabetically(objArray) {

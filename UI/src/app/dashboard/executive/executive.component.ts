@@ -116,6 +116,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     kpiTableDataObj:object={};
     noOfDataPoints:number = 5;
     maturityTableKpiList = [];
+    kpiList:Array<string> = [];
 
     constructor(public service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -194,6 +195,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         // user can enable kpis from show/hide filter, added below flag to show different message to the user
         this.enableByUser = disabledKpis?.length ? true : false;
         // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
+        this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId)
         this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
         if (this.updatedConfigGlobalData?.length === 0) {
             this.noKpis = true;
@@ -348,9 +350,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     groupZypherKpi(kpiIdsForCurrentBoard) {
         // creating a set of unique group Ids
         const groupIdSet = new Set();
-        this.masterData.kpiList.forEach((obj) => {
-            if (!obj.kanban && obj.kpiSource === 'Zypher') {
-                groupIdSet.add(obj.groupId);
+        this.updatedConfigGlobalData?.forEach((obj) => {
+            if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Zypher') {
+                groupIdSet.add(obj['kpiDetail'].groupId);
             }
         });
         // sending requests after grouping the the KPIs according to group Id
@@ -370,9 +372,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.jiraKpiData = {};
         // creating a set of unique group Ids
         const groupIdSet = new Set();
-        this.masterData.kpiList.forEach((obj) => {
-            if (!obj.kanban && obj.kpiSource === 'Jira') {
-                groupIdSet.add(obj.groupId);
+        this.updatedConfigGlobalData?.forEach((obj) => {
+            if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira') {
+                groupIdSet.add(obj['kpiDetail'].groupId);
             }
         });
 
@@ -393,9 +395,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.jiraKpiData = {};
         // creating a set of unique group Ids
         const groupIdSet = new Set();
-        this.masterData.kpiList.forEach((obj) => {
-            if (obj.kanban && obj.kpiSource === 'Jira') {
-                groupIdSet.add(obj.groupId);
+        this.updatedConfigGlobalData?.forEach((obj) => {
+            if (obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira') {
+                groupIdSet.add(obj['kpiDetail'].groupId);
             }
         });
 
@@ -737,37 +739,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         for (let index = 0; index <= 2; index++) {
             const maturity = maturityArray[index];
             this.maturityColorCycleTime[index] = this.helperService.colorAccToMaturity(maturity);
-        }
-    }
-
-    getKPIName(kpiId) {
-        if (this.masterData && this.masterData.kpiList && this.masterData.kpiList.length) {
-            return this.masterData.kpiList.filter(kpi => kpi.kpiId === 'kpi11')[0].kpiName;
-        } else {
-            return ' ';
-        }
-    }
-
-    // Return video link if video link present
-    getVideoLink(kpiId) {
-        const kpiData = this.masterData.kpiList.find(kpiObj => kpiObj.kpiId === kpiId);
-        if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
-            return kpiData?.videoLink?.videoUrl;
-        }
-    }
-
-    // Return boolean flag based on link is available and video is enabled
-    isVideoLinkAvailable(kpiId) {
-        let kpiData;
-        try {
-            kpiData = this.masterData?.kpiList?.find(kpiObj => kpiObj.kpiId === kpiId);
-            if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch {
-            return false;
         }
     }
 
