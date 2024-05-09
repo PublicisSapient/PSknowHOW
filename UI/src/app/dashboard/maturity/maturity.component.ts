@@ -148,6 +148,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
             this.subscription.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
                 this.configGlobalData = globalConfig;
                 this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration' && board?.boardName.toLowerCase() !== 'developer');
+                this.checkShownTabs();
                 this.selectedTabKpis = this.tabs[0].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled);
             }));
             this.subscription.push(this.service.noProjectsObs.subscribe((res) => {
@@ -538,7 +539,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
                 });
             }
             if (this.selectedTab !== 'Overall') {
-                root.textLines = [...root.textLines, '(M' + getAverageMaturityValue(sumOfMatirity / root.children.length) + ')'];
+                root.textLines = [...root.textLines, getAverageMaturityValue(sumOfMatirity / root.children.length) === 0 ? 'NA' 
+                : '(M' + getAverageMaturityValue(sumOfMatirity / root.children.length) + ')'];
             } else {
                 const allKpis = root.children;
                 const tabCategory = {};
@@ -558,7 +560,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     };
                     const categoryKpis = allKpis.filter(kpi => tabCategory[category].includes(kpi.kpiId) && kpisInOverAllTab.includes(kpi.kpiId));
                     const sumOfMaturityForCategory = categoryKpis.reduce((sum, kpi) => sum + +kpi.maturity, 0);
-                    tab['maturity'] = getAverageMaturityValue(sumOfMaturityForCategory !== 0 ? (sumOfMaturityForCategory / categoryKpis.length).toFixed(2) : 0);
+                    tab['maturity'] = getAverageMaturityValue(sumOfMaturityForCategory !== 0 ? (sumOfMaturityForCategory / categoryKpis.length).toFixed(2) : 'NA');
                     sumOfMatirity += +tab['maturity'];
                     children.push(tab);
                 }
@@ -757,7 +759,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                                     const arc = event.target.parentElement.lastElementChild.lastElementChild;
                                     let yPosition = arc?.getBoundingClientRect()?.top;
                                     let xPosition = arc?.getBoundingClientRect()?.right;
-                                    tooltipForMainCategoryDiv.html('<strong>Maturity Value: M' + getAverageMaturityValue(d.data['maturity']) + '</strong>');
+                                    tooltipForMainCategoryDiv.html(`<strong>Maturity Value: ${getAverageMaturityValue(d.data['maturity']) === 0 ? "NA" : "M" + getAverageMaturityValue(d.data['maturity'])}</strong>`);
                                     tooltipForMainCategoryDiv.transition()
                                         .duration(500)
                                         .style('opacity', 1)
@@ -785,7 +787,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
                                     top: yPosition,
                                     right: xPosition
                                 } = arc?.getBoundingClientRect();
-                                tooltipForMainCategoryDiv.html('<strong>Maturity Value: M' + getAverageMaturityValue(d.data['maturity']) + '</strong>');
+                                
+                                tooltipForMainCategoryDiv.html(`<strong>Maturity Value: ${getAverageMaturityValue(d.data['maturity']) === 0 ? "NA" : "M" + getAverageMaturityValue(d.data['maturity'])}</strong>`);
                                 tooltipForMainCategoryDiv.transition()
                                     .duration(500)
                                     .style('opacity', 1)
@@ -960,5 +963,9 @@ export class MaturityComponent implements OnInit, OnDestroy {
             renderDescription += '</div> <p><strong>Maturity Value:  <span class="tooltip-group-' + maturityLevelData.group + '">M' + maturityLevelData.maturity + '</span></strong> </p></div>';
             return renderDescription;
         }
+    }
+
+    checkShownTabs(){
+        this.tabs = this.tabs.filter(tab => tab.kpis.some(kpi => kpi.shown));
     }
 }
