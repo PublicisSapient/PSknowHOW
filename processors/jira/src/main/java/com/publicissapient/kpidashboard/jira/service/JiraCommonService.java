@@ -48,13 +48,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -186,7 +186,7 @@ public class JiraCommonService {
 			String statusCodeString = matcher.group(1);
 			int statusCode = Integer.parseInt(statusCodeString);
 			if (statusCode >= 401 && statusCode < 500 && connectionOptional.isPresent()) {
-				String errMsg = statusCode + " " + HttpStatus.valueOf(statusCode).getReasonPhrase();
+				String errMsg = ClientErrorMessageEnum.fromValue(statusCode).getReasonPhrase();
 				processorToolConnectionService.updateBreakingConnection(connectionOptional.get().getId(), errMsg);
 			}
 		}

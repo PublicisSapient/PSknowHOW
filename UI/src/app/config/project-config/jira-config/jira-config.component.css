@@ -79,3 +79,8 @@ display: block !important;
 ::ng-deep .field-mapping .p-autocomplete{
   width: 100%;
 }
+
+.link{
+  color : var(--color-secondary-blue);
+  cursor: pointer;
+}

@@ -707,7 +707,7 @@ public abstract class ToolsKPIService<R, S> {
 					valueMap.remove(Constant.DEFAULT);
 					valueMap.forEach((key, value) -> {
 						List<DataCount> trendValues = new ArrayList<>();
-
+						value = filterDataCountForMaturity(kpiRequest, value);
 						Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, value);
 						String aggregateValue = null;
 						String maturity = null;
