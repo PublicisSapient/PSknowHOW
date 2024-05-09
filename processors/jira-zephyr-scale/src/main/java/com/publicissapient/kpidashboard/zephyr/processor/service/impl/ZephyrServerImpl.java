@@ -17,6 +17,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.zephyr.ZephyrTestCaseDTO;
 import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
@@ -129,8 +130,8 @@ public class ZephyrServerImpl implements ZephyrClient {
 	private void isClientException(ProcessorToolConnection toolInfo, Exception exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) exception).getStatusCode().value() + " " + HttpStatus
-					.valueOf(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+			String errMsg = ClientErrorMessageEnum
+					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(toolInfo.getConnectionId(), errMsg);
 		}
 	}
