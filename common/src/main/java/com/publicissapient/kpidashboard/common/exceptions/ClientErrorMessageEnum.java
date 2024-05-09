@@ -1,4 +1,25 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.common.exceptions;
+
+/**
+ * The enum Client error message code.
+ *
+ * @author aksshriv1
+ */
 
 public enum ClientErrorMessageEnum {
 
@@ -15,19 +36,43 @@ public enum ClientErrorMessageEnum {
 	private final int value;
 	private final String reasonPhrase;
 
+	/**
+	 *
+	 * @param value
+	 * 	value
+	 * @param reasonPhrase
+	 * 	reasonPhrase
+	 */
 	private ClientErrorMessageEnum(int value, String reasonPhrase) {
 		this.value = value;
 		this.reasonPhrase = reasonPhrase;
 	}
 
+	/**
+	 *
+	 * @return
+	 * 	it returns error code
+	 */
 	public int value() {
 		return this.value;
 	}
 
+	/**
+	 *
+	 * @return
+	 * 	it returns error msg
+	 */
 	public String getReasonPhrase() {
 		return this.reasonPhrase;
 	}
 
+	/**
+	 *
+	 * @param value
+	 * 	value
+	 * @return
+	 * 	return error message
+	 */
 	public static ClientErrorMessageEnum fromValue(int value) {
 		for (ClientErrorMessageEnum error : ClientErrorMessageEnum.values()) {
 			if (error.value == value) {
