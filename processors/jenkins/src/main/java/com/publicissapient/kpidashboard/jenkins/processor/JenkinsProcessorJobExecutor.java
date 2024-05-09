@@ -175,6 +175,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 						proBasicConfig.getId().toHexString());
 
 				try {
+					processorToolConnectionService.validateConnectionFlag(jenkinsServer);
 					log.info("Fetching jobs : {}", jenkinsServer.getJobName());
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					MDC.put("ProjectDataStartTime", String.valueOf(System.currentTimeMillis()));

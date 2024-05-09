@@ -199,6 +199,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
+					processorToolConnectionService.validateConnectionFlag(tool);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					BitbucketRepo bitRepo = getBitbucketRepo(tool, processor.getId());
 					if (proBasicConfig.isSaveAssigneeDetails()

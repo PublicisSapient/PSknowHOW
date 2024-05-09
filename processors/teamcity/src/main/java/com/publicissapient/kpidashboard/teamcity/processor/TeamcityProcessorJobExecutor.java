@@ -177,6 +177,7 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
+					processorToolConnectionService.validateConnectionFlag(teamcityServer);
 					processorExecutionTraceLog.setExecutionStartedAt(startTime);
 					teamcityClient = teamcityClientFactory.getTeamcityClient(TEAMCITY_CLIENT);
 

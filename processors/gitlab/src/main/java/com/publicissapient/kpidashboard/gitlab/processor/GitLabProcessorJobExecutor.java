@@ -360,6 +360,7 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 					ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 							proBasicConfig.getId().toHexString());
 					try {
+						processorToolConnectionService.validateConnectionFlag(entry);
 						processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 						if (gitRepo.getToolConfigId().equals(entry.getId())) {
 							// save repository name by project id
