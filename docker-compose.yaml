@@ -194,6 +194,60 @@ services:
       - "2181:2181"
     networks:
       - Network_apps
+
+  scm-processor-postgres:
+    container_name: scm-processor-postgres
+    image: postgres:11.1
+    environment:
+      # add env variable as mentioned https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#SCM-tool%3A
+    volumes:
+      - scm-processor-postgres-data:/var/lib/postgresql/data
+    restart: always
+    ports:
+      - '8001:5432'
+    networks:
+      - Network_apps
+
+  scm-processor-rabbitmq:
+    container_name: scm-processor-rabbitmq
+    image: rabbitmq:3.8-management
+    environment:
+      # add env variable as mentioned https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#SCM-tool%3A
+    ports:
+      - "8002:5672"
+      - "8003:15672"
+    cpus: 0.1
+    networks:
+      - Network_apps
+
+  scm-processor-api:
+    container_name: scm-processor-api
+    image: psknowhow/scm-processor-api:latest
+    ports:
+      - '8000:8000'
+    environment:
+      # add env variable as mentioned https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#SCM-tool%3A
+    depends_on:
+      - scm-processor-postgres
+      - scm-processor-rabbitmq
+    restart: always
+    networks:
+      - Network_apps
+
+  scm-processor-core:
+    container_name: scm-processor-core
+    image: psknowhow/scm-processor-core:latest
+    restart: always
+    environment:
+      # add env variable as mentioned https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#SCM-tool%3A
+    volumes:
+      - scm-processor-scanner-storage:/scm-processor-storage
+    depends_on:
+      - scm-processor-postgres
+      - scm-processor-rabbitmq
+    networks:
+      - Network_apps
+      
 volumes:
   kafka-consumersrvol:
   azure-board-processorvol:
@@ -203,6 +257,8 @@ volumes:
   uivol:
   customapivol:
   mongodbvol:
+  scm-processor-scanner-storage:
+  scm-processor-postgres-data:
 
 networks:
   Network_apps:
