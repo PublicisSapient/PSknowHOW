@@ -71,6 +71,7 @@ public class AzureToolConfigServiceImpl {
 					version);
 
 			try {
+				connectionService.updateBreakingConnection(connection, null);
 				HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 				ResponseEntity<String> response = restTemplate.exchange(finalUrl, HttpMethod.GET, httpEntity,
 						String.class);
@@ -192,6 +193,7 @@ public class AzureToolConfigServiceImpl {
 			headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 			final String finalUrl = baseUrl + AZURE_GET_TEAMS_API;
 			try {
+				connectionService.updateBreakingConnection(optConnection.get(), null);
 				HttpEntity<?> httpEntity = new HttpEntity<>(headers);
 				ResponseEntity<String> response = restTemplate.exchange(finalUrl, HttpMethod.GET, httpEntity,
 						String.class);

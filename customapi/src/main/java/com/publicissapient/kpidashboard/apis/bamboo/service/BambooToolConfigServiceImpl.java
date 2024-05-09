@@ -73,9 +73,8 @@ public class BambooToolConfigServiceImpl {
 
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
-
+				connectionService.updateBreakingConnection(connection, null);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONParser respParser = new JSONParser();
 					JSONObject object = (JSONObject) respParser.parse(response.getBody());
@@ -116,9 +115,8 @@ public class BambooToolConfigServiceImpl {
 
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
-
+				connectionService.updateBreakingConnection(connection, null);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-
 				if (response.getStatusCode() == HttpStatus.OK) {
 					parseBranchesResponse(responseDTOList, response);
 				} else {
@@ -190,8 +188,8 @@ public class BambooToolConfigServiceImpl {
 			String url = baseUrl + DEPLOYMENTPROJECT_URL_SUFFIX;
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
+				connectionService.updateBreakingConnection(connection, null);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONParser respParser = new JSONParser();
 					JSONArray searchResults = (JSONArray) ((JSONObject) respParser.parse(response.getBody()))

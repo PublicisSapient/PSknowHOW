@@ -842,8 +842,13 @@ public class ConnectionServiceImpl implements ConnectionService {
 			Optional<Connection> existingConnOpt = connectionRepository.findById(connection.getId());
 			if (existingConnOpt.isPresent()) {
 				Connection existingConnection = existingConnOpt.get();
-				existingConnection.setBrokenConnection(true);
-				existingConnection.setConnectionErrorMsg(conErrorMsg);
+				if (StringUtils.isEmpty(conErrorMsg)) {
+					existingConnection.setBrokenConnection(false);
+					existingConnection.setConnectionErrorMsg(conErrorMsg);
+				} else {
+					existingConnection.setBrokenConnection(true);
+					existingConnection.setConnectionErrorMsg(conErrorMsg);
+				}
 				connectionRepository.save(existingConnection);
 			}
 
