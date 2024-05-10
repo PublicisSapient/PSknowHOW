@@ -86,28 +86,28 @@ public class UserInfoController {
 	/***
 	 * update the role updateAccessOfUserInfo()
 	 * 
-	 * @param username
-	 *            unique object username present in the database
-	 * @return responseEntity of userInfo with data,message and status
+	 * @param userInfoDto
+	 *            object containing the updated user info data
+	 * @return responseEntity of userInfo with data, message, and status
 	 */
 	@PreAuthorize("hasPermission(null, 'UPDATE_USER_INFO')")
-	@PostMapping("/{username}")
-	public ResponseEntity<ServiceResponse> updateUserRole(@PathVariable("username") String username,
-			@Valid @RequestBody UserInfoDTO userInfoDto) {
+	@PostMapping("/updateUserRole")
+	public ResponseEntity<ServiceResponse> updateUserRole(@Valid @RequestBody UserInfoDTO userInfoDto) {
 		ModelMapper modelMapper = new ModelMapper();
 		UserInfo userInfo = modelMapper.map(userInfoDto, UserInfo.class);
 
 		log.info("user info ");
-		ServiceResponse response = userInfoService.updateUserRole(username, userInfo);
+		ServiceResponse response = userInfoService.updateUserRole(userInfo.getUsername(), userInfo);
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 
 	}
 
 	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
-	@DeleteMapping(value = "/{userName}")
-	public ResponseEntity<ServiceResponse> deleteUser(@PathVariable String userName) {
+	@PostMapping("/deleteUser")
+	public ResponseEntity<ServiceResponse> deleteUser(@Valid @RequestBody UserInfoDTO userInfoDto) {
 		log.info("Inside deleteUser() method of UserInfoController ");
+		String userName = userInfoDto.getUsername();
 		String loggedUserName = authenticationService.getLoggedInUser();
 		UserInfo userInfo = userInfoRepository.findByUsername(userName);
 		if ((!loggedUserName.equals(userName) && !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))) {
@@ -122,9 +122,10 @@ public class UserInfoController {
 	}
 
 	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
-	@DeleteMapping(value = "/central/{userName}")
-	public ResponseEntity<ServiceResponse> deleteUserFromCentral(@PathVariable String userName) {
+	@PostMapping(value = "/central/deleteUser")
+	public ResponseEntity<ServiceResponse> deleteUserFromCentral(@Valid @RequestBody UserInfoDTO userInfoDto) {
 		log.info("Inside deleteUser() method of UserInfoController ");
+		String userName = userInfoDto.getUsername();
 		String loggedUserName = authenticationService.getLoggedInUser();
 		UserInfo userInfo = userInfoRepository.findByUsername(userName);
 		if ((!loggedUserName.equals(userName) && !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))) {
