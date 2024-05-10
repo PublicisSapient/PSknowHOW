@@ -109,7 +109,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 	private boolean processMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client) {
 		boolean isSuccess = false;
 		List<Field> fieldList = getField(client, projectConfig);
-		List<IssueType> issueTypeList = getIssueType(client);
+		List<IssueType> issueTypeList = getIssueType(client, projectConfig);
 		List<Status> statusList = JiraHelper.getStatus(client);
 		if (CollectionUtils.isNotEmpty(fieldList) && CollectionUtils.isNotEmpty(issueTypeList)
 				&& CollectionUtils.isNotEmpty(statusList)) {
@@ -168,7 +168,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 		return fieldList;
 	}
 
-	private List<IssueType> getIssueType(ProcessorJiraRestClient client) {
+	private List<IssueType> getIssueType(ProcessorJiraRestClient client, ProjectConfFieldMapping projectConfig) {
 		List<IssueType> issueTypeList = new ArrayList<>();
 
 		if (client == null) {
@@ -182,6 +182,11 @@ public class CreateMetadataImpl implements CreateMetadata {
 					issueTypeList = Lists.newArrayList(fieldIt.iterator());
 				}
 			} catch (RestClientException e) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 400 && e.getStatusCode().get() < 500) {
+					String errMsg = ClientErrorMessageEnum.fromValue(e.getStatusCode().get()).getReasonPhrase();
+					processorToolConnectionService
+							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
+				}
 				JiraHelper.exceptionBlockProcess(e);
 				throw e;
 			}
