@@ -53,7 +53,6 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
@@ -109,8 +108,7 @@ public class AutomationPercentageServiceImplTest {
 	List<TestCaseDetails> totalTestCaseList = new ArrayList<>();
 	List<TestCaseDetails> automatedTestCaseList = new ArrayList<>();
 	List<JiraIssue> issues = new ArrayList<>();
-	@Mock
-	private CustomApiConfig customApiConfig;
+
 	@Mock
 	private CommonService commonService;
 	@Mock
@@ -153,7 +151,6 @@ public class AutomationPercentageServiceImplTest {
 			test.setAutomatedTestCases(1);
 		});
 		when(testExecutionRepository.findTestExecutionDetailByFilters(anyMap(),anyMap())).thenReturn(testExecutionList);
-		when(customApiConfig.getSprintCountForKpiCalculation()).thenReturn(5);
 	}
 
 	@Test
