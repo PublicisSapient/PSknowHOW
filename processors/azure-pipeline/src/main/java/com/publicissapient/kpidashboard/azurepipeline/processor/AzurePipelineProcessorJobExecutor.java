@@ -190,6 +190,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
+					processorToolConnectionService.validateConnectionFlag(azurePipelineServer);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					azurePipelineClient = azurePipelineFactory.getAzurePipelineClient(azurePipelineServer.getJobType());
 					long lastStartTimeOfJobs = lastStartTime(proBasicConfig, processorExecutionTraceLog, processor,

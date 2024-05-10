@@ -87,6 +87,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 	@Override
 	public void collectMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client,
 			String isScheduler) {
+		processorToolConnectionService.validateJiraAzureConnFlag(projectConfig.getProjectToolConfig());
 		if (isScheduler.equalsIgnoreCase("false") || null == boardMetadataRepository
 				.findByProjectBasicConfigId(projectConfig.getBasicProjectConfigId())) {
 			boardMetadataRepository.deleteByProjectBasicConfigId(projectConfig.getBasicProjectConfigId());

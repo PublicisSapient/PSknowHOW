@@ -64,9 +64,8 @@ public class JenkinsToolConfigServiceImpl {
 
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
-
+				connectionService.validateConnectionFlag(connection);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONArray jsonArray = restAPIUtils.convertJSONArrayFromResponse(response.getBody(), JOBS);
 					List<String> jobNameKeyList = restAPIUtils.convertListFromMultipleArray(jsonArray, JOB_URL);

@@ -182,6 +182,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
+					processorToolConnectionService.validateConnectionFlag(argoCDJob);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					String accessToken = argoCDClient.getAuthToken(baseUrl, cred);
 					ApplicationsList listOfApplications = argoCDClient.getApplications(baseUrl, accessToken);

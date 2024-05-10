@@ -2039,6 +2039,6 @@ p-dialog .p-button-cancel.p-button-secondary {
 }
 
 .broken-conn-row{
-  background-color: rgb(201, 56, 56) !important;
-  color : white !important;
+  background-color: #ffecd7 !important;
+  color : black !important;
 }

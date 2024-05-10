@@ -154,6 +154,7 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 						proBasicConfig.getId().toHexString());
 
 				try {
+					processorToolConnectionService.validateConnectionFlag(gitHubActions);
 					log.info("Fetching jobs : {}", gitHubActions.getJobName());
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					MDC.put("ProjectDataStartTime", String.valueOf(System.currentTimeMillis()));
