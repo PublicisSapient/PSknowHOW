@@ -512,7 +512,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 			}
 		} catch (RestClientException rce) {
-			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 401
+			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 400
 					&& rce.getStatusCode().get() < 500) {
 				String errMsg = ClientErrorMessageEnum.fromValue(rce.getStatusCode().get()).getReasonPhrase();
 				processorToolConnectionService

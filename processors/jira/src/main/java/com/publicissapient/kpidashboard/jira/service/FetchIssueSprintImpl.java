@@ -145,7 +145,7 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 				}
 				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 			} catch (RestClientException e) {
-				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 400 && e.getStatusCode().get() < 500) {
 					processorToolConnectionService.updateBreakingConnection(
 							projectConfig.getProjectToolConfig().getConnectionId(),
 							ClientErrorMessageEnum.fromValue(e.getStatusCode().get()).getReasonPhrase());
