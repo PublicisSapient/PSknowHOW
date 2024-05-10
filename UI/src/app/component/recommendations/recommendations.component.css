@@ -7,7 +7,7 @@
     border: 2px solid #000;
     border-radius: 50px;
     background: #fff;
-    box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.8);
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     text-align: center;
     display: flex;
     align-items: center;
