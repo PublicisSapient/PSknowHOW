@@ -198,6 +198,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
+					processorToolConnectionService.validateConnectionFlag(sonar);
 					MDC.put(SONAR_URL, sonar.getUrl());
 					processorExecutionTraceLog.setExecutionStartedAt(startTime);
 					sonar.setPassword(decryptPassword(sonar.getPassword()));

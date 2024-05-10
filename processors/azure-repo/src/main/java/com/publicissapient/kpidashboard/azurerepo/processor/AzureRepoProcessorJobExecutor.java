@@ -379,6 +379,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 		for (AzureRepoModel azureRepo : azurerepoRepos) {
 			for (ProcessorToolConnection entry : azureRepoInfo) {
 				try {
+					processorToolConnectionService.validateConnectionFlag(entry);
 					if (azureRepo.getToolConfigId().equals(entry.getId())) {
 						boolean firstTimeRun = (azureRepo.getLastUpdatedCommit() == null);
 						if (projectBasicConfig.isSaveAssigneeDetails()

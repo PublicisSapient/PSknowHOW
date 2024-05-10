@@ -105,6 +105,7 @@ public class JiraToolConfigServiceImpl {
 		try {
 			if (optConnection.isPresent()) {
 				Connection connection = optConnection.get();
+				connectionService.validateConnectionFlag(connection);
 				String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 				HttpEntity<?> httpEntity = getHttpEntity(connection);
 				fetchBoardDetailsRestAPICall(boardRequestDTO, responseList, baseUrl, httpEntity, connection);

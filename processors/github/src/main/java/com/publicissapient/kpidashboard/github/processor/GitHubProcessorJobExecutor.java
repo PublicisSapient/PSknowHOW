@@ -183,6 +183,7 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
+					processorToolConnectionService.validateConnectionFlag(tool);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					GitHubProcessorItem gitHubProcessorItem = getGitHubProcessorItem(tool, processor.getId());
 					boolean firstTimeRun = (gitHubProcessorItem.getLastUpdatedCommit() == null);

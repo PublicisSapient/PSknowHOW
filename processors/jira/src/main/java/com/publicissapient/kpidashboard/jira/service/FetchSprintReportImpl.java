@@ -497,6 +497,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			KerberosClient krb5Client) throws IOException {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		try {
+			processorToolConnectionService.validateJiraAzureConnFlag(projectConfig.getProjectToolConfig());
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
 			if (null != jiraToolConfig) {
 				boolean isLast = false;
