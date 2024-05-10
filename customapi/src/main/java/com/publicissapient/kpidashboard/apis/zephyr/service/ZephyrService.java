@@ -132,21 +132,7 @@ public class ZephyrService {
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
 
-				if (!kpiRequest.getLabel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
-					Map<String, List<Node>> sprintMap = new LinkedHashMap<>();
-					treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-							.stream().collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
-								if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
-									sprintMap
-											.computeIfAbsent(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
-													k -> new ArrayList<>())
-											.addAll(new ArrayList<>(sprints.subList(0,
-													customApiConfig.getSprintCountForKpiCalculation())));
-
-								}
-							});
-					treeAggregatorDetail.setMapOfListOfLeafNodes(sprintMap);
-				}
+				updateTreeAggregatorDetail(kpiRequest, treeAggregatorDetail);
 
 				kpiRequest.setFilterToShowOnTrend(Constant.PROJECT);
 
@@ -219,6 +205,32 @@ public class ZephyrService {
 					kpiRequest.getSprintIncluded());
 		}
 
+	}
+
+	/**
+	 * updates the TreeAggregatorDetail object based on the KpiRequest.
+	 *
+	 * @param kpiRequest
+	 * 				The KpiRequest object that contains the label
+	 * @param treeAggregatorDetail
+	 * 				The TreeAggregatorDetail object to be updated.
+	 */
+	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
+		if (!kpiRequest.getLabel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
+			Map<String, List<Node>> sprintMap = new LinkedHashMap<>();
+			treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+					.stream().collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
+						if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
+							sprintMap
+									.computeIfAbsent(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
+											k -> new ArrayList<>())
+									.addAll(new ArrayList<>(sprints.subList(0,
+											customApiConfig.getSprintCountForKpiCalculation())));
+
+						}
+					});
+			treeAggregatorDetail.setMapOfListOfLeafNodes(sprintMap);
+		}
 	}
 
 	/**
