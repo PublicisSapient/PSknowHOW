@@ -17,10 +17,14 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
+import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.Node;
 import org.apache.commons.collections4.CollectionUtils;
 import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import org.apache.commons.lang.SerializationUtils;
@@ -134,6 +138,21 @@ public class JiraServiceR {
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
+
+				if (!kpiRequest.getLabel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
+					Map<String, List<Node>> sprintMap = new LinkedHashMap<>();
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+							.stream().collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
+								if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
+									sprintMap
+											.computeIfAbsent(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
+													k -> new ArrayList<>())
+											.addAll(new ArrayList<>(sprints.subList(0,
+													customApiConfig.getSprintCountForKpiCalculation())));
+								}
+							});
+					treeAggregatorDetail.setMapOfListOfLeafNodes(sprintMap);
+				}
 
 				// set filter value to show on trend line. If subprojects are
 				// in

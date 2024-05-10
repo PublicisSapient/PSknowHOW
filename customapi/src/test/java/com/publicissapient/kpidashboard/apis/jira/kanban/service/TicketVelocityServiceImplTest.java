@@ -40,7 +40,6 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
@@ -84,8 +83,6 @@ public class TicketVelocityServiceImplTest {
 	ProjectBasicConfigRepository projectConfigRepository;
 	@Mock
 	FieldMappingRepository fieldMappingRepository;
-	@Mock
-	CustomApiConfig customApiConfig;
 	@Mock
 	private CommonService commonService;
 	private KpiRequest kpiRequest;
@@ -147,7 +144,6 @@ public class TicketVelocityServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(customApiConfig.getSprintCountForKpiCalculation()).thenReturn(5);
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 
@@ -156,7 +152,7 @@ public class TicketVelocityServiceImplTest {
 					treeAggregatorDetail);
 			assertThat("Velocity Value :",
 					((List<DataCount>) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(),
-					equalTo(5));
+					equalTo(7));
 		} catch (ApplicationException enfe) {
 
 		}
