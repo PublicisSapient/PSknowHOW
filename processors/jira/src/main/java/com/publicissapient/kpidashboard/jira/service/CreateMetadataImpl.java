@@ -155,7 +155,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 					fieldList = Lists.newArrayList(fieldIt.iterator());
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 401 && e.getStatusCode().get() < 500) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 400 && e.getStatusCode().get() < 500) {
 					String errMsg = ClientErrorMessageEnum.fromValue(e.getStatusCode().get()).getReasonPhrase();
 					processorToolConnectionService
 							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
