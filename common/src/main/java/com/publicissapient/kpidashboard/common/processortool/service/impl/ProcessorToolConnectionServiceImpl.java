@@ -205,9 +205,7 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 	 *            toolConnection
 	 */
 	public void validateJiraAzureConnFlag(ProjectToolConfig toolConnection) {
-		if (toolConnection.isBrokenConnection()) {
-			updateBreakingConnection(toolConnection.getConnectionId(), null);
-		}
+		updateBreakingConnection(toolConnection.getConnectionId(), null);
 	}
 
 	/**
