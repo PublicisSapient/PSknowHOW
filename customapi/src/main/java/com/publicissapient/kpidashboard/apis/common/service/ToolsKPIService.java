@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -567,7 +566,6 @@ public abstract class ToolsKPIService<R, S> {
 
 				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
 				if (CollectionUtils.isNotEmpty(dataCounts)) {
-					dataCounts = filterDataCountForMaturity(kpiRequest, kpiElement, dataCounts);
 					Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, dataCounts);
 					String aggregateValue = null;
 					String maturity = null;
@@ -582,27 +580,6 @@ public abstract class ToolsKPIService<R, S> {
 			}
 		}
 		return trendValues;
-	}
-
-	/**
-	 * filter initial data points by property to get latest for maturity
-	 *
-	 * @param kpiRequest
-	 *            kpi request
-	 * @param kpiElement
-	 *            kpi element
-	 * @param dataCounts
-	 *            data counts
-	 * @return filtered data counts
-	 */
-	private List<DataCount> filterDataCountForMaturity(KpiRequest kpiRequest, KpiElement kpiElement,
-			List<DataCount> dataCounts) {
-		if (!kpiElement.getKpiSource().equalsIgnoreCase(ProcessorConstants.BITBUCKET)
-				&& kpiRequest.getLabel().equalsIgnoreCase(Constant.PROJECT)
-				&& dataCounts.size() > customApiConfig.getSprintCountForKpiCalculation()) {
-			dataCounts = dataCounts.subList(0, customApiConfig.getSprintCountForKpiCalculation());
-		}
-		return dataCounts;
 	}
 
 	/**
@@ -710,7 +687,6 @@ public abstract class ToolsKPIService<R, S> {
 					valueMap.remove(Constant.DEFAULT);
 					valueMap.forEach((key, value) -> {
 						List<DataCount> trendValues = new ArrayList<>();
-						value = filterDataCountForMaturity(kpiRequest, kpiElement, value);
 						Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, value);
 						String aggregateValue = null;
 						String maturity = null;

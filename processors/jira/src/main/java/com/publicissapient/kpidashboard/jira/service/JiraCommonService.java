@@ -17,9 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
-import static com.publicissapient.kpidashboard.jira.constant.JiraConstants.ERROR_MSG_401;
-import static com.publicissapient.kpidashboard.jira.constant.JiraConstants.ERROR_MSG_NO_RESULT_WAS_AVAILABLE;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -292,10 +289,10 @@ public class JiraCommonService {
 							searchResult.getTotal()));
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-					log.error(ERROR_MSG_401);
-				} else {
-					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e);
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 400 && e.getStatusCode().get() < 500) {
+					String errMsg = ClientErrorMessageEnum.fromValue(e.getStatusCode().get()).getReasonPhrase();
+					processorToolConnectionService
+							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 				}
 				throw e;
 			}
@@ -375,10 +372,10 @@ public class JiraCommonService {
 							searchResult.getTotal()));
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-					log.error(ERROR_MSG_401);
-				} else {
-					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e);
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 400 && e.getStatusCode().get() < 500) {
+					String errMsg = ClientErrorMessageEnum.fromValue(e.getStatusCode().get()).getReasonPhrase();
+					processorToolConnectionService
+							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 				}
 				throw e;
 			}
@@ -408,6 +405,12 @@ public class JiraCommonService {
 				parseVersionData(getDataFromClient(projectConfig, url, krb5Client), projectVersionList);
 			}
 		} catch (RestClientException rce) {
+			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 400
+					&& rce.getStatusCode().get() < 500) {
+				String errMsg = ClientErrorMessageEnum.fromValue(rce.getStatusCode().get()).getReasonPhrase();
+				processorToolConnectionService
+						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
+			}
 			log.error("Client exception when fetching versions " + rce);
 			throw rce;
 		} catch (MalformedURLException mfe) {

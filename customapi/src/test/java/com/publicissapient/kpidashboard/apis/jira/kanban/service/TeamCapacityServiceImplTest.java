@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,9 +71,6 @@ public class TeamCapacityServiceImplTest {
 
 	@Mock
 	FilterHelperService filterHelperService;
-
-	@Mock
-	CustomApiConfig customApiConfig;
 
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
@@ -128,7 +124,6 @@ public class TeamCapacityServiceImplTest {
 		resultListMap.put(SUBGROUPCATEGORY, "date");
 		when(kpiHelperService.fetchTeamCapacityDataFromDb(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
 				Mockito.eq(TICKET_LIST))).thenReturn(resultListMap);
-		when(customApiConfig.getSprintCountForKpiCalculation()).thenReturn(5);
 		try {
 			KpiElement kpiElement = teamCapacityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
