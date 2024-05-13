@@ -26,6 +26,7 @@ import * as d3 from 'd3';
 import { SharedService } from 'src/app/services/shared.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { HttpService } from 'src/app/services/http.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-daily-scrum-graph',
@@ -59,6 +60,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
   selectedConfig: any = {};
   fieldMappingMetaData = [];
   @Output() reloadKPITab = new EventEmitter<any>();
+  metaDataTemplateCode : any;
+  isSyncPassedOrFailed;
+  lastSyncTime;
 
   constructor(private viewContainerRef: ViewContainerRef, private http: HttpService, public service: SharedService, private authService: GetAuthorizationService) { }
 
@@ -879,11 +883,11 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
   /** This method is responsible for getting field mapping configuration for this KPI */
   getKPIFieldMappingConfig() {
-    console.log(this.kpiData);
     const selectedTrend = this.service.getSelectedTrends();
     this.loading = true;
     this.noData = false;
     this.displayConfigModel = true;
+    this.lastSyncTime = this.showExecutionDate(this.kpiData[0].kpiDetail.combinedKpiSource || this.kpiData.kpiDetail.kpiSource);
     this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData[0]['kpiId']}`).subscribe(data => {
       if (data && data['success']) {
         this.fieldMappingConfig = data?.data['fieldConfiguration'];
@@ -903,14 +907,18 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         } else {
           this.getFieldMappingMetaData(kpiSource);
         }
+      }else{
+        this.loading = false;
+            this.noData = true;
       }
     })
   }
 
   getFieldMapping() {
-    this.http.getFieldMappings(this.selectedToolConfig[0].id).subscribe(mappings => {
-      if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 2) {
-        this.selectedFieldMapping = mappings['data'];
+    this.http.getFieldMappingsWithHistory(this.selectedToolConfig[0].id,this.kpiData[0].kpiId).subscribe(mappings => {
+      if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 1) {
+        this.selectedFieldMapping = mappings['data'].fieldMappingResponses;
+        this.metaDataTemplateCode = mappings['data']?.metaTemplateCode
         this.displayConfigModel = true;
         this.loading = false;
 
@@ -939,6 +947,19 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     this.displayConfigModel = false;
     this.reloadKPITab.emit(this.kpiData[0]);
   }
+
+  showExecutionDate(processorName) {
+    const traceLog = this.findTraceLogForTool(processorName.toLowerCase());
+    this.isSyncPassedOrFailed = traceLog?.executionSuccess === true ? true : false;
+    return (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) ? 'NA' : new DatePipe('en-US').transform(traceLog.executionEndedAt, 'dd-MMM-yyyy (EEE) - hh:mmaaa');
+  }
+
+  findTraceLogForTool(processorName) {
+    const sourceArray = (processorName.includes('/')) ? processorName.split('/') : [processorName];
+    return this.service.getProcessorLogDetails().find(ptl => sourceArray.includes(ptl['processorName'].toLowerCase()));
+  }
+
+
 
   ngOnDestroy(): void {
     const chart = d3.select(this.elem).select('#chart');

@@ -831,8 +831,7 @@ public final class KpiDataHelper {
 				String formattedValue = df.format(leadTimeChangeInFullDay);
 				double leadTimeChangeIncluded = Double.parseDouble(formattedValue);
 				int weekendsCount = countSaturdaysAndSundays(startDateTime, endDateTime);
-				double leadTimeChangeExcluded = leadTimeChangeIncluded - weekendsCount;
-				return leadTimeChangeExcluded;
+				return leadTimeChangeIncluded - weekendsCount;
 			}
 		}
 		return 0.0d;
@@ -875,12 +874,14 @@ public final class KpiDataHelper {
 	 * @param subTaskHistory
 	 * @param sprintDetail
 	 * @param fieldMappingDoneStatus
-	 * @return
+	 * @param issueWiseDeliveredStatus
+	 * @return list of jiraIssues
 	 */
 	public static List<JiraIssue> getCompletedSubTasksByHistory(List<JiraIssue> totalSubTask,
 			List<JiraIssueCustomHistory> subTaskHistory, SprintDetails sprintDetail,
-			List<String> fieldMappingDoneStatus) {
+			List<String> fieldMappingDoneStatus, Map<String, String> issueWiseDeliveredStatus) {
 		List<JiraIssue> resolvedSubtaskForSprint = new ArrayList<>();
+		// <Number>,PAIR<JiraIssue,Status>>
 		LocalDateTime sprintEndDateTime = sprintDetail.getCompleteDate() != null
 				? LocalDateTime.parse(sprintDetail.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
 				: LocalDateTime.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
@@ -897,8 +898,11 @@ public final class KpiDataHelper {
 							sprintStartDateTime, sprintEndDateTime))
 					.reduce((a, b) -> b);
 			if (issueSprint.isPresent()
-					&& fieldMappingDoneStatus.contains(issueSprint.get().getChangedTo().toLowerCase()))
+					&& fieldMappingDoneStatus.contains(issueSprint.get().getChangedTo().toLowerCase())) {
+				issueWiseDeliveredStatus.putIfAbsent(jiraIssue.getNumber(),
+						issueSprint.get().getChangedTo().toLowerCase());
 				resolvedSubtaskForSprint.add(jiraIssue);
+			}
 		});
 		return resolvedSubtaskForSprint;
 	}

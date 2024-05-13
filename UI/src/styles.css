@@ -2037,3 +2037,8 @@ p-dialog .p-button-cancel.p-button-secondary {
 .font-black{
   color: #000;
 }
+
+.broken-conn-row{
+  background-color: #ffecd7 !important;
+  color : black !important;
+}

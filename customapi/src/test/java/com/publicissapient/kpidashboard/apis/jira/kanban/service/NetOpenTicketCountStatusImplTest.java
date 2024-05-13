@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -87,6 +88,8 @@ public class NetOpenTicketCountStatusImplTest {
 	private List<DataCount> trendValues = new ArrayList<>();
 	@Mock
 	private CommonService commonService;
+	@Mock
+	private CustomApiConfig customApiConfig;
 	private KpiRequest kpiRequest;
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 

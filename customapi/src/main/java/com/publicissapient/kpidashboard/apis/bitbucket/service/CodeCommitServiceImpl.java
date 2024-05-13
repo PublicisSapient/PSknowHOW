@@ -193,13 +193,13 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 							mergeCountForRepo);
 					Map<String, Long> excelDataLoader = new HashMap<>();
 					Map<String, Long> mergeRequestExcelDataLoader = new HashMap<>();
-
+					String repoName = repo.getRepositoryName() != null ? repo.getRepositoryName() : repo.getRepoSlug();
 					List<DataCount> dayWiseCount = setDayWiseCountForProject(mergeCountForRepo, commitCountForRepo,
 							excelDataLoader, projectName, mergeRequestExcelDataLoader, duration, dataPoints);
 					aggDataMap.put(getBranchSubFilter(repo, projectName), dayWiseCount);
 					repoWiseCommitList.add(excelDataLoader);
 					repoWiseMergeRequestList.add(mergeRequestExcelDataLoader);
-					repoList.add(repo.getUrl());
+					repoList.add(repoName);
 					branchList.add(repo.getBranch());
 
 				}

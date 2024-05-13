@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.tasklet;
 
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -45,7 +46,7 @@ public class ScrumReleaseDataTasklet implements Tasklet {
 	FetchProjectConfiguration fetchProjectConfiguration;
 
 	@Autowired
-	JiraClient jiraClient;
+	JiraClientService jiraClientService;
 
 	@Autowired
 	FetchScrumReleaseData fetchScrumReleaseData;
@@ -70,10 +71,8 @@ public class ScrumReleaseDataTasklet implements Tasklet {
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		log.info("**** ReleaseData fetch started ****");
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-		KerberosClient krb5Client = null;
-		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);) {
-			fetchScrumReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
-		}
+        KerberosClient krb5Client = jiraClientService.getKerberosClientMap(projectId);
+		fetchScrumReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
 		log.info("**** ReleaseData fetch ended ****");
 		return RepeatStatus.FINISHED;
 	}

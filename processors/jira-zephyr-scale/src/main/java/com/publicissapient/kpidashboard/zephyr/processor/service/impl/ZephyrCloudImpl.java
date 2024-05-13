@@ -22,11 +22,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.zephyr.ZephyrTestCaseDTO;
 import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
@@ -136,12 +138,30 @@ public class ZephyrCloudImpl implements ZephyrClient {
 					}
 				}
 			} catch (Exception exception) {
+				isClientException(toolInfo, exception);
 				log.error("Error while fetching projects from {}", exception.getMessage());
 				throw new RestClientException("Error while fetching projects from {}", exception);
 			}
 
 		}
 		return testCaseList;
+	}
+
+	/**
+	 * to check client exception
+	 * 
+	 * @param toolInfo
+	 *            toolInfo
+	 * @param exception
+	 *            exception
+	 */
+	private void isClientException(ProcessorToolConnection toolInfo, Exception exception) {
+		if (exception instanceof HttpClientErrorException
+				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum
+					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+			processorToolConnectionService.updateBreakingConnection(toolInfo.getConnectionId(), errMsg);
+		}
 	}
 
 	/**
