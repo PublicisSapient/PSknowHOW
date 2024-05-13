@@ -45,6 +45,9 @@ public class ProjectDataServiceImpl implements ProjectDataService {
 			masterJiraIssueList.addAll(masterJiraIssueRepository.findByProjectIdAndBoardIdAndSprintIdIn(
 					dataRequest.getProjectId(), dataRequest.getBoardId(), dataRequest.getSprintIds()));
 		}
+		if (dataRequest.getProjectKey() != null) {
+			masterJiraIssueList.addAll(masterJiraIssueRepository.findByProjectKey(dataRequest.getProjectKey()));
+		}
 		return masterJiraIssueList;
 	}
 

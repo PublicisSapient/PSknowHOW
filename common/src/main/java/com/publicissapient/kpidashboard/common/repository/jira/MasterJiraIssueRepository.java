@@ -217,4 +217,5 @@ public interface MasterJiraIssueRepository
 	@Query(value = "{ 'projectKey' : ?0 }", fields = "{ 'issueType' : 1 }")
 	List<MasterJiraIssue> findIssueTypesByProjectKey(String projectKey);
 
+	List<MasterJiraIssue> findByProjectKey(String projectKey);
 }

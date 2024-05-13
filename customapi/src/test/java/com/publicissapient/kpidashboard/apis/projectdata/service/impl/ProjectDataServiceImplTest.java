@@ -141,6 +141,15 @@ class ProjectDataServiceImplTest {
 	}
 
 	@Test
+	void testGetProjectJiraIssuesWithProjectKey() {
+		DataRequest dataRequest = new DataRequest();
+		dataRequest.setProjectKey("key");
+		when(masterJiraIssueRepository.findByProjectKey(anyString())).thenReturn(Collections.emptyList());
+		List<MasterJiraIssue> result = projectDataService.getProjectJiraIssues(dataRequest);
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
 	void testGetProjectJiraIssuesWithIssueIds() {
 		DataRequest dataRequest = new DataRequest();
 		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
