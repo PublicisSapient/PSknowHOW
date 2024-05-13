@@ -16,29 +16,37 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.mapper;
+package com.publicissapient.kpidashboard.common.model.application;//NOPMD
+
+import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.publicissapient.kpidashboard.common.model.MasterProjectVersion;
+import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
- * Custom object mapper that knows how to serialize Mongo ObjectIds.
+ * The type Project release.
  */
-public class CustomObjectMapper extends ObjectMapper {
-	private static final long serialVersionUID = 2035695746790240402L;
+@Data
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Document(collection = "master_project_release")
+public class MasterProjectRelease extends BasicModel {
+	private String projectName;
+	private String projectId;
+	private ObjectId configId;
+	private List<MasterProjectVersion> listProjectVersion;
 
-	/**
-	 * Default Constructor
-	 */
-	public CustomObjectMapper() {
-		super();
-		SimpleModule module = new SimpleModule("ObjectIdModule");
-		module.addSerializer(ObjectId.class, new ObjectIdSerializer());
-		this.registerModule(module);
-		// Register JodaModule
-		this.registerModule(new JodaModule());
-	}
 }
