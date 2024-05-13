@@ -30,7 +30,7 @@ data:
   API_HOST: "customapi"
   API_PORT: "8080"
   CENTRAL_LOGIN_URL: "https://authnauth.tools.publicis.sapient.com"
-  MAP_URL: "https://assessmentplatform2.tools.publicis.sapient.com"
+  MAP_URL: "https://assessmentplatform.tools.publicis.sapient.com"
   RETROS_URL: "https://rr.tools.publicis.sapient.com"
   AUTHENTICATION_SERVICE: "true"
   ENVIRONMENT: "prod"
