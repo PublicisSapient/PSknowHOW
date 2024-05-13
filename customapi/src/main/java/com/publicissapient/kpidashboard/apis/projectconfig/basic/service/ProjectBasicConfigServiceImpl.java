@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -145,6 +146,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
+	
+	@Autowired
+	private HappinessKpiDataRepository happinessKpiDataRepository;
 
 	/**
 	 * method to save basic configuration
@@ -377,13 +381,26 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			deleteBasicConfig(projectBasicConfig);
 			removeProjectUserInfo(projectBasicConfig);
 			rejectAccessRequestsWithProject(projectBasicConfig);
-			addToTraceLog(projectBasicConfig);
 			deleteSprintDetailsData(projectBasicConfig);
+			deleteAssigneeDetails(projectBasicConfig);
+			deleteHappinessKpiDetails(projectBasicConfig);
+			addToTraceLog(projectBasicConfig);
 			cleanAllCache();
 
 		}
 
 		return projectBasicConfig;
+	}
+
+	private void deleteHappinessKpiDetails(ProjectBasicConfig projectBasicConfig) {
+		happinessKpiDataRepository.deleteByBasicProjectConfigId(projectBasicConfig.getId());
+	}
+
+	private void deleteAssigneeDetails(ProjectBasicConfig projectBasicConfig) {
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(projectBasicConfig.getId().toString());
+		if (assigneeDetails != null) {
+			assigneeDetailsRepository.delete(assigneeDetails);
+		}
 	}
 
 	public void deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean isRepoTool) {
