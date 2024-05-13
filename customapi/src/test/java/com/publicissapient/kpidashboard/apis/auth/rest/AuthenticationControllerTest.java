@@ -27,7 +27,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -269,97 +268,6 @@ public class AuthenticationControllerTest {
 		mockMvc.perform(get("/users/testUser").accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON).principal(principal)).andExpect(status().isOk())
 				.andExpect(MockMvcResultMatchers.content().json(expectedResponse));
-	}
-
-	@Test
-	public void updateUserInfo_Success() throws Exception {
-
-		UserInfo userInfo = createUserInfo("SUPERADMIN", "ROLE_SUPERADMIN");
-
-		when(userInfoService.getUserInfo("SUPERADMIN")).thenReturn(userInfo);
-
-		when(authenticationService.isEmailExist(anyString())).thenReturn(false);
-
-		com.publicissapient.kpidashboard.apis.auth.model.Authentication authentication = new com.publicissapient.kpidashboard.apis.auth.model.Authentication();
-		authentication.setUsername("SUPERADMIN");
-
-		when(authenticationService.getAuthentication("SUPERADMIN")).thenReturn(authentication);
-
-		String expectedResponse = "{\"message\":\"Email updated successfully\",\"success\":true,\"data\":{\"username\":\"SUPERADMIN\",\"authorities\":[\"ROLE_SUPERADMIN\"],\"authType\":\"STANDARD\",\"emailAddress\":\"test@gmail.com\"}}";
-
-		Principal principal = Mockito.mock(Principal.class);
-		when(principal.getName()).thenReturn("SUPERADMIN");
-
-		mockMvc.perform(put("/users/SUPERADMIN/updateEmail").accept(MediaType.APPLICATION_JSON)
-				.content("{\"email\":\"test@gmail.com\"}").contentType(MediaType.APPLICATION_JSON).principal(principal))
-				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(expectedResponse));
-	}
-
-	@Test
-	public void updateUserInfo_UserNotFound() throws Exception {
-
-		String expectedResponse = "{'message':'user not found with username testUser','success':false}";
-
-		Principal principal = Mockito.mock(Principal.class);
-		when(principal.getName()).thenReturn("SUPERADMIN");
-
-		mockMvc.perform(put("/users/testUser/updateEmail").accept(MediaType.APPLICATION_JSON)
-				.content("{\"email\":\"test@gmail.com\"}").contentType(MediaType.APPLICATION_JSON).principal(principal))
-				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(expectedResponse));
-	}
-
-	@Test
-	public void updateUserInfo_UnAuthorizedAccess() throws Exception {
-
-		com.publicissapient.kpidashboard.apis.auth.model.Authentication authentication1 = new com.publicissapient.kpidashboard.apis.auth.model.Authentication();
-		authentication1.setUsername("testUser");
-		when(authenticationService.getAuthentication("testUser")).thenReturn(authentication1);
-
-		String expectedResponse = "{\"message\":\"You are not authorised to update the email\",\"success\":false}";
-
-		Principal principal = Mockito.mock(Principal.class);
-		when(principal.getName()).thenReturn("anotherUser");
-
-		mockMvc.perform(put("/users/testUser/updateEmail").accept(MediaType.APPLICATION_JSON)
-				.content("{\"email\":\"test@gmail.com\"}").contentType(MediaType.APPLICATION_JSON).principal(principal))
-				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(expectedResponse));
-	}
-
-	@Test
-	public void updateUserInfo_EmailAlreadyRegistered() throws Exception {
-
-		when(authenticationService.isEmailExist(anyString())).thenReturn(true);
-
-		com.publicissapient.kpidashboard.apis.auth.model.Authentication authentication = new com.publicissapient.kpidashboard.apis.auth.model.Authentication();
-		authentication.setUsername("SUPERADMIN");
-
-		when(authenticationService.getAuthentication("SUPERADMIN")).thenReturn(authentication);
-
-		String expectedResponse = "{\"message\":\"Email already registered. Try with a different email id\",\"success\":false}";
-
-		Principal principal = Mockito.mock(Principal.class);
-		when(principal.getName()).thenReturn("SUPERADMIN");
-
-		mockMvc.perform(put("/users/SUPERADMIN/updateEmail").accept(MediaType.APPLICATION_JSON)
-				.content("{\"email\":\"test@gmail.com\"}").contentType(MediaType.APPLICATION_JSON).principal(principal))
-				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(expectedResponse));
-	}
-
-	@Test
-	public void updateUserInfo_EmptyEmail() throws Exception {
-		com.publicissapient.kpidashboard.apis.auth.model.Authentication authentication = new com.publicissapient.kpidashboard.apis.auth.model.Authentication();
-		authentication.setUsername("SUPERADMIN");
-
-		when(authenticationService.getAuthentication("SUPERADMIN")).thenReturn(authentication);
-
-		String expectedResponse = "{\"message\":\"Provide a valid email id\",\"success\":false}";
-
-		Principal principal = Mockito.mock(Principal.class);
-		when(principal.getName()).thenReturn("SUPERADMIN");
-
-		mockMvc.perform(put("/users/SUPERADMIN/updateEmail").accept(MediaType.APPLICATION_JSON)
-				.content("{\"email\":\"\"}").contentType(MediaType.APPLICATION_JSON).principal(principal))
-				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(expectedResponse));
 	}
 
 	private UserInfo createUserInfo(String username, String role, String email) {
