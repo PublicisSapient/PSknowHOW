@@ -233,6 +233,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setToolName(projectToolConfig.getToolName());
 		projectTool.setBasicProjectConfigId(projectToolConfig.getBasicProjectConfigId());
 		projectTool.setConnectionId(projectToolConfig.getConnectionId());
+		projectTool.setBrokenConnection(projectToolConfig.isBrokenConnection());
 		projectTool.setProjectId(projectToolConfig.getProjectId());
 		projectTool.setProjectKey(projectToolConfig.getProjectKey());
 		projectTool.setJobName(projectToolConfig.getJobName());
@@ -393,6 +394,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setBranch(e.getBranch());
 			projectConfToolDto.setDefaultBranch(e.getDefaultBranch());
 			projectConfToolDto.setConnectionId(e.getConnectionId());
+			projectConfToolDto.setBrokenConnection(e.isBrokenConnection());
 			projectConfToolDto.setId(e.getId().toString());
 			projectConfToolDto.setToolName(e.getToolName());
 			projectConfToolDto.setProjectId(e.getProjectId());

@@ -24,13 +24,13 @@ API_PORT=${API_PORT:-8080}
 ENVIRONMENT=${ENVIRONMENT:-dev} # default to dev you can pass external var to change to prod
 
 if [ "$ENVIRONMENT" = "prod" ]; then
-   cp /tmp/nginx_prod.conf ${CONF_LOG}/nginx_prod.conf
-   sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOG}/nginx_prod.conf
-   sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOG}/nginx_prod.conf
+   cp /tmp/nginx_prod.conf ${CONF_LOC}/nginx_prod.conf
+   sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOC}/nginx_prod.conf
+   sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOC}/nginx_prod.conf
 else
-   cp /tmp/nginx_dev.conf ${CONF_LOG}/nginx_dev.conf
-   sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOG}/nginx_dev.conf
-   sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOG}/nginx_dev.conf
+   cp /tmp/nginx_dev.conf ${CONF_LOC}/nginx_dev.conf
+   sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOC}/nginx_dev.conf
+   sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOC}/nginx_dev.conf
 fi
 
 if [ -e /etc/ssl/certs/knowhow_ssl.key ] || [ "$ENVIRONMENT" = "prod" ]; then

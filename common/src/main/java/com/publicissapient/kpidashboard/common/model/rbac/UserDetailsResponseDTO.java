@@ -28,6 +28,9 @@ public class UserDetailsResponseDTO {
 	@JsonProperty("user_email")
 	private String userEmail;
 
+	@JsonProperty("authType")
+	private String authType;
+
 	@JsonProperty("authorities")
 	private List<String> authorities;
 

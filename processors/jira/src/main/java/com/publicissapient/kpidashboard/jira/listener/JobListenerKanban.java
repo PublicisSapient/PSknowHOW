@@ -148,6 +148,15 @@ public class JobListenerKanban implements JobExecutionListener {
 			log.info("removing project with basicProjectConfigId {}", projectId);
 			// Mark the execution as completed
 			ongoingExecutionsService.markExecutionAsCompleted(projectId);
+            if (jiraClientService.isContainRestClient(projectId)){
+                try {
+                    jiraClientService.getRestClientMap(projectId).close();
+                } catch (IOException e) {
+					throw new RuntimeException("Failed to close rest client",e);// NOSONAR
+                }
+                jiraClientService.removeRestClientMapClientForKey(projectId);
+                jiraClientService.removeKerberosClientMapClientForKey(projectId);
+            }
 		}
 	}
 

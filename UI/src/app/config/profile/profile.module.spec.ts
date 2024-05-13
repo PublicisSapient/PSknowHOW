@@ -65,7 +65,6 @@ describe('ProfileModule', () => {
    sharedService.currentUserDetailsSubject.next({});
     component.ngOnInit();
     expect(component.changePswdDisabled).toBeTruthy();
-    expect(component.adLogin).toBeTruthy();
   })
 
 });

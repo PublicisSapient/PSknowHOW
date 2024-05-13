@@ -104,7 +104,7 @@ public class KpiIntegrationServiceImplTest {
 
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
-		when(hierarchyLevelService.getFullHierarchyLevels(true)).thenReturn(hierarchyLevels);
+		when(hierarchyLevelService.getFullHierarchyLevels(false)).thenReturn(hierarchyLevels);
 	}
 
 	@Test

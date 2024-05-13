@@ -116,6 +116,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     kpiTableDataObj:object={};
     noOfDataPoints:number = 5;
     maturityTableKpiList = [];
+    cumulativeTrend = ['kpi17', 'kpi62', 'kpi67', 'kpi27', 'kpi66', 'kpi71', 'kpi42'];
 
     constructor(public service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -490,7 +491,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.selectedTestExecutionFilterData = {};
         this.loaderZypher = false;
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
-            if(this.filterApplyData['label'] === 'project'){
+            if(this.filterApplyData['label'] !== 'sprint'){
                 this.getLastConfigurableTrendingListData(getData);
             }
             // creating array into object where key is kpi id
@@ -604,9 +605,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             .subscribe(getData => {
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
                     const releaseFrequencyInd = getData.findIndex(de=>de.kpiId === 'kpi73')
-                    if(this.filterApplyData['label'] === 'project'){
+                    if(this.filterApplyData['label'] !== 'sprint'){
                         this.getLastConfigurableTrendingListData(getData);
-                    }else if(this.filterApplyData['label'] === 'sprint' && releaseFrequencyInd !== -1){
+                    }
+                    if(releaseFrequencyInd !== -1){
                         getData[releaseFrequencyInd].trendValueList?.map(trendData=>{
                             const valueLength = trendData.value.length;
                             if(valueLength > this.tooltip.sprintCountForKpiCalculation){
@@ -843,7 +845,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
               this.kpiChartData[kpiId] = [];
               if (trendValueList &&  trendValueList?.length > 0) {
                 this.kpiChartData[kpiId]?.push(trendValueList?.filter((x) => x['filter'] == 'Overall')[0]);
-              } 
+              }
               else {
                 this.kpiChartData[kpiId]?.push(trendValueList);
               }
@@ -1318,14 +1320,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         if (maturity == undefined) {
           return 'NA';
         }
-        if (item.value.length >= 5) {
-          const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
-          const tempArr = last5ArrItems.filter(x => x.data != 0);
-          if (tempArr.length == 0) {
-            maturity = '--';
-          }
-        } else {
-          maturity = '--';
+        const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
+        const tempArr = last5ArrItems.filter(x => x.data != 0);
+        if (tempArr.length == 0) {
+        maturity = '--';
         }
         maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M'+maturity : maturity;
         return maturity;
@@ -1334,6 +1332,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
       checkLatestAndTrendValue(kpiData, item){
         let latest:string = '';
         let trend:string = '';
+        let unit = '';
         if(item?.value?.length > 0){
             let tempVal;
             if(item?.value[item?.value?.length - 1]?.dataValue){
@@ -1341,7 +1340,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             }else{
                 tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
             }
-            var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
+            unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
             latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
         }
         if(item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
@@ -1402,7 +1401,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                                         this.checkMaturity(this.kpiChartData[kpiId][i])
                                         : 'M'+this.kpiChartData[kpiId][i]?.maturity,
                             "maturityValue":this.kpiChartData[kpiId][i]?.maturityValue,
-                            "kpiUnit" : unit
+                            "kpiUnit" : unit,
+                            "maturityDenominator" : this.kpiChartData[kpiId][i]?.value.length,
+                            "isCumulative" : this.cumulativeTrend.includes(kpiId)
                         };
                         if(kpiId === 'kpi997'){
                             trendObj['value'] = 'NA';
@@ -1435,7 +1436,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         const nodes = [...this.filterApplyData?.['selectedMap']['project']];
         const level = this.filterApplyData?.level;
         const nodeChildId = '';
-        this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)     
+        this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
     }
 
     reloadKPI(event) {
@@ -1503,6 +1504,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
       }
 
       getLastConfigurableTrendingListData(KpiData){
+        if(this.tooltip && this.tooltip.sprintCountForKpiCalculation !== undefined) {
+        if(!(this.filterApplyData['label'] === 'sqd' && this.filterApplyData['selectedMap']['sprint'].length !== 0)){
         KpiData.map(kpiList=>{
             kpiList.trendValueList?.map(trendData=>{
                 if(trendData.hasOwnProperty('filter') || trendData.hasOwnProperty('filter1') ){
@@ -1518,8 +1521,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
                     }
                 }
-               
+
             })
         })
+       }
       }
+    }
 }

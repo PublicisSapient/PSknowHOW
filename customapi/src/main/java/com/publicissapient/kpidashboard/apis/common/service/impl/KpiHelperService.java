@@ -649,7 +649,7 @@ public class KpiHelperService { // NOPMD
 		});
 
 		List<SprintDetails> sprintDetailList = sprintRepository.findBySprintIDIn(sprintList);
-		sprintDetailList.sort(Comparator.comparing(SprintDetails::getStartDate));
+		sprintDetailList.sort(Comparator.comparing(SprintDetails::getStartDate).reversed());
 		List<SprintDetails> sprintDetails = sprintDetailList.stream()
 				.limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
 		List<String> totalIssueIds = new ArrayList<>();
@@ -1398,8 +1398,7 @@ public class KpiHelperService { // NOPMD
 					.filter(t -> t.getBasicProjectConfigId().toString().equals(projectBasicConfigId))
 					.map(ProjectToolConfig::getId).findFirst().orElse(null);
 
-			List<FieldMappingStructure> fieldMappingStructureList1 = fieldMappingStructureList.stream()
-					.filter(f -> fieldList.contains(f.getFieldName())).collect(Collectors.toList());
+			List<FieldMappingStructure> fieldMappingStructureList1 = getFieldMappingStructure(fieldMappingStructureList, fieldList);
 
 			fieldMappingStructureResponse.setFieldConfiguration(
 					CollectionUtils.isNotEmpty(fieldMappingStructureList1) ? fieldMappingStructureList1
@@ -1412,6 +1411,13 @@ public class KpiHelperService { // NOPMD
 			log.info("kpi Id" + kpiId + "No Enum is present");
 		}
 		return fieldMappingStructureResponse;
+	}
+
+
+	public List<FieldMappingStructure> getFieldMappingStructure(List<FieldMappingStructure> fieldMappingStructureList, List<String> fieldList){
+		return fieldMappingStructureList.stream()
+				.filter(f -> fieldList.contains(f.getFieldName())).collect(Collectors.toList());
+
 	}
 
 	public boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue,

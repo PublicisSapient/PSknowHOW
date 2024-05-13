@@ -253,12 +253,36 @@ describe('AdvancedSettingsComponent', () => {
 
   it('should run Jira Processor for the selected projects', () => {
     component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
     component.runProcessor('Jira');
     fixture.detectChanges();
     httpMock.match(baseUrl + '/api/processor/trigger/Jira')[0].flush({ message: 'Got HTTP response: 200 on url: http://jira_processor:50008/processor/run', success: true });
   });
 
   it('should run Github Processor for the selected projects', () => {
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
     component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
     component.runProcessor('Github');
     fixture.detectChanges();
@@ -274,6 +298,18 @@ describe('AdvancedSettingsComponent', () => {
   }))
 
   it('should get processors trace logs for project', fakeAsync(() => {
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
     const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(fakeProcessorsTracelog));
     component.getProcessorsTraceLogsForProject(basicProjectConfigId);
@@ -466,6 +502,18 @@ describe('AdvancedSettingsComponent', () => {
   }))
 
   it('should not run Processor when processor is jira', fakeAsync(() => {
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
     component.selectedProject = {
       'id': '651af337d18501286c28a464'
     }
@@ -481,6 +529,18 @@ describe('AdvancedSettingsComponent', () => {
   }))
 
   it('should not run Processor when processor is not jira', fakeAsync(() => {
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
     component.selectedProject = {
       'id': 'sdjsagdjagdjagd'
     }

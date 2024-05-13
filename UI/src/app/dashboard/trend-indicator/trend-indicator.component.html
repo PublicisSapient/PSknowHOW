@@ -32,8 +32,13 @@
 
         
         <div class="p-text-center">
-            <div class="indicator-heading">Maturity</div>
-            <p class="average-data-primary">{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' ? dataTrend?.maturityValue : ''}}{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' && dataTrend?.kpiUnit ? ' '+dataTrend?.kpiUnit.charAt(0).toUpperCase() : ''}} {{dataTrend?.maturityValue && dataTrend?.maturity !== '--' ? '('+dataTrend?.maturity+')'  : dataTrend?.maturity}}</p>
+            <div class="indicator-heading">Maturity<span *ngIf="dataTrend?.maturityDenominator && dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA'" class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
+                [style]="{'position': 'relative'}" [pTooltip]="getTooltipContent()" [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper">
+            </span>
+        </div>
+            <p class="average-data-primary">{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' ? dataTrend?.maturityValue : ''}}{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' && dataTrend?.kpiUnit ? ' '+dataTrend?.kpiUnit.charAt(0).toUpperCase() : ''}} {{dataTrend?.maturityValue && dataTrend?.maturity !== '--' ? '('+dataTrend?.maturity+')'  : dataTrend?.maturity}}
+            
+                </p>
         </div>
     </div>
 

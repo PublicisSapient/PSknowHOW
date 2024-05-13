@@ -19,8 +19,9 @@ package com.publicissapient.kpidashboard.jira.listener;
 
 import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDateToCustomFormat;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -150,6 +151,15 @@ public class JobListenerScrum implements JobExecutionListener {
 			log.info("removing project with basicProjectConfigId {}", projectId);
 			// Mark the execution as completed
 			ongoingExecutionsService.markExecutionAsCompleted(projectId);
+            if (jiraClientService.isContainRestClient(projectId)){
+                try {
+                    jiraClientService.getRestClientMap(projectId).close();
+                } catch (IOException e) {
+					throw new RuntimeException("Failed to close rest client",e);// NOSONAR
+                }
+                jiraClientService.removeRestClientMapClientForKey(projectId);
+                jiraClientService.removeKerberosClientMapClientForKey(projectId);
+            }
 		}
 	}
 
@@ -172,7 +182,7 @@ public class JobListenerScrum implements JobExecutionListener {
 
 	private void setExecutionInfoInTraceLog(boolean status) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
-				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Arrays.asList(projectId));
+				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Collections.singletonList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
 				checkDeltaIssues(projectId, processorExecutionTraceLog);

@@ -108,7 +108,7 @@ export class AppInitializerService {
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     {
         path: 'dashboard', component: DashboardComponent,
-        canActivateChild: [AuthGuard, FeatureGuard],
+        canActivateChild: [FeatureGuard],
         children: [
             { path: '', redirectTo: 'iteration', pathMatch: 'full' },
             {
@@ -164,7 +164,7 @@ export class AppInitializerService {
             },
             { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
 
-        ],
+        ], canActivate: [AuthGuard],
     },
     { path: 'pageNotFound', component: PageNotFoundComponent },
     { path: '**', redirectTo: 'pageNotFound' }
@@ -185,6 +185,7 @@ export class AppInitializerService {
                     environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
                     environment['MAP_URL'] = env['MAP_URL'] || '';
                     environment['RETROS_URL'] = env['RETROS_URL'] || '';
+                    environment['SPEED_SUITE'] = env['SPEED_SUITE'] === 'true' ? true : false;
                     this.validateToken(loc);
                 }));
             env$.toPromise().then(async res => {
@@ -211,7 +212,8 @@ export class AppInitializerService {
     return new Promise<void>((resolve, reject) => {
         if (!environment['AUTHENTICATION_SERVICE'] == true) {
             this.router.resetConfig([...this.routes]);
-            this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
+            this.router.navigate([location]);
+            //this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
         } else {
             // TODO: find right property to avoid string manipulation - Rishabh 3/4/2024
             let url = window.location.href; 

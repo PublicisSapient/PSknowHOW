@@ -72,13 +72,15 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 	@Value("#{jobParameters['sprintId']}")
 	private String sprintId;
 	private ReaderRetryHelper retryHelper;
+    ProcessorJiraRestClient client;
 
 	public void initializeReader(String sprintId) {
 		log.info("**** Jira Issue fetch started * * *");
 		pageSize = jiraProcessorConfig.getPageSize();
 		projectConfFieldMapping = fetchProjectConfiguration.fetchConfigurationBasedOnSprintId(sprintId);
 		retryHelper = new ReaderRetryHelper();
-	}
+        client = jiraClientService.getRestClientMap(sprintId);
+    }
 
 	@Override
 	public ReadData read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
@@ -89,7 +91,6 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		if (null != projectConfFieldMapping) {
-			ProcessorJiraRestClient client = jiraClientService.getRestClient();
 			if (null == issueIterator) {
 				pageNumber = 0;
 				fetchIssues(client);

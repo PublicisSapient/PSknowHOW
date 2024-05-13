@@ -14,7 +14,7 @@
 	<groupId>com.publicissapient.kpidashboard</groupId>
 	<artifactId>customapi</artifactId>
 	<description>Rest API Layer</description>
-	<version>9.0.0-SNAPSHOT</version>
+	<version>9.1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 
@@ -490,6 +490,21 @@
 				<version>5.3.4</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>6.1.5</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-core</artifactId>
+				<version>6.2.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.26.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

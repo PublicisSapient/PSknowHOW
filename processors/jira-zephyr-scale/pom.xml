@@ -23,7 +23,7 @@
 	<groupId>com.publicissapient.kpidashboard</groupId>
 	<description>Zephyr Processor Microservice</description>
 	<packaging>jar</packaging>
-	<version>9.0.0-SNAPSHOT</version>
+	<version>9.1.0-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -38,6 +38,21 @@
 		<lombok.version>1.18.30</lombok.version>
 		<final.name>zephyr-processor</final.name>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>6.1.5</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-core</artifactId>
+				<version>6.2.3</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 

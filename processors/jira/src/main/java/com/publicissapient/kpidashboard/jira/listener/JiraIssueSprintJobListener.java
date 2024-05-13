@@ -68,16 +68,6 @@ public class JiraIssueSprintJobListener implements JobExecutionListener {
 	public void afterJob(JobExecution jobExecution) {
 		log.info("****** Creating Sprint trace log ********");
 		long endTime = System.currentTimeMillis();
-		try {
-			if (jiraClientService.getRestClient() != null) {
-				jiraClientService.getRestClient().close();
-			}
-			if (jiraClientService.getKerberosClient() != null) {
-				jiraClientService.getKerberosClient().close();
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 		// saving the execution details
 
 		SprintTraceLog sprintTrace = sprintTraceLogRepository.findFirstBySprintId(sprintId);
@@ -94,6 +84,15 @@ public class JiraIssueSprintJobListener implements JobExecutionListener {
 		}
 		log.info("Saving sprint Trace Log for sprintId: {}", sprintId);
 		sprintTraceLogRepository.save(sprintTrace);
+		if (jiraClientService.isContainRestClient(sprintId)){
+			try {
+				jiraClientService.getRestClientMap(sprintId).close();
+			} catch (IOException e) {
+				throw new RuntimeException("Failed to close rest client",e);// NOSONAR
+			}
+			jiraClientService.removeRestClientMapClientForKey(sprintId);
+			jiraClientService.removeKerberosClientMapClientForKey(sprintId);
+		}
 
 	}
 }

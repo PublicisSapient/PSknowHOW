@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -98,6 +99,9 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 	@Autowired
 	private FilterHelperService flterHelperService;
+
+	@Autowired
+	private CacheService cacheService;
 
 	@Override
 	public Long calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -284,7 +288,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.COMMITMENT_RELIABILITY.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.COMMITMENT_RELIABILITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 	}
 
 	private static Set<JiraIssue> getCompletedIssues(List<JiraIssue> allJiraIssue, SprintDetails sd,
@@ -298,7 +302,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 	public Map<String, List<JiraIssue>> getGroupByAllIssues(Set<JiraIssue> jiraIssuesList) {
 		return jiraIssuesList.stream().collect(Collectors.groupingBy(JiraIssue::getTypeName));
-
 	}
 
 	public void prepareDataCount(Map<String, Double> commitmentHowerMap, Map<String, Long> commitmentMap,

@@ -45,7 +45,6 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricRe
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiRequestBody;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
 import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
-import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
@@ -77,9 +76,6 @@ public class RepoToolsConfigServiceImpl {
 
 	@Autowired
 	CustomApiConfig customApiConfig;
-
-	@Autowired
-	private RestAPIUtils restAPIUtils;
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -151,7 +147,7 @@ public class RepoToolsConfigServiceImpl {
 			// api call to enroll the project
 			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig,
 					customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolEnrollProjectUrl(),
-					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+					customApiConfig.getRepoToolAPIKey());
 
 		} catch (HttpClientErrorException | HttpServerErrorException ex) {
 			log.error("Exception occcured while enrolling project {}",
@@ -186,7 +182,7 @@ public class RepoToolsConfigServiceImpl {
 				// api call to start project scanning
 				httpStatus = repoToolsClient.triggerScanCall(projectCode,
 						customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolTriggerScan(),
-						restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+						customApiConfig.getRepoToolAPIKey());
 
 				// save ProcessorItemRepository for all the ProjectToolConfig
 				processorItemRepository.saveAll(createProcessorItemList(projectToolConfigList, processor.getId()));
@@ -220,32 +216,30 @@ public class RepoToolsConfigServiceImpl {
 	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool,
 			String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
-			if (toolList.size() > 1) {
-				toolList.remove(tool);
+		if (toolList.size() > 1) {
+			toolList.remove(tool);
 			if (toolList.size() > 0) {
 				// configure debbie project with
 				List<String> branch = new ArrayList<>();
 				toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
-				Connection connection = connectionRepository.findById(tool.getConnectionId())
-						.orElse(new Connection());
+				Connection connection = connectionRepository.findById(tool.getConnectionId()).orElse(new Connection());
 				toolList.get(0).setIsNew(false);
 				httpStatus = configureRepoToolProject(toolList.get(0), connection, branch);
 			} else {
-					// delete only the repository
-					String deleteRepoUrl = customApiConfig.getRepoToolURL()
-							+ String.format(customApiConfig.getRepoToolDeleteRepoUrl(),
-									createProjectCode(basicProjectConfigId), tool.getRepositoryName());
-					httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
-							restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+				// delete only the repository
+				String deleteRepoUrl = customApiConfig.getRepoToolURL()
+						+ String.format(customApiConfig.getRepoToolDeleteRepoUrl(),
+								createProjectCode(basicProjectConfigId), tool.getRepositoryName());
+				httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl, customApiConfig.getRepoToolAPIKey());
 			}
-				} else {
+		} else {
 			try {
 				ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
 				// delete the project from repo tool if only one repository is present
 				httpStatus = deleteRepoToolProject(projectBasicConfig, false);
-		} catch (Exception ex) {
-			log.error("Exception while deleting project {}", ex);
-		}
+			} catch (Exception ex) {
+				log.error("Exception while deleting project {}", ex);
+			}
 		}
 		return httpStatus == HttpStatus.OK.value();
 	}
@@ -263,7 +257,7 @@ public class RepoToolsConfigServiceImpl {
 	public List<RepoToolKpiMetricResponse> getRepoToolKpiMetrics(List<String> projectCode, String repoToolKpi,
 			String startDate, String endDate, String frequency) {
 		String repoToolUrl = customApiConfig.getRepoToolURL().concat(repoToolKpi);
-		String repoToolApiKey = restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey());
+		String repoToolApiKey = customApiConfig.getRepoToolAPIKey();
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons = new ArrayList<>();
 		RepoToolKpiRequestBody repoToolKpiRequestBody = new RepoToolKpiRequestBody(
 				projectCode.stream().map(code -> code.replaceAll("\\s", "")).collect(Collectors.toList()), startDate,
@@ -318,8 +312,7 @@ public class RepoToolsConfigServiceImpl {
 						projectCode, onlyData);
 		int httpStatus = HttpStatus.NOT_FOUND.value();
 		try {
-			httpStatus = repoToolsClient.deleteProject(deleteUrl,
-					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+			httpStatus = repoToolsClient.deleteProject(deleteUrl, customApiConfig.getRepoToolAPIKey());
 		} catch (Exception ex) {
 			log.error("Exception while deleting project {}", projectBasicConfig.getProjectName(), ex);
 
@@ -339,8 +332,8 @@ public class RepoToolsConfigServiceImpl {
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.REPO_TOOLS);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
-		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
-				ProcessorConstants.REPO_TOOLS, basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.REPO_TOOLS, basicProjectConfigId);
 		existingTraceLogOptional.ifPresent(
 				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
@@ -367,7 +360,7 @@ public class RepoToolsConfigServiceImpl {
 			// api call to update the detail
 			repoToolsClient.updateConnection(repoToolConnModel,
 					customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolUpdateConnectionUrl(),
-					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+					customApiConfig.getRepoToolAPIKey());
 			return HttpStatus.OK.value();
 		} catch (HttpClientErrorException | HttpServerErrorException ex) {
 			log.error("Exception occcured while updating conneection  {}", repoToolConnectionDetails, ex);

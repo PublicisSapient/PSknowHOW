@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -100,6 +101,10 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Autowired
+	private FilterHelperService flterHelperService;
+	@Autowired
+	private CacheService cacheService;
 
 	/**
 	 * {@inheritDoc}
@@ -271,7 +276,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 			mapTmp.get(node.getId()).setValue(dataCountMap);
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.SCOPE_CHURN.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.SCOPE_CHURN.getColumns(sprintLeafNodeList,cacheService,filterHelperService));
 
 	}
 
