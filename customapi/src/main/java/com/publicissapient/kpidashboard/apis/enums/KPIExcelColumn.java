@@ -317,7 +317,11 @@ public enum KPIExcelColumn {
 			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live")),
 	REWORK_RATE("kpi173", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Rework Rate")),
 
-	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee"));
+	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee")),
+
+	DEFECT_COUNT_BY("kpi1178", Arrays.asList("Issue Id", "Issue Description", "Sprint Name", "Issue Type",
+			"Issue Status", "Root Cause List", "Priority", "Assignee"));
+
 
 	// @formatter:on
 

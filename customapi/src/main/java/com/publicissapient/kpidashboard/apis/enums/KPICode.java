@@ -508,6 +508,12 @@ public enum KPICode {
      * Rework Rate (Developer)
      */
     REWORK_RATE("kpi173", KPISource.BITBUCKET.name()),
+    /**
+     * Defect Count By (Release->Quality)
+     */
+    DEFECT_COUNT_BY("kpi178", KPISource.JIRA.name()),
+
+
 
 
 

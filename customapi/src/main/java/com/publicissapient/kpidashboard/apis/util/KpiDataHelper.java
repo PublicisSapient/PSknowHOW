@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.IssueKpiModalValue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -652,6 +653,17 @@ public final class KpiDataHelper {
 	public static Map<String, IterationKpiModalValue> createMapOfModalObject(List<JiraIssue> jiraIssueList) {
 		return jiraIssueList.stream()
 				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IterationKpiModalValue()));
+	}
+
+	/**
+	 * To create Map of Modal Object
+	 *
+	 * @param jiraIssueList
+	 * @return
+	 */
+	public static Map<String, IssueKpiModalValue> createMapOfIssueModal(List<JiraIssue> jiraIssueList) {
+		return jiraIssueList.stream()
+				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IssueKpiModalValue()));
 	}
 
 	public static SprintDetails processSprintBasedOnFieldMappings(SprintDetails dbSprintDetail,
