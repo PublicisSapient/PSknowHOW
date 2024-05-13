@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.auth.service.UserNameRequest;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -161,17 +162,9 @@ public interface UserInfoService {
 	// ----auth Service Methods started---------
 	List<UserInfoDTO> findAllUnapprovedUsersForCentralAuth();
 
-	boolean updateUserApprovalStatus(String user);
+	boolean updateUserApprovalStatus(UserNameRequest userNameRequest);
 
 	boolean deleteFromCentralAuthUser(String user);
-
-	/**
-	 * getUser info from cental auth
-	 * 
-	 * @param username
-	 * @return
-	 */
-	UserInfo getCentralAuthUserInfo(String username);
 
 	CentralUserInfoDTO getCentralAuthUserInfoDetails(String username);
 

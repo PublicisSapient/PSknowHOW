@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.auth.service.UserNameRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -105,9 +106,9 @@ public class UserInfoController {
 
 	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
 	@PostMapping("/deleteUser")
-	public ResponseEntity<ServiceResponse> deleteUser(@Valid @RequestBody UserInfoDTO userInfoDto) {
+	public ResponseEntity<ServiceResponse> deleteUser(@Valid @RequestBody UserNameRequest userNameRequest) {
 		log.info("Inside deleteUser() method of UserInfoController ");
-		String userName = userInfoDto.getUsername();
+		String userName = userNameRequest.getUserName();
 		String loggedUserName = authenticationService.getLoggedInUser();
 		UserInfo userInfo = userInfoRepository.findByUsername(userName);
 		if ((!loggedUserName.equals(userName) && !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))) {
@@ -123,9 +124,9 @@ public class UserInfoController {
 
 	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
 	@PostMapping(value = "/central/deleteUser")
-	public ResponseEntity<ServiceResponse> deleteUserFromCentral(@Valid @RequestBody UserInfoDTO userInfoDto) {
+	public ResponseEntity<ServiceResponse> deleteUserFromCentral(@Valid @RequestBody UserNameRequest userNameRequest) {
 		log.info("Inside deleteUser() method of UserInfoController ");
-		String userName = userInfoDto.getUsername();
+		String userName = userNameRequest.getUserName();
 		String loggedUserName = authenticationService.getLoggedInUser();
 		UserInfo userInfo = userInfoRepository.findByUsername(userName);
 		if ((!loggedUserName.equals(userName) && !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))) {
@@ -157,24 +158,4 @@ public class UserInfoController {
 		}
 	}
 
-	/**
-	 * user verify from central auth service
-	 * 
-	 * @param username
-	 * @param request
-	 * @return
-	 */
-	@GetMapping("/auth/{username}")
-	public ResponseEntity<ServiceResponse> getCentralAuthUserInfo(@PathVariable("username") String username,
-			HttpServletRequest request) {
-
-		UserInfo userInfo = userInfoService.getCentralAuthUserInfo(username);
-		if (Objects.nonNull(userInfo)) {
-			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ServiceResponse(true, "get successfully user info details ", userInfo));
-		} else {
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "invalid Token or user", null));
-
-		}
-	}
 }

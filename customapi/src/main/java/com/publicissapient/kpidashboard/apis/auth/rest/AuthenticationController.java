@@ -306,54 +306,6 @@ public class AuthenticationController {
         return loggedInUser.equals(username) || loggedInUserInfo.getAuthorities().contains("ROLE_SUPERADMIN");
     }
 
-    @RequestMapping(value = "/users/{username}/updateEmail", method = PUT) // NOSONAR
-    public ResponseEntity<ServiceResponse> updateUserInfo(@PathVariable String username,
-                                                          @RequestBody Map<String, String> emailObject, Principal principal) {
-
-        username = CommonUtils.handleCrossScriptingTaintedValue(username);
-        com.publicissapient.kpidashboard.apis.auth.model.Authentication authentication = authenticationService
-                .getAuthentication(username);
-        if (authentication == null) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ServiceResponse(false, "user not found with username " + username, null));
-        }
-
-        String email = emailObject.get("email");
-
-        if (StringUtils.isEmpty(email)) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ServiceResponse(false, "Provide a valid email id", null));
-
-        }
-        String loggedInUser = principal.getName();
-
-        if (loggedInUser.equals(username)) {
-
-            if (authenticationService.isEmailExist(email)) {
-                return ResponseEntity.status(HttpStatus.OK).body(
-                        new ServiceResponse(false, "Email already registered. Try with a different email id", null));
-
-            }
-            authentication.setEmail(email);
-            authenticationService.updateEmail(username, email);
-            UserInfo userInfo = userInfoService.getUserInfo(username);
-
-            UserInfoDTO userInfoDTO = new UserInfoDTO();
-            userInfoDTO.setUsername(userInfo.getUsername());
-            userInfoDTO.setEmailAddress(email);
-            userInfoDTO.setAuthorities(userInfo.getAuthorities());
-            userInfoDTO.setAuthType(userInfo.getAuthType());
-
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ServiceResponse(true, "Email updated successfully", userInfoDTO));
-
-        } else {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ServiceResponse(false, "You are not authorised to update the email", null));
-        }
-
-    }
-
     private boolean isPassContainUser(String reqPassword, String username) {
         return !(StringUtils.containsIgnoreCase(reqPassword, username));
     }

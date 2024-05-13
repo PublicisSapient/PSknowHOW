@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.rbac.userinfo.rest;
 
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.auth.service.UserNameRequest;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -61,6 +62,9 @@ public class UserInfoControlllerTest {
 	private RoleData testRoleData;
 	@Mock
 	private UserInfo userInfo;
+
+	@Mock
+	UserNameRequest userNameRequest;
 
 	@Mock
 	private UserInfoDTO userInfoDTO;
@@ -163,13 +167,11 @@ public class UserInfoControlllerTest {
 	 */
 	@Test
 	public void testdeleteUser() throws Exception {
-		userInfo.setUsername("testuser");
-		when(userInfoDTO.getUsername()).thenReturn("testuser");
+		when(userNameRequest.getUserName()).thenReturn("testuser");
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
-		when(userInfo.getAuthorities()).thenReturn(authorities);
 		doReturn(new ServiceResponse(true, "Deleted Successfully", "Ok")).when(userInfoService).deleteUser("testuser", false);
-		ServiceResponse response = userInfoController.deleteUser(userInfoDTO).getBody();
+		ServiceResponse response = userInfoController.deleteUser(userNameRequest).getBody();
 		assert response != null;
 		assertEquals(true, response.getSuccess());
 	}
@@ -181,10 +183,10 @@ public class UserInfoControlllerTest {
 	 */
 	@Test
 	public void testdeleteSuperAdminUser() {
-		when(userInfoDTO.getUsername()).thenReturn("testuser");
+		when(userNameRequest.getUserName()).thenReturn("testuser");
 		when(authenticationService.getLoggedInUser()).thenReturn("testuser");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
-		ServiceResponse response = userInfoController.deleteUser(userInfoDTO).getBody();
+		ServiceResponse response = userInfoController.deleteUser(userNameRequest).getBody();
 		assert response != null;
 		assertEquals(false, response.getSuccess());
 	}
@@ -198,10 +200,10 @@ public class UserInfoControlllerTest {
 	 */
 	@Test
 	public void testDelete_UserFromCentral() {
-		when(userInfoDTO.getUsername()).thenReturn("testuser");
+		when(userNameRequest.getUserName()).thenReturn("testuser");
 		when(authenticationService.getLoggedInUser()).thenReturn("testuser");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
-		ServiceResponse response = userInfoController.deleteUserFromCentral(userInfoDTO).getBody();
+		ServiceResponse response = userInfoController.deleteUserFromCentral(userNameRequest).getBody();
 		assert response != null;
 		assertEquals(false, response.getSuccess());
 	}
@@ -214,14 +216,12 @@ public class UserInfoControlllerTest {
 	 */
 	@Test
 	public void testDelete_UserFromCentralForSuperAdmin() {
-		userInfo.setUsername("testuser");
-		when(userInfoDTO.getUsername()).thenReturn("testuser");
+		when(userNameRequest.getUserName()).thenReturn("testuser");
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
 		when(userInfoService.deleteUser("testuser" , true) )
 				.thenReturn(new ServiceResponse(true, "Deleted Successfully", "Ok"));
-		when(userInfo.getAuthorities()).thenReturn(authorities);
-		ServiceResponse response = userInfoController.deleteUserFromCentral(userInfoDTO).getBody();
+		ServiceResponse response = userInfoController.deleteUserFromCentral(userNameRequest).getBody();
 		assert response != null;
 		assertEquals(true, response.getSuccess());
 	}

@@ -584,16 +584,14 @@ public class UserServiceImpl implements UserService {
 	/**
 	 * Update user profile
 	 *
-	 * @param username
 	 * @param request
 	 * @return
 	 */
 	@Override
-	public boolean updateUserProfile(String username, UserDTO request) {
+	public boolean updateUserProfile(UserDTO request) {
 
-		User user = userRepository.findByUsername(username);
+		User user = userRepository.findByUsername(request.getUsername());
 		if (user != null) {
-			user.setUsername(request.getUsername());
 			user.setEmail(request.getEmail().toLowerCase());
 			user.setFirstName(request.getFirstName());
 			user.setLastName(request.getLastName());
