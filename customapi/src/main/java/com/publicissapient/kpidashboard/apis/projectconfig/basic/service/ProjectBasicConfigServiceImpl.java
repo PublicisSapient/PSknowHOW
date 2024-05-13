@@ -32,9 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -60,6 +57,7 @@ import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingService;
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecutionService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -76,6 +74,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -146,7 +145,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
-	
+
 	@Autowired
 	private HappinessKpiDataRepository happinessKpiDataRepository;
 
@@ -397,7 +396,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	}
 
 	private void deleteAssigneeDetails(ProjectBasicConfig projectBasicConfig) {
-		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(projectBasicConfig.getId().toString());
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository
+				.findByBasicProjectConfigId(projectBasicConfig.getId().toString());
 		if (assigneeDetails != null) {
 			assigneeDetailsRepository.delete(assigneeDetails);
 		}
@@ -405,11 +405,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	public void deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean isRepoTool) {
 
-		if(isRepoTool.equals(Boolean.TRUE)) {
+		if (isRepoTool.equals(Boolean.TRUE)) {
 			repoToolsConfigService.deleteRepoToolProject(projectBasicConfig, false);
 		}
 
 	}
+
 	private void rejectAccessRequestsWithProject(ProjectBasicConfig projectBasicConfig) {
 		log.info("removing project [{}, {}] from project access requests", projectBasicConfig.getProjectName(),
 				projectBasicConfig.getId().toHexString());
@@ -441,7 +442,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	private void deleteToolsAndCleanData(ProjectBasicConfig projectBasicConfig) {
 
 		List<ProjectToolConfig> tools = toolRepository.findByBasicProjectConfigId(projectBasicConfig.getId());
-		Boolean isRepoTool = tools.stream().anyMatch(toolConfig -> ProcessorConstants.REPO_TOOLS.equals(toolConfig.getToolName()));
+		Boolean isRepoTool = tools.stream()
+				.anyMatch(toolConfig -> ProcessorConstants.REPO_TOOLS.equals(toolConfig.getToolName()));
 		deleteRepoToolProject(projectBasicConfig, isRepoTool);
 		CollectionUtils.emptyIfNull(tools).forEach(tool -> {
 
