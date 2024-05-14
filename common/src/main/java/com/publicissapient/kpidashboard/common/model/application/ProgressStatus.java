@@ -28,6 +28,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProgressStatus {
 	private String stepName;
-	private String startTime;
+	private String endTime;
 	private String status;
 }
