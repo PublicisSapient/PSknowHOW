@@ -19,20 +19,12 @@
 package com.publicissapient.kpidashboard.apis.service.impl;
 
 import com.google.common.collect.Sets;
-import com.publicissapient.kpidashboard.apis.config.AuthProperties;
-import com.publicissapient.kpidashboard.apis.entity.*;
+import com.publicissapient.kpidashboard.apis.config.AuthConfig;
+import com.publicissapient.kpidashboard.apis.config.CookieConfig;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.errors.GenericException;
-import com.publicissapient.kpidashboard.apis.errors.NoSSOImplementationFoundException;
-import com.publicissapient.kpidashboard.apis.repository.ApiKeyRepository;
-import com.publicissapient.kpidashboard.apis.repository.UserTokenRepository;
 import com.publicissapient.kpidashboard.apis.service.*;
 import com.publicissapient.kpidashboard.apis.util.CookieUtil;
-import com.publicissapient.kpidashboard.common.model.GenerateAPIKeyResponseDTO;
-import com.publicissapient.kpidashboard.common.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.util.CommonUtils;
-import com.publicissapient.kpidashboard.common.util.Encryption;
-import com.publicissapient.kpidashboard.common.util.EncryptionException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -43,8 +35,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -53,14 +43,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link TokenAuthenticationService}
@@ -71,31 +54,18 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TokenAuthenticationServiceImpl implements TokenAuthenticationService {
 
-	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 	private static final String ROLES_CLAIM = "roles";
-	private static final String DETAILS_CLAIM = "details";
 
-	// ? do we need this mapper?
-	final ModelMapper modelMapper = new ModelMapper();
+	private static final String DETAILS_CLAIM = "details";
 
 	private final UserService userService;
 
-	private final AuthProperties authProperties;
+	private final AuthConfig authProperties;
 
-	private final UserTokenRepository userTokenRepository;
-
-	private final ApiKeyRepository apiKeyRepository;
-
-	private final ResourceService resourceService;
-
-	private final UserRoleService userRoleService;
-
-	private final MessageService messageService;
+	private final CookieConfig cookieConfig;
 
 	public String extractUsernameFromEmail(String email) {
-		if (Objects.nonNull(email) &&
-			email.contains("@")) {
+		if (Objects.nonNull(email) && email.contains("@")) {
 			return email.substring(
 					0,
 					email.indexOf("@")
@@ -106,68 +76,52 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	}
 
 	@Override
-	public String saveSamlData(
+	public void saveSamlData(
 			Saml2AuthenticatedPrincipal principal,
 			HttpServletResponse response
 	) {
 		String userEmail = principal.getName();
-		// TOOD: remove log
-		log.info("Logged in as: " +
-				 userEmail);
 
 		String username = extractUsernameFromEmail(userEmail);
 
-		// * create the business logic in the UserServiceImpl:
-		// - extract the username from the emailAddress
-		// - generate the authToken with that username as the subject
-		// - generate two cookies:
-		// 1. authCookie- httpOnly=true, contains the authToken and will be used in the jwt filtering of the BE apps
-		// 2. authCookie_EXPIRY - httpOnly=false, doesn't contain the authToken, but has the same expiry date as
-		// 	the previous one and will be used by the FE apps guards in order to check if the user is logged in or not
-
-		String jwt = createApplicationJWT(username, AuthType.SAML);
-
-		CookieUtil.addCookie(response,
-							 CookieUtil.COOKIE_NAME,
-							 jwt,
-							 authProperties.getAuthCookieDuration(),
-							 authProperties.getDomain()
-		);
-		CookieUtil.addCookie(response,
-							 CookieUtil.EXPIRY_COOKIE_NAME,
-							 authProperties
-									 .getAuthCookieDuration()
-									 .toString(),
-							 false,
-							 authProperties.getAuthCookieDuration(),
-							 authProperties.getDomain()
+		String jwt = createApplicationJWT(
+				username,
+				AuthType.SAML
 		);
 
-		return userEmail;
+		addCookies(
+				username,
+				jwt,
+				response
+		);
+
+		this.userService.saveSamlUserData(principal);
 	}
 
 	@Override
-	public String createApplicationJWT(@NotNull String subject, AuthType authType) {
-		Date expirationDate = new Date(System.currentTimeMillis() +
-									   authProperties.getExpirationTime());
+	public String createApplicationJWT(
+			@NotNull
+			String subject,
+			AuthType authType
+	) {
+		Date expirationDate = new Date(System.currentTimeMillis() + cookieConfig.getDuration());
 
-		return Jwts
-				.builder()
-				.setSubject(subject)
-				.claim(
-						DETAILS_CLAIM,
-						authType
-				)
-				.claim(
-						ROLES_CLAIM,
-						new HashSet<>()
-				)
-				.setExpiration(expirationDate)
-				.signWith(
-						SignatureAlgorithm.HS512,
-						authProperties.getSecret()
-				)
-				.compact();
+		return Jwts.builder()
+				   .setSubject(subject)
+				   .claim(
+						   DETAILS_CLAIM,
+						   authType
+				   )
+				   .claim(
+						   ROLES_CLAIM,
+						   new HashSet<>()
+				   )
+				   .setExpiration(expirationDate)
+				   .signWith(
+						   SignatureAlgorithm.HS512,
+						   authProperties.getSecret()
+				   )
+				   .compact();
 	}
 
 	@Override
@@ -175,65 +129,78 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			HttpServletResponse response,
 			Authentication authentication
 	) {
-		Date expirationDate = new Date(System.currentTimeMillis() +
-									   authProperties.getExpirationTime());
-		String jwt = Jwts
-				.builder()
-				.setSubject(userService.getUsername(authentication))
-				.claim(
-						DETAILS_CLAIM,
-						authentication.getDetails()
-				)
-				.claim(
-						ROLES_CLAIM,
-						getRoles(authentication.getAuthorities())
-				)
-				.setExpiration(expirationDate)
-				.signWith(
-						SignatureAlgorithm.HS512,
-						authProperties.getSecret()
-				)
-				.compact();
+		Date expirationDate = new Date(System.currentTimeMillis() + cookieConfig.getDuration());
+		String jwt = Jwts.builder()
+						 .setSubject(userService.getUsername(authentication))
+						 .claim(
+								 DETAILS_CLAIM,
+								 authentication.getDetails()
+						 )
+						 .claim(
+								 ROLES_CLAIM,
+								 getRoles(authentication.getAuthorities())
+						 )
+						 .setExpiration(expirationDate)
+						 .signWith(
+								 SignatureAlgorithm.HS512,
+								 authProperties.getSecret()
+						 )
+						 .compact();
 
-		saveUserToken(
-				authentication,
+		addCookies(
 				jwt,
-				expirationDate
+				response
 		);
 
-		CookieUtil.addCookie(response,
-							 CookieUtil.COOKIE_NAME,
-							 jwt,
-							 authProperties.getAuthCookieDuration(),
-							 authProperties.getDomain()
-		);
-		CookieUtil.addCookie(response,
-							 CookieUtil.EXPIRY_COOKIE_NAME,
-							 "",
-							 false,
-							 authProperties.getAuthCookieDuration(),
-							 authProperties.getDomain()
-		);
-		// TODO: do we need this same site attribute?
-		//		cookieUtil.addSameSiteCookieAttribute(response);
 		return jwt;
 	}
 
-	@Transactional
-	public void saveUserToken(
-			Authentication authentication,
+	private void addCookies(
 			String jwt,
-			Date expirationDate
+			HttpServletResponse response
 	) {
-		UserToken data = new UserToken();
-		String username = userService.getUsername(authentication);
-		data.setUsername(username);
-		data.setToken(jwt);
-		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT);
-		String expiryDate = dateFormat.format(expirationDate);
-		data.setExpiryDate(expiryDate);
-		userTokenRepository.deleteByUsername(username);
-		userTokenRepository.save(data);
+		CookieUtil.addCookie(
+				response,
+				CookieUtil.COOKIE_NAME,
+				jwt,
+				cookieConfig.getDuration(),
+				cookieConfig.getDomain(),
+				cookieConfig.getIsSameSite(),
+				cookieConfig.getIsSecure()
+		);
+		CookieUtil.addCookie(
+				response,
+				CookieUtil.EXPIRY_COOKIE_NAME,
+				cookieConfig.getDuration()
+							.toString(),
+				false,
+				cookieConfig.getDuration(),
+				cookieConfig.getDomain(),
+				cookieConfig.getIsSameSite(),
+				cookieConfig.getIsSecure()
+		);
+	}
+
+	private void addCookies(
+			String username,
+			String jwt,
+			HttpServletResponse response
+	) {
+		CookieUtil.addCookie(
+				response,
+				CookieUtil.USERNAME_COOKIE_NAME,
+				username,
+				false,
+				cookieConfig.getDuration(),
+				cookieConfig.getDomain(),
+				cookieConfig.getIsSameSite(),
+				cookieConfig.getIsSecure()
+		);
+
+		addCookies(
+				jwt,
+				response
+		);
 	}
 
 	@Override
@@ -241,31 +208,25 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			HttpServletRequest request,
 			HttpServletResponse response
 	) {
-		if (authProperties.isSsoLogin()) {
-			// ? what is this
-			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
-		} else {
-			Optional<Cookie> authCookie = CookieUtil.getCookie(
-					request,
-					CookieUtil.COOKIE_NAME
-			);
-			if (authCookie.isEmpty()) {
-				return null;
-			}
-
-			String token = authCookie
-					.get()
-					.getValue();
-
-			if (null ==
-				token) {
-				return null;
-			}
-			return createAuthentication(
-					token,
-					response
-			);
+		Optional<Cookie> authCookie = CookieUtil.getCookie(
+				request,
+				CookieUtil.COOKIE_NAME
+		);
+		if (authCookie.isEmpty()) {
+			return null;
 		}
+
+		String token = authCookie.get()
+								 .getValue();
+
+		if (null == token) {
+			return null;
+		}
+		return createAuthentication(
+				token,
+				response
+		);
+
 	}
 
 	private Authentication createAuthentication(
@@ -280,19 +241,13 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 					ROLES_CLAIM,
 					Collection.class
 			));
-			authentication = new PreAuthenticatedAuthenticationToken(userService.getAuthentication(username),
-																	 null,
-																	 authorities
+			authentication = new PreAuthenticatedAuthenticationToken(
+					userService.findByUsername(username),
+					null,
+					authorities
 			);
 			authentication.setDetails(claims.get(DETAILS_CLAIM));
-			List<UserToken> userTokenData = userTokenRepository.findAllByUsername(username);
-			response.setHeader(
-					CommonUtils.AUTH_DETAILS_UPDATED_FLAG,
-					setUpdateAuthFlag(
-							userTokenData,
-							claims.getExpiration()
-					)
-			);
+
 		}
 		return authentication;
 	}
@@ -323,73 +278,10 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	}
 
 	private Claims parseClaims(String token) throws ExpiredJwtException {
-		return Jwts
-				.parser()
-				.setSigningKey(authProperties.getSecret())
-				.parseClaimsJws(token)
-				.getBody();
-	}
-
-	@Override
-	public String setUpdateAuthFlag(
-			List<UserToken> userTokenDataList,
-			Date tokenExpiration
-	) {
-		UserToken userTokenData = getLatestUser(userTokenDataList);
-		if (userTokenData !=
-			null) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT);
-			String expiryDate = dateFormat.format(tokenExpiration);
-			DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-					.appendPattern(TIME_FORMAT)
-					.optionalStart()
-					.appendPattern(".")
-					.appendFraction(ChronoField.MICRO_OF_SECOND,
-									1,
-									9,
-									false
-					)
-					.optionalEnd()
-					.toFormatter();
-			if (LocalDateTime
-					.parse(
-							expiryDate,
-							formatter
-					)
-					.isAfter(LocalDateTime.now())) {
-				return Boolean.toString(true);
-			}
-		}
-		return Boolean.toString(false);
-	}
-
-	private UserToken getLatestUser(List<UserToken> userTokenDataList) {
-		if (CollectionUtils.isEmpty(userTokenDataList)) {
-			return null;
-		}
-		List<UserToken> dataList = userTokenDataList
-				.stream()
-				.filter(data -> data.getExpiryDate() !=
-								null)
-				.collect(Collectors.toList());
-		DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-				.appendPattern(TIME_FORMAT)
-				.optionalStart()
-				.appendPattern(".")
-				.appendFraction(ChronoField.MICRO_OF_SECOND,
-								1,
-								9,
-								false
-				)
-				.optionalEnd()
-				.toFormatter();
-		return dataList
-				.stream()
-				.max(Comparator.comparing(data -> LocalDateTime.parse(
-						data.getExpiryDate(),
-						formatter
-				)))
-				.orElse(null);
+		return Jwts.parser()
+				   .setSigningKey(authProperties.getSecret())
+				   .parseClaimsJws(token)
+				   .getBody();
 	}
 
 	/**
@@ -417,125 +309,4 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 		return authorities;
 	}
-
-	@Override
-	public void updateExpiryDate(
-			String username,
-			String expiryDate
-	) {
-		List<UserToken> dataList = userTokenRepository.findAllByUsername(username);
-		dataList
-				.stream()
-				.forEach(data -> data.setExpiryDate(expiryDate));
-		userTokenRepository.saveAll(dataList);
-	}
-
-	@Override
-	public UserToken getLatestTokenByUser(String userName) {
-		List<UserToken> userTokenDataList = userTokenRepository.findAllByUsername(userName);
-		return getLatestUser(userTokenDataList);
-	}
-
-	/**
-	 * root user can only one generate token. if same resourceName request again
-	 * generate token then previously generated token will be updated and token will
-	 * be expired based on configure days.
-	 *
-	 * @param resourceName resourceName
-	 * @return ServiceResponse
-	 */
-	@Override
-	public ServiceResponse generateAndSaveToken(String resourceName) {
-		GenerateAPIKeyResponseDTO generateAPIKeyResponseDTO;
-		String loginUser = userService.getLoggedInUser();
-		ApiKey apiKeyTokenExist = apiKeyRepository.findByResource(resourceName);
-		User loginUserDetail = userService.validateUser(loginUser);
-		validateLoggedUserRole(
-				resourceName,
-				loginUser
-		);
-		String apiAccessToken = "";
-		try {
-			apiAccessToken = Encryption.getStringKey();
-			if (Objects.nonNull(apiKeyTokenExist)) {
-				apiKeyTokenExist.setKey(apiAccessToken);
-				apiKeyTokenExist.setExpiryDate(LocalDate
-													   .now()
-													   .plusDays(authProperties.getExposeAPITokenExpiryDays()));
-				apiKeyTokenExist.setModifiedBy(loginUserDetail);
-				apiKeyTokenExist.setModifiedDate(LocalDate.now());
-				apiKeyRepository.save(apiKeyTokenExist);
-				generateAPIKeyResponseDTO = modelMapper.map(
-						apiKeyTokenExist,
-						GenerateAPIKeyResponseDTO.class
-				);
-				return new ServiceResponse(true,
-										   messageService.getMessage("error_apiKey_updated"),
-										   generateAPIKeyResponseDTO
-				);
-			} else {
-				ApiKey apiKeyToken = new ApiKey();
-				Resource resource = resourceService.validateResource(resourceName);
-				apiKeyToken.setResource(resource);
-				apiKeyToken.setKey(apiAccessToken);
-				apiKeyToken.setExpiryDate(LocalDate
-												  .now()
-												  .plusDays(authProperties.getExposeAPITokenExpiryDays()));
-				apiKeyToken.setCreatedDate(LocalDate.now());
-				apiKeyToken.setCreatedBy(loginUserDetail);
-				apiKeyToken.setModifiedBy(loginUserDetail);
-				apiKeyToken.setModifiedDate(LocalDate.now());
-				apiKeyRepository.save(apiKeyToken);
-				generateAPIKeyResponseDTO = modelMapper.map(
-						apiKeyToken,
-						GenerateAPIKeyResponseDTO.class
-				);
-				return new ServiceResponse(true,
-										   messageService.getMessage("success_apiKey_generated"),
-										   generateAPIKeyResponseDTO
-				);
-			}
-		} catch (EncryptionException e) {
-			return new ServiceResponse(
-					false,
-					messageService.getMessage("error_apiKey_generated"),
-					null
-			);
-		}
-	}
-
-	/**
-	 * @param resourceName resourceName
-	 * @param loginUser    loginUser
-	 */
-	private void validateLoggedUserRole(
-			String resourceName,
-			String loginUser
-	) {
-		List<UserRole> userPermissionList = userRoleService.findUserRoleByUsernameAndResource(
-				loginUser,
-				resourceName
-		);
-		List<UserRole> rootUser = userPermissionList
-				.stream()
-				.filter(userRole -> userRole
-						.getRole()
-						.isRootUser())
-				.collect(Collectors.toList());
-		if (rootUser ==
-			null) {
-			log.error(messageService.getMessage("error_invalid_permission") +
-					  loginUser);
-			throw new GenericException(messageService.getMessage("error_invalid_permission"));
-		}
-	}
-
-	private void validateApiKey(String apiKey) {
-		boolean isValid = apiKeyRepository.validateApiKey(apiKey);
-		if (!isValid) {
-			log.error("Please provide a valid api key");
-			throw new GenericException("Please provide a valid api key");
-		}
-	}
-
 }

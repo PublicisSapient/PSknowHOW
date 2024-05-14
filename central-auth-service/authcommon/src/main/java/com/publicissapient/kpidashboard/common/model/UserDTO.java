@@ -37,14 +37,9 @@ public class UserDTO {
 	private String username;
 	private String samlEmail;
 	private String password;
-	private long failedLoginAttemptCount;
-	private LocalDateTime lastUnsuccessfulLoginTime;
 	private String email;
-	private boolean approved;
-	private boolean userVerified;
 	private String authType;
 	private String firstName;
 	private String lastName;
 	private String displayName;
-	private boolean rootUser;
 }

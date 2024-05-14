@@ -1,6 +1,6 @@
 package com.publicissapient.kpidashboard.apis.controller;
 
-import com.publicissapient.kpidashboard.apis.config.AuthProperties;
+import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,29 +11,40 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+
+import java.util.Objects;
 
 @Slf4j
 @RestController
 @AllArgsConstructor
-public class AuthenticationController {
-	private final AuthProperties authProperties;
+public class SSOAuthenticationController {
+
+	private final AuthConfig authProperties;
+
 	private final TokenAuthenticationService tokenAuthenticationService;
 
 	@GetMapping("/sso-login")
-	public ModelAndView login(
+	public RedirectView login(
 			@AuthenticationPrincipal
 			Saml2AuthenticatedPrincipal principal,
+			@RequestParam(required = false)
+			String redirectUri,
 			HttpServletResponse response
 	) {
-		String email = tokenAuthenticationService.saveSamlData(principal, response);
+		tokenAuthenticationService.saveSamlData(principal, response);
 
-		ModelAndView modelAndView = new ModelAndView(authProperties.getLoginView());
-		modelAndView.addObject("email", email);
-		modelAndView.addObject("redirectUrl", authProperties.getBaseUiUrl());
+		RedirectView redirectView = new RedirectView();
+		if (Objects.nonNull(redirectUri)) {
+			redirectView.setUrl(redirectUri);
+		} else {
+			redirectView.setUrl(authProperties.getBaseUiUrl());
+		}
 
-		return modelAndView;
+		return redirectView;
 	}
 
 	@GetMapping("/sso-logout")

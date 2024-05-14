@@ -42,7 +42,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -67,7 +66,7 @@ public class WebSecurityConfig {
 
 	private final AuthEndpointsProperties authEndpointsProperties;
 
-	private final AuthProperties authProperties;
+	private final AuthConfig authProperties;
 
 	private final TokenAuthenticationService tokenAuthenticationService;
 
@@ -81,6 +80,16 @@ public class WebSecurityConfig {
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
 		http.authorizeHttpRequests(authz -> authz.requestMatchers(HttpMethod.OPTIONS)
+												 .permitAll()
+												 .requestMatchers("/login")
+												 .permitAll()
+												 .requestMatchers("/login/status/standard")
+												 .permitAll()
+												 .requestMatchers("/register-user")
+												 .permitAll()
+												 .requestMatchers("/user-info")
+												 .permitAll()
+												 .requestMatchers("/sso-logout")
 												 .permitAll()
 												 .anyRequest()
 												 .authenticated())
@@ -104,11 +113,12 @@ public class WebSecurityConfig {
 
 	@Bean
 	protected StandardLoginRequestFilter standardLoginRequestFilter() throws Exception {
-		return new StandardLoginRequestFilter("/login",
-											  authenticationManager(authConfig),
-											  standardAuthenticationResultHandler,
-											  customAuthenticationFailureHandler,
-											  authProperties
+		return new StandardLoginRequestFilter(
+				"/login",
+				authenticationManager(authConfig),
+				standardAuthenticationResultHandler,
+				customAuthenticationFailureHandler,
+				authProperties
 		);
 	}
 
@@ -133,23 +143,21 @@ public class WebSecurityConfig {
 																		  .values()
 																		  .iterator()
 																		  .next();
-		return new InMemoryRelyingPartyRegistrationRepository(
-				RelyingPartyRegistrations.collectionFromMetadataLocation(
-						registration.getAssertingparty()
-									.getMetadataUri())
-                                   .stream()
-                                   .map((builder) -> builder.registrationId(UUID.randomUUID()
-                                                                                .toString())
-                                                            .entityId(registration.getEntityId())
-                                                            .assertionConsumerServiceLocation(registration.getAcs()
-                                                                                                          .getLocation())
-                                                            .singleLogoutServiceLocation(registration.getSinglelogout()
-                                                                                                     .getUrl())
-                                                            .singleLogoutServiceResponseLocation(registration.getSinglelogout()
-                                                                                                             .getResponseUrl())
-                                                            .signingX509Credentials((credentials) -> credentials.add(signing))
-                                                            .build())
-                                   .collect(Collectors.toList()));
+		return new InMemoryRelyingPartyRegistrationRepository(RelyingPartyRegistrations.collectionFromMetadataLocation(registration.getAssertingparty()
+																																   .getMetadataUri())
+																					   .stream()
+																					   .map((builder) -> builder.registrationId(UUID.randomUUID()
+																																	.toString())
+																												.entityId(registration.getEntityId())
+																												.assertionConsumerServiceLocation(registration.getAcs()
+																																							  .getLocation())
+																												.singleLogoutServiceLocation(registration.getSinglelogout()
+																																						 .getUrl())
+																												.singleLogoutServiceResponseLocation(registration.getSinglelogout()
+																																								 .getResponseUrl())
+																												.signingX509Credentials((credentials) -> credentials.add(signing))
+																												.build())
+																					   .collect(Collectors.toList()));
 	}
 
 	X509Certificate x509Certificate(File location) {

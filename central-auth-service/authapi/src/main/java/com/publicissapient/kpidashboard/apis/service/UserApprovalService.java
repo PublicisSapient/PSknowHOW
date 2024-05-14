@@ -7,7 +7,7 @@ import java.util.List;
 public interface UserApprovalService {
 	List<UserAccessRequest> findAllUnapprovedUsers();
 
-	boolean updateApprovalRequest(String username);
+	boolean approveUser(String username);
 
-	boolean deleteRejectUser(String username);
+	boolean rejectUser(String username);
 }

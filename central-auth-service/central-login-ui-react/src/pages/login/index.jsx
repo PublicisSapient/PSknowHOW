@@ -9,72 +9,87 @@ import {FloatingInput} from "../../components/FloatingInput";
 import '../../App.css';
 import SuiteLogos from '../../components/SuiteLogos';
 import PSLogo from '../../components/PSLogo';
+import Cookies from 'js-cookie';
 
-
+const SAML_USERNAME_COOKIE_NAME = "samlUsernameCookie";
 
 const LoginPage = ({search}) => {
 
     const [error, setError] = useState('');
     const [showLoader, setShowLoader] = useState(false);
     const [showSAMLLoader, setShowSAMLLoader] = useState(false);
-    const methods = useForm({ mode: 'all' });
+    const methods = useForm({mode: 'all'});
 
-    const currentUserEmail = localStorage.getItem('email');
+    const getSamlUsernameCookie = () => {
+        return Cookies.get(SAML_USERNAME_COOKIE_NAME);
+    };
+
+    const currentUsername = getSamlUsernameCookie();
 
     const PerformSAMLLogin = () => {
         setShowSAMLLoader(true);
-        window.location.href = apiProvider.handleSamlLogin;
+
+        let redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
+
+        if (redirectUri) {
+            window.location.href = `${apiProvider.handleSamlLogin}?redirectUri=${redirectUri}`;
+        } else {
+            window.location.href = apiProvider.handleSamlLogin;
+        }
     }
 
     const PerformSAMLLogout = async () => {
         setShowSAMLLoader(true);
+
+        Cookies.remove(SAML_USERNAME_COOKIE_NAME);
 
         window.location.href = apiProvider.handleSamlLogout
     }
 
     const PerformCredentialLogin = (data) => {
         setShowLoader(true);
+
         apiProvider.handleUserStandardLogin({
             username: data.userName,
             password: data.password
         })
-        .then((response) => {
-            if(response){
-                apiProvider.getStandardLoginStatus()
-                .then((res) => {
-                    if(res && res.data['success']){
-                        const authToken = res.data.data.authToken;
-                        const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
-                        localStorage.setItem('user_details', JSON.stringify({ email: res.data.data.email, isAuthenticated: true }));
-                        setShowLoader(false);
-                        let defaultAppUrl = process.env.NODE_ENV === 'production' ? window.env.REACT_APP_PSKnowHOW : process.env.REACT_APP_PSKnowHOW;
-                        if(!redirectUri){
-                            window.location.href = (defaultAppUrl + '?authToken=' + authToken);
-                        }else{
-                            if(redirectUri.indexOf('?') === -1){
-                                window.location.href = (`${redirectUri}?authToken=${authToken}`);
-                            }else{
-                                window.location.href = (`${redirectUri}&authToken=${authToken}`);
+            .then((response) => {
+                if (response) {
+                    apiProvider.getStandardLoginStatus()
+                        .then((res) => {
+                            if (res && res.data['success']) {
+                                const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
+
+                                setShowLoader(false);
+
+                                window.location.href = redirectUri;
+
+                            } else {
+                                setShowLoader(false);
+
+                                setError(res.data.message);
                             }
-                        }
-                    } else {
-                     setShowLoader(false);
-                     setError(res.data.message);
-                     }
-                }).catch((err) => {
-                    console.log(err);
-                    setShowLoader(false);
-                    let errMessage = err?.response?.data?.message ?  err?.response?.data?.message : 'Please try again after sometime'
-                    setError(errMessage);
-                });
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-            setShowLoader(false);
-            let errMessage = err?.response?.data?.message ?  err?.response?.data?.message : 'Please try again after sometime'
-            setError(errMessage);
-        });
+                        })
+                        .catch((err) => {
+                            setShowLoader(false);
+
+                            let errMessage = err?.response?.data?.message
+                                ? err?.response?.data?.message
+                                : 'Please try again after sometime'
+
+                            setError(errMessage);
+                        });
+                }
+            })
+            .catch((err) => {
+                setShowLoader(false);
+
+                let errMessage = err?.response?.data?.message
+                    ? err?.response?.data?.message
+                    : 'Please try again after sometime'
+
+                setError(errMessage);
+            });
     }
 
     useEffect(() => {
@@ -82,14 +97,15 @@ const LoginPage = ({search}) => {
         if (redirectUri) {
             localStorage.setItem('redirect_uri', JSON.stringify(redirectUri));
         }
-        return () => { };
+        return () => {
+        };
     }, [search]);
 
     return (
         <div className="componentContainer flex h-screen max-w-screen">
             <SuiteLogos/>
             <div className="w-2/5 p-12 h-screen bg-white-A700">
-                
+
                 <PSLogo/>
                 <div className='w-full mt-4 mb-2'>
                     <Text
@@ -117,10 +133,10 @@ const LoginPage = ({search}) => {
                     } clickFn={PerformSAMLLogin}
                 >
                     <Text className="text-white text-left">
-                        {currentUserEmail ? `Continue as ${currentUserEmail}` : 'Login with SSO'}
+                        {currentUsername ? `Continue as ${currentUsername}` : 'Login with SSO'}
                     </Text>
                 </Button>
-                {currentUserEmail && <Button
+                {currentUsername && <Button
                     className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[18px] w-full"
                     rightIcon={
                         <>

@@ -18,7 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.filters.standard;
 
-import com.publicissapient.kpidashboard.apis.config.AuthProperties;
+import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
 import com.publicissapient.kpidashboard.apis.service.UserService;
@@ -42,7 +42,7 @@ import java.time.LocalDateTime;
 public class StandardAuthenticationProvider implements AuthenticationProvider {
 
 	private final UserService authService;
-	private final AuthProperties authProperties;
+	private final AuthConfig authProperties;
 
 	/**
 	 * Performs Authentication

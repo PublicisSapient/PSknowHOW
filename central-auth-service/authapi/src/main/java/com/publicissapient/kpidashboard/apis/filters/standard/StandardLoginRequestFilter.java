@@ -18,7 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.filters.standard;
 
-import com.publicissapient.kpidashboard.apis.config.AuthProperties;
+import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.filters.CustomAuthenticationFailureHandler;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +36,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * @author Hiren Babariya
  */
 public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFilter {
-	private AuthProperties authProperties;
+	private AuthConfig authProperties;
 
 	/**
 	 * @param path
@@ -47,7 +47,7 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 			AuthenticationManager authenticationManager,
 			AuthenticationResultHandler standardAuthenticationResultHandler,
 			CustomAuthenticationFailureHandler authenticationFailureHandler,
-			AuthProperties authProperties
+			AuthConfig authProperties
 	) {
 		super();
 		super.setAuthenticationManager(authenticationManager);

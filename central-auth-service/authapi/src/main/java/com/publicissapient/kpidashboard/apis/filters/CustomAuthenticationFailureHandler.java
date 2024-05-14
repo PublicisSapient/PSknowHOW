@@ -31,6 +31,8 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.WRONG_CREDENTIALS_ERROR_MESSAGE;
+
 /**
  * This class will handle authentication failed exception like Bad credentials
  *
@@ -38,7 +40,7 @@ import java.util.Map;
  */
 @Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
-	private static final String WRONGCREDENTIALS = "Login Failed: The username or password entered is incorrect";
+
 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
@@ -53,7 +55,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
 		data.put("error", HttpStatus.UNAUTHORIZED.getReasonPhrase());
 		if (exception.getMessage().contains("error code 49 - 80090308")) {
-			data.put("message", "Authentication Failed: " + WRONGCREDENTIALS);
+			data.put("message", "Authentication Failed: " + WRONG_CREDENTIALS_ERROR_MESSAGE);
 		} else {
 			data.put("message", "Authentication Failed: " + exception.getMessage());
 		}

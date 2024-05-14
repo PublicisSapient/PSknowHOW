@@ -19,13 +19,10 @@
 package com.publicissapient.kpidashboard.apis.filters.standard;
 
 import com.publicissapient.kpidashboard.apis.entity.User;
-import com.publicissapient.kpidashboard.apis.entity.UserToken;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.filters.AuthenticationResponseService;
 import com.publicissapient.kpidashboard.apis.repository.UserRepository;
-import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.service.UserService;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -36,7 +33,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Provides Standard Login Authentication Result Handler.
@@ -50,10 +47,8 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
     private static final String USER_EMAIL = "user_email";
     private static final String USER_ID = "user_id";
     private static final String USER_TYPE = "user_type";
-    private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 
     private final AuthenticationResponseService authenticationResponseService;
-    private final TokenAuthenticationService tokenAuthenticationService;
 
     private final UserRepository userRepository;
 
@@ -61,12 +56,11 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+                                        Authentication authentication) throws IOException {
         authenticationResponseService.handle(response, authentication, AuthType.STANDARD);
         // sgu106: Google Analytics data population starts
         String username = userService.getUsername(authentication);
-        UserToken userToken = tokenAuthenticationService.getLatestTokenByUser(username);
-        JSONObject json = loginJsonData(response, username, userToken);
+        JSONObject json = loginJsonData(response, username);
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
         out.print(json.toJSONString());
@@ -74,17 +68,16 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 
     }
 
-    public JSONObject loginJsonData(HttpServletResponse httpServletResponse, String username, UserToken userToken) {
+    public JSONObject loginJsonData(HttpServletResponse httpServletResponse, String username) {
         JSONObject json = new JSONObject();
         httpServletResponse.setContentType("application/json");
         httpServletResponse.setCharacterEncoding("UTF-8");
-        User userinfo = userRepository.findByUsername(username);
+        Optional<User> userinfo = userRepository.findByUsername(username);
         json.put(USER_NAME, username);
-        if (Objects.nonNull(userinfo) && Objects.nonNull(userToken)) {
-            json.put(USER_EMAIL, userinfo.getEmail());
-            json.put(USER_TYPE, userinfo.getAuthType());
-            json.put(USER_ID, userinfo.getId().toString());
-            json.put(AUTH_RESPONSE_HEADER, userToken.getToken());
+        if (userinfo.isPresent()) {
+            json.put(USER_EMAIL, userinfo.get().getEmail());
+            json.put(USER_TYPE, userinfo.get().getAuthType());
+            json.put(USER_ID, userinfo.get().getId().toString());
         }
         return json;
 

@@ -48,17 +48,27 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	private String username;
 
 	private String samlEmail;
+
 	private String password;
+
 	private String firstName;
+
 	private String lastName;
+
 	private String displayName;
+
 	private long failedLoginAttemptCount;
+
 	private LocalDateTime lastUnsuccessfulLoginTime;
+
 	private String email;
+
 	private boolean approved = false;
+
 	private boolean userVerified = false;
 
 	private String authType;

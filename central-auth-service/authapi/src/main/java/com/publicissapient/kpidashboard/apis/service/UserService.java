@@ -20,15 +20,22 @@ package com.publicissapient.kpidashboard.apis.service;
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.common.model.UserDTO;
+import jakarta.validation.Valid;
+import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
  * An Interface to provide authentication service.
  */
 public interface UserService {
+
+	User save(@Valid User user);
+
+	User saveSamlUserData(Saml2AuthenticatedPrincipal principal);
 
 	org.springframework.security.core.Authentication authenticate(
 			org.springframework.security.core.Authentication authentication, String authType);
@@ -51,7 +58,7 @@ public interface UserService {
 	 */
 	void resetFailAttempts(String userName);
 
-	User getAuthentication(String username);
+	Optional<User> findByUsername(String username);
 
 	/**
 	 * Gets username from authentication object
@@ -62,13 +69,10 @@ public interface UserService {
 	 */
 	String getUsername(org.springframework.security.core.Authentication authentication);
 
-	UserDTO getOrSaveSSOAuthentication(String username, String authType, String email);
-
 	boolean isEmailExist(String email);
 
-	boolean isUsernameExists(String username);
+	Optional<User> findByUserName(String userName);
 
-	User findByUserName(String userName);
 	boolean deleteByUserName(String userName);
 
 	List<User> findAllUnapprovedUsers();
@@ -76,16 +80,6 @@ public interface UserService {
 	boolean registerUser(UserDTO request);
 
 	void deleteUnVerifiedUser(UUID token);
-
-	/**
-	 * Validate User Details
-	 * 
-	 * @param username
-	 * @return
-	 */
-	User validateUser(String username);
-
-	String getLoggedInUser();
 
 	/**
 	 * update user profile

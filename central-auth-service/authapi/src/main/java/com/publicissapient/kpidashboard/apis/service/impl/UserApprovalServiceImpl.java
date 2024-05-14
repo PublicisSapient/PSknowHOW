@@ -74,22 +74,23 @@ public class UserApprovalServiceImpl implements UserApprovalService {
 	 * @return
 	 */
 	@Override
-	public boolean updateApprovalRequest(String username) {
-		User user = userService.findByUserName(username);
+	public boolean approveUser(String username) {
+		Optional<User> user = userService.findByUserName(username);
 		try {
-			if (user != null && user.isUserVerified() && !user.isApproved()) {
-				user.setApproved(true);
-				user.setModifiedDate(LocalDateTime.now());
-				userRepository.save(user);
-				tokenAuthenticationService.updateExpiryDate(username, LocalDateTime.now().toString());
+			if (user.isPresent() && user.get().isUserVerified() && !user.get().isApproved()) {
+				User userData = user.get();
+				userData.setApproved(true);
+				userData.setModifiedDate(LocalDateTime.now());
+				userRepository.save(userData);
+//				tokenAuthenticationService.updateExpiryDate(username, LocalDateTime.now().toString());
 				List<String> emailAddresses = new ArrayList<>();
-				emailAddresses.add(user.getEmail());
+				emailAddresses.add(userData.getEmail());
 				String serverPath = getServerPath();
 				List<String> superAdminEmailList = commonService
 						.getEmailAddressBasedOnRoles(Arrays.asList(CommonConstant.ROLE_SUPERADMIN));
 				// logic needed to changes if that paticular superadmin send to mail who is
 				// approved User.
-				Map<String, String> customData = createCustomData(username, user.getEmail(), serverPath,
+				Map<String, String> customData = createCustomData(username, userData.getEmail(), serverPath,
 						superAdminEmailList.get(0));
 				commonService.sendEmailNotification(emailAddresses, customData,
 						CommonConstant.APPROVAL_NOTIFICATION_KEY, CommonConstant.APPROVAL_SUCCESS_TEMPLATE_KEY);
@@ -138,7 +139,7 @@ public class UserApprovalServiceImpl implements UserApprovalService {
 	 * @return
 	 */
 	@Override
-	public boolean deleteRejectUser(String username) {
+	public boolean rejectUser(String username) {
 		return userService.deleteByUserName(username);
 	}
 
