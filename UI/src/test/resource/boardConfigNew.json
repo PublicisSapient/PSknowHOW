@@ -1522,7 +1522,20 @@
                     },
                     "parentFilter": {
                         "labelName": "Organization Level"
-                    }
+                    },
+                    "additionalFilters": [{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sprint",
+                            "sortBy": null
+                        }
+                    },{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sqd",
+                            "sortBy": null
+                        }
+                    }]
                 }
             },
             {
@@ -1963,7 +1976,20 @@
                     },
                     "parentFilter": {
                         "labelName": "Organization Level"
-                    }
+                    },
+                    "additionalFilters": [{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sprint",
+                            "sortBy": null
+                        }
+                    },{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sqd",
+                            "sortBy": null
+                        }
+                    }]
                 }
             },
             {
@@ -3012,7 +3038,20 @@
                     },
                     "parentFilter": {
                         "labelName": "Organization Level"
-                    }
+                    },
+                    "additionalFilters": [{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sprint",
+                            "sortBy": null
+                        }
+                    },{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sqd",
+                            "sortBy": null
+                        }
+                    }]
                 }
             },
             {
@@ -3920,7 +3959,14 @@
                     "parentFilter": {
                         "labelName": "Project",
                         "emittedLevel": "sprint"
-                    }
+                    },
+                    "additionalFilters": [{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sqd",
+                            "sortBy": null
+                        }
+                    }]
                 }
             },
             {

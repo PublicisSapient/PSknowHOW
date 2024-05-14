@@ -445,55 +445,79 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         .attr('class', 'g')
         .attr('transform', (d) => 'translate(' + x0(d.categorie) + ',0)');
 
+      const rx = x1.bandwidth() / 2;
+      const ry = x1.bandwidth() / 2;
+
+      // slice
+      //   .selectAll('rect')
+      //   .data((d) => d.value)
+      //   .enter()
+      //   .append('rect')
+      //   .attr('width', barWidth)
+      //   .attr('x', (d, i) => {
+      //     return x1(d.rate);
+      //   })
+      //   .style('fill', (d) => color(d.rate))
+      //   .attr('y', (d) => y(0))
+      //   .attr('rx', rx)
+      //   .attr('height', (d) => height - margin.top - y(0) > 0 ? height - margin.top - y(0) : 0)
+      //   .attr('class', 'bar');
+
       slice
-        .selectAll('rect')
+        .selectAll("bar")
         .data((d) => d.value)
-        .enter()
-        .append('rect')
-        .attr('width', barWidth)
-        .attr('x', (d, i) => {
-          return x1(d.rate);
-        })
-        .style('fill', (d) => color(d.rate))
-        .attr('y', (d) => y(0))
-        .attr('height', (d) => height - margin.top - y(0) > 0 ? height - margin.top - y(0) : 0)
-        .attr('class', 'bar');
+        .enter().append("path")
+        .style("fill", (d) => color(d.rate))
+        .attr("d", item => {
+          if (item.value) {
+            return `
+        M${x1(item.rate)},${y(item.value) + ry}
+        a${rx},${ry} 0 0 1 ${rx},${-ry}
+        h${x1.bandwidth() - 2 * rx}
+        a${rx},${ry} 0 0 1 ${rx},${ry}
+        v${height - margin.top - y(item.value) - ry}
+        h${-(x1.bandwidth())}Z`;
+          } else {
+            return null;
+          }
+        }
+        );
 
-        const arc = d3.arc()
-        .innerRadius(0)
-        .outerRadius(barWidth / 2 - 0.5)
-        .startAngle(0) // Start angle in radians (0 for the beginning of the semi-circle)
-        .endAngle(Math.PI); // End angle in radians (Math.PI for a semi-circle, Math.PI * 2 for a full circle)
+      // const arc = d3.arc()
+      //   .innerRadius(0)
+      //   .outerRadius(barWidth / 2 - 0.5)
+      //   .startAngle(0) // Start angle in radians (0 for the beginning of the semi-circle)
+      //   .endAngle(Math.PI); // End angle in radians (Math.PI for a semi-circle, Math.PI * 2 for a full circle)
 
-      // Append semicircles on top of bars
-      slice.selectAll("arc")
-        .data((d) => d.value)
-        .enter()
-        .append("path")
-        .attr("d", arc)
-        .attr("fill", (d) => color(d.rate))
-        .attr("transform", (d, i) => `translate(${x1(d.rate) + barWidth / 2}, ${400}) rotate(-90)`)
-        .attr("stroke", (d) => color(d.rate))
-        .attr("stroke-width", 1);
+      // // Append semicircles on top of bars
+      // slice.selectAll("arc")
+      //   .data((d) => d.value)
+      //   .enter()
+      //   .append("path")
+      //   .attr("d", arc)
+      //   .attr("fill", (d) => color(d.rate))
+      //   .attr("transform", (d, i) => `translate(${x1(d.rate) + barWidth / 2}, ${400}) rotate(-90)`)
+      //   .attr("stroke", (d) => color(d.rate))
+      //   .attr("stroke-width", 1);
 
-        slice
-        .selectAll('rect')
+      slice
+        .selectAll('path')
         .transition()
         .delay((d) => 200)
         .duration(1000)
         .attr('y', (d) => y(d.value) + barWidth / 2)
         .attr('height', (d) => height - margin.top - y(d.value) - barWidth / 2 > 0 ? height - margin.top - y(d.value) - barWidth / 2 : 0)
 
-        slice
-        .selectAll('path')
-        .transition()
-        .delay((d) => 1200)
-        .duration(200)
-        .attr("transform", (d, i) => `translate(${x1(d.rate) + barWidth / 2}, ${ height - margin.top - y(d.value) - barWidth / 4 < barWidth/2 ? -500 : y(d.value) + barWidth / 2}) rotate(-90)`)
-        .attr("stroke", (d) => color(d.rate))
-        .attr("stroke-width", 1);
+      // slice
+      //   .selectAll('path')
+      //   .transition()
+      //   .delay((d) => 1200)
+      //   .duration(200)
+      //   .attr("transform", (d, i) => `translate(${x1(d.rate) + barWidth / 2}, ${height - margin.top - y(d.value) - barWidth / 4 < barWidth / 2 ? -500 : y(d.value) + barWidth / 2}) rotate(-90)`)
+      //   .attr("stroke", (d) => color(d.rate))
+      //   .attr("stroke-width", 1);
 
-      
+
 
       // threshold line
       if (self.thresholdValue) {

@@ -32,6 +32,7 @@ export class FilterNewComponent implements OnInit {
   dateRangeFilter: any;
   selectedDateValue: string;
   toggleDateDropdown = false;
+  additionalFiltersArr = [];
 
   constructor(
     private httpService: HttpService,
@@ -44,47 +45,47 @@ export class FilterNewComponent implements OnInit {
     this.subscriptions.push(
       this.service.globalDashConfigData.subscribe((boardData) => {
         this.processBoardData(boardData);
-
-        this.subscriptions.push(
-          this.service.onTypeOrTabRefresh
-            .subscribe(data => {
-              this.selectedTab = data.selectedTab;
-              this.selectedType = data.selectedType;
-              if (this.selectedType.toLowerCase() === 'kanban') {
-                this.kanban = true;
-              } else {
-                this.kanban = false;
-              }
-              this.processBoardData(this.boardData);
-
-              this.selectedDayType = 'Weeks';
-              this.dateRangeFilter = {
-                "types": [
-                  "Days",
-                  "Weeks",
-                  "Months"
-                ],
-                "counts": [
-                  5,
-                  6,
-                  7,
-                  8,
-                  9,
-                  10,
-                  11,
-                  12,
-                  13,
-                  14,
-                  15
-                ]
-              };
-
-              this.service.setSelectedDateFilter(this.selectedDayType);
-              this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
-              this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
-            })
-        );
       })
+    );
+
+    this.subscriptions.push(
+      this.service.onTypeOrTabRefresh
+        .subscribe(data => {
+          this.selectedTab = data.selectedTab;
+          this.selectedType = data.selectedType;
+          if (this.selectedType.toLowerCase() === 'kanban') {
+            this.kanban = true;
+          } else {
+            this.kanban = false;
+          }
+          this.processBoardData(this.boardData);
+
+          this.selectedDayType = 'Weeks';
+          this.dateRangeFilter = {
+            "types": [
+              "Days",
+              "Weeks",
+              "Months"
+            ],
+            "counts": [
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ]
+          };
+
+          this.service.setSelectedDateFilter(this.selectedDayType);
+          this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+          this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+        })
     );
   }
 
@@ -243,6 +244,13 @@ export class FilterNewComponent implements OnInit {
 
   handlePrimaryFilterChange(event) {
     if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
+
+      // Populate additional filters on MyKnowHOW, Speed and Quality
+      if (this.selectedTab.toLowerCase() !== 'developer') {
+        this.additionalFiltersArr = [];
+        this.populateAdditionalFilters(event);
+      }
+
       this.previousFilterEvent = [].concat(event);
       // remove the last 2 elements from event
       // event.splice(-2);
@@ -334,5 +342,53 @@ export class FilterNewComponent implements OnInit {
     } else {
       this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
     }
+  }
+
+  populateAdditionalFilters(event) {
+    let selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
+    this.additionalFilterConfig.forEach((addtnlFilter, index) => {
+      if (!this.additionalFiltersArr['filter' + (index + 1)]) {
+        this.additionalFiltersArr['filter' + (index + 1)] = [];
+      }
+      let allFilters = this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName];
+      selectedProjectIds.forEach(nodeId => {
+
+        this.additionalFiltersArr['filter' + (index + 1)].push(allFilters.filter((filterItem) => {
+          let parentId = '';
+          if (addtnlFilter.defaultLevel.labelName === 'sqd') {
+            parentId = filterItem.parentId.substring(filterItem.parentId.indexOf('_') + 1, filterItem.parentId.length)
+          } else {
+            parentId = filterItem.parentId;
+          }
+          return parentId === nodeId
+        })
+
+          .map(elem => {
+            return {
+              nodeName: elem.nodeName,
+              nodeId: elem.nodeId
+            };
+          }
+          ));
+      });
+      // make arrays unique
+      let uniqueIds = new Set();
+      this.additionalFiltersArr['filter' + (index + 1)][0].forEach(element => {
+        uniqueIds.add(element.nodeId);
+      });
+      let uniqueIdsArr = Array.from(uniqueIds);
+      let uniqueObjArr = [];
+      for (let i = 0; i < uniqueIdsArr.length; i++) {
+        let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)][0].filter(f => f.nodeId === uniqueIdsArr[i])[0];
+        uniqueObjArr.push({
+          nodeId : uniqueObj.nodeId,
+          nodeName: uniqueObj.nodeName
+        });
+        // continue;
+      }
+      this.additionalFiltersArr['filter' + (index + 1)][0] = uniqueObjArr;
+    });
+
+    this.service.setAdditionalFilters(this.additionalFiltersArr);
   }
 }

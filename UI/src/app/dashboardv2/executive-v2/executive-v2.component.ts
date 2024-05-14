@@ -896,15 +896,33 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           preAggregatedValues = [...preAggregatedValues, ...(trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
         }
         this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
-        if (!this.additionalFiltersArr['filter1']) {
-          this.additionalFiltersArr['filter1'] = [];
-        }
 
-        if (!this.additionalFiltersArr['filter2']) {
-          this.additionalFiltersArr['filter2'] = [];
+
+        // this block populates additional filters on developer dashboard because on developer dashboard, the 
+        // additional filters depend on KPI response
+        if (this.selectedTab.toLowerCase() === 'developer') {
+          if (!this.additionalFiltersArr['filter1']) {
+            this.additionalFiltersArr['filter1'] = [];
+          }
+
+          if (!this.additionalFiltersArr['filter2']) {
+            this.additionalFiltersArr['filter2'] = [];
+          }
+          this.additionalFiltersArr['filter1'].push(trendValueList.map((x) => x.filter1));
+          this.additionalFiltersArr['filter2'].push(trendValueList.map((x) => x.filter2));
+
+          if (!kpiFilterChange) {
+            this.additionalFiltersArr.forEach((filterSet) => {
+              filterSet[0] = filterSet[0].map((f) => {
+                return {
+                  nodeId: f,
+                  nodeName: f
+                }
+              })
+            });
+            this.service.setAdditionalFilters(this.additionalFiltersArr);
+          }
         }
-        this.additionalFiltersArr['filter1'].push(trendValueList.map((x) => x.filter1));
-        this.additionalFiltersArr['filter2'].push(trendValueList.map((x) => x.filter2));
       }
       else {
         this.kpiChartData[kpiId] = [];
@@ -965,9 +983,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     this.createTrendsData(kpiId);
     this.handleMaturityTableLoader();
-    if (!kpiFilterChange) {
-      this.service.setAdditionalFilters(this.additionalFiltersArr);
-    }
   }
 
   getChartDataForRelease(kpiId, idx, aggregationType?) {
