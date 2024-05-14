@@ -48,6 +48,7 @@ export class AdvancedSettingsComponent implements OnInit {
   jiraExecutionSteps : any = [];
   jiraStatusContinuePulling = false;
    subscription: Subscription;
+  jiraFinalIndex : number ;
 
   constructor(private httpService: HttpService, private messageService: MessageService, private getAuthorizationService: GetAuthorizationService,
     private service: SharedService, private confirmationService: ConfirmationService) { }
@@ -200,7 +201,18 @@ export class AdvancedSettingsComponent implements OnInit {
 
 
   findTraceLogForTool(processorName) {
-    return this.processorsTracelogs.find(ptl => ptl['processorName'] == processorName);
+    if(processorName.toLowerCase('Jira')){
+      const jiraCount = this.processorsTracelogs.filter(ptl => ptl['processorName'] == processorName).length;
+      if(jiraCount === 1){
+        this.jiraFinalIndex = this.processorsTracelogs.findIndex(ptl => ptl['processorName'] == processorName)
+        return this.processorsTracelogs.find(ptl => ptl['processorName'] == processorName);
+      }else{
+        this.jiraFinalIndex = this.processorsTracelogs.findIndex(ptl => ptl['processorName'] == processorName && ptl['progressStats'] === true)
+        return this.processorsTracelogs.find(ptl => ptl['processorName'] == processorName && ptl['progressStats'] === true);
+      }
+    }else{
+      return this.processorsTracelogs.find(ptl => ptl['processorName'] == processorName);
+    }
   }
 
   showExecutionDate(processorName) {
@@ -326,22 +338,17 @@ export class AdvancedSettingsComponent implements OnInit {
 
 
   getProcessorCompletionSteps(runProcessorInput){
-    console.log("came here")
-    const jiraInd = this.processorData['data'].findIndex(pDetails => pDetails.processorName === 'Jira');
+    // const jiraInd = this.processorData['data'].findIndex(pDetails => pDetails.processorName === 'Jira');
     this.subscription = interval(3000).pipe(
       takeWhile(() => this.jiraStatusContinuePulling),
       switchMap(() => this.httpService.getProgressStatusOfProcessors(runProcessorInput))
     ).subscribe(response => {
-      console.log("came hre 2")
       if (response && response['success']) {
-        console.log(response['data'][0])
         if (response['data'][0]['executionOngoing']) {
-          if (jiraInd !== -1) {
-            this.processorData['data'][jiraInd].executionOngoing = true;
+            this.processorsTracelogs[this.jiraFinalIndex].executionOngoing = true;
             this.jiraStatusContinuePulling = true
-          }
         } else {
-          this.processorData['data'][jiraInd].executionOngoing = false;
+          this.processorsTracelogs[this.jiraFinalIndex].executionOngoing = false;
           this.jiraStatusContinuePulling = false;
         }
         let preLOgs = this.findTraceLogForTool('Jira');
@@ -351,7 +358,7 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   resetLogs(){
-    const jiraTraceLogDetails = this.processorsTracelogs.find(ptl => ptl['processorName'] == 'Jira');
+    const jiraTraceLogDetails = this.processorsTracelogs[this.jiraFinalIndex];
       if(jiraTraceLogDetails){
         jiraTraceLogDetails.errorMessage = '';
         jiraTraceLogDetails.progressStatusList = [];

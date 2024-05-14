@@ -101,7 +101,7 @@
                     <span *ngIf="showProcessorLastState(processor.processorName) === 'NA'">NA</span>
                   </div>
                 <div class="p-ml-2" *ngIf="processor.processorName === 'Jira'">
-                  <i class="pi pi-info-circle" [ngClass]="{'cursor-pointer': (!findTraceLogForTool('Jira')?.executionSuccess && findTraceLogForTool('Jira')?.errorMessage) || jiraExecutionSteps?.length}"
+                  <i class="pi pi-info-circle" [ngClass]="{'cursor-pointer': (findTraceLogForTool('Jira')?.progressStatusList?.length || findTraceLogForTool('Jira')?.errorMessage) || jiraExecutionSteps?.length}"
                   (click)="(findTraceLogForTool('Jira')?.errorMessage || findTraceLogForTool('Jira')?.progressStatusList?.length) ? op.toggle($event) : ''" style="font-size: 1.2rem"></i>
                 </div>
               </div>
