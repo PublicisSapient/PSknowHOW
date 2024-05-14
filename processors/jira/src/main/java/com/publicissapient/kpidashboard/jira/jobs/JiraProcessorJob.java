@@ -128,7 +128,7 @@ public class JiraProcessorJob {
 
 	@Autowired
 	PlatformTransactionManager transactionManager;
-	
+
 	@Autowired
 	BuilderFactory builderFactory;
 
@@ -142,35 +142,37 @@ public class JiraProcessorJob {
 	@TrackExecutionTime
 	@Bean
 	public Job fetchIssueScrumBoardJob() {
-		return builderFactory.getJobBuilder("FetchIssueScrum Board Job",jobRepository).incrementer(new RunIdIncrementer()).start(metaDataStep())
-				.next(sprintReportStep()).next(processProjectStatusStep()).next(fetchIssueScrumBoardChunkStep())
-				.next(scrumReleaseDataStep()).listener(jobListenerScrum).build();
+		return builderFactory.getJobBuilder("FetchIssueScrum Board Job", jobRepository)
+				.incrementer(new RunIdIncrementer()).start(metaDataStep()).next(sprintReportStep())
+				.next(processProjectStatusStep()).next(fetchIssueScrumBoardChunkStep()).next(scrumReleaseDataStep())
+				.listener(jobListenerScrum).build();
 	}
-	
+
 	private Step metaDataStep() {
-		return builderFactory.getStepBuilder("Fetch metadata",jobRepository).tasklet(metaDataTasklet, transactionManager).listener(jobStepProgressListener).build();
+		return builderFactory.getStepBuilder("Fetch Metadata", jobRepository)
+				.tasklet(metaDataTasklet, transactionManager).listener(jobStepProgressListener).build();
 	}
 
 	private Step sprintReportStep() {
-		return builderFactory.getStepBuilder("Fetch Sprint Report-Scrum-board",jobRepository).tasklet(sprintScrumBoardTasklet, transactionManager)
-				.listener(jobStepProgressListener).build();
+		return builderFactory.getStepBuilder("Fetch Sprint Report Scrum Board", jobRepository)
+				.tasklet(sprintScrumBoardTasklet, transactionManager).listener(jobStepProgressListener).build();
 	}
 
 	private Step processProjectStatusStep() {
-		return builderFactory.getStepBuilder("processProjectStatus-Scrum-board",jobRepository)
+		return builderFactory.getStepBuilder("Fetch Release Status Scrum board", jobRepository)
 				.tasklet(jiraIssueReleaseStatusTasklet, transactionManager).listener(jobStepProgressListener).build();
 	}
 
 	@TrackExecutionTime
 	private Step fetchIssueScrumBoardChunkStep() {
-		return builderFactory.getStepBuilder("Fetch Issue-Scrum-board",jobRepository)
+		return builderFactory.getStepBuilder("Fetch Issues Scrum Board", jobRepository)
 				.<ReadData, CompositeResult>chunk(getChunkSize(), transactionManager).reader(issueBoardReader)
 				.processor(issueScrumProcessor).writer(issueScrumWriter).listener(jiraIssueBoardWriterListener).build();
 	}
 
 	private Step scrumReleaseDataStep() {
-		return builderFactory.getStepBuilder("ScrumReleaseData-Scrum-board",jobRepository).tasklet(scrumReleaseDataTasklet, transactionManager)
-				.listener(jobStepProgressListener).build();
+		return builderFactory.getStepBuilder("Fetch Release Data Scrum Board", jobRepository)
+				.tasklet(scrumReleaseDataTasklet, transactionManager).listener(jobStepProgressListener).build();
 	}
 
 	/** Scrum projects for board job : End **/
@@ -182,14 +184,14 @@ public class JiraProcessorJob {
 	@TrackExecutionTime
 	@Bean
 	public Job fetchIssueScrumJqlJob() {
-		return builderFactory.getJobBuilder("FetchIssueScrum JQL Job",jobRepository).incrementer(new RunIdIncrementer()).start(metaDataStep())
-				.next(processProjectStatusStep()).next(fetchIssueScrumJqlChunkStep()).next(scrumReleaseDataStep())
-				.listener(jobListenerScrum).build();
+		return builderFactory.getJobBuilder("FetchIssueScrum JQL Job", jobRepository)
+				.incrementer(new RunIdIncrementer()).start(metaDataStep()).next(processProjectStatusStep())
+				.next(fetchIssueScrumJqlChunkStep()).next(scrumReleaseDataStep()).listener(jobListenerScrum).build();
 	}
 
 	@TrackExecutionTime
 	private Step fetchIssueScrumJqlChunkStep() {
-		return builderFactory.getStepBuilder("Fetch Issue-Scrum-Jql",jobRepository)
+		return builderFactory.getStepBuilder("Fetch Issues Scrum Jql", jobRepository)
 				.<ReadData, CompositeResult>chunk(getChunkSize(), this.transactionManager).reader(issueJqlReader)
 				.processor(issueScrumProcessor).writer(issueScrumWriter).listener(jiraIssueJqlWriterListener).build();
 	}
@@ -203,22 +205,22 @@ public class JiraProcessorJob {
 	@TrackExecutionTime
 	@Bean
 	public Job fetchIssueKanbanBoardJob() {
-		return builderFactory.getJobBuilder("FetchIssueKanban Job",jobRepository).incrementer(new RunIdIncrementer()).start(metaDataStep())
-				.next(fetchIssueKanbanBoardChunkStep()).next(kanbanReleaseDataStep()).listener(jobListenerKanban)
-				.build();
+		return builderFactory.getJobBuilder("FetchIssueKanban Job", jobRepository).incrementer(new RunIdIncrementer())
+				.start(metaDataStep()).next(fetchIssueKanbanBoardChunkStep()).next(kanbanReleaseDataStep())
+				.listener(jobListenerKanban).build();
 
 	}
 
 	@TrackExecutionTime
 	private Step fetchIssueKanbanBoardChunkStep() {
-		return builderFactory.getStepBuilder("Fetch Issue-Kanban-board",jobRepository)
+		return builderFactory.getStepBuilder("Fetch Issues Kanban Board", jobRepository)
 				.<ReadData, CompositeResult>chunk(getChunkSize(), this.transactionManager).reader(issueBoardReader)
 				.processor(issueKanbanProcessor).writer(issueKanbanWriter).listener(kanbanJiraIssueWriterListener)
 				.build();
 	}
 
 	private Step kanbanReleaseDataStep() {
-		return builderFactory.getStepBuilder("KanbanReleaseData-Kanban-board", jobRepository)
+		return builderFactory.getStepBuilder("Fetch Release Data Kanban Board", jobRepository)
 				.tasklet(kanbanReleaseDataTasklet, transactionManager).listener(jobStepProgressListener).build();
 	}
 
@@ -231,13 +233,14 @@ public class JiraProcessorJob {
 	@TrackExecutionTime
 	@Bean
 	public Job fetchIssueKanbanJqlJob() {
-		return builderFactory.getJobBuilder("FetchIssueKanban JQL Job",jobRepository).incrementer(new RunIdIncrementer()).start(metaDataStep())
-				.next(fetchIssueKanbanJqlChunkStep()).next(kanbanReleaseDataStep()).listener(jobListenerKanban).build();
+		return builderFactory.getJobBuilder("FetchIssueKanban JQL Job", jobRepository)
+				.incrementer(new RunIdIncrementer()).start(metaDataStep()).next(fetchIssueKanbanJqlChunkStep())
+				.next(kanbanReleaseDataStep()).listener(jobListenerKanban).build();
 	}
 
 	@TrackExecutionTime
 	private Step fetchIssueKanbanJqlChunkStep() {
-		return builderFactory.getStepBuilder("Fetch Issue-Kanban-Jql",jobRepository)
+		return builderFactory.getStepBuilder("Fetch Issues Kanban Jql", jobRepository)
 				.<ReadData, CompositeResult>chunk(getChunkSize(), transactionManager).reader(issueJqlReader)
 				.processor(issueKanbanProcessor).writer(issueKanbanWriter).listener(kanbanJiraIssueJqlWriterListener)
 				.build();
@@ -253,17 +256,18 @@ public class JiraProcessorJob {
 	@TrackExecutionTime
 	@Bean
 	public Job fetchIssueSprintJob() {
-		return builderFactory.getJobBuilder("fetchIssueSprint Job",jobRepository).incrementer(new RunIdIncrementer()).start(sprintDataStep())
-				.next(fetchIssueSprintChunkStep()).listener(jiraIssueSprintJobListener).build();
+		return builderFactory.getJobBuilder("fetchIssueSprint Job", jobRepository).incrementer(new RunIdIncrementer())
+				.start(sprintDataStep()).next(fetchIssueSprintChunkStep()).listener(jiraIssueSprintJobListener).build();
 	}
 
 	private Step sprintDataStep() {
-		return builderFactory.getStepBuilder("Fetch Sprint Data",jobRepository).tasklet(sprintReportTasklet, transactionManager).build();
+		return builderFactory.getStepBuilder("Fetch Sprint Data", jobRepository)
+				.tasklet(sprintReportTasklet, transactionManager).build();
 	}
 
 	@TrackExecutionTime
 	private Step fetchIssueSprintChunkStep() {
-		return builderFactory.getStepBuilder("Fetch Issue-Sprint",jobRepository)
+		return builderFactory.getStepBuilder("Fetch Issue-Sprint", jobRepository)
 				.<ReadData, CompositeResult>chunk(getChunkSize(), this.transactionManager).reader(issueSprintReader)
 				.processor(issueScrumProcessor).writer(issueScrumWriter).build();
 	}
