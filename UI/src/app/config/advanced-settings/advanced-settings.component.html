@@ -138,7 +138,7 @@
 <p-overlayPanel #op [showCloseIcon]="false">
   <div class="dialog-body p-mb-4">
       <p-table [value]="findTraceLogForTool('Jira')?.progressStatusList" [tableStyle]="{ 'min-width': '40rem' }"
-       [scrollable]="true" scrollHeight="350px" *ngIf="findTraceLogForTool('Jira')?.progressStatusList?.length ; else logError">
+       [scrollable]="true" scrollHeight="300px" *ngIf="findTraceLogForTool('Jira')?.progressStatusList?.length">
         <ng-template pTemplate="header">
             <tr>
               <th>Step Name</th>
@@ -155,8 +155,9 @@
 
         </ng-template>
     </p-table>
-    <ng-template #logError>
-      <h3 class="p-text-center" class="error-text">{{findTraceLogForTool('Jira')?.errorMessage}}</h3>
-    </ng-template>
+    <hr *ngIf="findTraceLogForTool('Jira')?.progressStatusList?.length && findTraceLogForTool('Jira')?.errorMessage">
+    <div *ngIf="findTraceLogForTool('Jira')?.errorMessage">
+      <h3 class="p-text-center" class="error-text"> <img src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" /> {{findTraceLogForTool('Jira')?.errorMessage}}</h3>
+    </div>
   </div>
 </p-overlayPanel>
