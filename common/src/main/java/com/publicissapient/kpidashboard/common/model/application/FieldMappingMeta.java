@@ -41,6 +41,12 @@ import lombok.Setter;
 public class FieldMappingMeta {
 
 	List<FieldMappingResponse> fieldMappingResponses;
+	List<FieldMappingResponse> fieldMappingRequests;
 	String metaTemplateCode;
+	String releaseNodeId;
 
+	public FieldMappingMeta(List<FieldMappingResponse> fieldMappingResponses, String metaTemplateCode) {
+		this.fieldMappingResponses = fieldMappingResponses;
+		this.metaTemplateCode = metaTemplateCode;
+	}
 }
