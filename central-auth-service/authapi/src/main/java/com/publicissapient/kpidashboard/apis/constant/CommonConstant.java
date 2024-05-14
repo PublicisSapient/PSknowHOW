@@ -28,7 +28,7 @@ public final class CommonConstant {
 	public static final String ACCESS_REQUEST_STATUS_APPROVED = "Approved";
 	public static final String ACCESS_REQUEST_STATUS_REJECTED = "Rejected";
 	public static final String ROLE_PROJECT_ADMIN = "ROLE_PROJECT_ADMIN";
-	public static final String SUB = "sub";
+	public static final String SUBJECT = "sub";
 	public static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
 
 	public static final String APPROVAL_SUCCESS_TEMPLATE_KEY = "Approve_User_Success";
@@ -50,4 +50,15 @@ public final class CommonConstant {
 	public static final String STATUS = "Success";
 
 	public static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})";
+
+	public static final String WRONG_CREDENTIALS_ERROR_MESSAGE = "Login Failed: The username or password entered is incorrect";
+
+	public static final String SUCCESS_VALID_TOKEN = "success_valid_token";
+	public static final String ERROR_INVALID_USER = "error_invalid_user";
+
+	public static final String SUCCESS_DELETE_TOKEN = "success_delete_token";
+	public static final String ERROR_UNAUTHORIZED_USER = "error_unauthorized_user";
+	public static final String SUCCESS_LOGIN = "success_login";
+	public static final String SUCCESS_SENT_APPROVAL = "success_sent_approval";
+	public static final String ERROR_REGISTER_AGAIN = "error_register_again";
 }

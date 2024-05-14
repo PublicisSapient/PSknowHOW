@@ -72,7 +72,6 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 		loginResponse.setFirstName(auth.getFirstName());
 		loginResponse.setLastName(auth.getLastName());
 		loginResponse.setDisplayName(auth.getDisplayName());
-		loginResponse.setRootUser(auth.isRootUser());
 		return loginResponse;
 	}
 }

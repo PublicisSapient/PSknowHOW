@@ -1,19 +1,21 @@
 auth:
   accountLockedThreshold: 3
-  assertingEntityId: https://sts.windows.net/d52c9ea1-7c21-47b1-82a3-33a74b1f74b8/
-  authCookieDuration: 36000
-  authCookieHttpOnly: true
-  authCookieSameSite: SameSite=None
-  authCookieSecured: true
-  authenticationProviders: SAML,STANDARD
+
+  cookie:
+    isSameSite: false
+    isSecure: false
+    domain: localhost
+
   #Purpose of properties : central auth frontend url/domain Name
   #possible values : https://dev-authnauth.tools.publicis.sapient.com , http://localhost:3000
   #used in/for : back to frontend redirect
   baseUiUrl: http://localhost:3000
+
   #Purpose of properties : central auth backend url
   #possible values : http://authnauth:8787 , http://localhost:8787
   #used in/for : saml login , redirect and validate request
   baseUrl: http://localhost:8787
+
   #Purpose of properties : property used to provide valid origin
   #possible values : String [a-z, A-Z, 0-9]
   #used in/for : CORS
@@ -25,19 +27,7 @@ auth:
     - qa-authnauth.tools.publicis.sapient.com
     - uat-authnauth.tools.publicis.sapient.com
     - local-tengine.tremend.ro
-  defaultRedirectToAfterLogin: ${auth.baseUiUrl}/login/status
-  defaultRedirectToAfterLogout: ${auth.baseUrl}${server.servlet.context-path}/hello
-  domain: localhost
-  expirationTime: 172800000
-  #Purpose of properties : expose push data api token expiry days limit
-  #possible values : number [1-365]
-  #used in/for : expose push data api
-  exposeAPITokenExpiryDays: 90
-  holdingEntityId: spn:bf226903-9d44-4e77-af84-e3ad008442ef
-  loginCallback: ${auth.baseUrl}${server.servlet.context-path}/saml/sp/discovery?idp=${auth.assertingEntityId}
-  loginSuccessPageFormat: ${auth.baseUiUrl}/status?authToken=%s
-  logoutCallback: ${auth.baseUrl}${server.servlet.context-path}/saml/sp/logout?${auth.logoutEmailQueryParam}=%s
-  logoutEmailQueryParam: email
+
   mailTemplate:
     Access_Request: Access_Request_Template
     Approve_User_Reject: Approve_User_Reject_Template
@@ -46,7 +36,7 @@ auth:
     Pre_Approval: Pre_Approval_Template
     User_Verification: User_Verification_Template
     User_Verification_Failed: User_Verification_Failed_Template
-  nameId: urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
+
   notificationSubject:
     accessRequest: New access request for KnowHOW
     approvalRequest: Approval Request for KnowHow
@@ -55,10 +45,7 @@ auth:
     preApproval: "KnowHOW: New user request"
     userVerification: User Verification Request
     userVerificationFailed: User Verification Token Expired
-  samlMaxAuthenticationAgeMillis: 604800000
   secret: 3106dd9eee424487884363ce026ea979
-  subDomainCookie: true
-  ssoLogin: false
 
 flag:
   mailWithoutKafka: true
@@ -88,7 +75,7 @@ notification:
   #Purpose of properties : property used to provide if any instance want to disable mail
   #possible values : true for mail sent , false for disable
   #used in/for : sent mail
-  switch: true
+  switch: false
 
 server:
   port: 8787

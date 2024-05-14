@@ -37,55 +37,85 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.util.Arrays;
 import java.util.Optional;
 
-
 @Slf4j
 @AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
 	private static final String NO_JWT_EXCEPTION = "No JWT session token found on request.";
+
 	private static final String JWT_FILTER_GENERIC_EXCEPTION = "JWT filtering failed for URI {} with message: {}.";
-	private final TokenAuthenticationService tokenAuthenticationService;
 
 	private final AuthEndpointsProperties authEndpointsProperties;
 
-	private static boolean isRequestForURI(@NonNull HttpServletRequest request, @NotNull String uri) {
+	private static boolean isRequestForURI(
+			@NonNull
+			HttpServletRequest request,
+			@NotNull
+			String uri
+	) {
 		return new AntPathRequestMatcher(uri).matches(request);
 	}
 
-	private static boolean isRequestForAnyURI(@NonNull HttpServletRequest request, @NotNull String[] uris) {
-		return Arrays.stream(uris).anyMatch(uri -> isRequestForURI(request, uri));
+	private static boolean isRequestForAnyURI(
+			@NonNull
+			HttpServletRequest request,
+			@NotNull
+			String[] uris
+	) {
+		return Arrays.stream(uris)
+					 .anyMatch(uri -> isRequestForURI(
+							 request,
+							 uri
+					 ));
 	}
 
-	private boolean isRequestForPublicURI(@NonNull HttpServletRequest request) {
-		return isRequestForAnyURI(request, authEndpointsProperties.getPublicEndpoints());
+	private boolean isRequestForPublicURI(
+			@NonNull
+			HttpServletRequest request
+	) {
+		return isRequestForAnyURI(
+				request,
+				authEndpointsProperties.getPublicEndpoints()
+		);
 	}
 
 	@Override
 	public void doFilterInternal(
-		@NotNull HttpServletRequest request,
-		@NotNull HttpServletResponse response,
-		@NotNull FilterChain filterChain
+			@NotNull
+			HttpServletRequest request,
+			@NotNull
+			HttpServletResponse response,
+			@NotNull
+			FilterChain filterChain
 	) {
 		try {
-			log.info("entering request url: " + request.getRequestURI());
 			if (isRequestForPublicURI(request)) {
 				// * public endpoints should just pass without any authentication.
-				filterChain.doFilter(request, response);
+				filterChain.doFilter(
+						request,
+						response
+				);
 			} else {
-				Optional<Cookie> authCookie = CookieUtil.getCookie(request, CookieUtil.COOKIE_NAME);
+				Optional<Cookie> authCookie = CookieUtil.getCookie(
+						request,
+						CookieUtil.COOKIE_NAME
+				);
 
 				if (authCookie.isEmpty()) {
 					throw new BadCredentialsException(NO_JWT_EXCEPTION);
 				} else {
-					// TODO: Check if we really need to store the authentication in the security context
-					// for saml may be autocompleted, but for user and passwd accounts we might need to set it.
-//					Authentication authentication = tokenAuthenticationService.getAuthentication(request, response);
-//					SecurityContextHolder.getContext().setAuthentication(authentication);
-
-					filterChain.doFilter(request, response);
+					filterChain.doFilter(
+							request,
+							response
+					);
 				}
 			}
 		} catch (Exception exception) {
-			log.error(JWT_FILTER_GENERIC_EXCEPTION, request.getRequestURI(), exception.getMessage());
+			log.error(
+					JWT_FILTER_GENERIC_EXCEPTION,
+					request.getRequestURI(),
+					exception.getMessage()
+			);
 			response.setStatus(HttpStatus.FORBIDDEN.value());
 		}
 

@@ -18,7 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.service.impl;
 
-import com.publicissapient.kpidashboard.apis.config.AuthProperties;
+import com.publicissapient.kpidashboard.apis.config.AuthConfig;
+import com.publicissapient.kpidashboard.apis.config.ForgotPasswordConfig;
 import com.publicissapient.kpidashboard.apis.entity.GlobalConfig;
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.entity.UserRole;
@@ -69,7 +70,9 @@ public class CommonServiceImpl implements CommonService {
 
     private final NotificationEventProducer notificationEventProducer;
 
-    private final AuthProperties customApiConfig;
+    private final AuthConfig authConfig;
+
+    private final ForgotPasswordConfig forgotPasswordConfig;
 
     private final GlobalConfigRepository globalConfigRepository;
 
@@ -115,15 +118,14 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public void sendEmailNotification(List<String> emailAddresses, Map<String, String> customData, String subjectKey,
                                       String notKey) {
-        boolean notificationSwitch = customApiConfig.isNotificationSwitch();
-        if (notificationSwitch) {
-            Map<String, String> notificationSubjects = customApiConfig.getNotificationSubject();
+        if (authConfig.isNotificationSwitch()) {
+            Map<String, String> notificationSubjects = authConfig.getNotificationSubject();
             if (CollectionUtils.isNotEmpty(emailAddresses) && MapUtils.isNotEmpty(notificationSubjects)) {
                 String subject = notificationSubjects.get(subjectKey);
                 log.info(NOTIFICATION_MESSAGE_SENT_TO_KAFKA_WITH_KEY, notKey);
-                String templateKey = customApiConfig.getMailTemplate().getOrDefault(notKey, "");
-                sendNotificationEvent(emailAddresses, customData, subject, notKey, customApiConfig.getKafkaMailTopic(),
-                        kafkaTemplate, templateKey, customApiConfig.isMailWithoutKafka());
+                String templateKey = authConfig.getMailTemplate().getOrDefault(notKey, "");
+                sendNotificationEvent(emailAddresses, customData, subject, notKey, authConfig.getKafkaMailTopic(),
+                                      kafkaTemplate, templateKey, authConfig.isMailWithoutKafka());
             } else {
                 log.error("Notification Event not sent : No email address found "
                         + "or Property - notificationSubject.accessRequest not set in property file ");
@@ -152,7 +154,7 @@ public class CommonServiceImpl implements CommonService {
 
         if (!isMailWithoutKafka) {
             if (StringUtils.isNotBlank(notSubject)) {
-                GlobalConfig globalConfigs = globalConfigRepository.findByEnv(customApiConfig.getNotificationEnv());
+                GlobalConfig globalConfigs = globalConfigRepository.findByEnv(authConfig.getNotificationEnv());
                 if (globalConfigs != null) {
                     EmailEvent emailEvent = new EmailEvent(globalConfigs.getFromEmail(), emailAddresses, null, null,
                             notSubject, null, customData, globalConfigs.getEmailHost(), globalConfigs.getEmailPort());
@@ -181,7 +183,7 @@ public class CommonServiceImpl implements CommonService {
 
     private void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> additionalData,
                                        String notSubject, String templateKey) {
-        GlobalConfig globalConfigs = globalConfigRepository.findByEnv(customApiConfig.getNotificationEnv());
+        GlobalConfig globalConfigs = globalConfigRepository.findByEnv(authConfig.getNotificationEnv());
         if (StringUtils.isNotBlank(notSubject) && globalConfigs != null) {
             EmailEvent emailEvent = new EmailEvent(globalConfigs.getFromEmail(), emailAddresses, null, null, notSubject,
                     null, additionalData, globalConfigs.getEmailHost(), globalConfigs.getEmailPort());
@@ -224,11 +226,11 @@ public class CommonServiceImpl implements CommonService {
     public String getApiHost() throws UnknownHostException {
 
         StringBuilder urlPath = new StringBuilder();
-        if (StringUtils.isNotEmpty(customApiConfig.getUiHost())) {
-            urlPath.append(customApiConfig.getUiHost().trim());
+        if (StringUtils.isNotEmpty(forgotPasswordConfig.getUiHost())) {
+            urlPath.append(forgotPasswordConfig.getUiHost().trim());
             // append port if local setup
-            if (StringUtils.isNotEmpty(customApiConfig.getServerPort())) {
-                urlPath.append(':').append(customApiConfig.getServerPort());
+            if (StringUtils.isNotEmpty(forgotPasswordConfig.getServerPort())) {
+                urlPath.append(':').append(forgotPasswordConfig.getServerPort());
             }
         } else {
             throw new UnknownHostException("Api host not found in properties.");
@@ -241,13 +243,13 @@ public class CommonServiceImpl implements CommonService {
         StringBuilder urlPath = new StringBuilder();
         urlPath.append(':').append("//");
 
-        if (StringUtils.isNotEmpty(customApiConfig.getUiHost())) {
+        if (StringUtils.isNotEmpty(forgotPasswordConfig.getUiHost())) {
 
-            if (StringUtils.isNotEmpty(customApiConfig.getUiPort())) {
-                urlPath.append(customApiConfig.getUiHost());
-                urlPath.append(':').append(customApiConfig.getUiPort());
+            if (StringUtils.isNotEmpty(forgotPasswordConfig.getUiPort())) {
+                urlPath.append(forgotPasswordConfig.getUiHost());
+                urlPath.append(':').append(forgotPasswordConfig.getUiPort());
             } else {
-                urlPath.append(customApiConfig.getUiHost());
+                urlPath.append(forgotPasswordConfig.getUiHost());
             }
 
         } else {

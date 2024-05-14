@@ -39,57 +39,28 @@ import lombok.Data;
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "auth")
-public class AuthProperties {
+public class AuthConfig {
 
-	private Long expirationTime;
 	private String secret;
+
 	private List<AuthType> authenticationProviders = new ArrayList<>();
-	private String providers;
+
 	private Integer accountLockedThreshold;
 	private int accountLockedPeriod;
-	private int samlMaxAuthenticationAgeMillis;
-	private String baseUrl;
+
 	private String baseUiUrl;
-	private String holdingEntityId;
-	private String assertingEntityId;
-	private String nameId;
-	private String logoutEmailQueryParam;
-	private String loginCallback;
-	private String logoutCallback;
+
 	private String loginView;
 	private String logoutView;
 
-	private String loginSuccessPageFormat;
-	private String defaultRedirectToAfterLogout;
-	private String defaultRedirectToAfterLogin;
-
+	// TODO: refactor later in the cors filter
 	private List<String> corsFilterValidOrigin;
-	private boolean ssoLogin;
+
 	private Integer authCookieDuration;
-	private boolean authCookieSecured;
-	private boolean authCookieHttpOnly;
-	private String authCookieSameSite;
-	private boolean subDomainCookie;
-	private String domain;
+	private Boolean authCookieIsSameSite;
+	private Boolean authCookieIsSecure;
+	private String authCookieDomain;
 
-	private int exposeAPITokenExpiryDays;
-
-	@Value("${forgotPassword.expiryInterval}")
-	private String forgotPasswordExpiryInterval;
-	// forgot password server host only for server where nginex is not
-	// setup
-	@Value("${forgotPassword.serverPort}")
-	private String serverPort;
-	// forgot password server host only for server where nginex is not
-	// setup
-	@Value("${forgotPassword.uiHost}")
-	private String uiHost;
-	// forgot password UI port only for server where nginex is not setup
-	@Value("${forgotPassword.uiPort}")
-	private String uiPort;
-
-	@Value("$spring.kafka.producer.bootstrap-servers")
-	private List<String> kafkaProducerBootStrapServers;
 	@Value("${kafka.mailtopic}")
 	private String kafkaMailTopic;
 	private Map<String, String> notificationSubject;
@@ -114,6 +85,5 @@ public class AuthProperties {
 	private String registerPath;
 	@Value("${ui.validateUser}")
 	private String validateUser;
-
 
 }

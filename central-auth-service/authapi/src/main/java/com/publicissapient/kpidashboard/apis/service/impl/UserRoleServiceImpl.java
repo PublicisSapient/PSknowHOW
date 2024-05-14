@@ -82,12 +82,16 @@ public class UserRoleServiceImpl implements UserRoleService {
 	@Override
 	public List<UserRole> createAndGetDefaultUserRole(String username) {
 		List<UserRole> userRoles = new ArrayList<>();
-		User user = userService.findByUserName(username);
-		List<Role> roles = roleRepository.getAllDefaultRole();
-		roles.forEach(role -> {
-			UserRole usrRole = createUserRole(user.getUsername(), role, user);
-			userRoles.add(usrRole);
-		});
+		Optional<User> user = userService.findByUserName(username);
+
+		if (user.isPresent()) {
+			List<Role> roles = roleRepository.getAllDefaultRole();
+			roles.forEach(role -> {
+				UserRole usrRole = createUserRole(user.get().getUsername(), role, user.get());
+				userRoles.add(usrRole);
+			});
+		}
+
 		return userRoles;
 	}
 

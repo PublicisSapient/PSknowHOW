@@ -14,13 +14,13 @@ const apiProvider = {
     handleSamlLogin: `${API_BASE_URL}/api/sso-login`,
 
     handleUserRegistration: (data) => {
-        return axios.post(`${API_BASE_URL}/api/registerUser`, data);
+        return axios.post(`${API_BASE_URL}/api/register-user`, data);
     },
 
     handleSamlLogout: `${API_BASE_URL}/api/sso-logout-view`,
 
     handleForgotPassword: (data) => {
-        return axios.post(`${API_BASE_URL}/api/forgotPassword`, data);
+        return axios.post(`${API_BASE_URL}/api/forgot-password`, data);
     },
 
     handlePasswordReset: (data) => {

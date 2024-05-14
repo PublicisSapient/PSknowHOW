@@ -20,7 +20,7 @@
  */
 package com.publicissapient.kpidashboard.apis.service.impl;
 
-import com.publicissapient.kpidashboard.apis.config.AuthProperties;
+import com.publicissapient.kpidashboard.apis.config.ForgotPasswordConfig;
 import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
 import com.publicissapient.kpidashboard.apis.entity.ForgotPasswordToken;
 import com.publicissapient.kpidashboard.apis.entity.User;
@@ -45,218 +45,294 @@ import java.util.regex.Pattern;
  * password
  *
  * @author Hiren Babariya
- *
  */
 @Slf4j
 @AllArgsConstructor
 @Service
 public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
-    private static final String FORGOT_PASSWORD_TEMPLATE_KEY = "Forgot_Password";
-    private static final String VALIDATE_PATH = "/api/validateEmailToken?token="; // NOSONAR
-    private static final String FORGOT_PASSWORD_NOTIFICATION_KEY = "forgotPassword";
+	private static final String FORGOT_PASSWORD_TEMPLATE_KEY = "Forgot_Password";
+	private static final String VALIDATE_PATH = "/api/validateEmailToken?token="; // NOSONAR
+	private static final String FORGOT_PASSWORD_NOTIFICATION_KEY = "forgotPassword";
 
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    private final ForgotPasswordTokenRepository forgotPasswordTokenRepository;
+	private final ForgotPasswordTokenRepository forgotPasswordTokenRepository;
 
-    private final AuthProperties authProperties;
+	private final ForgotPasswordConfig forgotPasswordConfig;
 
-    private final CommonService commonService;
+	private final CommonService commonService;
 
-    /**
-     * Process forgotPassword request.
-     *
-     * <p>
-     * processForgotPassword checks whether the email in the ForgotPasswordRequest
-     * object exists in the database.If the email exists,creates a token for the
-     * user account and sends an email with token and reset url info
-     *
-     * @param email
-     * @param url
-     * @return authentication
-     */
-    @Override
-    public User processForgotPassword(String email, String url) {
-        log.info("ForgotPasswordServiceImpl: Requested mail {}", email);
-        User user = userRepository.findByEmail(email);
-        if (user != null) {
-            String token = createForgetPasswordToken(user);
-            Map<String, String> customData = createCustomData(user.getUsername(), token, url,
-                    authProperties.getForgotPasswordExpiryInterval());
-            commonService.sendEmailNotification(Arrays.asList(email), customData, FORGOT_PASSWORD_NOTIFICATION_KEY,
-                    FORGOT_PASSWORD_TEMPLATE_KEY);
-            return user;
-        }
-        return null;
-    }
+	/**
+	 * Process forgotPassword request.
+	 *
+	 * <p>
+	 * processForgotPassword checks whether the email in the ForgotPasswordRequest
+	 * object exists in the database.If the email exists,creates a token for the
+	 * user account and sends an email with token and reset url info
+	 *
+	 * @param email
+	 * @param url
+	 * @return authentication
+	 */
+	@Override
+	public User processForgotPassword(
+			String email,
+			String url
+	) {
+		log.info(
+				"ForgotPasswordServiceImpl: Requested mail {}",
+				email
+		);
+		User user = userRepository.findByEmail(email);
+		if (user != null) {
+			String token = createForgetPasswordToken(user);
+			Map<String, String> customData = createCustomData(user.getUsername(),
+															  token,
+															  url,
+															  forgotPasswordConfig.getExpiryInterval()
+			);
+			commonService.sendEmailNotification(Arrays.asList(email),
+												customData,
+												FORGOT_PASSWORD_NOTIFICATION_KEY,
+												FORGOT_PASSWORD_TEMPLATE_KEY
+			);
+			return user;
+		}
+		return null;
+	}
 
-    /**
-     * Validates Email Token sent to the user via email.
-     *
-     * <p>
-     * validateEmailToken method checks the token received from request, exists in
-     * the database.If the token is found in the database method will forward the
-     * token to validate it
-     * </p>
-     *
-     * @param token
-     * @return one of the enum <tt>INVALID, VALID, EXPIRED</tt> of type
-     *         ResetPasswordTokenStatusEnum
-     */
-    @Override
-    public ResetPasswordTokenStatusEnum validateEmailToken(String token) {
-        log.info("ForgotPasswordServiceImpl: Validate the token {}", token);
-        ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenRepository.findByToken(token);
-        return checkTokenValidity(forgotPasswordToken);
-    }
+	/**
+	 * Validates Email Token sent to the user via email.
+	 *
+	 * <p>
+	 * validateEmailToken method checks the token received from request, exists in
+	 * the database.If the token is found in the database method will forward the
+	 * token to validate it
+	 * </p>
+	 *
+	 * @param token
+	 * @return one of the enum <tt>INVALID, VALID, EXPIRED</tt> of type
+	 * ResetPasswordTokenStatusEnum
+	 */
+	@Override
+	public ResetPasswordTokenStatusEnum validateEmailToken(String token) {
+		log.info(
+				"ForgotPasswordServiceImpl: Validate the token {}",
+				token
+		);
+		ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenRepository.findByToken(token);
+		return checkTokenValidity(forgotPasswordToken);
+	}
 
-    /**
-     * Resets password after validating token
-     *
-     * <p>
-     * resetPassword checks if the reset token exists in the database.Later checks
-     * the validity of the token. If the token is valid,searches for the username
-     * from the <tt>forgotPasswordToken</tt> in the <tt>authentication</tt>
-     * collection in the database. Saves the reset password if the username exists
-     * </p>
-     *
-     * @param resetPasswordRequest
-     * @return authentication if the <tt>token</tt> is valid and <tt>username</tt>
-     *         from forgotPasswordToken exists in the database
-     * @throws ApplicationException
-     *             if either <tt>forgotPasswordToken</tt> is invalid or
-     *             <tt>username</tt> doen't exist in the database.
-     *
-     */
-    @Override
-    public User resetPassword(ResetPasswordRequestDTO resetPasswordRequest) throws ApplicationException {
-        log.info("ForgotPasswordServiceImpl: Reset token is {}", resetPasswordRequest.getResetToken());
-        ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenRepository
-                .findByToken(resetPasswordRequest.getResetToken());
-        ResetPasswordTokenStatusEnum tokenStatus = checkTokenValidity(forgotPasswordToken);
-        if (tokenStatus.equals(ResetPasswordTokenStatusEnum.VALID)) {
-            User user = userRepository.findByUsername(forgotPasswordToken.getUsername());
-            if (null == user) {
-                log.error("User {} Does not Exist", forgotPasswordToken.getUsername());
-                throw new ApplicationException("User Does not Exist", ApplicationException.BAD_DATA);
-            } else {
-                validatePasswordRules(forgotPasswordToken.getUsername(), resetPasswordRequest.getPassword(), user);
-                return user;
-            }
-        } else {
-            log.error("Token is {}", resetPasswordRequest.getResetToken());
-            throw new ApplicationException("Token is " + tokenStatus.name(), ApplicationException.BAD_DATA);
-        }
-    }
+	/**
+	 * Resets password after validating token
+	 *
+	 * <p>
+	 * resetPassword checks if the reset token exists in the database.Later checks
+	 * the validity of the token. If the token is valid,searches for the username
+	 * from the <tt>forgotPasswordToken</tt> in the <tt>authentication</tt>
+	 * collection in the database. Saves the reset password if the username exists
+	 * </p>
+	 *
+	 * @param resetPasswordRequest
+	 * @return authentication if the <tt>token</tt> is valid and <tt>username</tt>
+	 * from forgotPasswordToken exists in the database
+	 * @throws ApplicationException if either <tt>forgotPasswordToken</tt> is invalid or
+	 *                              <tt>username</tt> doen't exist in the database.
+	 */
+	@Override
+	public User resetPassword(ResetPasswordRequestDTO resetPasswordRequest) throws ApplicationException {
+		log.info(
+				"ForgotPasswordServiceImpl: Reset token is {}",
+				resetPasswordRequest.getResetToken()
+		);
+		ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenRepository.findByToken(resetPasswordRequest.getResetToken());
+		ResetPasswordTokenStatusEnum tokenStatus = checkTokenValidity(forgotPasswordToken);
+		if (tokenStatus.equals(ResetPasswordTokenStatusEnum.VALID)) {
+			Optional<User> user = userRepository.findByUsername(forgotPasswordToken.getUsername());
+			if (user.isEmpty()) {
+				log.error(
+						"User {} Does not Exist",
+						forgotPasswordToken.getUsername()
+				);
+				throw new ApplicationException(
+						"User Does not Exist",
+						ApplicationException.BAD_DATA
+				);
+			} else {
+				validatePasswordRules(
+						forgotPasswordToken.getUsername(),
+						resetPasswordRequest.getPassword(),
+						user.get()
+				);
+				return user.get();
+			}
+		} else {
+			log.error(
+					"Token is {}",
+					resetPasswordRequest.getResetToken()
+			);
+			throw new ApplicationException(
+					"Token is " + tokenStatus.name(),
+					ApplicationException.BAD_DATA
+			);
+		}
+	}
 
-    private boolean isPassContainUser(String reqPassword, String username) {
+	private boolean isPassContainUser(
+			String reqPassword,
+			String username
+	) {
 
-        return !(StringUtils.containsIgnoreCase(reqPassword, username));
-    }
+		return !(
+				StringUtils.containsIgnoreCase(
+						reqPassword,
+						username
+				)
+		);
+	}
 
-    private boolean isOldPassword(String reqPassword, String savedPassword) {
+	private boolean isOldPassword(
+			String reqPassword,
+			String savedPassword
+	) {
 
-        return !(StringUtils.containsIgnoreCase(User.hash(reqPassword), savedPassword));
+		return !(
+				StringUtils.containsIgnoreCase(
+						User.hash(reqPassword),
+						savedPassword
+				)
+		);
 
-    }
+	}
 
-    /**
-     * Creates UUID token and sets it to ForgotPasswordToken along with username and
-     * expiry date and saves it to <tt>forgotPasswordToken</tt> collection in
-     * database.
-     *
-     * @param user
-     * @return token
-     */
-    private String createForgetPasswordToken(User user) {
-        String token = UUID.randomUUID().toString();
-        ForgotPasswordToken forgotPasswordToken = new ForgotPasswordToken();
-        forgotPasswordToken.setToken(token);
-        forgotPasswordToken.setUsername(user.getUsername());
-        forgotPasswordToken.setExpiryDate(Integer.parseInt(authProperties.getForgotPasswordExpiryInterval()));
-        forgotPasswordTokenRepository.save(forgotPasswordToken);
-        return token;
-    }
+	/**
+	 * Creates UUID token and sets it to ForgotPasswordToken along with username and
+	 * expiry date and saves it to <tt>forgotPasswordToken</tt> collection in
+	 * database.
+	 *
+	 * @param user
+	 * @return token
+	 */
+	private String createForgetPasswordToken(User user) {
+		String token = UUID.randomUUID()
+						   .toString();
+		ForgotPasswordToken forgotPasswordToken = new ForgotPasswordToken();
+		forgotPasswordToken.setToken(token);
+		forgotPasswordToken.setUsername(user.getUsername());
+		forgotPasswordToken.setExpiryDate(Integer.parseInt(forgotPasswordConfig.getExpiryInterval()));
+		forgotPasswordTokenRepository.save(forgotPasswordToken);
+		return token;
+	}
 
-    /**
-     * Checks the validity of <tt>forgotPasswordToken</tt>
-     *
-     * @param forgotPasswordToken
-     * @return ResetPasswordTokenStatusEnum <tt>INVALID</tt> if token is
-     *         <tt>null</tt>, <tt>VALID</tt> if token is not expired,
-     *         <tt>EXPIRED</tt> if token is expired
-     */
-    private ResetPasswordTokenStatusEnum checkTokenValidity(ForgotPasswordToken forgotPasswordToken) {
-        if (forgotPasswordToken == null) {
-            return ResetPasswordTokenStatusEnum.INVALID;
-        } else if (isExpired(forgotPasswordToken.getExpiryDate())) {
-            return ResetPasswordTokenStatusEnum.EXPIRED;
-        } else {
-            return ResetPasswordTokenStatusEnum.VALID;
-        }
-    }
+	/**
+	 * Checks the validity of <tt>forgotPasswordToken</tt>
+	 *
+	 * @param forgotPasswordToken
+	 * @return ResetPasswordTokenStatusEnum <tt>INVALID</tt> if token is
+	 * <tt>null</tt>, <tt>VALID</tt> if token is not expired,
+	 * <tt>EXPIRED</tt> if token is expired
+	 */
+	private ResetPasswordTokenStatusEnum checkTokenValidity(ForgotPasswordToken forgotPasswordToken) {
+		if (forgotPasswordToken == null) {
+			return ResetPasswordTokenStatusEnum.INVALID;
+		} else if (isExpired(forgotPasswordToken.getExpiryDate())) {
+			return ResetPasswordTokenStatusEnum.EXPIRED;
+		} else {
+			return ResetPasswordTokenStatusEnum.VALID;
+		}
+	}
 
-    /**
-     * Validates if the given <tt>expiryDate</tt> is in the past
-     * <p>
-     * isExpired method checks the validity of token by comparing the validity of
-     * token expriy date with current Time and Date
-     * </p>
-     *
-     * @param expiryDate
-     * @return boolean <tt>true</tt> if expiryDate is invalid/expired,<tt>false</tt>
-     *         if token is valid
-     */
-    private boolean isExpired(Date expiryDate) {
-        return new Date().before(expiryDate);
-    }
+	/**
+	 * Validates if the given <tt>expiryDate</tt> is in the past
+	 * <p>
+	 * isExpired method checks the validity of token by comparing the validity of
+	 * token expriy date with current Time and Date
+	 * </p>
+	 *
+	 * @param expiryDate
+	 * @return boolean <tt>true</tt> if expiryDate is invalid/expired,<tt>false</tt>
+	 * if token is valid
+	 */
+	private boolean isExpired(Date expiryDate) {
+		return new Date().before(expiryDate);
+	}
 
-    private void validatePasswordRules(String username, String password, User user) throws ApplicationException {
+	private void validatePasswordRules(
+			String username,
+			String password,
+			User user
+	) throws ApplicationException {
 
 		Pattern pattern = Pattern.compile(CommonConstant.PASSWORD_PATTERN);
 		Matcher matcher = pattern.matcher(password);
 		if (matcher.matches()) {
-			if (isPassContainUser(password, username)) {
-				if (isOldPassword(password, user.getPassword())) {
+			if (isPassContainUser(
+					password,
+					username
+			)) {
+				if (isOldPassword(
+						password,
+						user.getPassword()
+				)) {
 					user.setPassword(password);
 					userRepository.save(user);
 				} else {
-					throw new ApplicationException("Password should not be old password",
-							ApplicationException.BAD_DATA);
+					throw new ApplicationException(
+							"Password should not be old password",
+							ApplicationException.BAD_DATA
+					);
 				}
 			} else {
-				throw new ApplicationException("Password should not contain userName", ApplicationException.BAD_DATA);
+				throw new ApplicationException(
+						"Password should not contain userName",
+						ApplicationException.BAD_DATA
+				);
 			}
 		} else {
 			throw new ApplicationException(
 					"At least 8 characters in length with Lowercase letters, Uppercase letters, Numbers and Special characters($,@,$,!,%,*,?,&)",
-					ApplicationException.BAD_DATA);
+					ApplicationException.BAD_DATA
+			);
 		}
 
-    }
+	}
 
-    /**
-     * * create custom data for email
-     *
-     * @param username
-     *            emailId
-     * @param token
-     *            token
-     * @param url
-     *            url
-     * @param expiryTime
-     *            expiryTime in Min
-     * @return Map<String, String>
-     */
-    private Map<String, String> createCustomData(String username, String token, String url, String expiryTime) {
-        Map<String, String> customData = new HashMap<>();
-        customData.put("token", token);
-        customData.put("user", username);
-        String resetUrl = url + VALIDATE_PATH + token;
-        customData.put("resetUrl", resetUrl);
-        customData.put("expiryTime", expiryTime);
-        return customData;
-    }
+	/**
+	 * * create custom data for email
+	 *
+	 * @param username   emailId
+	 * @param token      token
+	 * @param url        url
+	 * @param expiryTime expiryTime in Min
+	 * @return Map<String, String>
+	 */
+	private Map<String, String> createCustomData(
+			String username,
+			String token,
+			String url,
+			String expiryTime
+	) {
+		Map<String, String> customData = new HashMap<>();
+		customData.put(
+				"token",
+				token
+		);
+		customData.put(
+				"user",
+				username
+		);
+		String resetUrl = url + VALIDATE_PATH + token;
+		customData.put(
+				"resetUrl",
+				resetUrl
+		);
+		customData.put(
+				"expiryTime",
+				expiryTime
+		);
+		return customData;
+	}
 
 }

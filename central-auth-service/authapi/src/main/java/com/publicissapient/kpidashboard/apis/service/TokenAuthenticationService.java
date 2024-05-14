@@ -18,17 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.service;
 
-import com.publicissapient.kpidashboard.apis.entity.UserToken;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
-import com.publicissapient.kpidashboard.common.model.ServiceResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * A Contract to add and get authentication.
@@ -36,7 +31,8 @@ import java.util.List;
  * @author anisingh4
  */
 public interface TokenAuthenticationService {
-	String saveSamlData(Saml2AuthenticatedPrincipal principal, HttpServletResponse response);
+
+	void saveSamlData(Saml2AuthenticatedPrincipal principal, HttpServletResponse response);
 
 	String createApplicationJWT(@NotNull String subject, AuthType authType);
 
@@ -59,22 +55,8 @@ public interface TokenAuthenticationService {
 	 */
 	Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response);
 
-	String setUpdateAuthFlag(List<UserToken> userTokenDataList, Date tokenExpiration);
-
 	String getSubject(String token);
 
 	Object getClaim(String token, String claimKey);
-
-	void updateExpiryDate(String username, String expiryDate);
-
-	UserToken getLatestTokenByUser(String userName);
-
-	/**
-	 * generate And SaveToken for every client/resource system
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	ServiceResponse<?> generateAndSaveToken(String resource);
 
 }
