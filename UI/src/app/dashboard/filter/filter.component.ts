@@ -147,7 +147,6 @@ export class FilterComponent implements OnInit, OnDestroy {
   copyFilteredAddFilters = {};
   loader: boolean = false;
   backToDashboardLoader : boolean = false;
-  backToDashboardLoader : boolean = false;
   selectedProjectForIteration : any = [];
   selectedItems: number = 0;
   isAdditionalFilter: boolean = false;
