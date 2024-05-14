@@ -768,12 +768,26 @@ export class HttpService {
     );
   }
 
+    /** Get all Field Mappings with history */
+    getFieldMappingsWithHistory(toolId,kpiId, data) {
+      return this.http.post(
+        this.fieldMappingsUrl + '/fieldMapping/' + toolId + '/'+ kpiId, data
+      );
+    }
+
   /** Save all Field Mappings */
-  setFieldMappings(toolId, mappingConfig) {
-    return this.http.post(
-      this.fieldMappingsUrl + '/' + toolId + '/fieldMapping',
-      mappingConfig,
-    );
+  setFieldMappings(toolId, mappingConfig,kpiid,isImport?) {
+    if(isImport && isImport === true){
+      return this.http.post(
+        this.fieldMappingsUrl + '/' + toolId + '/fieldMapping',
+        mappingConfig,
+      );
+    }else{
+      return this.http.post(
+        this.fieldMappingsUrl + '/saveMapping/' + toolId + '/' + kpiid,
+        mappingConfig,
+      );
+    }
   }
 
   /** Get KPI-field mapping relationships */

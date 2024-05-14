@@ -22,7 +22,7 @@
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="false" [isShow]="true"
                               [showChartView]="kpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true"
                               [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
+                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <div class="p-d-flex p-justify-around p-align-center w-100"
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -70,12 +70,12 @@
                             <div class="p-sm-12 p-mb-3 p-pr-0 p-pl-0 iteration-chart p-pt-0 p-pb-0" cdkDragLockAxis="y"
                               cdkDrag>
                               <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
+                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.isAdditionalFilterSupport)"
                                 [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                                 (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
                                 [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
+                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
                                   <ng-container
                                     *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
@@ -181,7 +181,7 @@
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="false" [isShow]="true"
                               [showChartView]="kpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true"
                               [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
+                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <div class="p-d-flex p-justify-around p-align-center w-100"
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -229,12 +229,12 @@
                             <div class="p-sm-12 p-mb-3 p-pr-0 p-pl-0 iteration-chart p-pt-0 p-pb-0" cdkDragLockAxis="y"
                               cdkDrag>
                               <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
+                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.isAdditionalFilterSupport)"
                                 [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                                 (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
                                 [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
+                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
                                   <ng-container
                                     *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
@@ -340,7 +340,7 @@
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="false" [isShow]="true"
                               [showChartView]="kpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true"
                               [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
+                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <div class="p-d-flex p-justify-around p-align-center w-100"
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -388,12 +388,12 @@
                             <div class="p-sm-12 p-mb-3 p-pr-0 p-pl-0 iteration-chart p-pt-0 p-pb-0" cdkDragLockAxis="y"
                               cdkDrag>
                               <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
+                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.isAdditionalFilterSupport)"
                                 [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                                 (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
                                 [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
+                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
                                   <ng-container
                                     *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
@@ -501,7 +501,7 @@
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="false" [isShow]="true"
                               [showChartView]="kpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true"
                               [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
+                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <div class="p-d-flex p-justify-around p-align-center w-100"
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -549,12 +549,12 @@
                             <div class="p-sm-12 p-mb-3 p-pr-0 p-pl-0 iteration-chart p-pt-0 p-pb-0" cdkDragLockAxis="y"
                               cdkDrag>
                               <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
+                                (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.isAdditionalFilterSupport)"
                                 [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                                 (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
                                 [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
+                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
                                   <ng-container
                                     *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">

@@ -45,10 +45,12 @@ import org.springframework.stereotype.Service;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
@@ -94,6 +96,8 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	private JiraCommonService jiraCommonService;
 	@Autowired
 	private JiraProcessorRepository jiraProcessorRepository;
+	@Autowired
+	private ProcessorToolConnectionService processorToolConnectionService;
 
 	@Override
 	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
@@ -493,6 +497,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			KerberosClient krb5Client) throws IOException {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		try {
+			processorToolConnectionService.validateJiraAzureConnFlag(projectConfig.getProjectToolConfig());
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
 			if (null != jiraToolConfig) {
 				boolean isLast = false;
@@ -507,6 +512,12 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 			}
 		} catch (RestClientException rce) {
+			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 400
+					&& rce.getStatusCode().get() < 500) {
+				String errMsg = ClientErrorMessageEnum.fromValue(rce.getStatusCode().get()).getReasonPhrase();
+				processorToolConnectionService
+						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
+			}
 			log.error("Client exception when fetching sprints for board", rce);
 			throw rce;
 		} catch (MalformedURLException mfe) {

@@ -17,12 +17,15 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -38,9 +41,11 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraKPIServiceFactory;
+import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -135,6 +140,8 @@ public class JiraServiceR {
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
 
+				updateTreeAggregatorDetail(kpiRequest, treeAggregatorDetail);
+
 				// set filter value to show on trend line. If subprojects are
 				// in
 				// selection then show subprojects on trend line else show
@@ -167,6 +174,36 @@ public class JiraServiceR {
 
 	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
 		return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi171");
+	}
+
+	/**
+	 * updates the TreeAggregatorDetail object based on the KpiRequest.
+	 *
+	 * @param kpiRequest
+	 * 				The KpiRequest object that contains the label
+	 * @param treeAggregatorDetail
+	 * 				The TreeAggregatorDetail object to be updated.
+	 */
+	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
+		if (!kpiRequest.getLabel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+				&& MapUtils.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes())) {
+			Map<String, List<Node>> sprintMap = new LinkedHashMap<>();
+			if (CollectionUtils.isNotEmpty(
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT).stream()
+						.collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
+							if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
+								sprintMap
+										.computeIfAbsent(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
+												k -> new ArrayList<>())
+										.addAll(new ArrayList<>(
+												sprints.subList(0, customApiConfig.getSprintCountForKpiCalculation())));
+
+							}
+						});
+				treeAggregatorDetail.setMapOfListOfLeafNodes(sprintMap);
+			}
+		}
 	}
 
 	/**

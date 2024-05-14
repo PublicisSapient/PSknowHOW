@@ -81,6 +81,7 @@ import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -127,6 +128,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	@Autowired
+	private ProcessorToolConnectionService processorToolConnectionService;
 
 	@Override
 	public int processesAzureIssues(ProjectConfFieldMapping projectConfig, String projectKey, // NOSONAR
@@ -141,6 +144,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		// otherwise fetch latest update date from AzureIssue collection and
 		// fetch delta data.
 		try {
+			processorToolConnectionService.validateJiraAzureConnFlag(projectConfig.getProjectToolConfig());
+
 			boolean dataExist = (jiraIssueRepository
 					.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
 

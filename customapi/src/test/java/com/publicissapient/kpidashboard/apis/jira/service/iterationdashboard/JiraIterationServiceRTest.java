@@ -33,7 +33,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -107,6 +109,7 @@ public class JiraIterationServiceRTest {
 	private List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
 	private KpiElement ibKpiElement;
 	private Map<String, JiraIterationKPIService> jiraServiceCache = new HashMap<>();
+	private Map<String, AdditionalFilterCategory> additonalFilterMap;
 	@Mock
 	private JiraNonTrendKPIServiceFactory jiraKPIServiceFactory;
 	@Mock
@@ -147,6 +150,14 @@ public class JiraIterationServiceRTest {
 		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
 		List<SprintDetails> sprintDetails = sprintDetailsDataFactory.getSprintDetails();
 		when(sprintRepository.findBySprintIDIn(anyList())).thenReturn(sprintDetails);
+
+		AdditionalFilterCategoryFactory additionalFilterCategoryFactory = AdditionalFilterCategoryFactory.newInstance();
+		List<AdditionalFilterCategory> additionalFilterCategoryList = additionalFilterCategoryFactory
+				.getAdditionalFilterCategoryList();
+		additonalFilterMap = additionalFilterCategoryList.stream()
+				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
+		when(filterHelperService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
+
 	}
 
 	@After
@@ -233,6 +244,9 @@ public class JiraIterationServiceRTest {
 	public void TestProcessWithApplicationException() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(5);
+		Map<String, List<String>> selectMap= new HashMap<>();
+		selectMap.put("sqd", Arrays.asList("38296_Scrum Project_6335363749794a18e8a4479b"));
+		kpiRequest.getSelectedMap().putAll(selectMap);
 
 		@SuppressWarnings("rawtypes")
 		JiraIterationKPIService mcokAbstract = iterationBurnupService;

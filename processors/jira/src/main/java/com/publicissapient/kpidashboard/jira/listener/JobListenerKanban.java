@@ -19,10 +19,12 @@ package com.publicissapient.kpidashboard.jira.listener;
 
 import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDateToCustomFormat;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.batch.core.BatchStatus;
@@ -84,6 +86,9 @@ public class JobListenerKanban implements JobExecutionListener {
 	@Autowired
 	private JiraCommonService jiraCommonService;
 
+	@Autowired
+	JiraClientService jiraClientService;
+
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
 		// in future we can use this method to do something before job execution starts
@@ -125,6 +130,15 @@ public class JobListenerKanban implements JobExecutionListener {
 			log.info("removing project with basicProjectConfigId {}", projectId);
 			// Mark the execution as completed
 			ongoingExecutionsService.markExecutionAsCompleted(projectId);
+            if (jiraClientService.isContainRestClient(projectId)){
+                try {
+                    jiraClientService.getRestClientMap(projectId).close();
+                } catch (IOException e) {
+					throw new RuntimeException("Failed to close rest client",e);// NOSONAR
+                }
+                jiraClientService.removeRestClientMapClientForKey(projectId);
+                jiraClientService.removeKerberosClientMapClientForKey(projectId);
+            }
 		}
 	}
 
