@@ -129,7 +129,6 @@ export class AdvancedSettingsComponent implements OnInit {
           that.selectedProject = that.userProjects[0];
           that.getProcessorsTraceLogsForProject(that.selectedProject['id']);
           that.getAllToolConfigs(that.selectedProject['id']);
-          console.log(JSON.stringify(that.selectedProject));
         }
 
 
@@ -270,8 +269,8 @@ export class AdvancedSettingsComponent implements OnInit {
           const pDetails = this.findTraceLogForTool(runProcessorInput['processor'])
           if(pDetails){
             pDetails['executionOngoing'] = false;
-          }       
-        } 
+          }
+        }
       });
   }
 
@@ -364,6 +363,6 @@ export class AdvancedSettingsComponent implements OnInit {
     if (this.subscription) {
       this.subscription.unsubscribe();
       this.jiraStatusContinuePulling = false;
-    } 
+    }
   }
 }

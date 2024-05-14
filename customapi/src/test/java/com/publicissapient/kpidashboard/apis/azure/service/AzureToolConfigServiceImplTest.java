@@ -16,13 +16,13 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.azure.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -50,8 +50,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
@@ -70,6 +72,8 @@ public class AzureToolConfigServiceImplTest {
 
 	@InjectMocks
 	private AzureToolConfigServiceImpl azureToolConfigService;
+	@Mock
+	private ConnectionService connectionService;
 
 	private Optional<Connection> testConnectionOpt;
 	private Connection connection1;
@@ -121,6 +125,21 @@ public class AzureToolConfigServiceImplTest {
 		when(restAPIUtils.convertToString(jsonObject, "id")).thenReturn("1");
 		Assert.assertEquals(azureToolConfigService.getAzurePipelineNameAndDefinitionIdList(connectionId, "6.0").size(),
 				responseProjectList.size());
+	}
+
+	@Test
+	public void getAzurePipelineNameAndDefinitionIdListTestException() {
+		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
+		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
+		assertEquals(optConnection, testConnectionOpt);
+		when(restAPIUtils.decryptPassword(connection1.getPat())).thenReturn("decryptKey");
+		HttpHeaders header = new HttpHeaders();
+		header.add("Authorization", "base64str");
+		when(restAPIUtils.getHeaders(connection1.getUsername(), "decryptKey")).thenReturn(header);
+		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
+				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+		doNothing().when(connectionService).updateBreakingConnection(eq(connection1), anyString());
+		azureToolConfigService.getAzurePipelineNameAndDefinitionIdList(connectionId, "6.0");
 	}
 
 	@Test
@@ -182,7 +201,6 @@ public class AzureToolConfigServiceImplTest {
 		Assert.assertEquals(1, azureToolConfigService.getAzureReleaseNameAndDefinitionIdList(connectionId).size());
 	}
 
-
 	@Test
 	public void testAzureReleaseNameAndDefinitionId_fail() throws ParseException {
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt1);
@@ -209,6 +227,7 @@ public class AzureToolConfigServiceImplTest {
 		when(restAPIUtils.getHeaders(anyString(), anyString())).thenReturn(header);
 		Assert.assertEquals(0, azureToolConfigService.getAzureReleaseNameAndDefinitionIdList(connectionId).size());
 	}
+
 	@Test
 	public void testAzureReleaseNameAndDefinitionId_WhenBaseURLIsNull() {
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt1);
@@ -231,7 +250,7 @@ public class AzureToolConfigServiceImplTest {
 	public void testGetAzureTeamsListTestSuccess() throws IOException, ParseException {
 		extractedInputsFormGettingAzureList();
 		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class),
-				ArgumentMatchers.<Class<String>>any())).thenReturn(new ResponseEntity<>("",HttpStatus.OK));
+				ArgumentMatchers.<Class<String>>any())).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", "TEST_PROJECT");
@@ -241,8 +260,18 @@ public class AzureToolConfigServiceImplTest {
 		when(restAPIUtils.convertJSONArrayFromResponse(anyString(), anyString())).thenReturn(jsonArray);
 		when(restAPIUtils.convertToString(jsonObject, "name")).thenReturn("TEST_PROJECT");
 		when(restAPIUtils.convertToString(jsonObject, "id")).thenReturn("1");
-		Assert.assertEquals(1,azureToolConfigService.getAzureTeamsList(connectionId).size());
+		Assert.assertEquals(1, azureToolConfigService.getAzureTeamsList(connectionId).size());
 	}
+
+	@Test
+	public void testGetAzureTeamsListTestException() {
+		extractedInputsFormGettingAzureList();
+		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
+				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+		doNothing().when(connectionService).updateBreakingConnection(eq(connection1), anyString());
+		azureToolConfigService.getAzureTeamsList(connectionId);
+	}
+
 	public void extractedInputsFormGettingAzureList(){
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
 		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
@@ -256,13 +285,15 @@ public class AzureToolConfigServiceImplTest {
 	@Test
 	public void testGetAzureTeamsListTestFialure() {
 		extractedInputsFormGettingAzureList();
-		Assert.assertEquals(0,azureToolConfigService.getAzureTeamsList(connectionId).size());
+		Assert.assertEquals(0, azureToolConfigService.getAzureTeamsList(connectionId).size());
 	}
+
 	@Test
 	public void testGetAzureTeamsListTestWithStatusCodeOtherThenOK() {
 		extractedInputsFormGettingAzureList();
 		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class),
-				ArgumentMatchers.<Class<String>>any())).thenReturn(new ResponseEntity<>("",HttpStatus.INTERNAL_SERVER_ERROR));
-		Assert.assertEquals(0,azureToolConfigService.getAzureTeamsList(connectionId).size());
+				ArgumentMatchers.<Class<String>>any()))
+				.thenReturn(new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR));
+		Assert.assertEquals(0, azureToolConfigService.getAzureTeamsList(connectionId).size());
 	}
 }

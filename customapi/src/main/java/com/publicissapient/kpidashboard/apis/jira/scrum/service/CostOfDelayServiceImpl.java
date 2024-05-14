@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +71,10 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private FilterHelperService flterHelperService;
+	@Autowired
+	private CacheService cacheService;
 
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> subCategoryMap) {
@@ -162,7 +168,7 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.COST_OF_DELAY.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.COST_OF_DELAY.getColumns(projectLeafNodeList,cacheService,flterHelperService));
 	}
 
 	/**

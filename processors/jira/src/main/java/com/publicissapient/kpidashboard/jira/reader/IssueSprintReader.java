@@ -32,9 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -42,6 +40,7 @@ import com.publicissapient.kpidashboard.jira.helper.ReaderRetryHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.service.FetchIssueSprint;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,7 +56,7 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 	FetchProjectConfiguration fetchProjectConfiguration;
 
 	@Autowired
-	JiraClient jiraClient;
+	JiraClientService jiraClientService;
 
 	@Autowired
 	JiraProcessorConfig jiraProcessorConfig;
@@ -73,13 +72,15 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 	@Value("#{jobParameters['sprintId']}")
 	private String sprintId;
 	private ReaderRetryHelper retryHelper;
+    ProcessorJiraRestClient client;
 
 	public void initializeReader(String sprintId) {
 		log.info("**** Jira Issue fetch started * * *");
 		pageSize = jiraProcessorConfig.getPageSize();
 		projectConfFieldMapping = fetchProjectConfiguration.fetchConfigurationBasedOnSprintId(sprintId);
 		retryHelper = new ReaderRetryHelper();
-	}
+        client = jiraClientService.getRestClientMap(sprintId);
+    }
 
 	@Override
 	public ReadData read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
@@ -90,33 +91,30 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		if (null != projectConfFieldMapping) {
-			KerberosClient krb5Client = null;
-			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
-				if (null == issueIterator) {
-					pageNumber = 0;
-					fetchIssues(client);
-				}
+			if (null == issueIterator) {
+				pageNumber = 0;
+				fetchIssues(client);
+			}
 
-				if (null != issueIterator && !issueIterator.hasNext()) {
-					fetchIssues(client);
-				}
+			if (null != issueIterator && !issueIterator.hasNext()) {
+				fetchIssues(client);
+			}
 
-				if (null != issueIterator && issueIterator.hasNext()) {
-					Issue issue = issueIterator.next();
-					readData = new ReadData();
-					readData.setIssue(issue);
-					readData.setProjectConfFieldMapping(projectConfFieldMapping);
-					readData.setSprintFetch(true);
-				}
+			if (null != issueIterator && issueIterator.hasNext()) {
+				Issue issue = issueIterator.next();
+				readData = new ReadData();
+				readData.setIssue(issue);
+				readData.setProjectConfFieldMapping(projectConfFieldMapping);
+				readData.setSprintFetch(true);
+			}
 
-				if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
-					log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
-					readData = null;
-				}
+			if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
+				log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
+				readData = null;
 			}
 		}
-		return readData;
 
+		return readData;
 	}
 
 	@TrackExecutionTime

@@ -18,12 +18,17 @@ package com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +37,7 @@ import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -45,6 +51,8 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.apis.model.SprintFilter;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -118,7 +126,8 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest, groupName);
 
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList, referFromProjectCache);
+				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList,
+						referFromProjectCache);
 
 				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest,
 						filteredAccountDataList, referFromProjectCache);
@@ -218,16 +227,15 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	private void updateJiraIssueList(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
-		fetchSprintDetails(kpiRequest.getIds());
-		List<String> sprintIssuesList = createIssuesList(
-				filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
-		fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), sprintIssuesList);
-		fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
-				sprintIssuesList);
+		fetchSprintDetails(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT));
+		String basicConfigId = filteredAccountDataList.get(0).getBasicProjectConfigId().toString();
+		List<String> sprintIssuesList = createIssuesList(basicConfigId);
+		fetchJiraIssues(kpiRequest, basicConfigId, sprintIssuesList);
+		fetchJiraIssuesCustomHistory(basicConfigId);
 	}
 
-	public void fetchSprintDetails(String[] sprintId) {
-		sprintDetails = sprintRepository.findBySprintIDIn(Arrays.stream(sprintId).toList());
+	public void fetchSprintDetails(List<String> sprintId) {
+		sprintDetails = sprintRepository.findBySprintIDIn(sprintId);
 	}
 
 	public SprintDetails getCurrentSprintDetails() {
@@ -238,9 +246,13 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		sprintDetails = modifiedSprintDetails;
 	}
 
-	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList) {
-		jiraIssueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(sprintIssuesList,
-				basicProjectConfigId);
+	public void fetchJiraIssues(KpiRequest kpiRequest, String basicConfigId, List<String> sprintIssuesList) {
+		Map<String, Object> mapOfFilter = new HashMap<>();
+		createAdditionalFilterMap(kpiRequest, mapOfFilter);
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		uniqueProjectMap.put(basicConfigId, mapOfFilter);
+		jiraIssueList = jiraIssueRepository.findIssueByNumberWithAdditionalFilter(new HashSet<>(sprintIssuesList),
+				uniqueProjectMap);
 	}
 
 	private List<String> createIssuesList(String basicProjectConfigId) {
@@ -274,9 +286,10 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		return threadLocalJiraIssues.get();
 	}
 
-	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId, List<String> sprintIssuesList) {
-		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(
-				sprintIssuesList, Collections.singletonList(basicProjectConfigId));
+	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId) {
+		List<String> issueList = jiraIssueList.stream().map(JiraIssue::getNumber).toList();
+		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
+				.findByStoryIDInAndBasicProjectConfigIdIn(issueList, Collections.singletonList(basicProjectConfigId));
 
 	}
 
@@ -308,4 +321,23 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		referFromProjectCache = true;
 		return kpiElementList;
 	}
+
+	public void createAdditionalFilterMap(KpiRequest kpiRequest, Map<String, Object> mapOfFilters) {
+		Map<String, AdditionalFilterCategory> addFilterCat = filterHelperService.getAdditionalFilterHierarchyLevel();
+		Map<String, AdditionalFilterCategory> addFilterCategory = addFilterCat.entrySet().stream()
+				.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
+
+		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())) {
+			for (Map.Entry<String, List<String>> entry : kpiRequest.getSelectedMap().entrySet()) {
+				if (CollectionUtils.isNotEmpty(entry.getValue())
+						&& null != addFilterCategory.get(entry.getKey().toUpperCase())) {
+					mapOfFilters.put(JiraFeature.ADDITIONAL_FILTERS_FILTERID.getFieldValueInFeature(),
+							Arrays.asList(entry.getKey()));
+					mapOfFilters.put(JiraFeature.ADDITIONAL_FILTERS_FILTERVALUES_VALUEID.getFieldValueInFeature(),
+							entry.getValue());
+				}
+			}
+		}
+	}
+
 }

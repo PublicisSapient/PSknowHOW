@@ -47,7 +47,7 @@ describe('AdvancedSettingsComponent', () => {
   // var ls = function () {
     //   return JSON.parse(store['storage']);
     // };
-    
+
   const fakeProjects = require('../../../test/resource/fakeProjectsDashConfig.json');
   const fakeProcessorData = {
     message: '',
@@ -274,6 +274,18 @@ describe('AdvancedSettingsComponent', () => {
         errorMessage : "test"
       }
     ]
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
     component.runProcessor('Jira');
     fixture.detectChanges();
     httpMock.match(baseUrl + '/api/processor/trigger/Jira')[0].flush({ message: 'Got HTTP response: 200 on url: http://jira_processor:50008/processor/run', success: true });
@@ -315,7 +327,7 @@ describe('AdvancedSettingsComponent', () => {
      jiraStatusContinuePulling = false
      discardPeriodicTasks()
      expect(component.processorsTracelogs).toBeDefined();
-     
+
   }));
 
   it('should stop get stacks of jira processor when flagis false', fakeAsync(() => {
@@ -354,10 +366,22 @@ describe('AdvancedSettingsComponent', () => {
      jiraStatusContinuePulling = false
      discardPeriodicTasks()
      expect(component.processorsTracelogs).toBeDefined();
-     
+
   }));
 
   it('should run Github Processor for the selected projects', () => {
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
     component.processorData = {
       data : [
         {
@@ -385,6 +409,18 @@ describe('AdvancedSettingsComponent', () => {
   }))
 
   it('should get processors trace logs for project', fakeAsync(() => {
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
     const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
     component.processorData = {
       data : [
@@ -543,7 +579,7 @@ describe('AdvancedSettingsComponent', () => {
     }]
     const resp = component.showExecutionDate('Jira')
     expect(resp).not.toBe("NA")
-  })  
+  })
 
   it('should fetch all the projects when superadmin', () => {
     component.userProjects = [];
@@ -621,7 +657,7 @@ describe('AdvancedSettingsComponent', () => {
           executionOngoing : true
         }
       ]
-    
+
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(errResponse));
     const spy = spyOn(messageService, 'add')
     component.getProcessorsTraceLogsForProject(basicProjectConfigId);
@@ -656,6 +692,18 @@ describe('AdvancedSettingsComponent', () => {
         }
       ]
     }
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
     component.selectedProject = {
       'id': '651af337d18501286c28a464'
     }
@@ -678,6 +726,18 @@ describe('AdvancedSettingsComponent', () => {
   }))
 
   it('should not run Processor when processor is not jira', fakeAsync(() => {
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          loader : true
+        },
+        {
+          processorName : 'Github',
+          loader : true
+        }
+      ]
+    }
     component.processorData = {
       data : [
         {
@@ -725,23 +785,23 @@ describe('AdvancedSettingsComponent', () => {
     );
     spyOn(messageService, 'add');
     spyOn(component, 'getAllToolConfigs');
-  
+
     component.deleteProcessorDataReq(processorDetails, selectedProject);
-  
+
     fixture.detectChanges();
-  
+
     expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
     expect(httpService.deleteProcessorData).toHaveBeenCalledTimes(2);
     expect(httpService.deleteProcessorData).toHaveBeenCalledWith('123', '601bca9569515b0001d68182');
     expect(httpService.deleteProcessorData).toHaveBeenCalledWith('456', '601bca9569515b0001d68182');
-  
+
     setTimeout(() => {
       expect(messageService.add).toHaveBeenCalledWith({ severity: 'success', summary: 'Data deleted Successfully.', detail: '' });
       expect(component.getAllToolConfigs).toHaveBeenCalledWith('601bca9569515b0001d68182');
       done();
     });
   });
-  
+
   it('should handle error when deleting processor data', (done) => {
     const processorDetails = {
       processorName: 'Jira'
@@ -766,23 +826,23 @@ describe('AdvancedSettingsComponent', () => {
     );
     spyOn(messageService, 'add');
     spyOn(component, 'getAllToolConfigs');
-  
+
     component.deleteProcessorDataReq(processorDetails, selectedProject);
-  
+
     fixture.detectChanges();
-  
+
     expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
     expect(httpService.deleteProcessorData).toHaveBeenCalledTimes(2);
     expect(httpService.deleteProcessorData).toHaveBeenCalledWith('123', '601bca9569515b0001d68182');
     expect(httpService.deleteProcessorData).toHaveBeenCalledWith('456', '601bca9569515b0001d68182');
-  
+
     setTimeout(() => {
       expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Error in deleting project data. Please try after some time.' });
       expect(component.getAllToolConfigs).not.toHaveBeenCalled();
       done();
     });
   });
-  
+
   it('should handle error when getting tool details', () => {
     const processorDetails = {
       processorName: 'Jira'
@@ -792,11 +852,11 @@ describe('AdvancedSettingsComponent', () => {
     };
     spyOn(component, 'getToolDetailsForProcessor').and.returnValue(null);
     spyOn(messageService, 'add');
-  
+
     component.deleteProcessorDataReq(processorDetails, selectedProject);
-  
+
     fixture.detectChanges();
-  
+
     expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
     expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Something went wrong. Please try again after sometime.' });
   });

@@ -168,3 +168,51 @@ label.btn-import-label {
 :host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
   font-size: 14px;
 }
+
+.commentSummaryDdn{
+  width: max-content;
+  min-width: 300px;
+  position: absolute;
+  top: 20px;
+  right: 0;
+  box-shadow: 0px 1px 10px #00000045;
+  z-index: 2000;
+  border-radius: 5px;
+  left: 10px;
+  background-color: #686868;
+  color: #fff;
+}
+
+::ng-deep .hiatoryOverlayWrapper .p-overlaypanel-content{
+  border-radius: 5px;
+  background-color: #686868;
+  padding: 0rem !important;
+  z-index: 0 !important;
+}
+
+.comment-inner-section{
+  min-width: 300px;
+  max-width: 800px;
+  max-height: 400px;
+  overflow-y: scroll;
+  padding: 15px;
+  background-color: #686868;
+  color: #fff;
+  border-radius: 10px;
+}
+.dateAndName{
+  font-size: small;
+  color: #fff;
+}
+
+.h-40{
+  height :28px;
+}
+
+.pt-3{
+  padding-top: 3px;
+}
+
+
+
+

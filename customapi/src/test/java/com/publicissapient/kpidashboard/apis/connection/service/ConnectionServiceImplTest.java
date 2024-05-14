@@ -587,7 +587,7 @@ public class ConnectionServiceImplTest {
 		ServiceResponse response = connectionServiceImpl.getAllConnection();
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		dataConnection.get(0).getConnectionUsers().get(0).equals("user91");
-		assertThat("Data should exist but empty: ", response.getData(), equalTo(new ArrayList<>()));
+		assertThat("Data should exist but empty: ", response.getData(), equalTo(dataConnection));
 	}
 
 	@Test
