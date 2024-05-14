@@ -44,9 +44,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.scope.context.StepContext;
 import org.springframework.batch.core.scope.context.StepSynchronizationManager;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -320,13 +321,19 @@ public class JiraCommonService {
 			log.error("StepContext is null");
 			return;
 		}
+		JobExecution jobExecution = stepContext.getStepExecution().getJobExecution();
+		ExecutionContext executionContext = jobExecution.getExecutionContext();
+		String isScheduler =  executionContext.getString("isScheduler");
+		if (!isScheduler.equalsIgnoreCase("false")) {
+			return;
+		}
 		int total = searchResult.getTotal();
 		int processed = Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, total);
+
 		// Saving Progress details in context
-		StepExecution stepExecution = stepContext.getStepExecution();
-		stepExecution.getExecutionContext().putInt(JiraConstants.TOTAL_ISSUES, total);
-		stepExecution.getExecutionContext().putInt(JiraConstants.PROCESSED_ISSUES, processed);
-		stepExecution.getExecutionContext().putInt(JiraConstants.PAGE_START, pageStart);
+		jobExecution.getExecutionContext().putInt(JiraConstants.TOTAL_ISSUES, total);
+		jobExecution.getExecutionContext().putInt(JiraConstants.PROCESSED_ISSUES, processed);
+		jobExecution.getExecutionContext().putInt(JiraConstants.PAGE_START, pageStart);
 	}
 
 	/**

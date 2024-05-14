@@ -24,6 +24,7 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,8 +35,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.json.simple.JSONArray;
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.scope.context.StepContext;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -320,31 +321,35 @@ public class JiraProcessorUtil {
 	 * into traceLog.
 	 *
 	 * @param processorExecutionTraceLog
-	 *            processorExecutionTraceLog
-	 * @param stepExecution
-	 *            stepExecution
+	 *            processorTraceLog
+	 * @param stepContext
+	 *            stepContext
 	 */
-	public static void fetchProgressFromContext(ProcessorExecutionTraceLog processorExecutionTraceLog,
-			StepExecution stepExecution) {
-		if (stepExecution != null) {
-			ExecutionContext stepContext = stepExecution.getExecutionContext();
-			int totalIssues = stepContext.getInt(JiraConstants.TOTAL_ISSUES, 0);
-			int processedIssues = stepContext.getInt(JiraConstants.PROCESSED_ISSUES, 0);
-			int pageStart = stepContext.getInt(JiraConstants.PAGE_START, 0);
-
-			// Only save progressStatus if totalIssues issue to be fetching is non-zero
-			if (totalIssues != 0) {
-				List<ProgressStatus> progressStatusList = Optional
-						.ofNullable(processorExecutionTraceLog.getProgressStatusList()).orElseGet(ArrayList::new);
-				ProgressStatus progressStatus = new ProgressStatus();
-				progressStatus.setStepName(MessageFormat.format("Processing issues {0} to {1} out of {2}", pageStart,
-						processedIssues, totalIssues));
-				progressStatus.setStatus(BatchStatus.COMPLETED.toString());
-				progressStatus.setStartTime(String.valueOf(stepExecution.getStartTime()));
-				progressStatusList.add(progressStatus);
-				processorExecutionTraceLog.setProgressStatusList(progressStatusList);
-			}
+	public static ProcessorExecutionTraceLog saveChunkProgressInTrace(
+			ProcessorExecutionTraceLog processorExecutionTraceLog, StepContext stepContext) {
+		if (stepContext == null) {
+			log.error("StepContext is null");
+			return null;
 		}
+		if (processorExecutionTraceLog == null ) {
+			log.error("ProcessorExecutionTraceLog is not present");
+			return null;
+		}
+		JobExecution jobExecution = stepContext.getStepExecution().getJobExecution();
+		int totalIssues = jobExecution.getExecutionContext().getInt(JiraConstants.TOTAL_ISSUES, 0);
+		int processedIssues = jobExecution.getExecutionContext().getInt(JiraConstants.PROCESSED_ISSUES, 0);
+		int pageStart = jobExecution.getExecutionContext().getInt(JiraConstants.PAGE_START, 0);
+
+		List<ProgressStatus> progressStatusList = Optional
+				.ofNullable(processorExecutionTraceLog.getProgressStatusList()).orElseGet(ArrayList::new);
+		ProgressStatus progressStatus = new ProgressStatus();
+		progressStatus.setStepName(MessageFormat.format("Processing issues {0} to {1} out of {2}", pageStart,
+				processedIssues, totalIssues));
+		progressStatus.setStatus(BatchStatus.COMPLETED.toString());
+		progressStatus.setEndTime(LocalDateTime.now().toString());
+		progressStatusList.add(progressStatus);
+		processorExecutionTraceLog.setProgressStatusList(progressStatusList);
+		return processorExecutionTraceLog;
 	}
 
 }

@@ -28,10 +28,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.ItemWriteListener;
-import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.scope.context.StepContext;
 import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.item.Chunk;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -52,6 +53,13 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class JiraIssueBoardWriterListener implements ItemWriteListener<CompositeResult> {
+	
+	@Value("#{jobParameters['projectId']}")
+	private String projectId;
+
+	@Value("#{jobParameters['isScheduler']}")
+	private String isScheduler;
+
 
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
@@ -79,9 +87,14 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 		Map<String, Map<String, List<JiraIssue>>> projectBoardWiseIssues = jiraIssues.stream()
 				.filter(issue -> !issue.getTypeName().equalsIgnoreCase(JiraConstants.EPIC)).collect(Collectors
 						.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.groupingBy(JiraIssue::getBoardId)));
-		// getting step execution
-        StepExecution stepExecution = StepSynchronizationManager.getContext().getStepExecution();
-
+		if (isScheduler.equalsIgnoreCase("false")) {
+			// getting step context
+			StepContext stepContext = StepSynchronizationManager.getContext();
+			Optional<ProcessorExecutionTraceLog> progressStatsTraceLog = processorExecutionTraceLogRepo
+					.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(ProcessorConstants.JIRA, projectId);
+			Optional.ofNullable(JiraProcessorUtil.saveChunkProgressInTrace(progressStatsTraceLog.orElse(null), stepContext))
+					.ifPresent(processorExecutionToSave::add);
+		}
 		for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : projectBoardWiseIssues.entrySet()) {
 			String basicProjectConfigId = entry.getKey();
 			Map<String, List<JiraIssue>> boardWiseIssues = entry.getValue();
@@ -100,11 +113,11 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 					if (procTraceLog.isPresent()) {
 						ProcessorExecutionTraceLog processorExecutionTraceLog = procTraceLog.get();
 						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId,
-								firstIssue.getChangeDate(), processorExecutionToSave,stepExecution);
+								firstIssue.getChangeDate(), processorExecutionToSave);
 					} else {
 						ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId,
-								firstIssue.getChangeDate(), processorExecutionToSave,stepExecution);
+								firstIssue.getChangeDate(), processorExecutionToSave);
 					}
 				}
 			}
@@ -116,14 +129,12 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 	}
 
 	private void setTraceLog(ProcessorExecutionTraceLog processorExecutionTraceLog, String basicProjectConfigId,
-			String boardId, String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave,
-			StepExecution stepExecution) {
+			String boardId, String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave) {
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		processorExecutionTraceLog.setBoardId(boardId);
 		processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(changeDate,
 				JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
-		JiraProcessorUtil.fetchProgressFromContext(processorExecutionTraceLog, stepExecution);
 		processorExecutionToSave.add(processorExecutionTraceLog);
 	}
 
