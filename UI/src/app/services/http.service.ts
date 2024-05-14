@@ -769,9 +769,9 @@ export class HttpService {
   }
 
     /** Get all Field Mappings with history */
-    getFieldMappingsWithHistory(toolId,kpiId) {
-      return this.http.get(
-        this.fieldMappingsUrl + '/fieldMapping/' + toolId + '/'+ kpiId,
+    getFieldMappingsWithHistory(toolId,kpiId, data) {
+      return this.http.post(
+        this.fieldMappingsUrl + '/fieldMapping/' + toolId + '/'+ kpiId, data
       );
     }
 
