@@ -38,6 +38,10 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ *
+ * @author shunaray
+ */
 @Component
 @Slf4j
 @StepScope

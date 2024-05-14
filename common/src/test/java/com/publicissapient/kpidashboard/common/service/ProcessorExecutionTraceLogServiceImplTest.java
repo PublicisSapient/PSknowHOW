@@ -17,24 +17,27 @@
 
 package com.publicissapient.kpidashboard.common.service;
 
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 /**
  * @author anisingh4
@@ -76,25 +79,33 @@ public class ProcessorExecutionTraceLogServiceImplTest {
 
     @Test
     public void getTraceLogs_WithProcessorName() {
-        when(processorExecutionTraceLogRepository.findAll()).thenReturn(getRawData());
+        when(processorExecutionTraceLogRepository.findByProcessorName(anyString())).thenReturn(getRawData());
         List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService.getTraceLogs("Jira", null);
-        assertEquals(2, traceLogs.size());
+        assertEquals(4, traceLogs.size());
     }
 
     @Test
     public void getTraceLogs_WithProjectId() {
-        when(processorExecutionTraceLogRepository.findAll()).thenReturn(getRawData());
+        when(processorExecutionTraceLogRepository.findByBasicProjectConfigId(anyString())).thenReturn(getRawData());
         List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService.getTraceLogs(null,
                 "624e9325cfac8f68ea7affa4");
-        assertEquals(1, traceLogs.size());
+        assertEquals(4, traceLogs.size());
     }
 
     @Test
     public void getTraceLogs_WithProjectIdAndProcessorName() {
-        when(processorExecutionTraceLogRepository.findAll()).thenReturn(getRawData());
+        when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigIdIn(anyString(),anyList())).thenReturn(getRawData());
         List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService.getTraceLogs("Jira",
                 "62177593904d2839684f5d68");
-        assertEquals(1, traceLogs.size());
+        assertEquals(0, traceLogs.size());
+    }
+
+    @Test
+    public void getTraceLogs_WithProjectIdAndProcessorName2() {
+        when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigIdIn(anyString(),anyList())).thenReturn(getRawData());
+        List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService.getTraceLogs("Azure",
+                "62177593904d2839684f5d68");
+        assertEquals(4, traceLogs.size());
     }
 
     @Test
@@ -143,4 +154,21 @@ public class ProcessorExecutionTraceLogServiceImplTest {
         return traceLogs;
     }
 
+	@Test
+	public void testSave_ExistingTraceLogPresent() {
+		ProcessorExecutionTraceLog existingLog = new ProcessorExecutionTraceLog();
+
+		ProcessorExecutionTraceLog newLog = new ProcessorExecutionTraceLog();
+		newLog.setProcessorName("Jira");
+		newLog.setBasicProjectConfigId("62177593904d2839684f5d68");
+
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(anyString(), anyString()))
+				.thenReturn(Optional.of(existingLog));
+
+		processorExecutionTraceLogService.save(newLog);
+
+		Assertions.assertEquals(existingLog.getLastSavedEntryUpdatedDateByType(), newLog.getLastSavedEntryUpdatedDateByType());
+
+		verify(processorExecutionTraceLogRepository, times(1)).save(newLog);
+	}
 }

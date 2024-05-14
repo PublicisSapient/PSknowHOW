@@ -107,5 +107,4 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 				.sorted(Comparator.comparing(ProcessorExecutionTraceLog::getExecutionEndedAt).reversed())
 				.collect(Collectors.toList());
 	}
-
 }

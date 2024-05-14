@@ -30,5 +30,4 @@ public interface ProcessorExecutionTraceLogService {
 	List<ProcessorExecutionTraceLog> getTraceLogs();
 
 	List<ProcessorExecutionTraceLog> getTraceLogs(String processorName, String basicProjectConfigId);
-
 }

@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.item.Chunk;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -53,6 +54,7 @@ public class JiraIssueJqlWriterListenerTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
+		ReflectionTestUtils.setField(listener, "isScheduler", "false");
 	}
 
 	@Test

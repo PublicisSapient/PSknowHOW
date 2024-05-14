@@ -316,7 +316,7 @@ public class JiraCommonService {
 	 * @param stepContext
 	 *            stepContext
 	 */
-	private void saveSearchDetailsInContext(SearchResult searchResult, int pageStart, StepContext stepContext) {
+	public void saveSearchDetailsInContext(SearchResult searchResult, int pageStart, StepContext stepContext) {
 		if (stepContext == null) {
 			log.error("StepContext is null");
 			return;
