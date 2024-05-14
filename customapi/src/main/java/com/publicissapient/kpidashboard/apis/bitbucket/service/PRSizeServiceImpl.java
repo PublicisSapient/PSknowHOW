@@ -267,15 +267,6 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		return range;
 	}
 
-	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
-		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
-			currentDate = currentDate.minusWeeks(1);
-		} else {
-			currentDate = currentDate.minusDays(1);
-		}
-		return currentDate;
-	}
-
 	private DataCount setDataCount(String projectName, String week, Long value, Long mrCount) {
 		Map<String, Object> hoverMap = new HashMap<>();
 		hoverMap.put(MR_COUNT, mrCount);
@@ -306,27 +297,30 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
 		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(REPO_TOOLS,
 				Collections.emptyList());
-		if (!CollectionUtils.isEmpty(tools)) {
-			projectCodeList.add(node.getId());
+		if (CollectionUtils.isEmpty(tools)) {
+			return new ArrayList<>();
 		}
-
-		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
-
-		if (CollectionUtils.isNotEmpty(projectCodeList)) {
-			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
-			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-				startDate = LocalDate.now().minusWeeks(dataPoint);
-				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
-					startDate = startDate.minusDays(1);
-				}
+		projectCodeList.add(node.getId());
+		LocalDate startDate = LocalDate.now();
+		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+			startDate = LocalDate.now().minusWeeks(dataPoint);
+			while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+				startDate = startDate.minusDays(1);
 			}
-
-			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
-			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
-					customApiConfig.getRepoToolPRSizeUrl(), startDate.toString(), endDate.toString(), debbieDuration);
+		} else {
+			int daysSubtracted = 0;
+			while (daysSubtracted < dataPoint) {
+				// Skip the weekend days
+				if (!(startDate.getDayOfWeek() == DayOfWeek.SATURDAY || startDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
+					daysSubtracted++;
+				}
+				startDate = startDate.minusDays(1);
+			}
 		}
+		String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
+		return repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList, customApiConfig.getRepoToolPRSizeUrl(),
+				startDate.toString(), endDate.toString(), debbieDuration);
 
-		return repoToolKpiMetricResponseList;
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<Map<String, Long>> repoWiseMRList,

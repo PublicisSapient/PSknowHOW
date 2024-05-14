@@ -144,6 +144,7 @@ public final class Constant {
 	public static final String REPO_TOOLS = "RepoTool";
 	public static final String SUCCESS = "SUCCESS";
 	public static final String TOKEN_KEY = "X-Api-Key";
+	public static final int DAYS_IN_WEEK = 7;
 	public static final String SQALE_RATING = "sqale_rating";
 	public static final String SECURITY_REMEDIATION = "security_remediation_effort";
 	public static final String RELIABILITY_REMEDIATION = "reliability_remediation_effort";

@@ -221,15 +221,6 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		return range;
 	}
 
-	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
-		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
-			currentDate = currentDate.minusWeeks(1);
-		} else {
-			currentDate = currentDate.minusDays(1);
-		}
-		return currentDate;
-	}
-
 	/**
 	 * @param projectName
 	 * @param week
