@@ -186,7 +186,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		List<DataCount> dataCountList = new ArrayList<>();
 		LocalDate currentDate = LocalDate.now();
 		for (int i = 0; i < dataPoints; i++) {
-			CustomDateRange dateRange = getStartAndEndDateForDataFiltering(currentDate, duration);
+			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate, duration);
 			List<Double> durationList = new ArrayList<>();
 			for (MergeRequests mergeReq : mergeReqList) {
 				LocalDate closedDate = Instant.ofEpochMilli(mergeReq.getClosedDate()).atZone(ZoneId.systemDefault())
@@ -208,39 +208,6 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		}
 		Collections.reverse(dataCountList);
 		return dataCountList;
-	}
-
-	/**
-	 * get date range excluding weekends
-	 * 
-	 * @param date
-	 *            start date
-	 * @param period
-	 *            week or day
-	 * @return CustomDateRange
-	 */
-	public static CustomDateRange getStartAndEndDateForDataFiltering(LocalDate date, String period) {
-		CustomDateRange dateRange = new CustomDateRange();
-		LocalDate startDate = null;
-		LocalDate endDate = null;
-		if (period.equalsIgnoreCase(CommonConstant.WEEK)) {
-			LocalDate monday = date;
-			while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
-				monday = monday.minusDays(1);
-			}
-			startDate = monday;
-			LocalDate friday = date;
-			while (friday.getDayOfWeek() != DayOfWeek.FRIDAY) {
-				friday = friday.plusDays(1);
-			}
-			endDate = friday;
-		} else {
-			startDate = date;
-			endDate = date;
-		}
-		dateRange.setStartDate(startDate);
-		dateRange.setEndDate(endDate);
-		return dateRange;
 	}
 
 	private String getDateRange(CustomDateRange dateRange, String duration) {

@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -162,7 +163,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		String projectNodeId = node.getId();
 		for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 
-			CustomDateRange dateRange = getStartAndEndDateForDataFiltering(currentDate,
+			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate,
 					kpiRequest.getDuration());
 			List<Tool> reposList = getBitBucketJobs(toolMap, node);
 			if (CollectionUtils.isEmpty(reposList)) {
@@ -187,39 +188,6 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CODE_COMMIT_MERGE_KANBAN.getColumns());
 		kpiElement.setMapOfSprintAndData(validationMap);
-	}
-
-	/**
-	 * get date range excluding weekends
-	 *
-	 * @param date
-	 *            start date
-	 * @param period
-	 *            week or day
-	 * @return CustomDateRange
-	 */
-	public static CustomDateRange getStartAndEndDateForDataFiltering(LocalDate date, String period) {
-		CustomDateRange dateRange = new CustomDateRange();
-		LocalDate startDate = null;
-		LocalDate endDate = null;
-		if (period.equalsIgnoreCase(CommonConstant.WEEK)) {
-			LocalDate monday = date;
-			while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
-				monday = monday.minusDays(1);
-			}
-			startDate = monday;
-			LocalDate friday = date;
-			while (friday.getDayOfWeek() != DayOfWeek.FRIDAY) {
-				friday = friday.plusDays(1);
-			}
-			endDate = friday;
-		} else {
-			startDate = date;
-			endDate = date;
-		}
-		dateRange.setStartDate(startDate);
-		dateRange.setEndDate(endDate);
-		return dateRange;
 	}
 
 	/**
