@@ -152,164 +152,122 @@ public class JobListenerScrumTest {
 	}
 
 	@Test
-	public void testAfterJob_FailedExecution_JqlUnMatchedData() throws Exception {
+	public void testAfterJob_SuccessExecution_JqlUnMatchedData() throws Exception {
 		projectConfigMap.getJira().setBoardQuery("abc");
 		fieldMapping.setNotificationEnabler(true);
-		when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
 		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfigMap);
 		when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
 				.thenReturn(promisedRs);
 		when(promisedRs.claim()).thenReturn(searchResult);
 		when(jiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(null, "")).thenReturn(5L);
 		when(searchResult.getTotal()).thenReturn(0);
-		when(projectBasicConfigRepository.findByStringId(null))
-				.thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
 		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
 				.thenReturn(Collections.singletonList(processorExecutionTraceLog));
-		when(jiraCommonService.getApiHost()).thenReturn("xyz");
-		StepExecution stepExecution = jobExecution.createStepExecution("xyz");
-		stepExecution.setStatus(BatchStatus.FAILED);
-		stepExecution.addFailureException(new Throwable("Exception"));
 		// Simulate a failed job
-		jobExecution.setStatus(BatchStatus.FAILED);
+		jobExecution.setStatus(BatchStatus.STARTED);
 		// Act
 		jobListenerScrum.afterJob(jobExecution);
 		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
 	}
 
 	@Test
-	public void testAfterJob_FailedExecution_JqlMatchedData() throws Exception {
+	public void testAfterJob_SuccessExecution_JqlMatchedData() throws Exception {
 		projectConfigMap.getJira().setBoardQuery("abc");
 		fieldMapping.setNotificationEnabler(true);
-		when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
 		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfigMap);
 		when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
 				.thenReturn(promisedRs);
 		when(promisedRs.claim()).thenReturn(searchResult);
 		when(jiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(null, "")).thenReturn(5L);
 		when(searchResult.getTotal()).thenReturn(5);
-		when(projectBasicConfigRepository.findByStringId(null))
-				.thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
 		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
 				.thenReturn(Collections.singletonList(processorExecutionTraceLog));
-		when(jiraCommonService.getApiHost()).thenReturn("xyz");
-		StepExecution stepExecution = jobExecution.createStepExecution("xyz");
-		stepExecution.setStatus(BatchStatus.FAILED);
-		stepExecution.addFailureException(new Throwable("Exception"));
 		// Simulate a failed job
-		jobExecution.setStatus(BatchStatus.FAILED);
+		jobExecution.setStatus(BatchStatus.STARTED);
 		// Act
 		jobListenerScrum.afterJob(jobExecution);
 		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
 	}
 
 	@Test
-	public void testAfterJob_FailedExecution_JqlNoResult() throws Exception {
+	public void testAfterJob_SuccessExecution_JqlNoResult() throws Exception {
 		projectConfigMap.getJira().setBoardQuery("abc");
 		fieldMapping.setNotificationEnabler(true);
-		when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
 		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfigMap);
 		when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
 				.thenReturn(promisedRs);
 		when(promisedRs.claim()).thenReturn(null);
-		when(projectBasicConfigRepository.findByStringId(null))
-				.thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
 		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
 				.thenReturn(Collections.singletonList(processorExecutionTraceLog));
-		when(jiraCommonService.getApiHost()).thenReturn("xyz");
-		StepExecution stepExecution = jobExecution.createStepExecution("xyz");
-		stepExecution.setStatus(BatchStatus.FAILED);
-		stepExecution.addFailureException(new Throwable("Exception"));
 		// Simulate a failed job
-		jobExecution.setStatus(BatchStatus.FAILED);
+		jobExecution.setStatus(BatchStatus.STARTED);
 		// Act
 		jobListenerScrum.afterJob(jobExecution);
 		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
 	}
 
 	@Test
-	public void testAfterJob_FailedExecution_BoardMatchedData() throws Exception {
+	public void testAfterJob_SuccessExecution_BoardMatchedData() throws Exception {
 		projectConfigMap.getJira().setBoardQuery("abc");
 		fieldMapping.setNotificationEnabler(true);
-		when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
 		when(customAsynchronousIssueRestClient.searchBoardIssue(anyString(), anyString(), Mockito.anyInt(),
 				Mockito.anyInt(), Mockito.anySet())).thenReturn(promisedRs);
 		when(promisedRs.claim()).thenReturn(searchResult);
 		when(jiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(null, "Epic")).thenReturn(5L);
 		when(searchResult.getTotal()).thenReturn(5);
-		when(projectBasicConfigRepository.findByStringId(null))
-				.thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setBoardId("9");
 		processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
 		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
 				.thenReturn(Collections.singletonList(processorExecutionTraceLog));
-		when(jiraCommonService.getApiHost()).thenReturn("xyz");
-		StepExecution stepExecution = jobExecution.createStepExecution("xyz");
-		stepExecution.setStatus(BatchStatus.FAILED);
-		stepExecution.addFailureException(new Throwable("Exception"));
 		// Simulate a failed job
-		jobExecution.setStatus(BatchStatus.FAILED);
+		jobExecution.setStatus(BatchStatus.STARTED);
 		// Act
 		jobListenerScrum.afterJob(jobExecution);
 		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
 	}
 
 	@Test
-	public void testAfterJob_FailedExecution_BoardNoResult() throws Exception {
+	public void testAfterJob_SuccessExecution_BoardNoResult() throws Exception {
 		projectConfigMap.getJira().setBoardQuery("abc");
 		fieldMapping.setNotificationEnabler(true);
-		when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
 		when(customAsynchronousIssueRestClient.searchBoardIssue(anyString(), anyString(), Mockito.anyInt(),
 				Mockito.anyInt(), Mockito.anySet())).thenReturn(promisedRs);
 		when(promisedRs.claim()).thenReturn(null);
-		when(projectBasicConfigRepository.findByStringId(null))
-				.thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setBoardId("9");
 		processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
 		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
 				.thenReturn(Collections.singletonList(processorExecutionTraceLog));
-		when(jiraCommonService.getApiHost()).thenReturn("xyz");
-		StepExecution stepExecution = jobExecution.createStepExecution("xyz");
-		stepExecution.setStatus(BatchStatus.FAILED);
-		stepExecution.addFailureException(new Throwable("Exception"));
 		// Simulate a failed job
-		jobExecution.setStatus(BatchStatus.FAILED);
+		jobExecution.setStatus(BatchStatus.STARTED);
 		// Act
 		jobListenerScrum.afterJob(jobExecution);
 		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
 	}
 
 	@Test
-	public void testAfterJob_FailedExecution_BoardUnMatchedData() throws Exception {
+	public void testAfterJob_SuccessExecution_BoardUnMatchedData() throws Exception {
 		projectConfigMap.getJira().setBoardQuery("abc");
 		fieldMapping.setNotificationEnabler(true);
-		when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
 		when(customAsynchronousIssueRestClient.searchBoardIssue(anyString(), anyString(), Mockito.anyInt(),
 				Mockito.anyInt(), Mockito.anySet())).thenReturn(promisedRs);
 		when(promisedRs.claim()).thenReturn(searchResult);
 		when(jiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(null, "Epic")).thenReturn(5L);
 		when(searchResult.getTotal()).thenReturn(0);
-		when(projectBasicConfigRepository.findByStringId(null))
-				.thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setBoardId("9");
 		processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
 		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
 				.thenReturn(Collections.singletonList(processorExecutionTraceLog));
-		when(jiraCommonService.getApiHost()).thenReturn("xyz");
-		StepExecution stepExecution = jobExecution.createStepExecution("xyz");
-		stepExecution.setStatus(BatchStatus.FAILED);
-		stepExecution.addFailureException(new Throwable("Exception"));
 		// Simulate a failed job
-		jobExecution.setStatus(BatchStatus.FAILED);
+		jobExecution.setStatus(BatchStatus.STARTED);
 		// Act
 		jobListenerScrum.afterJob(jobExecution);
 		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
@@ -321,9 +279,23 @@ public class JobListenerScrumTest {
 	}
 
 	@Test
-	public void testAfterJob_SuccessExecution() throws Exception {
+	public void testAfterJob_FailedExecution() throws Exception {
+		projectConfigMap.getJira().setBoardQuery("abc");
+		fieldMapping.setNotificationEnabler(true);
+		when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
+		when(projectBasicConfigRepository.findByStringId(null))
+				.thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
+		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+		processorExecutionTraceLog.setBoardId("9");
+		processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
+				.thenReturn(Collections.singletonList(processorExecutionTraceLog));
+		when(jiraCommonService.getApiHost()).thenReturn("xyz");
+		StepExecution stepExecution = jobExecution.createStepExecution("xyz");
+		stepExecution.setStatus(BatchStatus.FAILED);
+		stepExecution.addFailureException(new Throwable("Exception"));
 		// Simulate a failed job
-		jobExecution.setStatus(BatchStatus.STARTED);
+		jobExecution.setStatus(BatchStatus.FAILED);
 
 		// Act
 		jobListenerScrum.afterJob(jobExecution);

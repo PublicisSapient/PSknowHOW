@@ -72,7 +72,7 @@ public interface FieldMappingService {
 	 * @throws NoSuchFieldException
 	 * @throws IllegalAccessException
 	 */
-	List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId, FieldMappingMeta requestData)
+	List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfigId, FieldMappingMeta requestData)
 			throws NoSuchFieldException, IllegalAccessException;
 
 	void updateSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfigId,

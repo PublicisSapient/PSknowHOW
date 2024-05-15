@@ -18,10 +18,13 @@
 package com.publicissapient.kpidashboard.common.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.publicissapient.kpidashboard.common.model.application.ProgressStatus;
 
 import lombok.Data;
 
@@ -50,4 +53,8 @@ public class ProcessorExecutionTraceLog {
 	private String boardId;
 	private String firstRunDate;
 	private boolean dataMismatch;
+	private boolean progressStats;
+	private boolean executionOngoing;
+	private String errorMessage;
+	private List<ProgressStatus> progressStatusList;
 }

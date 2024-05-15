@@ -135,10 +135,10 @@ public class JobListenerKanban implements JobExecutionListener {
 						break;
 					}
 				}
-				setExecutionInfoInTraceLog(false);
+				setExecutionInfoInTraceLog(false, stepFaliureException);
 				sendNotification(stepFaliureException);
 			} else {
-				setExecutionInfoInTraceLog(true);
+				setExecutionInfoInTraceLog(true, null);
 			}
 		} catch (Exception e) {
 			log.error("An Exception has occured in kanban jobListener", e);
@@ -175,7 +175,7 @@ public class JobListenerKanban implements JobExecutionListener {
 		return projectBasicConfig == null ? "" : projectBasicConfig.getProjectName();
 	}
 
-	private void setExecutionInfoInTraceLog(boolean status) {
+	private void setExecutionInfoInTraceLog(boolean status, Throwable stepFailureException) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
 				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Collections.singletonList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
@@ -183,6 +183,10 @@ public class JobListenerKanban implements JobExecutionListener {
 				checkDeltaIssues(processorExecutionTraceLog,status);
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(status);
+				if (stepFailureException != null) {
+					String rootCauseMessage = (stepFailureException).toString();
+					processorExecutionTraceLog.setErrorMessage("Failure Reason: " + rootCauseMessage);
+				}
 			}
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);
 		}
