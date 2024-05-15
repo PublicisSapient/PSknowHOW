@@ -3,7 +3,6 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
