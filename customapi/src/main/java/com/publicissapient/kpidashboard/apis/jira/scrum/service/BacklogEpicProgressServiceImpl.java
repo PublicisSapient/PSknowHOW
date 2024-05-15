@@ -86,7 +86,7 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
-			projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
+		projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
 		log.info("BacklogEpicProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}

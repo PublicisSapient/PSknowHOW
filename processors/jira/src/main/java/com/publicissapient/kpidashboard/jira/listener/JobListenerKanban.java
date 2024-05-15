@@ -106,6 +106,8 @@ public class JobListenerKanban implements JobExecutionListener {
 		log.info("********In kanban JobExecution  listener - finishing job ********");
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+				CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRAKANBAN_KPI_CACHE);
 		try {
 			// sending notification in case of job failure
