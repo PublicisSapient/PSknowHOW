@@ -158,14 +158,7 @@ public class JiraController {
 
 	@PostMapping(value = "/jira/board", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getJiraBoardDetailsList(@RequestBody BoardRequestDTO boardRequestDTO) {
-		List<BoardDetailsDTO> boardDetailsList = jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO);
-		if (CollectionUtils.isEmpty(boardDetailsList)) {
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
-					"Not found any configure board details with provided connection details", null));
-		} else {
-			return ResponseEntity.ok()
-					.body(new ServiceResponse(true, "Successfully fetched board details list", boardDetailsList));
-		}
+		return jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO);
 	}
 
 	@GetMapping(value = "/jira/assignees/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

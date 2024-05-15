@@ -18,16 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
-import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
-import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
-
 /**
  * This class provides various methods related to operations on Global
  * Configurations Data
@@ -37,22 +33,20 @@ import com.publicissapient.kpidashboard.common.repository.application.GlobalConf
 @Service
 public class GlobalConfigServiceImpl implements GlobalConfigService {
 
-	private final GlobalConfigRepository globalConfigRepository;
+	private final CustomApiConfig customApiConfig;
+
 
 	/**
-	 * @param globalConfigRepository
+	 * @param customApiConfig
 	 */
 	@Autowired
-	public GlobalConfigServiceImpl(GlobalConfigRepository globalConfigRepository) {
-		this.globalConfigRepository = globalConfigRepository;
+	public GlobalConfigServiceImpl(CustomApiConfig customApiConfig) {
+		this.customApiConfig = customApiConfig;
 	}
-
 	@Override
 	public ServiceResponse getZephyrCloudUrlDetails() {
 		boolean success = false;
-		List<GlobalConfig> globalConfigs = globalConfigRepository.findAll();
-		GlobalConfig globalConfig = CollectionUtils.isEmpty(globalConfigs) ? null : globalConfigs.get(0);
-		String zephyrCloudUrl = globalConfig == null ? null : globalConfig.getZephyrCloudBaseUrl();
+		String zephyrCloudUrl = customApiConfig.getZephyrCloudBaseUrl();
 		if (zephyrCloudUrl != null) {
 			success = true;
 		}

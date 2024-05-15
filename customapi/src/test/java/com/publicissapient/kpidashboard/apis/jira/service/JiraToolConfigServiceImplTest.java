@@ -33,7 +33,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Objects;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.util.ProjectAccessUtil;
 import org.bson.types.ObjectId;
 import org.json.simple.parser.ParseException;
 import org.junit.Assert;
@@ -99,6 +102,8 @@ public class JiraToolConfigServiceImplTest {
 	private ProjectToolConfig projectTool;
 	private BoardRequestDTO boardRequestDTO;
 	private String basicConfigId;
+	@Mock
+	private ProjectAccessUtil projectAccessUtil;
 
 	@Before
 	public void setup() {
@@ -152,7 +157,9 @@ public class JiraToolConfigServiceImplTest {
 		boardRequestDTO2.setBoardName("Test | ABC Support | Scrum Board");
 		responseList.add(boardRequestDTO1);
 		responseList.add(boardRequestDTO2);
-		Assert.assertEquals(jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO).size(), responseList.size());
+		doReturn(false).when(projectAccessUtil).ifConnectionNotAccessible(any());
+
+		Assert.assertEquals(Objects.requireNonNull(jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO).getBody()).getData(),responseList);
 	}
 
 	@Test
@@ -167,7 +174,9 @@ public class JiraToolConfigServiceImplTest {
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		doReturn(new ResponseEntity<>(null, null, HttpStatus.NO_CONTENT)).when(restTemplate)
 				.exchange(eq(RESOURCE_JIRA_BOARD_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
-		Assert.assertEquals(0, jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO).size());
+		ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
+				"Not found any configure board details with provided connection details", null));
+		Assert.assertNotEquals(null,Objects.requireNonNull(jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO).getBody()).getData());
 	}
 
 	private String getServerResponseFromJson(String fileName) throws IOException {

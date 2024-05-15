@@ -21,7 +21,9 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.doReturn;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,14 +33,12 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
-import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
-
 @RunWith(MockitoJUnitRunner.class)
 public class GlobalConfigServiceImplTest {
 
 	@Mock
-	private GlobalConfigRepository globalConfigRepository;
+	private  CustomApiConfig customApiConfig;
+	
 
 	@InjectMocks
 	private GlobalConfigServiceImpl globalConfigService;
@@ -59,8 +59,7 @@ public class GlobalConfigServiceImplTest {
 	@Test
 	public void testGetZephyrCloudUrlDetailsWhenZephyrCloudBaseUrlIsNull() {
 		// Arrange
-		GlobalConfig globalConfig = new GlobalConfig();
-		globalConfig.setZephyrCloudBaseUrl(null);
+		doReturn(null).when(customApiConfig).getZephyrCloudBaseUrl();
 		// Act
 		ServiceResponse result = globalConfigService.getZephyrCloudUrlDetails();
 
