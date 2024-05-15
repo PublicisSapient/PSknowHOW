@@ -323,7 +323,7 @@ describe('AdvancedSettingsComponent', () => {
        );
      });
      component.runProcessor('Jira');
-     tick(3000);
+     tick(15000);
      jiraStatusContinuePulling = false
      discardPeriodicTasks()
      expect(component.processorsTracelogs).toBeDefined();
