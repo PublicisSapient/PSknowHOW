@@ -99,6 +99,7 @@ export class HttpService {
   private deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
   private getAllUsersUrl = this.baseUrl + '/api/userinfo';
   private updateAccessUrl = this.baseUrl + '/api/userinfo/';
+  private notificationPreferencesUrl = this.baseUrl + '/api/userinfo/notificationPreferences';
   private getKPIConfigMetadataUrl =
     this.baseUrl + '/api/editConfig/jira/editKpi/';
   /** KnowHOW Lite */
@@ -363,7 +364,7 @@ export class HttpService {
     };
     if(environment?.['AUTHENTICATION_SERVICE']){
       this.changePasswordUrl = this.baseUrl + '/api/changePassword/central';
-    }  
+    }
     return this.http
       .post(this.changePasswordUrl, postData)
       .pipe(tap((res) => {}));
@@ -554,6 +555,11 @@ export class HttpService {
     return this.http.post(this.updateAccessUrl + username, requestData);
   }
 
+  /** Change Notification Preferences toggle  */
+   notificationEmailToggleChange(notificationEmailObj): Observable<any> {
+      return this.http.post<any>(this.notificationPreferencesUrl, notificationEmailObj);
+    }
+
   /** get all requests for access (RBAC) */
   getAccessRequests(status) {
     return this.http
@@ -565,7 +571,7 @@ export class HttpService {
   getAccessRequestsNotifications() {
     if(environment?.['AUTHENTICATION_SERVICE']){
       this.getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification/central';
-    }  
+    }
     return this.http
       .get<NotificationResponseDTO>(this.getAccessRequestNotificationsUrl)
       .pipe(map((requests) => requests));
@@ -832,6 +838,9 @@ export class HttpService {
         });
         this.sharedService.setCurrentUserDetails({
           projectsAccess: authDetails['projectsAccess'],
+        });
+        this.sharedService.setCurrentUserDetails({
+           notificationEmail: authDetails['notificationEmail'],
         });
         this.sharedService.setCurrentUserDetails({
           authorities: authDetails['authorities'],

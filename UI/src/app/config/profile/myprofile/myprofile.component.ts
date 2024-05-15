@@ -34,10 +34,12 @@ export class MyprofileComponent implements OnInit {
   emailSubmitted = false;
   emailConfigured = false;
   userEmailForm: UntypedFormGroup;
-  userName : string 
+  userName : string
   authorities = this.sharedService.getCurrentUserDetails('authorities');
-
-
+  notificationEmailObj = {
+    "accessAlertNotification": this.sharedService.getCurrentUserDetails('notificationEmail')?.accessAlertNotification || false,
+    "errorAlertNotification": this.sharedService.getCurrentUserDetails('notificationEmail')?.errorAlertNotification || false
+  };
   userRole = this.authorities?.length ? this.authorities.join(',') : '--';
   userEmail : string
   userEmailConfigured = false;
@@ -66,7 +68,7 @@ export class MyprofileComponent implements OnInit {
     if ((!this.isSuperAdmin) && (this.sharedService.getCurrentUserDetails('projectsAccess') === 'undefined' || !this.sharedService.getCurrentUserDetails('projectsAccess').length)) {
       this.noAccess = true;
     }
-   
+
     this.sharedService.currentUserDetailsObs.subscribe(details=>{
       if(details){
         this.userName = details['user_name'] ? details['user_name'] : '--';
@@ -165,6 +167,28 @@ export class MyprofileComponent implements OnInit {
           }
         }
       );
+  }
+
+ toggleNotificationEmail(event: any, toggleField: string) {
+    const updatedFlag = event.checked;
+    this.notificationEmailObj[toggleField] = updatedFlag;
+    //call http service
+     this.http.notificationEmailToggleChange(this.notificationEmailObj)
+       .subscribe(
+            response => {
+              if (response && response['success'] && response['data']) {
+                console.log( response['data']);
+                const userDetails = response['data'];
+                this.sharedService.setCurrentUserDetails({
+                  notificationEmail: userDetails['notificationEmail'],
+               });
+              } else if (response && !response['success']) {
+                if (response['message']) {
+                  this.message = response['message'];
+                }
+              }
+            }
+          );
   }
 
 }

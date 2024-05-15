@@ -95,7 +95,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					customApiConfig.getForgotPasswordExpiryInterval());
 			log.info("Notification message sent to kafka with key : {}", FORGOT_PASSWORD_NOTIFICATION_KEY);
 			notificationService.sendEmailWithoutKafka(Arrays.asList(email), customData, customApiConfig.getEmailSubject(),
-					FORGOT_PASSWORD_NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(),FORGOT_PASSWORD_TEMPLATE);
+					FORGOT_PASSWORD_NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(), customApiConfig.isNotificationSwitch() , FORGOT_PASSWORD_TEMPLATE);
 			return authentication;
 		}
 		return null;

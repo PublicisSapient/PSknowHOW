@@ -20,7 +20,7 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
 
@@ -125,7 +125,7 @@ public interface UserInfoService {
 	 * @param username
 	 *            username
 	 */
-	ServiceResponse deleteUser(String username , boolean centralAuthService);
+	ServiceResponse deleteUser(String username, boolean centralAuthService);
 
 	List<UserInfo> getUserInfoByAuthType(String userType);
 
@@ -178,5 +178,14 @@ public interface UserInfoService {
 	boolean getCentralAuthUserDeleteUserToken(String authCookieToken);
 
 	// ----auth Service Methods Ended---------
+
+	/**
+	 * update notification email alert flag user wise
+	 * 
+	 * @param loggedUserName
+	 * @param notificationEmail
+	 * @return
+	 */
+	UserInfo updateNotificationEmail(String loggedUserName, Map<String, Boolean> notificationEmail);
 
 }

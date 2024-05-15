@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.common.model.rbac;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 
@@ -52,4 +53,5 @@ public class UserInfoDTO {
 	private String createdOn;
 	private String emailAddress;
 	private List<ProjectsAccess> projectsAccess;
+	private Map<String , Boolean> notificationEmail;
 }
