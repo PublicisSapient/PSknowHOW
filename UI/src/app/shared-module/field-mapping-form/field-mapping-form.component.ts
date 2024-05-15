@@ -123,7 +123,7 @@ private setting = {
         history: fieldMapping.history
       })
     }
-    if (fieldMapping && (fieldMapping?.originalValue || fieldMapping?.originalValue === false) || (!isNaN(fieldMapping.originalValue) && fieldMapping.originalValue >= 0)) {
+    if (fieldMapping && (fieldMapping?.originalValue || fieldMapping?.originalValue === false) || (!isNaN(fieldMapping?.originalValue) && fieldMapping?.originalValue >= 0)) {
       return new FormControl(fieldMapping.originalValue);
     } else {
       switch (config.fieldType) {
