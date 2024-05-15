@@ -137,10 +137,10 @@ public class JobListenerScrumTest {
 	@Before
 	public void setUp() {
 		jobExecution = MetaDataInstanceFactory.createJobExecution();
-		when(jiraClientService.getRestClient()).thenReturn(client);
+		when(jiraClientService.isContainRestClient(null)).thenReturn(true);
+		when(jiraClientService.getRestClientMap(null)).thenReturn(client);
 		when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
 		when(client.getCustomIssueClient()).thenReturn(customAsynchronousIssueRestClient);
-		when(jiraClientService.getKerberosClient()).thenReturn(kerberosClient);
 
 		projectToolConfigs = IssueReaderUtil.getMockProjectToolConfig(projectId);
 		projectConfigsList = IssueReaderUtil.getMockProjectConfig();

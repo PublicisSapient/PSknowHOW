@@ -21,6 +21,7 @@ import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDat
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -95,7 +96,7 @@ public class JobListenerScrum implements JobExecutionListener {
 	private JiraCommonService jiraCommonService;
 
 	@Autowired
-	JiraClientService jiraClientService;
+	private JiraClientService jiraClientService;
 
 	@Autowired
 	JiraIssueRepository jiraIssueRepository;
@@ -141,18 +142,14 @@ public class JobListenerScrum implements JobExecutionListener {
 			} else {
 				setExecutionInfoInTraceLog(true);
 			}
-			if (jiraClientService.getRestClient() != null) {
-				jiraClientService.getRestClient().close();
-			}
-			if (jiraClientService.getKerberosClient() != null) {
-				jiraClientService.getKerberosClient().close();
-			}
 		} catch (Exception e) {
 			log.error("An Exception has occured in scrum jobListener", e);
 		} finally {
 			log.info("removing project with basicProjectConfigId {}", projectId);
 			// Mark the execution as completed
 			ongoingExecutionsService.markExecutionAsCompleted(projectId);
+
+			log.info("removing client for basicProjectConfigId {}", projectId);
             if (jiraClientService.isContainRestClient(projectId)){
                 try {
                     jiraClientService.getRestClientMap(projectId).close();
@@ -187,7 +184,7 @@ public class JobListenerScrum implements JobExecutionListener {
 				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Collections.singletonList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
-				checkDeltaIssues(projectId, processorExecutionTraceLog);
+				checkDeltaIssues(processorExecutionTraceLog,status);
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(status);
 			}
@@ -195,18 +192,17 @@ public class JobListenerScrum implements JobExecutionListener {
 		}
 	}
 
-	private void checkDeltaIssues(String projectId, ProcessorExecutionTraceLog processorExecutionTraceLog) {
-		if (StringUtils.isNotEmpty(processorExecutionTraceLog.getFirstRunDate())) {
+	private void checkDeltaIssues(ProcessorExecutionTraceLog processorExecutionTraceLog, boolean status) {
+		if (StringUtils.isNotEmpty(processorExecutionTraceLog.getFirstRunDate()) && status) {
 			if (StringUtils.isNotEmpty(processorExecutionTraceLog.getBoardId())) {
 				String query = "updatedDate>='" + processorExecutionTraceLog.getFirstRunDate();
-				Promise<SearchResult> promisedRs = jiraClientService.getRestClient().getCustomIssueClient()
+				Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getCustomIssueClient()
 						.searchBoardIssue(processorExecutionTraceLog.getBoardId(), query, 0, 0,
 								JiraConstants.ISSUE_FIELD_SET);
 				SearchResult searchResult = promisedRs.claim();
 				if (searchResult != null && (searchResult.getTotal() != jiraIssueRepository
 						.countByBasicProjectConfigIdAndExcludeTypeName(projectId, JiraConstants.EPIC))) {
 					processorExecutionTraceLog.setDataMismatch(true);
-
 				}
 			} else {
 				ProjectConfFieldMapping projectConfig = fetchProjectConfiguration.fetchConfiguration(projectId);
@@ -218,10 +214,9 @@ public class JobListenerScrum implements JobExecutionListener {
 				String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase()
 						.split(JiraConstants.ORDERBY)[0];
 				query.append(userQuery);
-				query.append(" and issuetype in (" + issueTypes + " ) and updatedDate>='"
-						+ processorExecutionTraceLog.getFirstRunDate() + "' ");
+				query.append(" and issuetype in (").append(issueTypes).append(" ) and updatedDate>='").append(processorExecutionTraceLog.getFirstRunDate()).append("' ");
 				log.info("jql query :{}", query);
-				Promise<SearchResult> promisedRs = jiraClientService.getRestClient().getProcessorSearchClient()
+				Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getProcessorSearchClient()
 						.searchJql(query.toString(), 0, 0, JiraConstants.ISSUE_FIELD_SET);
 				SearchResult searchResult = promisedRs.claim();
 				if (searchResult != null && (searchResult.getTotal() != jiraIssueRepository

@@ -209,5 +209,4 @@ public interface JiraIssueRepository
 	@Query(value = "{ 'basicProjectConfigId' : ?0, 'typeName' : { $ne : ?1 } }", count = true)
 	long countByBasicProjectConfigIdAndExcludeTypeName(String basicProjectConfigId, String typeName);
 
-	List<JiraIssue> findByProjectIDAndNumberInAndAdditionalFiltersFilterIdInAndAdditionalFiltersFilterValuesValueIdInOrProjectIDAndNumberInAndAdditionalFiltersFilterIdNullAndAdditionalFiltersFilterValuesValueIdNull(String projectId, List<String> issueList, List<String> filterId, List<String> valueIds);
 }
