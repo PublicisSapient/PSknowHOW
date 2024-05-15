@@ -722,4 +722,33 @@ describe('MyprofileComponent', () => {
       { id: 'projectName', name: 'Projects' },
     ]);
   });
+
+ fit('should update notification email flag', () => {
+    component.ngOnInit();
+    const event = { checked: true };
+    const toggleField = 'accessAlertNotification';
+    const successResponse = {
+              success: true,
+              message: 'Flag Updated successfully in user info details' ,
+              data :  {
+                        "username": "dummyUser",
+                        "authorities": [
+                          "ROLE_PROJECT_ADMIN"
+                        ],
+                        "authType": "SAML",
+                        "emailAddress": "someemail@abc.com",
+                        "notificationEmail": {
+                          "accessAlertNotification": true,
+                          "errorAlertNotification": false
+                        }
+                      }
+                   };
+    shared.currentUserDetailsSubject.next({user_name : "dummyUser",user_email:"someemail@abc.com" ,
+    "notificationEmail": { "accessAlertNotification": true,"errorAlertNotification": false }})
+    spyOn(httpService,'notificationEmailToggleChange').and.returnValue(of(successResponse))
+    const spyObj = spyOn(shared, 'setCurrentUserDetails');
+    component.toggleNotificationEmail(event, toggleField);
+    fixture.detectChanges();
+    expect(spyObj).toHaveBeenCalledWith();
+  });
 });
