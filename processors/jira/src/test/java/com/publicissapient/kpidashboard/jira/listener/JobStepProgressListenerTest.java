@@ -31,7 +31,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
@@ -62,6 +61,7 @@ public class JobStepProgressListenerTest {
 	@Test
 	public void afterStep() {
 		StepExecution stepExecutionMock = mock(StepExecution.class);
+		when(stepExecutionMock.getStatus()).thenReturn(BatchStatus.COMPLETED);
 		ExitStatus exitStatus = jobStepProgressListener.afterStep(stepExecutionMock);
 		assertNull(exitStatus);
 	}
@@ -72,7 +72,6 @@ public class JobStepProgressListenerTest {
 		StepExecution stepExecutionMock = mock(StepExecution.class);
 		when(stepExecutionMock.getStatus()).thenReturn(BatchStatus.COMPLETED);
 		when(stepExecutionMock.getStepName()).thenReturn("testStep");
-		ReflectionTestUtils.setField(jobStepProgressListener, "isScheduler", "false");
 
 		// Act
 		ExitStatus exitStatus = jobStepProgressListener.afterStep(stepExecutionMock);

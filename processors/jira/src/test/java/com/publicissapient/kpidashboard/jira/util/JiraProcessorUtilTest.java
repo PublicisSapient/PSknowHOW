@@ -231,7 +231,7 @@ public class JiraProcessorUtilTest {
 		// Verify the result
 		List<ProgressStatus> progressStatusList = result.getProgressStatusList();
 		assertEquals(1, progressStatusList.size());
-		assertEquals("Processing issues 0 to 0 out of 0", progressStatusList.get(0).getStepName());
+		assertEquals("Process issues 0 to 0 out of 0", progressStatusList.get(0).getStepName());
 		assertEquals(BatchStatus.COMPLETED.toString(), progressStatusList.get(0).getStatus());
 	}
 }
