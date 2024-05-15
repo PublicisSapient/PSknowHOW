@@ -269,10 +269,10 @@ export class AdvancedSettingsComponent implements OnInit {
             this.messageService.add({ severity: 'error', summary: response.data });
           }else{
             this.messageService.add({ severity: 'error', summary: `Error in running ${runProcessorInput['processor']} processor. Please try after some time.` });
-          }
-          const pDetails = this.findTraceLogForTool(runProcessorInput['processor'])
-          if(pDetails){
-            pDetails['executionOngoing'] = false;
+            const pDetails = this.findTraceLogForTool(runProcessorInput['processor'])
+            if(pDetails){
+              pDetails['executionOngoing'] = false;
+            }
           }
         }
       });
