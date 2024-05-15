@@ -54,7 +54,6 @@ import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -275,7 +274,7 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 		Integer dataPoints = kpiRequest.getXAxisDataPoints();
 		String duration = kpiRequest.getDuration();
 		for (int i = 0; i < dataPoints; i++) {
-			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
+			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate, duration);
 			Double reworkRate = weekWiseReworkRate.getOrDefault(dateRange.getStartDate().toString(), 0d);
 			String date = getDateRange(dateRange, duration);
 			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
@@ -301,7 +300,7 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 		if (CommonConstant.WEEK.equalsIgnoreCase(duration)) {
 			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
 					DateUtil.DISPLAY_DATE_FORMAT) + " to "
-					+ DateUtil.dateTimeConverter(dateRange.getEndDate().minusDays(2).toString(), DateUtil.DATE_FORMAT,
+					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 		} else {
 			range = dateRange.getStartDate().toString();

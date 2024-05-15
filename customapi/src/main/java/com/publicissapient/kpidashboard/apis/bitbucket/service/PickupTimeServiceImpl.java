@@ -242,7 +242,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 		String duration = kpiRequest.getDuration();
 
 		for (int i = 0; i < dataPoints; i++) {
-			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
+			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate, duration);
 			double pickupTime = Double.parseDouble(
 					decimalFormat.format(weekWisePickupTime.getOrDefault(dateRange.getStartDate().toString(), 0.0d)));
 			String date = getDateRange(dateRange, duration);
@@ -262,7 +262,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 		if (CommonConstant.WEEK.equalsIgnoreCase(duration)) {
 			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
 					DateUtil.DISPLAY_DATE_FORMAT) + " to "
-					+ DateUtil.dateTimeConverter(dateRange.getEndDate().minusDays(2).toString(), DateUtil.DATE_FORMAT,
+					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 		} else {
 			range = dateRange.getStartDate().toString();
