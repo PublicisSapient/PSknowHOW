@@ -331,7 +331,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   getProcessorCompletionSteps(runProcessorInput){
     const jiraInd = this.findCorrectJiraDetails();
-    this.subscription = interval(3000).pipe(
+    this.subscription = interval(15000).pipe(
       takeWhile(() => this.jiraStatusContinuePulling),
       switchMap(() => this.httpService.getProgressStatusOfProcessors(runProcessorInput))
     ).subscribe(response => {
