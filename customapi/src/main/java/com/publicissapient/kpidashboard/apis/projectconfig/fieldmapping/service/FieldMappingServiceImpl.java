@@ -193,13 +193,14 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 * first from fieldmapping table
 	 */
 	@Override
-	public List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId,
-			FieldMappingMeta requestData) throws NoSuchFieldException, IllegalAccessException {
+	public List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfig,
+																	 FieldMappingMeta requestData) throws NoSuchFieldException, IllegalAccessException {
 		FieldMappingEnum fieldMappingEnum = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase());
 		List<String> fields = fieldMappingEnum.getFields();
 		String releaseNodeId = requestData.getReleaseNodeId();
 		List<String> nodeSpecifFields = getNodeSpecificFields();
-		FieldMapping fieldMapping = getFieldMapping(projectToolConfigId);
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				.get(projectToolConfig.getBasicProjectConfigId());
 		List<FieldMappingResponse> fieldMappingResponses = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(fields) && fieldMapping != null) {
 			Class<FieldMapping> fieldMappingClass = FieldMapping.class;
