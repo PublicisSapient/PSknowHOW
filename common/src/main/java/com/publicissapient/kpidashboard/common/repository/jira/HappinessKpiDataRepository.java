@@ -41,4 +41,5 @@ public interface HappinessKpiDataRepository extends MongoRepository<HappinessKpi
 	HappinessKpiData findExistingByBasicProjectConfigIdAndSprintIDAndDateOfSubmission(ObjectId basicProjectConfigId,
 			String sprintID, String dateOfSubmission);
 
+	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 }

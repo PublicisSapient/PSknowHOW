@@ -41,6 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -193,6 +194,11 @@ public class ProjectBasicConfigServiceImplTest {
 	private KanbanAccountHierarchy accountHierarchy6;
 
 	private ModelMapper modelMapper = new ModelMapper();
+
+	@Mock
+	private HappinessKpiDataRepository happinessKpiDataRepository;
+
+
 
 	/**
 	 * method includes pre processes for test cases
@@ -596,6 +602,39 @@ public class ProjectBasicConfigServiceImplTest {
 		verify(toolRepository, times(1)).deleteById(new ObjectId("5fc4d61f80b6350f048a93e6"));
 
 	}
+
+
+	@Test
+	public void deleteAssigneeDetails() {
+		String id = "5fc4d61f80b6350f048a93e5";
+		ObjectId basicProjectConfigId = new ObjectId(id);
+
+		ProjectBasicConfig p1 = new ProjectBasicConfig();
+		p1.setId(basicProjectConfigId);
+		p1.setProjectName("Test");
+
+		Optional<ProjectBasicConfig> p1Opt = Optional.of(p1);
+		AccessRequest accessRequestsData = createAccessRequestData();
+		when(toolRepository.findByBasicProjectConfigId(any(ObjectId.class))).thenReturn(createTools());
+		when(userAuthorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
+		when(basicConfigRepository.findById(any(ObjectId.class))).thenReturn(p1Opt);
+		when(assigneeDetailsRepository.findByBasicProjectConfigId(anyString())).thenReturn(new AssigneeDetails());
+		when(dataCleanUpServiceFactory.getService(ProcessorConstants.JIRA)).thenReturn(agileDataCleanUpService);
+		doNothing().when(agileDataCleanUpService).clean(anyString());
+		doNothing().when(toolRepository).deleteById(any(ObjectId.class));
+		doNothing().when(fieldMappingService).deleteByBasicProjectConfigId(any(ObjectId.class));
+		doNothing().when(basicConfigRepository).delete(any(ProjectBasicConfig.class));
+		doNothing().when(deleteProjectTraceLogService).save(any(ProjectBasicConfig.class));
+		when(accessRequestsHelperService.getAccessRequestsByProject(anyString()))
+				.thenReturn(Arrays.asList(accessRequestsData));
+		projectBasicConfigServiceImpl.deleteProject(id);
+
+		verify(basicConfigRepository, times(1)).delete(p1);
+		verify(toolRepository, times(1)).deleteById(new ObjectId("5fc4d61f80b6350f048a93e6"));
+
+	}
+
+
 
 	private AccessRequest createAccessRequestData() {
 		AccessRequest accessRequestsData = new AccessRequest();
