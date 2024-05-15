@@ -192,9 +192,9 @@ public class UserInfoController {
 
 		if (Objects.nonNull(userInfo)) {
 			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ServiceResponse(true, "get successfully user info details ", userInfo));
+					.body(new ServiceResponse(true, "Flag Updated successfully in user info details", userInfo));
 		} else {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ServiceResponse(false, "invalid Token or user", null));
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ServiceResponse(false, "Invalid Token or user or flag is not found", null));
 
 		}
 

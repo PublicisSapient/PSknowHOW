@@ -177,7 +177,6 @@ export class MyprofileComponent implements OnInit {
        .subscribe(
             response => {
               if (response && response['success'] && response['data']) {
-                console.log( response['data']);
                 const userDetails = response['data'];
                 this.sharedService.setCurrentUserDetails({
                   notificationEmail: userDetails['notificationEmail'],
