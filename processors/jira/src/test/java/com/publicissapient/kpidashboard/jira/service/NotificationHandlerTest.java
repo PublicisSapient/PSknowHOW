@@ -124,6 +124,9 @@ public class NotificationHandlerTest {
     }
 
     private UserInfo createMockUserInfo() {
+        Map<String, Boolean> notificationEmail = new HashMap<>();
+        notificationEmail.put("accessAlertNotification" , false);
+        notificationEmail.put("errorAlertNotification" , true);
         UserInfo userInfo = new UserInfo();
         userInfo.setEmailAddress("admin1@example.com");
         ProjectsAccess projectsAccess = new ProjectsAccess();
@@ -135,6 +138,7 @@ public class NotificationHandlerTest {
         accessNode.setAccessItems(Collections.singletonList(accessItem));
         projectsAccess.setAccessNodes(Collections.singletonList(accessNode));
         userInfo.setProjectsAccess(Collections.singletonList(projectsAccess));
+        userInfo.setNotificationEmail(notificationEmail);
         return userInfo;
     }
 }
