@@ -31,7 +31,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,7 +65,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		return Jwts.builder()
 				   .setSubject(subject)
 				   .claim(DETAILS_CLAIM, authType)
-				   .claim(ROLES_CLAIM, Objects.nonNull(authorities) ? getRoles(authorities) : new HashSet<>())
+				   .claim(ROLES_CLAIM, Objects.nonNull(authorities) ? authorities : new HashSet<>())
 				   .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, authProperties.getSecret())
 				   .compact();
 	}
@@ -99,14 +101,17 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		}
 	}
 
-	private Claims parseClaims(String token) throws ExpiredJwtException {
-		return Jwts.parser().setSigningKey(authProperties.getSecret()).parseClaimsJws(token).getBody();
+	// TODO: we could store the resource names as keys and roles lists as values
+	@Override
+	public Collection<GrantedAuthority> createAuthorities(List<String> roles) {
+		Collection<GrantedAuthority> grantedAuthorities = new HashSet<>();
+
+		roles.forEach(authority -> grantedAuthorities.add(new SimpleGrantedAuthority(authority)));
+
+		return grantedAuthorities;
 	}
 
-	private Collection<String> getRoles(Collection<? extends GrantedAuthority> authorities) {
-		Collection<String> roles = new HashSet<>();
-		authorities.forEach(authority -> roles.add(authority.getAuthority()));
-
-		return roles;
+	private Claims parseClaims(String token) throws ExpiredJwtException {
+		return Jwts.parser().setSigningKey(authProperties.getSecret()).parseClaimsJws(token).getBody();
 	}
 }

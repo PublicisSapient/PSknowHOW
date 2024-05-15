@@ -17,30 +17,11 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.service;
 
-import com.publicissapient.kpidashboard.apis.entity.Role;
-import com.publicissapient.kpidashboard.apis.entity.User;
-import com.publicissapient.kpidashboard.apis.entity.UserRole;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Collection;
 import java.util.List;
 
-/**
- * 
- * this service will using in future while central authorization
- * 
- * @author hargupta15
- */
+
 public interface UserRoleService {
 
-	Collection<GrantedAuthority> getAuthorities(String username);
-
-	boolean isRootUser(String username, String resource);
-
-	UserRole createUserRole(String username, Role role, User user);
-
-	List<UserRole> findUserRoleByUsernameAndResource(String loggedUser, String resource);
-
-	List<UserRole> createAndGetDefaultUserRole(String username);
+	List<String> getRolesNamesByUsername(String username);
 
 }

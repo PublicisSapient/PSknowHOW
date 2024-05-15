@@ -20,14 +20,16 @@ package com.publicissapient.kpidashboard.apis.service.impl;
 
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.config.ForgotPasswordConfig;
+import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
 import com.publicissapient.kpidashboard.apis.entity.GlobalConfig;
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.entity.UserRole;
+import com.publicissapient.kpidashboard.apis.enums.NotificationCustomDataEnum;
 import com.publicissapient.kpidashboard.apis.kafka.producer.NotificationEventProducer;
 import com.publicissapient.kpidashboard.apis.repository.GlobalConfigRepository;
 import com.publicissapient.kpidashboard.apis.repository.UserRepository;
 import com.publicissapient.kpidashboard.apis.repository.UserRoleRepository;
-import com.publicissapient.kpidashboard.apis.service.CommonService;
+import com.publicissapient.kpidashboard.apis.service.NotificationService;
 import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -52,16 +54,10 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-/**
- * Implementation of {@link CommonService} to get maturity level
- *
- * @author Hiren Babariya
- */
-
 @Service
 @AllArgsConstructor
 @Slf4j
-public class CommonServiceImpl implements CommonService {
+public class NotificationServiceImpl implements NotificationService {
 	public static final String NOTIFICATION_MESSAGE_SENT_TO_KAFKA_WITH_KEY = "Notification message sent to kafka with key : {}";
 
 	private final UserRoleRepository userRoleRepository;
@@ -277,6 +273,51 @@ public class CommonServiceImpl implements CommonService {
 		props.put("mail.smtp.ssl.trust", "*");
 		props.put("mail.debug", "true");
 		return mailSender;
+	}
+
+	@Override
+	public void sendUserApprovalEmail(String username, String email) {
+		String serverPath = getServerPath();
+		List<String> superAdminEmailList = getEmailAddressBasedOnRoles(Arrays.asList(CommonConstant.ROLE_SUPERADMIN));
+
+		List<String> emailAddresses = new ArrayList<>();
+		emailAddresses.add(email);
+
+		Map<String, String> customData = createCustomData(username, email, serverPath,
+														  superAdminEmailList.get(0));
+		sendEmailNotification(emailAddresses,
+							  customData,
+							  CommonConstant.APPROVAL_NOTIFICATION_KEY,
+							  CommonConstant.APPROVAL_SUCCESS_TEMPLATE_KEY
+		);
+	}
+
+	/**
+	 * * create custom data for email
+	 *
+	 * @param username
+	 * @param email
+	 * @param serverPath
+	 * @param adminEmail
+	 * @return
+	 */
+	private Map<String, String> createCustomData(String username, String email, String serverPath, String adminEmail) {
+		Map<String, String> customData = new HashMap<>();
+		customData.put(NotificationCustomDataEnum.USER_NAME.getValue(), username);
+		customData.put(NotificationCustomDataEnum.USER_EMAIL.getValue(), email);
+		customData.put(NotificationCustomDataEnum.SERVER_HOST.getValue(), serverPath);
+		customData.put(NotificationCustomDataEnum.ADMIN_EMAIL.getValue(), adminEmail);
+		return customData;
+	}
+
+	private String getServerPath() {
+		String serverPath = "";
+		try {
+			serverPath = getApiHost();
+		} catch (UnknownHostException e) {
+			log.error("ApproveRequestController: Server Host name is not bind with Approval Request mail ");
+		}
+		return serverPath;
 	}
 
 }

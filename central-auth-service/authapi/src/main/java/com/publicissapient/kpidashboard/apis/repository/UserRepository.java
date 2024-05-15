@@ -22,14 +22,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.apis.entity.User;
 
-/**
- * The interface Authentication repository.
- *
- * @author Hiren Babariya
- */
+@Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
 	/**
@@ -56,10 +53,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	 */
 	List<User> findByUsernameIn(List<String> userName);
 
-	/**
-	 * @param approved
-	 * @return
-	 */
 	List<User> findByUserVerifiedAndApprovedOrderByIdDesc(Boolean userVerified, Boolean approved);
 
 }

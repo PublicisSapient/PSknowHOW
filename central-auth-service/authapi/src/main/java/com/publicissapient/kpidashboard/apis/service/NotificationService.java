@@ -10,7 +10,7 @@ import java.util.Map;
  * @author Hiren Babariya
  *
  */
-public interface CommonService {
+public interface NotificationService {
 
 	/**
 	 *
@@ -29,6 +29,9 @@ public interface CommonService {
 	 */
 	void sendEmailNotification(List<String> emailAddresses, Map<String, String> customData, String subjectKey,
 			String notKey);
+
+	void sendUserApprovalEmail(String username, String email);
+
 	/**
 	 *
 	 * @return String

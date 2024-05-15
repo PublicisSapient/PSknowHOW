@@ -17,64 +17,31 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.service.impl;
 
-import com.publicissapient.kpidashboard.apis.entity.Role;
-import com.publicissapient.kpidashboard.apis.errors.GenericException;
-import com.publicissapient.kpidashboard.apis.repository.RoleRepository;
-import com.publicissapient.kpidashboard.apis.service.RoleService;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author hargupta15
- */
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.stereotype.Service;
+
+import com.publicissapient.kpidashboard.apis.entity.Role;
+import com.publicissapient.kpidashboard.apis.repository.RoleRepository;
+import com.publicissapient.kpidashboard.apis.service.RoleService;
+
 @Service
 @AllArgsConstructor
 @Slf4j
 public class RoleServiceImpl implements RoleService {
+
     private final RoleRepository roleRepository;
 
-    /**
-     * Validate Role details
-     *
-     * @param roleName
-     * @param resourceId
-     */
-    public Role validateRole(String roleName, Long resourceId) {
-        if (roleName == null || roleName.isEmpty()) {
-            log.error("Invalid Role Name : " + roleName);
-            throw new GenericException("Please provide a valid Role");
-        }
-        Role role = roleRepository.findByNameAndResourceId(roleName, resourceId);
-        if (role == null) {
-            log.error("Role doesn't exist for given resource");
-            throw new GenericException("Role doesn't exist for given resource");
-        }
-        return role;
-    }
-
-    /**
-     * fetch resource wise roles name
-     *
-     * @param resourceName
-     * @return
-     */
-
     @Override
-    public List<String> getResourceAllRoles(String resourceName) {
+    public List<String> getAllRolesByResourceName(String resourceName) {
 
-        return roleRepository.findByResourceId(resourceName).stream().map(Role::getName).collect(Collectors.toList());
-    }
-
-    /**
-     * @param resource
-     * @return
-     */
-    @Override
-    public List<Role> getRootUserForResource(String resource) {
-        return roleRepository.getRootRoleforResource(resource);
+        return roleRepository.findByResource_Name(resourceName)
+                             .stream()
+                             .map(Role::getName)
+                             .collect(Collectors.toList());
     }
 }

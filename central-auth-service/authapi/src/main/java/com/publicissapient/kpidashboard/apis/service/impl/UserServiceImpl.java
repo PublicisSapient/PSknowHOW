@@ -27,11 +27,9 @@ import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.enums.NotificationCustomDataEnum;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.apis.errors.GenericException;
-import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
-import com.publicissapient.kpidashboard.apis.errors.UserNotFoundException;
 import com.publicissapient.kpidashboard.apis.repository.UserRepository;
 import com.publicissapient.kpidashboard.apis.repository.UserVerificationTokenRepository;
-import com.publicissapient.kpidashboard.apis.service.CommonService;
+import com.publicissapient.kpidashboard.apis.service.NotificationService;
 import com.publicissapient.kpidashboard.apis.service.MessageService;
 import com.publicissapient.kpidashboard.apis.service.UserService;
 import com.publicissapient.kpidashboard.common.model.UserDTO;
@@ -40,11 +38,8 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.net.UnknownHostException;
@@ -52,8 +47,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.WRONG_CREDENTIALS_ERROR_MESSAGE;
 
 /**
  * This class provides method to perform CRUD and validation operations on user
@@ -74,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
 	private final UserInterfacePathsConfig userInterfacePathsConfig;
 
-	private final CommonService commonService;
+	private final NotificationService commonService;
 
 	private final UserVerificationTokenRepository userVerificationTokenRepository;
 
@@ -151,23 +144,17 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findByUsername(userName);
 	}
 
-	/**
-	 * method to delete user details from user collection
-	 *
-	 * @param userName
-	 * @return
-	 */
 	@Override
 	@Transactional
-	public boolean deleteByUserName(String userName) {
+	public boolean deleteByUserName(String username) {
 		try {
-			userRepository.deleteByUsername(userName);
+			userRepository.deleteByUsername(username);
+			log.info("User: {} has been deleted.", username);
 			return true;
 		} catch (Exception e) {
-			log.info("error while delete user", e);
+			log.error("Error while deleting user: {}", username, e);
 			return false;
 		}
-
 	}
 
 	@Override

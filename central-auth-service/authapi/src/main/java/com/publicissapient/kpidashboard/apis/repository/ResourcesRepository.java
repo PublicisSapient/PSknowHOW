@@ -18,11 +18,14 @@
 package com.publicissapient.kpidashboard.apis.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.apis.entity.Resource;
-import org.springframework.stereotype.Repository;
+
 
 @Repository
 public interface ResourcesRepository extends JpaRepository<Resource, Long> {
+
 	Resource findByName(String name);
+
 }

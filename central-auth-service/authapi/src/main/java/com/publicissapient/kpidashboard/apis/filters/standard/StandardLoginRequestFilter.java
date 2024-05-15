@@ -29,8 +29,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.publicissapient.kpidashboard.apis.enums.AuthType;
-
 public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFilter {
 	public StandardLoginRequestFilter(String path, AuthenticationManager authenticationManager,
 									  CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,

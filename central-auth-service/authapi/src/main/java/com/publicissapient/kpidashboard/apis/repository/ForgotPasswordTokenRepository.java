@@ -19,9 +19,9 @@
 package com.publicissapient.kpidashboard.apis.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.apis.entity.ForgotPasswordToken;
-import org.springframework.stereotype.Repository;
 
 /**
  * The interface Forgot password token repository.
@@ -34,8 +34,7 @@ public interface ForgotPasswordTokenRepository extends JpaRepository<ForgotPassw
 	/**
 	 * Find by token forgot password token.
 	 *
-	 * @param token
-	 *            the token
+	 * @param token the token
 	 * @return the forgot password token
 	 */
 	ForgotPasswordToken findByToken(String token);
