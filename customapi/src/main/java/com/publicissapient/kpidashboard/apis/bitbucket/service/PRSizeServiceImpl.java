@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -248,7 +249,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 					weekWiseMRCount.getOrDefault(dateRange.getStartDate().toString(), 0l));
 			aggDataMap.get(branchName).add(dataCount);
 			excelDataLoader.put(date, prSize);
-			currentDate = getNextRangeDate(duration, currentDate);
+			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 
 		}
 

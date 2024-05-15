@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
@@ -32,9 +31,6 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 
 /**
  * Bitbucket Kpi service.
@@ -103,25 +99,4 @@ public abstract class BitBucketKPIService<R, S, T> extends ToolsKPIService<R, S>
 		}
 		return subfilter;
 	}
-
-	/**
-	 * gets next date excluding weekends
-	 * @param duration
-	 * 				time duration
-	 * @param currentDate
-	 * 				current date
-	 * @return next local date excluding weekends
-	 */
-	public LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
-		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
-			currentDate = currentDate.minusWeeks(1);
-		} else {
-			currentDate = currentDate.minusDays(1);
-			while(currentDate.getDayOfWeek() == DayOfWeek.SATURDAY || currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-				currentDate = currentDate.minusDays(1);
-			}
-		}
-		return currentDate;
-	}
-
 }

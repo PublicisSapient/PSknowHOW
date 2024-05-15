@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -1636,6 +1637,27 @@ public class KpiHelperService { // NOPMD
 	public static long convertMilliSecondsToHours(double milliseconds) {
 		double hoursExact = milliseconds / (3600000);
 		return Math.round(hoursExact);
+	}
+
+	/**
+	 * gets next date excluding weekends
+	 * 
+	 * @param duration
+	 *            time duration
+	 * @param currentDate
+	 *            current date
+	 * @return next local date excluding weekends
+	 */
+	public static LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
+		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
+			currentDate = currentDate.minusWeeks(1);
+		} else {
+			currentDate = currentDate.minusDays(1);
+			while (currentDate.getDayOfWeek() == DayOfWeek.SATURDAY || currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+				currentDate = currentDate.minusDays(1);
+			}
+		}
+		return currentDate;
 	}
 
 	/**

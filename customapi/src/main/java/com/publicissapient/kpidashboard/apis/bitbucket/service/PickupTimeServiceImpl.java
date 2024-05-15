@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
@@ -250,7 +251,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 					weekWiseMRCount.getOrDefault(dateRange.getStartDate().toString(), 0).longValue());
 			aggDataMap.get(branchName).add(dataCount);
 			excelDataLoader.put(date, pickupTime);
-			currentDate = getNextRangeDate(duration, currentDate);
+			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 
 		}
 

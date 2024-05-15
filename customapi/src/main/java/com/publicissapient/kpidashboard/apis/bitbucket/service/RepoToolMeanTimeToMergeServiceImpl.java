@@ -209,7 +209,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			DataCount dataCount = setDataCount(projectName, date, meanTimeToMerge);
 			dataCountList.add(dataCount);
 			excelDataLoader.put(date, (double) KpiHelperService.convertMilliSecondsToHours(meanTimeToMerge));
-			currentDate = getNextRangeDate(duration, currentDate);
+			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 
 		}
 		Collections.reverse(dataCountList);

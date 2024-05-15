@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -281,7 +282,7 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 			DataCount dataCount = setDataCount(projectName, date, reworkRate);
 			aggDataMap.get(branchName).add(dataCount);
 			excelDataLoader.put(date, reworkRate);
-			currentDate = getNextRangeDate(duration, currentDate);
+			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 
 		}
 
