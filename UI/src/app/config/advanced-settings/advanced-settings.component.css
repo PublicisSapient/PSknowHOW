@@ -85,3 +85,6 @@ div.main {
   font-size: 12px;
   font-style: italic;
 }
+.error-text{
+  color: red;max-width: 600px;
+}
