@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.controller;
 
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
+import com.publicissapient.kpidashboard.apis.config.UserInterfacePathsConfig;
 import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
@@ -55,6 +56,8 @@ public class UserController {
 
 	private final AuthConfig authConfigurationProperties;
 
+	private final UserInterfacePathsConfig userInterfacePathsConfig;
+
 	private final UserService userService;
 
 	private final TokenAuthenticationService tokenAuthenticationService;
@@ -67,46 +70,28 @@ public class UserController {
 	 * @param request request
 	 * @return ResponseEntity
 	 */
-	@GetMapping(
-			value = "/user-info",
-			produces = APPLICATION_JSON_VALUE
-	)
+	@GetMapping(value = "/user-info", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> fetchUserInfoFromAuthCookie(HttpServletRequest request) {
 		try {
-			ServiceResponse response = new ServiceResponse(
-					false,
-					messageService.getMessage(ERROR_UNAUTHORIZED_USER),
-					null
+			ServiceResponse response = new ServiceResponse(false, messageService.getMessage(ERROR_UNAUTHORIZED_USER),
+														   null
 			);
 
-			Optional<String> authToken = CookieUtil.getCookieValue(
-					request,
-					CookieUtil.COOKIE_NAME
-			);
+			Optional<String> authToken = CookieUtil.getCookieValue(request, CookieUtil.COOKIE_NAME);
 			if (authToken.isPresent() && StringUtils.isNotEmpty(authToken.get())) {
-				String userName = (String) tokenAuthenticationService.getClaim(
-						authToken.get(),
-						CommonConstant.SUBJECT
-				);
+				String userName = tokenAuthenticationService.getSubject(authToken.get());
 
 				Optional<User> user = userService.findByUsername(userName);
 				UserDTO userDTO = userService.getUserDTO(user.get());
 
-				response = new ServiceResponse(
-						true,
-						messageService.getMessage(SUCCESS_VALID_TOKEN),
-						userDTO
-				);
+				response = new ServiceResponse(true, messageService.getMessage(SUCCESS_VALID_TOKEN), userDTO);
 
-				return ResponseEntity.status(HttpStatus.OK)
-									 .body(response);
+				return ResponseEntity.status(HttpStatus.OK).body(response);
 			} else {
-				return ResponseEntity.status(HttpStatus.FORBIDDEN)
-									 .body(response);
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
 			}
 		} catch (Exception e) {
-			ServiceResponse serviceResponse = new ServiceResponse(false,
-																  messageService.getMessage(ERROR_INVALID_USER),
+			ServiceResponse serviceResponse = new ServiceResponse(false, messageService.getMessage(ERROR_INVALID_USER),
 																  null
 			);
 			return ResponseEntity.ok(serviceResponse);
@@ -120,63 +105,36 @@ public class UserController {
 	 * @param request  updated data
 	 * @return
 	 */
-	@PutMapping(
-			value = "/users/{username}/updateProfile",
-			consumes = APPLICATION_JSON_VALUE,
-			produces = APPLICATION_JSON_VALUE
-	)
-	public ResponseEntity<ServiceResponse> updateUserProfile(
-			@PathVariable("username")
-			String username,
-			@Valid
-			@RequestBody
-			UserDTO request
-	) {
-		boolean isSuccess = userService.updateUserProfile(
-				username,
-				request
-		);
+	@PutMapping(value = "/users/{username}/updateProfile", consumes = APPLICATION_JSON_VALUE,
+				produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> updateUserProfile(@PathVariable("username") String username,
+															 @Valid @RequestBody UserDTO request) {
+		boolean isSuccess = userService.updateUserProfile(username, request);
 
-		return ResponseEntity.status(HttpStatus.OK)
-							 .body(new ServiceResponse(isSuccess,
-													   isSuccess ?
-															   messageService.getMessage("success_profile_user") :
-															   messageService.getMessage("error_update_profile"),
-													   null
-							 ));
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(isSuccess, isSuccess ?
+				messageService.getMessage("success_profile_user") :
+				messageService.getMessage("error_update_profile"), null));
 	}
-
-
 
 	/**
 	 * api to verify user
 	 *
-	 * @param httpServletRequest
 	 * @param token
 	 * @return
 	 * @throws UnknownHostException
 	 */
-	@GetMapping(
-			value = "/verifyUser",
-			produces = APPLICATION_JSON_VALUE
-	) // NOSONAR
-	public RedirectView verifyUser(
-			HttpServletRequest httpServletRequest,
-			@RequestParam("token")
-			UUID token
-	) throws UnknownHostException {
-		log.info(
-				"UserController: requested token for validate {}",
-				token
-		);
+	@GetMapping(value = "/verifyUser", produces = APPLICATION_JSON_VALUE) // NOSONAR
+	public RedirectView verifyUser(@RequestParam("token") UUID token) {
+		log.info("UserController: requested token for validate {}", token);
+
 		ResetPasswordTokenStatusEnum tokenStatus = userService.verifyUserToken(token.toString());
 		String serverPath = authConfigurationProperties.getBaseUiUrl();
+
 		if (tokenStatus != null && tokenStatus.equals(ResetPasswordTokenStatusEnum.VALID)) {
 			return new RedirectView(serverPath);
 		} else {
 			userService.deleteUnVerifiedUser(token);
-			return new RedirectView(serverPath + authConfigurationProperties.getRegisterPath());
+			return new RedirectView(serverPath + userInterfacePathsConfig.getRegisterPath());
 		}
 	}
-
 }

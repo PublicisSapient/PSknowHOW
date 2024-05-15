@@ -18,24 +18,26 @@
 
 package com.publicissapient.kpidashboard.apis.filters;
 
-import com.publicissapient.kpidashboard.apis.config.AuthEndpointsProperties;
-import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
-import com.publicissapient.kpidashboard.apis.util.CookieUtil;
+import java.util.Arrays;
+import java.util.Optional;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.util.Arrays;
-import java.util.Optional;
+import com.publicissapient.kpidashboard.apis.config.AuthEndpointsProperties;
+import com.publicissapient.kpidashboard.apis.util.CookieUtil;
 
 @Slf4j
 @AllArgsConstructor
@@ -47,75 +49,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final AuthEndpointsProperties authEndpointsProperties;
 
-	private static boolean isRequestForURI(
-			@NonNull
-			HttpServletRequest request,
-			@NotNull
-			String uri
-	) {
+	private static boolean isRequestForURI(@NonNull HttpServletRequest request, @NotNull String uri) {
 		return new AntPathRequestMatcher(uri).matches(request);
 	}
 
-	private static boolean isRequestForAnyURI(
-			@NonNull
-			HttpServletRequest request,
-			@NotNull
-			String[] uris
-	) {
-		return Arrays.stream(uris)
-					 .anyMatch(uri -> isRequestForURI(
-							 request,
-							 uri
-					 ));
+	private static boolean isRequestForAnyURI(@NonNull HttpServletRequest request, @NotNull String[] uris) {
+		return Arrays.stream(uris).anyMatch(uri -> isRequestForURI(request, uri));
 	}
 
-	private boolean isRequestForPublicURI(
-			@NonNull
-			HttpServletRequest request
-	) {
-		return isRequestForAnyURI(
-				request,
-				authEndpointsProperties.getPublicEndpoints()
-		);
+	private boolean isRequestForPublicURI(@NonNull HttpServletRequest request) {
+		return isRequestForAnyURI(request, authEndpointsProperties.getPublicEndpoints());
 	}
 
 	@Override
-	public void doFilterInternal(
-			@NotNull
-			HttpServletRequest request,
-			@NotNull
-			HttpServletResponse response,
-			@NotNull
-			FilterChain filterChain
-	) {
+	public void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
+								 @NotNull FilterChain filterChain) {
 		try {
 			if (isRequestForPublicURI(request)) {
 				// * public endpoints should just pass without any authentication.
-				filterChain.doFilter(
-						request,
-						response
-				);
+				filterChain.doFilter(request, response);
 			} else {
-				Optional<Cookie> authCookie = CookieUtil.getCookie(
-						request,
-						CookieUtil.COOKIE_NAME
-				);
+				Optional<Cookie> authCookie = CookieUtil.getCookie(request, CookieUtil.COOKIE_NAME);
 
 				if (authCookie.isEmpty()) {
 					throw new BadCredentialsException(NO_JWT_EXCEPTION);
 				} else {
-					filterChain.doFilter(
-							request,
-							response
-					);
+					filterChain.doFilter(request, response);
 				}
 			}
 		} catch (Exception exception) {
-			log.error(
-					JWT_FILTER_GENERIC_EXCEPTION,
-					request.getRequestURI(),
-					exception.getMessage()
-			);
+			log.error(JWT_FILTER_GENERIC_EXCEPTION, request.getRequestURI(), exception.getMessage());
 			response.setStatus(HttpStatus.FORBIDDEN.value());
 		}
 

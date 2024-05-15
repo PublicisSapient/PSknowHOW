@@ -18,97 +18,52 @@
 
 package com.publicissapient.kpidashboard.apis.filters.standard;
 
-import com.publicissapient.kpidashboard.apis.config.AuthConfig;
-import com.publicissapient.kpidashboard.apis.enums.AuthType;
-import com.publicissapient.kpidashboard.apis.filters.CustomAuthenticationFailureHandler;
+import com.publicissapient.kpidashboard.apis.filters.standard.handlers.CustomAuthenticationFailureHandler;
+import com.publicissapient.kpidashboard.apis.filters.standard.handlers.CustomAuthenticationSuccessHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-/**
- * Provides Standard Login Request Filter .
- *
- * @author Hiren Babariya
- */
-public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFilter {
-	private AuthConfig authProperties;
+import com.publicissapient.kpidashboard.apis.enums.AuthType;
 
-	/**
-	 * @param path
-	 * @param standardAuthenticationResultHandler
-	 */
-	public StandardLoginRequestFilter(
-			String path,
-			AuthenticationManager authenticationManager,
-			AuthenticationResultHandler standardAuthenticationResultHandler,
-			CustomAuthenticationFailureHandler authenticationFailureHandler,
-			AuthConfig authProperties
-	) {
+public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFilter {
+	public StandardLoginRequestFilter(String path, AuthenticationManager authenticationManager,
+									  CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
+									  CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
 		super();
 		super.setAuthenticationManager(authenticationManager);
-		setAuthenticationSuccessHandler(standardAuthenticationResultHandler);
-		setAuthenticationFailureHandler(authenticationFailureHandler);
+
+		setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
+
+		setAuthenticationFailureHandler(customAuthenticationFailureHandler);
+
 		setFilterProcessesUrl(path);
-		this.authProperties = authProperties;
 	}
 
-	/**
-	 * Attempts Authentication
-	 *
-	 * @param request
-	 * @param response
-	 * @return Authentication
-	 * @throws AuthenticationException
-	 */
 	@Override
-	public Authentication attemptAuthentication(
-			HttpServletRequest request,
-			HttpServletResponse response
-	) throws AuthenticationException {
-
-		if (!authProperties
-				.getAuthenticationProviders()
-				.contains(AuthType.STANDARD)) {
-			throw new AuthenticationServiceException("Standard login is disabled");
-		}
-
-		if (!request
-				.getMethod()
-				.equals("POST")) {
-			throw new AuthenticationServiceException("Authentication method not supported: " +
-													 request.getMethod());
+	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+			throws AuthenticationException {
+		if (!request.getMethod().equals("POST")) {
+			throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
 		}
 
 		String username = obtainUsername(request);
 		String password = obtainPassword(request);
 
-		if (username ==
-			null) {
+		if (username == null) {
 			username = "";
 		}
 
-		if (password ==
-			null) {
-			password = StringUtils.EMPTY;
+		if (password == null) {
+			password = "";
 		}
 
-		username = username.trim();
-
-		StandardAuthenticationToken authRequest = new StandardAuthenticationToken(
-				username,
-				password
-		);
-
-		authRequest.setDetails(AuthType.STANDARD);
-
-		return this
-				.getAuthenticationManager()
-				.authenticate(authRequest);
+		return this.getAuthenticationManager().authenticate(new StandardAuthenticationToken(username.trim(), password));
 	}
 
 }

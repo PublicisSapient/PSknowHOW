@@ -17,54 +17,26 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.service;
 
-import com.publicissapient.kpidashboard.apis.entity.User;
-import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
-import com.publicissapient.kpidashboard.common.model.UserDTO;
-import jakarta.validation.Valid;
-import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * An Interface to provide authentication service.
- */
+import jakarta.validation.Valid;
+
+import com.publicissapient.kpidashboard.apis.entity.User;
+import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
+import com.publicissapient.kpidashboard.common.model.UserDTO;
+
 public interface UserService {
 
 	User save(@Valid User user);
-
-	User saveSamlUserData(Saml2AuthenticatedPrincipal principal);
-
-	org.springframework.security.core.Authentication authenticate(
-			org.springframework.security.core.Authentication authentication, String authType);
-
-	/**
-	 * update failed attempt and date
-	 *
-	 * @param userName
-	 *            userName
-	 * @param unsuccessAttemptTime
-	 *            unsuccessAttemptTime
-	 * @return status
-	 */
-	Boolean updateFailAttempts(String userName, LocalDateTime unsuccessAttemptTime);
-
-	/**
-	 * reset user attempt and date
-	 *
-	 * @param userName
-	 */
-	void resetFailAttempts(String userName);
 
 	Optional<User> findByUsername(String username);
 
 	/**
 	 * Gets username from authentication object
 	 *
-	 * @param authentication
-	 *            authentication object
+	 * @param authentication authentication object
 	 * @return username
 	 */
 	String getUsername(org.springframework.security.core.Authentication authentication);
@@ -83,7 +55,7 @@ public interface UserService {
 
 	/**
 	 * update user profile
-	 * 
+	 *
 	 * @param username
 	 * @param request
 	 * @return
@@ -93,10 +65,8 @@ public interface UserService {
 	/**
 	 * check new password is not same as old password
 	 *
-	 * @param oldPassword
-	 *            oldpassword
-	 * @param newPassword
-	 *            newpassword
+	 * @param oldPassword oldpassword
+	 * @param newPassword newpassword
 	 * @return true if new password is not same as old password
 	 */
 	boolean isPasswordIdentical(String oldPassword, String newPassword);
@@ -104,17 +74,15 @@ public interface UserService {
 	/**
 	 * Change password and saves it to the store
 	 *
-	 * @param email
-	 *            email of user
-	 * @param password
-	 *            password of user
+	 * @param email    email of user
+	 * @param password password of user
 	 * @return newly created Authentication object
 	 */
 	org.springframework.security.core.Authentication changePassword(String email, String password);
 
 	/**
 	 * remove secure info
-	 * 
+	 *
 	 * @param user
 	 * @return
 	 */

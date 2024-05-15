@@ -16,27 +16,26 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.service;
+package com.publicissapient.kpidashboard.apis.filters.standard.service;
 
-import java.util.Collection;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotNull;
 
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.apis.enums.AuthType;
+import com.publicissapient.kpidashboard.apis.service.StandardAuthenticationService;
 
-public interface TokenAuthenticationService {
+@Service
+@AllArgsConstructor
+@Slf4j
+public class AuthenticationResponseServiceImpl implements AuthenticationResponseService {
+	private final StandardAuthenticationService standardAuthenticationService;
 
-	String createJWT(@NotNull String subject, AuthType authType, Collection<? extends GrantedAuthority> authorities);
-
-	// will create the two cookies: authCookie & authCookie_EXPIRY
-	void addStandardCookies(String jwt, HttpServletResponse response);
-
-	// will create the three cookies: authCookie & authCookie_EXPIRY & samlUsernameCookie
-	void addSamlCookies(String username, String jwt, HttpServletResponse response);
-
-	String getSubject(String token);
-
+	@Override
+	public String handle(HttpServletResponse response, Authentication authentication) {
+		return standardAuthenticationService.addAuthentication(response, authentication);
+	}
 }

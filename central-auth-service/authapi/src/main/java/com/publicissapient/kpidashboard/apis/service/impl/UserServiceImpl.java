@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.service.impl;
 
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
+import com.publicissapient.kpidashboard.apis.config.UserInterfacePathsConfig;
 import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
@@ -27,6 +28,7 @@ import com.publicissapient.kpidashboard.apis.enums.NotificationCustomDataEnum;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.apis.errors.GenericException;
 import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
+import com.publicissapient.kpidashboard.apis.errors.UserNotFoundException;
 import com.publicissapient.kpidashboard.apis.repository.UserRepository;
 import com.publicissapient.kpidashboard.apis.repository.UserVerificationTokenRepository;
 import com.publicissapient.kpidashboard.apis.service.CommonService;
@@ -63,14 +65,14 @@ import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.WRON
 @AllArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
-	public static final String ERROR_INVALID_USER = "error_invalid_user";
 	private static final String STANDARD = "STANDARD";
 	private static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-	public static final String INVALID_USER = "error_invalid_user";
 
 	private final UserRepository userRepository;
 
 	private final AuthConfig authProperties;
+
+	private final UserInterfacePathsConfig userInterfacePathsConfig;
 
 	private final CommonService commonService;
 
@@ -78,106 +80,16 @@ public class UserServiceImpl implements UserService {
 
 	private final MessageService messageService;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public Boolean updateFailAttempts(
-			String userName,
-			LocalDateTime unsuccessAttemptTime
-	) {
-		Optional<User> user = userRepository.findByUsername(userName);
-		if (user.isEmpty()) {
-			return Boolean.FALSE;
-		} else {
-			long attemptCount = user.get().getFailedLoginAttemptCount();
-			if (0 == attemptCount) {
-				attemptCount = 1;
-			} else {
-				attemptCount++;
-			}
-			user.get().setFailedLoginAttemptCount(attemptCount);
-			user.get().setLastUnsuccessfulLoginTime(unsuccessAttemptTime);
-			userRepository.save(user.get());
-			return Boolean.TRUE;
-		}
+	public User save(@Valid User user) {
+		return this.userRepository.save(user);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+
+
 	@Override
-	public void resetFailAttempts(String userName) {
-		Optional<User> user = userRepository.findByUsername(userName);
-		if (user.isPresent()) {
-			user.get().setFailedLoginAttemptCount(0);
-			user.get().setLastUnsuccessfulLoginTime(null);
-			userRepository.save(user.get());
-		}
-	}
-
-	public Authentication authenticate(
-			Authentication authentication,
-			String authType
-	) {
-		String fullEmail = authentication.getName();
-		// Extract the substring before '@' as the username
-		String username = fullEmail;
-		if (fullEmail != null && fullEmail.contains("@")) {
-			username = fullEmail.substring(
-					0,
-					fullEmail.indexOf("@")
-			);
-		}
-		String password = (String) authentication.getCredentials();
-		User dbUsers = getUserObject(
-				authentication,
-				authType,
-				username
-		);
-
-		if (checkForResetFailAttempts(
-				dbUsers,
-				LocalDateTime.now()
-		)) {
-			resetFailAttempts(username);
-		} else if (checkForLockedUser(dbUsers)) {
-			throw new LockedException("Account Locked: Invalid Login Limit Reached " + username);
-		}
-
-		if (dbUsers != null && !dbUsers.isUserVerified()) {
-			throw new PendingApprovalException("Login Failed: Your verification is pending. Please check your registered mail for verification");
-		}
-
-		if (dbUsers != null && !dbUsers.isApproved()) {
-			throw new PendingApprovalException("Login Failed: Your access request is pending for approval");
-		}
-
-		if (dbUsers != null) {
-			UserDTO userDTO = getUserDTO(dbUsers);
-			if (authType.equalsIgnoreCase(AuthType.SAML.name())) {
-				return new UsernamePasswordAuthenticationToken(
-						userDTO,
-						null,
-						new ArrayList<>()
-				);
-			} else if (!userDTO.getAuthType()
-							   .equalsIgnoreCase(authType)) {
-				throw new BadCredentialsException("Login Failed: You have previously logged-in using SSO credentials. Please use SSO Authentication");
-			} else {
-				if (dbUsers.getPassword() != null && dbUsers.checkPassword(password)) {
-					return new UsernamePasswordAuthenticationToken(
-							userDTO,
-							dbUsers.getPassword(),
-							new ArrayList<>()
-					);
-				} else {
-					throw new BadCredentialsException(WRONG_CREDENTIALS_ERROR_MESSAGE);
-				}
-			}
-		}
-
-		throw new BadCredentialsException(WRONG_CREDENTIALS_ERROR_MESSAGE);
+	public Optional<User> findByUsername(String username) {
+		return userRepository.findByUsername(username);
 	}
 
 	/**
@@ -187,8 +99,7 @@ public class UserServiceImpl implements UserService {
 	 * @return Authentication
 	 */
 	private Authentication generateUserAuthToken(User user) {
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user,
-																							user.getPassword(),
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user, user.getPassword(),
 																							new ArrayList<>()
 		);
 		token.setDetails(AuthType.STANDARD);
@@ -198,123 +109,19 @@ public class UserServiceImpl implements UserService {
 	private User saveUserDetails(UserDTO authenticationRequest) {
 		String username = authenticationRequest.getUsername();
 		String password = authenticationRequest.getPassword();
-		String email = authenticationRequest.getEmail()
-											.toLowerCase();
+		String email = authenticationRequest.getEmail().toLowerCase();
 		String firstName = authenticationRequest.getFirstName();
 		String lastName = authenticationRequest.getLastName();
 		String displayName = authenticationRequest.getDisplayName();
 		LocalDateTime createdDate = LocalDateTime.now();
 		LocalDateTime modifiedDate = LocalDateTime.now();
-		return userRepository.save(new User(username,
-											password,
-											firstName,
-											lastName,
-											displayName,
-											email,
-											createdDate,
-											STANDARD,
-											modifiedDate,
-											false
-		));
+		return userRepository.save(
+				new User(username, password, firstName, lastName, displayName, email, createdDate, STANDARD,
+						 modifiedDate, false
+				));
 	}
 
-	private User getUserObject(
-			Authentication authentication,
-			String authType,
-			String username
-	) {
-		Optional<User> dbUser = userRepository.findByUsername(username);
-		if (dbUser.isEmpty() && authType.equalsIgnoreCase(AuthType.SAML.name())) {
-			// todo
-			//dbUser = userRepository.save(createSamlAuthenticationObject((DefaultSamlAuthentication) authentication));
-		}
-		return dbUser.get();
-	}
 
-	public User save(@Valid
-					 User user) {
-		return this.userRepository.save(user);
-	}
-
-	@Override
-	public User saveSamlUserData(Saml2AuthenticatedPrincipal principal) {
-		User userData = createUserFromSamlPrincipal(principal);
-
-		Optional<User> user = findByUserName(userData.getUsername());
-
-		return user.orElseGet(() -> save(userData));
-	}
-
-	private User createUserFromSamlPrincipal(Saml2AuthenticatedPrincipal principal) {
-		try {
-			User user = new User();
-
-			// TODO: clean up the hardcoded strings
-			user.setFirstName(principal.getAttribute("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname")
-														 .get(0)
-														 .toString());
-			user.setLastName(principal.getAttribute("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname")
-														.get(0)
-														.toString());
-			user.setDisplayName(principal.getAttribute("http://schemas.microsoft.com/identity/claims/displayname")
-														   .get(0)
-														   .toString());
-			user.setEmail(principal.getAttribute("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")
-													 .get(0)
-													 .toString());
-			user.setSamlEmail(principal.getAttribute("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")
-														 .get(0)
-														 .toString());
-
-			if (user.getSamlEmail() != null && user.getSamlEmail().contains("@")) {
-				// Extract the substring before '@' as the username
-				String userName = user.getSamlEmail().substring(0, user.getSamlEmail().indexOf("@"));
-				user.setUsername(userName);
-			}
-
-			user.setApproved(true);
-			user.setUserVerified(true);
-			user.setAuthType(AuthType.SAML.name());
-			user.setCreatedDate(LocalDateTime.now());
-
-			return user;
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-	}
-
-	/**
-	 * Checks if user is locked
-	 *
-	 * @param user the Authentication
-	 * @return true if user is locked
-	 */
-	private boolean checkForLockedUser(User user) {
-
-		return user != null && user.getFailedLoginAttemptCount() != 0
-			   && user.getFailedLoginAttemptCount() == authProperties.getAccountLockedThreshold();
-	}
-
-	/**
-	 * Checks if need to reset fail attempts.
-	 *
-	 * @param user Authentication
-	 * @param now  current date time
-	 * @return true or false
-	 */
-	private boolean checkForResetFailAttempts(
-			User user,
-			LocalDateTime now
-	) {
-		return user != null && null != user.getLastUnsuccessfulLoginTime()
-			   && now.isAfter(user.getLastUnsuccessfulLoginTime()
-								  .plusMinutes(authProperties.getAccountLockedPeriod()));
-	}
-
-	@Override
-	public Optional<User> findByUsername(String username) {
-		return userRepository.findByUsername(username);
-	}
 
 	@Override
 	public String getUsername(Authentication authentication) {
@@ -324,13 +131,10 @@ public class UserServiceImpl implements UserService {
 		}
 
 		String username;
-		if (authentication.getPrincipal() instanceof User) {
-			username = ((User) authentication.getPrincipal()).getUsername();
-		} else if (authentication.getPrincipal() instanceof UserDTO) {
+		if (authentication.getPrincipal() instanceof UserDTO) {
 			username = ((UserDTO) authentication.getPrincipal()).getUsername();
 		} else if (authentication.getPrincipal() instanceof String) {
-			username = authentication.getPrincipal()
-									 .toString();
+			username = authentication.getPrincipal().toString();
 		} else {
 			username = null;
 		}
@@ -360,10 +164,7 @@ public class UserServiceImpl implements UserService {
 			userRepository.deleteByUsername(userName);
 			return true;
 		} catch (Exception e) {
-			log.info(
-					"error while delete user",
-					e
-			);
+			log.info("error while delete user", e);
 			return false;
 		}
 
@@ -371,10 +172,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<User> findAllUnapprovedUsers() {
-		return userRepository.findByUserVerifiedAndApprovedOrderByIdDesc(
-				true,
-				false
-		);
+		return userRepository.findByUserVerifiedAndApprovedOrderByIdDesc(true, false);
 	}
 
 	public User approveUser(User user) {
@@ -384,14 +182,9 @@ public class UserServiceImpl implements UserService {
 	public UserDTO getUserDTO(User user) {
 		UserDTO dto = null;
 		if (null != user) {
-			dto = UserDTO.builder()
-						 .id(user.getId())
-						 .username(user.getUsername())
-						 .email(user.getEmail())
+			dto = UserDTO.builder().id(user.getId()).username(user.getUsername()).email(user.getEmail())
 						 //                    .approved(user.isApproved())
-						 .firstName(user.getFirstName())
-						 .lastName(user.getLastName())
-						 .displayName(user.getDisplayName())
+						 .firstName(user.getFirstName()).lastName(user.getLastName()).displayName(user.getDisplayName())
 						 .authType(user.getAuthType())
 						 //                         .userVerified(user.isUserVerified())
 						 .build();
@@ -410,10 +203,7 @@ public class UserServiceImpl implements UserService {
 		if (validateUserDetails(request)) {
 			User user = saveUserDetails(request);
 			generateUserAuthToken(user);
-			sendVerificationMailToRegisterUser(
-					user.getUsername(),
-					user.getEmail()
-			);
+			sendVerificationMailToRegisterUser(user.getUsername(), user.getEmail());
 			return true;
 		}
 		throw new GenericException(messageService.getMessage("error_register_password"));
@@ -428,16 +218,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void deleteUnVerifiedUser(UUID token) {
 		UserVerificationToken userVerificationToken = userVerificationTokenRepository.findByToken(token.toString());
-		log.info(
-				"UserController: User {}",
-				token
-		);
+		log.info("UserController: User {}", token);
 
 		if (userVerificationToken.getUsername() != null && userVerificationToken.getEmail() != null) {
-			sendVerificationFailedMailUser(
-					userVerificationToken.getUsername(),
-					userVerificationToken.getEmail()
-			);
+			sendVerificationFailedMailUser(userVerificationToken.getUsername(), userVerificationToken.getEmail());
 		}
 	}
 
@@ -447,31 +231,15 @@ public class UserServiceImpl implements UserService {
 	 * @param username
 	 * @param email
 	 */
-	private void sendVerificationMailToRegisterUser(
-			String username,
-			String email
-	) {
+	private void sendVerificationMailToRegisterUser(String username, String email) {
 		String serverPath = getServerPath();
-		log.info(
-				"UserServiceImpl: serverPath {}",
-				serverPath
+		log.info("UserServiceImpl: serverPath {}", serverPath);
+		log.info("UserServiceImpl: registered mail {}", email);
+		String token = createUserVerificationToken(username, email);
+		Map<String, String> customData = createCustomData(username, email, serverPath,
+														  authProperties.getVerifyUserTokenExpiryInterval(), token
 		);
-		log.info(
-				"UserServiceImpl: registered mail {}",
-				email
-		);
-		String token = createUserVerificationToken(
-				username,
-				email
-		);
-		Map<String, String> customData = createCustomData(username,
-														  email,
-														  serverPath,
-														  authProperties.getVerifyUserTokenExpiryInterval(),
-														  token
-		);
-		commonService.sendEmailNotification(Arrays.asList(email),
-											customData,
+		commonService.sendEmailNotification(Arrays.asList(email), customData,
 											CommonConstant.USER_VERIFICATION_NOTIFICATION_KEY,
 											CommonConstant.USER_VERIFICATION_TEMPLATE_KEY
 		);
@@ -483,26 +251,13 @@ public class UserServiceImpl implements UserService {
 	 * @param username
 	 * @param email
 	 */
-	private void sendVerificationFailedMailUser(
-			String username,
-			String email
-	) {
+	private void sendVerificationFailedMailUser(String username, String email) {
 		String serverPath = getServerPath();
-		log.info(
-				"UserServiceImpl: registered mail {}",
-				email
-		);
+		log.info("UserServiceImpl: registered mail {}", email);
 		User user = userRepository.findByEmail(email);
 		if (user != null) {
-			Map<String, String> customData = createCustomData(
-					username,
-					email,
-					serverPath,
-					"",
-					" "
-			);
-			commonService.sendEmailNotification(Arrays.asList(email),
-												customData,
+			Map<String, String> customData = createCustomData(username, email, serverPath, "", " ");
+			commonService.sendEmailNotification(Arrays.asList(email), customData,
 												CommonConstant.USER_VERIFICATION_FAILED_NOTIFICATION_KEY,
 												CommonConstant.USER_VERIFICATION_FAILED_TEMPLATE_KEY
 			);
@@ -517,12 +272,8 @@ public class UserServiceImpl implements UserService {
 	 * @param email
 	 * @return
 	 */
-	private String createUserVerificationToken(
-			String username,
-			String email
-	) {
-		String token = UUID.randomUUID()
-						   .toString();
+	private String createUserVerificationToken(String username, String email) {
+		String token = UUID.randomUUID().toString();
 		UserVerificationToken userVerificationToken = new UserVerificationToken();
 		userVerificationToken.setToken(token);
 		userVerificationToken.setUsername(username);
@@ -542,15 +293,12 @@ public class UserServiceImpl implements UserService {
 		Pattern pattern = Pattern.compile(CommonConstant.PASSWORD_PATTERN);
 		Matcher matcher = pattern.matcher(request.getPassword());
 		boolean flag = matcher.matches();
-		boolean isEmailExist = isEmailExist(request.getEmail()
-												   .toLowerCase());
+		boolean isEmailExist = isEmailExist(request.getEmail().toLowerCase());
 		boolean isUsernameExists = findByUserName(request.getUsername()).isPresent();
 
 		if (isUsernameExists)
 			throw new GenericException("Cannot complete the registration process, Try with different username");
-		if (!Pattern.compile(EMAIL_PATTERN)
-					.matcher(request.getEmail())
-					.matches())
+		if (!Pattern.compile(EMAIL_PATTERN).matcher(request.getEmail()).matches())
 			throw new GenericException("Cannot complete the registration process, Invalid Email");
 		if (isEmailExist)
 			throw new GenericException("Cannot complete the registration process, Try with different email");
@@ -565,17 +313,13 @@ public class UserServiceImpl implements UserService {
 	 * @return
 	 */
 	@Override
-	public boolean updateUserProfile(
-			String username,
-			UserDTO request
-	) {
+	public boolean updateUserProfile(String username, UserDTO request) {
 
 		Optional<User> user = userRepository.findByUsername(username);
 		if (user.isPresent()) {
 			User userData = user.get();
 			userData.setUsername(request.getUsername());
-			userData.setEmail(request.getEmail()
-								 .toLowerCase());
+			userData.setEmail(request.getEmail().toLowerCase());
 			userData.setFirstName(request.getFirstName());
 			userData.setLastName(request.getLastName());
 			userData.setDisplayName(request.getDisplayName());
@@ -586,10 +330,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean isPasswordIdentical(
-			String oldPassword,
-			String newPassword
-	) {
+	public boolean isPasswordIdentical(String oldPassword, String newPassword) {
 		return oldPassword.equals(newPassword);
 	}
 
@@ -597,17 +338,13 @@ public class UserServiceImpl implements UserService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Authentication changePassword(
-			String email,
-			String password
-	) {
+	public Authentication changePassword(String email, String password) {
 		UsernamePasswordAuthenticationToken token = null;
 		User user = userRepository.findByEmail(email);
 		if (Objects.nonNull(user)) {
 			user.setPassword(password);
 			User authentication = userRepository.save(user);
-			token = new UsernamePasswordAuthenticationToken(authentication.getUsername(),
-															authentication.getPassword(),
+			token = new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword(),
 															new ArrayList<>()
 			);
 			token.setDetails(AuthType.STANDARD);
@@ -620,21 +357,12 @@ public class UserServiceImpl implements UserService {
 	 * @param email
 	 */
 
-	public void sendUserPreApprovalRequestEmailToAdmin(
-			String username,
-			String email
-	) {
-		List<String> emailAddresses = commonService.getEmailAddressBasedOnRoles(Arrays.asList(CommonConstant.ROLE_SUPERADMIN));
+	public void sendUserPreApprovalRequestEmailToAdmin(String username, String email) {
+		List<String> emailAddresses = commonService.getEmailAddressBasedOnRoles(
+				Arrays.asList(CommonConstant.ROLE_SUPERADMIN));
 		String serverPath = getServerPath();
-		Map<String, String> customData = createCustomData(
-				username,
-				email,
-				serverPath,
-				"",
-				""
-		);
-		commonService.sendEmailNotification(emailAddresses,
-											customData,
+		Map<String, String> customData = createCustomData(username, email, serverPath, "", "");
+		commonService.sendEmailNotification(emailAddresses, customData,
 											CommonConstant.PRE_APPROVAL_NOTIFICATION_SUBJECT_KEY,
 											CommonConstant.PRE_APPROVAL_NOTIFICATION_KEY
 		);
@@ -650,41 +378,22 @@ public class UserServiceImpl implements UserService {
 	 * @param token
 	 * @return
 	 */
-	private Map<String, String> createCustomData(
-			String username,
-			String email,
-			String url,
-			String expiryTime,
-			String token
-	) {
+	private Map<String, String> createCustomData(String username, String email, String url, String expiryTime,
+												 String token) {
 		Map<String, String> customData = new HashMap<>();
-		customData.put(
-				NotificationCustomDataEnum.USER_NAME.getValue(),
-				username
-		);
-		customData.put(
-				NotificationCustomDataEnum.USER_EMAIL.getValue(),
-				email
-		);
-		customData.put(
-				NotificationCustomDataEnum.SERVER_HOST.getValue(),
-				url
-		);
+
+		customData.put(NotificationCustomDataEnum.USER_NAME.getValue(), username);
+		customData.put(NotificationCustomDataEnum.USER_EMAIL.getValue(), email);
+		customData.put(NotificationCustomDataEnum.SERVER_HOST.getValue(), url);
+
 		if (StringUtils.isNotEmpty(token) && StringUtils.isNotEmpty(expiryTime)) {
-			customData.put(
-					NotificationCustomDataEnum.USER_TOKEN.getValue(),
-					token
-			);
-			customData.put(
-					NotificationCustomDataEnum.USER_TOKEN_EXPIRY.getValue(),
-					expiryTime
-			);
-			String resetUrl = url + authProperties.getValidateUser() + token;
-			customData.put(
-					"resetUrl",
-					resetUrl
-			);
+			customData.put(NotificationCustomDataEnum.USER_TOKEN.getValue(), token);
+			customData.put(NotificationCustomDataEnum.USER_TOKEN_EXPIRY.getValue(), expiryTime);
+
+			String resetUrl = url + userInterfacePathsConfig.getValidateUser() + token;
+			customData.put("resetUrl", resetUrl);
 		}
+
 		return customData;
 	}
 
@@ -718,10 +427,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public ResetPasswordTokenStatusEnum verifyUserToken(String token) {
-		log.info(
-				"UserServiceImpl: Validate the token {}",
-				token
-		);
+		log.info("UserServiceImpl: Validate the token {}", token);
 		UserVerificationToken userVerificationToken = userVerificationTokenRepository.findByToken(token);
 		return checkTokenValidity(userVerificationToken);
 	}
@@ -745,10 +451,7 @@ public class UserServiceImpl implements UserService {
 				User userData = user.get();
 				userData.setUserVerified(true);
 				userRepository.save(userData);
-				sendUserPreApprovalRequestEmailToAdmin(
-						userData.getUsername(),
-						userData.getEmail()
-				);
+				sendUserPreApprovalRequestEmailToAdmin(userData.getUsername(), userData.getEmail());
 			}
 			return ResetPasswordTokenStatusEnum.VALID;
 		}

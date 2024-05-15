@@ -19,6 +19,14 @@ auth:
     #Set this property only for local setup (eg. 3000). Empty for server.
     uiPort: ''
 
+  ui:
+    #Purpose of properties : property used to reset link open via mail and redirect to UI
+    registerPath: /register
+    #Purpose of properties : property used to reset link open via mail and redirect to UI
+    resetPath: /reset-password?resetToken=
+    #Purpose of properties : property used to verify user via mail and redirect to UI
+    validateUser: /api/verifyUser?token=
+
   authenticationProviders: SAML,STANDARD
 
   #Purpose of properties : central auth frontend url/domain Name
@@ -72,8 +80,8 @@ auth:
     authenticated-endpoints:
       - '**'
     public-endpoints:
-      - '/sso-login'
-      - '/sso-logout-view'
+      - '/saml-login'
+      - '/saml-logout'
       - '/login'
       - '/login/status/standard'
 
@@ -145,13 +153,7 @@ spring:
         singleLogoutEnabled: true
         wantAssertionsSigned: true
 
-ui:
-  #Purpose of properties : property used to reset link open via mail and redirect to UI
-  registerPath: /register
-  #Purpose of properties : property used to reset link open via mail and redirect to UI
-  resetPath: /reset-password?resetToken=
-  #Purpose of properties : property used to verify user via mail and redirect to UI
-  validateUser: /api/verifyUser?token=
+
 
 verifyUser:
   #Purpose of properties : property used for user token expiration before verification

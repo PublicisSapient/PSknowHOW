@@ -16,30 +16,15 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.filters;
+package com.publicissapient.kpidashboard.apis.filters.standard.service;
 
-import com.publicissapient.kpidashboard.apis.enums.AuthType;
-import com.publicissapient.kpidashboard.common.model.LoginResponse;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-/**
- * Interface to handle authentication service response.
- *
- * @author Hiren Babariya
- */
 @Service
 public interface AuthenticationResponseService {
 
-	/**
-	 * handle authentication response.
-	 * 
-	 * @param response
-	 * @param authentication
-	 */
-	String handle(HttpServletResponse response, Authentication authentication, AuthType authType);
-
-	LoginResponse createLoginResponse(Authentication authentication);
-
+	String handle(HttpServletResponse response, Authentication authentication);
 }

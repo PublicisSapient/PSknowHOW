@@ -30,12 +30,8 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.filters.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.filters.standard.AuthenticationResultHandler;
-import com.publicissapient.kpidashboard.apis.filters.standard.StandardLoginRequestFilter;
-import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
-
 import lombok.AllArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties;
 import org.springframework.context.annotation.Bean;
@@ -51,119 +47,103 @@ import org.springframework.security.saml2.provider.service.registration.InMemory
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.publicissapient.kpidashboard.apis.filters.JwtAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.publicissapient.kpidashboard.apis.filters.standard.handlers.CustomAuthenticationFailureHandler;
+import com.publicissapient.kpidashboard.apis.filters.standard.handlers.CustomAuthenticationSuccessHandler;
+import com.publicissapient.kpidashboard.apis.filters.standard.StandardLoginRequestFilter;
+import com.publicissapient.kpidashboard.apis.filters.JwtAuthenticationFilter;
 
 @Configuration
 @AllArgsConstructor
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
-	private AuthenticationConfiguration authConfig;
+	private final AuthenticationConfiguration authConfig;
 
 	private final AuthEndpointsProperties authEndpointsProperties;
 
-	private final AuthConfig authProperties;
+	private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-	private final TokenAuthenticationService tokenAuthenticationService;
-
-	private AuthenticationResultHandler standardAuthenticationResultHandler;
-
-	private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+	private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
 	@Bean
 	protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable());
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-		http.authorizeHttpRequests(authz -> authz.requestMatchers(HttpMethod.OPTIONS)
-												 .permitAll()
-												 .requestMatchers("/login")
-												 .permitAll()
-												 .requestMatchers("/login/status/standard")
-												 .permitAll()
-												 .requestMatchers("/register-user")
-												 .permitAll()
-												 .requestMatchers("/user-info")
-												 .permitAll()
-												 .requestMatchers("/sso-logout")
-												 .permitAll()
-												 .anyRequest()
-												 .authenticated())
+		http.authorizeHttpRequests(authz -> authz
+					.requestMatchers(HttpMethod.OPTIONS)
+					.permitAll()
+					.requestMatchers("/login")
+					.permitAll()
+					.requestMatchers("/login/status/standard")
+					.permitAll()
+					.requestMatchers("/register-user")
+					.permitAll()
+					.requestMatchers("/user-info")
+					.permitAll()
+					.requestMatchers("/sso-logout")
+					.permitAll()
+					.anyRequest()
+					.authenticated())
 			.saml2Login((saml2) -> saml2.loginProcessingUrl("/saml/SSO"))
 			.saml2Logout((saml2) -> saml2.logoutRequest((request) -> request.logoutUrl("/saml/logout")))
 			.saml2Logout((saml2) -> saml2.logoutResponse((response) -> response.logoutUrl("/saml/SingleLogout")))
 			.saml2Metadata((saml2) -> saml2.metadataUrl("/saml/metadata"))
 			.addFilterBefore(
-					standardLoginRequestFilter(),
+					new StandardLoginRequestFilter(
+							"/login",
+							authenticationManager(authConfig),
+							customAuthenticationSuccessHandler,
+							customAuthenticationFailureHandler
+					),
 					UsernamePasswordAuthenticationFilter.class
 			)
 			.addFilterBefore(
-					new JwtAuthenticationFilter(
-							tokenAuthenticationService,
-							authEndpointsProperties
-					),
+					new JwtAuthenticationFilter(authEndpointsProperties),
 					UsernamePasswordAuthenticationFilter.class
 			);
 		return http.build();
 	}
 
 	@Bean
-	protected StandardLoginRequestFilter standardLoginRequestFilter() throws Exception {
-		return new StandardLoginRequestFilter(
-				"/login",
-				authenticationManager(authConfig),
-				standardAuthenticationResultHandler,
-				customAuthenticationFailureHandler,
-				authProperties
-		);
-	}
-
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-		return authConfig.getAuthenticationManager();
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+			throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
 	}
 
 	@Bean
 	InMemoryRelyingPartyRegistrationRepository repository(
 			Saml2RelyingPartyProperties properties,
-			@Value("classpath:credentials/rp-private.key")
-			RSAPrivateKey key,
-			@Value("classpath:credentials/rp-certificate.crt")
-			File cert
+			@Value("classpath:credentials/rp-private.key") RSAPrivateKey key,
+			@Value("classpath:credentials/rp-certificate.crt") File cert
 	) {
-		Saml2X509Credential signing = Saml2X509Credential.signing(
-				key,
-				x509Certificate(cert)
-		);
-		Saml2RelyingPartyProperties.Registration registration = properties.getRegistration()
-																		  .values()
-																		  .iterator()
-																		  .next();
-		return new InMemoryRelyingPartyRegistrationRepository(RelyingPartyRegistrations.collectionFromMetadataLocation(registration.getAssertingparty()
-																																   .getMetadataUri())
-																					   .stream()
-																					   .map((builder) -> builder.registrationId(UUID.randomUUID()
-																																	.toString())
-																												.entityId(registration.getEntityId())
-																												.assertionConsumerServiceLocation(registration.getAcs()
-																																							  .getLocation())
-																												.singleLogoutServiceLocation(registration.getSinglelogout()
-																																						 .getUrl())
-																												.singleLogoutServiceResponseLocation(registration.getSinglelogout()
-																																								 .getResponseUrl())
-																												.signingX509Credentials((credentials) -> credentials.add(signing))
-																												.build())
-																					   .collect(Collectors.toList()));
+		Saml2X509Credential signing = Saml2X509Credential.signing(key, x509Certificate(cert));
+
+		Saml2RelyingPartyProperties.Registration registration = properties.getRegistration().values().iterator().next();
+
+		return new InMemoryRelyingPartyRegistrationRepository(
+				RelyingPartyRegistrations.collectionFromMetadataLocation(
+					registration.getAssertingparty().getMetadataUri()
+				).stream()
+				 .map((builder) -> builder.registrationId(UUID.randomUUID().toString())
+										  .entityId(registration.getEntityId())
+										  .assertionConsumerServiceLocation(registration.getAcs().getLocation())
+										  .singleLogoutServiceLocation(registration.getSinglelogout().getUrl())
+										  .singleLogoutServiceResponseLocation(registration.getSinglelogout()
+																						   .getResponseUrl()
+										  )
+										  .signingX509Credentials((credentials) -> credentials.add(signing))
+										  .build()
+				 ).collect(Collectors.toList()));
 	}
 
 	X509Certificate x509Certificate(File location) {
 		try (InputStream source = new FileInputStream(location)) {
-			return (X509Certificate) CertificateFactory.getInstance("X.509")
-													   .generateCertificate(source);
+			return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(source);
 		} catch (CertificateException | IOException ex) {
 			throw new IllegalArgumentException(ex);
 		}
@@ -180,10 +160,7 @@ public class WebSecurityConfig {
 		configuration.setMaxAge(1800L);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration(
-				"/**",
-				configuration
-		);
+		source.registerCorsConfiguration("/**", configuration);
 
 		return source;
 	}
