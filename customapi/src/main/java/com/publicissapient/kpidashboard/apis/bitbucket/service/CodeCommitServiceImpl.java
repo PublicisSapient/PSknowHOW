@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -55,6 +56,7 @@ import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -305,7 +307,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		List<DataCount> dayWiseCommitCount = new ArrayList<>();
 		LocalDate currentDate = LocalDate.now();
 		for (int i = 0; i < dataPoints; i++) {
-			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
+			CustomDateRange dateRange = getStartAndEndDateForDataFiltering(currentDate, duration);
 			Map<String, Object> hoverValues = new HashMap<>();
 			String date = getDateRange(dateRange, duration);
 			LocalDate startDate = dateRange.getStartDate();
@@ -326,11 +328,44 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 			excelDataLoader.put(date, commitCountValue);
 			hoverValues.put(NO_CHECKIN, commitCountValue.intValue());
 			dayWiseCommitCount.add(setDataCount(projectName, date, hoverValues, commitCountValue, mergeCountValue));
-			currentDate = getNextRangeDate(duration, currentDate);
+			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 		}
 		Collections.reverse(dayWiseCommitCount);
 		return dayWiseCommitCount;
 
+	}
+
+	/**
+	 * get date range excluding weekends
+	 *
+	 * @param date
+	 *            start date
+	 * @param period
+	 *            week or day
+	 * @return CustomDateRange
+	 */
+	public static CustomDateRange getStartAndEndDateForDataFiltering(LocalDate date, String period) {
+		CustomDateRange dateRange = new CustomDateRange();
+		LocalDate startDate = null;
+		LocalDate endDate = null;
+		if (period.equalsIgnoreCase(CommonConstant.WEEK)) {
+			LocalDate monday = date;
+			while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
+				monday = monday.minusDays(1);
+			}
+			startDate = monday;
+			LocalDate friday = date;
+			while (friday.getDayOfWeek() != DayOfWeek.FRIDAY) {
+				friday = friday.plusDays(1);
+			}
+			endDate = friday;
+		} else {
+			startDate = date;
+			endDate = date;
+		}
+		dateRange.setStartDate(startDate);
+		dateRange.setEndDate(endDate);
+		return dateRange;
 	}
 
 	private DataCount setDataCount(String projectName, String date, Map<String, Object> dataValues, Long commitCount,

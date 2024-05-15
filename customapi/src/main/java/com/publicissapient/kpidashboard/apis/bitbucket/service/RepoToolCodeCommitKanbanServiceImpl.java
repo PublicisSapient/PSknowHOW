@@ -233,7 +233,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		if (CommonConstant.WEEK.equalsIgnoreCase(duration)) {
 			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
 					DateUtil.DISPLAY_DATE_FORMAT) + " to "
-					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+					+ DateUtil.dateTimeConverter(dateRange.getEndDate().minusDays(2).toString(), DateUtil.DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 		} else {
 			range = dateRange.getStartDate().toString();
