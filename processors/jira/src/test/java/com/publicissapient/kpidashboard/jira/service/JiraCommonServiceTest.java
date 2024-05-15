@@ -489,7 +489,6 @@ public class JiraCommonServiceTest {
 		when(mockStepExecution.getJobExecution()).thenReturn(mockJobExecution);
 		when(mockJobExecution.getExecutionContext()).thenReturn(mockExecutionContext);
 		when(mockSearchResult.getTotal()).thenReturn(totalIssues);
-		when(mockExecutionContext.getString("isScheduler")).thenReturn("false");
 		// Act
 		jiraCommonService.saveSearchDetailsInContext(mockSearchResult, pageStart, mockStepContext);
 

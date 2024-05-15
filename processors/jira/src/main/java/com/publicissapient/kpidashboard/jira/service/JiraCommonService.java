@@ -323,10 +323,6 @@ public class JiraCommonService {
 		}
 		JobExecution jobExecution = stepContext.getStepExecution().getJobExecution();
 		ExecutionContext executionContext = jobExecution.getExecutionContext();
-		String isScheduler =  executionContext.getString("isScheduler");
-		if (!isScheduler.equalsIgnoreCase("false")) {
-			return;
-		}
 		int total = searchResult.getTotal();
 		int processed = Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, total);
 

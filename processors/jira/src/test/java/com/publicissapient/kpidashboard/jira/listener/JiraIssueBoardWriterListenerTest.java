@@ -61,7 +61,7 @@ public class JiraIssueBoardWriterListenerTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
-		ReflectionTestUtils.setField(listener, "isScheduler", "false");
+		
 	}
 
 	@Test

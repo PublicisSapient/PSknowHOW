@@ -32,7 +32,6 @@ import org.springframework.batch.core.scope.context.StepContext;
 import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.item.Chunk;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -53,12 +52,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class KanbanJiraIssueWriterListener implements ItemWriteListener<CompositeResult> {
-
-	@Value("#{jobParameters['projectId']}")
-	private String projectId;
-
-	@Value("#{jobParameters['isScheduler']}")
-	private String isScheduler;
 
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
@@ -92,14 +85,8 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 				.filter(issue -> !issue.getTypeName().equalsIgnoreCase(JiraConstants.EPIC))
 				.collect(Collectors.groupingBy(KanbanJiraIssue::getBasicProjectConfigId,
 						Collectors.groupingBy(KanbanJiraIssue::getBoardId)));
-		if (isScheduler.equalsIgnoreCase("false")) {
-			// getting step context
-			StepContext stepContext = StepSynchronizationManager.getContext();
-			Optional<ProcessorExecutionTraceLog> progressStatsTraceLog = processorExecutionTraceLogRepo
-					.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(ProcessorConstants.JIRA, projectId);
-			Optional.ofNullable(JiraProcessorUtil.saveChunkProgressInTrace(progressStatsTraceLog.orElse(null), stepContext))
-					.ifPresent(processorExecutionToSave::add);
-		}
+		// getting step context
+		StepContext stepContext = StepSynchronizationManager.getContext();
 		for (Map.Entry<String, Map<String, List<KanbanJiraIssue>>> entry : projectBoardWiseIssues.entrySet()) {
 			String basicProjectConfigId = entry.getKey();
 			Map<String, List<KanbanJiraIssue>> boardWiseIssues = entry.getValue();
@@ -126,6 +113,12 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 					}
 				}
 			}
+			Optional<ProcessorExecutionTraceLog> progressStatsTraceLog = processorExecutionTraceLogRepo
+					.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(ProcessorConstants.JIRA,
+							basicProjectConfigId);
+			Optional.ofNullable(
+							JiraProcessorUtil.saveChunkProgressInTrace(progressStatsTraceLog.orElse(null), stepContext))
+					.ifPresent(processorExecutionToSave::add);
 
 		}
 		if (CollectionUtils.isNotEmpty(processorExecutionToSave)) {

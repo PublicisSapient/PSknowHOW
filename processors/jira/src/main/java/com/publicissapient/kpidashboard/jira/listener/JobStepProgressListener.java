@@ -53,9 +53,6 @@ public class JobStepProgressListener implements StepExecutionListener {
 	@Value("#{jobParameters['projectId']}")
 	private String projectId;
 
-	@Value("#{jobParameters['isScheduler']}")
-	private String isScheduler;
-
 	/**
 	 * (non-Javadoc)
 	 * 
@@ -77,10 +74,6 @@ public class JobStepProgressListener implements StepExecutionListener {
 	 */
 	@Override
 	public ExitStatus afterStep(StepExecution stepExecution) {
-		// saving step progress stats only for non-scheduler jobs
-		if (!"false".equalsIgnoreCase(isScheduler)) {
-			return null;
-		}
 		String stepName = stepExecution.getStepName();
 		BatchStatus status = stepExecution.getStatus();
 		ProgressStatus progressStatus = new ProgressStatus();

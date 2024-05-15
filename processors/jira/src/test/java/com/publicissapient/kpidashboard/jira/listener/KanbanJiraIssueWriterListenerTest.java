@@ -58,7 +58,7 @@ public class KanbanJiraIssueWriterListenerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(listener, "isScheduler", "false");
+        
         KanbanJiraIssue kanbanJiraIssue = new KanbanJiraIssue();
         kanbanJiraIssue.setBasicProjectConfigId("testProjectId");
         kanbanJiraIssue.setBoardId("testBoardId");
