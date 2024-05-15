@@ -47,7 +47,6 @@ import org.json.simple.parser.ParseException;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.scope.context.StepContext;
 import org.springframework.batch.core.scope.context.StepSynchronizationManager;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -322,8 +321,7 @@ public class JiraCommonService {
 			return;
 		}
 		JobExecution jobExecution = stepContext.getStepExecution().getJobExecution();
-		ExecutionContext executionContext = jobExecution.getExecutionContext();
-		int total = searchResult.getTotal();
+        int total = searchResult.getTotal();
 		int processed = Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, total);
 
 		// Saving Progress details in context

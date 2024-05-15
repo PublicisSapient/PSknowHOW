@@ -24,7 +24,6 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.batch.core.BatchStatus;
@@ -46,6 +45,7 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
@@ -168,7 +168,7 @@ public class JobListenerKanban implements JobExecutionListener {
 				processorExecutionTraceLog.setExecutionSuccess(status);
 				if (stepFailureException != null) {
 					String rootCauseMessage = (stepFailureException).toString();
-					processorExecutionTraceLog.setErrorMessage("Step failed due to: " + rootCauseMessage);
+					processorExecutionTraceLog.setErrorMessage("Failure Reason: " + rootCauseMessage);
 				}
 			}
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);

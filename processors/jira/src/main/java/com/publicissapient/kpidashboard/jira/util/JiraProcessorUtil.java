@@ -343,7 +343,7 @@ public class JiraProcessorUtil {
 		List<ProgressStatus> progressStatusList = Optional
 				.ofNullable(processorExecutionTraceLog.getProgressStatusList()).orElseGet(ArrayList::new);
 		ProgressStatus progressStatus = new ProgressStatus();
-		progressStatus.setStepName(MessageFormat.format("Processing issues {0} to {1} out of {2}", pageStart,
+		progressStatus.setStepName(MessageFormat.format("Process issues {0} to {1} out of {2}", pageStart,
 				processedIssues, totalIssues));
 		progressStatus.setStatus(BatchStatus.COMPLETED.toString());
 		progressStatus.setEndTime(LocalDateTime.now().toString());
