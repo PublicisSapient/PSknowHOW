@@ -32,7 +32,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
@@ -95,6 +94,7 @@ public class JobScheduler {
 					log.info(
 							"Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID), e);
+					ongoingExecutionsService.markExecutionAsCompleted(params.getString(PROJECT_ID));
 				}
 			});
 		}
@@ -124,6 +124,7 @@ public class JobScheduler {
 				} catch (Exception e) {
 					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID), e);
+					ongoingExecutionsService.markExecutionAsCompleted(params.getString(PROJECT_ID));
 				}
 			});
 		}
@@ -152,6 +153,7 @@ public class JobScheduler {
 					log.info(
 							"Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID), e);
+					ongoingExecutionsService.markExecutionAsCompleted(params.getString(PROJECT_ID));
 				}
 			});
 		}
@@ -181,6 +183,7 @@ public class JobScheduler {
 				} catch (Exception e) {
 					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID), e);
+					ongoingExecutionsService.markExecutionAsCompleted(params.getString(PROJECT_ID));
 				}
 			});
 		}
@@ -191,8 +194,8 @@ public class JobScheduler {
 		List<JobParameters> parameterSets = new ArrayList<>();
 
 		scrumBoardbasicProjConfIds.forEach(configId -> {
-			// making execution onGoing true for projects
-			ongoingExecutionsService.setExecutionOngoingForProcessor(ProcessorConstants.JIRA, configId, true);
+			// making execution onGoing for projects
+			ongoingExecutionsService.markExecutionInProgress(configId);
 			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 			// Add dynamic parameters as needed
 			jobParametersBuilder.addString(PROJECT_ID, configId);
