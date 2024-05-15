@@ -24,7 +24,7 @@ import { GetAuthorizationService } from '../../services/get-authorization.servic
 import { DatePipe } from '@angular/common';
 import { forkJoin,interval,Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { delay, switchMap, takeWhile } from 'rxjs/operators';
+import { switchMap, takeWhile } from 'rxjs/operators';
 
 @Component({
   selector: 'app-advanced-settings',
