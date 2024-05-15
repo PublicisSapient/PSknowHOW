@@ -62,16 +62,10 @@ public class AuthConfig {
 	@Value("${notification.env}")
 	private String notificationEnv;
 
-	@Value("${flag.mailWithoutKafka}")
 	private boolean mailWithoutKafka;
 
 	private Map<String, String> mailTemplate;
 
-
-
-	// ------ verify user ------
-	@Value("${verifyUser.tokenExpiryDays}")
 	private String verifyUserTokenExpiryInterval;
-
 
 }

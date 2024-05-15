@@ -39,11 +39,11 @@ public class RoleController {
 	private final RoleService roleService;
 
 	@GetMapping(value = "/{resourceName}")
-	public ResponseEntity<ServiceResponse> getAllRoles(@PathVariable String resourceName) {
+	public ResponseEntity<ServiceResponse> getAllRolesForByResourceName(@PathVariable String resourceName) {
 		return ResponseEntity.status(HttpStatus.OK)
 							 .body(new ServiceResponse<>(true,
 														 "",
-														 roleService.getResourceAllRoles(resourceName))
+														 roleService.getAllRolesByResourceName(resourceName))
 							 );
 	}
 

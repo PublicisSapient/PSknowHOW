@@ -27,6 +27,7 @@ import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.common.model.UserDTO;
 
+
 public interface UserService {
 
 	User save(@Valid User user);
@@ -45,7 +46,7 @@ public interface UserService {
 
 	Optional<User> findByUserName(String userName);
 
-	boolean deleteByUserName(String userName);
+	boolean deleteByUserName(String username);
 
 	List<User> findAllUnapprovedUsers();
 

@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.service;
 
 import java.util.Collection;
+import java.util.List;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
@@ -39,4 +40,5 @@ public interface TokenAuthenticationService {
 
 	String getSubject(String token);
 
+	Collection<GrantedAuthority> createAuthorities(List<String> roles);
 }

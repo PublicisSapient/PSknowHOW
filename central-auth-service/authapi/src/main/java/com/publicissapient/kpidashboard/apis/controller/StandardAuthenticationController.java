@@ -52,7 +52,7 @@ public class StandardAuthenticationController {
 
 	private final UserApprovalService userApprovalService;
 
-	private final CommonService commonService;
+	private final NotificationService commonService;
 
 	private final ForgotPasswordService forgotPasswordService;
 
@@ -111,26 +111,28 @@ public class StandardAuthenticationController {
 				messageService.getMessage(ERROR_REGISTER_AGAIN), request.getUsername()));
 	}
 
-	/**
-	 * Get Method To Fetch All unapproved Requests
-	 *
-	 * @return ServiceResponse
-	 */
+
 	@GetMapping("/user-approvals/pending")
-	public ResponseEntity<ServiceResponse> unApprovedUsers() {
+	public ResponseEntity<ServiceResponse> getAllUnapprovedUsers() {
 		return ResponseEntity.status(HttpStatus.OK)
-							 .body(new ServiceResponse(true, messageService.getMessage("success_pending_approval"),
+							 .body(new ServiceResponse(true,
+													   messageService.getMessage("success_pending_approval"),
 													   userApprovalService.findAllUnapprovedUsers()
 							 ));
 	}
 
 	@PutMapping(value = "/approve/{username}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> approveUserCreationRequest(@PathVariable("username") String username) {
-
 		boolean isSuccess = userApprovalService.approveUser(username);
-		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(isSuccess, isSuccess ?
-				messageService.getMessage("success_request_approve") :
-				messageService.getMessage("error_request_approve"), isSuccess));
+
+		return ResponseEntity.status(HttpStatus.OK)
+							 .body(new ServiceResponse(
+									 isSuccess,
+									 isSuccess
+											 ? messageService.getMessage("success_request_approve")
+											 : messageService.getMessage("error_request_approve"),
+									 isSuccess
+							 ));
 
 	}
 

@@ -1,13 +1,15 @@
 package com.publicissapient.kpidashboard.apis.service;
 
-import com.publicissapient.kpidashboard.common.model.UserAccessRequest;
-
 import java.util.List;
 
-public interface UserApprovalService {
-	List<UserAccessRequest> findAllUnapprovedUsers();
+import com.publicissapient.kpidashboard.apis.errors.UserNotFoundException;
+import com.publicissapient.kpidashboard.apis.service.dto.UnapprovedUserDTO;
 
-	boolean approveUser(String username);
+
+public interface UserApprovalService {
+	List<UnapprovedUserDTO> findAllUnapprovedUsers();
+
+	boolean approveUser(String username) throws UserNotFoundException;
 
 	boolean rejectUser(String username);
 }

@@ -1,10 +1,17 @@
 auth:
-  accountLockedThreshold: 3
-
   cookie:
     isSameSite: false
     isSecure: false
     domain: localhost
+
+  forgotPassword:
+    #Purpose of properties : property used to expire forgot password
+    #possible values : number [1-20]
+    #used in/for : forgot password functionality - In Minute
+    expiryInterval: 30
+    serverPort: 8787
+    uiHost: http://localhost
+    uiPort: 3000
 
   #Purpose of properties : central auth frontend url/domain Name
   #possible values : https://dev-authnauth.tools.publicis.sapient.com , http://localhost:3000
@@ -16,56 +23,7 @@ auth:
   #used in/for : saml login , redirect and validate request
   baseUrl: http://localhost:8787
 
-  #Purpose of properties : property used to provide valid origin
-  #possible values : String [a-z, A-Z, 0-9]
-  #used in/for : CORS
-  corsFilterValidOrigin:
-    - localhost
-    - 127.0.0.1
-    - ui
-    - dev-authnauth.tools.publicis.sapient.com
-    - qa-authnauth.tools.publicis.sapient.com
-    - uat-authnauth.tools.publicis.sapient.com
-    - local-tengine.tremend.ro
-
-  mailTemplate:
-    Access_Request: Access_Request_Template
-    Approve_User_Reject: Approve_User_Reject_Template
-    Approve_User_Success: Approve_User_Success_Template
-    Forgot_Password: Forgot_Password_Template
-    Pre_Approval: Pre_Approval_Template
-    User_Verification: User_Verification_Template
-    User_Verification_Failed: User_Verification_Failed_Template
-
-  notificationSubject:
-    accessRequest: New access request for KnowHOW
-    approvalRequest: Approval Request for KnowHow
-    failedApproval: "KnowHOW: User Approval Rejected"
-    forgotPassword: Password Reset Request
-    preApproval: "KnowHOW: New user request"
-    userVerification: User Verification Request
-    userVerificationFailed: User Verification Token Expired
-  secret: 3106dd9eee424487884363ce026ea979
-
-flag:
   mailWithoutKafka: true
-
-forgotPassword:
-  #Purpose of properties : property used to expire forgot password
-  #possible values : number [1-20]
-  #used in/for : forgot password functionality - In Minute
-  expiryInterval: 30
-  serverPort: 8787
-  uiHost: http://localhost
-  uiPort: 3000
-
-kafka:
-  mailtopic: mail-topic
-
-logging:
-  level:
-    root: INFO
-  logType: both
 
 notification:
   #Purpose of properties : property used to provide smtp service sent mail
@@ -77,55 +35,8 @@ notification:
   #used in/for : sent mail
   switch: false
 
-server:
-  port: 8787
-  servlet:
-    context-path: /api
-  tomcat:
-    redirect-context-root: false
-
 spring:
   datasource:
     password: postgres
     url: jdbc:postgresql://localhost:5432/authdblocal
     username: postgres
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    properties:
-      hibernate:
-        default_schema: auth
-  kafka:
-    producer:
-      bootstrap-servers: kafka:9092
-  main:
-    allow-circular-references: false
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-  security:
-    filter:
-      dispatcher-types: async, error, request, forward
-    saml2:
-      relyingparty:
-        registration:
-          azure:
-            acs:
-              location: '{baseUrl}/saml/SSO'
-            assertingparty:
-              metadata-uri: https://login.microsoftonline.com/d52c9ea1-7c21-47b1-82a3-33a74b1f74b8/federationmetadata/2007-06/federationmetadata.xml?appid=bf226903-9d44-4e77-af84-e3ad008442ef
-            entity-id: "spn:bf226903-9d44-4e77-af84-e3ad008442ef"
-            singlelogout:
-              binding: POST
-              responseUrl: '{baseUrl}/saml/SingleLogout'
-              url: '{baseUrl}/saml/logout'
-
-ui:
-  registerPath: /register
-  resetPath: /reset-password?resetToken=
-  validateUser: /api/verifyUser?token=
-
-verifyUser:
-  #Purpose of properties : property used for user token expiration before verification
-  #possible values : number [1-20]
-  #used in/for : user verification functionality - In days
-  tokenExpiryDays: 30

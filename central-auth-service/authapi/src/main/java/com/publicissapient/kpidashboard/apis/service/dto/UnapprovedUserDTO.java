@@ -15,22 +15,18 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.common.model;
+package com.publicissapient.kpidashboard.apis.service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Data
 @Builder
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAccessRequest {
+public class UnapprovedUserDTO {
 	private String username;
 	private String email;
 }

@@ -17,18 +17,13 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.entity;
 
+import lombok.*;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.*;
 
-/**
- * role for root user of central auth like admin of auth service
- *
- * @author Hiren Babariya
- */
-@Data
 @Builder
 @Getter
 @Setter
@@ -37,9 +32,13 @@ import lombok.*;
 @Entity(name = "role")
 public class Role extends BaseEntity {
 	private String name;
+
 	private String description;
+
 	private boolean rootUser;
+
 	private boolean defaultRole;
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "resource_id")
 	private Resource resource;

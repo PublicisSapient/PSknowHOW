@@ -28,7 +28,7 @@ import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.repository.ForgotPasswordTokenRepository;
 import com.publicissapient.kpidashboard.apis.repository.UserRepository;
-import com.publicissapient.kpidashboard.apis.service.CommonService;
+import com.publicissapient.kpidashboard.apis.service.NotificationService;
 import com.publicissapient.kpidashboard.apis.service.ForgotPasswordService;
 import com.publicissapient.kpidashboard.common.model.ResetPasswordRequestDTO;
 import lombok.AllArgsConstructor;
@@ -61,7 +61,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 	private final ForgotPasswordConfig forgotPasswordConfig;
 
-	private final CommonService commonService;
+	private final NotificationService commonService;
 
 	/**
 	 * Process forgotPassword request.

@@ -17,17 +17,13 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.entity;
 
+import lombok.*;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.*;
 
-/**
- * this class for user role
- *
- * @author Hiren Babariya
- */
 @Builder
 @Getter
 @Setter

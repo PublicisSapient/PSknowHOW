@@ -19,8 +19,9 @@
 package com.publicissapient.kpidashboard.apis.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
 import org.springframework.stereotype.Repository;
+
+import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
 
 /**
  * The interface User Verification Token Repository

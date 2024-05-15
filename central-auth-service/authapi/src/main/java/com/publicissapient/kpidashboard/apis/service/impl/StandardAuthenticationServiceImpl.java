@@ -1,8 +1,6 @@
 package com.publicissapient.kpidashboard.apis.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -12,12 +10,10 @@ import com.publicissapient.kpidashboard.apis.service.UserRoleService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.entity.User;
@@ -75,9 +71,13 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 			UserDTO userDTO = userService.getUserDTO(user);
 
 			if (user.checkPassword(password)) {
-				Collection<GrantedAuthority> authorities = this.userRoleService.getAuthorities(userDTO.getUsername());
-
-				return new UsernamePasswordAuthenticationToken(userDTO, user.getPassword(), authorities);
+				return new UsernamePasswordAuthenticationToken(
+						userDTO,
+						user.getPassword(),
+						this.tokenAuthenticationService.createAuthorities(
+								this.userRoleService.getRolesNamesByUsername(username)
+						)
+				);
 			} else {
 				throw new BadCredentialsException(WRONG_CREDENTIALS_ERROR_MESSAGE);
 			}

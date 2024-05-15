@@ -31,12 +31,6 @@ import org.springframework.stereotype.Repository;
 public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
 	List<UserRole> findByUsername(String name);
 
-	@Query(value = "select * from auth.user_role where username = :username and role_id in (select id from auth.role where name = :role and resource_id = (select id from auth.resource where name = :resource ))", nativeQuery = true)
-	Optional<UserRole> findByUsernameAndRole(@Param("username") String username, @Param("role") String role,
-			@Param("resource") String resource);
-
-	List<UserRole> findByRoleId(Long id);
-
 	@Query(value = "select * from auth.user_role where username = :username and role_id in (select id from auth.role where resource_id = (select id from auth.resource where name = :resource ))", nativeQuery = true)
 	List<UserRole> findByUsernameAndResource(@Param("username") String username, @Param("resource") String resource);
 
