@@ -50,7 +50,7 @@
     </div>
 
     <div *ngSwitchCase="'number'">
-        <input type="number" id="fieldConfig?.fieldName" [(ngModel)]="value" (change)="setValue()" min="0"  pInputText class="form-control p-p-2 mb-2 mr-sm-2" (keydown)="enterNumericValue($event)"
+        <input type="number" [id]="fieldConfig?.fieldName" [(ngModel)]="value" (change)="setValue()" min="0"  pInputText class="form-control p-p-2 mb-2 mr-sm-2" (keydown)="enterNumericValue($event)"
         (input)="numericInputUpDown($event)" [ngClass]="fieldConfig?.fieldName.indexOf('thresholdValue') !== -1 ? 'w-80' : ''">
          {{ fieldConfig?.fieldName.indexOf('thresholdValue') !== -1 && thresholdUnit ? '( ' + thresholdUnit + ' )' : '' }}
     </div>

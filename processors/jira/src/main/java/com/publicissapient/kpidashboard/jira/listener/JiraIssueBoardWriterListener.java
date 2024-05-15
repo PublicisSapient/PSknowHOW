@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.ItemWriteListener;
+import org.springframework.batch.core.scope.context.StepContext;
+import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.item.Chunk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,6 +42,7 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,7 +53,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class JiraIssueBoardWriterListener implements ItemWriteListener<CompositeResult> {
-
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 
@@ -79,7 +81,8 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 		Map<String, Map<String, List<JiraIssue>>> projectBoardWiseIssues = jiraIssues.stream()
 				.filter(issue -> !issue.getTypeName().equalsIgnoreCase(JiraConstants.EPIC)).collect(Collectors
 						.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.groupingBy(JiraIssue::getBoardId)));
-
+		// getting step context
+		StepContext stepContext = StepSynchronizationManager.getContext();
 		for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : projectBoardWiseIssues.entrySet()) {
 			String basicProjectConfigId = entry.getKey();
 			Map<String, List<JiraIssue>> boardWiseIssues = entry.getValue();
@@ -112,7 +115,12 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 					}
 				}
 			}
-
+			Optional<ProcessorExecutionTraceLog> progressStatsTraceLog = processorExecutionTraceLogRepo
+					.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(ProcessorConstants.JIRA,
+							basicProjectConfigId);
+			Optional.ofNullable(
+					JiraProcessorUtil.saveChunkProgressInTrace(progressStatsTraceLog.orElse(null), stepContext))
+					.ifPresent(processorExecutionToSave::add);
 		}
 		if (CollectionUtils.isNotEmpty(processorExecutionToSave)) {
 			processorExecutionTraceLogRepo.saveAll(processorExecutionToSave);
