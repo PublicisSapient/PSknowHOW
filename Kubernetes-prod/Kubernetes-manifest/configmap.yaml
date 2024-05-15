@@ -19,12 +19,13 @@ data:
   forgotPassword.uiHost: "psknowhow.tools.publicis.sapient.com"
   corsFilterValidOrigin: "psknowhow.tools.publicis.sapient.com"
   isRepoToolEnable: "true"
-  versionnumber: "9.0.0"
+  versionnumber: "9.1.0"
   priority.P1: "p1,P1 - Blocker, blocker, 1, 0, p0, Urgent"
   priority.P2: "p2, critical, P2 - Critical, 2"
   priority.P3: "p3, P3 - Major, major, 3, High"
   priority.P4: "p4, P4 - Minor, minor, 4, Medium"
   priority.P5: "P5 - Trivial, 5, trivial, Unprioritized, Low"
+  repoToolURL: "http://debbie-django:8000/api"
 
   # UI Config
   API_HOST: "customapi"

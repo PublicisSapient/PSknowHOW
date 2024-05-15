@@ -30,6 +30,10 @@ spec:
           objectType: secret
           objectVersion: ""
         - |
+          objectName: prod-test-knhdbconnectionstring
+          objectType: secret
+          objectVersion: ""
+        - |
           objectName: prod-rabbitpass
           objectType: secret
           objectVersion: ""
@@ -111,6 +115,11 @@ spec:
     data:
     - objectName: prod-knhdbconnectionstring                           # This refers to the name of the secret as it is stored in Azure Key Vault
       key: prod-knhdbconnectionstring                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: prod-test-knhdbconnectionstring
+    type: Opaque
+    data:
+    - objectName: prod-test-knhdbconnectionstring                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: prod-test-knhdbconnectionstring
   - secretName: prod-rabbitpass
     type: Opaque
     data:

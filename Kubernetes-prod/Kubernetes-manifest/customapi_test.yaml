@@ -2,19 +2,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: customapi
+  name: customapi-test
   namespace: prod-knowhow
   labels:
-    app: customapi
+    app: customapi-test
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: customapi
+      app: customapi-test
   template:
     metadata:
       labels:
-        app: customapi
+        app: customapi-test
     spec:
       # initContainers:
       # - name: init-mongodb
@@ -24,8 +24,8 @@ spec:
       #   image: busybox:1.28
       #   command: ['sh', '-c', "until nslookup customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for customapi; sleep 2; done"]
       containers:
-        - name: customapi
-          image: speedtools.azurecr.io/knowhow-customapi:9.1.0
+        - name: customapi-test
+          image: speedtools.azurecr.io/knowhow-customapi:9.0.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -47,8 +47,8 @@ spec:
             - name: spring.data.mongodb.uri
               valueFrom:
                 secretKeyRef:
-                  name: prod-knhdbconnectionstring
-                  key: prod-knhdbconnectionstring
+                  name: prod-test-knhdbconnectionstring
+                  key: prod-test-knhdbconnectionstring
             # - name: spring.data.mongodb.host
             #   valueFrom:
             #     secretKeyRef:
@@ -92,9 +92,9 @@ spec:
             - name: mongock.migration-scan-package
               value: "com.publicissapient.kpidashboard.apis.mongock.upgrade"
             - name: mongock.start-system-version
-              value: "9.0.0"
+              value: "8.0.0"
             - name: mongock.end-system-version
-              value: "9.1.0"
+              value: "9.0.0"
           envFrom:
           - configMapRef:
               name: knowhow-config  
@@ -113,11 +113,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: customapi
+  name: customapi-test
   namespace: prod-knowhow
 spec:
   selector:
-    app: customapi
+    app: customapi-test
   ports:
     - protocol: TCP
       port: 8080
