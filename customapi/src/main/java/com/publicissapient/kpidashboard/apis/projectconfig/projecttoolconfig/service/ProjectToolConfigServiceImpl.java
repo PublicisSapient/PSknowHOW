@@ -196,6 +196,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectToolConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), TIME_FORMAT));
 		projectToolConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), TIME_FORMAT));
 		toolRepository.save(projectToolConfig);
+		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
 		return new ServiceResponse(true, "created and saved new project_tools", projectToolConfig);
