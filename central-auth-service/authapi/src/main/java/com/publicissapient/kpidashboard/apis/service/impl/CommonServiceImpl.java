@@ -62,213 +62,221 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Slf4j
 public class CommonServiceImpl implements CommonService {
-    public static final String NOTIFICATION_MESSAGE_SENT_TO_KAFKA_WITH_KEY = "Notification message sent to kafka with key : {}";
+	public static final String NOTIFICATION_MESSAGE_SENT_TO_KAFKA_WITH_KEY = "Notification message sent to kafka with key : {}";
 
-    private final UserRoleRepository userRoleRepository;
+	private final UserRoleRepository userRoleRepository;
 
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    private final NotificationEventProducer notificationEventProducer;
+	private final NotificationEventProducer notificationEventProducer;
 
-    private final AuthConfig authConfig;
+	private final AuthConfig authConfig;
 
-    private final ForgotPasswordConfig forgotPasswordConfig;
+	private final ForgotPasswordConfig forgotPasswordConfig;
 
-    private final GlobalConfigRepository globalConfigRepository;
+	private final GlobalConfigRepository globalConfigRepository;
 
-    private final SpringTemplateEngine templateEngine;
+	private final SpringTemplateEngine templateEngine;
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+	private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    /**
-     * This method is to search the email addresses based on roles
-     *
-     * @param roles
-     * @return list of email addresses
-     */
-    public List<String> getEmailAddressBasedOnRoles(List<String> roles) {
-        Set<String> emailAddresses = new HashSet<>();
-        List<UserRole> superAdminUserRoleList = userRoleRepository.findByRoles(roles);
+	@SuppressWarnings("PMD.AvoidCatchingGenericException")
+	/**
+	 * This method is to search the email addresses based on roles
+	 *
+	 * @param roles
+	 * @return list of email addresses
+	 */ public List<String> getEmailAddressBasedOnRoles(List<String> roles) {
+		Set<String> emailAddresses = new HashSet<>();
+		List<UserRole> superAdminUserRoleList = userRoleRepository.findByRoles(roles);
 
-        if (CollectionUtils.isNotEmpty(superAdminUserRoleList)) {
-            List<String> superAdminUserNameList = superAdminUserRoleList.stream().map(UserRole::getUsername)
-                    .collect(Collectors.toList());
-            List<User> superAdminUsersList = userRepository.findByUsernameIn(superAdminUserNameList);
-            emailAddresses.addAll(superAdminUsersList.stream().filter(user -> StringUtils.isNotEmpty(user.getEmail()))
-                    .map(User::getEmail).collect(Collectors.toSet()));
-            if (CollectionUtils.isNotEmpty(superAdminUsersList)) {
-                emailAddresses.addAll(superAdminUsersList.stream().map(User::getEmail).collect(Collectors.toSet()));
+		if (CollectionUtils.isNotEmpty(superAdminUserRoleList)) {
+			List<String> superAdminUserNameList = superAdminUserRoleList.stream().map(UserRole::getUsername)
+																		.collect(Collectors.toList());
+			List<User> superAdminUsersList = userRepository.findByUsernameIn(superAdminUserNameList);
+			emailAddresses.addAll(superAdminUsersList.stream().filter(user -> StringUtils.isNotEmpty(user.getEmail()))
+													 .map(User::getEmail).collect(Collectors.toSet()));
+			if (CollectionUtils.isNotEmpty(superAdminUsersList)) {
+				emailAddresses.addAll(superAdminUsersList.stream().map(User::getEmail).collect(Collectors.toSet()));
 
-            }
-        }
-        return emailAddresses.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
-    }
+			}
+		}
+		return emailAddresses.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
+	}
 
-    /**
-     * send notification to super admin for approval and notification to user for
-     * the status of the request used this function for mail with kafka or without
-     * kafka.
-     *
-     * @param emailAddresses
-     * @param customData
-     * @param subjectKey
-     * @param notKey
-     */
-    @Override
-    public void sendEmailNotification(List<String> emailAddresses, Map<String, String> customData, String subjectKey,
-                                      String notKey) {
-        if (authConfig.isNotificationSwitch()) {
-            Map<String, String> notificationSubjects = authConfig.getNotificationSubject();
-            if (CollectionUtils.isNotEmpty(emailAddresses) && MapUtils.isNotEmpty(notificationSubjects)) {
-                String subject = notificationSubjects.get(subjectKey);
-                log.info(NOTIFICATION_MESSAGE_SENT_TO_KAFKA_WITH_KEY, notKey);
-                String templateKey = authConfig.getMailTemplate().getOrDefault(notKey, "");
-                sendNotificationEvent(emailAddresses, customData, subject, notKey, authConfig.getKafkaMailTopic(),
-                                      kafkaTemplate, templateKey, authConfig.isMailWithoutKafka());
-            } else {
-                log.error("Notification Event not sent : No email address found "
-                        + "or Property - notificationSubject.accessRequest not set in property file ");
-            }
-        } else {
-            log.info(
-                    "Notification Switch is Off. If want to send notification set true for notification.switch in property");
-        }
-    }
+	/**
+	 * send notification to super admin for approval and notification to user for
+	 * the status of the request used this function for mail with kafka or without
+	 * kafka.
+	 *
+	 * @param emailAddresses
+	 * @param customData
+	 * @param subjectKey
+	 * @param notKey
+	 */
+	@Override
+	public void sendEmailNotification(List<String> emailAddresses, Map<String, String> customData, String subjectKey,
+									  String notKey) {
+		if (authConfig.isNotificationSwitch()) {
+			Map<String, String> notificationSubjects = authConfig.getNotificationSubject();
+			if (CollectionUtils.isNotEmpty(emailAddresses) && MapUtils.isNotEmpty(notificationSubjects)) {
+				String subject = notificationSubjects.get(subjectKey);
+				log.info(NOTIFICATION_MESSAGE_SENT_TO_KAFKA_WITH_KEY, notKey);
+				String templateKey = authConfig.getMailTemplate().getOrDefault(notKey, "");
+				sendNotificationEvent(emailAddresses, customData, subject, notKey, authConfig.getKafkaMailTopic(),
+									  kafkaTemplate, templateKey, authConfig.isMailWithoutKafka()
+				);
+			} else {
+				log.error("Notification Event not sent : No email address found "
+						  + "or Property - notificationSubject.accessRequest not set in property file ");
+			}
+		} else {
+			log.info(
+					"Notification Switch is Off. If want to send notification set true for notification.switch in property");
+		}
+	}
 
-    /**
-     * This method create EmailEvent object and send async message to kafka broker
-     *
-     * @param emailAddresses
-     * @param customData
-     * @param notSubject
-     * @param notKey
-     * @param topic
-     * @param kafkaTemplate
-     * @param templateKey
-     * @param isMailWithoutKafka
-     */
-    private void sendNotificationEvent(List<String> emailAddresses, Map<String, String> customData, String notSubject,
-                                       String notKey, String topic, KafkaTemplate<String, Object> kafkaTemplate, String templateKey,
-                                       boolean isMailWithoutKafka) {
+	/**
+	 * This method create EmailEvent object and send async message to kafka broker
+	 *
+	 * @param emailAddresses
+	 * @param customData
+	 * @param notSubject
+	 * @param notKey
+	 * @param topic
+	 * @param kafkaTemplate
+	 * @param templateKey
+	 * @param isMailWithoutKafka
+	 */
+	private void sendNotificationEvent(List<String> emailAddresses, Map<String, String> customData, String notSubject,
+									   String notKey, String topic, KafkaTemplate<String, Object> kafkaTemplate,
+									   String templateKey, boolean isMailWithoutKafka) {
 
-        if (!isMailWithoutKafka) {
-            if (StringUtils.isNotBlank(notSubject)) {
-                GlobalConfig globalConfigs = globalConfigRepository.findByEnv(authConfig.getNotificationEnv());
-                if (globalConfigs != null) {
-                    EmailEvent emailEvent = new EmailEvent(globalConfigs.getFromEmail(), emailAddresses, null, null,
-                            notSubject, null, customData, globalConfigs.getEmailHost(), globalConfigs.getEmailPort());
-                    notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic, kafkaTemplate);
-                } else {
-                    log.error("Notification Event not sent : notification emailServer Details not found in db");
-                }
-            } else {
-                log.error("Notification Event not sent : notification subject for {} not found in properties file",
-                        notSubject);
-            }
-        } else {
-            sendEmailWithoutKafka(emailAddresses, customData, notSubject, templateKey);
-        }
+		if (!isMailWithoutKafka) {
+			if (StringUtils.isNotBlank(notSubject)) {
+				GlobalConfig globalConfigs = globalConfigRepository.findByEnv(authConfig.getNotificationEnv());
+				if (globalConfigs != null) {
+					EmailEvent emailEvent = new EmailEvent(globalConfigs.getFromEmail(), emailAddresses, null, null,
+														   notSubject, null, customData, globalConfigs.getEmailHost(),
+														   globalConfigs.getEmailPort()
+					);
+					notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic, kafkaTemplate);
+				} else {
+					log.error("Notification Event not sent : notification emailServer Details not found in db");
+				}
+			} else {
+				log.error(
+						"Notification Event not sent : notification subject for {} not found in properties file",
+						notSubject
+				);
+			}
+		} else {
+			sendEmailWithoutKafka(emailAddresses, customData, notSubject, templateKey);
+		}
 
-    }
+	}
 
-    /**
-     * this function only use for smtp mail service
-     *
-     * @param emailAddresses
-     * @param additionalData
-     * @param notSubject
-     * @param templateKey
-     */
+	/**
+	 * this function only use for smtp mail service
+	 *
+	 * @param emailAddresses
+	 * @param additionalData
+	 * @param notSubject
+	 * @param templateKey
+	 */
 
-    private void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> additionalData,
-                                       String notSubject, String templateKey) {
-        GlobalConfig globalConfigs = globalConfigRepository.findByEnv(authConfig.getNotificationEnv());
-        if (StringUtils.isNotBlank(notSubject) && globalConfigs != null) {
-            EmailEvent emailEvent = new EmailEvent(globalConfigs.getFromEmail(), emailAddresses, null, null, notSubject,
-                    null, additionalData, globalConfigs.getEmailHost(), globalConfigs.getEmailPort());
-            JavaMailSenderImpl javaMailSender = getJavaMailSender(emailEvent);
-            MimeMessage message = javaMailSender.createMimeMessage();
-            try {
-                MimeMessageHelper helper = new MimeMessageHelper(message,
-                        MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
-                Context context = new Context();
-                Map<String, String> customData = emailEvent.getCustomData();
-                if (MapUtils.isNotEmpty(customData)) {
-                    customData.forEach((k, value) -> {
-                        BiConsumer<String, Object> setVariable = context::setVariable;
-                        setVariable.accept(k, value);
-                    });
-                }
-                String html = templateEngine.process(templateKey, context);
-                if (StringUtils.isNotEmpty(html)) {
-                    helper.setTo(emailEvent.getTo().stream().toArray(String[]::new));
-                    helper.setText(html, true);
-                    helper.setSubject(emailEvent.getSubject());
-                    helper.setFrom(emailEvent.getFrom());
-                    javaMailSender.send(message);
-                    log.info("Email successfully sent for the key : {}", templateKey);
-                }
-            } catch (MessagingException me) {
-                log.error("Email not sent for the key : {}", templateKey);
-            } catch (TemplateInputException tie) {
-                log.error("Template not found for the key : {}", templateKey);
-                throw new RecoverableDataAccessException("Template not found for the key :" + templateKey);
-            } catch (TemplateProcessingException tpe) {
-                throw new RecoverableDataAccessException("Template not parsed for the key :" + templateKey);
-            }
-        }
-    }
+	private void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> additionalData,
+									   String notSubject, String templateKey) {
+		GlobalConfig globalConfigs = globalConfigRepository.findByEnv(authConfig.getNotificationEnv());
+		if (StringUtils.isNotBlank(notSubject) && globalConfigs != null) {
+			EmailEvent emailEvent = new EmailEvent(globalConfigs.getFromEmail(), emailAddresses, null, null, notSubject,
+												   null, additionalData, globalConfigs.getEmailHost(),
+												   globalConfigs.getEmailPort()
+			);
+			JavaMailSenderImpl javaMailSender = getJavaMailSender(emailEvent);
+			MimeMessage message = javaMailSender.createMimeMessage();
+			try {
+				MimeMessageHelper helper = new MimeMessageHelper(message,
+																 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+																 StandardCharsets.UTF_8.name()
+				);
+				Context context = new Context();
+				Map<String, String> customData = emailEvent.getCustomData();
+				if (MapUtils.isNotEmpty(customData)) {
+					customData.forEach((k, value) -> {
+						BiConsumer<String, Object> setVariable = context::setVariable;
+						setVariable.accept(k, value);
+					});
+				}
+				String html = templateEngine.process(templateKey, context);
+				if (StringUtils.isNotEmpty(html)) {
+					helper.setTo(emailEvent.getTo().stream().toArray(String[]::new));
+					helper.setText(html, true);
+					helper.setSubject(emailEvent.getSubject());
+					helper.setFrom(emailEvent.getFrom());
+					javaMailSender.send(message);
+					log.info("Email successfully sent for the key : {}", templateKey);
+				}
+			} catch (MessagingException me) {
+				log.error("Email not sent for the key : {}", templateKey);
+			} catch (TemplateInputException tie) {
+				log.error("Template not found for the key : {}", templateKey);
+				throw new RecoverableDataAccessException("Template not found for the key :" + templateKey);
+			} catch (TemplateProcessingException tpe) {
+				throw new RecoverableDataAccessException("Template not parsed for the key :" + templateKey);
+			}
+		}
+	}
 
-    /**
-     * Gets api host
-     **/
-    public String getApiHost() throws UnknownHostException {
+	/**
+	 * Gets api host
+	 **/
+	public String getApiHost() throws UnknownHostException {
 
-        StringBuilder urlPath = new StringBuilder();
-        if (StringUtils.isNotEmpty(forgotPasswordConfig.getUiHost())) {
-            urlPath.append(forgotPasswordConfig.getUiHost().trim());
-            // append port if local setup
-            if (StringUtils.isNotEmpty(forgotPasswordConfig.getServerPort())) {
-                urlPath.append(':').append(forgotPasswordConfig.getServerPort());
-            }
-        } else {
-            throw new UnknownHostException("Api host not found in properties.");
-        }
+		StringBuilder urlPath = new StringBuilder();
+		if (StringUtils.isNotEmpty(forgotPasswordConfig.getUiHost())) {
+			urlPath.append(forgotPasswordConfig.getUiHost().trim());
+			// append port if local setup
+			if (StringUtils.isNotEmpty(forgotPasswordConfig.getServerPort())) {
+				urlPath.append(':').append(forgotPasswordConfig.getServerPort());
+			}
+		} else {
+			throw new UnknownHostException("Api host not found in properties.");
+		}
 
-        return urlPath.toString();
-    }
+		return urlPath.toString();
+	}
 
-    public String getUIHost() throws UnknownHostException {
-        StringBuilder urlPath = new StringBuilder();
-        urlPath.append(':').append("//");
+	public String getUIHost() throws UnknownHostException {
+		StringBuilder urlPath = new StringBuilder();
+		urlPath.append(':').append("//");
 
-        if (StringUtils.isNotEmpty(forgotPasswordConfig.getUiHost())) {
+		if (StringUtils.isNotEmpty(forgotPasswordConfig.getUiHost())) {
 
-            if (StringUtils.isNotEmpty(forgotPasswordConfig.getUiPort())) {
-                urlPath.append(forgotPasswordConfig.getUiHost());
-                urlPath.append(':').append(forgotPasswordConfig.getUiPort());
-            } else {
-                urlPath.append(forgotPasswordConfig.getUiHost());
-            }
+			if (StringUtils.isNotEmpty(forgotPasswordConfig.getUiPort())) {
+				urlPath.append(forgotPasswordConfig.getUiHost());
+				urlPath.append(':').append(forgotPasswordConfig.getUiPort());
+			} else {
+				urlPath.append(forgotPasswordConfig.getUiHost());
+			}
 
-        } else {
-            throw new UnknownHostException("Ui host not found in properties.");
-        }
-        return urlPath.toString();
-    }
+		} else {
+			throw new UnknownHostException("Ui host not found in properties.");
+		}
+		return urlPath.toString();
+	}
 
-    private JavaMailSenderImpl getJavaMailSender(EmailEvent emailEvent) {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(emailEvent.getEmailHost());
-        mailSender.setPort(emailEvent.getEmailPort());
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "false");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.ssl.trust", "*");
-        props.put("mail.debug", "true");
-        return mailSender;
-    }
+	private JavaMailSenderImpl getJavaMailSender(EmailEvent emailEvent) {
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		mailSender.setHost(emailEvent.getEmailHost());
+		mailSender.setPort(emailEvent.getEmailPort());
+		Properties props = mailSender.getJavaMailProperties();
+		props.put("mail.transport.protocol", "smtp");
+		props.put("mail.smtp.auth", "false");
+		props.put("mail.smtp.starttls.enable", "true");
+		props.put("mail.smtp.ssl.trust", "*");
+		props.put("mail.debug", "true");
+		return mailSender;
+	}
 
 }

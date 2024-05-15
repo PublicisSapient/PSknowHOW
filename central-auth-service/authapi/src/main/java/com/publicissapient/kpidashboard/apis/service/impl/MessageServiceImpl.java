@@ -19,8 +19,7 @@
 package com.publicissapient.kpidashboard.apis.service.impl;
 
 import com.publicissapient.kpidashboard.apis.service.MessageService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -33,15 +32,9 @@ import java.util.Locale;
  * into Other Classes ex class UserServiceImpl
  */
 @Service
+@AllArgsConstructor
 public class MessageServiceImpl implements MessageService {
-
-	@Autowired
-	@Qualifier("validationMessageSource")
-	protected MessageSource mSource;
-
-	public MessageServiceImpl(MessageSource mSource) {
-		this.mSource = mSource;
-	}
+	protected final MessageSource mSource;
 
 	@Override
 	public String getMessage(String id) {

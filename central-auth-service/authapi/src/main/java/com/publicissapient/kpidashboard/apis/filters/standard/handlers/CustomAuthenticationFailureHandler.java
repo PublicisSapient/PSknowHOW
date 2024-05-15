@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.filters;
+package com.publicissapient.kpidashboard.apis.filters.standard.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -27,33 +26,29 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Calendar;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.WRONG_CREDENTIALS_ERROR_MESSAGE;
 
-/**
- * This class will handle authentication failed exception like Bad credentials
- *
- * @author Hiren Babariya
- */
 @Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
-			AuthenticationException exception) throws IOException, ServletException {
+			AuthenticationException exception) throws IOException {
 		httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
 		httpServletResponse.setContentType("application/json");
 
 		Map<String, Object> data = new LinkedHashMap<>();
-		data.put("timestamp", Calendar.getInstance().getTime());
+		data.put("timestamp", LocalDateTime.now());
 
 		data.put("status", HttpStatus.UNAUTHORIZED.value());
 
 		data.put("error", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+
 		if (exception.getMessage().contains("error code 49 - 80090308")) {
 			data.put("message", "Authentication Failed: " + WRONG_CREDENTIALS_ERROR_MESSAGE);
 		} else {

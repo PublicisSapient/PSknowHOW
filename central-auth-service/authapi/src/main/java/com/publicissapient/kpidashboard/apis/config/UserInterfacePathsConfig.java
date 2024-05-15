@@ -9,13 +9,12 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix = "auth.cookie")
-public class CookieConfig {
-	private Integer duration;
+@ConfigurationProperties(prefix = "auth.ui")
+public class UserInterfacePathsConfig {
 
-	private Boolean isSameSite;
+	private String registerPath;
 
-	private Boolean isSecure;
+	private String validateUser;
 
-	private String domain;
+	private String uiResetPath;
 }

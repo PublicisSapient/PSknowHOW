@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Data;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -29,16 +31,11 @@ import org.springframework.context.annotation.Configuration;
 
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 
-import lombok.Data;
-
-/**
- * This class maps authentication properties to object
- */
-
 @Data
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "auth")
+// TODO: remove useless configs
 public class AuthConfig {
 
 	private String secret;
@@ -56,11 +53,6 @@ public class AuthConfig {
 	// TODO: refactor later in the cors filter
 	private List<String> corsFilterValidOrigin;
 
-	private Integer authCookieDuration;
-	private Boolean authCookieIsSameSite;
-	private Boolean authCookieIsSecure;
-	private String authCookieDomain;
-
 	@Value("${kafka.mailtopic}")
 	private String kafkaMailTopic;
 	private Map<String, String> notificationSubject;
@@ -75,15 +67,11 @@ public class AuthConfig {
 
 	private Map<String, String> mailTemplate;
 
-	@Value("${ui.resetPath}")
-	private String uiResetPath;
+
 
 	// ------ verify user ------
 	@Value("${verifyUser.tokenExpiryDays}")
 	private String verifyUserTokenExpiryInterval;
-	@Value("${ui.registerPath}")
-	private String registerPath;
-	@Value("${ui.validateUser}")
-	private String validateUser;
+
 
 }

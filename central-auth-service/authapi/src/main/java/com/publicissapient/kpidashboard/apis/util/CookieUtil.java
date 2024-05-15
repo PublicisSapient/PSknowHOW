@@ -17,26 +17,21 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.util;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.Optional;
 
-/**
- * Provides Cookie utils.
- *
- * @author Hiren Babariya
- */
+import lombok.NoArgsConstructor;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 @NoArgsConstructor
 public class CookieUtil {
-	public static final String DEFAULT_COOKIE_PATH = "/";
+	private static final String DEFAULT_COOKIE_PATH = "/";
 
-	public static final String API_COOKIE_PATH = "/api";
+	private static final String API_COOKIE_PATH = "/api";
 
 	public static final String COOKIE_NAME = "authCookie";
 
@@ -44,135 +39,60 @@ public class CookieUtil {
 
 	public static final String USERNAME_COOKIE_NAME = "samlUsernameCookie";
 
-	public static final String SAME_SITE_ATTRIBUTE = "SameSite";
+	private static final String SAME_SITE_ATTRIBUTE = "SameSite";
 
-	public static final String SAME_SITE_VALUE = "None";
+	private static final String SAME_SITE_VALUE = "None";
 
-	public static Optional<Cookie> getCookie(
-			HttpServletRequest request,
-			String name
-	) {
+	public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
 		Cookie[] cookies = request.getCookies();
+
 		if (cookies != null) {
-			return Arrays.stream(cookies)
-						 .filter(cookie -> cookie.getName()
-												 .equals(name))
-						 .findFirst();
+			return Arrays.stream(cookies).filter(cookie -> cookie.getName().equals(name)).findFirst();
 		} else {
 			return Optional.empty();
 		}
 	}
 
-	public static Optional<String> getCookieValue(
-			@NotNull
-			HttpServletRequest request,
-			@NotNull
-			String name
-	) {
-		return getCookie(
-				request,
-				name
-		).map(Cookie::getValue);
+	public static Optional<String> getCookieValue(@NotNull HttpServletRequest request, @NotNull String name) {
+		return getCookie(request, name).map(Cookie::getValue);
 	}
 
 	public static void addCookie(
-			@NotNull
-			HttpServletResponse response,
-			@NotNull
-			String name,
-			@NotNull
-			String path,
-			@NotNull
-			String value,
-			boolean httpOnly,
-			int maxAge,
-			String domain,
-			boolean isSameSite,
-			boolean isSecure
+			@NotNull HttpServletResponse response, @NotNull String name, @NotNull String path, @NotNull String value,
+			boolean httpOnly, int maxAge, String domain, boolean isSameSite, boolean isSecure
 	) {
-		Cookie cookie = new Cookie(
-				name,
-				value
-		);
+		Cookie cookie = new Cookie(name, value);
 		cookie.setPath(path);
 		cookie.setHttpOnly(httpOnly);
 		cookie.setMaxAge(maxAge);
 		cookie.setDomain(domain);
 		cookie.setSecure(isSecure);
 		if (isSameSite) {
-			cookie.setAttribute(
-					SAME_SITE_ATTRIBUTE,
-					SAME_SITE_VALUE
-			);
+			cookie.setAttribute(SAME_SITE_ATTRIBUTE, SAME_SITE_VALUE);
 		}
 		response.addCookie(cookie);
 	}
 
 	public static void addCookie(
-			@NotNull
-			HttpServletResponse response,
-			@NotNull
-			String name,
-			@NotNull
-			String value,
-			boolean httpOnly,
-			int maxAge,
-			String domain,
-			boolean isSameSite,
-			boolean isSecure
+			@NotNull HttpServletResponse response, @NotNull String name, @NotNull String value, boolean httpOnly,
+			int maxAge, String domain, boolean isSameSite, boolean isSecure
 	) {
-		addCookie(
-				response,
-				name,
-				DEFAULT_COOKIE_PATH,
-				value,
-				httpOnly,
-				maxAge,
-				domain,
-				isSameSite,
-				isSecure
-		);
+		addCookie(response, name, DEFAULT_COOKIE_PATH, value, httpOnly, maxAge, domain, isSameSite, isSecure);
 	}
 
 	public static void addCookie(
-			@NotNull
-			HttpServletResponse response,
-			@NotNull
-			String name,
-			@NotNull
-			String value,
-			int maxAge,
-			String domain,
-			boolean isSameSite,
-			boolean isSecure
+			@NotNull HttpServletResponse response, @NotNull String name, @NotNull String value, int maxAge,
+			String domain, boolean isSameSite, boolean isSecure
 	) {
-		addCookie(
-				response,
-				name,
-				API_COOKIE_PATH,
-				value,
-				Boolean.TRUE,
-				maxAge,
-				domain,
-				isSameSite,
-				isSecure
-		);
+		addCookie(response, name, API_COOKIE_PATH, value, Boolean.TRUE, maxAge, domain, isSameSite, isSecure);
 	}
 
 	public static void deleteCookie(
-			@NotNull
-			HttpServletRequest request,
-			@NotNull
-			HttpServletResponse response,
-			@NotNull
-			String name
+			@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull String name
 	) {
-		getCookie(
-				request,
-				name
-		).ifPresent(foundCookie -> {
+		getCookie(request, name).ifPresent(foundCookie -> {
 			foundCookie.setMaxAge(0);
-			foundCookie.setValue(StringUtils.EMPTY);
+			foundCookie.setValue("");
 			foundCookie.setPath(DEFAULT_COOKIE_PATH);
 			response.addCookie(foundCookie);
 		});

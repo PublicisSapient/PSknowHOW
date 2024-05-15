@@ -35,9 +35,6 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * @author hargupta15
- */
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -49,6 +46,7 @@ public class UserRoleServiceImpl implements UserRoleService {
 
 	public Collection<GrantedAuthority> getAuthorities(String username) {
 		List<UserRole> userPermissionList = userRoleRepository.findByUsername(username);
+
 		if(CollectionUtils.isNotEmpty(userPermissionList)) {
 			userPermissionList = userPermissionList.stream().filter(userRole -> userRole.getRole() != null).collect(Collectors.toList());
 			return createAuthorities(CollectionUtils.emptyIfNull(userPermissionList).stream()

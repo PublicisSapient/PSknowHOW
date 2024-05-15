@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.apis.controller;
 
 import lombok.AllArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,15 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.publicissapient.kpidashboard.apis.service.RoleService;
 import com.publicissapient.kpidashboard.common.model.ServiceResponse;
 
-import lombok.extern.slf4j.Slf4j;
 
-/**
- * Controller for handling Role APIs
- *
- * @author hargupta15
- */
 @RestController
-@Slf4j
 @AllArgsConstructor
 @RequestMapping("/roles")
 @SuppressWarnings("java:S3740")
@@ -44,16 +38,13 @@ public class RoleController {
 
 	private final RoleService roleService;
 
-	/**
-	 * Fetch all roles data.
-	 *
-	 * @return the roles
-	 */
 	@GetMapping(value = "/{resourceName}")
 	public ResponseEntity<ServiceResponse> getAllRoles(@PathVariable String resourceName) {
-		log.info("Fetching all roles");
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ServiceResponse<>(true, "", roleService.getResourceAllRoles(resourceName)));
+							 .body(new ServiceResponse<>(true,
+														 "",
+														 roleService.getResourceAllRoles(resourceName))
+							 );
 	}
 
 }
