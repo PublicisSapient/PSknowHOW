@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.Node;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -216,20 +217,24 @@ public class ZephyrService {
 	 * 				The TreeAggregatorDetail object to be updated.
 	 */
 	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
-		if (!kpiRequest.getLabel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
+		if (!kpiRequest.getLabel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+				&& MapUtils.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes())) {
 			Map<String, List<Node>> sprintMap = new LinkedHashMap<>();
-			treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-					.stream().collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
-						if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
-							sprintMap
-									.computeIfAbsent(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
-											k -> new ArrayList<>())
-									.addAll(new ArrayList<>(sprints.subList(0,
-											customApiConfig.getSprintCountForKpiCalculation())));
+			if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+						.stream().collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
+							if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
+								sprintMap
+										.computeIfAbsent(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
+												k -> new ArrayList<>())
+										.addAll(new ArrayList<>(sprints.subList(0,
+												customApiConfig.getSprintCountForKpiCalculation())));
 
-						}
-					});
-			treeAggregatorDetail.setMapOfListOfLeafNodes(sprintMap);
+							}
+						});
+				treeAggregatorDetail.setMapOfListOfLeafNodes(sprintMap);
+			}
 		}
 	}
 

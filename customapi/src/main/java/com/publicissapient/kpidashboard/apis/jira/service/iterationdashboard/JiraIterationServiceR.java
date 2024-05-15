@@ -223,7 +223,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		return accountDataListAll.stream()
 				.filter(data -> data.getNode().stream().anyMatch(
 						d -> d.getGroupName().equalsIgnoreCase(groupName) && selectedValue.contains(d.getId())))
-				.toList();
+				.findFirst().map(List::of).orElse(List.of());
 	}
 
 	private void updateJiraIssueList(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
