@@ -317,7 +317,7 @@ public class JiraProcessorUtil {
 	}
 
 	/**
-	 * Method to fetch progress of chunk based issues processing from context & save
+	 * Method to fetch progress of chunk based issues processing from context save
 	 * into traceLog.
 	 *
 	 * @param processorExecutionTraceLog
