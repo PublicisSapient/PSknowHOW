@@ -76,11 +76,10 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 
 	@Override
 	public List<ProcessorExecutionTraceLog> getTraceLogs(String processorName, String basicProjectConfigId) {
-		List<ProcessorExecutionTraceLog> traceLogs = getTraceLogs();
-		List<ProcessorExecutionTraceLog> resultTraceLogs = new ArrayList<>();
+        List<ProcessorExecutionTraceLog> resultTraceLogs = new ArrayList<>();
 
 		if (StringUtils.isEmpty(processorName) && StringUtils.isEmpty(basicProjectConfigId)) {
-			resultTraceLogs.addAll(traceLogs);
+			resultTraceLogs.addAll(getTraceLogs());
 		} else if (StringUtils.isNotEmpty(processorName) && StringUtils.isEmpty(basicProjectConfigId)) {
 			List<ProcessorExecutionTraceLog> traceLogsByProcessorName = processorExecutionTraceLogRepository
 					.findByProcessorName(processorName);
