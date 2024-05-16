@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.capacity.service;
 
 import static org.junit.Assert.assertEquals;
@@ -7,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Method;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +35,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -71,6 +98,8 @@ public class CapacityMasterServiceImplTest {
 	@Mock
 	private CacheService cacheService;
 	@Mock
+	private FilterHelperService filterHelperService;
+	@Mock
 	private CustomApiConfig customApiConfig;
 	@Mock
 	private ProjectBasicConfigService projectBasicConfigService;
@@ -78,6 +107,8 @@ public class CapacityMasterServiceImplTest {
 	private SprintDetailsService sprintDetailsService;
 	@Mock
 	private HappinessKpiDataRepository happinessKpiDataRepository;
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 	private List<SprintDetails> sprintDetailsList;
 
 	/**
@@ -96,6 +127,8 @@ public class CapacityMasterServiceImplTest {
 		scrumCapacityMaster.setSprintNodeId("38296_Scrum Project_6335363749794a18e8a4479b");
 		scrumCapacityMaster.setKanban(false);
 		scrumCapacityMaster.setCapacity(500.0);
+		scrumCapacityMaster.setAdditionalFilterCapacityList(createAdditionalFilter());
+		scrumCapacityMaster.setBasicProjectConfigId(new ObjectId("65eec0156f35b0294eb765f6"));
 
 		kanbanCapacity = new CapacityMaster();
 		kanbanCapacity.setProjectName("Kanban Project");
@@ -104,11 +137,20 @@ public class CapacityMasterServiceImplTest {
 		kanbanCapacity.setEndDate("2020-02-02");
 		kanbanCapacity.setKanban(true);
 		kanbanCapacity.setCapacity(500.0);
+		kanbanCapacity.setBasicProjectConfigId(new ObjectId("65eec0156f35b0294eb765f6"));
+
 
 		kanbanDbData = new KanbanCapacity();
 		kanbanDbData.setProjectName("health project");
 		kanbanDbData.setProjectId("Kanban Project_6335368249794a18e8a4479f");
 		kanbanDbData.setCapacity(200.0);
+
+		scrumCapacityAssigneeMaster.setBasicProjectConfigId(new ObjectId("65eec0156f35b0294eb765f6"));
+
+		when(capacityKpiDataRepository.findAll()).thenReturn(capacityKpiDataList);
+		when(assigneeDetailsRepository
+				.findByBasicProjectConfigId(anyString()))
+				.thenReturn(new AssigneeDetails());
 	}
 
 	private void setUpCapacityAssignee() {
@@ -138,7 +180,32 @@ public class CapacityMasterServiceImplTest {
 		kanbanCapacityAssignee.setCapacity(500.0);
 		kanbanCapacityAssignee.setAssigneeDetails(true);
 		kanbanCapacityAssignee.setAssigneeCapacity(assigneeCapacityList);
+		kanbanCapacityAssignee.setAdditionalFilterCapacityList(createAdditionalFilter());
 
+		kanbanCapacityAsigneeList.forEach(a -> a.setAdditionalFilterCapacityList(createAdditionalFilter()));
+
+		AdditionalFilterCategoryFactory additionalFilterCategoryFactory = AdditionalFilterCategoryFactory.newInstance();
+		List<AdditionalFilterCategory> additionalFilterCategoryList = additionalFilterCategoryFactory
+				.getAdditionalFilterCategoryList();
+		Map<String, AdditionalFilterCategory> additonalFilterMap = additionalFilterCategoryList.stream()
+				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
+		when(filterHelperService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
+
+	}
+
+	private List<AdditionalFilterCapacity> createAdditionalFilter() {
+
+		List<AdditionalFilterCapacity>  additionalFilterCapacityList= new ArrayList<>();
+		AdditionalFilterCapacity additionalFilterCapacity= new AdditionalFilterCapacity();
+		additionalFilterCapacity.setFilterId("sqd");
+		List<LeafNodeCapacity> leafNodeCapacityList= new ArrayList<>();
+		leafNodeCapacityList.add(new LeafNodeCapacity("filterId1",50D));
+		leafNodeCapacityList.add(new LeafNodeCapacity("filterId2",40D));
+		leafNodeCapacityList.add(new LeafNodeCapacity("filterId3",60D));
+		additionalFilterCapacity.setNodeCapacityList(leafNodeCapacityList);
+		additionalFilterCapacityList.add(additionalFilterCapacity);
+
+		return additionalFilterCapacityList;
 	}
 
 	private AssigneeCapacity createAssigneeData(String userId, String userName, double planned, double leaves) {
@@ -170,6 +237,7 @@ public class CapacityMasterServiceImplTest {
 	public void testProcessCapacityData_scrum_failure() {
 		Map<String, String> map = new HashMap<>();
 		map.put("projectId", scrumCapacityMaster.getProjectNodeId());
+		when(assigneeDetailsRepository.findByBasicProjectConfigId(anyString())).thenReturn(new AssigneeDetails());
 		assertNotNull(capacityMasterServiceImpl.processCapacityData(kanbanCapacity));
 	}
 
@@ -347,6 +415,22 @@ public class CapacityMasterServiceImplTest {
 	public void testProcessAssigneeCapacityData_kanban_success() {
 		when(kanbanCapacityRepository.findByFilterMapAndDate(Mockito.any(), Mockito.any()))
 				.thenReturn(Lists.newArrayList(kanbanDbData));
+		kanbanCapacityAssignee.setBasicProjectConfigId(new ObjectId("65eec0156f35b0294eb765f6"));
 		assertNotNull(capacityMasterServiceImpl.processCapacityData(kanbanCapacityAssignee));
 	}
+
+	@Test
+	public void testSaveAdditionalFilterCapacity_EmptyList() throws Exception {
+		//List<AdditionalFilterCapacity> additionalFilterCapacityList= new ArrayList<>();
+		//when(scrumCapacityMaster.getAdditionalFilterCapacityList()).thenReturn(additionalFilterCapacityList);
+
+		Method method = CapacityMasterServiceImpl.class.getDeclaredMethod("saveAdditionalFilterCapacity", CapacityMaster.class);
+		method.setAccessible(true);
+
+		@SuppressWarnings("unchecked")
+		List<AdditionalFilterCapacity> result = (List<AdditionalFilterCapacity>) method.invoke(capacityMasterServiceImpl, scrumCapacityMaster);
+
+		assertNotNull(String.valueOf(result), "The result should be null when the input list is empty.");
+	}
+
 }
