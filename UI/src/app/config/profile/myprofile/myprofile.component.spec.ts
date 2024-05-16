@@ -31,6 +31,7 @@ import { environment } from 'src/environments/environment';
 import { SharedService } from 'src/app/services/shared.service';
 import { of } from 'rxjs';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { InputSwitchModule } from 'primeng/inputswitch';
 describe('MyprofileComponent', () => {
   let component: MyprofileComponent;
   let fixture: ComponentFixture<MyprofileComponent>;
@@ -648,6 +649,7 @@ describe('MyprofileComponent', () => {
         CommonModule,
         HttpClientTestingModule,
         RouterTestingModule,
+        InputSwitchModule
       ],
       declarations: [MyprofileComponent],
       providers: [HttpService, ProfileComponent, SharedService , { provide: APP_CONFIG, useValue: AppConfig }]
@@ -723,7 +725,7 @@ describe('MyprofileComponent', () => {
     ]);
   });
 
- fit('should update notification email flag', (fakeAsync(() => {
+ it('should update notification email flag', (fakeAsync(() => {
     // component.ngOnInit();
     const event = { checked: true };
     const toggleField = 'accessAlertNotification';
