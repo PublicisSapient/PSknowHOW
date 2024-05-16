@@ -103,12 +103,23 @@ public class NotificationHandler {
 		}
 	}
 
+	/**
+	 * find User List will all project admin who have access of that particular project
+	 * and send email which users had enabled notification alert
+	 * 
+	 * @param projectConfigId
+	 * @return
+	 */
 	private List<String> getProjectAdminEmailAddressBasedProjectId(String projectConfigId) {
 		Set<String> emailAddresses = new HashSet<>();
 		List<UserInfo> usersList = userInfoRepository.findByAuthoritiesIn(Arrays.asList(ROLE_PROJECT_ADMIN));
+		List<UserInfo> notificationEnableUsersList = usersList.stream()
+				.filter(userInfo -> userInfo.getNotificationEmail() != null
+						&& userInfo.getNotificationEmail().get(CommonConstant.ERROR_ALERT_NOTIFICATION))
+				.collect(Collectors.toList());
 		Map<String, String> projectMap = getHierarchyMap(projectConfigId);
-		if (CollectionUtils.isNotEmpty(usersList)) {
-			usersList.forEach(action -> {
+		if (CollectionUtils.isNotEmpty(notificationEnableUsersList)) {
+			notificationEnableUsersList.forEach(action -> {
 				Optional<ProjectsAccess> projectAccess = action.getProjectsAccess().stream()
 						.filter(access -> access.getRole().equalsIgnoreCase(ROLE_PROJECT_ADMIN)).findAny();
 				if (projectAccess.isPresent()) {

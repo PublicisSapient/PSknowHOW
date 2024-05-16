@@ -34,7 +34,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -432,5 +434,22 @@ public class UserInfoServiceImplTest {
 		when(userInfoRepository.save(any())).thenReturn(user);
 		UserInfo userInfo = service.getOrSaveUserInfo("user", AuthType.STANDARD, new ArrayList<>());
 		assertNotNull(userInfo);
+	}
+
+	@Test
+	public void updateNotificationEmailTest() {
+		Map<String, Boolean> notificationEmail = new HashMap<>();
+		notificationEmail.put("accessAlertNotification" , true);
+		notificationEmail.put("errorAlertNotification" , false);
+		UserInfo user = new UserInfo();
+		user.setUsername("testUser");
+		user.setAuthType(AuthType.STANDARD);
+		user.setAuthorities(Lists.newArrayList("ROLE_PROJECT_ADMIN"));
+		user.setEmailAddress("email");
+		when(userInfoRepository.findByUsername("testUser")).thenReturn(user);
+		when(userInfoRepository.save(any())).thenReturn(user);
+		UserInfo userInfo = service.updateNotificationEmail("testUser", notificationEmail);
+		assertNotNull(userInfo);
+		assertNotNull(userInfo.getNotificationEmail());
 	}
 }

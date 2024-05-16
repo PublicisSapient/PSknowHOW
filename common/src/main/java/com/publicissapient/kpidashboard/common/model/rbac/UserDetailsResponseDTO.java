@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.common.model.rbac;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -36,4 +37,7 @@ public class UserDetailsResponseDTO {
 
 	@JsonProperty("projectsAccess")
 	private List<RoleWiseProjects> projectsAccess;
+
+	@JsonProperty("notificationEmail")
+	private Map<String, Boolean> notificationEmail;
 }
