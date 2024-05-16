@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormGroup, Validators, UntypedFormBuilder, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { UntypedFormGroup, Validators, UntypedFormBuilder } from '@angular/forms';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { HttpService } from '../../../services/http.service';
 import { ProfileComponent } from '../profile.component';
@@ -94,8 +94,6 @@ export class MyprofileComponent implements OnInit {
       "accessAlertNotification": [this.sharedService.getCurrentUserDetails('notificationEmail')?.accessAlertNotification || false],
       "errorAlertNotification": [this.sharedService.getCurrentUserDetails('notificationEmail')?.errorAlertNotification || false]
     })
-    console.log(this.notificationEmailForm);
-    
   }
 
   getTableHeadings() {
