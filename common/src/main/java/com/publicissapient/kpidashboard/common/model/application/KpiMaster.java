@@ -88,6 +88,7 @@ public class KpiMaster extends BasicModel {
 	private String aggregationCircleCriteria;
 	private boolean isTrendCalculative;
 	private List<KpiFormula> trendCalculation;
+	@JsonProperty("isAdditionalFilterSupport")
 	private boolean isAdditionalFilterSupport;
 	private List<String> maturityRange;
 	private Integer kpiWidth;
