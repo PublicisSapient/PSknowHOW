@@ -149,7 +149,7 @@
         <ng-template pTemplate="body" let-item>
             <tr>
               <td>{{item.stepName}}</td>
-              <td>{{item.endTime |  date : 'MMM d, h:mm:ss a'}}</td>
+              <td>{{endTimeConversion(item?.endTime)}}</td>
               <td>{{item.status}}</td>
             </tr>
 

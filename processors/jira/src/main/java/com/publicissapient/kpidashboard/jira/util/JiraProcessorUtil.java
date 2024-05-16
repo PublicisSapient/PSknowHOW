@@ -24,7 +24,6 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -346,7 +345,7 @@ public class JiraProcessorUtil {
 		progressStatus.setStepName(MessageFormat.format("Process issues {0} to {1} out of {2}", pageStart,
 				processedIssues, totalIssues));
 		progressStatus.setStatus(BatchStatus.COMPLETED.toString());
-		progressStatus.setEndTime(LocalDateTime.now().toString());
+		progressStatus.setEndTime(System.currentTimeMillis());
 		progressStatusList.add(progressStatus);
 		processorExecutionTraceLog.setProgressStatusList(progressStatusList);
 		return processorExecutionTraceLog;

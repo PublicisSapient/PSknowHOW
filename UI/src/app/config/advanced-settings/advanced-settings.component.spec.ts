@@ -860,4 +860,9 @@ describe('AdvancedSettingsComponent', () => {
     expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
     expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Something went wrong. Please try again after sometime.' });
   });
+
+  it('should convert end time',()=>{
+    component.endTimeConversion('2023-01-04T06:02:20');
+    expect(component.endTimeConversion).not.toBeNull();
+  })
 });
