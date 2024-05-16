@@ -19,12 +19,17 @@
 package com.publicissapient.kpidashboard.apis.zephyr.service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -76,6 +81,9 @@ public class ZephyrService {
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
+	@Autowired
+	private CustomApiConfig customApiConfig;
+
 	private boolean referFromProjectCache = true;
 
 	/**
@@ -124,6 +132,8 @@ public class ZephyrService {
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
+
+				updateTreeAggregatorDetail(kpiRequest, treeAggregatorDetail);
 
 				kpiRequest.setFilterToShowOnTrend(Constant.PROJECT);
 
@@ -196,6 +206,36 @@ public class ZephyrService {
 					kpiRequest.getSprintIncluded());
 		}
 
+	}
+
+	/**
+	 * updates the TreeAggregatorDetail object based on the KpiRequest.
+	 *
+	 * @param kpiRequest
+	 * 				The KpiRequest object that contains the label
+	 * @param treeAggregatorDetail
+	 * 				The TreeAggregatorDetail object to be updated.
+	 */
+	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
+		if (!kpiRequest.getLabel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+				&& MapUtils.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes())) {
+			Map<String, List<Node>> sprintMap = new LinkedHashMap<>();
+			if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+						.stream().collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
+							if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
+								sprintMap
+										.computeIfAbsent(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
+												k -> new ArrayList<>())
+										.addAll(new ArrayList<>(sprints.subList(0,
+												customApiConfig.getSprintCountForKpiCalculation())));
+
+							}
+						});
+				treeAggregatorDetail.setMapOfListOfLeafNodes(sprintMap);
+			}
+		}
 	}
 
 	/**

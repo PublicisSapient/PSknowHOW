@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.rbac.userinfo.rest;
 
+import java.util.Map;
 import java.util.Objects;
 
 import javax.validation.Valid;

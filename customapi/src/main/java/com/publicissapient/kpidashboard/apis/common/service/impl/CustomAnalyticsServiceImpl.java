@@ -71,6 +71,8 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final String USER_AUTHORITIES = "authorities";
 	private static final String USER_AUTH_TYPE = "authType";
+	private static final String NOTIFICATION_EMAIL = "notificationEmail";
+
 	public static final String SUCCESS = "SUCCESS";
 
 	@Autowired
@@ -111,6 +113,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		json.put(USER_ID, userinfo.getId().toString());
 		json.put(USER_AUTH_TYPE, userinfo.getAuthType().toString());
 		json.put(USER_AUTHORITIES, userinfo.getAuthorities());
+		json.put(NOTIFICATION_EMAIL, userinfo.getNotificationEmail());
 		Gson gson = new Gson();
 
 		userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
@@ -145,8 +148,6 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			if (Objects.nonNull(centralUserInfoDTO)) {
 				setUserDetailsFromCentralAuth(username, centralUserInfoDTO, centralUserInfo);
 				userinfoKnowHow = centralUserInfo;
-				Authentication authenticationCentral = new Authentication();
-				setAuthenticationFromCentralAuth(username, centralUserInfoDTO, authenticationCentral);
 				UserTokenData userTokenData = new UserTokenData(username, authToken, LocalDateTime.now().toString());
 				userTokenReopository.save(userTokenData);
 			}
@@ -160,6 +161,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			userMap.put(USER_ID, userinfoKnowHow.getId().toString());
 			userMap.put(USER_AUTHORITIES, userinfoKnowHow.getAuthorities());
 			userMap.put(USER_AUTH_TYPE, userinfoKnowHow.getAuthType().toString());
+			userMap.put(NOTIFICATION_EMAIL, userinfoKnowHow.getNotificationEmail());
 			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 			if (CollectionUtils.isNotEmpty(projectAccessesWithRole)) {
 				userMap.put(PROJECTS_ACCESS, projectAccessesWithRole);
@@ -173,24 +175,6 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		log.info("Successfully added Google Analytics data to Response.");
 		return userMap;
 
-	}
-
-	/**
-	 *
-	 * @param username
-	 * @param centralUserInfoDTO
-	 * @param authenticationCentral
-	 */
-	private void setAuthenticationFromCentralAuth(String username, CentralUserInfoDTO centralUserInfoDTO,
-			Authentication authenticationCentral) {
-		authenticationCentral.setUsername(username);
-		authenticationCentral.setPassword(centralUserInfoDTO.getPassword());
-		authenticationCentral.setApproved(centralUserInfoDTO.isApproved());
-		authenticationCentral.setEmail(centralUserInfoDTO.getEmail());
-		authenticationCentral.setLastUnsuccessfulLoginTime(centralUserInfoDTO.getLastUnsuccessfulLoginTime());
-		authenticationCentral.setUserRole(Constant.ROLE_VIEWER);
-		authenticationCentral.setLoginAttemptCount(centralUserInfoDTO.getLoginAttemptCount());
-		authenticationRepository.save(authenticationCentral);
 	}
 
 	/**

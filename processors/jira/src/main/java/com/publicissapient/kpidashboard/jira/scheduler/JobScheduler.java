@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,6 +67,8 @@ public class JobScheduler {
 	Job fetchIssueKanbanJqlJob;
 	@Autowired
 	private FetchProjectConfiguration fetchProjectConfiguration;
+	@Autowired
+	private OngoingExecutionsService ongoingExecutionsService;
 
 	/**
 	 * This method is used to start scrum job setup with board
@@ -91,6 +94,7 @@ public class JobScheduler {
 					log.info(
 							"Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID), e);
+					ongoingExecutionsService.markExecutionAsCompleted(params.getString(PROJECT_ID));
 				}
 			});
 		}
@@ -120,6 +124,7 @@ public class JobScheduler {
 				} catch (Exception e) {
 					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID), e);
+					ongoingExecutionsService.markExecutionAsCompleted(params.getString(PROJECT_ID));
 				}
 			});
 		}
@@ -148,6 +153,7 @@ public class JobScheduler {
 					log.info(
 							"Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID), e);
+					ongoingExecutionsService.markExecutionAsCompleted(params.getString(PROJECT_ID));
 				}
 			});
 		}
@@ -177,6 +183,7 @@ public class JobScheduler {
 				} catch (Exception e) {
 					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID), e);
+					ongoingExecutionsService.markExecutionAsCompleted(params.getString(PROJECT_ID));
 				}
 			});
 		}
@@ -187,6 +194,8 @@ public class JobScheduler {
 		List<JobParameters> parameterSets = new ArrayList<>();
 
 		scrumBoardbasicProjConfIds.forEach(configId -> {
+			// making execution onGoing for projects
+			ongoingExecutionsService.markExecutionInProgress(configId);
 			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 			// Add dynamic parameters as needed
 			jobParametersBuilder.addString(PROJECT_ID, configId);

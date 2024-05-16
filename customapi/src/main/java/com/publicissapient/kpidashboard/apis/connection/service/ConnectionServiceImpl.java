@@ -41,20 +41,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
-import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -66,8 +66,6 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 
 /**
  * This class provides various methods related to operations on Connections
@@ -102,7 +100,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	@Autowired
 	private AuthenticationService authenticationService;
-	
+
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
@@ -154,9 +152,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 			original.setCreatedBy(maskStrings(original.getCreatedBy()));
 			original.setUsername(maskStrings(original.getUsername()));
 			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
-			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
-				List<String> connectionUsers=new ArrayList<>();
-				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(maskStrings(connectionUser)));
+			if (CollectionUtils.isNotEmpty(original.getConnectionUsers())) {
+				List<String> connectionUsers = new ArrayList<>();
+				original.getConnectionUsers()
+						.forEach(connectionUser -> connectionUsers.add(maskStrings(connectionUser)));
 				original.setConnectionUsers(connectionUsers);
 			}
 		});
@@ -223,8 +222,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 			return new ServiceResponse(false, "No type in this collection", type);
 		}
 		List<Connection> typeList = connectionRepository.findAllWithoutSecret().stream()
-				.filter(connection -> StringUtils.isNotEmpty(connection.getType()) && connection.getType()
-						.equalsIgnoreCase(type)).collect(Collectors.toList());
+				.filter(connection -> StringUtils.isNotEmpty(connection.getType())
+						&& connection.getType().equalsIgnoreCase(type))
+				.collect(Collectors.toList());
 
 		if (CollectionUtils.isEmpty(typeList)) {
 			log.info("connection Db returned null");
@@ -311,7 +311,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 		return new ServiceResponse(false, "Connection already exists with same name. Please choose a different name",
 				null);
 	}
-
 
 	/*
 	 *
@@ -577,6 +576,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		existingConnection.setSamlEndPoint(connection.getSamlEndPoint());
 		existingConnection.setKrb5ConfigFilePath(connection.getKrb5ConfigFilePath());
 		existingConnection.setEmail(connection.getEmail());
+		existingConnection.setBrokenConnection(false);
 	}
 
 	private void saveConnection(Connection conn) {
@@ -826,6 +826,44 @@ public class ConnectionServiceImpl implements ConnectionService {
 		projectBasicConfigRepository.findByIdIn(basicProjectConfigIds)
 				.forEach(e -> projectInUseList.add(e.getProjectName()));
 		return projectInUseList;
+	}
+
+	/**
+	 * update breaking connection flag
+	 *
+	 * @param connection
+	 * @param conErrorMsg
+	 */
+	@Override
+	public void updateBreakingConnection(Connection connection, String conErrorMsg) {
+
+		if (connection != null) {
+
+			Optional<Connection> existingConnOpt = connectionRepository.findById(connection.getId());
+			if (existingConnOpt.isPresent()) {
+				Connection existingConnection = existingConnOpt.get();
+				if (StringUtils.isEmpty(conErrorMsg)) {
+					existingConnection.setBrokenConnection(false);
+					existingConnection.setConnectionErrorMsg(conErrorMsg);
+				} else {
+					existingConnection.setBrokenConnection(true);
+					existingConnection.setConnectionErrorMsg(conErrorMsg);
+				}
+				connectionRepository.save(existingConnection);
+			}
+
+		}
+	}
+
+	/**
+	 *
+	 * @param connection
+	 *            connection
+	 */
+	public void validateConnectionFlag(Connection connection) {
+		if (connection.isBrokenConnection()) {
+			updateBreakingConnection(connection, null);
+		}
 	}
 
 }

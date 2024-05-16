@@ -325,8 +325,9 @@ public final class CommonConstant {
 	public static final String JIRAISSUERISKTYPE = "jiraIssueRiskTypeKPI176";
 	public static final String JIRAISSUEDEPENDENCYTYPE = "jiraIssueDependencyTypeKPI176";
 
-	//-- auth-N-auth changes starts here --
-	public static final String ACTION_POLICY_RULES_CACHE = "actionPolicyRules";
+	public static final String ACCESS_ALERT_NOTIFICATION = "accessAlertNotification";
+
+	public static final String ERROR_ALERT_NOTIFICATION = "errorAlertNotification";
 
 	public static final String USERNAME_PATTERN = "^[a-zA-Z0-9]{4,30}$";//Username can only contain letters and numbers Maximum length is 30 and min is 4 characters
 

@@ -78,6 +78,8 @@ public class ConnectionDTO {
 	private String samlEndPoint;
 	private String email;
 	private String repoToolProvider;
+	private boolean brokenConnection;
+	private String connectionErrorMsg;
 
 	public boolean getIsOAuth() {
 		return this.isOAuth;

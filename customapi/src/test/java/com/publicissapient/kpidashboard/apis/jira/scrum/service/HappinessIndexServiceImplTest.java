@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +75,8 @@ public class HappinessIndexServiceImplTest {
 	private SprintRepository sprintRepository;
 	@Mock
 	private HappinessKpiDataRepository happinessKpiDataRepository;
+	@Mock
+	private CustomApiConfig customApiConfig;
 	private KpiRequest kpiRequest;
 
 	@InjectMocks

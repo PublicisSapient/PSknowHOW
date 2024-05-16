@@ -20,7 +20,10 @@
 package com.publicissapient.kpidashboard.apis.jenkins.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -47,6 +51,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
@@ -64,7 +69,8 @@ public class JenkinsToolConfigServiceImplTest {
 
 	@Mock
 	private ConnectionRepository connectionRepository;
-
+	@Mock
+	private ConnectionService connectionService;
 	@InjectMocks
 	private JenkinsToolConfigServiceImpl jenkinsToolConfigService;
 
@@ -109,6 +115,21 @@ public class JenkinsToolConfigServiceImplTest {
 		when(restAPIUtils.convertListFromMultipleArray(jsonArray, "url")).thenReturn(responseProjectList);
 		Assert.assertEquals(jenkinsToolConfigService.getJenkinsJobNameList(connectionId).size(),
 				responseProjectList.size());
+	}
+
+	@Test
+	public void getJenkinsJobNameListTestException(){
+		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
+		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
+		assertEquals(optConnection, testConnectionOpt);
+		when(restAPIUtils.decryptPassword(connection.getApiKey())).thenReturn("decryptKey");
+		HttpHeaders header = new HttpHeaders();
+		header.add("Authorization", "base64str");
+		when(restAPIUtils.getHeaders(connection.getUsername(), "decryptKey")).thenReturn(header);
+		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
+				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+		doNothing().when(connectionService).updateBreakingConnection(eq(connection), anyString());
+		jenkinsToolConfigService.getJenkinsJobNameList(connectionId);
 	}
 
 	@Test

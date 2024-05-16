@@ -877,6 +877,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
               "trend": trend,
               "maturity":'M'+trendingList[0]?.maturity,
               "maturityValue":trendingList[0]?.maturityValue,
+              "maturityDenominator": trendingList[0]?.value.length,
               "kpiUnit" : unit
           };
           this.kpiTrendObject[kpiId]?.push(trendObj);

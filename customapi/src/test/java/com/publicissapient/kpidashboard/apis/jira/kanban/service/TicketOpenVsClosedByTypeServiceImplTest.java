@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -84,6 +85,8 @@ public class TicketOpenVsClosedByTypeServiceImplTest {
 	private FilterHelperService flterHelperService;
 	@Mock
 	private CommonService commonService;
+	@Mock
+	private CustomApiConfig customApiConfig;
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
