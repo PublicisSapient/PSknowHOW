@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormGroup, Validators, UntypedFormBuilder } from '@angular/forms';
+import { UntypedFormGroup, Validators, UntypedFormBuilder, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { HttpService } from '../../../services/http.service';
 import { ProfileComponent } from '../profile.component';
@@ -34,14 +34,11 @@ export class MyprofileComponent implements OnInit {
   emailSubmitted = false;
   emailConfigured = false;
   userEmailForm: UntypedFormGroup;
-  userName : string
+  userName: string
   authorities = this.sharedService.getCurrentUserDetails('authorities');
-  notificationEmailObj = {
-    "accessAlertNotification": this.sharedService.getCurrentUserDetails('notificationEmail')?.accessAlertNotification || false,
-    "errorAlertNotification": this.sharedService.getCurrentUserDetails('notificationEmail')?.errorAlertNotification || false
-  };
+  notificationEmailForm: UntypedFormGroup;
   userRole = this.authorities?.length ? this.authorities.join(',') : '--';
-  userEmail : string
+  userEmail: string
   userEmailConfigured = false;
   message: string;
   dataLoading = false;
@@ -51,7 +48,7 @@ export class MyprofileComponent implements OnInit {
   ssoLogin = environment.SSO_LOGIN;
   loginType: string = '';
   constructor(private formBuilder: UntypedFormBuilder, private getAuthorizationService: GetAuthorizationService, private http: HttpService, private profile: ProfileComponent,
-    private sharedService : SharedService) { }
+    private sharedService: SharedService) { }
 
 
 
@@ -60,7 +57,7 @@ export class MyprofileComponent implements OnInit {
       // logged in as SuperAdmin
       this.isSuperAdmin = true;
     }
-    if(this.getAuthorizationService.checkIfProjectAdmin()) {
+    if (this.getAuthorizationService.checkIfProjectAdmin()) {
       // logged in as projectAdmin
       this.isProjectAdmin = true;
     }
@@ -69,8 +66,8 @@ export class MyprofileComponent implements OnInit {
       this.noAccess = true;
     }
 
-    this.sharedService.currentUserDetailsObs.subscribe(details=>{
-      if(details){
+    this.sharedService.currentUserDetailsObs.subscribe(details => {
+      if (details) {
         this.userName = details['user_name'] ? details['user_name'] : '--';
         this.userEmail = details['user_email'] ? details['user_email'] : '--';
         if (details['user_email']) {
@@ -93,11 +90,17 @@ export class MyprofileComponent implements OnInit {
     }, { validator: this.checkConfirmEmail });
     this.loginType = this.sharedService.getCurrentUserDetails('authType');
 
+    this.notificationEmailForm = this.formBuilder.group({
+      "accessAlertNotification": [this.sharedService.getCurrentUserDetails('notificationEmail')?.accessAlertNotification || false],
+      "errorAlertNotification": [this.sharedService.getCurrentUserDetails('notificationEmail')?.errorAlertNotification || false]
+    })
+    console.log(this.notificationEmailForm);
+    
   }
 
-  getTableHeadings(){
+  getTableHeadings() {
     let cols = JSON.parse(localStorage.getItem('hierarchyData'));
-    if(!cols){
+    if (!cols) {
       const tempCols = JSON.parse(localStorage.getItem('completeHierarchyData'))?.['scrum'];
       let projectLevel = tempCols?.filter((item) => item.hierarchyLevelId?.toLowerCase() === 'project')?.[0]?.level;
       cols = tempCols.filter((item) => item.level < projectLevel);
@@ -109,20 +112,20 @@ export class MyprofileComponent implements OnInit {
       };
       this.dynamicCols?.push(obj);
     });
-    this.dynamicCols.push({id:'projectName', name: 'Projects'});
+    this.dynamicCols.push({ id: 'projectName', name: 'Projects' });
   }
 
   groupProjects(inArr) {
-    for(let k = 0; k<inArr?.length;k++){
+    for (let k = 0; k < inArr?.length; k++) {
       const projectsArr = [];
-      for(let i = 0; i < inArr[k]?.projects?.length; i++){
+      for (let i = 0; i < inArr[k]?.projects?.length; i++) {
         const obj = {
           role: inArr[k]?.role,
           projectName: inArr[k]?.projects[i]?.projectName,
           projectId: inArr[k]?.projects[i]?.projectId
         };
         const hierarchyArr = inArr[k]?.projects[i]?.hierarchy;
-        for(let j = 0; j < hierarchyArr?.length; j++){
+        for (let j = 0; j < hierarchyArr?.length; j++) {
           obj[hierarchyArr[j].hierarchyLevel.hierarchyLevelId] = hierarchyArr[j]?.value;
         }
         projectsArr?.push(obj);
@@ -140,8 +143,8 @@ export class MyprofileComponent implements OnInit {
 
   // convenience getter for easy access to form fields
   get getEmailForm() {
- return this.userEmailForm.controls;
-}
+    return this.userEmailForm.controls;
+  }
 
   setEmail() {
     this.emailSubmitted = true;
@@ -150,13 +153,13 @@ export class MyprofileComponent implements OnInit {
     }
     this.dataLoading = true;
     // call http service
-    this.http.changeEmail(this.getEmailForm.email.value, this.sharedService.getCurrentUserDetails('user_name') )
+    this.http.changeEmail(this.getEmailForm.email.value, this.sharedService.getCurrentUserDetails('user_name'))
       .subscribe(
         response => {
           this.dataLoading = false;
           if (response && response['success']) {
             this.userEmail = response['data'].emailAddress;
-            this.sharedService.setCurrentUserDetails({user_email: this.userEmail});
+            this.sharedService.setCurrentUserDetails({ user_email: this.userEmail });
             this.userEmailConfigured = true;
             this.profile.changePswdDisabled = false;
             this.message = '';
@@ -169,25 +172,29 @@ export class MyprofileComponent implements OnInit {
       );
   }
 
- toggleNotificationEmail(event: any, toggleField: string) {
+  toggleNotificationEmail(event: any, toggleField: string) {
     const updatedFlag = event.checked;
-    this.notificationEmailObj[toggleField] = updatedFlag;
+    this.notificationEmailForm[toggleField] = updatedFlag;
+    let obj = {};
+    for(let key in this.notificationEmailForm.value){
+      obj[key] = this.notificationEmailForm.value[key]
+    }
     //call http service
-     this.http.notificationEmailToggleChange(this.notificationEmailObj)
-       .subscribe(
-            response => {
-              if (response && response['success'] && response['data']) {
-                const userDetails = response['data'];
-                this.sharedService.setCurrentUserDetails({
-                  notificationEmail: userDetails['notificationEmail'],
-               });
-              } else if (response && !response['success']) {
-                if (response['message']) {
-                  this.message = response['message'];
-                }
-              }
+    this.http.notificationEmailToggleChange(obj)
+      .subscribe(
+        response => {
+          if (response && response['success'] && response['data']) {
+            const userDetails = response['data'];
+            this.sharedService.setCurrentUserDetails({
+              notificationEmail: userDetails['notificationEmail'],
+            });
+          } else if (response && !response['success']) {
+            if (response['message']) {
+              this.message = response['message'];
             }
-          );
+          }
+        }
+      );
   }
 
 }

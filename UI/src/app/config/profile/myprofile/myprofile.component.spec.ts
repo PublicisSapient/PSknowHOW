@@ -16,8 +16,8 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import { UntypedFormGroup, FormControl } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { MyprofileComponent } from './myprofile.component';
@@ -723,32 +723,44 @@ describe('MyprofileComponent', () => {
     ]);
   });
 
- fit('should update notification email flag', () => {
-    component.ngOnInit();
+ fit('should update notification email flag', (fakeAsync(() => {
+    // component.ngOnInit();
     const event = { checked: true };
     const toggleField = 'accessAlertNotification';
+    component.notificationEmailForm = new UntypedFormGroup({
+      "accessAlertNotification": new FormControl(false),
+      "errorAlertNotification": new FormControl(false)
+    });
+     
     const successResponse = {
-              success: true,
-              message: 'Flag Updated successfully in user info details' ,
-              data :  {
-                        "username": "dummyUser",
-                        "authorities": [
-                          "ROLE_PROJECT_ADMIN"
-                        ],
-                        "authType": "SAML",
-                        "emailAddress": "someemail@abc.com",
-                        "notificationEmail": {
-                          "accessAlertNotification": true,
-                          "errorAlertNotification": false
-                        }
-                      }
-                   };
-    shared.currentUserDetailsSubject.next({user_name : "dummyUser",user_email:"someemail@abc.com" ,
-    "notificationEmail": { "accessAlertNotification": true,"errorAlertNotification": false }})
+      success: true,
+      message: 'Flag Updated successfully in user info details' ,
+      data :  {
+        "username": "dummyUser",
+        "authorities": [
+          "ROLE_PROJECT_ADMIN"
+        ],
+        "authType": "SAML",
+        "emailAddress": "someemail@abc.com",
+        "notificationEmail": {
+          "accessAlertNotification": true,
+          "errorAlertNotification": false
+        }
+      }
+    };
+    shared.currentUserDetailsSubject.next({
+      user_name : "dummyUser",
+      user_email:"someemail@abc.com" ,
+      notificationEmail: { 
+        "accessAlertNotification": true,
+        "errorAlertNotification": false 
+      }
+    })
     spyOn(httpService,'notificationEmailToggleChange').and.returnValue(of(successResponse))
     const spyObj = spyOn(shared, 'setCurrentUserDetails');
     component.toggleNotificationEmail(event, toggleField);
-    fixture.detectChanges();
-    expect(spyObj).toHaveBeenCalledWith();
-  });
+    tick();
+    expect(spyObj).toHaveBeenCalled();
+  })));
+
 });

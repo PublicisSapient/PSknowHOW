@@ -33,25 +33,29 @@
   </div>
 
 
-  <div class="notification-toggle">
+  <form class="notification-toggle" [formGroup]="notificationEmailForm">
     <span class="switch-label">Notification preferences :</span>
-
+  
     <div class="p-d-flex p-ml-3">
-    <p-inputSwitch [(ngModel)]="notificationEmailObj.accessAlertNotification"  id="accessManageToggle" styleClass="custom-switch" (onChange)="toggleNotificationEmail($event, 'accessAlertNotification')"></p-inputSwitch>
-    <div>
-    <span class="switch-label">Access alerts</span>
-    <p class="switch-desc">Email notifications about access permission requests/grants</p>
-  </div>
-  </div>
-
-  <div class="p-d-flex p-ml-3">
-    <p-inputSwitch [(ngModel)]="notificationEmailObj.errorAlertNotification"  id="errorAlertToggle" styleClass="custom-switch" (onChange)="toggleNotificationEmail($event, 'errorAlertNotification')"></p-inputSwitch>
-    <div>
-    <span class="switch-label">Error alerts</span>
-    <p class="switch-desc">Email notifications about tool processor failures or other errors</p>
+      <p-inputSwitch formControlName="accessAlertNotification" id="accessManageToggle"
+        styleClass="custom-switch"
+        (onChange)="toggleNotificationEmail($event, 'accessAlertNotification')"></p-inputSwitch>
+      <div>
+        <label class="switch-label" for="accessManageToggle">Access alerts</label>
+        
+        <p class="switch-desc">Email notifications about access permission requests/grants</p>
+      </div>
     </div>
-  </div>
-  </div>
+  
+    <div class="p-d-flex p-ml-3">
+      <p-inputSwitch formControlName="errorAlertNotification" id="errorAlertToggle"
+        styleClass="custom-switch" (onChange)="toggleNotificationEmail($event, 'errorAlertNotification')"></p-inputSwitch>
+      <div>
+        <label class="switch-label" for="errorAlertToggle">Error alerts</label>
+        <p class="switch-desc">Email notifications about tool processor failures or other errors</p>
+      </div>
+    </div>
+  </form>
 
   <div class="card p-text-center border-warning p-mb-3" *ngIf="userEmail === '--' && !ssoLogin">
     <div class="card-header bg-warning border-warning">
