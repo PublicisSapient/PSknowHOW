@@ -325,11 +325,9 @@ public final class CommonConstant {
 	public static final String JIRAISSUERISKTYPE = "jiraIssueRiskTypeKPI176";
 	public static final String JIRAISSUEDEPENDENCYTYPE = "jiraIssueDependencyTypeKPI176";
 
-	//-- auth-N-auth changes starts here --
-	public static final String ACTION_POLICY_RULES_CACHE = "actionPolicyRules";
+	public static final String ACCESS_ALERT_NOTIFICATION = "accessAlertNotification";
 
-	//-- auth-N-auth changes ends here --
-
+	public static final String ERROR_ALERT_NOTIFICATION = "errorAlertNotification";
 
 	private CommonConstant() {
 

@@ -32,6 +32,31 @@
     </div>
   </div>
 
+
+  <form class="notification-toggle" [formGroup]="notificationEmailForm">
+    <span class="switch-label">Notification preferences :</span>
+  
+    <div class="p-d-flex p-ml-3">
+      <p-inputSwitch formControlName="accessAlertNotification" id="accessManageToggle"
+        styleClass="custom-switch"
+        (onChange)="toggleNotificationEmail($event, 'accessAlertNotification')"></p-inputSwitch>
+      <div>
+        <label class="switch-label" for="accessManageToggle">Access alerts</label>
+        
+        <p class="switch-desc">Email notifications about access permission requests/grants</p>
+      </div>
+    </div>
+  
+    <div class="p-d-flex p-ml-3">
+      <p-inputSwitch formControlName="errorAlertNotification" id="errorAlertToggle"
+        styleClass="custom-switch" (onChange)="toggleNotificationEmail($event, 'errorAlertNotification')"></p-inputSwitch>
+      <div>
+        <label class="switch-label" for="errorAlertToggle">Error alerts</label>
+        <p class="switch-desc">Email notifications about tool processor failures or other errors</p>
+      </div>
+    </div>
+  </form>
+
   <div class="card p-text-center border-warning p-mb-3" *ngIf="userEmail === '--' && !ssoLogin">
     <div class="card-header bg-warning border-warning">
       Configure Email
@@ -66,7 +91,7 @@
         Please enter a valid
         email
       </div>
-      
+
       <div *ngIf="message && message.length" class="invalid-text">{{ message }}</div>
 
       <!--Loading div-->
@@ -173,7 +198,7 @@
         </div>
       </div>
     </a>
-    
+
     <a *ngIf="loginType?.toLowerCase() == 'standard'" class="action-link float-left p-md-3 p-mb-3 p-pl-3 p-pr-3" [class.disabled]="userEmail === '--'"
       routerLink="/dashboard/Config/Profile/UserSettings">
       <div class="action-box clearfix bg-role">
@@ -194,7 +219,7 @@
           <h3 class="form_title p-mb-2">Current Project Access</h3>
 
           <div class="request-table-container">
-            <p-table [value]="roleBasedProjectList" styleClass="p-datatable-striped" id="project-access-table"  loadingIcon="loading-img" 
+            <p-table [value]="roleBasedProjectList" styleClass="p-datatable-striped" id="project-access-table"  loadingIcon="loading-img"
             rowGroupMode="rowspan" groupRowsBy="role"
             sortField="role" sortMode="single">
               <ng-template pTemplate="header">
