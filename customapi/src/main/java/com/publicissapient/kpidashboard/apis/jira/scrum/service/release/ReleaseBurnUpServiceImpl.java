@@ -41,7 +41,6 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -359,7 +358,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 				.get(DEV_COMPLETE_DATE_MAP);
 
 		List<IterationKpiValue> iterationKpiValueList = new ArrayList<>();
-		long range = 0;
+		int range = 0;
 		String duration;
 		if (CollectionUtils.isNotEmpty(releaseIssues) && MapUtils.isNotEmpty(fullReleaseIssueMap)) {
 			Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
@@ -381,7 +380,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 					.plusDays(Optional.ofNullable(fieldMapping.getStartDateCountKPI150()).orElse(0));
 			Map<String, Long> durationRangeMap = getDurationRangeMap(startLocalDate, endLocalDate);
 			duration = durationRangeMap.keySet().stream().findFirst().orElse("");
-			range = durationRangeMap.values().stream().findFirst().orElse(0L);
+			range = Math.toIntExact(durationRangeMap.values().stream().findFirst().orElse(0L));
 			Boolean isPopulateByDevDone = ObjectUtils.defaultIfNull(fieldMapping.isPopulateByDevDoneKPI150(), false);
 			Map<LocalDate, List<JiraIssue>> originalCompletedIssueMap = deepCopyMap(completedReleaseMap);
 			Map<LocalDate, List<JiraIssue>> originalDevCompletedIssueMap = deepCopyMap(devCompletedIssueMap);
@@ -458,7 +457,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 				// range
 				Map<String, Long> durationMapPrediction = getDurationRangeMap(startLocalDate, predictionEndDate);
 				duration = durationMapPrediction.keySet().stream().findFirst().orElse("");
-				range = durationMapPrediction.values().stream().findFirst().orElse(0L);
+				range = Math.toIntExact(durationMapPrediction.values().stream().findFirst().orElse(0L));
 
 				// setting the initial value form which prediction population will start
 				double issueCountPrediction = releaseProgressTillNow.size();

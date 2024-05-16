@@ -458,7 +458,7 @@ public class ProjectAccessManager {
 			createGlobalChildrenMap(accessLevel, accessRequest.getAccessNode().getAccessItems(), projectBasicConfigNode,
 					globalChildrenMap);
 
-			if (existingUserInfo != null && isNewUser(existingUserInfo)) {
+			if (isNewUser(existingUserInfo)) {
 				updateAuthorities(resultUserInfo, accessRequest.getRole());
 				setFirstProjectsAccess(resultUserInfo, accessRequest.getRole(), accessRequest.getAccessNode());
 

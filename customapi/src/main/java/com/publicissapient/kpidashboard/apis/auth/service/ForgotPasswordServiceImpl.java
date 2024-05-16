@@ -116,7 +116,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 */
 	@Override
 	public ResetPasswordTokenStatusEnum validateEmailToken(String token) {
-		log.info("ForgotPasswordServiceImpl: Validate the token {}", token);
 		ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenRepository.findByToken(token);
 		return checkTokenValidity(forgotPasswordToken);
 	}
