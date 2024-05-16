@@ -156,4 +156,27 @@ public class UserInfoController {
 		}
 	}
 
+	/**
+	 * enable and disable email notification user wise
+	 * user can enable/disable ERROR_ALERT_NOTIFICATION and ACCESS_ALERT_NOTIFICATION
+	 * @param notificationEmail
+	 * @return
+	 */
+	@PostMapping("/notificationPreferences")
+	public ResponseEntity<ServiceResponse> updateFlagEmailNotification(
+			@Valid @RequestBody Map<String, Boolean> notificationEmail) {
+		String loggedUserName = authenticationService.getLoggedInUser();
+
+		UserInfo userInfo = userInfoService.updateNotificationEmail(loggedUserName, notificationEmail);
+
+		if (Objects.nonNull(userInfo)) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "Flag Updated successfully in user info details", userInfo));
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ServiceResponse(false, "Invalid Token or user or flag is not found", null));
+
+		}
+
+	}
+
 }
