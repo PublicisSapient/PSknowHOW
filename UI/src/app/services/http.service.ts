@@ -1157,4 +1157,8 @@ export class HttpService {
   getAzureTeams(connectionId) {
       return this.http.get<any>(`${this.baseUrl}/api/azure/teams/${connectionId}`);
     }
+
+  getProgressStatusOfProcessors(data){
+    return this.http.get<any>(`${this.processorTraceLogsUrl}?processorName=${data.processor}&basicProjectConfigId=${data.projects[0]}`);
+  }
 }

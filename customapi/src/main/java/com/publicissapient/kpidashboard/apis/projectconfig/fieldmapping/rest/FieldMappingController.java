@@ -135,31 +135,32 @@ public class FieldMappingController {
 	public ResponseEntity<ServiceResponse> getFieldMapping(@PathVariable String projectToolConfigId,
 			@PathVariable String kpiId, @RequestBody FieldMappingMeta requestData) {
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
-		KPICode kpi = KPICode.getKPI(kpiId);
-		List<FieldMappingResponse> kpiSpecificFieldsAndHistory = new ArrayList<>();
-		if (!Objects.equals(kpi.getKpiId(), KPICode.INVALID.getKpiId())) {
-			try {
-				kpiSpecificFieldsAndHistory = fieldMappingService.getKpiSpecificFieldsAndHistory(kpi,
-						projectToolConfigId, requestData);
-			} catch (NoSuchFieldException | IllegalAccessException e) {
-				log.error("Field/ Class not found in FieldMapping collection");
-			}
-		}
-		log.info("getFieldMapping result : {}", kpiSpecificFieldsAndHistory);
+		Optional<ProjectToolConfig> projectToolConfigOptional = getProjectToolConfig(projectToolConfigId);
+
 		ServiceResponse response = null;
-		if (CollectionUtils.isEmpty(kpiSpecificFieldsAndHistory)) {
-			response = new ServiceResponse(false, "no field mapping found for " + projectToolConfigId, null);
-		} else {
-			Optional<ProjectToolConfig> projectToolConfigOptional = getProjectToolConfig(projectToolConfigId);
-			if (projectToolConfigOptional.isPresent()) {
-				ProjectToolConfig projectToolConfig = projectToolConfigOptional.get();
-				if (checkTool(projectToolConfig)) {
+		if (projectToolConfigOptional.isPresent()) {
+			ProjectToolConfig projectToolConfig = projectToolConfigOptional.get();
+			KPICode kpi = KPICode.getKPI(kpiId);
+			List<FieldMappingResponse> kpiSpecificFieldsAndHistory = new ArrayList<>();
+			if (!Objects.equals(kpi.getKpiId(), KPICode.INVALID.getKpiId())) {
+				try {
+					kpiSpecificFieldsAndHistory = fieldMappingService.getKpiSpecificFieldsAndHistory(kpi,
+							projectToolConfig, requestData);
+				} catch (NoSuchFieldException | IllegalAccessException e) {
+					log.error("Field/ Class not found in FieldMapping collection");
+				}
+			}
+			log.info("getFieldMapping result : {}", kpiSpecificFieldsAndHistory);
+
+			if (CollectionUtils.isEmpty(kpiSpecificFieldsAndHistory)) {
+				response = new ServiceResponse(false, "no field mapping found for " + projectToolConfigId, null);
+			}
+			else if (checkTool(projectToolConfig)) {
 					FieldMappingMeta fieldMappingMeta = new FieldMappingMeta(kpiSpecificFieldsAndHistory,
 							projectToolConfig.getMetadataTemplateCode());
 					response = new ServiceResponse(true, "field mappings", fieldMappingMeta);
-				}
-			}
 
+			}
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
