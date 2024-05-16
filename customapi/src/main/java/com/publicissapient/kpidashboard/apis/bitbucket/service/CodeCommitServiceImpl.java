@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -305,7 +306,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		List<DataCount> dayWiseCommitCount = new ArrayList<>();
 		LocalDate currentDate = LocalDate.now();
 		for (int i = 0; i < dataPoints; i++) {
-			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
+			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate, duration);
 			Map<String, Object> hoverValues = new HashMap<>();
 			String date = getDateRange(dateRange, duration);
 			LocalDate startDate = dateRange.getStartDate();
@@ -326,7 +327,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 			excelDataLoader.put(date, commitCountValue);
 			hoverValues.put(NO_CHECKIN, commitCountValue.intValue());
 			dayWiseCommitCount.add(setDataCount(projectName, date, hoverValues, commitCountValue, mergeCountValue));
-			currentDate = getNextRangeDate(duration, currentDate);
+			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 		}
 		Collections.reverse(dayWiseCommitCount);
 		return dayWiseCommitCount;
@@ -357,14 +358,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		return range;
 	}
 
-	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
-		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
-			currentDate = currentDate.minusWeeks(1);
-		} else {
-			currentDate = currentDate.minusDays(1);
-		}
-		return currentDate;
-	}
+
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
