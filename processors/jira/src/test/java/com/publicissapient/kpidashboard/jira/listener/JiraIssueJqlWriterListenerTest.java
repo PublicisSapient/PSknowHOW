@@ -35,7 +35,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.item.Chunk;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -108,7 +107,7 @@ public class JiraIssueJqlWriterListenerTest {
 		processorExecutionTraceLog.setBasicProjectConfigId("abc");
 		processorExecutionTraceLog.setBoardId("abc");
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigId(
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(
 				eq(JiraConstants.JIRA), eq("Project1")))
 				.thenReturn(Optional.of(processorExecutionTraceLog));
 		listener.afterWrite(createSampleCompositeResults());

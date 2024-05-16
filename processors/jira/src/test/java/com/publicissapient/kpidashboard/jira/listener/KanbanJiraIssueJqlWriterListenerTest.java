@@ -71,7 +71,7 @@ public class KanbanJiraIssueJqlWriterListenerTest {
     @Test
     public void testAfterWrite() {
         // Mock the repository's behavior
-        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigId(
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(
                 eq(JiraConstants.JIRA), eq("testProjectId")))
                 .thenReturn(Optional.empty()); // For the case where trace log is not present
 
@@ -110,7 +110,7 @@ public class KanbanJiraIssueJqlWriterListenerTest {
         processorExecutionTraceLog.setBasicProjectConfigId("abc");
         processorExecutionTraceLog.setBoardId("abc");
         processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
-        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigId(
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(
                 eq(JiraConstants.JIRA), eq("testProjectId")))
                 .thenReturn(Optional.of(processorExecutionTraceLog));
         listener.afterWrite(compositeResults);

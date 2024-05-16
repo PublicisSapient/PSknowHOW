@@ -93,7 +93,8 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 					.findFirst().orElse(null);
 			if (firstIssue != null) {
 				Optional<ProcessorExecutionTraceLog> procTraceLog = processorExecutionTraceLogRepo
-						.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JIRA, basicProjectConfigId);
+						.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(ProcessorConstants.JIRA,
+								basicProjectConfigId);
 				if (procTraceLog.isPresent()) {
 					ProcessorExecutionTraceLog processorExecutionTraceLog = procTraceLog.get();
 					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
