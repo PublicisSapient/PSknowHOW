@@ -287,7 +287,7 @@ public class JiraCommonService {
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
 				if (searchResult != null) {
-					saveSearchDetailsInContext(searchResult, pageStart, StepSynchronizationManager.getContext());
+					saveSearchDetailsInContext(searchResult, pageStart, null, StepSynchronizationManager.getContext());
 					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
 							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
 							searchResult.getTotal()));
@@ -315,19 +315,21 @@ public class JiraCommonService {
 	 * @param stepContext
 	 *            stepContext
 	 */
-	public void saveSearchDetailsInContext(SearchResult searchResult, int pageStart, StepContext stepContext) {
+	public void saveSearchDetailsInContext(SearchResult searchResult, int pageStart, String boardId,
+			StepContext stepContext) {
 		if (stepContext == null) {
 			log.error("StepContext is null");
 			return;
 		}
 		JobExecution jobExecution = stepContext.getStepExecution().getJobExecution();
-        int total = searchResult.getTotal();
+		int total = searchResult.getTotal();
 		int processed = Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, total);
 
 		// Saving Progress details in context
 		jobExecution.getExecutionContext().putInt(JiraConstants.TOTAL_ISSUES, total);
 		jobExecution.getExecutionContext().putInt(JiraConstants.PROCESSED_ISSUES, processed);
 		jobExecution.getExecutionContext().putInt(JiraConstants.PAGE_START, pageStart);
+		jobExecution.getExecutionContext().putString(JiraConstants.BOARD_ID, boardId);
 	}
 
 	/**
@@ -396,7 +398,8 @@ public class JiraCommonService {
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
 				if (searchResult != null) {
-					saveSearchDetailsInContext(searchResult, pageStart, StepSynchronizationManager.getContext());
+					saveSearchDetailsInContext(searchResult, pageStart, boardId,
+							StepSynchronizationManager.getContext());
 					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
 							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
 							searchResult.getTotal()));

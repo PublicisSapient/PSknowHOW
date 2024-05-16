@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.jira.listener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -86,25 +87,24 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 							.reversed())
 					.findFirst().orElse(null);
 			if (firstIssue != null) {
-				Optional<ProcessorExecutionTraceLog> procTraceLog = processorExecutionTraceLogRepo
-						.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JIRA, basicProjectConfigId);
-				if (procTraceLog.isPresent()) {
-					ProcessorExecutionTraceLog processorExecutionTraceLog = procTraceLog.get();
-					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
-							processorExecutionToSave);
+				List<ProcessorExecutionTraceLog> procTraceLog = processorExecutionTraceLogRepo
+						.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
+								Collections.singletonList(basicProjectConfigId));
+				if (CollectionUtils.isNotEmpty(procTraceLog)) {
+					procTraceLog.forEach(traceLog -> {
+						setTraceLog(traceLog, basicProjectConfigId, firstIssue.getChangeDate(),
+								processorExecutionToSave);
+						if (traceLog.isProgressStats()) {
+							Optional.ofNullable(JiraProcessorUtil.saveChunkProgressInTrace(traceLog, stepContext))
+									.ifPresent(processorExecutionToSave::add);
+						}
+					});
 				} else {
 					ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
 							processorExecutionToSave);
 				}
 			}
-			Optional<ProcessorExecutionTraceLog> progressStatsTraceLog = processorExecutionTraceLogRepo
-					.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(ProcessorConstants.JIRA,
-							basicProjectConfigId);
-			Optional.ofNullable(
-							JiraProcessorUtil.saveChunkProgressInTrace(progressStatsTraceLog.orElse(null), stepContext))
-					.ifPresent(processorExecutionToSave::add);
-
 		}
 		if (CollectionUtils.isNotEmpty(processorExecutionToSave)) {
 			processorExecutionTraceLogRepo.saveAll(processorExecutionToSave);
