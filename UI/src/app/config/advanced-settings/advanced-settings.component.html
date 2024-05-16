@@ -93,7 +93,21 @@
               </td>
               <td class='custom-table-cell'>
                 <div class="p-d-flex p-align-center">
-                  <div *ngIf="(!findTraceLogForTool(processor.processorName)?.executionOngoing && processor.processorName === 'Jira') || processor.processorName !== 'Jira'">
+                  <div class="p-d-flex p-align-center" *ngIf="(!findTraceLogForTool(processor.processorName)?.executionOngoing && processor.processorName === 'Jira') || processor.processorName !== 'Jira'">
+                    <div class="tooltip-warning p-mr-1" *ngIf="dataMismatchObj[processor.processorName]">
+                      <i class="fas fa-exclamation-triangle ico-warning">
+                      </i>
+                      <div class="tooltiptext">
+                        <ul class="p-mt-0 p-pr-1">
+                          <li class="tooltip-item">
+                            <b>Warning:</b> There are some Jira issues that no longer satisfy your Scrum board's JQL condition. This could be due to changes in JQL query or changes in the Jira issue fields.
+                          </li>
+                          <li class="tooltip-item">
+                            <b>Suggested Action:</b> Delete your Jira processor in Misc Settings and click on "Run Now" to rectify past sprint data.
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
                     <div *ngIf="showProcessorLastState(processor.processorName) !== 'NA'" class="status-container"
                       [ngClass]="showProcessorLastState(processor.processorName) === 'Success' ? 'active' : 'inactive'">
                       {{ showProcessorLastState(processor.processorName)}}

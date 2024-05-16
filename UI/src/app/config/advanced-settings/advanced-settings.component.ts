@@ -48,6 +48,7 @@ export class AdvancedSettingsComponent implements OnInit {
   jiraExecutionSteps : any = [];
   jiraStatusContinuePulling = false;
    subscription: Subscription;
+  dataMismatchObj: object = {};
 
   constructor(private httpService: HttpService, private messageService: MessageService, private getAuthorizationService: GetAuthorizationService,
     private service: SharedService, private confirmationService: ConfirmationService) { }
@@ -161,6 +162,7 @@ export class AdvancedSettingsComponent implements OnInit {
               if(pDetails.processorName !== 'Jira'){
                 pDetails['executionOngoing'] = false;
               }
+              this.dataMismatchObj[pDetails.processorName] = pDetails.dataMismatch;
           })
 
           if(that.findTraceLogForTool('Jira')?.executionOngoing){
