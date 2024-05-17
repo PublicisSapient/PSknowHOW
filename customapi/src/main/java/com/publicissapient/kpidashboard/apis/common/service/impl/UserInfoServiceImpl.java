@@ -440,6 +440,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 
 			userDetailsResponseDTO.setProjectsAccess(projectAccessesWithRole);
+			userDetailsResponseDTO.setNotificationEmail(userinfo.getNotificationEmail());
 		}
 		return userDetailsResponseDTO;
 
@@ -648,6 +649,25 @@ public class UserInfoServiceImpl implements UserInfoService {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return false;
 		}
+	}
+
+	/**
+	 * update notification email alert flag user wise
+	 * 2 type of notification flag - accessAlertNotification and errorAlertNotification
+	 * @param loggedUserName
+	 * @param notificationEmail
+	 * @return
+	 */
+	@Override
+	public UserInfo updateNotificationEmail(String loggedUserName, Map<String, Boolean> notificationEmail) {
+		UserInfo userinfo = userInfoRepository.findByUsername(loggedUserName);
+
+		if(Objects.nonNull(userinfo) && Objects.nonNull(notificationEmail)){
+			userinfo.setNotificationEmail(notificationEmail);
+			userInfoRepository.save(userinfo);
+			return userinfo;
+		}
+		return null;
 	}
 
 }

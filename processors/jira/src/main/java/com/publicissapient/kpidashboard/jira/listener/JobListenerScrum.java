@@ -188,8 +188,8 @@ public class JobListenerScrum implements JobExecutionListener {
 				checkDeltaIssues(processorExecutionTraceLog,status);
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(status);
-				if (stepFailureException != null) {
-					String rootCauseMessage = (stepFailureException).toString();
+				if (stepFailureException != null && processorExecutionTraceLog.isProgressStats()) {
+					String rootCauseMessage = ExceptionUtils.getRootCauseMessage(stepFailureException);
 					processorExecutionTraceLog.setErrorMessage("Failure Reason: " + rootCauseMessage);
 				}
 			}

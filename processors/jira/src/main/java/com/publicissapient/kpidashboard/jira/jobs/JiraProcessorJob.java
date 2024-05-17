@@ -159,7 +159,7 @@ public class JiraProcessorJob {
 	}
 
 	private Step processProjectStatusStep() {
-		return builderFactory.getStepBuilder("Fetch Release Status Scrum board", jobRepository)
+		return builderFactory.getStepBuilder("Fetch Release Status Scrum", jobRepository)
 				.tasklet(jiraIssueReleaseStatusTasklet, transactionManager).listener(jobStepProgressListener).build();
 	}
 
@@ -171,7 +171,7 @@ public class JiraProcessorJob {
 	}
 
 	private Step scrumReleaseDataStep() {
-		return builderFactory.getStepBuilder("Fetch Release Data Scrum Board", jobRepository)
+		return builderFactory.getStepBuilder("Fetch Release Data Scrum", jobRepository)
 				.tasklet(scrumReleaseDataTasklet, transactionManager).listener(jobStepProgressListener).build();
 	}
 
@@ -220,7 +220,7 @@ public class JiraProcessorJob {
 	}
 
 	private Step kanbanReleaseDataStep() {
-		return builderFactory.getStepBuilder("Fetch Release Data Kanban Board", jobRepository)
+		return builderFactory.getStepBuilder("Fetch Release Data Kanban", jobRepository)
 				.tasklet(kanbanReleaseDataTasklet, transactionManager).listener(jobStepProgressListener).build();
 	}
 

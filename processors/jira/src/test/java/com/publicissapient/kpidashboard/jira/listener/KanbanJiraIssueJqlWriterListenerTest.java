@@ -28,8 +28,8 @@ import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.junit.Before;
@@ -75,9 +75,9 @@ public class KanbanJiraIssueJqlWriterListenerTest {
     @Test
     public void testAfterWrite() {
         // Mock the repository's behavior
-        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigId(
-                eq(JiraConstants.JIRA), eq("testProjectId")))
-                .thenReturn(Optional.empty()); // For the case where trace log is not present
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
+                eq(JiraConstants.JIRA), anyList()))
+                .thenReturn(Collections.emptyList()); // For the case where trace log is not present
 
         // Act
         listener.afterWrite(compositeResults);
@@ -114,9 +114,21 @@ public class KanbanJiraIssueJqlWriterListenerTest {
         processorExecutionTraceLog.setBasicProjectConfigId("abc");
         processorExecutionTraceLog.setBoardId("abc");
         processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
-        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigId(
-                eq(JiraConstants.JIRA), eq("testProjectId")))
-                .thenReturn(Optional.of(processorExecutionTraceLog));
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
+                eq(JiraConstants.JIRA), anyList()))
+                .thenReturn(List.of(processorExecutionTraceLog));
+        listener.afterWrite(compositeResults);
+    }
+    @Test
+    public void testAfterWriteWithTraceLogStatusTrue() {
+        ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setBasicProjectConfigId("abc");
+        processorExecutionTraceLog.setBoardId("abc");
+        processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
+        processorExecutionTraceLog.setProgressStats(true);
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
+                eq(JiraConstants.JIRA), anyList()))
+                .thenReturn(List.of(processorExecutionTraceLog));
         listener.afterWrite(compositeResults);
     }
 }

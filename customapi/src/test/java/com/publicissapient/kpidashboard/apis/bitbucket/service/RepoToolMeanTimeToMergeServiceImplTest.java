@@ -130,6 +130,13 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 		setToolMap();
 		setTreadValuesDataCount();
 
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
+				.thenReturn("BB-Excel-5be544de025de212549176a9");
+		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any()))
+				.thenReturn(repoToolKpiMetricResponseList);
+
 	}
 
 	private void setTreadValuesDataCount() {
@@ -186,21 +193,27 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 
 	@Test
 	public void testGetKpiData() throws Exception {
-
-		setup();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
 		Map<String, String> aggregationMap = new HashMap<>();
 		aggregationMap.put("meanTimeToMerge", "average");
-		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
-				.thenReturn("Jira-Excel-5be544de025de212549176a9");
-		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
-		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any()))
-				.thenReturn(repoToolKpiMetricResponseList);
+		KpiElement kpiElement = meanTimeToMergeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+		List<BranchMergeReqCount> out = (List<BranchMergeReqCount>) kpiElement.getTrendValueList();
+		assertThat("merge requests", out.size(), equalTo(2));
+	}
+
+	@Test
+	public void testGetKpiDataDays() throws Exception {
+		kpiRequest.setDuration(Constant.DAYS);
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		Map<String, String> aggregationMap = new HashMap<>();
+		aggregationMap.put("meanTimeToMerge", "average");
+
 		KpiElement kpiElement = meanTimeToMergeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		List<BranchMergeReqCount> out = (List<BranchMergeReqCount>) kpiElement.getTrendValueList();

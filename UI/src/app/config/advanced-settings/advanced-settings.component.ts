@@ -225,6 +225,10 @@ export class AdvancedSettingsComponent implements OnInit {
     return this.selectedProject != null || this.selectedProject != undefined;
   }
 
+  endTimeConversion(time){
+    return new DatePipe('en-US').transform(time, 'dd-MMM-yyyy (EEE) - hh:mmaaa')
+  }
+
   //used to run the processor's run(), called when run button is clicked
   runProcessor(processorName) {
     let runProcessorInput = null;

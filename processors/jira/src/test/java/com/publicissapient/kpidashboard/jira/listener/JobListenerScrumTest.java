@@ -311,4 +311,28 @@ public class JobListenerScrumTest {
 		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
 	}
 
+    @Test
+    public void testAfterJob_FailedExecution_progress_stats() throws Exception {
+            FieldMapping fieldMapping=new FieldMapping();
+            ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+            processorExecutionTraceLog.setProgressStats(true);
+            fieldMapping.setNotificationEnabler(true);
+            when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
+            ProjectBasicConfig projectBasicConfig= ProjectBasicConfig.builder().projectName("xyz").build();
+            when(projectBasicConfigRepository.findByStringId(null)).thenReturn(Optional.ofNullable(projectBasicConfig));
+            when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
+                    .thenReturn(Collections.singletonList(processorExecutionTraceLog));
+            when(jiraCommonService.getApiHost()).thenReturn("xyz");
+            StepExecution stepExecution=jobExecution.createStepExecution("xyz");
+            stepExecution.setStatus(BatchStatus.FAILED);
+            stepExecution.addFailureException(new Throwable("Exception"));
+            // Simulate a failed job
+            jobExecution.setStatus(BatchStatus.FAILED);
+
+            // Act
+            jobListenerScrum.afterJob(jobExecution);
+
+            verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+    }
+
 }

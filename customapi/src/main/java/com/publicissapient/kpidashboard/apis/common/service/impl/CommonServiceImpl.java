@@ -248,9 +248,13 @@ public class CommonServiceImpl implements CommonService {
 		Set<String> emailAddresses = new HashSet<>();
 		List<String> usernameList = new ArrayList<>();
 		List<UserInfo> usersList = userInfoRepository.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_PROJECT_ADMIN));
+		List<UserInfo> notificationEnableUsersList = usersList.stream()
+				.filter(userInfo -> userInfo.getNotificationEmail() != null
+						&& userInfo.getNotificationEmail().get(CommonConstant.ACCESS_ALERT_NOTIFICATION))
+				.collect(Collectors.toList());
 		Map<String, String> projectMap = getHierarchyMap(projectConfigId);
-		if (CollectionUtils.isNotEmpty(usersList)) {
-			usersList.forEach(action -> {
+		if (CollectionUtils.isNotEmpty(notificationEnableUsersList)) {
+			notificationEnableUsersList.forEach(action -> {
 				Optional<ProjectsAccess> projectAccess = action.getProjectsAccess().stream()
 						.filter(access -> access.getRole().equalsIgnoreCase(Constant.ROLE_PROJECT_ADMIN)).findAny();
 				if (projectAccess.isPresent()) {
