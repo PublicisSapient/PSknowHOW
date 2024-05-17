@@ -19,7 +19,7 @@
 
 package com.publicissapient.kpidashboard.jira.listener;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
@@ -108,8 +108,8 @@ public class JiraIssueJqlWriterListenerTest {
 		processorExecutionTraceLog.setBasicProjectConfigId("abc");
 		processorExecutionTraceLog.setBoardId("abc");
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(
-				eq(JiraConstants.JIRA), anyString()))
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
+				eq(JiraConstants.JIRA), anyList()))
 				.thenReturn(List.of(processorExecutionTraceLog));
 		listener.afterWrite(createSampleCompositeResults());
 	}
@@ -120,8 +120,8 @@ public class JiraIssueJqlWriterListenerTest {
 		processorExecutionTraceLog.setBoardId("abc");
 		processorExecutionTraceLog.setProgressStats(true);
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(
-				eq(JiraConstants.JIRA), anyString()))
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
+				eq(JiraConstants.JIRA), anyList()))
 				.thenReturn(List.of(processorExecutionTraceLog));
 		listener.afterWrite(createSampleCompositeResults());
 	}

@@ -20,10 +20,12 @@ package com.publicissapient.kpidashboard.jira.listener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -52,6 +54,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class KanbanJiraIssueWriterListener implements ItemWriteListener<CompositeResult> {
+	public static final String PROG_TRACE_LOG = "progTraceLog";
 
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
@@ -90,6 +93,14 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 		for (Map.Entry<String, Map<String, List<KanbanJiraIssue>>> entry : projectBoardWiseIssues.entrySet()) {
 			String basicProjectConfigId = entry.getKey();
 			Map<String, List<KanbanJiraIssue>> boardWiseIssues = entry.getValue();
+			List<ProcessorExecutionTraceLog> procTraceLogList = processorExecutionTraceLogRepo
+					.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
+							Collections.singletonList(basicProjectConfigId));
+			Map<String, ProcessorExecutionTraceLog> boardWiseTraceLogMap = procTraceLogList.stream()
+					.collect(Collectors.toMap(
+							traceLog -> Optional.ofNullable(traceLog.getBoardId()).orElse(PROG_TRACE_LOG),
+							Function.identity()));
+			ProcessorExecutionTraceLog progressStatsTraceLog = boardWiseTraceLogMap.getOrDefault(PROG_TRACE_LOG, new ProcessorExecutionTraceLog());
 			for (Map.Entry<String, List<KanbanJiraIssue>> boardData : boardWiseIssues.entrySet()) {
 				String boardId = boardData.getKey();
 				KanbanJiraIssue firstIssue = boardData
@@ -99,25 +110,19 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 										.reversed())
 						.findFirst().orElse(null);
 				if (firstIssue != null) {
-					Optional<ProcessorExecutionTraceLog> procTraceLog = processorExecutionTraceLogRepo
-							.findByProcessorNameAndBasicProjectConfigIdAndBoardId(ProcessorConstants.JIRA,
-									basicProjectConfigId, boardId);
-					if (procTraceLog.isPresent()) {
-						ProcessorExecutionTraceLog processorExecutionTraceLog = procTraceLog.get();
-						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId,
-								firstIssue.getChangeDate(), processorExecutionToSave);
+					ProcessorExecutionTraceLog processorExecutionTraceLog;
+					if (boardWiseTraceLogMap.containsKey(boardId)) {
+						processorExecutionTraceLog = boardWiseTraceLogMap.get(boardId);
 					} else {
-						ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId,
-								firstIssue.getChangeDate(), processorExecutionToSave);
+						processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 					}
+					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId, firstIssue.getChangeDate(),
+							processorExecutionToSave);
+					progressStatsTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(firstIssue.getChangeDate(),
+							JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 				}
 			}
-			Optional<ProcessorExecutionTraceLog> progressStatsTraceLog = processorExecutionTraceLogRepo
-					.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(ProcessorConstants.JIRA,
-							basicProjectConfigId);
-			Optional.ofNullable(
-							JiraProcessorUtil.saveChunkProgressInTrace(progressStatsTraceLog.orElse(null), stepContext))
+			Optional.ofNullable(JiraProcessorUtil.saveChunkProgressInTrace(progressStatsTraceLog, stepContext))
 					.ifPresent(processorExecutionToSave::add);
 
 		}
