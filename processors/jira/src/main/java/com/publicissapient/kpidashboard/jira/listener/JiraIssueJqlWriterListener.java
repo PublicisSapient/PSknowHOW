@@ -96,8 +96,6 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 				boolean isAnyLastSuccessfulRunPresent = procTraceLogList.stream()
 						.anyMatch(traceLog -> traceLog.getLastSuccessfulRun() != null
 								&& !traceLog.getLastSuccessfulRun().isEmpty());
-				progressStatsTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(firstIssue.getChangeDate(),
-						JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 				if (CollectionUtils.isNotEmpty(procTraceLogList) && isAnyLastSuccessfulRunPresent) {
 					for (ProcessorExecutionTraceLog processorExecutionTraceLog : procTraceLogList) {
 						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
@@ -107,6 +105,8 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 					ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
 							processorExecutionToSave);
+					progressStatsTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(firstIssue.getChangeDate(),
+							JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 
 				}
 			}
