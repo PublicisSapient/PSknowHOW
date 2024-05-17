@@ -19,7 +19,6 @@ package com.publicissapient.kpidashboard.jira.reader;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -223,8 +222,8 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 				getProjectName(), boardId);
 
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
-				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA,
-						Arrays.asList(projectConfFieldMapping.getBasicProjectConfigId().toString()));
+				.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(JiraConstants.JIRA,
+						projectConfFieldMapping.getBasicProjectConfigId().toString());
 
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			Map<String, String> boardWiseDate = new HashMap<>();
