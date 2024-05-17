@@ -194,9 +194,9 @@ public class UserInfoController {
 
 		if (Objects.nonNull(userInfo)) {
 			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ServiceResponse(true, "Flag Updated successfully in user info details", userInfo));
+					.body(new ServiceResponse(true, "Notification preferences updated successfully.", userInfo));
 		} else {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ServiceResponse(false, "Invalid Token or user or flag is not found", null));
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ServiceResponse(false, "Sorry! Couldn't save your preferences. Please try again later", null));
 
 		}
 

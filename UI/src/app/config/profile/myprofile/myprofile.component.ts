@@ -184,14 +184,13 @@ export class MyprofileComponent implements OnInit {
         response => {
           if (response?.['success'] && response['data']) {
             const userDetails = response['data'];
-            this.messageService.add({ severity: 'success', summary: 'Notification preferences updated successfully.' });
+            this.messageService.add({ severity: 'success', summary: 'response['message']' });
             this.sharedService.setCurrentUserDetails({
               notificationEmail: userDetails['notificationEmail'],
             });
           } else if (response && !response['success']) {
             if (response['message']) {
-              this.message = response['message'];
-              this.messageService.add({ severity: 'error', summary: 'Sorry! Could not save your preferences. Please try again later.' });
+              this.messageService.add({ severity: 'error', summary: 'response['message']' });
             }
           }
         }
