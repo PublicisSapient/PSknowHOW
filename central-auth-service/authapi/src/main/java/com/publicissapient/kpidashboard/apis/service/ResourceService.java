@@ -1,18 +1,10 @@
 package com.publicissapient.kpidashboard.apis.service;
 
 import com.publicissapient.kpidashboard.apis.entity.Resource;
+import com.publicissapient.kpidashboard.apis.errors.GenericException;
 
-/**
- * @author hargupta15
- */
 public interface ResourceService {
 
-	/**
-	 * Validate Resource Details
-	 * 
-	 * @param resourceName
-	 *            resourceName
-	 * @return Resource
-	 */
-	Resource validateResource(String resourceName);
+	Resource getResourceByName(String resourceName) throws GenericException;
+
 }

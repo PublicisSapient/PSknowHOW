@@ -1,33 +1,40 @@
 package com.publicissapient.kpidashboard.apis.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.publicissapient.kpidashboard.apis.config.AuthConfig;
-import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
-import com.publicissapient.kpidashboard.apis.service.UserRoleService;
-import jakarta.servlet.http.HttpServletResponse;
+import com.publicissapient.kpidashboard.apis.errors.*;
+import com.publicissapient.kpidashboard.apis.filters.standard.service.AuthenticationResponseService;
+import com.publicissapient.kpidashboard.common.model.*;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.config.AuthConfig;
+import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
+import com.publicissapient.kpidashboard.apis.entity.ForgotPasswordToken;
+import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
+import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
+import com.publicissapient.kpidashboard.apis.service.*;
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
-import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
-import com.publicissapient.kpidashboard.apis.errors.UserNotFoundException;
-import com.publicissapient.kpidashboard.apis.service.StandardAuthenticationService;
-import com.publicissapient.kpidashboard.apis.service.UserService;
-import com.publicissapient.kpidashboard.common.model.UserDTO;
 
+import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.EMAIL_PATTERN;
 import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.WRONG_CREDENTIALS_ERROR_MESSAGE;
 
-@Service
 @AllArgsConstructor
+@Service
+@Slf4j
 public class StandardAuthenticationServiceImpl implements StandardAuthenticationService {
 
 	private final AuthConfig authConfig;
@@ -38,16 +45,26 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 
 	private final TokenAuthenticationService tokenAuthenticationService;
 
+	private final MessageService messageService;
+
+	private final NotificationService notificationService;
+
+	private final UserVerificationTokenService userVerificationTokenService;
+
+	private final ForgotPasswordTokenService forgotPasswordTokenService;
+
+	private final ForgotPasswordService forgotPasswordService;
+
 	@Override
 	public Authentication authenticateUser(Authentication authentication)
 			throws BadCredentialsException, LockedException, PendingApprovalException {
 		String username = authentication.getPrincipal().toString();
 		String password = authentication.getCredentials().toString();
 
-		Optional<User> userOptional = userService.findByUserName(username);
+		Optional<User> userOptional = userService.findByUsername(username);
 
 		if (userOptional.isEmpty()) {
-			throw new UserNotFoundException(username, AuthType.STANDARD);
+			throw new UsernameNotFoundException(username, AuthType.STANDARD);
 		} else {
 			User user = userOptional.get();
 
@@ -71,12 +88,10 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 			UserDTO userDTO = userService.getUserDTO(user);
 
 			if (user.checkPassword(password)) {
-				return new UsernamePasswordAuthenticationToken(
-						userDTO,
-						user.getPassword(),
-						this.tokenAuthenticationService.createAuthorities(
-								this.userRoleService.getRolesNamesByUsername(username)
-						)
+				return new UsernamePasswordAuthenticationToken(userDTO, user.getPassword(),
+															   this.tokenAuthenticationService.createAuthorities(
+																	   this.userRoleService.getRolesNamesByUsername(
+																			   username))
 				);
 			} else {
 				throw new BadCredentialsException(WRONG_CREDENTIALS_ERROR_MESSAGE);
@@ -108,8 +123,9 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 
 	@Override
 	public String addAuthentication(HttpServletResponse response, Authentication authentication) {
-		String jwt = this.tokenAuthenticationService.createJWT(userService.getUsername(authentication),
-															   AuthType.STANDARD, authentication.getAuthorities()
+		String jwt = this.tokenAuthenticationService.createJWT(
+				this.tokenAuthenticationService.extractUsernameFromAuthentication(authentication), AuthType.STANDARD,
+				authentication.getAuthorities()
 		);
 
 		this.tokenAuthenticationService.addStandardCookies(jwt, response);
@@ -131,4 +147,239 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 		}
 	}
 
+	@Override
+	public boolean registerUser(UserDTO request) {
+		if (isRequestValid(request)) {
+			User user = saveUserDetails(request);
+
+			notificationService.sendVerificationMailToRegisterUser(user.getUsername(), user.getEmail(),
+																   createUserVerificationToken(user.getUsername(),
+																							   user.getEmail()
+																   )
+			);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean isRequestValid(UserDTO request) throws GenericException {
+		if (userService.findByUsername(request.getUsername()).isPresent()) {
+			throw new GenericException("Cannot complete the registration process, Try with different username");
+		}
+		if (!Pattern.compile(EMAIL_PATTERN).matcher(request.getEmail()).matches()) {
+			throw new GenericException("Cannot complete the registration process, Invalid Email");
+		}
+		if (this.userService.findByEmail(request.getEmail().toLowerCase()).isPresent()) {
+			throw new GenericException("Cannot complete the registration process, Try with different email");
+		}
+		if (Pattern.compile(CommonConstant.PASSWORD_PATTERN).matcher(request.getPassword()).matches()) {
+			throw new GenericException(this.messageService.getMessage("error_register_password"));
+		}
+
+		return true;
+	}
+
+	/**
+	 * Validates Email Token sent to the user via email.
+	 *
+	 * <p>
+	 * validateEmailToken method checks the token received from request, exists in
+	 * the database.If the token is found in the database method will forward the
+	 * token to validate it
+	 * </p>
+	 *
+	 * @param token
+	 * @return one of the enum <tt>INVALID, VALID, EXPIRED</tt> of type
+	 * ResetPasswordTokenStatusEnum
+	 */
+	@Override
+	public ResetPasswordTokenStatusEnum validateEmailToken(String token) {
+		log.info("ForgotPasswordServiceImpl: Validate the token {}", token);
+
+		Optional<ForgotPasswordToken> forgotPasswordTokenOptional = forgotPasswordTokenService.findByToken(token);
+		if (forgotPasswordTokenOptional.isPresent()) {
+			return checkTokenValidity(forgotPasswordTokenOptional.get());
+		} else {
+			return ResetPasswordTokenStatusEnum.INVALID;
+		}
+	}
+
+	private User saveUserDetails(UserDTO request) {
+		User user = User.builder().username(request.getUsername()).password(request.getPassword())
+						.email(request.getEmail().toLowerCase()).firstName(request.getFirstName())
+						.lastName(request.getLastName()).displayName(request.getDisplayName())
+						.createdDate(LocalDateTime.now()).modifiedDate(LocalDateTime.now())
+						.authType(AuthType.STANDARD.name()).userVerified(false).build();
+
+		return this.userService.save(user);
+	}
+
+	private String createUserVerificationToken(String username, String email) {
+		String token = UUID.randomUUID().toString();
+
+		UserVerificationToken userVerificationToken = new UserVerificationToken();
+		userVerificationToken.setToken(token);
+		userVerificationToken.setUsername(username);
+		userVerificationToken.setExpiryDate(Integer.parseInt(authConfig.getVerifyUserTokenExpiryInterval()));
+		userVerificationToken.setEmail(email);
+
+		this.userVerificationTokenService.save(userVerificationToken);
+
+		return token;
+	}
+
+	/**
+	 * Resets password after validating token
+	 *
+	 * <p>
+	 * resetPassword checks if the reset token exists in the database.Later checks
+	 * the validity of the token. If the token is valid,searches for the username
+	 * from the <tt>forgotPasswordToken</tt> in the <tt>authentication</tt>
+	 * collection in the database. Saves the reset password if the username exists
+	 * </p>
+	 *
+	 * @param resetPasswordRequest
+	 * @return authentication if the <tt>token</tt> is valid and <tt>username</tt>
+	 * from forgotPasswordToken exists in the database
+	 * @throws ApplicationException if either <tt>forgotPasswordToken</tt> is invalid or
+	 *                              <tt>username</tt> doen't exist in the database.
+	 */
+	@Override
+	public User resetPassword(ResetPasswordRequestDTO resetPasswordRequest) throws ApplicationException {
+		log.info("ForgotPasswordServiceImpl: Reset token is {}", resetPasswordRequest.getResetToken());
+		Optional<ForgotPasswordToken> forgotPasswordTokenOptional = forgotPasswordTokenService.findByToken(
+				resetPasswordRequest.getResetToken());
+		if (forgotPasswordTokenOptional.isPresent()) {
+			ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenOptional.get();
+
+			ResetPasswordTokenStatusEnum tokenStatus = checkTokenValidity(forgotPasswordToken);
+
+			if (tokenStatus.equals(ResetPasswordTokenStatusEnum.VALID)) {
+				Optional<User> user = userService.findByUsername(forgotPasswordToken.getUsername());
+				if (user.isEmpty()) {
+					log.error("User {} Does not Exist", forgotPasswordToken.getUsername());
+					throw new ApplicationException("User Does not Exist", ApplicationException.BAD_DATA);
+				} else {
+					validatePasswordRules(forgotPasswordToken.getUsername(), resetPasswordRequest.getPassword(),
+										  user.get()
+					);
+					return user.get();
+				}
+			} else {
+				log.error("Token is {}", resetPasswordRequest.getResetToken());
+				throw new ApplicationException("Token is " + tokenStatus.name(), ApplicationException.BAD_DATA);
+			}
+		} else {
+			log.error("Token is {}", resetPasswordRequest.getResetToken());
+			throw new ApplicationException(
+					"Token is " + ResetPasswordTokenStatusEnum.INVALID, ApplicationException.BAD_DATA);
+		}
+
+	}
+
+	private boolean isPassContainUser(String reqPassword, String username) {
+
+		return !(
+				StringUtils.containsIgnoreCase(reqPassword, username)
+		);
+	}
+
+	private boolean isOldPassword(String reqPassword, String savedPassword) {
+
+		return !(
+				StringUtils.containsIgnoreCase(User.hash(reqPassword), savedPassword)
+		);
+
+	}
+
+	/**
+	 * Checks the validity of <tt>forgotPasswordToken</tt>
+	 *
+	 * @param forgotPasswordToken
+	 * @return ResetPasswordTokenStatusEnum <tt>INVALID</tt> if token is
+	 * <tt>null</tt>, <tt>VALID</tt> if token is not expired,
+	 * <tt>EXPIRED</tt> if token is expired
+	 */
+	private ResetPasswordTokenStatusEnum checkTokenValidity(ForgotPasswordToken forgotPasswordToken) {
+		if (forgotPasswordToken == null) {
+			return ResetPasswordTokenStatusEnum.INVALID;
+		} else if (isExpired(forgotPasswordToken.getExpiryDate())) {
+			return ResetPasswordTokenStatusEnum.EXPIRED;
+		} else {
+			return ResetPasswordTokenStatusEnum.VALID;
+		}
+	}
+
+	/**
+	 * Validates if the given <tt>expiryDate</tt> is in the past
+	 * <p>
+	 * isExpired method checks the validity of token by comparing the validity of
+	 * token expriy date with current Time and Date
+	 * </p>
+	 *
+	 * @param expiryDate
+	 * @return boolean <tt>true</tt> if expiryDate is invalid/expired,<tt>false</tt>
+	 * if token is valid
+	 */
+	private boolean isExpired(Date expiryDate) {
+		return new Date().before(expiryDate);
+	}
+
+	private void validatePasswordRules(String username, String password, User user) throws ApplicationException {
+
+		Pattern pattern = Pattern.compile(CommonConstant.PASSWORD_PATTERN);
+		Matcher matcher = pattern.matcher(password);
+		if (matcher.matches()) {
+			if (isPassContainUser(password, username)) {
+				if (isOldPassword(password, user.getPassword())) {
+					user.setPassword(password);
+					userService.save(user);
+				} else {
+					throw new ApplicationException("Password should not be old password",
+												   ApplicationException.BAD_DATA
+					);
+				}
+			} else {
+				throw new ApplicationException("Password should not contain userName", ApplicationException.BAD_DATA);
+			}
+		} else {
+			throw new ApplicationException(
+					"At least 8 characters in length with Lowercase letters, Uppercase letters, Numbers and Special characters($,@,$,!,%,*,?,&)",
+					ApplicationException.BAD_DATA
+			);
+		}
+
+	}
+
+	@Override
+	public ServiceResponse changePassword(ChangePasswordRequestDTO changePasswordRequestDTO,
+										  HttpServletResponse response) {
+		try {
+			Authentication authentication = forgotPasswordService.changePasswordAndReturnAuthentication(
+					changePasswordRequestDTO);
+
+			addAuthentication(response, authentication);
+
+			return new ServiceResponse(true, messageService.getMessage("success_change_password"), null);
+		} catch (EmailNotFoundException e) {
+			return new ServiceResponse(false, messageService.getMessage("error_invalid_user_email"), null);
+		} catch (PasswordPatternException e) {
+			return new ServiceResponse(false, messageService.getMessage("error_password_pattern"), null);
+		} catch (IdenticalPasswordException e) {
+			return new ServiceResponse(false, messageService.getMessage("error_same_old_password"), null);
+		} catch (PasswordContainsUsernameException e) {
+			new ServiceResponse(false, messageService.getMessage("error_password_contain"), null);
+		} catch (WrongPasswordException e) {
+			new ServiceResponse(false, messageService.getMessage("error_wrong_password"), null);
+		}
+
+		return null;
+	}
+
+	@Override
+	public ServiceResponse processForgotPassword(String email) {
+		return forgotPasswordService.validateUserAndSendForgotPasswordEmail(email);
+	}
 }

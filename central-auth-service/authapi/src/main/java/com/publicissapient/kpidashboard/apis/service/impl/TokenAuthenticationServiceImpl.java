@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.service.impl;
 
 import java.util.*;
 
+import com.publicissapient.kpidashboard.common.model.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +33,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -113,5 +115,19 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	private Claims parseClaims(String token) throws ExpiredJwtException {
 		return Jwts.parser().setSigningKey(authProperties.getSecret()).parseClaimsJws(token).getBody();
+	}
+
+	@Override
+	public String extractUsernameFromAuthentication(Authentication authentication) {
+		if (authentication != null) {
+			if (authentication.getPrincipal() instanceof UserDTO) {
+				return ((UserDTO) authentication.getPrincipal()).getUsername();
+			} else if (authentication.getPrincipal() instanceof String) {
+				return authentication.getPrincipal().toString();
+			}
+
+			return null;
+		}
+		return null;
 	}
 }

@@ -15,19 +15,16 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.apis.repository;
+
+package com.publicissapient.kpidashboard.apis.service;
 
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.publicissapient.kpidashboard.apis.entity.ForgotPasswordToken;
 
-import com.publicissapient.kpidashboard.apis.entity.Resource;
+public interface ForgotPasswordTokenService {
 
+	Optional<ForgotPasswordToken> findByToken(String token);
 
-@Repository
-public interface ResourcesRepository extends JpaRepository<Resource, Long> {
-
-	Optional<Resource> findByName(String name);
-
+	ForgotPasswordToken save(ForgotPasswordToken token);
 }

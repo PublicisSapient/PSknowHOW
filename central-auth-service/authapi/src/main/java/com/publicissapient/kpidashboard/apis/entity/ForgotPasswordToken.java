@@ -18,22 +18,17 @@
 
 package com.publicissapient.kpidashboard.apis.entity;
 
+import java.util.Calendar;
+import java.util.Date;
+
+import lombok.*;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.*;
 
-import java.util.Calendar;
-import java.util.Date;
 
-/**
- * This class serves as the model for storing credential used for login and
- * Signup.
- *
- * @author Hiren Babariya
- */
-@Data
 @Builder
 @Getter
 @Setter
@@ -41,7 +36,6 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity(name = "forgot_password_token")
 public class ForgotPasswordToken {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -52,16 +46,10 @@ public class ForgotPasswordToken {
 
 	private String username;
 
-	/**
-	 * Sets expiry date.
-	 *
-	 * @param minutes
-	 *            the minutes
-	 */
+
 	public void setExpiryDate(int minutes) {
 		Calendar now = Calendar.getInstance();
 		now.add(Calendar.MINUTE, minutes);
 		this.expiryDate = now.getTime();
 	}
-
 }

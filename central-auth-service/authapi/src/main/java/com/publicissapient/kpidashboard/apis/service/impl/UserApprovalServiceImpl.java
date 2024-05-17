@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
-import com.publicissapient.kpidashboard.apis.errors.UserNotFoundException;
+import com.publicissapient.kpidashboard.apis.errors.UsernameNotFoundException;
 import com.publicissapient.kpidashboard.apis.service.*;
 import com.publicissapient.kpidashboard.apis.service.dto.UnapprovedUserDTO;
 
@@ -52,10 +52,10 @@ public class UserApprovalServiceImpl implements UserApprovalService {
 	}
 
 	@Override
-	public boolean approveUser(String username) throws UserNotFoundException {
-		Optional<User> userOptional = userService.findByUserName(username);
+	public boolean approveUser(String username) throws UsernameNotFoundException {
+		Optional<User> userOptional = userService.findByUsername(username);
 
-		User user = userOptional.orElseThrow(() -> new UserNotFoundException(username, AuthType.STANDARD));
+		User user = userOptional.orElseThrow(() -> new UsernameNotFoundException(username, AuthType.STANDARD));
 
 		if (user.isUserVerified() && !user.isApproved()) {
 			user.setApproved(true);
