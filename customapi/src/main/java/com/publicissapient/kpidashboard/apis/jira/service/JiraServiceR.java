@@ -176,9 +176,11 @@ public class JiraServiceR {
 
 	/**
 	 * updates the TreeAggregatorDetail object based on the KpiRequest.
+	 * If the selectedMap in the KpiRequest does not contain the HIERARCHY_LEVEL_ID_SPRINT,
+	 * filter out the sprint by sprintCountForKpiCalculation property
 	 *
 	 * @param kpiRequest
-	 * 				The KpiRequest object that contains the label
+	 * 				KpiRequest object containing the selectedMap.
 	 * @param treeAggregatorDetail
 	 * 				The TreeAggregatorDetail object to be updated.
 	 */
