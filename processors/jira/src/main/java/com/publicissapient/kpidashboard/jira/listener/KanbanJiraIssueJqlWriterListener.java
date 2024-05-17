@@ -91,6 +91,12 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 		StepContext stepContext = StepSynchronizationManager.getContext();
 		for (Map.Entry<String, List<KanbanJiraIssue>> entry : projectWiseIssues.entrySet()) {
 			String basicProjectConfigId = entry.getKey();
+			List<ProcessorExecutionTraceLog> procTraceLogList = processorExecutionTraceLogRepo
+					.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
+							Collections.singletonList(basicProjectConfigId));
+			ProcessorExecutionTraceLog progressStatsTraceLog = procTraceLogList.stream()
+					.filter(ProcessorExecutionTraceLog::isProgressStats).findFirst()
+					.orElse(new ProcessorExecutionTraceLog());
 			KanbanJiraIssue firstIssue = entry.getValue().stream()
 					.sorted(Comparator
 							.comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
@@ -98,18 +104,14 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 							.reversed())
 					.findFirst().orElse(null);
 			if (firstIssue != null) {
-				List<ProcessorExecutionTraceLog> procTraceLog = processorExecutionTraceLogRepo
-						.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
-								Collections.singletonList(basicProjectConfigId));
-				if (CollectionUtils.isNotEmpty(procTraceLog)) {
-					procTraceLog.forEach(traceLog -> {
-						setTraceLog(traceLog, basicProjectConfigId, firstIssue.getChangeDate(),
+				boolean isAnyLastSuccessfulRunPresent = procTraceLogList.stream()
+						.anyMatch(traceLog -> traceLog.getLastSuccessfulRun() != null
+								&& !traceLog.getLastSuccessfulRun().isEmpty());
+				if (CollectionUtils.isNotEmpty(procTraceLogList)  && isAnyLastSuccessfulRunPresent) {
+					for (ProcessorExecutionTraceLog processorExecutionTraceLog : procTraceLogList) {
+						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
 								processorExecutionToSave);
-						if (traceLog.isProgressStats()) {
-							Optional.ofNullable(JiraProcessorUtil.saveChunkProgressInTrace(traceLog, stepContext))
-									.ifPresent(processorExecutionToSave::add);
-						}
-					});
+					}
 				} else {
 					ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 					processorExecutionTraceLog.setFirstRunDate(DateUtil.dateTimeFormatter(
@@ -117,7 +119,11 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 							JiraConstants.QUERYDATEFORMAT));
 					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
 							processorExecutionToSave);
+					progressStatsTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(firstIssue.getChangeDate(),
+							JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 				}
+				Optional.ofNullable(JiraProcessorUtil.saveChunkProgressInTrace(progressStatsTraceLog, stepContext))
+						.ifPresent(processorExecutionToSave::add);
 			}
 		}
 		if (CollectionUtils.isNotEmpty(processorExecutionToSave)) {

@@ -19,6 +19,7 @@
 
 package com.publicissapient.kpidashboard.jira.listener;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -127,7 +128,20 @@ public class KanbanJiraIssueJqlWriterListenerTest {
         processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
         processorExecutionTraceLog.setProgressStats(true);
         when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
-                eq(JiraConstants.JIRA), anyList()))
+                eq(JiraConstants.JIRA), any()))
+                .thenReturn(List.of(processorExecutionTraceLog));
+        listener.afterWrite(compositeResults);
+    }
+    @Test
+    public void testAfterWriteWithTraceLogStatusTrueLastSuccessRun() {
+        ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setBasicProjectConfigId("abc");
+        processorExecutionTraceLog.setBoardId("abc");
+        processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
+        processorExecutionTraceLog.setProgressStats(true);
+        processorExecutionTraceLog.setLastSuccessfulRun("2022-02-02T10:00:00");
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
+                eq(JiraConstants.JIRA), any()))
                 .thenReturn(List.of(processorExecutionTraceLog));
         listener.afterWrite(compositeResults);
     }
