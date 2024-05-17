@@ -217,19 +217,16 @@ public class ZephyrService {
 	 * 				The TreeAggregatorDetail object to be updated.
 	 */
 	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
-		if (!kpiRequest.getLabel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+		if (CollectionUtils.isEmpty(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
 				&& MapUtils.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes())) {
-			Map<String, List<Node>> sprintMap = new LinkedHashMap<>();
+			Map<String, List<Node>> sprintMap = treeAggregatorDetail.getMapOfListOfLeafNodes();
 			if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
-				treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-						.stream().collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT).stream()
+						.collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
 							if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
-								sprintMap
-										.computeIfAbsent(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
-												k -> new ArrayList<>())
-										.addAll(new ArrayList<>(sprints.subList(0,
-												customApiConfig.getSprintCountForKpiCalculation())));
+								sprintMap.put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, new ArrayList<>(
+										sprints.subList(0, customApiConfig.getSprintCountForKpiCalculation())));
 
 							}
 						});
