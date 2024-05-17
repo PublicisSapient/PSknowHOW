@@ -18,6 +18,7 @@ const LoginPage = ({search}) => {
     const [showLoader, setShowLoader] = useState(false);
     const [showSAMLLoader, setShowSAMLLoader] = useState(false);
     const methods = useForm({ mode: 'all' });
+    const userNamePattern = /^[A-Za-z0-9]+$/;
 
     const PerformSAMLLogin = () => {
         setShowSAMLLoader(true);
@@ -121,6 +122,10 @@ const LoginPage = ({search}) => {
                                 "minLength": {
                                     "value": 6,
                                     "message": "Field should contain at least 6 characters"
+                                },
+                                "pattern": {
+                                    "value": userNamePattern,
+                                    "message": 'Username can only contain letters and numbers'
                                 }
                             }}>
                         </FloatingInput>
