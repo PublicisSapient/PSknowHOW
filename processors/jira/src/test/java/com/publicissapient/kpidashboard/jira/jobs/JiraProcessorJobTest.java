@@ -55,7 +55,7 @@ import com.publicissapient.kpidashboard.jira.listener.JobListenerKanban;
 import com.publicissapient.kpidashboard.jira.listener.JobListenerScrum;
 import com.publicissapient.kpidashboard.jira.listener.JobStepProgressListener;
 import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueJqlWriterListener;
-import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueWriterListener;
+import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueBoardWriterListener;
 import com.publicissapient.kpidashboard.jira.processor.IssueKanbanProcessor;
 import com.publicissapient.kpidashboard.jira.processor.IssueScrumProcessor;
 import com.publicissapient.kpidashboard.jira.reader.IssueBoardReader;
