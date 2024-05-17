@@ -54,7 +54,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-public class KanbanJiraIssueWriterListener implements ItemWriteListener<CompositeResult> {
+public class KanbanJiraIssueBoardWriterListener implements ItemWriteListener<CompositeResult> {
 	public static final String PROG_TRACE_LOG = "progTraceLog";
 
 	@Autowired
