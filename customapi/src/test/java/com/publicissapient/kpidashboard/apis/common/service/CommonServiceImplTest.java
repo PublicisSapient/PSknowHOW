@@ -195,6 +195,10 @@ public class CommonServiceImplTest {
 		projectsAccess.setRole("ROLE_SUPERADMIN");
 		projectsAccess.setAccessNodes(accessNodes);
 		user.setProjectsAccess(Arrays.asList(projectsAccess));
+		Map<String, Boolean> notificationEmail = new HashMap<>();
+		notificationEmail.put("accessAlertNotification" , true);
+		notificationEmail.put("errorAlertNotification" , false);
+		user.setNotificationEmail(notificationEmail);
 		List<UserInfo> users = new ArrayList<>();
 		users.add(user);
 
