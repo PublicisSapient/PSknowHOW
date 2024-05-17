@@ -127,5 +127,4 @@ public class KanbanJiraIssueJqlWriterListenerTest {
                 .thenReturn(List.of(processorExecutionTraceLog));
         listener.afterWrite(compositeResults);
     }
-
 }
