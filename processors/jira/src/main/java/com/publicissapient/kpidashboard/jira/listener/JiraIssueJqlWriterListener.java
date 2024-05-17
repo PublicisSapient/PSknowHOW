@@ -87,23 +87,25 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 					.findFirst().orElse(null);
 			if (firstIssue != null) {
 				List<ProcessorExecutionTraceLog> procTraceLog = processorExecutionTraceLogRepo
-						.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
-								Collections.singletonList(basicProjectConfigId));
+						.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(ProcessorConstants.JIRA,
+								basicProjectConfigId);
 				if (CollectionUtils.isNotEmpty(procTraceLog)) {
-					procTraceLog.forEach(traceLog -> {
-						setTraceLog(traceLog, basicProjectConfigId, firstIssue.getChangeDate(),
+					for (ProcessorExecutionTraceLog processorExecutionTraceLog : procTraceLog) {
+						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
 								processorExecutionToSave);
-						if (traceLog.isProgressStats()) {
-							Optional.ofNullable(JiraProcessorUtil.saveChunkProgressInTrace(traceLog, stepContext))
-									.ifPresent(processorExecutionToSave::add);
-						}
-					});
+					}
 				} else {
 					ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
 							processorExecutionToSave);
 				}
 			}
+			Optional<ProcessorExecutionTraceLog> progressStatsTraceLog = processorExecutionTraceLogRepo
+					.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(ProcessorConstants.JIRA,
+							basicProjectConfigId);
+			Optional.ofNullable(
+							JiraProcessorUtil.saveChunkProgressInTrace(progressStatsTraceLog.orElse(null), stepContext))
+					.ifPresent(processorExecutionToSave::add);
 		}
 		if (CollectionUtils.isNotEmpty(processorExecutionToSave)) {
 			processorExecutionTraceLogRepo.saveAll(processorExecutionToSave);
