@@ -17,9 +17,7 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
@@ -185,20 +183,22 @@ public class JiraServiceR {
 	 * 				The TreeAggregatorDetail object to be updated.
 	 */
 	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
-		if (CollectionUtils.isEmpty(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
+		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())
+				&& CollectionUtils.isEmpty(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
 				&& MapUtils.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes())) {
-			Map<String, List<Node>> sprintMap = treeAggregatorDetail.getMapOfListOfLeafNodes();
+			List<Node> sprintList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
 				treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT).stream()
 						.collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
 							if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
-								sprintMap.put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, new ArrayList<>(
+								sprintList.addAll(new ArrayList<>(
 										sprints.subList(0, customApiConfig.getSprintCountForKpiCalculation())));
 
 							}
 						});
-				treeAggregatorDetail.setMapOfListOfLeafNodes(sprintMap);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
+						sprintList);
 			}
 		}
 	}
