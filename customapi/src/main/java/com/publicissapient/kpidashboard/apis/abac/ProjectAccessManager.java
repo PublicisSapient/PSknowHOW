@@ -329,7 +329,7 @@ public class ProjectAccessManager {
 
 	private void sendAccessRequestEmailToAdmin(AccessRequest accessRequest) {
 		List<String> emailAddresses = commonService
-				.getEmailAddressBasedOnRoles(Arrays.asList(Constant.ROLE_SUPERADMIN));
+				.getEmailAddressBasedOnRoles(Arrays.asList());
 
 		if (accessRequest.getAccessNode().getAccessLevel().equals(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
 			emailAddresses.addAll(commonService.getProjectAdminEmailAddressBasedProjectId(
