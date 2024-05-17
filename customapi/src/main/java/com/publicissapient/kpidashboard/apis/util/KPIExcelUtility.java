@@ -47,6 +47,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.jira.scrum.service.CommittmentReliabilityServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.BuildFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.ChangeFailureRateInfo;
 import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
@@ -753,9 +754,11 @@ public class KPIExcelUtility {
 	 */
 
 	public static void populateCommittmentReliability(String sprint, Map<String, JiraIssue> totalStoriesMap,
-			Set<JiraIssue> initialIssueNumber, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+			CommittmentReliabilityServiceImpl.CommitmentReliabilityValidationData commitmentReliabilityValidationData, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
 		if (MapUtils.isNotEmpty(totalStoriesMap)) {
-
+			Set<JiraIssue> initialIssueNumber = commitmentReliabilityValidationData.getInitialIssueNumber();
+			Set<String> addedIssues = commitmentReliabilityValidationData.getAddedIssues();
+			Set<String> puntedIssues = commitmentReliabilityValidationData.getPuntedIssues();
 			totalStoriesMap.forEach((storyId, jiraIssue) -> {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setSprintName(sprint);
@@ -768,6 +771,12 @@ public class KPIExcelUtility {
 				setSquads(excelData,jiraIssue);
 				if (initialIssueNumber.contains(jiraIssue)) {
 					excelData.setInitialCommited("Y");
+				}
+				if(addedIssues.contains(storyId)) {
+					excelData.setScopeValue(CommonConstant.ADDED);
+				}
+				if(puntedIssues.contains(storyId)) {
+					excelData.setScopeValue(CommonConstant.REMOVED);
 				}
 
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
