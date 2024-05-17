@@ -182,10 +182,9 @@ export class MyprofileComponent implements OnInit {
     this.http.notificationEmailToggleChange(obj)
       .subscribe(
         response => {
-          if (response && response['success'] && response['data']) {
+          if (response?.['success'] && response['data']) {
             const userDetails = response['data'];
             this.messageService.add({ severity: 'success', summary: 'Notification preferences updated successfully.' });
-            console.log(response);
             this.sharedService.setCurrentUserDetails({
               notificationEmail: userDetails['notificationEmail'],
             });
