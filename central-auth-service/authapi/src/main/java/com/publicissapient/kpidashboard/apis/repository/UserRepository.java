@@ -28,24 +28,11 @@ import com.publicissapient.kpidashboard.apis.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
-	/**
-	 * Find by username authentication.
-	 *
-	 * @param username the username
-	 * @return the authentication
-	 */
 	Optional<User> findByUsername(String username);
 
-	void deleteByUsername(String username);
+	Optional<User> findByEmail(String email);
 
-	/**
-	 * Find by email list.
-	 *
-	 * @param email the email
-	 * @return the authentication object
-	 */
-	User findByEmail(String email);
+	void deleteByUsername(String username);
 
 	/**
 	 * @param userName

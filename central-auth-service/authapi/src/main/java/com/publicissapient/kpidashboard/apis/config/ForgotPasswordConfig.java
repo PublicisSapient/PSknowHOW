@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "auth.forgot-password")
 public class ForgotPasswordConfig {
 
-	private String expiryInterval;
+	private Integer expiryInterval;
 
 	// forgot password server host only for server where nginex is not
 	// setup

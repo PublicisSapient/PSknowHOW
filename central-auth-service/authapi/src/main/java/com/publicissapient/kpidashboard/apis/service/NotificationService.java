@@ -4,12 +4,6 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
-/**
- * The interface Common service to get maturity level.
- *
- * @author Hiren Babariya
- *
- */
 public interface NotificationService {
 
 	/**
@@ -32,6 +26,13 @@ public interface NotificationService {
 
 	void sendUserApprovalEmail(String username, String email);
 
+	void sendRecoverPasswordEmail(String email, String username, String forgotPasswordToken);
+
+	void sendVerificationMailToRegisterUser(String username, String email, String token);
+
+	void sendVerificationFailedMailUser(String username, String email);
+
+	void sendUserPreApprovalRequestEmailToAdmin(String username, String email);
 	/**
 	 *
 	 * @return String

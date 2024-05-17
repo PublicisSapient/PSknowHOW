@@ -18,11 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.controller;
 
-import com.publicissapient.kpidashboard.apis.config.AuthConfig;
-import com.publicissapient.kpidashboard.apis.config.UserInterfacePathsConfig;
-import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
 import com.publicissapient.kpidashboard.apis.entity.User;
-import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.apis.service.*;
 import com.publicissapient.kpidashboard.apis.util.CookieUtil;
 import com.publicissapient.kpidashboard.common.model.*;
@@ -33,30 +29,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.validation.Valid;
-import java.net.UnknownHostException;
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-/**
- * Rest Controller to handle authentication requests
- *
- * @author hirenkumar Babariya
- */
 @RestController
 @AllArgsConstructor
 @Slf4j
 @SuppressWarnings("java:S3740")
 public class UserController {
-
-	private final AuthConfig authConfigurationProperties;
-
-	private final UserInterfacePathsConfig userInterfacePathsConfig;
 
 	private final UserService userService;
 
@@ -114,27 +98,5 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(isSuccess, isSuccess ?
 				messageService.getMessage("success_profile_user") :
 				messageService.getMessage("error_update_profile"), null));
-	}
-
-	/**
-	 * api to verify user
-	 *
-	 * @param token
-	 * @return
-	 * @throws UnknownHostException
-	 */
-	@GetMapping(value = "/verifyUser", produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public RedirectView verifyUser(@RequestParam("token") UUID token) {
-		log.info("UserController: requested token for validate {}", token);
-
-		ResetPasswordTokenStatusEnum tokenStatus = userService.verifyUserToken(token.toString());
-		String serverPath = authConfigurationProperties.getBaseUiUrl();
-
-		if (tokenStatus != null && tokenStatus.equals(ResetPasswordTokenStatusEnum.VALID)) {
-			return new RedirectView(serverPath);
-		} else {
-			userService.deleteUnVerifiedUser(token);
-			return new RedirectView(serverPath + userInterfacePathsConfig.getRegisterPath());
-		}
 	}
 }

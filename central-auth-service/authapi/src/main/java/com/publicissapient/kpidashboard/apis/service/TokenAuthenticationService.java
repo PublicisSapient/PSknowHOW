@@ -24,6 +24,7 @@ import java.util.List;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
@@ -41,4 +42,6 @@ public interface TokenAuthenticationService {
 	String getSubject(String token);
 
 	Collection<GrantedAuthority> createAuthorities(List<String> roles);
+
+	String extractUsernameFromAuthentication(Authentication authentication);
 }

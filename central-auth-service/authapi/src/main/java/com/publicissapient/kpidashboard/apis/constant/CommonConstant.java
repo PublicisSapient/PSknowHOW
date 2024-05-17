@@ -47,8 +47,8 @@ public final class CommonConstant {
 
 	public static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 
-	public static final String STATUS = "Success";
-
+	public static final String SUCCESS_STATUS = "Success";
+	public static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 	public static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})";
 
 	public static final String WRONG_CREDENTIALS_ERROR_MESSAGE = "Login Failed: The username or password entered is incorrect";

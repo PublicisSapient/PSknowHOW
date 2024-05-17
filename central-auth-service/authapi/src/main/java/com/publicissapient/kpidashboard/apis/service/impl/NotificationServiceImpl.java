@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.service.impl;
 
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.config.ForgotPasswordConfig;
+import com.publicissapient.kpidashboard.apis.config.UserInterfacePathsConfig;
 import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
 import com.publicissapient.kpidashboard.apis.entity.GlobalConfig;
 import com.publicissapient.kpidashboard.apis.entity.User;
@@ -59,6 +60,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class NotificationServiceImpl implements NotificationService {
 	public static final String NOTIFICATION_MESSAGE_SENT_TO_KAFKA_WITH_KEY = "Notification message sent to kafka with key : {}";
+	private static final String FORGOT_PASSWORD_TEMPLATE_KEY = "Forgot_Password";
+	private static final String FORGOT_PASSWORD_NOTIFICATION_KEY = "forgotPassword";
+	private static final String VALIDATE_PATH = "/api/validateEmailToken?token="; // NOSONAR
 
 	private final UserRoleRepository userRoleRepository;
 
@@ -75,6 +79,8 @@ public class NotificationServiceImpl implements NotificationService {
 	private final SpringTemplateEngine templateEngine;
 
 	private final KafkaTemplate<String, Object> kafkaTemplate;
+
+	private final UserInterfacePathsConfig userInterfacePathsConfig;
 
 	@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	/**
@@ -283,14 +289,81 @@ public class NotificationServiceImpl implements NotificationService {
 		List<String> emailAddresses = new ArrayList<>();
 		emailAddresses.add(email);
 
-		Map<String, String> customData = createCustomData(username, email, serverPath,
-														  superAdminEmailList.get(0));
-		sendEmailNotification(emailAddresses,
-							  customData,
-							  CommonConstant.APPROVAL_NOTIFICATION_KEY,
+		Map<String, String> customData = createCustomData(username, email, serverPath, superAdminEmailList.get(0));
+		sendEmailNotification(emailAddresses, customData, CommonConstant.APPROVAL_NOTIFICATION_KEY,
 							  CommonConstant.APPROVAL_SUCCESS_TEMPLATE_KEY
 		);
 	}
+
+	@Override
+	public void sendRecoverPasswordEmail(String email, String username, String forgotPasswordToken) {
+		try {
+			Map<String, String> customData = createCustomDataForgotPassword(username, forgotPasswordToken, getApiHost(),
+																			forgotPasswordConfig.getExpiryInterval()
+			);
+
+			sendEmailNotification(Arrays.asList(email), customData, FORGOT_PASSWORD_NOTIFICATION_KEY,
+								  FORGOT_PASSWORD_TEMPLATE_KEY
+			);
+		} catch (UnknownHostException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	@Override
+	public void sendVerificationMailToRegisterUser(String username, String email, String token) {
+		String serverPath = getServerPath();
+		log.info("UserServiceImpl: serverPath {}", serverPath);
+		log.info("UserServiceImpl: registered mail {}", email);
+
+		Map<String, String> customData = createCustomDataVerificationUser(username, email, serverPath,
+																		  this.authConfig.getVerifyUserTokenExpiryInterval(), token
+		);
+		sendEmailNotification(Arrays.asList(email), customData,
+											CommonConstant.USER_VERIFICATION_NOTIFICATION_KEY,
+											CommonConstant.USER_VERIFICATION_TEMPLATE_KEY
+		);
+	}
+
+	/**
+	 * Verification Failed Mail
+	 *
+	 * @param username
+	 * @param email
+	 */
+	@Override
+	public void sendVerificationFailedMailUser(String username, String email) {
+		String serverPath = getServerPath();
+		log.info("UserServiceImpl: registered mail {}", email);
+		Optional<User> userOptional = userRepository.findByEmail(email);
+		if (userOptional.isPresent()) {
+			Map<String, String> customData = createCustomDataVerificationUser(username, email, serverPath, "", " ");
+			sendEmailNotification(Arrays.asList(email), customData,
+												CommonConstant.USER_VERIFICATION_FAILED_NOTIFICATION_KEY,
+												CommonConstant.USER_VERIFICATION_FAILED_TEMPLATE_KEY
+			);
+			userRepository.deleteByUsername(userOptional.get().getUsername());
+		}
+	}
+
+	/**
+	 * @param username
+	 * @param email
+	 */
+
+	@Override
+	public void sendUserPreApprovalRequestEmailToAdmin(String username, String email) {
+		List<String> emailAddresses = getEmailAddressBasedOnRoles(
+				Arrays.asList(CommonConstant.ROLE_SUPERADMIN));
+		String serverPath = getServerPath();
+		Map<String, String> customData = createCustomDataVerificationUser(username, email, serverPath, "", "");
+		sendEmailNotification(emailAddresses, customData,
+											CommonConstant.PRE_APPROVAL_NOTIFICATION_SUBJECT_KEY,
+											CommonConstant.PRE_APPROVAL_NOTIFICATION_KEY
+		);
+	}
+
 
 	/**
 	 * * create custom data for email
@@ -307,6 +380,55 @@ public class NotificationServiceImpl implements NotificationService {
 		customData.put(NotificationCustomDataEnum.USER_EMAIL.getValue(), email);
 		customData.put(NotificationCustomDataEnum.SERVER_HOST.getValue(), serverPath);
 		customData.put(NotificationCustomDataEnum.ADMIN_EMAIL.getValue(), adminEmail);
+		return customData;
+	}
+
+	/**
+	 * * create custom data for email
+	 *
+	 * @param username   emailId
+	 * @param token      token
+	 * @param url        url
+	 * @param expiryTime expiryTime in Min
+	 * @return Map<String, String>
+	 */
+	private Map<String, String> createCustomDataForgotPassword(String username, String token, String url, Integer expiryTime) {
+		Map<String, String> customData = new HashMap<>();
+		customData.put("token", token);
+		customData.put("user", username);
+		String resetUrl = url + VALIDATE_PATH + token;
+		customData.put("resetUrl", resetUrl);
+		customData.put("expiryTime", expiryTime.toString());
+		return customData;
+	}
+
+
+	/**
+	 * * create custom data for email
+	 *
+	 * @param username
+	 * @param email
+	 * @param url
+	 * @param expiryTime
+	 * @param token
+	 * @return
+	 */
+	private Map<String, String> createCustomDataVerificationUser(String username, String email, String url, String expiryTime,
+																 String token) {
+		Map<String, String> customData = new HashMap<>();
+
+		customData.put(NotificationCustomDataEnum.USER_NAME.getValue(), username);
+		customData.put(NotificationCustomDataEnum.USER_EMAIL.getValue(), email);
+		customData.put(NotificationCustomDataEnum.SERVER_HOST.getValue(), url);
+
+		if (StringUtils.isNotEmpty(token) && StringUtils.isNotEmpty(expiryTime)) {
+			customData.put(NotificationCustomDataEnum.USER_TOKEN.getValue(), token);
+			customData.put(NotificationCustomDataEnum.USER_TOKEN_EXPIRY.getValue(), expiryTime);
+
+			String resetUrl = url + this.userInterfacePathsConfig.getValidateUser() + token;
+			customData.put("resetUrl", resetUrl);
+		}
+
 		return customData;
 	}
 

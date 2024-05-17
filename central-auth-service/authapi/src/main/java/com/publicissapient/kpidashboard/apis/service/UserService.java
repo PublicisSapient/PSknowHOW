@@ -21,12 +21,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.common.model.ResetPasswordRequestDTO;
 import jakarta.validation.Valid;
 
 import com.publicissapient.kpidashboard.apis.entity.User;
-import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.common.model.UserDTO;
-
+import org.springframework.security.core.Authentication;
 
 public interface UserService {
 
@@ -34,25 +35,11 @@ public interface UserService {
 
 	Optional<User> findByUsername(String username);
 
-	/**
-	 * Gets username from authentication object
-	 *
-	 * @param authentication authentication object
-	 * @return username
-	 */
-	String getUsername(org.springframework.security.core.Authentication authentication);
-
-	boolean isEmailExist(String email);
-
-	Optional<User> findByUserName(String userName);
+	Optional<User> findByEmail(String email);
 
 	boolean deleteByUserName(String username);
 
 	List<User> findAllUnapprovedUsers();
-
-	boolean registerUser(UserDTO request);
-
-	void deleteUnVerifiedUser(UUID token);
 
 	/**
 	 * update user profile
@@ -64,24 +51,6 @@ public interface UserService {
 	boolean updateUserProfile(String username, UserDTO request);
 
 	/**
-	 * check new password is not same as old password
-	 *
-	 * @param oldPassword oldpassword
-	 * @param newPassword newpassword
-	 * @return true if new password is not same as old password
-	 */
-	boolean isPasswordIdentical(String oldPassword, String newPassword);
-
-	/**
-	 * Change password and saves it to the store
-	 *
-	 * @param email    email of user
-	 * @param password password of user
-	 * @return newly created Authentication object
-	 */
-	org.springframework.security.core.Authentication changePassword(String email, String password);
-
-	/**
 	 * remove secure info
 	 *
 	 * @param user
@@ -89,5 +58,5 @@ public interface UserService {
 	 */
 	UserDTO getUserDTO(User user);
 
-	ResetPasswordTokenStatusEnum verifyUserToken(String token);
+
 }

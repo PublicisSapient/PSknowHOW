@@ -41,6 +41,6 @@ public class ChangePasswordRequestDTO {
 	private String password;
 
 	@NotNull
-	private String user;
+	private String username;
 
 }

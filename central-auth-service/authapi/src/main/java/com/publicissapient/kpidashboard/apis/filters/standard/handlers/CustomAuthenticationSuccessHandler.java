@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
+import com.publicissapient.kpidashboard.apis.service.UserService;
 import lombok.AllArgsConstructor;
 
 import org.json.simple.JSONObject;
@@ -35,7 +37,6 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.filters.standard.service.AuthenticationResponseService;
-import com.publicissapient.kpidashboard.apis.service.UserService;
 
 @Component
 @AllArgsConstructor
@@ -47,6 +48,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     private final AuthenticationResponseService authenticationResponseService;
 
+    private final TokenAuthenticationService tokenAuthenticationService;
+
     private final UserService userService;
 
     @Override
@@ -55,7 +58,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         authenticationResponseService.handle(response, authentication);
 
         // sgu106: Google Analytics data population starts
-        String username = userService.getUsername(authentication);
+        String username = tokenAuthenticationService.extractUsernameFromAuthentication(authentication);
         JSONObject json = loginJsonData(response, username);
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
@@ -79,7 +82,5 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         }
 
         return json;
-
     }
-
 }
