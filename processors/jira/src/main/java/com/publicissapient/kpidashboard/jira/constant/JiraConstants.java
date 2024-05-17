@@ -83,6 +83,7 @@ public final class JiraConstants {
 	public static final String TOTAL_ISSUES = "total issues";
 	public static final String PROCESSED_ISSUES = "processed issues";
 	public static final String PAGE_START = "pageStart";
+	public static final String BOARD_ID = "boardId";
 	static {
 		ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");
 	}
