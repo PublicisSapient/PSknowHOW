@@ -162,7 +162,7 @@ public class JobListenerKanban implements JobExecutionListener {
 		FieldMapping fieldMapping = fieldMappingRepository.findByProjectConfigId(projectId);
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findByStringId(projectId).orElse(null);
 		if (fieldMapping == null || (fieldMapping.getNotificationEnabler() && projectBasicConfig != null)) {
-			handler.sendEmailToProjectAdmin(
+			handler.sendEmailToProjectAdminAndSuperAdmin(
 					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost()
 							+ " for \"" + getProjectName(projectBasicConfig) + "\"",
 					ExceptionUtils.getStackTrace(stepFaliureException), projectId);

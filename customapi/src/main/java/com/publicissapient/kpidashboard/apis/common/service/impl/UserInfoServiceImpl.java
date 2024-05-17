@@ -28,20 +28,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.naming.Context;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
-
-import com.publicissapient.kpidashboard.apis.errors.APIKeyInvalidException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -76,6 +65,7 @@ import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationServi
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.errors.APIKeyInvalidException;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigService;
@@ -652,8 +642,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	/**
-	 * update notification email alert flag user wise
-	 * 2 type of notification flag - accessAlertNotification and errorAlertNotification
+	 * update notification email alert flag user wise 2 type of notification flag -
+	 * accessAlertNotification and errorAlertNotification
+	 * 
 	 * @param loggedUserName
 	 * @param notificationEmail
 	 * @return
@@ -662,7 +653,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 	public UserInfo updateNotificationEmail(String loggedUserName, Map<String, Boolean> notificationEmail) {
 		UserInfo userinfo = userInfoRepository.findByUsername(loggedUserName);
 
-		if(Objects.nonNull(userinfo) && Objects.nonNull(notificationEmail)){
+		if (Objects.nonNull(userinfo) && Objects.nonNull(notificationEmail)
+				&& (userinfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN)
+						|| userinfo.getAuthorities().contains(Constant.ROLE_PROJECT_ADMIN))) {
 			userinfo.setNotificationEmail(notificationEmail);
 			userInfoRepository.save(userinfo);
 			return userinfo;

@@ -291,9 +291,10 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     this.sonarKpiData = getData;
                     const newObject = {};
                     for (const obj in this.sonarKpiData) {
-                        newObject[this.sonarKpiData[obj].kpiId] = this.sonarKpiData[obj];
-                        this.maturityValue[this.sonarKpiData[obj].kpiId] = this.sonarKpiData[obj];
-
+                        if(this.sonarKpiData[obj].kpiId != 'kpi17'){
+                            newObject[this.sonarKpiData[obj].kpiId] = this.sonarKpiData[obj];
+                            this.maturityValue[this.sonarKpiData[obj].kpiId] = this.sonarKpiData[obj];
+                        }
                     }
                     this.sonarKpiData = newObject;
                 }

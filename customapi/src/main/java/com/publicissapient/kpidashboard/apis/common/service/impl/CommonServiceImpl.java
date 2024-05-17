@@ -213,7 +213,7 @@ public class CommonServiceImpl implements CommonService {
 	}
 
 	/**
-	 * This method is to search the email addresses based on roles
+	 * This method is to search the email addresses based on roles and which have notification enabled
 	 * 
 	 * @param roles
 	 * @return list of email addresses
@@ -222,16 +222,21 @@ public class CommonServiceImpl implements CommonService {
 		Set<String> emailAddresses = new HashSet<>();
 		List<UserInfo> superAdminUsersList = userInfoRepository.findByAuthoritiesIn(roles);
 		if (CollectionUtils.isNotEmpty(superAdminUsersList)) {
-			List<String> userNames = superAdminUsersList.stream().map(UserInfo::getUsername)
+			List<UserInfo> notificationEnableUsersList = superAdminUsersList.stream()
+					.filter(userInfo -> userInfo.getNotificationEmail() != null
+							&& userInfo.getNotificationEmail().get(CommonConstant.ACCESS_ALERT_NOTIFICATION))
 					.collect(Collectors.toList());
 			emailAddresses
-					.addAll(superAdminUsersList.stream().filter(user -> StringUtils.isNotEmpty(user.getEmailAddress()))
+					.addAll(notificationEnableUsersList.stream().filter(user -> StringUtils.isNotEmpty(user.getEmailAddress()))
 							.map(UserInfo::getEmailAddress).collect(Collectors.toSet()));
-			List<Authentication> authentications = authenticationRepository.findByUsernameIn(userNames);
-			if (CollectionUtils.isNotEmpty(authentications)) {
-				emailAddresses
-						.addAll(authentications.stream().map(Authentication::getEmail).collect(Collectors.toSet()));
-
+			List<String> usernameList = notificationEnableUsersList.stream().map(UserInfo::getUsername)
+					.collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(usernameList)) {
+				List<Authentication> authentications = authenticationRepository.findByUsernameIn(usernameList);
+				if (CollectionUtils.isNotEmpty(authentications)) {
+					emailAddresses
+							.addAll(authentications.stream().map(Authentication::getEmail).collect(Collectors.toSet()));
+				}
 			}
 		}
 		return emailAddresses.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
