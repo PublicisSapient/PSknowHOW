@@ -184,7 +184,6 @@ public class UserInfoController {
 	 * @param notificationEmail
 	 * @return
 	 */
-	@PreAuthorize("hasPermission(null, 'UPDATE_PROJECT')")
 	@PostMapping("/notificationPreferences")
 	public ResponseEntity<ServiceResponse> updateFlagEmailNotification(
 			@Valid @RequestBody Map<String, Boolean> notificationEmail) {
