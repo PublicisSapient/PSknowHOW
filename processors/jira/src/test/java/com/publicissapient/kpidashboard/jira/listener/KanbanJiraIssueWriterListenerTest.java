@@ -145,4 +145,18 @@ public class KanbanJiraIssueWriterListenerTest {
         listener.afterWrite(compositeResults);
     }
 
+    @Test
+    public void testAfterWriteWithTraceLogProgressStatus_lastSuccessfulRun() {
+        ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setBasicProjectConfigId("abc");
+        processorExecutionTraceLog.setBoardId("abc");
+        processorExecutionTraceLog.setProgressStats(true);
+        processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
+        processorExecutionTraceLog.setLastSuccessfulRun("2022-02-02T10:00:00");
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
+                eq(JiraConstants.JIRA), anyList()))
+                .thenReturn(List.of(processorExecutionTraceLog));
+        listener.afterWrite(compositeResults);
+    }
+
 }

@@ -145,6 +145,27 @@ public class JiraIssueBoardWriterListenerTest {
 		// Assert
 		verify(processorExecutionTraceLogRepo, times(1)).saveAll(anyList());
 	}
+	@Test
+	public void afterWrite_ExistingLog_Success_last_Success() {
+		// Arrange
+		Chunk<CompositeResult> compositeResults = createSampleCompositeResults();
+
+		ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
+		processorExecutionTraceLog.setBasicProjectConfigId("abc");
+		processorExecutionTraceLog.setBoardId("abc");
+		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
+		processorExecutionTraceLog.setLastSuccessfulRun("2022-02-02T10:00:00");
+
+		// Mock the repository behavior
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(),
+				anyList())).thenReturn(List.of(processorExecutionTraceLog));
+
+		// Act
+		listener.afterWrite(compositeResults);
+
+		// Assert
+		verify(processorExecutionTraceLogRepo, times(1)).saveAll(anyList());
+	}
 
 	@Test
 	public void testAfterWriteWithEmptyValue() {
