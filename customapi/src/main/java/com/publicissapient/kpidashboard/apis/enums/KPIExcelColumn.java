@@ -72,7 +72,7 @@ public enum KPIExcelColumn {
 													"Original Time Estimate (in hours)",
 													"Total Time Spent (in hours)")), COMMITMENT_RELIABILITY("kpi72",
 															Arrays.asList("Sprint Name", "Story ID", "Squad", "Issue Status","Issue Type", "Scope" ,
-																	"Initial Commitment", "Size(story point/hours)")),
+																	"Size(story point/hours)")),
 
 	DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad", "Linked Defects")),
 

@@ -749,14 +749,15 @@ public class KPIExcelUtility {
 	 *
 	 * @param sprint
 	 * @param totalStoriesMap
-	 * @param initialIssueNumber
+	 * @param commitmentReliabilityValidationData
 	 * @param kpiExcelData
 	 */
 
 	public static void populateCommittmentReliability(String sprint, Map<String, JiraIssue> totalStoriesMap,
 			CommittmentReliabilityServiceImpl.CommitmentReliabilityValidationData commitmentReliabilityValidationData, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
 		if (MapUtils.isNotEmpty(totalStoriesMap)) {
-			Set<JiraIssue> initialIssueNumber = commitmentReliabilityValidationData.getInitialIssueNumber();
+			Set<String> initialIssueNumber = commitmentReliabilityValidationData.getInitialIssueNumber().stream()
+					.map(JiraIssue::getNumber).collect(Collectors.toSet());
 			Set<String> addedIssues = commitmentReliabilityValidationData.getAddedIssues();
 			Set<String> puntedIssues = commitmentReliabilityValidationData.getPuntedIssues();
 			totalStoriesMap.forEach((storyId, jiraIssue) -> {
@@ -769,12 +770,13 @@ public class KPIExcelUtility {
 				excelData.setIssueType(jiraIssue.getTypeName());
 				excelData.setIssueStatus(jiraIssue.getStatus());
 				setSquads(excelData,jiraIssue);
-				if (initialIssueNumber.contains(jiraIssue)) {
-					excelData.setInitialCommited("Y");
+				if (initialIssueNumber.contains(storyId)) {
+					excelData.setScopeValue(CommonConstant.INITIAL);
 				}
 				if(addedIssues.contains(storyId)) {
 					excelData.setScopeValue(CommonConstant.ADDED);
 				}
+				//Removed Issue is implicit showing Initial is there in sprint.
 				if(puntedIssues.contains(storyId)) {
 					excelData.setScopeValue(CommonConstant.REMOVED);
 				}
