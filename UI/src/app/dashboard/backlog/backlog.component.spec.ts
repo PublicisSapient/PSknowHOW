@@ -3021,7 +3021,7 @@ describe('BacklogComponent', () => {
             "maturity": "4"
         };
         const val = component.checkMaturity(item);
-        expect(val).toEqual('--')
+        expect(val).toEqual('M4')
     })
 
     it('should check maturity when all value array length is less than 5', () => {
@@ -3050,7 +3050,7 @@ describe('BacklogComponent', () => {
             "maturity": "4"
         };
         const val = component.checkMaturity(item);
-        expect(val).toEqual('--')
+        expect(val).toEqual('M4')
     })
 
     it('should create trend data for the given kpiId when the data exists', () => {
@@ -3079,6 +3079,7 @@ describe('BacklogComponent', () => {
             trend: 'NA',
             maturity: 'M1',
             maturityValue: 'Low',
+            maturityDenominator: 3,
             kpiUnit: '%'
           }
         ]);

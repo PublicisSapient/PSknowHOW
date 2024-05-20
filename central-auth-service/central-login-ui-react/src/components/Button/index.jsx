@@ -5,6 +5,7 @@ const shapes = { round: "rounded-md" };
 const variants = {
   fill: {
     blue_800: "bg-blue-800 text-white-A700",
+    blue_80: "bg-blue-80 text-white-A700",
     blue_gray_100: "bg-blue_gray-100 text-blue_gray-50",
   },
 };
@@ -42,7 +43,7 @@ Button.propTypes = {
   shape: PropTypes.oneOf(["round"]),
   size: PropTypes.oneOf(["xs"]),
   variant: PropTypes.oneOf(["fill"]),
-  color: PropTypes.oneOf(["blue_800", "blue_gray_100"]),
+  color: PropTypes.oneOf(["blue_800", "blue_80", "blue_gray_100"]),
 };
 
 export { Button };

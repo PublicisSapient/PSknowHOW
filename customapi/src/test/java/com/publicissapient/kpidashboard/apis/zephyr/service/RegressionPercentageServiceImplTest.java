@@ -99,6 +99,8 @@ public class RegressionPercentageServiceImplTest {
 	FieldMappingRepository fieldMappingRepository;
 	@Mock
 	TestCaseDetailsRepository testCaseDetailsRepository;
+	@Mock
+	private CustomApiConfig customApiConfig;
 	List<JiraIssue> totalTestCaseList = new ArrayList<>();
 	List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
 	List<TestCaseDetails> testCaseDetailsList = new ArrayList<>();
@@ -107,7 +109,6 @@ public class RegressionPercentageServiceImplTest {
 	private KpiHelperService kpiHelperService;
 	@Mock
 	FilterHelperService filterHelperService;
-	private CustomApiConfig customApiConfig;
 	@Mock
 	private CommonService commonService;
 	@Mock

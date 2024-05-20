@@ -27,7 +27,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.publicissapient.kpidashboard.common.repository.azure.AzureStateCategoryRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +48,10 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.azure.AzureStateCategoryRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
@@ -84,6 +85,8 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	private ProjectToolConfigRepository toolRepository;
 	@Autowired
 	private AzureStateCategoryRepository azureStateCategoryRepository;
+	@Autowired
+	private ProcessorToolConnectionService processorToolConnectionService;
 
 	/**
 	 * Validates and collects Azure issues using JIA API for projects with
@@ -112,7 +115,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 				// Placeholder for Oauth Client implementation.
 				AzureServer azureServer = prepareAzureServer(entry.getValue());
 				AzureAdapter azureAdapter = new OnlineAdapter(azureProcessorConfig, processorAzureRestClient,
-						azureServer);
+						azureServer, processorToolConnectionService);
 				Runnable worker = new AzureOnlineRunnable(latch, azureAdapter, entry.getValue(),
 						entry.getValue().getProjectKey(), azureIssueClientFactory, azureProcessorConfig,
 						boardMetadataRepository, metadataIdentifierRepository, fieldMappingRepository,

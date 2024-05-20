@@ -56,4 +56,32 @@ public interface ProcessorToolConnectionService {
 	 * @return list of {@link ProcessorToolConnection}
 	 */
 	List<ProcessorToolConnection> findByToolAndBasicProjectConfigId(String toolName, ObjectId configId);
+
+	/**
+	 * Method to update the flag of breaking connection
+	 * 
+	 * @param connection
+	 *            connection
+	 * @param connectionErrorMsg
+	 *            connectionErrorMsg
+	 */
+	void updateBreakingConnection(ObjectId connection, String connectionErrorMsg);
+
+	/**
+	 * Method to validate the broken connection and update the flag for all tools
+	 * except Jira and Azure
+	 * 
+	 * @param toolConnection
+	 *            toolConnection
+	 */
+	void validateConnectionFlag(ProcessorToolConnection toolConnection);
+
+	/**
+	 * Method to validate the broken connection and update the flag for Jira and
+	 * Azure
+	 *
+	 * @param toolConfig
+	 *            toolConfig
+	 */
+	void validateJiraAzureConnFlag(ProjectToolConfig toolConfig);
 }

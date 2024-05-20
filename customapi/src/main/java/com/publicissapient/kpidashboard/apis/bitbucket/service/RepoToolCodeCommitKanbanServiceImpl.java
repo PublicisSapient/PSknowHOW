@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
@@ -202,7 +203,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		LocalDate currentDate = LocalDate.now();
 		List<DataCount> dayWiseCommitCount = new ArrayList<>();
 		for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
-			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
+			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate,
 					kpiRequest.getDuration());
 			DataCount dataCount = new DataCount();
 			Map<String, Object> hoverValues = new HashMap<>();
@@ -221,7 +222,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 			dataCount.setHoverValue(hoverValues);
 			dataCount.setSProjectName(projectName);
 			dayWiseCommitCount.add(dataCount);
-			currentDate = getNextRangeDate(kpiRequest.getDuration(), currentDate);
+			currentDate = KpiHelperService.getNextRangeDate(kpiRequest.getDuration(), currentDate);
 		}
 		return dayWiseCommitCount;
 
@@ -238,15 +239,6 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 			range = dateRange.getStartDate().toString();
 		}
 		return range;
-	}
-
-	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
-		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
-			currentDate = currentDate.minusWeeks(1);
-		} else {
-			currentDate = currentDate.minusDays(1);
-		}
-		return currentDate;
 	}
 
 	/**

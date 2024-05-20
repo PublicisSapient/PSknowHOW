@@ -129,6 +129,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedRelease = {};
   ssoLogin = environment.SSO_LOGIN;
   auth_service = environment.AUTHENTICATION_SERVICE;
+  isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
   lastSyncData: object = {};
   commentList: Array<object> = [];
   showCommentPopup: boolean = false;
@@ -724,6 +725,8 @@ this.resetAddtionalFIlters();
                 }
                 if(Object.keys(this.additionalFiltersDdn)[i] != 'sprint' && selectedAdditionalFilter?.length > 0){
                   this.isAdditionalFilter = true;
+                }else{
+                  this.isAdditionalFilter = false;
                 }
               }else{
                 this.isAdditionalFilter = false;
@@ -1430,7 +1433,7 @@ this.resetAddtionalFIlters();
   removeItem(hierarchyLevelId, nodeId) {
     const hierarchy = this.filterForm.get(hierarchyLevelId);
     if (typeof hierarchy?.value === 'object' && Object.keys(hierarchy?.value)?.length > 0) {
-      this.filterForm.get(hierarchyLevelId).get(nodeId).setValue(false);
+      this.filterForm.get(hierarchyLevelId)?.['controls']?.[nodeId].setValue(false);
     } else {
       this.filterForm.get(hierarchyLevelId).setValue('');
     }

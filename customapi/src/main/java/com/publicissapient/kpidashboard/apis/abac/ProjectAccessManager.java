@@ -657,6 +657,7 @@ public class ProjectAccessManager {
 			copyOfUserInfo.setLastName(userInfo.getLastName());
 			copyOfUserInfo.setEmailAddress(userInfo.getEmailAddress());
 			copyOfUserInfo.setProjectsAccess(userInfo.getProjectsAccess());
+			copyOfUserInfo.setNotificationEmail(userInfo.getNotificationEmail());
 		}
 		return copyOfUserInfo;
 	}
