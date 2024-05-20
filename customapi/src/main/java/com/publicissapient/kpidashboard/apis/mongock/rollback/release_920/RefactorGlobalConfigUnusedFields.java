@@ -13,7 +13,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author pawkandp
  */
-@ChangeUnit(id = "r_unset_zephyr_cloud_base_url", order = "09203", author = "pawkandp", systemVersion = "9.2.0")
+@ChangeUnit(id = "r_refactor_global_config_unused_fields", order = "09203", author = "pawkandp", systemVersion = "9.2.0")
 public class RefactorGlobalConfigUnusedFields {
 	private final MongoTemplate mongoTemplate;
 
