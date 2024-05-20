@@ -128,7 +128,7 @@ export class ChartWithFiltersComponent implements OnChanges {
       this.legendData.push({
         key: Object.keys(element)[0],
         value: element[Object.keys(element)[0]],
-        percentage: element[Object.keys(element)[0]] / total * 100,
+        percentage: Math.round(element[Object.keys(element)[0]] / total * 100 * 100) / 100,
         color: color(Object.keys(element)[0])
       })
     });
