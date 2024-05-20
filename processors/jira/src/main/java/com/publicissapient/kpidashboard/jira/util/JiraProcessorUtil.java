@@ -330,7 +330,7 @@ public class JiraProcessorUtil {
 			log.error("StepContext is null");
 			return null;
 		}
-		if (processorExecutionTraceLog == null ) {
+		if (processorExecutionTraceLog == null) {
 			log.error("ProcessorExecutionTraceLog is not present");
 			return null;
 		}
@@ -338,12 +338,15 @@ public class JiraProcessorUtil {
 		int totalIssues = jobExecution.getExecutionContext().getInt(JiraConstants.TOTAL_ISSUES, 0);
 		int processedIssues = jobExecution.getExecutionContext().getInt(JiraConstants.PROCESSED_ISSUES, 0);
 		int pageStart = jobExecution.getExecutionContext().getInt(JiraConstants.PAGE_START, 0);
+		String boardId = jobExecution.getExecutionContext().getString(JiraConstants.BOARD_ID, "");
 
 		List<ProgressStatus> progressStatusList = Optional
 				.ofNullable(processorExecutionTraceLog.getProgressStatusList()).orElseGet(ArrayList::new);
 		ProgressStatus progressStatus = new ProgressStatus();
-		progressStatus.setStepName(MessageFormat.format("Process issues {0} to {1} out of {2}", pageStart,
-				processedIssues, totalIssues));
+
+		String stepMsg = MessageFormat.format("Process Issues {0} to {1} out of {2}", pageStart, processedIssues,
+				totalIssues) + (StringUtils.isNotEmpty(boardId) ? ", Board ID : " + boardId : "");
+		progressStatus.setStepName(stepMsg);
 		progressStatus.setStatus(BatchStatus.COMPLETED.toString());
 		progressStatus.setEndTime(System.currentTimeMillis());
 		progressStatusList.add(progressStatus);

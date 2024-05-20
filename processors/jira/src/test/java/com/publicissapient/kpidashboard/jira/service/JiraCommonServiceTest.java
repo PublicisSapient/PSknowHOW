@@ -484,13 +484,13 @@ public class JiraCommonServiceTest {
 		int pageStart = 0; // Set your desired page start value
 		int pageSize = 10; // Set your desired page size
 		int totalIssues = 100; // Set your desired total issues count
-
+		String boardId = "test id";
 		when(mockStepContext.getStepExecution()).thenReturn(mockStepExecution);
 		when(mockStepExecution.getJobExecution()).thenReturn(mockJobExecution);
 		when(mockJobExecution.getExecutionContext()).thenReturn(mockExecutionContext);
 		when(mockSearchResult.getTotal()).thenReturn(totalIssues);
 		// Act
-		jiraCommonService.saveSearchDetailsInContext(mockSearchResult, pageStart, mockStepContext);
+		jiraCommonService.saveSearchDetailsInContext(mockSearchResult, pageStart,boardId, mockStepContext);
 
 		// Assert
 		verify(mockExecutionContext).putInt(JiraConstants.TOTAL_ISSUES, totalIssues);

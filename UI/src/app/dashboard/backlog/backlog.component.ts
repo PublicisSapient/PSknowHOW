@@ -891,16 +891,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     if (maturity == undefined) {
       return 'NA';
     }
-    if (item.value.length >= 5) {
-      const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
-      const tempArr = last5ArrItems.filter(x => x.data != 0);
-      if (tempArr.length == 0) {
-        maturity = '--';
-      }
-    } else {
-      maturity = '--';
-    }
-    maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M'+maturity : maturity;
+    maturity = 'M'+maturity;
     return maturity;
   }
 

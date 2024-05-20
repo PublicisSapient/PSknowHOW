@@ -148,6 +148,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
             this.subscription.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
                 this.configGlobalData = globalConfig;
                 this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration' && board?.boardName.toLowerCase() !== 'developer');
+                this.checkShownTabs();
                 this.selectedTabKpis = this.tabs[0].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled);
             }));
             this.subscription.push(this.service.noProjectsObs.subscribe((res) => {
@@ -290,9 +291,10 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     this.sonarKpiData = getData;
                     const newObject = {};
                     for (const obj in this.sonarKpiData) {
-                        newObject[this.sonarKpiData[obj].kpiId] = this.sonarKpiData[obj];
-                        this.maturityValue[this.sonarKpiData[obj].kpiId] = this.sonarKpiData[obj];
-
+                        if(this.sonarKpiData[obj].kpiId != 'kpi17'){
+                            newObject[this.sonarKpiData[obj].kpiId] = this.sonarKpiData[obj];
+                            this.maturityValue[this.sonarKpiData[obj].kpiId] = this.sonarKpiData[obj];
+                        }
                     }
                     this.sonarKpiData = newObject;
                 }
@@ -432,7 +434,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
             } else {
                 result = getMaturityValue(undefinedCheck(self.maturityValue[kpiId]) ||
                     undefinedCheck(self.maturityValue[kpiId].trendValueList) ||
-                    undefinedCheck(self.maturityValue[kpiId].trendValueList[0]) ? -1 : self.maturityValue[kpiId].trendValueList[0].maturity);
+                    undefinedCheck(self.maturityValue[kpiId].trendValueList[0]) ? -1 : (self.maturityValue[kpiId].trendValueList[0].maturity || self.maturityValue[kpiId].trendValueList[0].value[0].maturity));
             }
             return result;
         };
@@ -470,6 +472,14 @@ export class MaturityComponent implements OnInit, OnDestroy {
             }
         };
 
+        const getFinalChildrenCount = (arr) => {
+            let count = 0;
+            arr.forEach((item) => {
+                if(item.maturity>0) count++;
+            })
+            return count;
+        }
+
         d3.select('svg').remove();
         d3.select('.tooltip_').remove();
         d3.select('.tooltipForCategory').remove();
@@ -489,7 +499,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     maturity: 0
                 });
             }
-            console.log(root);
             
         } else {
             // on loading show data;
@@ -538,7 +547,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                 });
             }
             if (this.selectedTab !== 'Overall') {
-                root.textLines = [...root.textLines, '(M' + getAverageMaturityValue(sumOfMatirity / root.children.length) + ')'];
+                root.textLines = [...root.textLines, sumOfMatirity > 0 ? '(M' + getAverageMaturityValue(sumOfMatirity / getFinalChildrenCount(root.children)) + ')' : '(NA)'];
             } else {
                 const allKpis = root.children;
                 const tabCategory = {};
@@ -558,9 +567,11 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     };
                     const categoryKpis = allKpis.filter(kpi => tabCategory[category].includes(kpi.kpiId) && kpisInOverAllTab.includes(kpi.kpiId));
                     const sumOfMaturityForCategory = categoryKpis.reduce((sum, kpi) => sum + +kpi.maturity, 0);
-                    tab['maturity'] = getAverageMaturityValue(sumOfMaturityForCategory !== 0 ? (sumOfMaturityForCategory / categoryKpis.length).toFixed(2) : 0);
-                    sumOfMatirity += +tab['maturity'];
-                    children.push(tab);
+                    tab['maturity'] = getAverageMaturityValue(sumOfMaturityForCategory !== 0 ? (sumOfMaturityForCategory / categoryKpis.length).toFixed(2) : 'NA');
+                    if(tab['maturity'] > 0){
+                        sumOfMatirity += tab['maturity'];
+                        children.push(tab);
+                    }
                 }
                 root.children = children;
                 root.textLines = [...root.textLines, '(M' + getAverageMaturityValue(sumOfMatirity / root.children.length) + ')'];
@@ -757,7 +768,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                                     const arc = event.target.parentElement.lastElementChild.lastElementChild;
                                     let yPosition = arc?.getBoundingClientRect()?.top;
                                     let xPosition = arc?.getBoundingClientRect()?.right;
-                                    tooltipForMainCategoryDiv.html('<strong>Maturity Value: M' + getAverageMaturityValue(d.data['maturity']) + '</strong>');
+                                    tooltipForMainCategoryDiv.html(`<strong>Maturity Value: ${getAverageMaturityValue(d.data['maturity']) === 0 ? "NA" : "M" + getAverageMaturityValue(d.data['maturity'])}</strong>`);
                                     tooltipForMainCategoryDiv.transition()
                                         .duration(500)
                                         .style('opacity', 1)
@@ -785,7 +796,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                                     top: yPosition,
                                     right: xPosition
                                 } = arc?.getBoundingClientRect();
-                                tooltipForMainCategoryDiv.html('<strong>Maturity Value: M' + getAverageMaturityValue(d.data['maturity']) + '</strong>');
+                                tooltipForMainCategoryDiv.html(`<strong>Maturity Value: ${getAverageMaturityValue(d.data['maturity']) === 0 ? "NA" : "M" + getAverageMaturityValue(d.data['maturity'])}</strong>`);
                                 tooltipForMainCategoryDiv.transition()
                                     .duration(500)
                                     .style('opacity', 1)
@@ -957,8 +968,12 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
             renderDescription += '<span class="p-col"><strong>M5</strong></br><sub>' + maturityLevelData.maturityRange[4] + '</sub></span>';
             renderDescription += '';
-            renderDescription += '</div> <p><strong>Maturity Value:  <span class="tooltip-group-' + maturityLevelData.group + '">M' + maturityLevelData.maturity + '</span></strong> </p></div>';
+            renderDescription += '</div> <p><strong>Maturity Value:  <span class="tooltip-group-' + maturityLevelData.group + '">' + (maturityLevelData.maturity == 0 ? 'NA' : 'M'+maturityLevelData.maturity) + '</span></strong> </p></div>';
             return renderDescription;
         }
+    }
+
+    checkShownTabs(){
+        this.tabs = this.tabs.filter(tab => tab.kpis.some(kpi => kpi.shown));
     }
 }
