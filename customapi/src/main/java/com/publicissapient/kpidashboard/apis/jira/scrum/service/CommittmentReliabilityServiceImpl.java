@@ -185,7 +185,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseCreatedIssues = new HashMap<>();
 		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseClosedIssues = new HashMap<>();
 		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseInitialScopeIssues = new HashMap<>();
-		Map<Pair<String, String>, Set<JiraIssue>> sprintWisePuntedIssues = new HashMap<>();
 		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseInitialScopeCompletedIssues = new HashMap<>();
 		Map<Pair<String, String>, Set<String>> sprintWiseAddedIssues = new HashMap<>();
 		Map<Pair<String, String>, Set<String>> sprintWiseRemovedIssues = new HashMap<>();
@@ -247,10 +246,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 				totalPresentJiraIssue = sprintWiseCreatedIssues.get(currentNodeIdentifier);
 				totalPresentCompletedIssue = sprintWiseClosedIssues.get(currentNodeIdentifier);
 				totalPresentInitialIssue = sprintWiseInitialScopeIssues.get(currentNodeIdentifier);
-				if (CollectionUtils.isNotEmpty(sprintWisePuntedIssues.get(currentNodeIdentifier))) {
-					totalPresentInitialIssue.addAll(sprintWisePuntedIssues.get(currentNodeIdentifier));
-				}
-				//TODO
 				if (CollectionUtils.isNotEmpty(sprintWiseRemovedIssues.get(currentNodeIdentifier))) {
 					totalPuntedIssue.addAll(sprintWiseRemovedIssues.get(currentNodeIdentifier));
 				}
@@ -269,8 +264,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			totalSumIssues.addAll(totalPresentInitialIssue);
 			totalSumIssues.addAll(totalPresentCompltdInitialIssue);
 
-			List<String> uniqueIssues = totalSumIssues.stream().map(JiraIssue::getTypeName).distinct()
-					.collect(Collectors.toList());
+			List<String> uniqueIssues = totalSumIssues.stream().map(JiraIssue::getTypeName).distinct().toList();
 			Map<String, List<JiraIssue>> totalPresentJiraIssueGroup = getGroupByAllIssues(totalPresentJiraIssue);
 			Map<String, List<JiraIssue>> totalPresentCompletedIssueGroup = getGroupByAllIssues(
 					totalPresentCompletedIssue);
@@ -401,7 +395,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		/** additional filter **/
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+				basicProjectConfigIds.stream().distinct().toList());
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
 			resultListMap.put(PROJECT_WISE_TOTAL_ISSUE,
 					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, new HashMap<>()));

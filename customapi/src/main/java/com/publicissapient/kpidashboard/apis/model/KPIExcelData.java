@@ -340,8 +340,8 @@ public class KPIExcelData {
 	@JsonProperty("Count")
 	private Map<String, Integer> count;
 
-	@JsonProperty("Initial Commitment")
-	private String initialCommited;
+	@JsonProperty("Scope")
+	private String scopeValue;
 
 	@JsonProperty("PI Name")
 	private String piName;
@@ -420,9 +420,6 @@ public class KPIExcelData {
 
 	@JsonProperty("Squad")
 	private List<String> squads;
-
-	@JsonProperty("Scope")
-	private String scopeValue;
 
 
 
