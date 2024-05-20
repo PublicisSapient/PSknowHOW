@@ -183,9 +183,9 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> priorities = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
-			List<Long> overAllBlockedTime = Arrays.asList(0L);
-			List<Long> overAllWaitedTime = Arrays.asList(0L);
-			List<Long> overAllWastedTime = Arrays.asList(0L);
+			List<Integer> overAllBlockedTime = Arrays.asList(0);
+			List<Integer> overAllWaitedTime = Arrays.asList(0);
+			List<Integer> overAllWastedTime = Arrays.asList(0);
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -205,14 +205,14 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 						int blockedTime = 0;
 						int waitedTime = 0;
 						for (JiraIssue jiraIssue : issues) {
-							long jiraIssueWaitedTime = 0L;
-							long jiraIssueBlockedTime = 0L;
+							int jiraIssueWaitedTime = 0;
+							int jiraIssueBlockedTime = 0;
 							JiraIssueCustomHistory issueCustomHistory = allIssueHistory.stream()
 									.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
 											.equals(jiraIssue.getNumber()))
 									.findFirst().orElse(new JiraIssueCustomHistory());
 
-							List<Long> waitedTimeAndBlockedTime = calculateWaitAndBlockTime(issueCustomHistory,
+							List<Integer> waitedTimeAndBlockedTime = calculateWaitAndBlockTime(issueCustomHistory,
 									sprintDetail, blockedStatusList, waitStatusList, flagIncluded);
 							jiraIssueWaitedTime = waitedTimeAndBlockedTime.get(0);
 							jiraIssueBlockedTime = waitedTimeAndBlockedTime.get(1);
@@ -225,10 +225,10 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 								overAllBlockedTime.set(0, overAllBlockedTime.get(0) + jiraIssueBlockedTime);
 							}
 							IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
-							jiraIssueModalObject.setBlockedTime(CommonUtils.convertIntoDays(Math.toIntExact(jiraIssueBlockedTime)));
-							jiraIssueModalObject.setWaitTime(CommonUtils.convertIntoDays(Math.toIntExact(jiraIssueWaitedTime)));
+							jiraIssueModalObject.setBlockedTime(CommonUtils.convertIntoDays(jiraIssueBlockedTime));
+							jiraIssueModalObject.setWaitTime(CommonUtils.convertIntoDays(jiraIssueWaitedTime));
 							jiraIssueModalObject.setWastage(
-									CommonUtils.convertIntoDays(Math.toIntExact(jiraIssueBlockedTime) + Math.toIntExact(jiraIssueWaitedTime)));
+									CommonUtils.convertIntoDays(jiraIssueBlockedTime + jiraIssueWaitedTime));
 							KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue,
 									fieldMapping, modalObjectMap);
 						}
@@ -302,17 +302,17 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 	 * @param sprintDetail
 	 * @return List<Integer>
 	 */
-	List<Long> calculateWaitAndBlockTime(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail,
+	List<Integer> calculateWaitAndBlockTime(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail,
 			List<String> blockedStatusList, List<String> waitStatusList, boolean flagIncluded) {
 		List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
 		List<JiraHistoryChangeLog> flagStatusUpdationLog;
-		List<Long> resultList = new ArrayList<>();
+		List<Integer> resultList = new ArrayList<>();
 
 		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
 			statusUpdationLog = issueCustomHistory.getStatusUpdationLog();
 		}
-		long blockedTime = 0L;
-		long waitedTime = 0L;
+		int blockedTime = 0;
+		int waitedTime = 0;
 		for (int i = 0; i < statusUpdationLog.size(); i++) {
 			JiraHistoryChangeLog entry = statusUpdationLog.get(i);
 			if (!flagIncluded) {
@@ -346,8 +346,8 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 	 * @param time
 	 * @return int
 	 */
-	private long calculateBlockTimeBasedOnFlagStatus(JiraHistoryChangeLog entry,
-			List<JiraHistoryChangeLog> flagStatusUpdationLog, int index, SprintDetails sprintDetails, long time) {
+	private int calculateBlockTimeBasedOnFlagStatus(JiraHistoryChangeLog entry,
+			List<JiraHistoryChangeLog> flagStatusUpdationLog, int index, SprintDetails sprintDetails, int time) {
 		LocalDateTime sprintStartDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getStartDate(),
 				DateUtil.TIME_FORMAT);
 		LocalDateTime sprintEndDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getEndDate(),
@@ -382,9 +382,9 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 		return time;
 	}
 
-	private long calculateBlockandwaitTimeinDays(long timeInHours) {
-		long timeInMin = (timeInHours / 24) * 8 * 60;
-		long remainingTimeInMin = (timeInHours % 24) * 60;
+	private int calculateBlockandwaitTimeinDays(int timeInHours) {
+		int timeInMin = (timeInHours / 24) * 8 * 60;
+		int remainingTimeInMin = (timeInHours % 24) * 60;
 		if (remainingTimeInMin >= 480) {
 			timeInMin = timeInMin + 480;
 		} else {
@@ -404,20 +404,20 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 	 * @param time
 	 * @return int
 	 */
-	private long calculateBlockAndWaitTimeBasedOnFieldMapping(JiraHistoryChangeLog entry,
+	private int calculateBlockAndWaitTimeBasedOnFieldMapping(JiraHistoryChangeLog entry,
 			List<String> fieldMappingStatus, List<JiraHistoryChangeLog> statusUpdationLog, int index,
-			SprintDetails sprintDetails, long time) {
+			SprintDetails sprintDetails, int time) {
 		LocalDateTime sprintStartDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getStartDate(),
 				DateUtil.TIME_FORMAT);
 		LocalDateTime sprintEndDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getEndDate(),
 				DateUtil.TIME_FORMAT);
 		LocalDateTime entryActivityDate = entry.getUpdatedOn();
 		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getChangedTo())) {
-			long hours = 0;
+			int hours = 0;
 			// Checking for indexOutOfBound in statusUpdationLog list
 			if (statusUpdationLog.size() == index + 1) {
-				hours = hoursForLastEntryOfStatusUpdationLog(sprintDetails, sprintStartDate, sprintEndDate,
-						entryActivityDate);
+				hours = Math.toIntExact(hoursForLastEntryOfStatusUpdationLog(sprintDetails, sprintStartDate, sprintEndDate,
+						entryActivityDate));
 			} else {
 				// Find fetch the next element of statusUpdationLog
 				JiraHistoryChangeLog nextEntry = statusUpdationLog.get(index + 1);
@@ -426,8 +426,8 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 				if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
 						&& !(entryActivityDate.isAfter(sprintEndDate)
 								&& nextEntryActivityDate.isAfter(sprintEndDate))) {
-					hours = hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
-							nextEntryActivityDate);
+					hours = Math.toIntExact(hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
+							nextEntryActivityDate));
 				}
 			}
 			if (hours != 0)

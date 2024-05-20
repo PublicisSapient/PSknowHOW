@@ -411,7 +411,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			// be shown
 			if (releaseState.equalsIgnoreCase(CommonConstant.RELEASED) || MapUtils.isEmpty(startDateAdjustedDoneMap)) {
 				// populating only release scope vs progress
-				for (int i = 0; i < range && !startLocalDate.isAfter(endLocalDate); i++) {
+				for (long i = 0; i < range && !startLocalDate.isAfter(endLocalDate); i++) {
 					DataCountGroup issueCount = new DataCountGroup();
 					DataCountGroup issueSize = new DataCountGroup();
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(startLocalDate,
