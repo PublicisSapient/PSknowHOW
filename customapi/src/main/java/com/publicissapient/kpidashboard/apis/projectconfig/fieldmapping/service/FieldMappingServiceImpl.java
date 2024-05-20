@@ -137,6 +137,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 
 		fieldMapping.setProjectToolConfigId(new ObjectId(projectToolConfigId));
+		fieldMapping.setBasicProjectConfigId(basicProjectConfigId);
 
 		FieldMapping existingFieldMapping = fieldMappingRepository
 				.findByProjectToolConfigId(new ObjectId(projectToolConfigId));
