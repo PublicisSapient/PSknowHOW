@@ -252,4 +252,10 @@ public class TestConnectionController {
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_ARGOCD));
 	}
 
+	@RequestMapping(value = "/zephyrcloudurl", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	public ResponseEntity<ServiceResponse> getZephyrCloudUrl() {
+		return ResponseEntity.status(HttpStatus.OK).body(testConnectionService.getZephyrCloudUrlDetails());
+
+	}
+
 }

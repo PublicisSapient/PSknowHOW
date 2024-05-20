@@ -53,7 +53,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationResponseService;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
@@ -87,9 +86,6 @@ public class AuthenticationControllerTest {
 
 	@Mock
 	private SignupManager signupManager;
-
-	@Mock
-	private AuthTypesConfigService authTypesConfigService;
 
 	@Before
 	public void before() {

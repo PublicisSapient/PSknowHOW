@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +46,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationResponseService;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationRequest;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.ChangePasswordRequest;
@@ -58,7 +56,6 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 
@@ -84,7 +81,6 @@ public class AuthenticationController {
     private final AuthProperties authProperties;
     private final UserInfoService userInfoService;
     private final SignupManager signupManager;
-    private AuthTypesConfigService authTypesConfigService;
     private TokenAuthenticationService tokenAuthenticationService;
 
     /**
@@ -102,13 +98,6 @@ public class AuthenticationController {
                                                         HttpServletResponse httpServletResponse, @Valid @RequestBody AuthenticationRequest request) {
 
         try {
-            AuthTypeStatus authTypesStatus = authTypesConfigService.getAuthTypesStatus();
-
-            if (authTypesStatus != null && !authTypesStatus.isStandardLogin()) {
-                return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
-                        "Cannot complete the registration process. Standard authentication is disabled", null));
-            }
-
 			if (!Pattern.matches(CommonConstant.USERNAME_PATTERN, request.getUsername())) {
 				return ResponseEntity.status(HttpStatus.OK).body(
 						new ServiceResponse(false, "Cannot complete the registration process, Invalid Username", null));

@@ -49,7 +49,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
 import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
 import com.publicissapient.kpidashboard.apis.auth.standard.StandardAuthenticationManager;
 import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.token.JwtAuthenticationFilter;
@@ -85,8 +84,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     private AuthProperties authProperties;
 
     private CustomApiConfig customApiConfig;
-
-    private AuthTypesConfigService authTypesConfigService;
 
     private StandardAuthenticationManager authenticationManager;
 
@@ -160,7 +157,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Bean
     protected StandardLoginRequestFilter standardLoginRequestFilter(AuthenticationManager authenticationManager){
         return new StandardLoginRequestFilter("/login", authenticationManager, authenticationResultHandler,
-                customAuthenticationFailureHandler, customApiConfig, authTypesConfigService);
+                customAuthenticationFailureHandler, customApiConfig);
     }
 
     @Bean

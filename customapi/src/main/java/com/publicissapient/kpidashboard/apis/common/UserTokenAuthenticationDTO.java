@@ -39,7 +39,6 @@ public class UserTokenAuthenticationDTO {
 
 	private String userName;
 	private List<String> userRoles;
-	private String authToken;
 	private String resource;
 	private boolean resourceTokenValid;
 }
