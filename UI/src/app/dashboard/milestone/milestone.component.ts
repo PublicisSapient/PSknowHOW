@@ -23,7 +23,7 @@ import { HttpService } from '../../services/http.service';
 import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
-import { CdkDragDrop} from '@angular/cdk/drag-drop';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 
 declare let require: any;
@@ -65,7 +65,7 @@ export class MilestoneComponent implements OnInit {
   globalConfig;
   sharedObject;
   kpiCommentsCountObj: object = {};
-  navigationTabs:Array<object>;
+  navigationTabs: Array<object>;
   activeIndex = 0;
   kpiThresholdObj = {};
   chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
@@ -109,21 +109,21 @@ export class MilestoneComponent implements OnInit {
 
   processKpiConfigData() {
     this.navigationTabs = [
-      {'label':'Speed', 'count': 0,kpis : [],width : 'half', fullWidthKpis : []},
-      {'label':'Quality', 'count': 0,kpis : [],width :'half'},
-      {'label':'Value', 'count': 0,kpis : [],width :'full'},
+      { 'label': 'Speed', 'count': 0, kpis: [], width: 'half', fullWidthKpis: [] },
+      { 'label': 'Quality', 'count': 0, kpis: [], width: 'half' },
+      { 'label': 'Value', 'count': 0, kpis: [], width: 'full' },
     ];
     const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
-     /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
+    /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
     this.enableByUser = disabledKpis?.length ? true : false;
     /** noKpis - if true, all kpis are not shown to the user (not showing kpis to the user) **/
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
 
-    for(let i = 0; i<this.upDatedConfigData?.length; i++){
+    for (let i = 0; i < this.upDatedConfigData?.length; i++) {
       let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
       let idx = this.navigationTabs?.findIndex(x => (x['label'] == board));
-      if(idx != -1) {
+      if (idx != -1) {
         this.navigationTabs[idx]['count']++;
         this.navigationTabs[idx]['kpis'].push(this.upDatedConfigData[i]);
       }
@@ -145,15 +145,15 @@ export class MilestoneComponent implements OnInit {
     });
   }
 
-  formatNavigationTabs(){
+  formatNavigationTabs() {
     this.navigationTabs.forEach(tabDetails => {
-      if(tabDetails['width'] === 'half'){
+      if (tabDetails['width'] === 'half') {
         let fullWidthKPis = [];
         let halfWithKpis = []
-        tabDetails['kpis'].forEach(kpiDetails=>{
-          if(kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100){
+        tabDetails['kpis'].forEach(kpiDetails => {
+          if (kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100) {
             fullWidthKPis = fullWidthKPis.concat(kpiDetails);
-          }else{
+          } else {
             halfWithKpis = halfWithKpis.concat(kpiDetails);
           }
         })
@@ -176,7 +176,7 @@ export class MilestoneComponent implements OnInit {
     click apply and call kpi
    **/
   receiveSharedData($event) {
-    if(this.service.getDashConfigData()){
+    if (this.service.getDashConfigData()) {
       this.configGlobalData = this.service.getDashConfigData()['others']?.filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
       this.processKpiConfigData();
       this.masterData = $event.masterData;
@@ -242,7 +242,7 @@ export class MilestoneComponent implements OnInit {
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
-    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj,'release',this.filterApplyData['ids'][0]);
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj, 'release', this.filterApplyData['ids'][0]);
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
 
   }
@@ -348,21 +348,21 @@ export class MilestoneComponent implements OnInit {
       const trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
       if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList) && filters && Object.keys(filters)?.length > 0) {
-        this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'],filters)
+        this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
       }
       else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},[this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] )
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]])
         }
         else if (formType?.toLowerCase() == 'dropdown') {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'] )
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
         }
         else if (filters && Object.keys(filters)?.length > 0) {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'],filters)
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
         } else {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'] )
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
         }
       } else if (!trendValueList || trendValueList?.length == 0) {
         this.getDropdownArray(data[key]?.kpiId);
@@ -372,105 +372,116 @@ export class MilestoneComponent implements OnInit {
   }
 
   setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters?) {
-    this.kpiSelectedFilterObj  = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId,this.kpiSelectedFilterObj,'release', refreshValue, initialValue,this.filterApplyData['ids'][0],filters)
+    this.kpiSelectedFilterObj = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId, this.kpiSelectedFilterObj, 'release', refreshValue, initialValue, this.filterApplyData['ids'][0], filters)
     this.getDropdownArray(kpiId);
   }
 
   getChartData(kpiId, idx, aggregationType?) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
     this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
-    /**if trendValueList is an object */
-    if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
-      if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
-        && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
-        let tempArr = [];
-        const preAggregatedValues = [];
-        /** tempArr: array with combination of all items of filter1 and filter2 */
-        tempArr = this.helperService.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
-        for (let i = 0; i < tempArr?.length; i++) {
-          preAggregatedValues?.push(...trendValueList['value']?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
-        }
-        if (preAggregatedValues?.length > 1) {
-          this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
-        } else {
-          this.kpiChartData[kpiId] = [...preAggregatedValues];
-        }
-      } else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1'))
-        || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2'))) {
-        const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
-        let preAggregatedValues = [];
-        for (let i = 0; i < filters?.length; i++) {
-          preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
-        }
-        if (preAggregatedValues?.length > 1) {
-          this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
-        } else {
-          this.kpiChartData[kpiId] = [...preAggregatedValues];
-        }
-      }
-      else {
-        /** when there are no kpi level filters */
-        this.kpiChartData[kpiId] = [];
-        if (trendValueList && trendValueList?.hasOwnProperty('value') && trendValueList['value']?.length > 0) {
-          this.kpiChartData[kpiId]?.push(trendValueList['value']?.filter((x) => x['filter1'] == 'Overall')[0]);
-        } else if (trendValueList?.length > 0) {
-          this.kpiChartData[kpiId] = [...trendValueList];
-        } else {
-          const obj = JSON.parse(JSON.stringify(trendValueList));
-          this.kpiChartData[kpiId]?.push(obj);
-        }
-      }
-    }
-    /**if trendValueList is an array */
-    else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-      if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
-        let tempArr = [];
-        const preAggregatedValues = [];
-        /** tempArr: array with combination of all items of filter1 and filter2 */
-        tempArr = this.helperService.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
-        for (let i = 0; i < tempArr?.length; i++) {
-          preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
-        }
-        if (preAggregatedValues?.length > 1) {
-          if (this.getKpiChartType(kpiId) === 'GroupBarChart' || this.getKpiChartType(kpiId) === 'horizontalPercentBarChart') {
-            this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
-          } else {
-            this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+
+    if (kpiId === 'kpi178') {
+      this.kpiChartData[kpiId] = [];
+      this.kpiChartData[kpiId].push({
+        data: this.allKpiArray[idx]?.issueData,
+        filters: this.allKpiArray[idx]?.pieChartFilter,
+        modalHeads:  this.allKpiArray[idx]?.modalHeads
+      });
+      
+    } else {
+      /**if trendValueList is an object */
+      if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
+        if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
+          && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
+          let tempArr = [];
+          const preAggregatedValues = [];
+          /** tempArr: array with combination of all items of filter1 and filter2 */
+          tempArr = this.helperService.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
+          for (let i = 0; i < tempArr?.length; i++) {
+            preAggregatedValues?.push(...trendValueList['value']?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
           }
-        } else {
-          this.kpiChartData[kpiId] = [...preAggregatedValues];
-        }
-      } else if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') || this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
-        let filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
-        let preAggregatedValues = [];
-        // for single select dropdown filters
-        if(!Array.isArray(filters)) {
-          filters = [filters];
-        }
-        for (let i = 0; i < filters?.length; i++) {
-          preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
-        }
-        if (preAggregatedValues?.length > 1) {
-          if (this.getKpiChartType(kpiId) === 'GroupBarChart' || this.getKpiChartType(kpiId) === 'horizontalPercentBarChart') {
-            this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
-          } else {
+          if (preAggregatedValues?.length > 1) {
             this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+          } else {
+            this.kpiChartData[kpiId] = [...preAggregatedValues];
           }
-        } else {
-          if(preAggregatedValues[0]?.hasOwnProperty('value')){
-            this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
-          }else{
+        } else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1'))
+          || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2'))) {
+          const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
+          let preAggregatedValues = [];
+          for (let i = 0; i < filters?.length; i++) {
+            preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
+          }
+          if (preAggregatedValues?.length > 1) {
+            this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+          } else {
             this.kpiChartData[kpiId] = [...preAggregatedValues];
           }
         }
-      } else {
-        this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
+        else {
+          /** when there are no kpi level filters */
+          this.kpiChartData[kpiId] = [];
+          if (trendValueList && trendValueList?.hasOwnProperty('value') && trendValueList['value']?.length > 0) {
+            this.kpiChartData[kpiId]?.push(trendValueList['value']?.filter((x) => x['filter1'] == 'Overall')[0]);
+          } else if (trendValueList?.length > 0) {
+            this.kpiChartData[kpiId] = [...trendValueList];
+          } else {
+            const obj = JSON.parse(JSON.stringify(trendValueList));
+            this.kpiChartData[kpiId]?.push(obj);
+          }
+        }
       }
-    }
-    else if (trendValueList?.length > 0) {
-      this.kpiChartData[kpiId] = [...trendValueList[0]?.value];
-    } else {
-      this.kpiChartData[kpiId] = [];
+      /**if trendValueList is an array */
+      else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
+        if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
+          let tempArr = [];
+          const preAggregatedValues = [];
+          /** tempArr: array with combination of all items of filter1 and filter2 */
+          tempArr = this.helperService.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
+          for (let i = 0; i < tempArr?.length; i++) {
+            preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
+          }
+          if (preAggregatedValues?.length > 1) {
+            if (this.getKpiChartType(kpiId) === 'GroupBarChart' || this.getKpiChartType(kpiId) === 'horizontalPercentBarChart') {
+              this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
+            } else {
+              this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+            }
+          } else {
+            this.kpiChartData[kpiId] = [...preAggregatedValues];
+          }
+        } else if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') || this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
+          let filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
+          let preAggregatedValues = [];
+          // for single select dropdown filters
+          if (!Array.isArray(filters)) {
+            filters = [filters];
+          }
+          for (let i = 0; i < filters?.length; i++) {
+            preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
+          }
+          if (preAggregatedValues?.length > 1) {
+            if (this.getKpiChartType(kpiId) === 'GroupBarChart' || this.getKpiChartType(kpiId) === 'horizontalPercentBarChart') {
+              this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
+            } else {
+              this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+            }
+          } else {
+            if (preAggregatedValues[0]?.hasOwnProperty('value')) {
+              this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
+            } else {
+              this.kpiChartData[kpiId] = [...preAggregatedValues];
+            }
+          }
+        } else {
+          this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
+        }
+      }
+      else if (trendValueList?.length > 0) {
+        this.kpiChartData[kpiId] = [...trendValueList[0]?.value];
+      } else {
+        this.kpiChartData[kpiId] = [];
+      }
     }
   }
 
@@ -614,40 +625,40 @@ export class MilestoneComponent implements OnInit {
     }
   }
 
-  drop(event: CdkDragDrop<string[]>,updatedContainer) {
-    this.helperService.drop(event,updatedContainer,this.navigationTabs,this.upDatedConfigData,this.configGlobalData);
+  drop(event: CdkDragDrop<string[]>, updatedContainer) {
+    this.helperService.drop(event, updatedContainer, this.navigationTabs, this.upDatedConfigData, this.configGlobalData);
   }
 
   async getKpiCommentsCount(kpiId?) {
     const nodes = this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId;
     const level = this.filterApplyData?.level;
     const nodeChildId = this.filterApplyData['selectedMap']?.release[0];
-    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
-  
+    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj, nodes, level, nodeChildId, this.updatedConfigGlobalData, kpiId)
+
 
   }
 
-   /** Reload KPI once field mappoing updated */
-   reloadKPI(event){
+  /** Reload KPI once field mappoing updated */
+  reloadKPI(event) {
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
-    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId,'Release');
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Release');
     if (currentKPIGroup?.kpiList?.length > 0) {
-        this.postJiraKpi(this.kpiJira, 'jira');
+      this.postJiraKpi(this.kpiJira, 'jira');
     }
   }
 
-  handleTabChange(event){
+  handleTabChange(event) {
     this.activeIndex = event.index;
   }
 
   checkIfDataPresent(data) {
     let dataCount = 0;
-    if(data[0] && !isNaN(parseInt(data[0].data))) {
+    if (data[0] && !isNaN(parseInt(data[0].data))) {
       dataCount = data[0].data;
-    } else if(data[0] && data[0].value && !isNaN(parseInt(data[0].value[0].data))) {
+    } else if (data[0] && data[0].value && !isNaN(parseInt(data[0].value[0].data))) {
       dataCount = data[0].value[0].data;
     }
-    if(parseInt(dataCount + '') > 0) {
+    if (parseInt(dataCount + '') > 0) {
       return true;
     }
     return false;
