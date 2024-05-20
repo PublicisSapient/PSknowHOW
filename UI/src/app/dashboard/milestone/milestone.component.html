@@ -22,7 +22,8 @@
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="false" [isShow]="true"
                               [showChartView]="kpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true"
                               [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
+                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)"
+                              [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <div class="p-d-flex p-justify-around p-align-center w-100"
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -75,7 +76,8 @@
                                 (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
                                 [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
+                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)"
+                                [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
                                   <ng-container
                                     *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
@@ -85,10 +87,13 @@
                                       <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
                                         <ng-container *ngSwitchCase="'stackedColumn'">
                                           <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
-                                            <app-groupstackchart [legendType]="'normal'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                            <app-groupstackchart [legendType]="'normal'"
+                                              [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                               [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
-                                              [filter]="kpiSelectedFilterObj[kpi?.kpiId]" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                              [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId" [selectedtype]="selectedtype"
+                                              [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
+                                              [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                                              [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
+                                              [kpiId]="kpi?.kpiId" [selectedtype]="selectedtype"
                                               [activeTab]="activeImilesndex"
                                               [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                           </ng-container>
@@ -181,7 +186,8 @@
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="false" [isShow]="true"
                               [showChartView]="kpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true"
                               [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
+                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)"
+                              [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <div class="p-d-flex p-justify-around p-align-center w-100"
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -234,7 +240,8 @@
                                 (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
                                 [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
+                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)"
+                                [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
                                   <ng-container
                                     *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
@@ -244,10 +251,13 @@
                                       <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
                                         <ng-container *ngSwitchCase="'stackedColumn'">
                                           <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
-                                            <app-groupstackchart [legendType]="'normal'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                            <app-groupstackchart [legendType]="'normal'"
+                                              [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                               [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
-                                              [filter]="kpiSelectedFilterObj[kpi?.kpiId]" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                              [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId" [selectedtype]="selectedtype"
+                                              [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
+                                              [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                                              [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
+                                              [kpiId]="kpi?.kpiId" [selectedtype]="selectedtype"
                                               [activeTab]="activeIndex"
                                               [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                           </ng-container>
@@ -264,6 +274,18 @@
                                           [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
                                           [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
                                         </app-group-bar-chart>
+                                        <ng-container *ngSwitchCase="'chartWithFilter'">
+                                          <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.[0]?.data?.length; else noDataForChartWithFilters">
+                                            <app-chart-with-filters [data]="kpiChartData[kpi?.kpiId]?.[0]?.data"
+                                              [kpiId]="kpi?.kpiId" [kpiName]="kpi?.kpiName"
+                                              [isKanban]="kpi?.kpiDetail?.kanban"
+                                              [additionalFilterSupport]="kpi?.kpiDetail?.isAdditionalFilterSupport"
+                                              [filterApplyData]="filterApplyData" [filterData]="filterData"
+                                              [filters]="kpiChartData[kpi?.kpiId]?.[0]?.filters"
+                                              [modalHeads]="kpiChartData[kpi?.kpiId]?.[0]?.modalHeads">
+                                            </app-chart-with-filters>
+                                          </ng-container>
+                                        </ng-container>
 
                                         <ng-container *ngSwitchCase="'pieChart'">
                                           <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
@@ -322,6 +344,17 @@
                               <div class="no-data">No Data Available</div>
                             </div>
                           </ng-template>
+                          <ng-template #noDataForChartWithFilters>
+                            <div class="overlay"
+                              *ngIf="(kpiChartData[kpi.kpiId]?.data?.length)|| kpiLoader">
+
+                              <div class="loading-img"></div>
+                            </div>
+                            <div class="min-ht"
+                              *ngIf="!kpiChartData[kpi.kpiId]?.data?.length && kpiLoader === false">
+                              <div class="no-data">No Data Available</div>
+                            </div>
+                          </ng-template>
                           <ng-template #loader>
                             <div class="overlay">
                               <div class="loading-img"></div>
@@ -340,7 +373,8 @@
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="false" [isShow]="true"
                               [showChartView]="kpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true"
                               [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
+                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)"
+                              [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <div class="p-d-flex p-justify-around p-align-center w-100"
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -393,7 +427,8 @@
                                 (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
                                 [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
+                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)"
+                                [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
                                   <ng-container
                                     *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
@@ -403,10 +438,13 @@
                                       <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
                                         <ng-container *ngSwitchCase="'stackedColumn'">
                                           <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
-                                            <app-groupstackchart [legendType]="'normal'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                            <app-groupstackchart [legendType]="'normal'"
+                                              [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                               [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
-                                              [filter]="kpiSelectedFilterObj[kpi?.kpiId]" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                              [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId" [selectedtype]="selectedtype"
+                                              [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
+                                              [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                                              [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
+                                              [kpiId]="kpi?.kpiId" [selectedtype]="selectedtype"
                                               [activeTab]="activeIndex"
                                               [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                           </ng-container>
@@ -501,7 +539,8 @@
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="false" [isShow]="true"
                               [showChartView]="kpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true"
                               [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
+                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)"
+                              [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <div class="p-d-flex p-justify-around p-align-center w-100"
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -554,7 +593,8 @@
                                 (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
                                 [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)" [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
+                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)"
+                                [nodeId]="filterApplyData?.selectedMap?.['release'][0]">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
                                   <ng-container
                                     *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
@@ -564,10 +604,13 @@
                                       <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
                                         <ng-container *ngSwitchCase="'stackedColumn'">
                                           <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
-                                            <app-groupstackchart [legendType]="'normal'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                            <app-groupstackchart [legendType]="'normal'"
+                                              [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                               [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
-                                              [filter]="kpiSelectedFilterObj[kpi?.kpiId]" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                              [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId" [selectedtype]="selectedtype"
+                                              [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
+                                              [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                                              [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
+                                              [kpiId]="kpi?.kpiId" [selectedtype]="selectedtype"
                                               [activeTab]="activeIndex"
                                               [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                           </ng-container>

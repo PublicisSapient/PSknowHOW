@@ -27,6 +27,7 @@ import { AppRoutingModule } from './module/app-routing.module';
 import { CommonModule, DatePipe } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { DropdownModule } from 'primeng/dropdown';
 import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
@@ -121,6 +122,7 @@ import { FeatureFlagsService } from './services/feature-toggle.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AppInitializerService } from './services/app-initializer.service';
 import { AuthGuard } from './services/auth.guard';
+import { ChartWithFiltersComponent } from './component/chart-with-filters/chart-with-filters.component';
 
 
 /******************************************************/
@@ -187,7 +189,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         DeveloperComponent,
         BarWithYAxisGroupComponent,
         DeveloperComponent,
-        PageNotFoundComponent
+        PageNotFoundComponent,
+        ChartWithFiltersComponent
     ],
     imports: [
         DropdownModule,
@@ -200,6 +203,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         AppRoutingModule,
         // NgSelectModule,
         MultiSelectModule,
+        SelectButtonModule,
         BrowserAnimationsModule,
         InputSwitchModule,
         RippleModule,
