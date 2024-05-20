@@ -319,8 +319,11 @@ public enum KPIExcelColumn {
 
 	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee")),
 
-	DEFECT_COUNT_BY("kpi1178", Arrays.asList("Issue Id", "Issue Description", "Sprint Name", "Issue Type",
-			"Issue Status", "Root Cause List", "Priority", "Assignee"));
+	DEFECT_COUNT_BY("kpi178", Arrays.asList("Issue Id", "Issue Description", "Sprint Name", "Issue Type",
+			"Issue Status", "Root Cause List", "Priority", "Testing Phase", "Assignee")),
+
+	DEFECT_COUNT_BY_EXPORT("kpi178", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
+			"Issue Status", "Root Cause", "Priority", "Testing Phase", "Assignee"));
 
 
 	// @formatter:on

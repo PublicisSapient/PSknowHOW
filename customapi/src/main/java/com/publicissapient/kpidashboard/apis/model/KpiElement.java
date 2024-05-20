@@ -133,7 +133,7 @@ public class KpiElement implements Serializable { // NOPMD
 	private String overallMaturity;
 
 	//for consolidated one kpi for all Pie charts where grouping happens on some key
-	private transient Map<String, List<Filter>> pieChartFilter;
+	private transient FilterGroup filterGroup;
 
 	/**
 	 * Instantiates a new Kpi element.
@@ -906,12 +906,12 @@ public class KpiElement implements Serializable { // NOPMD
 		isAggregationStacks = aggregationStacks;
 	}
 
-	public Map<String, List<Filter>> getPieChartFilter() {
-		return pieChartFilter;
+	public FilterGroup getFilterGroup() {
+		return filterGroup;
 	}
 
-	public void setPieChartFilter(Map<String, List<Filter>> pieChartFilter) {
-		this.pieChartFilter = pieChartFilter;
+	public void setFilterGroup(FilterGroup filterGroup) {
+		this.filterGroup = filterGroup;
 	}
 
 }

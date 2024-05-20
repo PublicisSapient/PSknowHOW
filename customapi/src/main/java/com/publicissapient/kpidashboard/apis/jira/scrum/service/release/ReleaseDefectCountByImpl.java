@@ -32,10 +32,13 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import com.publicissapient.kpidashboard.apis.model.Filter;
+import com.publicissapient.kpidashboard.apis.model.FilterGroup;
 import com.publicissapient.kpidashboard.apis.model.IssueKpiModalValue;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
@@ -81,8 +84,10 @@ public class ReleaseDefectCountByImpl extends JiraReleaseKPIService {
 	 */
 	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, KpiRequest kpiRequest) {
 		if (latestRelease != null) {
+			String requestTrackerId = getRequestTrackerId();
 			Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 			List<JiraIssue> totalDefects = (List<JiraIssue>) resultMap.get(TOTAL_DEFECT);
+			List<KPIExcelData> excelData = new ArrayList<>();
 
 			if (CollectionUtils.isNotEmpty(totalDefects)) {
 				Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
@@ -91,42 +96,21 @@ public class ReleaseDefectCountByImpl extends JiraReleaseKPIService {
 				totalDefects.forEach(
 						defect -> KPIExcelUtility.populateIssueModal(defect, fieldMapping, issueKpiModalObject));
 
+				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+					KPIExcelUtility.populateReleaseDefectRelatedExcelData(totalDefects, excelData, fieldMapping);
+				}
+
 				log.info("ReleaseDefectCountBy {}", totalDefects);
 				kpiElement.setSprint(latestRelease.getName());
 				kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY.getColumns());
+				kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_EXPORT.getColumns());
+				kpiElement.setExcelData(excelData);
 				kpiElement.setIssueData(new HashSet<>(issueKpiModalObject.values()));
-				kpiElement.setPieChartFilter(createFilter());
+				kpiElement.setFilterGroup(createFilterGroup());
 
 			}
 		}
 
-	}
-
-	private Map<String, List<Filter>> createFilter() {
-		Map<String, List<Filter>> mainFilter = new HashMap<>();
-		List<Filter> filterList = new ArrayList<>();
-		Filter status = new Filter();
-		status.setFilterType("Single");
-		status.setFilterName("Status");
-		status.setFilterKey("Issue Status");
-		status.setOrder(1);
-		filterList.add(status);
-
-		Filter priority = new Filter();
-		priority.setFilterType("Single");
-		priority.setFilterName("Priority");
-		priority.setFilterKey("Priority");
-		priority.setOrder(2);
-		filterList.add(priority);
-
-		Filter rca = new Filter();
-		rca.setFilterType("Multi");
-		rca.setFilterName("RCA");
-		rca.setFilterKey("Root Cause List");
-		rca.setOrder(3);
-		filterList.add(rca);
-		mainFilter.put("mainFilter", filterList);
-		return mainFilter;
 	}
 
 	@Override
@@ -145,4 +129,28 @@ public class ReleaseDefectCountByImpl extends JiraReleaseKPIService {
 		return resultListMap;
 	}
 
+	private FilterGroup createFilterGroup() {
+		FilterGroup filterGroup = new FilterGroup();
+		// for the first group by selection
+		List<Filter> filterList = new ArrayList<>();
+		filterList.add(createFilter("Single", "Status", "Issue Status", 1));
+		filterList.add(createFilter("Single", "Priority", "Priority", 2));
+		filterList.add(createFilter("Multi", "RCA", "Root Cause List", 3));
+		filterGroup.setFilterGroup1(filterList);
+		// for the additional filter selection
+		List<Filter> filterGroupList2 = new ArrayList<>();
+		filterGroupList2.add(createFilter("Single", "Assignee", "Assignee", 1));
+		filterGroupList2.add(createFilter("Multi", "Testing Phase", "Testing Phase", 2));
+		filterGroup.setFilterGroup2(filterGroupList2);
+		return filterGroup;
+	}
+
+	private Filter createFilter(String type, String name, String key, Integer order) {
+		Filter filter = new Filter();
+		filter.setFilterType(type);
+		filter.setFilterName(name);
+		filter.setFilterKey(key);
+		filter.setOrder(order);
+		return filter;
+	}
 }
