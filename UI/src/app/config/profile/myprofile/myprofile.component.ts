@@ -23,6 +23,7 @@ import { HttpService } from '../../../services/http.service';
 import { ProfileComponent } from '../profile.component';
 import { SharedService } from 'src/app/services/shared.service';
 import { environment } from 'src/environments/environment';
+import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-myprofile',
   templateUrl: './myprofile.component.html',
@@ -48,7 +49,7 @@ export class MyprofileComponent implements OnInit {
   ssoLogin = environment.SSO_LOGIN;
   loginType: string = '';
   constructor(private formBuilder: UntypedFormBuilder, private getAuthorizationService: GetAuthorizationService, private http: HttpService, private profile: ProfileComponent,
-    private sharedService: SharedService) { }
+    private sharedService: SharedService , private messageService: MessageService) { }
 
 
 
@@ -181,14 +182,15 @@ export class MyprofileComponent implements OnInit {
     this.http.notificationEmailToggleChange(obj)
       .subscribe(
         response => {
-          if (response && response['success'] && response['data']) {
+          if (response?.['success'] && response['data']) {
             const userDetails = response['data'];
+            this.messageService.add({ severity: 'success', summary: response['message'] });
             this.sharedService.setCurrentUserDetails({
               notificationEmail: userDetails['notificationEmail'],
             });
           } else if (response && !response['success']) {
             if (response['message']) {
-              this.message = response['message'];
+              this.messageService.add({ severity: 'error', summary: response['message'] });
             }
           }
         }
