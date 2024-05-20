@@ -193,13 +193,14 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 * first from fieldmapping table
 	 */
 	@Override
-	public List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, String projectToolConfigId,
-			FieldMappingMeta requestData) throws NoSuchFieldException, IllegalAccessException {
+	public List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfig,
+																	 FieldMappingMeta requestData) throws NoSuchFieldException, IllegalAccessException {
 		FieldMappingEnum fieldMappingEnum = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase());
 		List<String> fields = fieldMappingEnum.getFields();
 		String releaseNodeId = requestData.getReleaseNodeId();
 		List<String> nodeSpecifFields = getNodeSpecificFields();
-		FieldMapping fieldMapping = getFieldMapping(projectToolConfigId);
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				.get(projectToolConfig.getBasicProjectConfigId());
 		List<FieldMappingResponse> fieldMappingResponses = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(fields) && fieldMapping != null) {
 			Class<FieldMapping> fieldMappingClass = FieldMapping.class;
@@ -273,6 +274,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			for (FieldMappingResponse fieldMappingResponse : fieldMappingResponseList) {
 				FieldMappingStructure mappingStructure = fieldMappingStructureMap
 						.get(fieldMappingResponse.getFieldName());
+				update.set(fieldMappingResponse.getFieldName(), fieldMappingResponse.getOriginalValue());
 				if (null != mappingStructure) {
 					cleanTraceLog = createSpecialFieldsAndUpdateFieldMapping(projectToolConfig, fieldMappingMeta, update,
 							fieldMappingResponseList, cleanTraceLog, fieldMappingResponse, mappingStructure);
@@ -392,10 +394,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			FieldMappingMeta fieldMappingMeta, Update update, List<FieldMappingResponse> fieldMappingResponseList,
 			String cleanTraceLog, FieldMappingResponse fieldMappingResponse, FieldMappingStructure mappingStructure)
 			throws NoSuchFieldException, IllegalAccessException {
-
-			if (!mappingStructure.isNodeSpecific()) {
-				update.set(fieldMappingResponse.getFieldName(), fieldMappingResponse.getOriginalValue());
-			}
 			// for nested fields
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(projectToolConfig.getBasicProjectConfigId());

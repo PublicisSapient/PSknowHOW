@@ -132,6 +132,13 @@ public class ReworkRateServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
 		Mockito.when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn("trackerid");
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+		String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any()))
+				.thenReturn(repoToolKpiMetricResponseList);
 
 	}
 	@Test
@@ -143,19 +150,24 @@ public class ReworkRateServiceImplTest {
 	public void getKpiData() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-
-		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-
-		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
-
-		String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
-				.thenReturn(kpiRequestTrackerId);
-
-		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any())).thenReturn(repoToolKpiMetricResponseList);
 		try {
 			KpiElement kpiElement = reworkRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+			assertThat("Trend Size: ", ((List)kpiElement.getTrendValueList()).size(), equalTo(1));
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void getKpiDataDays() throws ApplicationException {
+		kpiRequest.setDuration(Constant.DAYS);
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		try {
+			KpiElement kpiElement = reworkRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+			assertThat("Trend Size: ", ((List)kpiElement.getTrendValueList()).size(), equalTo(1));
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}

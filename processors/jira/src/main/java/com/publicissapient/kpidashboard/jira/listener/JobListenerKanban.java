@@ -24,7 +24,6 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.batch.core.BatchStatus;
@@ -46,6 +45,7 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
@@ -106,6 +106,8 @@ public class JobListenerKanban implements JobExecutionListener {
 		log.info("********In kanban JobExecution  listener - finishing job ********");
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+				CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRAKANBAN_KPI_CACHE);
 		try {
 			// sending notification in case of job failure
@@ -119,10 +121,10 @@ public class JobListenerKanban implements JobExecutionListener {
 						break;
 					}
 				}
-				setExecutionInfoInTraceLog(false);
+				setExecutionInfoInTraceLog(false, stepFaliureException);
 				sendNotification(stepFaliureException);
 			} else {
-				setExecutionInfoInTraceLog(true);
+				setExecutionInfoInTraceLog(true, null);
 			}
 		} catch (Exception e) {
 			log.error("An Exception has occured in kanban jobListener", e);
@@ -146,7 +148,7 @@ public class JobListenerKanban implements JobExecutionListener {
 		FieldMapping fieldMapping = fieldMappingRepository.findByProjectConfigId(projectId);
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findByStringId(projectId).orElse(null);
 		if (fieldMapping == null || (fieldMapping.getNotificationEnabler() && projectBasicConfig != null)) {
-			handler.sendEmailToProjectAdmin(
+			handler.sendEmailToProjectAdminAndSuperAdmin(
 					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost()
 							+ " for \"" + getProjectName(projectBasicConfig) + "\"",
 					ExceptionUtils.getStackTrace(stepFaliureException), projectId);
@@ -159,13 +161,17 @@ public class JobListenerKanban implements JobExecutionListener {
 		return projectBasicConfig == null ? "" : projectBasicConfig.getProjectName();
 	}
 
-	private void setExecutionInfoInTraceLog(boolean status) {
+	private void setExecutionInfoInTraceLog(boolean status, Throwable stepFailureException) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
 				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Arrays.asList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(status);
+				if (stepFailureException != null && processorExecutionTraceLog.isProgressStats()) {
+					String rootCauseMessage = ExceptionUtils.getRootCauseMessage(stepFailureException);
+					processorExecutionTraceLog.setErrorMessage("Failure Reason: " + rootCauseMessage);
+				}
 			}
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);
 		}

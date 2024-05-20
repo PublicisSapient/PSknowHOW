@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.rbac.userinfo.rest;
 
+import java.util.Map;
 import java.util.Objects;
 
 import javax.validation.Valid;
@@ -35,7 +36,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
@@ -175,5 +175,29 @@ public class UserInfoController {
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "invalid Token or user", null));
 
 		}
+	}
+
+	/**
+	 * enable and disable email notification user wise
+	 * user can enable/disable ERROR_ALERT_NOTIFICATION and ACCESS_ALERT_NOTIFICATION
+	 * this API will access only ProjectAdmin And SUPER ADMIN
+	 * @param notificationEmail
+	 * @return
+	 */
+	@PostMapping("/notificationPreferences")
+	public ResponseEntity<ServiceResponse> updateFlagEmailNotification(
+			@Valid @RequestBody Map<String, Boolean> notificationEmail) {
+		String loggedUserName = authenticationService.getLoggedInUser();
+
+		UserInfo userInfo = userInfoService.updateNotificationEmail(loggedUserName, notificationEmail);
+
+		if (Objects.nonNull(userInfo)) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "Notification preferences updated successfully.", userInfo));
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ServiceResponse(false, "Sorry! Couldn't save your preferences. Please try again later", null));
+
+		}
+
 	}
 }

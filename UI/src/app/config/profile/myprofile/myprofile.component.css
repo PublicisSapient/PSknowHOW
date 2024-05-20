@@ -180,6 +180,26 @@ td.med-td {
     border-bottom: 1px solid #e4e4e4;
 }
 
+.notification-toggle {
+  display: flex;
+}
+
+.custom-switch .p-inputswitch-slider {
+  width: 60px;
+  height: 30px;
+}
+
+.switch-label {
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+.switch-desc {
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+
 
 
 

@@ -382,14 +382,9 @@ public class FieldMappingServiceImplTest {
 				scrumFieldMapping.getBasicProjectConfigId());
 		Set<String> configIds = new HashSet<>();
 		configIds.add(scrumFieldMapping.getBasicProjectConfigId().toString());
-		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
-		when(projectBasicConfigRepository.findById(Mockito.any())).thenReturn(projectBasicConfigOpt);
-		when(tokenAuthenticationService.getUserProjects()).thenReturn(configIds);
-
-		when(fieldMappingRepository.findByProjectToolConfigId(any(ObjectId.class))).thenReturn(this.scrumFieldMapping);
 		List<FieldMappingResponse> fieldMappingResponses = fieldMappingService.getKpiSpecificFieldsAndHistory(
 				KPICode.getKPI("kpi36"),
-				createProjectToolConfigOpt(scrumFieldMapping.getBasicProjectConfigId()).get().getId().toString(), new FieldMappingMeta());
+				createProjectToolConfigOpt(scrumFieldMapping.getBasicProjectConfigId()).get(), new FieldMappingMeta());
 		assertNotNull(fieldMappingResponses);
 		Map<String, Object> collect = fieldMappingResponses.stream()
 				.filter(response -> Objects.nonNull(response.getOriginalValue()))
@@ -412,13 +407,9 @@ public class FieldMappingServiceImplTest {
 				scrumFieldMapping2.getBasicProjectConfigId());
 		Set<String> configIds = new HashSet<>();
 		configIds.add(scrumFieldMapping2.getBasicProjectConfigId().toString());
-		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
-		when(projectBasicConfigRepository.findById(Mockito.any())).thenReturn(projectBasicConfigOpt);
-		when(tokenAuthenticationService.getUserProjects()).thenReturn(configIds);
-		when(fieldMappingRepository.findByProjectToolConfigId(any(ObjectId.class))).thenReturn(this.scrumFieldMapping2);
 		List<FieldMappingResponse> fieldMappingResponses = fieldMappingService.getKpiSpecificFieldsAndHistory(
 				KPICode.getKPI("kpi36"),
-				createProjectToolConfigOpt(scrumFieldMapping.getBasicProjectConfigId()).get().getId().toString(), new FieldMappingMeta());
+				createProjectToolConfigOpt(scrumFieldMapping.getBasicProjectConfigId()).get(), new FieldMappingMeta());
 		assertNotNull(fieldMappingResponses);
 		Map<String, Object> collect = fieldMappingResponses.stream().filter(
 				response -> Objects.nonNull(response.getOriginalValue()) && Objects.nonNull(response.getHistory()))
