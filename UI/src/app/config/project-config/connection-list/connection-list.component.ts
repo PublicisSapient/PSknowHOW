@@ -459,6 +459,9 @@ export class ConnectionListComponent implements OnInit {
   }, {
     'label': 'Bitbucket',
     'key': 'bitbucket',
+  }, {
+    'label': 'Azure Repository',
+    'key': 'AzureRepository',
   }];
 
   jiraConnectionFields: JiraConnectionField = {
