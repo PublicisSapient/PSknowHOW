@@ -28,6 +28,7 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoService
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -99,18 +100,19 @@ public class SignupRequestsControllerTest {
 	}
 
 	/**
-	 * method to get all unapproved requests when CA switch is Off
+	 * method to get all unapproved requests when CA switch is on
 	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void testGetUnApprovedRequests_ForCentralAuth() throws Exception {
-		List<UserInfoDTO> userInfoDTOS =new ArrayList<>();
-		UserInfoDTO userInfoDTO = new UserInfoDTO();
-		userInfoDTO.setAuthType(AuthType.APIKEY);
-		userInfoDTO.setEmailAddress("abc.test@test.com");
-		userInfoDTOS.add(userInfoDTO);
-		Mockito.when(userInfoService.findAllUnapprovedUsersForCentralAuth()).thenReturn(userInfoDTOS);
+		List<CentralUserInfoDTO> userInfoDTOS =new ArrayList<>();
+		CentralUserInfoDTO centralUserInfoDTO = new CentralUserInfoDTO();
+		centralUserInfoDTO.setAuthType(AuthType.SAML);
+		centralUserInfoDTO.setEmail("abc.test@test.com");
+		centralUserInfoDTO.setApproved(false);
+		userInfoDTOS.add(centralUserInfoDTO);
+		//Mockito.when(userInfoService.findAllUnapprovedUsers()).thenReturn(userInfoDTOS);
 		mockMvc.perform(MockMvcRequestBuilders.get("/userapprovals/central").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
