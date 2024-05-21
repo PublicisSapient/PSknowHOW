@@ -48,6 +48,7 @@ public class ProjectToolConfig extends BasicModel {
 	private String toolName;
 	private ObjectId basicProjectConfigId;
 	private ObjectId connectionId;
+	private boolean brokenConnection;
 	private String projectId;
 	private String projectKey;
 	private String jobName;

@@ -2780,4 +2780,8 @@ export class JiraConfigComponent implements OnInit {
       self.tool['projectKey'].enable();
     }
   }
+
+  redirectToConnections() {
+    this.router.navigate(['./dashboard/Config/connection-list']);
+  }
 }

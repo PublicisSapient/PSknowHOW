@@ -198,7 +198,8 @@
             [disableSave]="disableSave" [fieldMappingMetaData]="fieldMappingMetaData"
             [fieldMappingConfig]="fieldMappingConfig" [formData]="selectedFieldMapping"
             [selectedConfig]="selectedConfig" [selectedToolConfig]="selectedToolConfig" (reloadKPI)="reloadKPI()"
-            [thresholdUnit]="kpiData['kpiDetail']['kpiUnit']"></app-field-mapping-form>
+            [thresholdUnit]="kpiData['kpiDetail']['kpiUnit']"
+            [kpiId]="kpiData?.kpiId" [metaDataTemplateCode]="metaDataTemplateCode" [nodeId]="nodeId" [parentComp]="'kpicard'"></app-field-mapping-form>
     </ng-template>
     <ng-template pTemplate="footer"></ng-template>
     <ng-container *ngIf=" noData && !loading">

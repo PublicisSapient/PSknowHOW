@@ -7,9 +7,10 @@ import { Button } from "../../components/Button";
 import { Img } from "../../components/Img";
 import { FloatingInput } from "../../components/FloatingInput";
 import '../../App.css';
-import BgItem from "../../components/BgItem";
+import SuiteLogos from '../../components/SuiteLogos';
+import PSLogo from '../../components/PSLogo';
 
-const bg = ['KnowHOWGroup', 'RetrosGroup', 'APGroup'];
+
 
 const LoginPage = ({search}) => {
 
@@ -17,6 +18,7 @@ const LoginPage = ({search}) => {
     const [showLoader, setShowLoader] = useState(false);
     const [showSAMLLoader, setShowSAMLLoader] = useState(false);
     const methods = useForm({ mode: 'all' });
+    const userNamePattern = /^[A-Za-z0-9]+$/;
 
     const PerformSAMLLogin = () => {
         setShowSAMLLoader(true);
@@ -78,22 +80,10 @@ const LoginPage = ({search}) => {
 
     return (
         <div className="componentContainer flex h-screen max-w-screen">
-            <div className="w-3/5 h-screen gradient-container">
-                <div className="h-3/4 w-1/2 mt-36 m-auto">
-                    {bg.map((item, index) => (
-                        <BgItem key={index} item={item} />
-                    ))}
-                </div>
-                <div className="bg-image absolute h-[150px] w-[150px] bottom-0 left-0"></div>
-            </div>
+            <SuiteLogos/>
             <div className="w-2/5 p-12 h-screen bg-white-A700">
-                <div className='flex items-center'>
-                    <div className='h-[48px] w-1/3 ps-logo'></div>
-                    <div className='w-2/3 speed-suit-logo'><span>SPEED</span> <span>SUITE</span></div>
-
-                </div>
-                <div className='w-full mt-8 accelerate-container'>Accelerate your next.</div>
-
+                
+                <PSLogo/>
                 <div className='w-full mt-4 mb-2'>
                     <Text
                         className="text-left text-lg"
@@ -132,6 +122,10 @@ const LoginPage = ({search}) => {
                                 "minLength": {
                                     "value": 6,
                                     "message": "Field should contain at least 6 characters"
+                                },
+                                "pattern": {
+                                    "value": userNamePattern,
+                                    "message": 'Username can only contain letters and numbers'
                                 }
                             }}>
                         </FloatingInput>
@@ -148,6 +142,8 @@ const LoginPage = ({search}) => {
                         {(methods.formState.errors['password']) && <p className='errMsg'>{methods.formState.errors['password'].message}</p>}
                         
                         <Button
+                            color='blue_80'
+                            variant='fill'
                             className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[18px] w-full"
                             clickFn={methods.handleSubmit(PerformCredentialLogin)}
                             rightIcon={

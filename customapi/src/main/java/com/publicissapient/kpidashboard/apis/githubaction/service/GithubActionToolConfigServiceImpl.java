@@ -14,11 +14,14 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.githubaction.model.GithubActionWorkflowsDTO;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
@@ -43,6 +46,8 @@ public class GithubActionToolConfigServiceImpl {
 	private AesEncryptionService aesEncryptionService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private ConnectionService connectionService;
 
 	public List<GithubActionWorkflowsDTO> getGitHubWorkFlowList(String connectionId, String repoName) {
 
@@ -60,9 +65,8 @@ public class GithubActionToolConfigServiceImpl {
 
 			HttpEntity<?> httpEntity = new HttpEntity<>(RestAPIUtils.getHeaders(accessToken, true));
 			try {
-
+				connectionService.validateConnectionFlag(connection);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONParser respParser = new JSONParser();
 					JSONObject object = (JSONObject) respParser.parse(response.getBody());
@@ -85,9 +89,27 @@ public class GithubActionToolConfigServiceImpl {
 				}
 
 			} catch (Exception exception) {
+				isClientException(connection, exception);
 				log.error("Error while fetching getJenkinsJobNameList from {}:  {}", url, exception.getMessage());
 			}
 		}
 		return responseDTOList;
+	}
+
+	/**
+	 * 
+	 * @param connection
+	 *            connection
+	 * @param exception
+	 *            exception
+	 */
+	private void isClientException(Connection connection, Exception exception) {
+		if (exception instanceof HttpClientErrorException
+				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum
+					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+			connectionService.updateBreakingConnection(connection, errMsg);
+
+		}
 	}
 }

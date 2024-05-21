@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -40,9 +41,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.githubaction.model.GithubActionWorkflowsDTO;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -61,6 +64,8 @@ public class GithubActionToolConfigServiceImplTest {
 	@Mock
 	private RestAPIUtils restAPIUtils;
 
+	@Mock
+	private ConnectionService connectionService;
 	@Mock
 	private ConnectionRepository connectionRepository;
 
@@ -97,6 +102,16 @@ public class GithubActionToolConfigServiceImplTest {
         assertFalse(result.isEmpty());
         assertEquals(1, result.size());
     }
+
+	@Test
+	public void testGetGitHubWorkFlowListException() {
+
+		when(connectionRepository.findById(any())).thenReturn(Optional.of(new Connection()));
+		when(restTemplate.exchange(anyString(), any(), any(), eq(String.class)))
+				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+		doNothing().when(connectionService).updateBreakingConnection(eq(new Connection()), anyString());
+		githubActionToolConfigService.getGitHubWorkFlowList(connectionId, repoName);
+	}
 
 	@Test
     public void testGetGitHubWorkFlowList_InvalidConnectionId_ReturnsEmptyList() {

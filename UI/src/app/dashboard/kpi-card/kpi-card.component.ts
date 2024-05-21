@@ -64,6 +64,8 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
  checkIfViewer : boolean;
  lastSyncTime : any;
  isSyncPassedOrFailed;
+ metaDataTemplateCode : any;
+ @Input() nodeId: string = '';
 
   constructor(public service: SharedService,
     private http : HttpService,
@@ -310,9 +312,13 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   }
 
   getFieldMapping() {
-    this.http.getFieldMappings(this.selectedToolConfig[0].id).subscribe(mappings => {
-      if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 2) {
-        this.selectedFieldMapping = mappings['data'];
+    let obj = {
+      "releaseNodeId": this.nodeId || null
+    }
+    this.http.getFieldMappingsWithHistory(this.selectedToolConfig[0].id,this.kpiData.kpiId, obj).subscribe(mappings => {
+      if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 1) {
+        this.selectedFieldMapping = mappings['data'].fieldMappingResponses;
+        this.metaDataTemplateCode = mappings['data']?.metaTemplateCode
         this.displayConfigModel = true;
         this.loading = false;
 

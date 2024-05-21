@@ -19,8 +19,9 @@ package com.publicissapient.kpidashboard.jira.listener;
 
 import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDateToCustomFormat;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,6 +45,7 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
@@ -85,6 +87,9 @@ public class JobListenerScrum implements JobExecutionListener {
 	@Autowired
 	private JiraCommonService jiraCommonService;
 
+	@Autowired
+	JiraClientService jiraClientService;
+
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
 		// in future we can use this method to do something before job execution starts
@@ -104,6 +109,8 @@ public class JobListenerScrum implements JobExecutionListener {
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_SPRINT_HIERARCHY);
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+				CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
 		try {
 			if (jobExecution.getStatus() == BatchStatus.FAILED) {
@@ -116,10 +123,10 @@ public class JobListenerScrum implements JobExecutionListener {
 						break;
 					}
 				}
-				setExecutionInfoInTraceLog(false);
+				setExecutionInfoInTraceLog(false,	stepFaliureException);
 				sendNotification(stepFaliureException);
 			} else {
-				setExecutionInfoInTraceLog(true);
+				setExecutionInfoInTraceLog(true, null);
 			}
 		} catch (Exception e) {
 			log.error("An Exception has occured in scrum jobListener", e);
@@ -127,6 +134,15 @@ public class JobListenerScrum implements JobExecutionListener {
 			log.info("removing project with basicProjectConfigId {}", projectId);
 			// Mark the execution as completed
 			ongoingExecutionsService.markExecutionAsCompleted(projectId);
+            if (jiraClientService.isContainRestClient(projectId)){
+                try {
+                    jiraClientService.getRestClientMap(projectId).close();
+                } catch (IOException e) {
+					throw new RuntimeException("Failed to close rest client",e);// NOSONAR
+                }
+                jiraClientService.removeRestClientMapClientForKey(projectId);
+                jiraClientService.removeKerberosClientMapClientForKey(projectId);
+            }
 		}
 	}
 
@@ -134,7 +150,7 @@ public class JobListenerScrum implements JobExecutionListener {
 		FieldMapping fieldMapping = fieldMappingRepository.findByProjectConfigId(projectId);
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findByStringId(projectId).orElse(null);
 		if (fieldMapping == null || (fieldMapping.getNotificationEnabler() && projectBasicConfig != null)) {
-			handler.sendEmailToProjectAdmin(
+			handler.sendEmailToProjectAdminAndSuperAdmin(
 					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost()
 							+ " for \"" + getProjectName(projectBasicConfig) + "\"",
 					ExceptionUtils.getRootCauseMessage(stepFaliureException), projectId);
@@ -148,13 +164,18 @@ public class JobListenerScrum implements JobExecutionListener {
 	}
 
 
-	private void setExecutionInfoInTraceLog(boolean status) {
+	private void setExecutionInfoInTraceLog(boolean status, Throwable stepFailureException) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
-				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Arrays.asList(projectId));
+				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Collections.singletonList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(status);
+				if (stepFailureException != null && processorExecutionTraceLog.isProgressStats()) {
+					String failureMessage = "An error occurred. Please check logs.";
+					processorExecutionTraceLog.setErrorMessage(failureMessage);
+					processorExecutionTraceLog.setFailureLog(stepFailureException.getMessage());
+				}
 			}
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);
 		}
