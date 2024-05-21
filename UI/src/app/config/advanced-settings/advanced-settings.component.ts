@@ -162,7 +162,9 @@ export class AdvancedSettingsComponent implements OnInit {
               if(pDetails.processorName !== 'Jira'){
                 pDetails['executionOngoing'] = false;
               }
-              this.dataMismatchObj[pDetails.processorName] = pDetails.dataMismatch;
+              if(pDetails.dataMismatch && pDetails.firstRunDate){
+                this.dataMismatchObj[pDetails.processorName] = pDetails.dataMismatch;
+              }
           })
 
           if(that.findTraceLogForTool('Jira')?.executionOngoing){
@@ -173,7 +175,7 @@ export class AdvancedSettingsComponent implements OnInit {
             };
             that.getProcessorCompletionSteps(runProcessorInput);
           }
-
+          
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error in fetching processor\'s execution date. Please try after some time.' });
         }
