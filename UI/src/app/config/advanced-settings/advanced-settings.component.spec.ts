@@ -202,7 +202,7 @@ describe('AdvancedSettingsComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     confirmationService = TestBed.inject(ConfirmationService);
     messageService = TestBed.inject(MessageService);
-    fixture.detectChanges();
+    // fixture.detectChanges();
   });
 
   afterEach(() => {
@@ -217,7 +217,7 @@ describe('AdvancedSettingsComponent', () => {
   it('should load processor data', (done) => {
     component.selectedView = 'processor_state';
     component.getProcessorData();
-    fixture.detectChanges();
+    // fixture.detectChanges();
     httpMock.match(baseUrl + '/api/processor')[0].flush(fakeProcessorData);
     if (component.processorData['success']) {
       expect(Object.keys(component.processorData).length).toEqual(Object.keys(fakeProcessorData).length);
@@ -229,7 +229,7 @@ describe('AdvancedSettingsComponent', () => {
 
   it('should switch view to Processor State', (done) => {
     component.switchView(switchViewEventProcessor);
-    fixture.detectChanges();
+    // fixture.detectChanges();
     expect(component.selectedView).toBe('processor_state');
     done();
   });
@@ -239,7 +239,7 @@ describe('AdvancedSettingsComponent', () => {
     const getProjectsResponse = { message: 'Fetched successfully', success: true, data: [{ id: '601bca9569515b0001d68182', projectName: 'TestRIshabh', createdAt: '2021-02-04T10:21:09', isKanban: false }] };
     component.selectedView = 'processor_state';
     component.getProjects();
-    fixture.detectChanges();
+    // fixture.detectChanges();
     httpMock.match(baseUrl + '/api/basicconfigs')[0].flush(getProjectsResponse);
     // expect(component.userProjects).toEqual([{ "name": "TestUser", "id": "601bca9569515b0001d68182" }]);
   });
@@ -248,7 +248,7 @@ describe('AdvancedSettingsComponent', () => {
     const selectedProjects = { originalEvent: { isTrusted: true }, value: {id: '601bca9569515b0001d68182', name: 'test'}, itemValue: '601bca9569515b0001d68182' };
     const processorName = 'Jira';
     component.updateProjectSelection(selectedProjects);
-    fixture.detectChanges();
+    // fixture.detectChanges();
     expect(component.selectedProject).toEqual({id: '601bca9569515b0001d68182', name: 'test'});
   });
 
@@ -396,7 +396,7 @@ describe('AdvancedSettingsComponent', () => {
     }
     component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
     component.runProcessor('Github');
-    fixture.detectChanges();
+    // fixture.detectChanges();
     httpMock.match(baseUrl + '/api/processor/trigger/Github')[0].flush({ message: 'Got HTTP response: 200 on url: http://nonjira-processor:50008/processor/run', success: true });
   });
 
@@ -788,7 +788,7 @@ describe('AdvancedSettingsComponent', () => {
 
     component.deleteProcessorDataReq(processorDetails, selectedProject);
 
-    fixture.detectChanges();
+    // fixture.detectChanges();
 
     expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
     expect(httpService.deleteProcessorData).toHaveBeenCalledTimes(2);
@@ -829,7 +829,7 @@ describe('AdvancedSettingsComponent', () => {
 
     component.deleteProcessorDataReq(processorDetails, selectedProject);
 
-    fixture.detectChanges();
+    // fixture.detectChanges();
 
     expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
     expect(httpService.deleteProcessorData).toHaveBeenCalledTimes(2);
@@ -855,7 +855,7 @@ describe('AdvancedSettingsComponent', () => {
 
     component.deleteProcessorDataReq(processorDetails, selectedProject);
 
-    fixture.detectChanges();
+    // fixture.detectChanges();
 
     expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
     expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Something went wrong. Please try again after sometime.' });
