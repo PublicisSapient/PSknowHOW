@@ -174,6 +174,7 @@ public class JobListenerScrum implements JobExecutionListener {
 				if (stepFailureException != null && processorExecutionTraceLog.isProgressStats()) {
 					String failureMessage = "An error occurred. Please check logs.";
 					processorExecutionTraceLog.setErrorMessage(failureMessage);
+					processorExecutionTraceLog.setFailureLog(stepFailureException.getMessage());
 				}
 			}
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);
