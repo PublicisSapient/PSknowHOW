@@ -1,25 +1,52 @@
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true"
   (onHide)="clearModalDataOnClose()">
   <p-header>
-    {{modalDetails['header']}}
-    <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
-      class="p-button-secondary p-p-2 export-button" (click)="exportExcel(modalDetails['header'])"></button>
-  </p-header>
+      <div>
+        {{modalDetails['header']}}
+        <div class="export-button">
+          <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
+            class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('filtered')"></button>
+          <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export All"
+            class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('all')"></button>
+        </div>
+      </div>
+    </p-header>
 
   <div class="dialog-body p-mb-4">
-    <p-table *ngIf="modalDetails['tableValues'].length > 0 ; else showNoDataMessage"
-      [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines" loadingIcon="loading-img"
-      [autoLayout]="true">
+    <p-table #table *ngIf="modalDetails['tableValues'].length > 0 ; else showNoDataMessage"
+      [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img"
+      [scrollable]="true" scrollHeight="65vh">
       <ng-template pTemplate="header">
         <tr>
-          <ng-container *ngFor="let col of modalDetails['tableHeadings']">
-            <th id="{{col}}" scope="col">{{col}}</th>
+          <ng-container *ngFor="let item of modalDetails['tableHeadings']">
+            <th id="{{item}}" scope="item" class="min-max-width" [ngClass]="{'overlap': filteredColumn === item }">
+              <div class="table-head">
+                <span [ngStyle]="{'width':'max-content','margin-right': '1rem'}">{{item}}</span>
+                <div class="p-d-flex">
+                  <p-columnFilter [field]="item" matchMode="in"
+                    [showMenu]="false" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
+                    [showClearButton]="false" [showApplyButton]="false" [style]="{'margin-top':'2px'}">
+                    <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
+                      <p-multiSelect resetFilterOnHide="true" autofocusFilter="true" (onPanelShow)="onFilterClick(item)"
+                        (onPanelHide)="onFilterBlur(item)" [options]="this.tableColumnData[item]"
+                        [placeholder]="'Select '+ item" (onChange)="filter($event.value)" [optionValue]="'value'"
+                        [optionLabel]="'name'" [ngModel]="tableColumnForm[item]" styleClass="column-filter">
+                        <ng-template pTemplate="selectedItems">
+                          <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
+                        </ng-template>
+                      </p-multiSelect>
+                    </ng-template>
+                  </p-columnFilter>
+                  <p-sortIcon [pSortableColumn]="item" [field]="item"></p-sortIcon>
+                </div>
+              </div>
+            </th>
           </ng-container>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-rowData>
         <tr>
-          <td class="font-small" *ngFor="let column of modalDetails['tableHeadings']">
+          <td class="font-small min-max-width" *ngFor="let column of modalDetails['tableHeadings']">
             <ng-container *ngIf="!checkIfArray(rowData[column]); else displayArrayData">
               <a *ngIf="rowData[column]?.hasOwnProperty('hyperlink') ; else displayCellData"
                 [href]="rowData[column]['hyperlink']" class="text-blue" rel="noopener" target="_blank">{{rowData[column]['text']}}</a>

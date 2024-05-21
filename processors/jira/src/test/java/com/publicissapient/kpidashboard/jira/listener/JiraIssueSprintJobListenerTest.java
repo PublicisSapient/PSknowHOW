@@ -23,11 +23,14 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,12 +53,23 @@ public class JiraIssueSprintJobListenerTest {
 	@Mock
 	private JiraProcessorCacheEvictor processorCacheEvictor;
 
+	@Mock
+	private JiraClientService jiraClientService;
+
+	@Mock
+	private ProcessorJiraRestClient client;
+
+	@Mock
+	private KerberosClient kerberosClient;
+
 	@InjectMocks
 	private JiraIssueSprintJobListener listener;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
+		when(jiraClientService.isContainRestClient(null)).thenReturn(true);
+		when(jiraClientService.getRestClientMap(null)).thenReturn(client);
 	}
 
 	@Test
@@ -81,7 +95,7 @@ public class JiraIssueSprintJobListenerTest {
 		assertTrue(fetchDetails.isFetchSuccessful());
 
 		// Verify that the cache is cleared
-		verify(processorCacheEvictor, times(1)).evictCache(anyString(), anyString());
+		verify(processorCacheEvictor, times(2)).evictCache(anyString(), anyString());
 
 		// Verify that the sprint trace log is saved
 		verify(sprintTraceLogRepository, times(1)).save(fetchDetails);

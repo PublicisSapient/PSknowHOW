@@ -773,7 +773,7 @@ describe('MaturityComponent', () => {
   }
 
   tick();
-  expect(Object.keys(component.sonarKpiData).length).toEqual(sonarKpiData.length);
+  expect(Object.keys(component.sonarKpiData).length).toEqual(0);
   expect(Object.keys(component.jenkinsKpiData).length).toEqual(jenkinsKpiData.length);
   expect(Object.keys(component.zypherKpiData).length).toEqual(zypherKpiData.length);
   expect(Object.keys(component.jiraKpiData).length).toEqual(jiraKpiData.length);

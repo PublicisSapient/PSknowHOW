@@ -22,6 +22,7 @@ const RegisterPage = () => {
     const passwordPattern = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{7,}/;
     const passwordError = 'At least 8 characters in length with Lowercase letters, Uppercase letters, Numbers and Special characters';
     const emailPatthern = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$/;
+    const userNamePattern = /^[A-Za-z0-9]+$/;
     const password = methods.watch('password', '');
 
     const onSubmit = (data) => {
@@ -71,6 +72,10 @@ const RegisterPage = () => {
                                 "minLength": {
                                     "value": 6,
                                     "message": "Field should contain at least 6 characters"
+                                },
+                                "pattern": {
+                                    "value": userNamePattern,
+                                    "message": 'Username can only contain letters and numbers'
                                 }
                             }}>
                         </FloatingInput>

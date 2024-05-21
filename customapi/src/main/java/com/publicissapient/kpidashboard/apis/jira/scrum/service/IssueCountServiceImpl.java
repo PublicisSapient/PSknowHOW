@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -79,13 +80,14 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
 	private ConfigHelperService configHelperService;
-
 	@Autowired
 	private FilterHelperService flterHelperService;
 	@Autowired
 	private SprintRepository sprintRepository;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private CacheService cacheService;
 
 	/**
 	 * Gets Qualifier Type
@@ -355,7 +357,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 		}
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.ISSUE_COUNT.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.ISSUE_COUNT.getColumns(sprintLeafNodeList,cacheService, flterHelperService));
 
 	}
 

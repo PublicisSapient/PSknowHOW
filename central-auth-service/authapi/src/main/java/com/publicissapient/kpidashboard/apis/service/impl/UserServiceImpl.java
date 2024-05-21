@@ -152,7 +152,7 @@ public class UserServiceImpl implements UserService {
 		String fullEmail = authentication.getName();
 		// Extract the substring before '@' as the username
 		String username = fullEmail;
-		if (fullEmail != null && fullEmail.contains("@")) {
+		if (fullEmail != null && fullEmail.contains("@") && !authType.equals(STANDARD)) {
 			username = fullEmail.substring(0, fullEmail.indexOf("@"));
 		}
 		String password = (String) authentication.getCredentials();

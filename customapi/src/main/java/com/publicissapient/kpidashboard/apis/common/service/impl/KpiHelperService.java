@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,6 +37,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1398,8 +1400,7 @@ public class KpiHelperService { // NOPMD
 					.filter(t -> t.getBasicProjectConfigId().toString().equals(projectBasicConfigId))
 					.map(ProjectToolConfig::getId).findFirst().orElse(null);
 
-			List<FieldMappingStructure> fieldMappingStructureList1 = fieldMappingStructureList.stream()
-					.filter(f -> fieldList.contains(f.getFieldName())).collect(Collectors.toList());
+			List<FieldMappingStructure> fieldMappingStructureList1 = getFieldMappingStructure(fieldMappingStructureList, fieldList);
 
 			fieldMappingStructureResponse.setFieldConfiguration(
 					CollectionUtils.isNotEmpty(fieldMappingStructureList1) ? fieldMappingStructureList1
@@ -1412,6 +1413,13 @@ public class KpiHelperService { // NOPMD
 			log.info("kpi Id" + kpiId + "No Enum is present");
 		}
 		return fieldMappingStructureResponse;
+	}
+
+
+	public List<FieldMappingStructure> getFieldMappingStructure(List<FieldMappingStructure> fieldMappingStructureList, List<String> fieldList){
+		return fieldMappingStructureList.stream()
+				.filter(f -> fieldList.contains(f.getFieldName())).collect(Collectors.toList());
+
 	}
 
 	public boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue,
@@ -1630,6 +1638,60 @@ public class KpiHelperService { // NOPMD
 	public static long convertMilliSecondsToHours(double milliseconds) {
 		double hoursExact = milliseconds / (3600000);
 		return Math.round(hoursExact);
+	}
+
+	/**
+	 * gets next date excluding weekends
+	 * 
+	 * @param duration
+	 *            time duration
+	 * @param currentDate
+	 *            current date
+	 * @return next local date excluding weekends
+	 */
+	public static LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
+		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
+			currentDate = currentDate.minusWeeks(1);
+		} else {
+			currentDate = currentDate.minusDays(1);
+			while (currentDate.getDayOfWeek() == DayOfWeek.SATURDAY || currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+				currentDate = currentDate.minusDays(1);
+			}
+		}
+		return currentDate;
+	}
+
+	/**
+	 * get date range excluding weekends
+	 *
+	 * @param date
+	 *            start date
+	 * @param period
+	 *            week or day
+	 * @return CustomDateRange
+	 */
+	public static CustomDateRange getStartAndEndDateExcludingWeekends(LocalDate date, String period) {
+		CustomDateRange dateRange = new CustomDateRange();
+		LocalDate startDate = null;
+		LocalDate endDate = null;
+		if (period.equalsIgnoreCase(CommonConstant.WEEK)) {
+			LocalDate monday = date;
+			while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
+				monday = monday.minusDays(1);
+			}
+			startDate = monday;
+			LocalDate friday = date;
+			while (friday.getDayOfWeek() != DayOfWeek.FRIDAY) {
+				friday = friday.plusDays(1);
+			}
+			endDate = friday;
+		} else {
+			startDate = date;
+			endDate = date;
+		}
+		dateRange.setStartDate(startDate);
+		dateRange.setEndDate(endDate);
+		return dateRange;
 	}
 
 	/**

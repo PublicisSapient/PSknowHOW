@@ -111,7 +111,7 @@ public class NotificationServiceImplTest {
                 globalConfig.getEmailServerDetail().getEmailPort());
         notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic, false, kafkaTemplate);
         Assert.assertThrows(MailSendException.class, () ->
-                notificationService.sendEmailWithoutKafka(emailList, customData, notSubject, notKey, topic, "Forgot_Password_Template")
+                notificationService.sendEmailWithoutKafka(emailList, customData, notSubject, notKey, topic,true, "Forgot_Password_Template")
         );
 
     }
@@ -131,7 +131,7 @@ public class NotificationServiceImplTest {
                 null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
                 globalConfig.getEmailServerDetail().getEmailPort());
         notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic, false, kafkaTemplate);
-        notificationService.sendEmailWithoutKafka(emailList, customData, notSubject, notKey, topic, "Forgot_Password_Template");
+        notificationService.sendEmailWithoutKafka(emailList, customData, notSubject, notKey, topic, false , "Forgot_Password_Template");
     }
 
     @Test

@@ -184,19 +184,23 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest) {
-		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
-				.cacheAccountHierarchyData();
+		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService.cacheAccountHierarchyData();
 
-		List<AccountHierarchyData> projectAccountHierarchyData = accountDataListAll.stream()
-				.filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId()
-						.equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.PROJECT.toLowerCase()).get(0)))
-				.toList();
-		if (projectAccountHierarchyData.isEmpty()) {
-			return accountDataListAll.stream().filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId()
-					.equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).get(0))).toList();
+		List<AccountHierarchyData> hierarchyData = new ArrayList<>();
+
+		String targetNodeId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).get(0);
+
+		for (AccountHierarchyData data : accountDataListAll) {
+			if (data.getLeafNodeId().equalsIgnoreCase(targetNodeId) ||
+					data.getNode().stream().anyMatch(node -> node.getId().equalsIgnoreCase(targetNodeId))) {
+				hierarchyData.add(data);
+				break;
+			}
 		}
-		return projectAccountHierarchyData;
+
+		return hierarchyData;
 	}
+
 
 	private void updateJiraIssueList(List<AccountHierarchyData> filteredAccountDataList) {
 		futureProjectWiseSprintDetails(filteredAccountDataList.get(0).getBasicProjectConfigId(),

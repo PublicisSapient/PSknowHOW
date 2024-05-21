@@ -79,51 +79,53 @@ public class NotificationHandlerTest {
     }
 
     @Test
-    public void testSendEmailToProjectAdmin() {
-        // Mock data
-        String value = "Test message";
-        String allFailureExceptions = "Test exceptions";
-        String projectBasicConfigId = "5fd99f7bc8b51a7b55aec836";
-        List<String> emailAddresses = Arrays.asList("admin1@example.com");
+	public void testSendEmailToProjectAdmin() {
+		// Mock data
+		String value = "Test message";
+		String allFailureExceptions = "Test exceptions";
+		String projectBasicConfigId = "5fd99f7bc8b51a7b55aec836";
+		List<String> emailAddresses = Arrays.asList("admin1@example.com");
 
-        // Mock behavior
-        when(jiraProcessorConfig.getDomainNames()).thenReturn(Collections.singletonList("example.com"));
-        when(jiraProcessorConfig.getNotificationSubject()).thenReturn(Collections.singletonMap(
-                "errorInJiraProcessor", "TestSubject"
-        ));
-        when(userInfoRepository.findByAuthoritiesIn(Collections.singletonList(NotificationHandler.ROLE_PROJECT_ADMIN)))
-                .thenReturn(Collections.singletonList(createMockUserInfo()));
-        HierarchyLevel hierarchyLevel = new HierarchyLevel();
-        hierarchyLevel.setLevel(1);
-        hierarchyLevel.setHierarchyLevelId("level1");
-        hierarchyLevel.setHierarchyLevelName("Level One");
+		// Mock behavior
+		when(jiraProcessorConfig.getDomainNames()).thenReturn(Collections.singletonList("example.com"));
+		when(jiraProcessorConfig.getNotificationSubject())
+				.thenReturn(Collections.singletonMap("errorInJiraProcessor", "TestSubject"));
+		when(userInfoRepository.findByAuthoritiesIn(
+				Arrays.asList(NotificationHandler.ROLE_PROJECT_ADMIN, NotificationHandler.ROLE_SUPERADMIN)))
+						.thenReturn(Collections.singletonList(createMockUserInfo()));
+		HierarchyLevel hierarchyLevel = new HierarchyLevel();
+		hierarchyLevel.setLevel(1);
+		hierarchyLevel.setHierarchyLevelId("level1");
+		hierarchyLevel.setHierarchyLevelName("Level One");
 
-        // Mock HierarchyValue
-        HierarchyValue hierarchyValue = new HierarchyValue();
-        hierarchyValue.setHierarchyLevel(hierarchyLevel);
-        hierarchyValue.setValue("SomeValue");
+		// Mock HierarchyValue
+		HierarchyValue hierarchyValue = new HierarchyValue();
+		hierarchyValue.setHierarchyLevel(hierarchyLevel);
+		hierarchyValue.setValue("SomeValue");
 
-        // Mock ProjectBasicConfig
-        ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
-        projectBasicConfig.setId(new ObjectId(projectBasicConfigId));
-        projectBasicConfig.setProjectName("TestProject");
-        projectBasicConfig.setHierarchy(Collections.singletonList(hierarchyValue));
+		// Mock ProjectBasicConfig
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId(projectBasicConfigId));
+		projectBasicConfig.setProjectName("TestProject");
+		projectBasicConfig.setHierarchy(Collections.singletonList(hierarchyValue));
 
-        // Mock the findById method
-        when(projectBasicConfigRepository.findById(any()))
-                .thenReturn(Optional.of(projectBasicConfig));
+		// Mock the findById method
+		when(projectBasicConfigRepository.findById(any())).thenReturn(Optional.of(projectBasicConfig));
 
-        // Call the method under test
-        notificationHandler.sendEmailToProjectAdmin(value, allFailureExceptions, projectBasicConfigId);
-        Map<String, String> customData = new HashMap<>();
-        customData.put("Notification_Error", allFailureExceptions);
-        customData.put("Notification_Msg", value);
-        // Verify the interactions
-        verify(notificationService).sendNotificationEvent(emailAddresses, customData, "TestSubject", "Error_In_Jira_Processor",
-                null, false, kafkaTemplate, "", false);
-    }
+		// Call the method under test
+		notificationHandler.sendEmailToProjectAdminAndSuperAdmin(value, allFailureExceptions, projectBasicConfigId);
+		Map<String, String> customData = new HashMap<>();
+		customData.put("Notification_Error", allFailureExceptions);
+		customData.put("Notification_Msg", value);
+		// Verify the interactions
+		verify(notificationService).sendNotificationEvent(emailAddresses, customData, "TestSubject",
+				"Error_In_Jira_Processor", null, false, kafkaTemplate, "", false);
+	}
 
     private UserInfo createMockUserInfo() {
+        Map<String, Boolean> notificationEmail = new HashMap<>();
+        notificationEmail.put("accessAlertNotification" , false);
+        notificationEmail.put("errorAlertNotification" , true);
         UserInfo userInfo = new UserInfo();
         userInfo.setEmailAddress("admin1@example.com");
         ProjectsAccess projectsAccess = new ProjectsAccess();
@@ -135,6 +137,7 @@ public class NotificationHandlerTest {
         accessNode.setAccessItems(Collections.singletonList(accessItem));
         projectsAccess.setAccessNodes(Collections.singletonList(accessNode));
         userInfo.setProjectsAccess(Collections.singletonList(projectsAccess));
+        userInfo.setNotificationEmail(notificationEmail);
         return userInfo;
     }
 }

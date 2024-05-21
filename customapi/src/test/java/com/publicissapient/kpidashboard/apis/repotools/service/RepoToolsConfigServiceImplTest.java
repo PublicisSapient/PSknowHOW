@@ -159,7 +159,6 @@ public class RepoToolsConfigServiceImplTest {
 
         when(customApiConfig.getRepoToolAPIKey()).thenReturn("repoToolAPIKey");
         when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
-        when(restAPIUtils.decryptPassword(anyString())).thenReturn("decryptedApiKey");
         when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(repoToolsProvider);
         when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
                 .thenReturn(projectBasicConfig);

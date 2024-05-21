@@ -28,6 +28,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
+import com.publicissapient.kpidashboard.common.processortool.service.impl.ProcessorToolConnectionServiceImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -87,7 +90,6 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
 	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
-	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
 	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
 	private static final String NO_RESULT_QUERY = "No result available for query: {}";
 	private static final String TEST_AUTOMATED_FLAG = "testAutomatedFlag";
@@ -116,6 +118,8 @@ public class JiraTestServiceImpl implements JiraTestService {
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Autowired
 	private TestCaseDetailsRepository testCaseDetailsRepository;
+	@Autowired
+	private ProcessorToolConnectionServiceImpl processorToolConnectionService;
 	private ProcessorJiraRestClient client;
 
 	/**
@@ -616,13 +620,13 @@ public class JiraTestServiceImpl implements JiraTestService {
 	private void setStoryLinkWithDefect(Issue issue, TestCaseDetails testCaseDetail) {
 		if (null != issue.getIssueLinks()) {
 			Set<String> defectStorySet = new HashSet<>();
-			for (IssueLink issueLink : issue.getIssueLinks()) {
-				if (CollectionUtils.isNotEmpty(jiraTestProcessorConfig.getExcludeLinks())
-						&& jiraTestProcessorConfig.getExcludeLinks().stream()
-								.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
-					break;
+			if (CollectionUtils.isNotEmpty(jiraTestProcessorConfig.getExcludeLinks())) {
+				for (IssueLink issueLink : issue.getIssueLinks()) {
+					if (jiraTestProcessorConfig.getExcludeLinks().stream()
+							.noneMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
+						defectStorySet.add(issueLink.getTargetIssueKey());
+					}
 				}
-				defectStorySet.add(issueLink.getTargetIssueKey());
 			}
 			testCaseDetail.setDefectStoryID(defectStorySet);
 		}
@@ -779,8 +783,10 @@ public class JiraTestServiceImpl implements JiraTestService {
 							Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal());
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-					log.error(ERROR_MSG_401);
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 400 && e.getStatusCode().get() < 500) {
+					String errMsg = ClientErrorMessageEnum.fromValue(e.getStatusCode().get()).getReasonPhrase();
+					processorToolConnectionService
+							.updateBreakingConnection(projectConfig.getProcessorToolConnection().getConnectionId(), errMsg);
 				} else {
 					log.info(NO_RESULT_QUERY, query);
 					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
@@ -815,6 +821,11 @@ public class JiraTestServiceImpl implements JiraTestService {
 			userTimeZone = getUserTimeZone(getDataFromServer(processorToolConnection, (HttpURLConnection) connection));
 
 		} catch (RestClientException rce) {
+			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 400 && rce.getStatusCode().get() < 500) {
+				String errMsg = ClientErrorMessageEnum.fromValue(rce.getStatusCode().get()).getReasonPhrase();
+				processorToolConnectionService
+						.updateBreakingConnection(projectConfig.getProcessorToolConnection().getConnectionId(), errMsg);
+			}
 			log.error("Client exception when loading statuses", rce);
 			throw rce;
 		} catch (MalformedURLException mfe) {

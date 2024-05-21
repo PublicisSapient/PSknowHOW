@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
@@ -45,6 +46,7 @@ import org.testng.Assert;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
@@ -63,6 +65,8 @@ import com.publicissapient.kpidashboard.common.constant.Role;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.Tool;
+import com.publicissapient.kpidashboard.common.model.azure.AzureStateCategory;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -71,6 +75,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.azure.AzureStateCategoryRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
@@ -91,6 +96,8 @@ public class DailyStandupServiceImplTest {
 	private ProjectBasicConfigRepository projectConfigRepository;
 	@Mock
 	private CapacityKpiDataRepository capacityKpiDataRepository;
+	@Mock
+	private AzureStateCategoryRepository azureStateCategoryRepository;
 
 	@Mock
 	private FieldMappingRepository fieldMappingRepository;
@@ -174,7 +181,7 @@ public class DailyStandupServiceImplTest {
 		CapacityKpiData capacityKpiData = new CapacityKpiData();
 		capacityKpiData.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
 		capacityKpiData.setCapacityPerSprint(12.0);
-
+		when(configHelperService.getToolItemMap()).thenReturn(setToolMap());
 		KpiElement kpiData = dailyStandupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 		assertNotNull(kpiData.getTrendValueList());
@@ -198,6 +205,7 @@ public class DailyStandupServiceImplTest {
 		when(jiraIssueRepository.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(anyString(), anySet(),
 				anyList())).thenReturn(new HashSet<>(subTasks));
 		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(anyString())).thenReturn(jiraReleasStatus);
+		when(configHelperService.getToolItemMap()).thenReturn(setToolMap());
 		try {
 
 			KpiElement kpiElement = dailyStandupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -242,7 +250,7 @@ public class DailyStandupServiceImplTest {
 		assigneeCapacity.setAvailableCapacity(56.0);
 		capacityList.add(assigneeCapacity);
 		capacityKpiData.setAssigneeCapacity(capacityList);
-
+		when(configHelperService.getToolItemMap()).thenReturn(setToolMap());
 		when(capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(any(), any())).thenReturn(capacityKpiData);
 		try {
 			KpiElement kpiElement = dailyStandupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -261,6 +269,69 @@ public class DailyStandupServiceImplTest {
 
 		}
 
+	}
+
+	/*
+	 * when DSV is called for an active sprint, with role provided
+	 */
+	@Test
+	public void getKpiDataWithActiveSprintAndCapcityAzure() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		sprintDetails.setState(SprintDetails.SPRINT_STATE_ACTIVE);
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(jiraIssueRepository.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(anyString(), anySet(),
+				anyList())).thenReturn(new HashSet<>(subTasks));
+
+		CapacityKpiData capacityKpiData = new CapacityKpiData();
+		capacityKpiData.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
+		capacityKpiData.setCapacityPerSprint(12.0);
+
+		List<AssigneeCapacity> capacityList = new ArrayList<>();
+		AssigneeCapacity assigneeCapacity = new AssigneeCapacity();
+		assigneeCapacity.setUserId("testUser1");
+		assigneeCapacity.setUserName("testUser1");
+		assigneeCapacity.setRole(Role.TESTER);
+		assigneeCapacity.setAvailableCapacity(56.0);
+		capacityList.add(assigneeCapacity);
+		capacityKpiData.setAssigneeCapacity(capacityList);
+		when(configHelperService.getToolItemMap()).thenReturn(setToolMapAzure());
+		when(capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(any(), any())).thenReturn(capacityKpiData);
+		when(azureStateCategoryRepository.findByBasicProjectConfigId(anyString()))
+				.thenReturn(createAzureStateCategory());
+		try {
+			KpiElement kpiElement = dailyStandupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
+			assertNotNull(kpiElement.getTrendValueList());
+			List<DailyStandupServiceImpl.UserWiseCardDetail> trendValueList = (List<DailyStandupServiceImpl.UserWiseCardDetail>) kpiElement
+					.getTrendValueList();
+			List<DailyStandupServiceImpl.UserWiseCardDetail> unassigned = trendValueList.stream()
+					.filter(issue -> issue.getRole().equalsIgnoreCase("Unassigned")).collect(Collectors.toList());
+			Assert.assertEquals(unassigned.size(), 5);
+			Assert.assertEquals(trendValueList.stream()
+					.filter(issue -> issue.getRole().equalsIgnoreCase(Role.TESTER.getRoleValue()))
+					.collect(Collectors.toList()).size(), 1);
+
+		} catch (ApplicationException enfe) {
+
+		}
+
+	}
+
+	private AzureStateCategory createAzureStateCategory() {
+		AzureStateCategory azureStateCategory = new AzureStateCategory();
+		Set<String> list = new HashSet<>();
+		list.add("Proposed");
+		list.add("New");
+		azureStateCategory.setBasicProjectConfigId("6335363749794a18e8a4479b");
+		azureStateCategory.setCompletedList(list);
+		azureStateCategory.setProposedList(list);
+		azureStateCategory.setInProgressList(list);
+		azureStateCategory.setResolvedList(list);
+		azureStateCategory.setRemovedList(list);
+		return azureStateCategory;
 	}
 
 	private void setMockProjectConfig() {
@@ -286,4 +357,26 @@ public class DailyStandupServiceImplTest {
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}
+
+	private Map<ObjectId, Map<String, List<Tool>>> setToolMap() {
+		Map<String, List<Tool>> toolGroup = new HashMap<>();
+		toolGroup.put(Constant.TOOL_JIRA, new ArrayList<>());
+		Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
+		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
+		return toolMap;
+	}
+
+	private Map<ObjectId, Map<String, List<Tool>>> setToolMapAzure() {
+		Map<String, List<Tool>> toolGroup = new HashMap<>();
+		Tool tool = new Tool();
+		tool.setUrl("url");
+		tool.setBranch("branch");
+		tool.setTool("toolType");
+		tool.setProcessorItemList(new ArrayList<>());
+		toolGroup.put(Constant.TOOL_AZURE, Arrays.asList(tool));
+		Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
+		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
+		return toolMap;
+	}
+
 }

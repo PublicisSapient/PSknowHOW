@@ -23,20 +23,25 @@
 
                 <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of formConfig[section]">
 
-                  <div><span *ngIf="field?.processorCommon"><i class="fas fa-sync-alt p-mr-2"></i></span>
-                    <label class="field-title">
-                        {{field['fieldLabel']}}
-                        <span class="font-black p-mr-1" *ngIf="field?.mandatory">*</span>
-                        <span class="fa fa-info-circle"
-                            aria-hidden="true" pTooltip="<span>
-                                            Definition:
-                                            {{field.tooltip.definition}} <br>
-                                            {{field.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }}
-                                             {{field.tooltip.kpiImpacted ? field.tooltip.kpiImpacted : '' }}
-                                            </span>" tooltipPosition="top" tooltipEvent="hover"
-                            tooltipStyleClass="tooltiptext" [escape]="false"></span>
-                    </label>
-                  </div>
+                <div class="p-d-flex p-align-center">
+                    <div><span *ngIf="field?.processorCommon"><i class="fas fa-sync-alt p-mr-2"></i></span>
+                        <label class="field-title">
+                            {{field['fieldLabel']}}
+                            <span class="font-black p-mr-1" *ngIf="field?.mandatory">*</span>
+                            <span class="fa fa-info-circle" aria-hidden="true" pTooltip="<span>
+                                                            Definition:
+                                                            {{field.tooltip.definition}} <br>
+                                                            {{field.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }}
+                                                             {{field.tooltip.kpiImpacted ? field.tooltip.kpiImpacted : '' }}
+                                                            </span>" tooltipPosition="top" tooltipEvent="hover"
+                                tooltipStyleClass="tooltiptext" [escape]="false"></span>
+                        </label>
+                    </div>
+                        <div id="comment-summary" class="btn-custom rounded filter-btn pt-3">
+                            <img #commentSummary class="p-p-2 h-40 cursor-pointer" (click)="hitoryPopup.toggle($event);handleBtnClick(field.fieldName);"
+                                src="../../../assets/img/RequiresSyncIcon.svg" alt="History" />
+                    </div>
+                </div>
                     <ng-container *ngIf="!field?.nestedFields else nestedFieldContainer">
                         <div class="w-60vw">
                             <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData" [fieldConfig]="field"
@@ -76,7 +81,7 @@
 </form>
 <div class="save-container p-mt-5 p-mb-1">
     <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-mr-3" icon="pi pi-save"
-        iconPos="left" label="Save" (click)="save()" [disabled]="disableSave || form.invalid"></button>
+        iconPos="left" label="Save" (click)="save()" [disabled]="disableSave || form.invalid || !isFormDirty"></button>
     <!-- <button pButton pRipple type="button" class="p-button-lg p-button-primary p-mr-3" icon="pi pi-download"
         iconPos="left" label="Export" (click)="export()" [disabled]="form.invalid"></button> -->
 </div>
@@ -118,3 +123,22 @@
         <button type="button" (click)="templateInfoDialog.accept()" pButton label="Proceed"></button>
     </p-footer>
 </p-confirmDialog>
+
+<p-overlayPanel #hitoryPopup styleClass="hiatoryOverlayWrapper" [showCloseIcon]="true">
+    <div class="comment-inner-section">
+    <i *ngIf="showSpinner" class="fas fa-circle-notch icon-spinner"></i>
+    <ng-container *ngIf="individualFieldHistory?.length > 0 && !showSpinner; else noComments">
+        <h5 class="p-m-0 dateAndName">Change Log</h5>
+        <div *ngFor="let history of individualFieldHistory">
+            <div class="p-p-2">
+                <div class="dateAndName">{{history['Changed At'] | date:'MM.dd.yyyy - hh:mmaaa'}} {{history['Changed By']}}</div>
+                <div class="dateAndName">{{history?.['Changed From'] | json}} <i class="pi pi-arrow-right" style="color: #fff"></i>
+                    <label> {{history?.['Changed To'] | json}}</label> </div>
+            </div>
+        </div>
+    </ng-container>
+</div>
+<ng-template #noComments>
+    <h5 class="p-m-0 dateAndName" *ngIf="!showSpinner">No History</h5>
+</ng-template>
+</p-overlayPanel>

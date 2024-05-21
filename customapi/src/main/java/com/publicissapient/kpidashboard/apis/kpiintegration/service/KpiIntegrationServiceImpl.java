@@ -41,6 +41,7 @@ import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -177,7 +178,7 @@ public class KpiIntegrationServiceImpl {
 	 */
 	public void setKpiRequest(KpiRequest kpiRequest) {
 		String[] hierarchyIdList = kpiRequest.getIds();
-		Optional<HierarchyLevel> optionalHierarchyLevel = hierarchyLevelService.getFullHierarchyLevels(true).stream()
+		Optional<HierarchyLevel> optionalHierarchyLevel = hierarchyLevelService.getFullHierarchyLevels(false).stream()
 				.filter(hierarchyLevel -> hierarchyLevel.getLevel() == kpiRequest.getLevel()).findFirst();
 		if (optionalHierarchyLevel.isPresent()) {
 			HierarchyLevel hierarchyLevel = optionalHierarchyLevel.get();
@@ -321,9 +322,13 @@ public class KpiIntegrationServiceImpl {
 			httpHeaders.set("X-Custom-Authentication", customApiConfig.getRnrRecommendationApiKey());
 			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-			ResponseEntity<ProjectWiseKpiRecommendation> response = restTemplate.exchange(URI.create(recommendationUrl),
-					HttpMethod.GET, entity, ProjectWiseKpiRecommendation.class);
-			return response.getBody();
+			ResponseEntity<List<ProjectWiseKpiRecommendation>> response = restTemplate.exchange(
+					URI.create(recommendationUrl),
+					HttpMethod.GET,
+					entity,
+					new ParameterizedTypeReference<List<ProjectWiseKpiRecommendation>>() {}
+			);
+			return response.getBody().get(0);
 		} catch (Exception ex) {
 			log.error("Exception hitting recommendation api ", ex);
 			return new ProjectWiseKpiRecommendation();
