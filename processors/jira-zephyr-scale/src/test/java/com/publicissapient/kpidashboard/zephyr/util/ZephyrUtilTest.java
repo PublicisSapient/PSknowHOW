@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.zephyr.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,6 @@ import com.publicissapient.kpidashboard.zephyr.config.ZephyrConfig;
 @ExtendWith(SpringExtension.class)
 public class ZephyrUtilTest {
 
-	private static final String KEY = "1231231231231234";
 	private static final String PLAIN_TEXT = "test";
 	private static final String ENCRYPTED_TEXT = "encryptedTest";
 	@InjectMocks
@@ -52,8 +52,8 @@ public class ZephyrUtilTest {
 	@Test
 	public void testDecryptPassword() {
 		String result = PLAIN_TEXT;
-		when(aesEncryptionService.decrypt(ENCRYPTED_TEXT, KEY)).thenReturn(PLAIN_TEXT);
-		assertEquals(aesEncryptionService.decrypt(ENCRYPTED_TEXT, KEY), result);
+		when(aesEncryptionService.decrypt(any(), any())).thenReturn(PLAIN_TEXT);
+		assertEquals(aesEncryptionService.decrypt(ENCRYPTED_TEXT, "abc"), result);
 
 	}
 
