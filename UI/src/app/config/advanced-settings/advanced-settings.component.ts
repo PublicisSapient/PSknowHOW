@@ -367,8 +367,11 @@ export class AdvancedSettingsComponent implements OnInit {
     const jiraCount = this.processorsTracelogs.filter(ptl => ptl['processorName'] == processorName).length;
     if(jiraCount === 1){
       return this.processorsTracelogs.findIndex(ptl => ptl['processorName'] == processorName);
-    }else{
+    }else if(jiraCount >= 1){
        return this.processorsTracelogs.findIndex(ptl => ptl['processorName'] == processorName && ptl['progressStats'] === true);
+    }else{
+      this.processorsTracelogs.push({processorName : 'Jira',errorMessage : '',progressStatusList : [],executionOngoing : false,executionEndedAt : 0});
+      return  this.processorsTracelogs.length;
     }
   }
 

@@ -68,7 +68,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, Map<String, Object>> {
 
-	public static final String MR_COUNT = "No of MRs";
+	public static final String MR_COUNT = "No of PRs";
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
 	private static final String REPO_TOOLS = "RepoTool";
