@@ -54,5 +54,6 @@ public class ProcessorExecutionTraceLog {
 	private boolean progressStats;
 	private boolean executionOngoing;
 	private String errorMessage;
+	private String failureLog;
 	private List<ProgressStatus> progressStatusList;
 }
