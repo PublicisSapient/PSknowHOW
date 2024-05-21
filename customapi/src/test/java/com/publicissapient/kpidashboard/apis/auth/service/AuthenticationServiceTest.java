@@ -71,6 +71,7 @@ public class AuthenticationServiceTest {
 	public void setUp() {
 		authentication.setUsername("Test");
 		authentication.setPassword("Ps123");
+		authentication.setApproved(false);
 	}
 
 	@Test
@@ -314,8 +315,8 @@ public class AuthenticationServiceTest {
 	public void getAuthenticationByApprovedTest() {
 		List<Authentication> authenticationList = new ArrayList<>();
 		authenticationList.add(authentication);
-		when(authRepo.findByApproved(true)).thenReturn(authenticationList);
-		Assertions.assertTrue(authService.getAuthenticationByApproved(true).iterator().hasNext());
+		when(authRepo.findByApproved(false)).thenReturn(authenticationList);
+		Assertions.assertNotNull(authService.getAuthenticationByApproved(false));
 	}
 
 

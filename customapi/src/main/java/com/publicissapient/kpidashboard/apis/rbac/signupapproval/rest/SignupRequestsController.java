@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +85,8 @@ public class SignupRequestsController {
 	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
 	public ResponseEntity<ServiceResponse> getAllUnapprovedRequestsForCentralAuth() {
 		log.info("Getting all unapproved requests for central auth");
-		List<UserInfoDTO> unapprovedUsersList = userInfoService.findAllUnapprovedUsersForCentralAuth();
+		List<UserAccessApprovalResponseDTO> unapprovedUsersList = userInfoService.findAllUnapprovedUsers();
+
 		if (Objects.nonNull(unapprovedUsersList)) {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, "Unapproved User details", unapprovedUsersList));
@@ -101,7 +103,7 @@ public class SignupRequestsController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new ServiceResponse(true, "Unapproved User details",
 						mapper.map(authenticationService.getAuthenticationByApproved(false),
-								new TypeToken<List<AuthenticationDTO>>() {
+								new TypeToken<>() {
 								}.getType())));
 	}
 
