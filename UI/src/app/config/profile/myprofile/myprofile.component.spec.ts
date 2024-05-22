@@ -32,6 +32,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { of } from 'rxjs';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { MessageService } from 'primeng/api';
 describe('MyprofileComponent', () => {
   let component: MyprofileComponent;
   let fixture: ComponentFixture<MyprofileComponent>;
@@ -652,7 +653,7 @@ describe('MyprofileComponent', () => {
         InputSwitchModule
       ],
       declarations: [MyprofileComponent],
-      providers: [HttpService, ProfileComponent, SharedService , { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, ProfileComponent, SharedService , { provide: APP_CONFIG, useValue: AppConfig },MessageService]
     })
       .compileComponents();
   }));
