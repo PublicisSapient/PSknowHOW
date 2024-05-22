@@ -136,7 +136,7 @@
 </p-confirmDialog>
 
 <p-overlayPanel #op [showCloseIcon]="false">
-  <div class="dialog-body p-mb-4">
+  <div class="progress-dialog-body p-mb-4">
       <p-table [value]="findTraceLogForTool('Jira')?.progressStatusList" [tableStyle]="{ 'min-width': '40rem' }"
        [scrollable]="true" scrollHeight="300px" *ngIf="findTraceLogForTool('Jira')?.progressStatusList?.length && !(findTraceLogForTool('Jira')?.errorMessage) ; else logError">
         <ng-template pTemplate="header">

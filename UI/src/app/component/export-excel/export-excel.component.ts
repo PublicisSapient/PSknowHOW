@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ExcelService } from 'src/app/services/excel.service';
 import { HelperService } from 'src/app/services/helper.service';
+import { Table } from 'primeng/table';
+import { SharedService } from 'src/app/services/shared.service';
+import { HttpService } from 'src/app/services/http.service';
 
 @Component({
   selector: 'app-export-excel',
@@ -8,6 +11,7 @@ import { HelperService } from 'src/app/services/helper.service';
   styleUrls: ['./export-excel.component.css'],
 })
 export class ExportExcelComponent implements OnInit {
+  @ViewChild('table') tableComponent: Table;
   displayModal = false;
   modalDetails = {
     header: '',
@@ -26,10 +30,15 @@ export class ExportExcelComponent implements OnInit {
 
     '5': '../assets/img/smiley-5.svg',
   };
+  tableColumnData = {};
+  tableColumnForm = {};
+  filteredColumn;
 
   constructor(
     private excelService: ExcelService,
     private helperService: HelperService,
+    private sharedService : SharedService,
+    private httpService : HttpService
   ) {}
 
   ngOnInit(): void {}
@@ -84,8 +93,9 @@ export class ExportExcelComponent implements OnInit {
             }
 
             this.modalDetails['tableHeadings'] =
-              this.kpiExcelData.headerNames.map((column) => column.header);
+            this.kpiExcelData.headerNames.map((column) => column.header);
             this.modalDetails['tableValues'] = this.kpiExcelData.excelData;
+            this.generateTableColumnData();
             this.modalDetails['header'] = kpiName;
             this.displayModal = true;
           } else {
@@ -141,5 +151,61 @@ export class ExportExcelComponent implements OnInit {
 
   checkIfArray(arr) {
     return Array.isArray(arr);
+  }
+
+  onFilterClick(columnName) {
+    this.filteredColumn = columnName;
+  }
+
+  onFilterBlur(columnName) {
+    this.filteredColumn = this.filteredColumn === columnName ? '' : this.filteredColumn;
+  }
+
+  generateTableColumnData() {
+    this.modalDetails['tableHeadings'].forEach(colName => {
+      this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
+        if (this.typeOf(colData)) {
+          return { name: colData.text, value: colData.text }
+        } else {
+          return { name: colData, value: colData }
+        }
+      });
+      this.tableColumnForm[colName] = [];
+    });
+  }
+
+  generateExcel(exportMode) {
+    const tableData = {
+      columns: [],
+      excelData: []
+    };
+    let excelData = [];
+    let columns = [];
+    if (exportMode === 'all') {
+      console.log(this.kpiExcelData);
+      this.excelService.generateExcel(this.kpiExcelData, this.modalDetails['header']);
+    } else {
+      excelData = this.tableComponent?.filteredValue ? this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
+      tableData.columns = this.modalDetails['tableHeadings']
+  
+      excelData.forEach(colData => {
+        let obj = {};
+        for (let key in colData) {
+          if (this.typeOf(colData[key])) {
+            obj[key] = { [colData[key]['text']] : colData[key]['hyperlink']}
+          } else {
+            obj[key] = colData[key]
+          }
+        }
+        tableData.excelData.push(obj);
+      });
+   
+      let kpiData = this.excelService.generateExcelModalData(tableData);
+      this.excelService.generateExcel(kpiData, this.modalDetails['header']);
+    }
+  }
+
+  typeOf(value) {
+    return typeof value === 'object' && value !== null;
   }
 }

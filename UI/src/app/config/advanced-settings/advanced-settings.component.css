@@ -88,3 +88,10 @@ div.main {
 .error-text{
   color: red;max-width: 600px;
 }
+
+::ng-deep .progress-dialog-body{
+  min-width: 300px;
+  max-width: 600px;
+  max-height: 310px;
+  overflow-y: scroll;
+}
