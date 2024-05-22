@@ -9,6 +9,7 @@ import { ExportExcelComponent } from '../export-excel/export-excel.component';
 })
 export class ChartWithFiltersComponent implements OnChanges {
   @Input() data;
+  dataCopy;
   modifiedData;
   legendData;
   @Input() filters;
@@ -17,6 +18,7 @@ export class ChartWithFiltersComponent implements OnChanges {
   displayModal: boolean = false;
   selectedMainFilter;
   modalDetails;
+  selectedFilter2;
   elem;
 
   constructor(private viewContainerRef: ViewContainerRef) { }
@@ -26,16 +28,19 @@ export class ChartWithFiltersComponent implements OnChanges {
 
       this.elem = this.viewContainerRef.element.nativeElement;
       this.modifiedData = this.groupData(this.data, 'Issue Status');
-
-      this.draw(this.modifiedData);
-      this.selectedMainFilter = this.filters.mainFilter[0];
+      this.dataCopy = Object.assign([], this.data);
+      
+      this.selectedMainFilter = this.filters.filterGroup1[0];
       this.populateLegend(this.modifiedData);
-
+      
       this.modalDetails = {
         header: this.kpiName + ' ' + this.selectedMainFilter.filterName,
         tableHeadings: this.modalHeads,
         tableValues: this.data,
       };
+
+      this.populateAdditionalFilters();
+      setTimeout(() => this.draw(this.modifiedData), 100);
     }
   }
 
@@ -132,13 +137,11 @@ export class ChartWithFiltersComponent implements OnChanges {
         color: color(Object.keys(element)[0])
       })
     });
-
-    console.log(this.legendData);
   }
 
   mainFilterSelect(event) {
     this.selectedMainFilter = event.option;
-    this.modifiedData = this.groupData(this.data, this.selectedMainFilter.filterKey);
+    this.modifiedData = this.groupData(this.dataCopy, this.selectedMainFilter.filterKey);
     console.log(this.modifiedData);
     this.draw(this.modifiedData);
     this.legendData = [];
@@ -149,7 +152,7 @@ export class ChartWithFiltersComponent implements OnChanges {
     this.modalDetails = {
       header: this.kpiName + ' ' + this.selectedMainFilter.filterName,
       tableHeadings: this.modalHeads,
-      tableValues: this.data.filter((d) => {
+      tableValues: this.dataCopy.filter((d) => {
         if (this.selectedMainFilter.filterType === 'Single') {
           return d[this.selectedMainFilter.filterKey] === filterVal;
         } else {
@@ -171,6 +174,59 @@ export class ChartWithFiltersComponent implements OnChanges {
 
   checkIfArray(arr) {
     return Array.isArray(arr);
+  }
+
+  populateAdditionalFilters() {
+    this.filters.filterGroup2.forEach(element => {
+      element.values = this.getUniquePropertyValues(this.data, element.filterKey)
+    });
+  }
+
+  getUniquePropertyValues(arr: any[], propertyName: string): any[] {
+    const uniqueValues = new Set();
+
+    arr.forEach(item => {
+      if (Array.isArray(item[propertyName])) {
+        item[propertyName].forEach(element => {
+          uniqueValues.add(element);
+        });
+      } else if (item.hasOwnProperty(propertyName)) {
+        uniqueValues.add(item[propertyName]);
+      }
+    });
+    return Array.from(uniqueValues);
+  }
+
+  applyAdditionalFilters() {
+    this.selectedFilter2.forEach(element => {
+      if (element.filterType === 'Single') {
+        this.dataCopy = this.dataCopy.filter((d) => d[element.filterKey] === element.selectedValue);
+      } else {
+
+        this.dataCopy = this.dataCopy.filter((d) => {
+          let dataProperty = new Set(d[element.filterKey]);
+          return element.selectedValue.filter(item => dataProperty.has(item)).length > 0;
+        });
+      }
+    });
+    this.modifiedData = this.groupData(this.dataCopy, this.selectedMainFilter.filterKey);
+    this.populateLegend(this.modifiedData);
+    this.draw(this.modifiedData);
+  }
+
+  clearAdditionalFilters() {
+    this.dataCopy = Object.assign([], this.data);
+    this.modifiedData = this.groupData(this.data, this.selectedMainFilter.filterKey);
+    this.selectedFilter2.forEach(filter => {
+      filter.selectedValue = null;
+    });
+    this.selectedFilter2 = null;
+    this.populateLegend(this.modifiedData);
+    setTimeout(() => this.draw(this.modifiedData), 100);
+  }
+
+  clearFilter(i) {
+    delete this.selectedFilter2[i];
   }
 
 

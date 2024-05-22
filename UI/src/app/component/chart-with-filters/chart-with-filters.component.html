@@ -1,7 +1,35 @@
 <div id="chartWithFilter_Container">
-  <p-selectButton [options]="filters?.mainFilter" [ngModel]="selectedMainFilter"
-    (onOptionClick)="mainFilterSelect($event)" optionLabel="filterName"></p-selectButton>
   <div class="p-d-flex p-jc-between">
+    <p-selectButton [options]="filters?.filterGroup1" [(ngModel)]="selectedMainFilter"
+      (onOptionClick)="mainFilterSelect($event)" optionLabel="filterName"></p-selectButton>
+    <p-button label="Apply Filters" icon="pi pi-filter" styleClass="filter-btn" (click)="op.toggle($event)"></p-button>
+  </div>
+  <p-overlayPanel #op>
+    <ng-template pTemplate>
+      Select what you want to filter by: &nbsp;
+      <p-multiSelect [style]="{'min-width':'200px', 'height':'40px'}" [options]="filters?.filterGroup2" optionLabel="filterName"
+        [(ngModel)]="selectedFilter2"></p-multiSelect>
+      <table *ngIf="selectedFilter2?.length">
+        <tbody>
+          <tr *ngFor="let filter of selectedFilter2; let i = index;">
+            <td *ngIf="filter">{{ filter?.filterKey }} </td>
+            <td *ngIf="filter"><div style="background-color: #F6F6F6; width: 100%;text-align: center;padding: 5px;">{{ filter?.filterType === 'Single' ? '=' : 'contains' }}</div></td>
+            <td *ngIf="filter">
+              <p-multiSelect [style]="{'min-width':'200px', 'height':'40px'}" *ngIf="filter?.filterType !== 'Single'" [options]="filter?.values" [(ngModel)]="filter.selectedValue"></p-multiSelect>
+              <p-dropdown [style]="{'min-width':'200px', 'height':'40px'}" [autoDisplayFirst]="false" *ngIf="filter?.filterType === 'Single'" [options]="filter?.values" [(ngModel)]="filter.selectedValue"></p-dropdown>
+            </td>
+            <td *ngIf="filter">
+              <i class="pi pi-filter-slash" (click)="clearFilter(i)"></i>
+            </td>
+        </tbody>
+      </table>
+      <div>
+        <p-button label="Filter" (click)="applyAdditionalFilters()" [style]="{'background-color':'#fff', 'color': '#333333', 'border': '1px solid #333333', 'height': '30px', 'font-size': '10px'}"></p-button>
+        <p-button label="Reset" (click)="clearAdditionalFilters()" [style]="{'margin-left': '15px','background-color':'#fff', 'color': '#333333', 'border': '1px solid #333333', 'height': '30px', 'font-size': '10px'}"></p-button>
+      </div>
+    </ng-template>
+  </p-overlayPanel>
+  <div class="p-d-flex p-jc-between" *ngIf="modifiedData?.length">
     <div id="legend">
       <table>
         <thead>
@@ -30,7 +58,9 @@
 
     </div>
   </div>
-
+  <div class="min-ht" *ngIf="!legendData?.length">
+    <div class="no-data">No data for selected filters</div>
+  </div>
 </div>
 
 

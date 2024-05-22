@@ -278,9 +278,6 @@
                                           <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.[0]?.data?.length; else noDataForChartWithFilters">
                                             <app-chart-with-filters [data]="kpiChartData[kpi?.kpiId]?.[0]?.data"
                                               [kpiId]="kpi?.kpiId" [kpiName]="kpi?.kpiName"
-                                              [isKanban]="kpi?.kpiDetail?.kanban"
-                                              [additionalFilterSupport]="kpi?.kpiDetail?.isAdditionalFilterSupport"
-                                              [filterApplyData]="filterApplyData" [filterData]="filterData"
                                               [filters]="kpiChartData[kpi?.kpiId]?.[0]?.filters"
                                               [modalHeads]="kpiChartData[kpi?.kpiId]?.[0]?.modalHeads">
                                             </app-chart-with-filters>

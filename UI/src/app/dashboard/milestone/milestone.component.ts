@@ -384,7 +384,7 @@ export class MilestoneComponent implements OnInit {
       this.kpiChartData[kpiId] = [];
       this.kpiChartData[kpiId].push({
         data: this.allKpiArray[idx]?.issueData,
-        filters: this.allKpiArray[idx]?.pieChartFilter,
+        filters: this.allKpiArray[idx]?.filterGroup,
         modalHeads:  this.allKpiArray[idx]?.modalHeads
       });
       
