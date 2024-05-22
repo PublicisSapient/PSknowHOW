@@ -22,7 +22,6 @@ import static com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.s
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -72,6 +71,9 @@ public class FieldMappingController {
 	@Autowired
 	private ConfigHelperService configHelperService;
 
+	/*
+	 * save import functionality
+	 */
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> addFieldMapping(@PathVariable String projectToolConfigId,
 			@RequestBody FieldMappingMeta fieldMappingMeta) {
@@ -90,8 +92,8 @@ public class FieldMappingController {
 			ServiceResponse response;
 			try {
 				FieldMapping fieldMapping = new FieldMapping();
-				boolean allfieldFound = fieldMappingService
-						.convertToFieldMappingAndCheckIsFieldPresent(fieldMappingMeta.getFieldMappingRequests(), fieldMapping);
+				boolean allfieldFound = fieldMappingService.convertToFieldMappingAndCheckIsFieldPresent(
+						fieldMappingMeta.getFieldMappingRequests(), fieldMapping);
 				fieldMappingService.addFieldMapping(projectToolConfigId, fieldMapping,
 						projectToolConfig.getBasicProjectConfigId());
 				if (!allfieldFound) {
@@ -110,6 +112,9 @@ public class FieldMappingController {
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "No Tool Configuration Found", ""));
 	}
 
+	/*
+	 * export fieldmapping
+	 */
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getFieldMapping(@PathVariable String projectToolConfigId) {
 
@@ -131,6 +136,9 @@ public class FieldMappingController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
+	/*
+	 * save kpiwise fieldmapping
+	 */
 	@RequestMapping(value = "/tools/fieldMapping/{projectToolConfigId}/{kpiId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getFieldMapping(@PathVariable String projectToolConfigId,
 			@PathVariable String kpiId, @RequestBody FieldMappingMeta requestData) {
@@ -154,11 +162,10 @@ public class FieldMappingController {
 
 			if (CollectionUtils.isEmpty(kpiSpecificFieldsAndHistory)) {
 				response = new ServiceResponse(false, "no field mapping found for " + projectToolConfigId, null);
-			}
-			else if (checkTool(projectToolConfig)) {
-					FieldMappingMeta fieldMappingMeta = new FieldMappingMeta(kpiSpecificFieldsAndHistory,
-							projectToolConfig.getMetadataTemplateCode());
-					response = new ServiceResponse(true, "field mappings", fieldMappingMeta);
+			} else if (checkTool(projectToolConfig)) {
+				FieldMappingMeta fieldMappingMeta = new FieldMappingMeta(kpiSpecificFieldsAndHistory,
+						projectToolConfig.getMetadataTemplateCode());
+				response = new ServiceResponse(true, "field mappings", fieldMappingMeta);
 
 			}
 		}
@@ -166,6 +173,9 @@ public class FieldMappingController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
+	/*
+	 * get kpiwise fieldmapping
+	 */
 	@RequestMapping(value = "/tools/saveMapping/{projectToolConfigId}/{kpiId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> saveKpiWiseSpecificFieldmAPPING(@PathVariable String projectToolConfigId,
 			@PathVariable String kpiId, @RequestBody FieldMappingMeta fieldMappingMeta)
