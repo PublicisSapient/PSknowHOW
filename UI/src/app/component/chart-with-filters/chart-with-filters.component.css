@@ -79,6 +79,10 @@ td {
     padding: 10px;
 }
 
+:host ::ng-deep .p-dropdown-label.p-inputtext {
+    font-size: 12px !important;
+}
+
 /** Primeng style overrides end **/
 
 .min-ht {
