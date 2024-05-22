@@ -204,14 +204,16 @@ export class ChartWithFiltersComponent implements OnChanges {
 
   applyAdditionalFilters() {
     this.selectedFilter2.forEach(element => {
-      if (element.filterType === 'Single') {
-        this.dataCopy = this.dataCopy.filter((d) => d[element.filterKey] === element.selectedValue);
-      } else {
+      if (element.selectedValue) {
+        if (element.filterType === 'Single') {
+          this.dataCopy = this.dataCopy.filter((d) => d[element.filterKey] === element.selectedValue);
+        } else {
 
-        this.dataCopy = this.dataCopy.filter((d) => {
-          let dataProperty = new Set(d[element.filterKey]);
-          return element.selectedValue.filter(item => dataProperty.has(item)).length > 0;
-        });
+          this.dataCopy = this.dataCopy.filter((d) => {
+            let dataProperty = new Set(d[element.filterKey]);
+            return element.selectedValue.filter(item => dataProperty.has(item)).length > 0;
+          });
+        }
       }
     });
     this.modifiedData = this.groupData(this.dataCopy, this.selectedMainFilter.filterKey);
@@ -231,9 +233,13 @@ export class ChartWithFiltersComponent implements OnChanges {
   }
 
   clearFilter(i) {
-    delete this.selectedFilter2[i];
+    delete this.selectedFilter2[i].selectedValue;
     this.dataCopy = Object.assign([], this.data);
     this.applyAdditionalFilters();
+  }
+
+  additionalFilterChanged() {
+    this.dataCopy = Object.assign([], this.data);
   }
 
 

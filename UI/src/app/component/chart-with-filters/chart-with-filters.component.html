@@ -15,8 +15,8 @@
             <td *ngIf="filter">{{ filter?.filterKey }} </td>
             <td *ngIf="filter"><div style="background-color: #F6F6F6; width: 100%;text-align: center;padding: 5px;">{{ filter?.filterType === 'Single' ? '=' : 'contains' }}</div></td>
             <td *ngIf="filter">
-              <p-multiSelect [style]="{'min-width':'200px', 'height':'40px'}" *ngIf="filter?.filterType !== 'Single'" [options]="filter?.values" [(ngModel)]="filter.selectedValue"></p-multiSelect>
-              <p-dropdown [style]="{'min-width':'200px', 'height':'40px'}" [autoDisplayFirst]="false" *ngIf="filter?.filterType === 'Single'" [options]="filter?.values" [(ngModel)]="filter.selectedValue"></p-dropdown>
+              <p-multiSelect [style]="{'min-width':'200px', 'height':'40px'}" *ngIf="filter?.filterType !== 'Single'" [options]="filter?.values" [(ngModel)]="filter.selectedValue" (onChange)="additionalFilterChanged()"></p-multiSelect>
+              <p-dropdown [style]="{'min-width':'200px', 'height':'40px'}" [autoDisplayFirst]="false" *ngIf="filter?.filterType === 'Single'" [options]="filter?.values" [(ngModel)]="filter.selectedValue" (onChange)="additionalFilterChanged()"></p-dropdown>
             </td>
             <td *ngIf="filter">
               <i class="pi pi-filter-slash" (click)="clearFilter(i)"></i>
