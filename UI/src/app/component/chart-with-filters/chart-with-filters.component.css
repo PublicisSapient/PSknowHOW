@@ -80,7 +80,7 @@ td {
 }
 
 :host ::ng-deep .p-dropdown-label.p-inputtext {
-    font-size: 12px !important;
+    font-size: 12px;
 }
 
 /** Primeng style overrides end **/
