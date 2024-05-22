@@ -412,7 +412,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			// be shown
 			if (releaseState.equalsIgnoreCase(CommonConstant.RELEASED) || MapUtils.isEmpty(startDateAdjustedDoneMap)) {
 				// populating only release scope vs progress
-				for (int i = 0; i < range && !startLocalDate.isAfter(endLocalDate); i++) {
+				for (long i = 0; i < range && !startLocalDate.isAfter(endLocalDate); i++) {
 					DataCountGroup issueCount = new DataCountGroup();
 					DataCountGroup issueSize = new DataCountGroup();
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(startLocalDate,
@@ -468,7 +468,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 				predictionDataMap.put(ISSUE_SIZE_PREDICTION, issueSizePrediction);
 				boolean isPredictionBoundary = true; // used to check and add data point of release
 				// scope,progress,prediction at boundary
-				for (int i = 0; i <= range && !startLocalDate.isAfter(predictionEndDate); i++) {
+				for (long i = 0; i <= range && !startLocalDate.isAfter(predictionEndDate); i++) {
 					DataCountGroup issueCount = new DataCountGroup();
 					DataCountGroup issueSize = new DataCountGroup();
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(startLocalDate,

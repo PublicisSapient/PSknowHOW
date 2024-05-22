@@ -47,6 +47,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.jira.scrum.service.CommittmentReliabilityServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.BuildFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.ChangeFailureRateInfo;
 import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
@@ -748,14 +749,17 @@ public class KPIExcelUtility {
 	 *
 	 * @param sprint
 	 * @param totalStoriesMap
-	 * @param initialIssueNumber
+	 * @param commitmentReliabilityValidationData
 	 * @param kpiExcelData
 	 */
 
 	public static void populateCommittmentReliability(String sprint, Map<String, JiraIssue> totalStoriesMap,
-			Set<JiraIssue> initialIssueNumber, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+			CommittmentReliabilityServiceImpl.CommitmentReliabilityValidationData commitmentReliabilityValidationData, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
 		if (MapUtils.isNotEmpty(totalStoriesMap)) {
-
+			Set<String> initialIssueNumber = commitmentReliabilityValidationData.getInitialIssueNumber().stream()
+					.map(JiraIssue::getNumber).collect(Collectors.toSet());
+			Set<String> addedIssues = commitmentReliabilityValidationData.getAddedIssues();
+			Set<String> puntedIssues = commitmentReliabilityValidationData.getPuntedIssues();
 			totalStoriesMap.forEach((storyId, jiraIssue) -> {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setSprintName(sprint);
@@ -766,8 +770,15 @@ public class KPIExcelUtility {
 				excelData.setIssueType(jiraIssue.getTypeName());
 				excelData.setIssueStatus(jiraIssue.getStatus());
 				setSquads(excelData,jiraIssue);
-				if (initialIssueNumber.contains(jiraIssue)) {
-					excelData.setInitialCommited("Y");
+				if (initialIssueNumber.contains(storyId)) {
+					excelData.setScopeValue(CommonConstant.INITIAL);
+				}
+				if(addedIssues.contains(storyId)) {
+					excelData.setScopeValue(CommonConstant.ADDED);
+				}
+				//Removed Issue is implicit showing Initial is there in sprint.
+				if(puntedIssues.contains(storyId)) {
+					excelData.setScopeValue(CommonConstant.REMOVED);
 				}
 
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())

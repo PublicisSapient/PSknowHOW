@@ -219,9 +219,8 @@ public final class KpiDataHelper {
 							|| date.isEqual(kanbanCapacity.getEndDate()))
 							&& !(date.getDayOfWeek().equals(DayOfWeek.SUNDAY)
 									|| date.getDayOfWeek().equals(DayOfWeek.SATURDAY)); date = date.plusDays(1)) {
-						String formattedDate = DateUtil.localDateTimeConverter(date);
-						dateWiseCapacityMap.putIfAbsent(formattedDate, new ArrayList<>());
-						dateWiseCapacityMap.get(formattedDate).add(kanbanCapacity);
+						dateWiseCapacityMap.putIfAbsent(date.toString(), new ArrayList<>());
+						dateWiseCapacityMap.get(date.toString()).add(kanbanCapacity);
 					}
 				});
 				projectAndDateWiseCapacityMap.put(project, dateWiseCapacityMap);

@@ -16,8 +16,8 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import { UntypedFormGroup, FormControl } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { MyprofileComponent } from './myprofile.component';
@@ -31,6 +31,8 @@ import { environment } from 'src/environments/environment';
 import { SharedService } from 'src/app/services/shared.service';
 import { of } from 'rxjs';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { MessageService } from 'primeng/api';
 describe('MyprofileComponent', () => {
   let component: MyprofileComponent;
   let fixture: ComponentFixture<MyprofileComponent>;
@@ -648,9 +650,10 @@ describe('MyprofileComponent', () => {
         CommonModule,
         HttpClientTestingModule,
         RouterTestingModule,
+        InputSwitchModule
       ],
       declarations: [MyprofileComponent],
-      providers: [HttpService, ProfileComponent, SharedService , { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, ProfileComponent, SharedService , { provide: APP_CONFIG, useValue: AppConfig },MessageService]
     })
       .compileComponents();
   }));
@@ -722,4 +725,45 @@ describe('MyprofileComponent', () => {
       { id: 'projectName', name: 'Projects' },
     ]);
   });
+
+ it('should update notification email flag', (fakeAsync(() => {
+    // component.ngOnInit();
+    const event = { checked: true };
+    const toggleField = 'accessAlertNotification';
+    component.notificationEmailForm = new UntypedFormGroup({
+      "accessAlertNotification": new FormControl(false),
+      "errorAlertNotification": new FormControl(false)
+    });
+     
+    const successResponse = {
+      success: true,
+      message: 'Flag Updated successfully in user info details' ,
+      data :  {
+        "username": "dummyUser",
+        "authorities": [
+          "ROLE_PROJECT_ADMIN"
+        ],
+        "authType": "SAML",
+        "emailAddress": "someemail@abc.com",
+        "notificationEmail": {
+          "accessAlertNotification": true,
+          "errorAlertNotification": false
+        }
+      }
+    };
+    shared.currentUserDetailsSubject.next({
+      user_name : "dummyUser",
+      user_email:"someemail@abc.com" ,
+      notificationEmail: { 
+        "accessAlertNotification": true,
+        "errorAlertNotification": false 
+      }
+    })
+    spyOn(httpService,'notificationEmailToggleChange').and.returnValue(of(successResponse))
+    const spyObj = spyOn(shared, 'setCurrentUserDetails');
+    component.toggleNotificationEmail(event, toggleField);
+    tick();
+    expect(spyObj).toHaveBeenCalled();
+  })));
+
 });
