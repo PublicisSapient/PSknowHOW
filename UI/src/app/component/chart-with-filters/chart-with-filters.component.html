@@ -24,7 +24,7 @@
         </tbody>
       </table>
       <div>
-        <p-button label="Filter" (click)="applyAdditionalFilters()" [style]="{'background-color':'#fff', 'color': '#333333', 'border': '1px solid #333333', 'height': '30px', 'font-size': '10px'}"></p-button>
+        <p-button label="Filter" [disabled]="!selectedFilter2?.length" (click)="applyAdditionalFilters()" [style]="{'background-color':'#fff', 'color': '#333333', 'border': '1px solid #333333', 'height': '30px', 'font-size': '10px'}"></p-button>
         <p-button label="Reset" (click)="clearAdditionalFilters()" [style]="{'margin-left': '15px','background-color':'#fff', 'color': '#333333', 'border': '1px solid #333333', 'height': '30px', 'font-size': '10px'}"></p-button>
       </div>
     </ng-template>

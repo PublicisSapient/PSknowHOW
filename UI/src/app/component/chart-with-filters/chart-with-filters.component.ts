@@ -25,14 +25,19 @@ export class ChartWithFiltersComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] || changes['filters']) {
-
+      if (this.selectedFilter2?.length) {
+        this.selectedFilter2.forEach(filter => {
+          filter.selectedValue = null;
+        });
+        this.selectedFilter2 = null;
+      }
       this.elem = this.viewContainerRef.element.nativeElement;
       this.modifiedData = this.groupData(this.data, 'Issue Status');
       this.dataCopy = Object.assign([], this.data);
-      
+
       this.selectedMainFilter = this.filters.filterGroup1[0];
       this.populateLegend(this.modifiedData);
-      
+
       this.modalDetails = {
         header: this.kpiName + ' ' + this.selectedMainFilter.filterName,
         tableHeadings: this.modalHeads,
@@ -227,6 +232,8 @@ export class ChartWithFiltersComponent implements OnChanges {
 
   clearFilter(i) {
     delete this.selectedFilter2[i];
+    this.dataCopy = Object.assign([], this.data);
+    this.applyAdditionalFilters();
   }
 
 
