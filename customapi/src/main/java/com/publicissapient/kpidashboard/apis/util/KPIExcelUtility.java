@@ -759,7 +759,8 @@ public class KPIExcelUtility {
 	 */
 
 	public static void populateCommittmentReliability(String sprint, Map<String, JiraIssue> totalStoriesMap,
-			CommittmentReliabilityServiceImpl.CommitmentReliabilityValidationData commitmentReliabilityValidationData, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+			CommittmentReliabilityServiceImpl.CommitmentReliabilityValidationData commitmentReliabilityValidationData,
+			List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
 		if (MapUtils.isNotEmpty(totalStoriesMap)) {
 			Set<String> initialIssueNumber = commitmentReliabilityValidationData.getInitialIssueNumber().stream()
 					.map(JiraIssue::getNumber).collect(Collectors.toSet());
@@ -774,15 +775,15 @@ public class KPIExcelUtility {
 				excelData.setStoryId(storyDetails);
 				excelData.setIssueType(jiraIssue.getTypeName());
 				excelData.setIssueStatus(jiraIssue.getStatus());
-				setSquads(excelData,jiraIssue);
+				setSquads(excelData, jiraIssue);
 				if (initialIssueNumber.contains(storyId)) {
 					excelData.setScopeValue(CommonConstant.INITIAL);
 				}
-				if(addedIssues.contains(storyId)) {
+				if (addedIssues.contains(storyId)) {
 					excelData.setScopeValue(CommonConstant.ADDED);
 				}
-				//Removed Issue is implicit showing Initial is there in sprint.
-				if(puntedIssues.contains(storyId)) {
+				// Removed Issue is implicit showing Initial is there in sprint.
+				if (puntedIssues.contains(storyId)) {
 					excelData.setScopeValue(CommonConstant.REMOVED);
 				}
 
@@ -1487,9 +1488,7 @@ public class KPIExcelUtility {
 
 	/**
 	 * Common method to populate modal window of Iteration KPI's
-	 *
-	 * @param overAllModalValues
-	 * @param modalValues
+	 * 
 	 * @param jiraIssue
 	 * @param fieldMapping
 	 * @param modalObjectMap
@@ -1567,8 +1566,10 @@ public class KPIExcelUtility {
 			}
 		}
 
-		issueKpiModalValue.setTestPhaseList(jiraIssue.getEscapedDefectGroup());
-
+		List<String> testingPhase = CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup())
+				? jiraIssue.getEscapedDefectGroup()
+				: List.of(UNDEFINED);
+		issueKpiModalValue.setTestPhaseList(testingPhase);
 
 		modalObjectMap.computeIfPresent(jiraIssue.getNumber(), (k, v) -> issueKpiModalValue);
 
