@@ -232,6 +232,8 @@ export class ChartWithFiltersComponent implements OnChanges {
 
   clearFilter(i) {
     delete this.selectedFilter2[i];
+    this.dataCopy = Object.assign([], this.data);
+    this.applyAdditionalFilters();
   }
 
 
