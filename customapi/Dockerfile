@@ -3,8 +3,8 @@ FROM amazoncorretto:17
 
 # Set a non-root user
 ARG USER=marriott
-ARG UID=1000
-ARG GID=1000
+ARG UID=10000
+ARG GID=10000
 
 RUN yum install -y shadow-utils \
     && ln -sf /bin/bash /bin/sh \
