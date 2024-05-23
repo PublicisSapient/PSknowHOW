@@ -228,7 +228,8 @@ public class ZephyrService {
 							if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
 								sprintList.addAll(new ArrayList<>(
 										sprints.subList(0, customApiConfig.getSprintCountForKpiCalculation())));
-
+							} else {
+								sprintList.addAll(sprints);
 							}
 						});
 				treeAggregatorDetail.getMapOfListOfLeafNodes().put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,

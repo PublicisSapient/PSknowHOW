@@ -48,6 +48,7 @@ export class AdvancedSettingsComponent implements OnInit {
   jiraExecutionSteps : any = [];
   jiraStatusContinuePulling = false;
    subscription: Subscription;
+  dataMismatchObj: object = {};
 
   constructor(private httpService: HttpService, private messageService: MessageService, private getAuthorizationService: GetAuthorizationService,
     private service: SharedService, private confirmationService: ConfirmationService) { }
@@ -161,6 +162,9 @@ export class AdvancedSettingsComponent implements OnInit {
               if(pDetails.processorName !== 'Jira'){
                 pDetails['executionOngoing'] = false;
               }
+              if(pDetails.dataMismatch && pDetails.firstRunDate){
+                this.dataMismatchObj[pDetails.processorName] = pDetails.dataMismatch;
+              }
           })
 
           if(that.findTraceLogForTool('Jira')?.executionOngoing){
@@ -171,7 +175,7 @@ export class AdvancedSettingsComponent implements OnInit {
             };
             that.getProcessorCompletionSteps(runProcessorInput);
           }
-
+          
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error in fetching processor\'s execution date. Please try after some time.' });
         }

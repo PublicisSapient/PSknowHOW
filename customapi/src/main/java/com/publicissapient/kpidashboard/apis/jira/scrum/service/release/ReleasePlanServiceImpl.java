@@ -222,7 +222,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 		Map<LocalDate, List<JiraIssue>> removeIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
 				.get(REMOVED_FROM_RELEASE);
 
-		List<IterationKpiValue> iterationKpiValueList = new ArrayList<>();
+		IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 		long range;
 		String duration;
 		if (CollectionUtils.isNotEmpty(releaseIssues) && MapUtils.isNotEmpty(fullReleaseIssueMap)) {
@@ -263,10 +263,21 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 				issueCountDataGroup.add(issueCount);
 			}
 			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
-			createExcelDataAndTrendValueList(kpiElement, excelData, iterationKpiValueList, issueCountDataGroup);
+			if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
+				Map<String, Object> additionalInfoMap = new HashMap<>();
+				additionalInfoMap.put("isXaxisGapRequired", true);
+				additionalInfoMap.put("plannedDueDate", String.valueOf(maxPlannedDueDate));
+				kpiValueIssueCount.setDataGroup(issueCountDataGroup);
+				kpiValueIssueCount.setFilter1(CommonConstant.OVERALL);
+				kpiValueIssueCount.setAdditionalInfo(additionalInfoMap);
+
+				kpiElement.setModalHeads(KPIExcelColumn.RELEASE_PLAN.getColumns());
+				kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_PLAN.getColumns());
+				kpiElement.setExcelData(excelData);
+			}
 
 		}
-		kpiElement.setTrendValueList(iterationKpiValueList);
+		kpiElement.setTrendValueList(kpiValueIssueCount);
 	}
 
 	/**
@@ -510,36 +521,6 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 			jiraIssueList.retainAll(allReleaseTaggedIssue);
 
 			KPIExcelUtility.populateReleasePlanExcelData(jiraIssueList, excelData, fieldMapping);
-		}
-	}
-
-	/**
-	 * Method for setting Trend value & Excel Data
-	 *
-	 * @param kpiElement
-	 *            kpiElement
-	 * @param excelData
-	 *            List<KPIExcelData>
-	 * @param iterationKpiValueList
-	 *            List<IterationKpiValue>
-	 * @param issueCountDataGroup
-	 *            List<DataCountGroup>
-	 */
-	private void createExcelDataAndTrendValueList(KpiElement kpiElement, List<KPIExcelData> excelData,
-			List<IterationKpiValue> iterationKpiValueList, List<DataCountGroup> issueCountDataGroup) {
-		if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
-			Map<String, Object> additionalInfoMap = new HashMap<>();
-			additionalInfoMap.put("isXaxisGapRequired", true);
-			additionalInfoMap.put("plannedDueDate", maxPlannedDueDate.toString());
-			IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
-			kpiValueIssueCount.setDataGroup(issueCountDataGroup);
-			kpiValueIssueCount.setFilter1(CommonConstant.OVERALL);
-			kpiValueIssueCount.setAdditionalInfo(additionalInfoMap);
-			iterationKpiValueList.add(kpiValueIssueCount);
-
-			kpiElement.setModalHeads(KPIExcelColumn.RELEASE_PLAN.getColumns());
-			kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_PLAN.getColumns());
-			kpiElement.setExcelData(excelData);
 		}
 	}
 }
