@@ -414,7 +414,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 				.map(JiraIssue::getDueDate)
 				.filter(Objects::nonNull)
 				.filter(dueDate -> !dueDate.isBlank())
-				.map(dueDate -> DateUtil.stringToLocalDate(dueDate, DateUtil.TIME_FORMAT_WITH_SEC))
+				.map(dueDate -> LocalDate.parse(dueDate.split("T")[0], DATE_TIME_FORMATTER))
 				.max(Comparator.naturalOrder()).orElse(null);
 
 		if (plannedDueDate != null && (maxPlannedDueDate == null || plannedDueDate.isAfter(maxPlannedDueDate))) {
