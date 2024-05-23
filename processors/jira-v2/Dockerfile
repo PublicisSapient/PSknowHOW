@@ -30,10 +30,10 @@ VOLUME $PROPERTIES_DIR
 
 # Set the JAR file variable
 ARG JAR_FILE
-ADD ${JAR_FILE} $APP_DIR/jira.jar
+ADD ${JAR_FILE} $APP_DIR/jira-v2.jar
 
 # Copy application.properties file
-ADD src/main/resources/application.properties $PROPERTIES_DIR/jira.properties
+ADD src/main/resources/application.properties $PROPERTIES_DIR/jira_v2.properties
 
 # Expose port
 EXPOSE 50008
@@ -46,4 +46,4 @@ RUN chown -R $USER:$USER /app \
 USER $USER:$GID
 
 # Entrypoint command
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar jira.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/jira.properties"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar jira-v2.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/jira_v2.properties"]
