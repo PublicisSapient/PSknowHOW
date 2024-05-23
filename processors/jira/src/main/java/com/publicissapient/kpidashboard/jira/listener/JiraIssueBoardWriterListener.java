@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.scope.context.StepContext;
@@ -57,6 +58,9 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 	public static final String PROG_TRACE_LOG = "progTraceLog";
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
+
+	@Autowired
+	JiraProcessorConfig jiraProcessorConfig;
 
 	@Override
 	public void beforeWrite(Chunk<? extends CompositeResult> compositeResult) {
@@ -108,6 +112,9 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 						processorExecutionTraceLog = boardWiseTraceLogMap.get(boardId);
 					} else {
 						processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+						processorExecutionTraceLog.setFirstRunDate(DateUtil.dateTimeFormatter(
+								LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()).minusDays(jiraProcessorConfig.getDaysToReduce()),
+								JiraConstants.QUERYDATEFORMAT));
 					}
 					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId, firstIssue.getChangeDate(),
 							processorExecutionToSave);
