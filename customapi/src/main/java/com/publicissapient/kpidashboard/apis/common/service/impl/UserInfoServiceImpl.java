@@ -673,11 +673,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 			userAccessApprovalResponseDTO.setUsername(userInfoDTO.getUsername());
 			userAccessApprovalResponseDTO.setEmail(userInfoDTO.getEmail());
 			userAccessApprovalResponseDTO.setApproved(userInfoDTO.isApproved());
-			if (CollectionUtils.isNotEmpty(authProperties.getWhiteListDomainForEmail())
-					&& authProperties.getWhiteListDomainForEmail().contains(userInfoDTO.getEmail())) {
+			List<String> whitelistDomain = authProperties.getWhiteListDomainForEmail();
+			if (CollectionUtils.isNotEmpty(whitelistDomain)
+					&& whitelistDomain.stream().anyMatch(domain -> userInfoDTO.getEmail().contains(domain))) {
 				userAccessApprovalResponseDTO.setWhitelistDomainEmail(true);
+			} else {
+				userAccessApprovalResponseDTO.setWhitelistDomainEmail(false);
 			}
-			userAccessApprovalResponseDTO.setWhitelistDomainEmail(false);
 			userAccessApprovalResponseDTOList.add(userAccessApprovalResponseDTO);
 		});
 		return userAccessApprovalResponseDTOList;
