@@ -1,5 +1,14 @@
 package com.publicissapient.kpidashboard.apis.service.impl;
 
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.stereotype.Service;
+
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
@@ -7,14 +16,7 @@ import com.publicissapient.kpidashboard.apis.repository.UserVerificationTokenRep
 import com.publicissapient.kpidashboard.apis.service.NotificationService;
 import com.publicissapient.kpidashboard.apis.service.UserService;
 import com.publicissapient.kpidashboard.apis.service.UserVerificationTokenService;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor

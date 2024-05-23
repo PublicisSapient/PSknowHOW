@@ -3,14 +3,13 @@ package com.publicissapient.kpidashboard.apis.controller;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Optional;
 import java.util.UUID;
 
+import com.publicissapient.kpidashboard.apis.service.dto.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
@@ -26,8 +25,6 @@ import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.service.*;
-import com.publicissapient.kpidashboard.apis.util.CookieUtil;
-import com.publicissapient.kpidashboard.common.model.*;
 
 import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.*;
 
@@ -36,15 +33,11 @@ import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.*;
 @Slf4j
 public class StandardAuthenticationController {
 
-	private final TokenAuthenticationService tokenAuthenticationService;
-
-	private final UserService userService;
-
 	private final MessageService messageService;
 
 	private final UserApprovalService userApprovalService;
 
-	private final AuthConfig authConfigurationProperties;
+	private final AuthConfig authConfig;
 
 	private final UserInterfacePathsConfig userInterfacePathsConfig;
 
@@ -52,79 +45,44 @@ public class StandardAuthenticationController {
 
 	private final UserVerificationTokenService userVerificationTokenService;
 
-	@GetMapping("/login/status/standard")
-	public ResponseEntity<ServiceResponse> loginStatusCheck(HttpServletRequest request) {
-		try {
-			Optional<String> authCookie = CookieUtil.getCookieValue(request, CookieUtil.COOKIE_NAME);
-
-			if (authCookie.isPresent() && !authCookie.get().isEmpty()) {
-
-				String userName = tokenAuthenticationService.getSubject(authCookie.get());
-
-				Optional<User> user = userService.findByUsername(userName);
-
-				UserTokenAuthenticationDTO userTokenAuthenticationDTO = new UserTokenAuthenticationDTO();
-				userTokenAuthenticationDTO.setUsername(userName);
-				userTokenAuthenticationDTO.setEmail(user.get().getEmail());
-
-				ServiceResponse serviceResponse = new ServiceResponse(true,
-																	  messageService.getMessage(SUCCESS_VALID_TOKEN),
-																	  userTokenAuthenticationDTO
-				);
-				return ResponseEntity.ok(serviceResponse);
-			} else {
-				ServiceResponse serviceResponse = new ServiceResponse(false,
-																	  messageService.getMessage(ERROR_INVALID_USER),
-																	  null
-				);
-				return ResponseEntity.ok(serviceResponse);
-			}
-		} catch (Exception e) {
-			ServiceResponse serviceResponse = new ServiceResponse(false, messageService.getMessage(ERROR_INVALID_USER),
-																  null
-			);
-			return ResponseEntity.ok(serviceResponse);
-		}
-	}
-
 	@PostMapping(value = "/register-user", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponse> registerUser(@Valid @RequestBody UserDTO request) {
-		boolean isSuccess = this.standardAuthenticationService.registerUser(request);
+	public ResponseEntity<ServiceResponseDTO> registerUser(@Valid @RequestBody UserDTO request) {
+		boolean isSuccess = standardAuthenticationService.registerUser(request);
 
-		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(isSuccess, isSuccess ?
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponseDTO(isSuccess, isSuccess ?
 				messageService.getMessage(SUCCESS_SENT_APPROVAL) :
 				messageService.getMessage(ERROR_REGISTER_AGAIN), request.getUsername()));
 	}
 
 	@GetMapping("/user-approvals/pending")
-	public ResponseEntity<ServiceResponse> getAllUnapprovedUsers() {
+	public ResponseEntity<ServiceResponseDTO> getAllUnapprovedUsers() {
 		return ResponseEntity.status(HttpStatus.OK)
-							 .body(new ServiceResponse(true, messageService.getMessage("success_pending_approval"),
-													   userApprovalService.findAllUnapprovedUsers()
+							 .body(new ServiceResponseDTO(true, messageService.getMessage("success_pending_approval"),
+														  userApprovalService.findAllUnapprovedUsers()
 							 ));
 	}
 
 	@PutMapping(value = "/approve/{username}", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponse> approveUserCreationRequest(@PathVariable("username") String username) {
+	public ResponseEntity<ServiceResponseDTO> approveUserCreationRequest(@PathVariable("username") String username) {
 		boolean isSuccess = userApprovalService.approveUser(username);
 
-		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(isSuccess, isSuccess ?
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponseDTO(isSuccess, isSuccess ?
 				messageService.getMessage("success_request_approve") :
 				messageService.getMessage("error_request_approve"), isSuccess));
 
 	}
 
 	@GetMapping(value = "/reject/{username}", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponse> deleteUser(@PathVariable("username") String username) {
+	public ResponseEntity<ServiceResponseDTO> deleteUser(@PathVariable("username") String username) {
 		boolean isSuccess = userApprovalService.rejectUser(username);
-		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(isSuccess, isSuccess ?
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponseDTO(isSuccess, isSuccess ?
 				messageService.getMessage("rejected_user_deleted") :
 				messageService.getMessage("error_delete_user"), isSuccess));
 
 	}
 
 	@PostMapping(value = "/forgot-password", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponse> processForgotPassword(
+	public ResponseEntity<ServiceResponseDTO> processForgotPassword(
 			@RequestBody ForgotPasswordRequestDTO forgotPasswordRequestDTO) {
 		return ResponseEntity.ok().body(standardAuthenticationService.processForgotPassword(forgotPasswordRequestDTO.getEmail()));
 	}
@@ -143,7 +101,7 @@ public class StandardAuthenticationController {
 	 * response code <tt>-14</tt>
 	 */
 	@PostMapping(value = "/resetPassword", produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponse> resetPassword(@RequestBody ResetPasswordRequestDTO updatedPasswordRequest) {
+	public ResponseEntity<ServiceResponseDTO> resetPassword(@RequestBody ResetPasswordRequestDTO updatedPasswordRequest) {
 		boolean isSuccess = false;
 		log.info("ForgotPasswordController: requested token for update {}", updatedPasswordRequest.getResetToken());
 		User user = null;
@@ -157,11 +115,11 @@ public class StandardAuthenticationController {
 			}
 		} catch (ApplicationException e) {
 			log.error("Error in ForgotPasswordController: resetPassword()", e);
-			return ResponseEntity.badRequest().body(new ServiceResponse(isSuccess, e.getMessage(), null));
+			return ResponseEntity.badRequest().body(new ServiceResponseDTO(isSuccess, e.getMessage(), null));
 		}
 		return ResponseEntity.ok()
-							 .body(new ServiceResponse(isSuccess, messageService.getMessage("success_reset_password"),
-													   user
+							 .body(new ServiceResponseDTO(isSuccess, messageService.getMessage("success_reset_password"),
+														  user
 							 ));
 	}
 
@@ -175,8 +133,8 @@ public class StandardAuthenticationController {
 	 * @throws ServletException the servlet exception
 	 */
 	@PostMapping(value = "/changePassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponse> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request,
-														  HttpServletResponse response) { // NOSONAR
+	public ResponseEntity<ServiceResponseDTO> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request,
+															 HttpServletResponse response) { // NOSONAR
 		return ResponseEntity.ok().body(standardAuthenticationService.changePassword(request, response));
 	}
 
@@ -188,7 +146,7 @@ public class StandardAuthenticationController {
 
 		ResetPasswordTokenStatusEnum tokenStatus = standardAuthenticationService.validateEmailToken(token.toString());
 
-		String baseUiUrl = authConfigurationProperties.getBaseUiUrl();
+		String baseUiUrl = authConfig.getBaseUiUrl();
 
 		if (tokenStatus != null && tokenStatus.equals(ResetPasswordTokenStatusEnum.VALID)) {
 			return new RedirectView(baseUiUrl + userInterfacePathsConfig.getUiResetPath() + token);
@@ -209,7 +167,7 @@ public class StandardAuthenticationController {
 		log.info("UserController: requested token for validate {}", token);
 
 		ResetPasswordTokenStatusEnum tokenStatus = userVerificationTokenService.verifyUserToken(token.toString());
-		String serverPath = authConfigurationProperties.getBaseUiUrl();
+		String serverPath = authConfig.getBaseUiUrl();
 
 		if (tokenStatus != null && tokenStatus.equals(ResetPasswordTokenStatusEnum.VALID)) {
 			return new RedirectView(serverPath);

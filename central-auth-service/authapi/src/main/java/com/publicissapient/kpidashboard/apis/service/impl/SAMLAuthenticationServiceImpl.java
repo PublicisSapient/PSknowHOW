@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 
@@ -54,6 +55,9 @@ public class SAMLAuthenticationServiceImpl implements SAMLAuthenticationService 
 
 	private void saveSamlUserData(Saml2AuthenticatedPrincipal principal) {
 		User userData = createUserFromSamlPrincipal(principal);
+
+		Optional<User> existingUserOptional = this.userService.findByUsername(userData.getUsername());
+		existingUserOptional.ifPresent(user -> userData.setId(user.getId()));
 
 		this.userService.save(userData);
 	}

@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.common.model;
+package com.publicissapient.kpidashboard.apis.service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +13,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthResourceDTO {
+public class UserTokenAuthenticationDTO {
 
-	private String resourceName;
+	private String username;
+	private String email;
 	private String authToken;
+
 }

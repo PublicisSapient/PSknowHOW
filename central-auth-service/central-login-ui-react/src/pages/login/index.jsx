@@ -30,7 +30,7 @@ const LoginPage = ({search}) => {
     const PerformSAMLLogin = () => {
         setShowSAMLLoader(true);
 
-        let redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
+        const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
 
         if (redirectUri) {
             window.location.href = `${apiProvider.handleSamlLogin}?redirectUri=${redirectUri}`;
@@ -55,31 +55,17 @@ const LoginPage = ({search}) => {
             password: data.password
         })
             .then((response) => {
-                if (response) {
-                    apiProvider.getStandardLoginStatus()
-                        .then((res) => {
-                            if (res && res.data['success']) {
-                                const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
+                console.log(response);
+                if (response.status === 200) {
+                    const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
 
-                                setShowLoader(false);
+                    setShowLoader(false);
 
-                                window.location.href = redirectUri;
+                    window.location.href = redirectUri;
+                } else {
+                    setShowLoader(false);
 
-                            } else {
-                                setShowLoader(false);
-
-                                setError(res.data.message);
-                            }
-                        })
-                        .catch((err) => {
-                            setShowLoader(false);
-
-                            let errMessage = err?.response?.data?.message
-                                ? err?.response?.data?.message
-                                : 'Please try again after sometime'
-
-                            setError(errMessage);
-                        });
+                    setError(response.data.message);
                 }
             })
             .catch((err) => {

@@ -12,7 +12,6 @@
 	</dependencies>
 
 	<modules>
-		<module>authcommon</module>
 		<module>authapi</module>
 	</modules>
 </project>

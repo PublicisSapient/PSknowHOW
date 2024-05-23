@@ -61,7 +61,7 @@ import com.publicissapient.kpidashboard.apis.filters.JwtAuthenticationFilter;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
-	private final AuthenticationConfiguration authConfig;
+	private final AuthenticationConfiguration authenticationConfiguration;
 
 	private final AuthEndpointsProperties authEndpointsProperties;
 
@@ -79,8 +79,6 @@ public class WebSecurityConfig {
 					.permitAll()
 					.requestMatchers("/login")
 					.permitAll()
-					.requestMatchers("/login/status/standard")
-					.permitAll()
 					.requestMatchers("/register-user")
 					.permitAll()
 					.requestMatchers("/user-info")
@@ -96,7 +94,7 @@ public class WebSecurityConfig {
 			.addFilterBefore(
 					new StandardLoginRequestFilter(
 							"/login",
-							authenticationManager(authConfig),
+							authenticationManager(authenticationConfiguration),
 							customAuthenticationSuccessHandler,
 							customAuthenticationFailureHandler
 					),
@@ -152,7 +150,7 @@ public class WebSecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		// TODO: get the allowed origins from the .yml file
+
 		configuration.setAllowedOriginPatterns(Arrays.asList("*"));
 		configuration.setAllowedMethods(Arrays.asList("*"));
 		configuration.setAllowCredentials(true);

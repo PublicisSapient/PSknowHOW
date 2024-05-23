@@ -35,6 +35,10 @@ notification:
   #used in/for : sent mail
   switch: false
 
+logging:
+  level:
+    root: INFO
+
 spring:
   datasource:
     password: postgres

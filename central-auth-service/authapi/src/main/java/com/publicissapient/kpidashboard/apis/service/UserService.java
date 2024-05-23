@@ -19,15 +19,12 @@ package com.publicissapient.kpidashboard.apis.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
-import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.common.model.ResetPasswordRequestDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import com.publicissapient.kpidashboard.apis.entity.User;
-import com.publicissapient.kpidashboard.common.model.UserDTO;
-import org.springframework.security.core.Authentication;
+import com.publicissapient.kpidashboard.apis.service.dto.UserDTO;
 
 public interface UserService {
 
@@ -58,5 +55,5 @@ public interface UserService {
 	 */
 	UserDTO getUserDTO(User user);
 
-
+	UserDTO getCurrentUser(HttpServletRequest request);
 }

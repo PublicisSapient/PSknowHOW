@@ -18,6 +18,33 @@
 
 package com.publicissapient.kpidashboard.apis.service.impl;
 
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import org.thymeleaf.context.Context;
+import org.thymeleaf.exceptions.TemplateInputException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+
+import org.springframework.dao.RecoverableDataAccessException;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.config.ForgotPasswordConfig;
 import com.publicissapient.kpidashboard.apis.config.UserInterfacePathsConfig;
@@ -31,29 +58,8 @@ import com.publicissapient.kpidashboard.apis.repository.GlobalConfigRepository;
 import com.publicissapient.kpidashboard.apis.repository.UserRepository;
 import com.publicissapient.kpidashboard.apis.repository.UserRoleRepository;
 import com.publicissapient.kpidashboard.apis.service.NotificationService;
-import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.dao.RecoverableDataAccessException;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.exceptions.TemplateInputException;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring6.SpringTemplateEngine;
+import com.publicissapient.kpidashboard.apis.service.dto.EmailEventDTO;
 
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -158,11 +164,11 @@ public class NotificationServiceImpl implements NotificationService {
 			if (StringUtils.isNotBlank(notSubject)) {
 				GlobalConfig globalConfigs = globalConfigRepository.findByEnv(authConfig.getNotificationEnv());
 				if (globalConfigs != null) {
-					EmailEvent emailEvent = new EmailEvent(globalConfigs.getFromEmail(), emailAddresses, null, null,
-														   notSubject, null, customData, globalConfigs.getEmailHost(),
-														   globalConfigs.getEmailPort()
+					EmailEventDTO emailEventDTO = new EmailEventDTO(globalConfigs.getFromEmail(), emailAddresses, null, null,
+																	notSubject, null, customData, globalConfigs.getEmailHost(),
+																	globalConfigs.getEmailPort()
 					);
-					notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic, kafkaTemplate);
+					notificationEventProducer.sendNotificationEvent(notKey, emailEventDTO, null, topic, kafkaTemplate);
 				} else {
 					log.error("Notification Event not sent : notification emailServer Details not found in db");
 				}
@@ -191,11 +197,11 @@ public class NotificationServiceImpl implements NotificationService {
 									   String notSubject, String templateKey) {
 		GlobalConfig globalConfigs = globalConfigRepository.findByEnv(authConfig.getNotificationEnv());
 		if (StringUtils.isNotBlank(notSubject) && globalConfigs != null) {
-			EmailEvent emailEvent = new EmailEvent(globalConfigs.getFromEmail(), emailAddresses, null, null, notSubject,
-												   null, additionalData, globalConfigs.getEmailHost(),
-												   globalConfigs.getEmailPort()
+			EmailEventDTO emailEventDTO = new EmailEventDTO(globalConfigs.getFromEmail(), emailAddresses, null, null, notSubject,
+															null, additionalData, globalConfigs.getEmailHost(),
+															globalConfigs.getEmailPort()
 			);
-			JavaMailSenderImpl javaMailSender = getJavaMailSender(emailEvent);
+			JavaMailSenderImpl javaMailSender = getJavaMailSender(emailEventDTO);
 			MimeMessage message = javaMailSender.createMimeMessage();
 			try {
 				MimeMessageHelper helper = new MimeMessageHelper(message,
@@ -203,7 +209,7 @@ public class NotificationServiceImpl implements NotificationService {
 																 StandardCharsets.UTF_8.name()
 				);
 				Context context = new Context();
-				Map<String, String> customData = emailEvent.getCustomData();
+				Map<String, String> customData = emailEventDTO.getCustomData();
 				if (MapUtils.isNotEmpty(customData)) {
 					customData.forEach((k, value) -> {
 						BiConsumer<String, Object> setVariable = context::setVariable;
@@ -212,10 +218,10 @@ public class NotificationServiceImpl implements NotificationService {
 				}
 				String html = templateEngine.process(templateKey, context);
 				if (StringUtils.isNotEmpty(html)) {
-					helper.setTo(emailEvent.getTo().stream().toArray(String[]::new));
+					helper.setTo(emailEventDTO.getTo().stream().toArray(String[]::new));
 					helper.setText(html, true);
-					helper.setSubject(emailEvent.getSubject());
-					helper.setFrom(emailEvent.getFrom());
+					helper.setSubject(emailEventDTO.getSubject());
+					helper.setFrom(emailEventDTO.getFrom());
 					javaMailSender.send(message);
 					log.info("Email successfully sent for the key : {}", templateKey);
 				}
@@ -249,7 +255,7 @@ public class NotificationServiceImpl implements NotificationService {
 		return urlPath.toString();
 	}
 
-	public String getUIHost() throws UnknownHostException {
+	String getUIHost() throws UnknownHostException {
 		StringBuilder urlPath = new StringBuilder();
 		urlPath.append(':').append("//");
 
@@ -268,10 +274,10 @@ public class NotificationServiceImpl implements NotificationService {
 		return urlPath.toString();
 	}
 
-	private JavaMailSenderImpl getJavaMailSender(EmailEvent emailEvent) {
+	private JavaMailSenderImpl getJavaMailSender(EmailEventDTO emailEventDTO) {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-		mailSender.setHost(emailEvent.getEmailHost());
-		mailSender.setPort(emailEvent.getEmailPort());
+		mailSender.setHost(emailEventDTO.getEmailHost());
+		mailSender.setPort(emailEventDTO.getEmailPort());
 		Properties props = mailSender.getJavaMailProperties();
 		props.put("mail.transport.protocol", "smtp");
 		props.put("mail.smtp.auth", "false");

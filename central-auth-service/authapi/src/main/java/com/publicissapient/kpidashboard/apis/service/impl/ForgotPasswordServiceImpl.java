@@ -1,26 +1,27 @@
 package com.publicissapient.kpidashboard.apis.service.impl;
 
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.regex.Pattern;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
+
 import com.publicissapient.kpidashboard.apis.config.ForgotPasswordConfig;
 import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
 import com.publicissapient.kpidashboard.apis.entity.ForgotPasswordToken;
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.errors.*;
-import com.publicissapient.kpidashboard.apis.filters.standard.service.AuthenticationResponseService;
 import com.publicissapient.kpidashboard.apis.service.*;
-import com.publicissapient.kpidashboard.common.model.ChangePasswordRequestDTO;
-import com.publicissapient.kpidashboard.common.model.ServiceResponse;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Service;
+import com.publicissapient.kpidashboard.apis.service.dto.ChangePasswordRequestDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.regex.Pattern;
 
 @AllArgsConstructor
 @Service
@@ -105,7 +106,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 
 	@Override
-	public ServiceResponse validateUserAndSendForgotPasswordEmail(String email) {
+	public ServiceResponseDTO validateUserAndSendForgotPasswordEmail(String email) {
 		log.info("ForgotPasswordServiceImpl: Requested mail {}", email);
 
 		Optional<User> userOptional = userService.findByEmail(email);
@@ -117,11 +118,11 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 			notificationService.sendRecoverPasswordEmail(email, user.getUsername(), token);
 
-			return new ServiceResponse(true, messageService.getMessage(
+			return new ServiceResponseDTO(true, messageService.getMessage(
 					"success_forgot_password"), user);
 		}
 
-		return new ServiceResponse(false, messageService.getMessage(
+		return new ServiceResponseDTO(false, messageService.getMessage(
 				"error_email_not_exist"), null);
 	}
 

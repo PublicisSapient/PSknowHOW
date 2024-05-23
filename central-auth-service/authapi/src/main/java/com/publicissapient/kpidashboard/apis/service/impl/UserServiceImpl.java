@@ -18,47 +18,33 @@
 
 package com.publicissapient.kpidashboard.apis.service.impl;
 
-import com.publicissapient.kpidashboard.apis.config.AuthConfig;
-import com.publicissapient.kpidashboard.apis.config.UserInterfacePathsConfig;
-import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
-import com.publicissapient.kpidashboard.apis.entity.User;
-import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
-import com.publicissapient.kpidashboard.apis.enums.AuthType;
-import com.publicissapient.kpidashboard.apis.enums.NotificationCustomDataEnum;
-import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
-import com.publicissapient.kpidashboard.apis.errors.GenericException;
-import com.publicissapient.kpidashboard.apis.repository.UserRepository;
-import com.publicissapient.kpidashboard.apis.repository.UserVerificationTokenRepository;
-import com.publicissapient.kpidashboard.apis.service.NotificationService;
-import com.publicissapient.kpidashboard.apis.service.MessageService;
-import com.publicissapient.kpidashboard.apis.service.UserService;
-import com.publicissapient.kpidashboard.common.model.UserDTO;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+import java.util.*;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+
 import org.springframework.stereotype.Service;
 
-import java.net.UnknownHostException;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.publicissapient.kpidashboard.apis.entity.User;
+import com.publicissapient.kpidashboard.apis.repository.UserRepository;
+import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
+import com.publicissapient.kpidashboard.apis.service.UserService;
+import com.publicissapient.kpidashboard.apis.util.CookieUtil;
+import com.publicissapient.kpidashboard.apis.service.dto.UserDTO;
 
-/**
- * This class provides method to perform CRUD and validation operations on user
- * authentication data.
- *
- * @author hargupta15
- */
+
 @Service
 @AllArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
+
 	private final UserRepository userRepository;
+
+	private final TokenAuthenticationService tokenAuthenticationService;
 
 	@Override
 	public User save(@Valid User user) {
@@ -97,10 +83,8 @@ public class UserServiceImpl implements UserService {
 		UserDTO dto = null;
 		if (null != user) {
 			dto = UserDTO.builder().id(user.getId()).username(user.getUsername()).email(user.getEmail())
-						 //                    .approved(user.isApproved())
 						 .firstName(user.getFirstName()).lastName(user.getLastName()).displayName(user.getDisplayName())
 						 .authType(user.getAuthType())
-						 //                         .userVerified(user.isUserVerified())
 						 .build();
 		}
 		return dto;
@@ -128,5 +112,24 @@ public class UserServiceImpl implements UserService {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public UserDTO getCurrentUser(HttpServletRequest request) {
+		try {
+			Optional<String> jwt = CookieUtil.getCookieValue(request, CookieUtil.COOKIE_NAME);
+			if (jwt.isPresent()) {
+				String username = tokenAuthenticationService.getSubject(jwt.get());
+
+				Optional<User> userOptional = findByUsername(username);
+
+				return userOptional.map(this::getUserDTO).orElse(null);
+			}
+
+			return null;
+		} catch (Exception e) {
+			log.debug("Token expired");
+			throw e;
+		}
 	}
 }
