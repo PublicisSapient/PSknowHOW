@@ -88,44 +88,18 @@ div.main {
 .error-text{
   color: red;max-width: 600px;
 }
-.ico-warning{
-  color: var(--color-yellow);
-  cursor: pointer;
-}
-
-.tooltip-warning {
-  position: relative;
-  display: inline-block;
-}
-
-/* Tooltip text */
-.tooltip-warning .tooltiptext {
-  visibility: hidden;
-  width: 300px;
-  height: 100px;
-  overflow-y: auto;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  padding: 5px 0;
-  border-radius: 6px;
-  /* Position the tooltip text - see examples below! */
-  position: absolute;
-  bottom: 100%;  
-  z-index: 1;
-  right: 0;
-}
-
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip-warning:hover .tooltiptext {
-  visibility: visible;
-}
 .tooltip-item{
   word-break: break-word;
 }
-
+.icon-list{
+  font-size: 1.5rem;
+}
 ::ng-deep .progress-dialog-body{
   min-width: 300px;
   max-width: 600px;
-  max-height: 310px;
-  overflow-y: scroll;
+  /* max-height: 310px;
+  overflow-y: scroll; */
+}
+:host ::ng-deep .p-overlaypanel.p-overlaypanel-flipped:after{
+  left:98%;
 }
