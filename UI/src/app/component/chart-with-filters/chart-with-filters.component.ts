@@ -218,7 +218,7 @@ export class ChartWithFiltersComponent implements OnChanges {
     });
     this.modifiedData = this.groupData(this.dataCopy, this.selectedMainFilter.filterKey);
     this.populateLegend(this.modifiedData);
-    this.draw(this.modifiedData);
+    setTimeout(() => this.draw(this.modifiedData), 100);
   }
 
   clearAdditionalFilters() {
