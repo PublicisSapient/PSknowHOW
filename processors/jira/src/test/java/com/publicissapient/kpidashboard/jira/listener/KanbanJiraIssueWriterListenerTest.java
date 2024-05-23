@@ -51,7 +51,7 @@ public class KanbanJiraIssueWriterListenerTest {
     private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 
     @InjectMocks
-    private KanbanJiraIssueBoardWriterListener listener;
+    private KanbanJiraIssueWriterListener listener;
 
     @Mock
     JiraProcessorConfig jiraProcessorConfig;
