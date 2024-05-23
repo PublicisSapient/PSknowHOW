@@ -3,8 +3,8 @@ FROM psknowhow/nginx:1.22.1-alpine-slim
 
 # Create a non-root user
 ARG USER=marriott
-ARG UID=1000
-ARG GID=1000
+ARG UID=10000
+ARG GID=10000
 
 RUN apk add openssl --no-cache \
     && addgroup -g $GID $USER \
