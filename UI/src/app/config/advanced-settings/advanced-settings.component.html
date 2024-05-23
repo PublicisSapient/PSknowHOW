@@ -111,7 +111,7 @@
                   icon="{{findTraceLogForTool(processor.processorName)?.executionOngoing === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
                   [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.processorName)?.executionOngoing === true) && processor.processorName !== 'Jira'  "
                   class="p-button-sm p-button-success p-button-raised" (click)="runProcessor(processor.processorName)"></button>
-                  <div  class="action-btns p-ml-3" [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.processorName)?.length > 0 && findTraceLogForTool(processor?.processorName))}" *ngIf="!shouldDisableRunProcessor()"><i class="far fa-trash-alt" (click)="deleteProcessorData(processor)"></i></div>
+                  <div  class="action-btns p-ml-3" [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.processorName)?.length > 0 && findTraceLogForTool(processor?.processorName)) || findTraceLogForTool(processor?.processorName)?.isDeleteDisable}" *ngIf="!shouldDisableRunProcessor()"><i class="far fa-trash-alt" (click)="deleteProcessorData(processor)"></i></div>
               </td>
             </tr>
           </ng-template>
