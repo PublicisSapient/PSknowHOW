@@ -1,8 +1,8 @@
-package com.publicissapient.kpidashboard.common.model;
-
-import org.hibernate.validator.constraints.NotEmpty;
+package com.publicissapient.kpidashboard.apis.service.dto;
 
 import lombok.Data;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Data
 public class ForgotPasswordRequestDTO {

@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.service.RoleService;
-import com.publicissapient.kpidashboard.common.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
 
 
 @RestController
@@ -39,11 +39,11 @@ public class RoleController {
 	private final RoleService roleService;
 
 	@GetMapping(value = "/{resourceName}")
-	public ResponseEntity<ServiceResponse> getAllRolesForByResourceName(@PathVariable String resourceName) {
+	public ResponseEntity<ServiceResponseDTO> getAllRolesForByResourceName(@PathVariable String resourceName) {
 		return ResponseEntity.status(HttpStatus.OK)
-							 .body(new ServiceResponse<>(true,
-														 "",
-														 roleService.getAllRolesByResourceName(resourceName))
+							 .body(new ServiceResponseDTO<>(true,
+															"",
+															roleService.getAllRolesByResourceName(resourceName))
 							 );
 	}
 

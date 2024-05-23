@@ -17,18 +17,21 @@
 
 package com.publicissapient.kpidashboard.apis.filters.standard.handlers;
 
+import java.io.IOException;
+import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.WRONG_CREDENTIALS_ERROR_MESSAGE;
 
@@ -43,20 +46,21 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 		httpServletResponse.setContentType("application/json");
 
 		Map<String, Object> data = new LinkedHashMap<>();
-		data.put("timestamp", LocalDateTime.now());
+		data.put("timestamp", Instant.now());
 
 		data.put("status", HttpStatus.UNAUTHORIZED.value());
 
 		data.put("error", HttpStatus.UNAUTHORIZED.getReasonPhrase());
 
 		if (exception.getMessage().contains("error code 49 - 80090308")) {
-			data.put("message", "Authentication Failed: " + WRONG_CREDENTIALS_ERROR_MESSAGE);
+			data.put("message", WRONG_CREDENTIALS_ERROR_MESSAGE);
 		} else {
 			data.put("message", "Authentication Failed: " + exception.getMessage());
 		}
 		data.put("path", httpServletRequest.getRequestURI());
 
 		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
 		httpServletResponse.getOutputStream().println(objectMapper.writeValueAsString(data));
 	}
 }

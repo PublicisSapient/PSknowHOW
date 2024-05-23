@@ -15,49 +15,29 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package com.publicissapient.kpidashboard.apis.service.dto;
 
-package com.publicissapient.kpidashboard.common.model;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
-public class ResetPasswordRequestDTO {
-
-	@NotEmpty
+@Data
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserDTO {
+	private Long id;
+	private String username;
+	private String samlEmail;
 	private String password;
-
-	@NotEmpty
-	private String resetToken;
-
-	/**
-	 * @return password
-	 */
-	public String getPassword() {
-		return password;
-	}
-
-	/**
-	 * Sets password
-	 * 
-	 * @param password
-	 */
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	/**
-	 * @return resetToken
-	 */
-	public String getResetToken() {
-		return resetToken;
-	}
-
-	/**
-	 * Sets resetToken
-	 * 
-	 * @param resetToken
-	 */
-	public void setResetToken(String resetToken) {
-		this.resetToken = resetToken;
-	}
-
+	private String email;
+	private String authType;
+	private String firstName;
+	private String lastName;
+	private String displayName;
 }

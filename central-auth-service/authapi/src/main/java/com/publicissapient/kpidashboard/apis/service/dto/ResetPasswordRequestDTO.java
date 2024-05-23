@@ -16,28 +16,23 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model;
+package com.publicissapient.kpidashboard.apis.service.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Data
-@Builder
+import jakarta.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GenerateAPIKeyResponseDTO {
+public class ResetPasswordRequestDTO {
+	@NotNull
+	private String password;
 
-	private String resource;
-	private String key;
-	private String expiryDate;
-	private String createdBy;
-	private String createdDate;
-	private String modifiedDate;
-	private String modifiedBy;
+	@NotNull
+	private String resetToken;
 }

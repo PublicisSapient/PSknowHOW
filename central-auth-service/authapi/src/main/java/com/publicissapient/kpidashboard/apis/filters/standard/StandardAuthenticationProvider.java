@@ -20,41 +20,30 @@ package com.publicissapient.kpidashboard.apis.filters.standard;
 
 import java.time.LocalDateTime;
 
-import com.publicissapient.kpidashboard.apis.service.StandardAuthenticationService;
 import lombok.AllArgsConstructor;
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.apis.config.AuthConfig;
-import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
+import com.publicissapient.kpidashboard.apis.service.StandardAuthenticationService;
 
 @Component
 @AllArgsConstructor
 public class StandardAuthenticationProvider implements AuthenticationProvider {
 	private final StandardAuthenticationService standardAuthenticationService;
 
-	private final AuthConfig authProperties;
-
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		try {
-			Authentication auth = standardAuthenticationService.authenticateUser(authentication);
-
-			return auth;
+			return standardAuthenticationService.authenticateUser(authentication);
 		} catch (BadCredentialsException e) {
 			standardAuthenticationService.updateFailAttempts(authentication.getName(), LocalDateTime.now());
-
 			throw e;
-		} catch (LockedException e) {
-			String error = "User account is locked for " + authProperties.getAccountLockedPeriod() + " minutes";
-			throw new LockedException(error, e);
-		} catch (PendingApprovalException e) {
-			throw new PendingApprovalException(e.getMessage());
+		} catch (Exception e) {
+			throw new BadCredentialsException("Invalid username or password");
 		}
 	}
 

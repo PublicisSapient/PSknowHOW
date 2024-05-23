@@ -5,21 +5,24 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.publicissapient.kpidashboard.apis.errors.*;
-import com.publicissapient.kpidashboard.apis.filters.standard.service.AuthenticationResponseService;
-import com.publicissapient.kpidashboard.common.model.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.errors.*;
+import com.publicissapient.kpidashboard.apis.service.dto.ChangePasswordRequestDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.ResetPasswordRequestDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.UserDTO;
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
 import com.publicissapient.kpidashboard.apis.entity.ForgotPasswordToken;
@@ -57,7 +60,7 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 
 	@Override
 	public Authentication authenticateUser(Authentication authentication)
-			throws BadCredentialsException, LockedException, PendingApprovalException {
+			throws BadCredentialsException, LockedException, PendingApprovalException, UsernameNotFoundException {
 		String username = authentication.getPrincipal().toString();
 		String password = authentication.getCredentials().toString();
 
@@ -354,32 +357,32 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	}
 
 	@Override
-	public ServiceResponse changePassword(ChangePasswordRequestDTO changePasswordRequestDTO,
-										  HttpServletResponse response) {
+	public ServiceResponseDTO changePassword(ChangePasswordRequestDTO changePasswordRequestDTO,
+											 HttpServletResponse response) {
 		try {
 			Authentication authentication = forgotPasswordService.changePasswordAndReturnAuthentication(
 					changePasswordRequestDTO);
 
 			addAuthentication(response, authentication);
 
-			return new ServiceResponse(true, messageService.getMessage("success_change_password"), null);
+			return new ServiceResponseDTO(true, messageService.getMessage("success_change_password"), null);
 		} catch (EmailNotFoundException e) {
-			return new ServiceResponse(false, messageService.getMessage("error_invalid_user_email"), null);
+			return new ServiceResponseDTO(false, messageService.getMessage("error_invalid_user_email"), null);
 		} catch (PasswordPatternException e) {
-			return new ServiceResponse(false, messageService.getMessage("error_password_pattern"), null);
+			return new ServiceResponseDTO(false, messageService.getMessage("error_password_pattern"), null);
 		} catch (IdenticalPasswordException e) {
-			return new ServiceResponse(false, messageService.getMessage("error_same_old_password"), null);
+			return new ServiceResponseDTO(false, messageService.getMessage("error_same_old_password"), null);
 		} catch (PasswordContainsUsernameException e) {
-			new ServiceResponse(false, messageService.getMessage("error_password_contain"), null);
+			new ServiceResponseDTO(false, messageService.getMessage("error_password_contain"), null);
 		} catch (WrongPasswordException e) {
-			new ServiceResponse(false, messageService.getMessage("error_wrong_password"), null);
+			new ServiceResponseDTO(false, messageService.getMessage("error_wrong_password"), null);
 		}
 
 		return null;
 	}
 
 	@Override
-	public ServiceResponse processForgotPassword(String email) {
+	public ServiceResponseDTO processForgotPassword(String email) {
 		return forgotPasswordService.validateUserAndSendForgotPasswordEmail(email);
 	}
 }

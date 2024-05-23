@@ -15,39 +15,23 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.common.model.notification;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
+package com.publicissapient.kpidashboard.apis.service.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-/**
- * This class is represent kafka message format
- *
- * @author Hiren Babariya
- */
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-@Data
-public class EmailEvent implements Serializable {
+public class ServiceResponseDTO<T> extends BaseResponseDTO {
+	private T data;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1334987659830782650L;
-
-	private String from;
-	private List<String> to;
-	private List<String> cc;
-	private List<String> bcc;
-	private String subject;
-	private String body;
-	private Map<String, String> customData;
-	private String emailHost;
-	private int emailPort;
-
+	public ServiceResponseDTO(Boolean isSuccess, String msg, T data) {
+		super();
+		this.data = data;
+		setMessage(msg);
+		setSuccess(isSuccess);
+	}
 }

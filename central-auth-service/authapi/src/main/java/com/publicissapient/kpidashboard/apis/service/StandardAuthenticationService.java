@@ -1,19 +1,27 @@
 package com.publicissapient.kpidashboard.apis.service;
 
+import java.time.LocalDateTime;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.Authentication;
+
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.common.model.ChangePasswordRequestDTO;
-import com.publicissapient.kpidashboard.common.model.ResetPasswordRequestDTO;
-import com.publicissapient.kpidashboard.common.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.UserDTO;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.core.Authentication;
+import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
+import com.publicissapient.kpidashboard.apis.errors.UsernameNotFoundException;
+import com.publicissapient.kpidashboard.apis.service.dto.ChangePasswordRequestDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.ResetPasswordRequestDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.UserDTO;
 
-import java.time.LocalDateTime;
 
 public interface StandardAuthenticationService {
-	Authentication authenticateUser(Authentication authentication);
+	Authentication authenticateUser(Authentication authentication)
+			throws BadCredentialsException, LockedException, PendingApprovalException, UsernameNotFoundException;
 
 	String addAuthentication(HttpServletResponse response, Authentication authentication);
 
@@ -39,8 +47,8 @@ public interface StandardAuthenticationService {
 	User resetPassword(ResetPasswordRequestDTO updatedPasswordRequest) throws ApplicationException;
 
 
-	ServiceResponse changePassword(ChangePasswordRequestDTO request, HttpServletResponse response);
+	ServiceResponseDTO changePassword(ChangePasswordRequestDTO request, HttpServletResponse response);
 
 
-	ServiceResponse processForgotPassword(String email);
+	ServiceResponseDTO processForgotPassword(String email);
 }

@@ -45,18 +45,6 @@ auth:
   #used in/for : saml login , redirect and validate request
   baseUrl: http://authnauth:8787
 
-  #Purpose of properties : property used to provide valid origin
-  #possible values : String [a-z, A-Z, 0-9]
-  #used in/for : CORS
-  corsFilterValidOrigin:
-    - localhost
-    - 127.0.0.1
-    - ui
-    - dev-authnauth.tools.publicis.sapient.com
-    - qa-authnauth.tools.publicis.sapient.com
-    - uat-authnauth.tools.publicis.sapient.com
-    - local-tengine.tremend.ro
-
   loginView: login_view
   logoutView: logout_view
 
@@ -88,7 +76,6 @@ auth:
       - '/saml-login'
       - '/saml-logout'
       - '/login'
-      - '/login/status/standard'
 
   mailWithoutKafka: false
 

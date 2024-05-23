@@ -16,55 +16,25 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model;
+package com.publicissapient.kpidashboard.apis.service.dto;
 
-/**
- * The Base response.
- */
-public class BaseResponse {
+import lombok.Data;
 
-	private String message;
-	private Boolean success;
+import jakarta.validation.constraints.NotNull;
 
-	public BaseResponse() {
-	}
+@Data
+public class ChangePasswordRequestDTO {
 
-	/**
-	 * Gets message.
-	 *
-	 * @return the message
-	 */
-	public String getMessage() {
-		return message;
-	}
+	@NotNull
+	private String email;
 
-	/**
-	 * Sets message.
-	 *
-	 * @param message
-	 *            the message
-	 */
-	public void setMessage(String message) {
-		this.message = message;
-	}
+	@NotNull
+	private String oldPassword;
 
-	/**
-	 * Gets success.
-	 *
-	 * @return the success
-	 */
-	public Boolean getSuccess() {
-		return success;
-	}
+	@NotNull
+	private String password;
 
-	/**
-	 * Sets success.
-	 *
-	 * @param success
-	 *            the success
-	 */
-	public void setSuccess(Boolean success) {
-		this.success = success;
-	}
+	@NotNull
+	private String username;
 
 }

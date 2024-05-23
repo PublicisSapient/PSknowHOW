@@ -2,8 +2,8 @@ package com.publicissapient.kpidashboard.apis.service;
 
 import org.springframework.security.core.Authentication;
 
-import com.publicissapient.kpidashboard.common.model.ChangePasswordRequestDTO;
-import com.publicissapient.kpidashboard.common.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.service.dto.ChangePasswordRequestDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
 
 
 public interface ForgotPasswordService {
@@ -21,6 +21,6 @@ public interface ForgotPasswordService {
 	 * @param email
 	 * @return authentication
 	 */
-	ServiceResponse validateUserAndSendForgotPasswordEmail(String email);
+	ServiceResponseDTO validateUserAndSendForgotPasswordEmail(String email);
 
 }

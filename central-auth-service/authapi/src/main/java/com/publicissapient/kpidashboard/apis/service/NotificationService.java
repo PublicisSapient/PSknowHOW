@@ -40,6 +40,4 @@ public interface NotificationService {
 	 */
 	String getApiHost() throws UnknownHostException;
 
-	String getUIHost() throws UnknownHostException;
-
 }
