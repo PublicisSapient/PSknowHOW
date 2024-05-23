@@ -794,6 +794,10 @@ this.resetAddtionalFIlters();
         if(this.selectedTab?.toLowerCase() === 'backlog'){
           this.filterApplyData['selectedMap']['sprint'].push(...this.additionalFiltersDdn['sprint']?.filter((x) => x['parentId']?.includes(this.selectedFilterArray[i]?.nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de=>de.nodeId));
         }
+
+        if(this.selectedTab?.toLowerCase() === 'release'){
+          this.filterApplyData['selectedMap']['project'] = [this.selectedFilterArray[0]?.parentId[0]];
+        }
       }
     }
 
