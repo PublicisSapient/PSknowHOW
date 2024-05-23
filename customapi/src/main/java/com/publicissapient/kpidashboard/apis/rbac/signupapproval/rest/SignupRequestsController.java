@@ -102,9 +102,7 @@ public class SignupRequestsController {
 		log.info("Getting all unapproved requests");
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new ServiceResponse(true, "Unapproved User details",
-						mapper.map(authenticationService.getAuthenticationByApproved(false),
-								new TypeToken<>() {
-								}.getType())));
+						authenticationService.getAuthenticationByApproved(false)));
 	}
 
 	@GetMapping("/all")
