@@ -2,7 +2,7 @@
 FROM psknowhow/nginx:1.22.1-alpine-slim
 
 # Create a non-root user
-ARG USER=knowhowuser
+ARG USER=marriott
 ARG UID=1000
 ARG GID=1000
 
@@ -46,11 +46,23 @@ RUN chown -R $USER:$USER ${CONF_LOC} \
     && chown -R $USER:$USER /var/run/nginx.pid \
     && apk add --no-cache libcap \
     && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
+RUN chgrp -R 0 ${CONF_LOC} && \
+    chmod -R g=u ${CONF_LOC} && \
+    chmod -R u+x ${CONF_LOC}
+RUN chgrp -R 0 ${CERT_LOC} && \
+    chmod -R g=u ${CERT_LOC} && \
+    chmod -R u+x ${CERT_LOC}
+RUN chgrp -R 0 /var && \
+    chmod -R g=u /var && \
+    chmod -R u+x /var
+RUN chgrp -R 0 /var/run/nginx.pid && \
+    chmod -R g=u /var/run/nginx.pid && \
+    chmod -R u+x /var/run/nginx.pid
 
 EXPOSE 80 443
 
 # Switch to the non-root user
-USER $USER:$GID
+USER $USER
 
 # Entrypoint command
 ENTRYPOINT ["/etc/init.d/start_nginx.sh"]

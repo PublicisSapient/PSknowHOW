@@ -2,7 +2,7 @@
 FROM amazoncorretto:17
 
 # Create a non-root user
-ARG USER=knowhowuser
+ARG USER=marriott
 ARG UID=1000
 ARG GID=1000
 
@@ -53,9 +53,12 @@ ADD processors/azure-pipeline-repo-processor-startup/start_combined_collector.sh
 RUN chown -R $USER:$USER /app \
     && chmod +x $APP_DIR/start_combined_collector.sh \
     && chmod 766 $keystorefile
+RUN chgrp -R 0 /app && \
+    chmod -R g=u /app && \
+    chmod -R u+x /app
 
 # Switch to the non-root user
-USER $USER:$GID
+USER $USER
 
 # Command to run the application
 CMD ["sh", "start_combined_collector.sh"]

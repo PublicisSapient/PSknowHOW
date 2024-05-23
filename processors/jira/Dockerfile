@@ -2,7 +2,7 @@
 FROM amazoncorretto:17
 
 # Create a non-root user
-ARG USER=knowhowuser
+ARG USER=marriott
 ARG UID=1000
 ARG GID=1000
 
@@ -41,9 +41,12 @@ EXPOSE 50008
 # Set permissions for the JAR file
 RUN chown -R $USER:$USER /app \
     && chmod 766 $keystorefile
+RUN chgrp -R 0 /app && \
+    chmod -R g=u /app && \
+    chmod -R u+x /app
 
 # Switch to the non-root user
-USER $USER:$GID
+USER $USER
 
 # Entrypoint command
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar jira.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/jira.properties"]
