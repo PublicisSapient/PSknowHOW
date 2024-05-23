@@ -2,7 +2,7 @@
 FROM amazoncorretto:17
 
 # Set a non-root user
-ARG USER=knowhowuser
+ARG USER=marriott
 ARG UID=1000
 ARG GID=1000
 
@@ -33,12 +33,15 @@ COPY start_combined_collector.sh /app/start_combined_collector.sh
 RUN chown -R $USER:$USER /app \
     && chmod +x /app/start_combined_collector.sh \
     && chmod 766 $keystorefile
+RUN chgrp -R 0 /app && \
+    chmod -R g=u /app && \
+    chmod -R u+x /app
 
 # Expose the port
 EXPOSE 8080
 
 # Switch to the non-root user
-USER $USER:$GID
+USER $USER
 
 # Specify the command to run your application
 CMD ["sh", "start_combined_collector.sh"]
