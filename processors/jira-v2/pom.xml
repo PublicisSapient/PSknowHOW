@@ -544,7 +544,7 @@
 							<goal>build</goal>
 						</goals>
 						<configuration>
-							<dockerfile>Dockerfile</dockerfile>
+							<dockerfile>processors/jira-v2/Dockerfile</dockerfile>
 							<repository>${final.name}</repository>
 							<tag>${project.version}</tag>
 							<buildArgs>
