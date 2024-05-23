@@ -757,11 +757,10 @@ describe('MaturityComponent', () => {
   const postMethods =['postSonarKpi','postJenkinsKpi','postZypherKpi','postJiraKpi','postBitBucketKpi'];
   const fakeResponses = [fakeSonarResponse,fakeJenkinsResponse,fakeZypherResponse,fakeJiraGroupId1,fakeBitbucketResponse];
   const fakePayloads =[fakeSonarPayload,fakeJenkinsPayload,fakeZypherPayload,fakeJiraPayload,fakeBitbucketPayload];
-  for(let i=0; i<postMethods.length;i++ ){
-   httpService.postKpi = jasmine.createSpy().and.returnValue(of(fakeResponses[i]));
+  for(let i=0; i<postMethods.length;i++ ){  
+    httpService.postKpi = jasmine.createSpy().and.returnValue(of(fakeResponses[i]));
     component[postMethods[i]](fakePayloads[i],sources[i]);
   }
-
   tick();
   expect(Object.keys(component.sonarKpiData).length).toEqual(0);
   expect(Object.keys(component.jenkinsKpiData).length).toEqual(jenkinsKpiData.length);

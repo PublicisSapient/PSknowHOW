@@ -28,6 +28,7 @@ import static org.testng.AssertJUnit.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,6 +52,9 @@ public class KanbanJiraIssueWriterListenerTest {
 
     @InjectMocks
     private KanbanJiraIssueWriterListener listener;
+
+    @Mock
+    JiraProcessorConfig jiraProcessorConfig;
 
     Chunk<CompositeResult> compositeResults = new Chunk<>();
 
