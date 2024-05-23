@@ -17,7 +17,6 @@
 
 package com.publicissapient.kpidashboard.jira.listener;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -79,7 +78,7 @@ public class JobStepProgressListener implements StepExecutionListener {
 		ProgressStatus progressStatus = new ProgressStatus();
 		progressStatus.setStepName(stepName);
 		progressStatus.setStatus(status.toString());
-		progressStatus.setEndTime(LocalDateTime.now().toString());
+		progressStatus.setEndTime(System.currentTimeMillis());
 		log.info("Step {} done with status {}", stepName, status);
 		saveProgressStatusInTraceLog(ProcessorConstants.JIRA, projectId,
 				progressStatus);

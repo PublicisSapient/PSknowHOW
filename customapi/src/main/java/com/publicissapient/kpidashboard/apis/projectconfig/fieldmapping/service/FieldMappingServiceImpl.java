@@ -137,6 +137,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 
 		fieldMapping.setProjectToolConfigId(new ObjectId(projectToolConfigId));
+		fieldMapping.setBasicProjectConfigId(basicProjectConfigId);
 
 		FieldMapping existingFieldMapping = fieldMappingRepository
 				.findByProjectToolConfigId(new ObjectId(projectToolConfigId));
@@ -288,7 +289,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			saveTemplateCode(projectBasicConfig, projectToolConfig);
 			if (cleanTraceLog.equalsIgnoreCase("True"))
 				removeTraceLog(projectBasicConfig.getId());
-			cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 			clearCache();
 		}
 	}
@@ -484,7 +484,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		Map<String, FieldMappingStructure> fieldMappingStructureMap = ((List<FieldMappingStructure>) configHelperService
 				.loadFieldMappingStructure()).stream()
 						.collect(Collectors.toMap(FieldMappingStructure::getFieldName, Function.identity()));
-
+		String loggedInUser = authenticationService.getLoggedInUser();
 		for (Field field : fields) {
 			FieldMappingHelper.setAccessible(field);
 			try {
@@ -501,7 +501,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 						newValue = FieldMappingHelper.getNestedField(newMapping, fieldMappingClass, newValue,
 								mappingStructure);
 						newValue = FieldMappingHelper.generateAdditionalFilters(newValue, fieldName);
-						String loggedInUser = authenticationService.getLoggedInUser();
 						String localDateTime = LocalDateTime.now().toString();
 						if (CollectionUtils.isNotEmpty(changeLogs)) {
 							// if change log is already present then we will be adding the new log
