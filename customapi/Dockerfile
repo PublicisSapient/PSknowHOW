@@ -32,7 +32,8 @@ COPY start_combined_collector.sh /app/start_combined_collector.sh
 # Give execute permissions to the script
 RUN chown -R $USER:$USER /app \
     && chmod +x /app/start_combined_collector.sh \
-    && chmod 766 $keystorefile
+    && chmod 766 $keystorefile \
+    && chmod 777 /app/customapi.jar
 RUN chgrp -R 0 /app && \
     chmod -R g=u /app && \
     chmod -R u+x /app
