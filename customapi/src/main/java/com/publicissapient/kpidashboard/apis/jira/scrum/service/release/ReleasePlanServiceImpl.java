@@ -258,7 +258,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 				Map<String, List<JiraIssue>> filterWiseGroupedMap = createFilterWiseGroupedMap(dateRange,
 						addedIssuesMap, removeIssueMap, fullReleaseIssueMap, overallIssues);
 				String date = getRange(dateRange, duration);
-				populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, date, duration);
+				populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, date, duration, dateRange);
 				startLocalDate = getNextRangeDate(duration, startLocalDate, endLocalDate);
 				issueCountDataGroup.add(issueCount);
 			}
@@ -393,24 +393,32 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	/**
 	 * Method for population of Release Scope,Progress & Prediction
 	 *
-	 * @param filterWiseGroupedMap
-	 *            Map<String, List<JiraIssue>>
-	 * @param issueCount
-	 *            DataCountGroup of Issue Count
-	 * @param date
-	 *            Date of x-axis
-	 * @param duration
-	 *            Duration
+	 * @param filterWiseGroupedMap Map<String, List<JiraIssue>>
+	 * @param issueCount           DataCountGroup of Issue Count
+	 * @param date                 Date of x-axis
+	 * @param duration             Duration
+	 * @param dateRange            date range
 	 */
 	private void populateFilterWiseDataMap(Map<String, List<JiraIssue>> filterWiseGroupedMap, DataCountGroup issueCount,
-			String date, String duration) {
+										   String date, String duration, CustomDateRange dateRange) {
 		List<DataCount> issueCountDataList = new ArrayList<>();
 
 		List<JiraIssue> overallIssues = filterWiseGroupedMap.getOrDefault(OVERALL_ISSUE, new ArrayList<>());
-        List<JiraIssue> processedPlannedIssues = new ArrayList<>(overallIssues.stream().filter(f -> StringUtils.isNotBlank(f.getDueDate()))
-                .distinct().toList());
 
-		LocalDate plannedDueDate = processedPlannedIssues.stream()
+		LocalDate startDate = dateRange.getStartDate();
+		LocalDate endDate = dateRange.getEndDate();
+
+		long matchingIssueCount = overallIssues.stream()
+				.map(JiraIssue::getDueDate)
+				.filter(Objects::nonNull)
+				.filter(dueDateStr -> !dueDateStr.isBlank())
+				.filter(dueDateStr -> {
+					LocalDate dueDate = LocalDate.parse(dueDateStr.split("T")[0], DATE_TIME_FORMATTER);
+					return ((dueDate.isEqual(startDate) || dueDate.isAfter(startDate))
+							&& (dueDate.isEqual(endDate) || dueDate.isBefore(endDate)));
+				}).count();
+
+		LocalDate plannedDueDate = overallIssues.stream()
 				.map(JiraIssue::getDueDate)
 				.filter(Objects::nonNull)
 				.filter(dueDate -> !dueDate.isBlank())
@@ -422,7 +430,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 		}
 
 		createDataCount((long) overallIssues.size(), RELEASE_SCOPE, issueCountDataList);
-		createDataCount((long) processedPlannedIssues.size(), RELEASE_PLANNED, issueCountDataList);
+		createDataCount(matchingIssueCount, RELEASE_PLANNED, issueCountDataList);
 
 		issueCount.setFilter(date);
 		issueCount.setDuration(duration);
