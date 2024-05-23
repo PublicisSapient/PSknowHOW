@@ -15,16 +15,10 @@ on:
       - ready_for_review
       - reopened
       - unlocked
-    branches:
-      - master
-      - develop
-      - qa-master
+    branches: [ master ]
   pull_request_review:
     types: [edited, dismissed]
-    branches:
-      - master
-      - develop
-      - qa-master
+    branches: [ master ]
 env:
   GITHUB_HEAD_NAME: $GITHUB_HEAD_REF
   sonartoken: ${{secrets.SONARQUBE_TOKEN}}
@@ -60,6 +54,8 @@ jobs:
         if: steps.changes.outputs.UI == 'true'
         id: BuildUI
         run: |
+          hostname
+          java -version
           cd UI
           sudo chmod -R 777 /usr/local/lib/node_modules
           sudo npm cache clean --force
