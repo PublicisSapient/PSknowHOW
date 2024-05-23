@@ -1991,4 +1991,33 @@ public class KPIExcelUtility {
 		}
 	}
 
+	public static void populateReleasePlanExcelData(List<JiraIssue> jiraIssues, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+			jiraIssues.forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				Map<String, String> issueDetails = new HashMap<>();
+				issueDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setIssueID(issueDetails);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setIssueStatus(jiraIssue.getStatus());
+				excelData.setIssueType(jiraIssue.getTypeName());
+				populateAssignee(jiraIssue, excelData);
+				excelData.setPriority(jiraIssue.getPriority());
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));
+					excelData.setStoryPoint(Double.toString(roundingOff));
+				} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
+					double totalOriginalEstimate = Double.valueOf(jiraIssue.getAggregateTimeOriginalEstimateMinutes())
+							/ 60;
+					excelData.setStoryPoint(
+							roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
+									+ roundingOff(totalOriginalEstimate) + " hrs");
+				}
+				excelData.setDevCompleteDate(
+						DateUtil.dateTimeConverter(jiraIssue.getDevDueDate(),DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
 }
