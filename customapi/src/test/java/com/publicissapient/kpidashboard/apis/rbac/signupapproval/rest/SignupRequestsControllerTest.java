@@ -114,7 +114,6 @@ public class SignupRequestsControllerTest {
 		userAccessApprovalResponseDTO.setEmail("abc.test@test.com");
 		userAccessApprovalResponseDTO.setApproved(false);
 		UserAccessApprovalResponseDTOList.add(userAccessApprovalResponseDTO);
-		when(authProperties.getWhiteListDomainForEmail()).thenReturn(new ArrayList<>(List.of("example.com")));
 		Mockito.when(userInfoService.findAllUnapprovedUsers()).thenReturn(UserAccessApprovalResponseDTOList);
 		mockMvc.perform(MockMvcRequestBuilders.get("/userapprovals/central").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
