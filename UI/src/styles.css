@@ -2045,3 +2045,6 @@ p-dialog .p-button-cancel.p-button-secondary {
 .text-yellow{
   color: var(--color-yellow);
 }
+.list-style-none{
+  list-style-type: none;
+}

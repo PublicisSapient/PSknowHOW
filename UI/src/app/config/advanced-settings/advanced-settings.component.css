@@ -91,6 +91,11 @@ div.main {
 .tooltip-item{
   word-break: break-word;
 }
+.icon-container{
+  min-width: 35px;
+  margin: 0 auto;
+  text-align: center;
+}
 .icon-list{
   font-size: 1.5rem;
 }
