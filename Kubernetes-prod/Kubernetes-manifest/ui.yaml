@@ -36,20 +36,20 @@ spec:
         #   requests:
         #     memory: "1Gi"
         #     cpu: "0.5"
-        # readinessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: 443
-        #     scheme: HTTPS
-        #   initialDelaySeconds: 10
-        #   periodSeconds: 10
-        # livenessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: 443
-        #     scheme: HTTPS
-        #   initialDelaySeconds: 15
-        #   periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
         envFrom:
           - configMapRef:
               name: knowhow-config

@@ -73,16 +73,16 @@ spec:
         #   requests:
         #     memory: "1Gi"
         #     cpu: "0.5"
-        # readinessProbe:
-        #   tcpSocket:
-        #     port: 50020
-        #   initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-        #   periodSeconds: 5          # Check every 5 seconds
-        # livenessProbe:
-        #   tcpSocket:
-        #     port: 50020
-        #   initialDelaySeconds: 15
-        #   periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: 50020
+          initialDelaySeconds: 40   # Wait for 40 seconds before starting probes
+          periodSeconds: 30          # Check every 30 seconds
+        livenessProbe:
+          tcpSocket:
+            port: 50020
+          initialDelaySeconds: 40
+          periodSeconds: 30
 
         envFrom:
           - configMapRef:

@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: knowhow-ui
-  namespace: stage-knowhow
+  name: edc-redirect-ui
+  namespace: prod-knowhow
   labels:
-    app: knowhow-ui
+    app: edc-redirect-ui
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: knowhow-ui
+      app: edc-redirect-ui
   template:
     metadata:
       labels:
-        app: knowhow-ui
+        app: edc-redirect-ui
     spec:
       # initContainers:
       # - name: init-mongodb
@@ -26,8 +26,8 @@ spec:
       #   image: busybox:1.28
       #   command: ['sh', '-c', "until nslookup knowhow-ui-knowhow.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for knowhow-ui; sleep 2; done"]
       containers:
-      - name: knowhow-ui
-        image: speedtools.azurecr.io/knowhow-ui:9.1.0
+      - name: edc-redirect-ui
+        image: speedtools.azurecr.io/edc-nginx-redirect:0.0.1
         imagePullPolicy: Always
         ports:
         - containerPort: 80
@@ -50,18 +50,18 @@ spec:
             scheme: HTTP
           initialDelaySeconds: 10
           periodSeconds: 10
-        envFrom:
-          - configMapRef:
-              name: knowhow-config
+        #envFrom:
+        #  - configMapRef:
+        #      name: knowhow-config
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: knowhow-ui
-  namespace: stage-knowhow
+  name: edc-redirect-ui
+  namespace: prod-knowhow
 spec:
   selector:
-    app: knowhow-ui
+    app: edc-redirect-ui
   ports:
     - name: http
       protocol: TCP

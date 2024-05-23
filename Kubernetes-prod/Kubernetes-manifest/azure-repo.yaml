@@ -72,6 +72,16 @@ spec:
         ports:
         - containerPort: 50015
         - containerPort: 50016
+        readinessProbe:
+          tcpSocket:
+            port: 50016
+          initialDelaySeconds: 40   # Wait for 40 seconds before starting probes
+          periodSeconds: 30          # Check every 30 seconds
+        livenessProbe:
+          tcpSocket:
+            port: 50016
+          initialDelaySeconds: 40
+          periodSeconds: 30
         envFrom:
         - configMapRef:
             name: knowhow-config

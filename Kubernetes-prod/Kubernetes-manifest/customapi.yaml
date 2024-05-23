@@ -33,16 +33,16 @@ spec:
           #   requests:
           #     memory: "1Gi"
           #     cpu: "0.5"
-          # readinessProbe:
-          #   tcpSocket:
-          #     port: 8080
-          #   initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-          #   periodSeconds: 5          # Check every 5 seconds
-          # livenessProbe:
-          #   tcpSocket:
-          #     port: 8080
-          #   initialDelaySeconds: 15
-          #   periodSeconds: 20
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
+            periodSeconds: 5          # Check every 5 seconds
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
           env:
             - name: spring.data.mongodb.uri
               valueFrom:

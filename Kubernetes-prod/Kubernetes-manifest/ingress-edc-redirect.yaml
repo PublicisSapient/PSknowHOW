@@ -1,0 +1,44 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    appgw.ingress.kubernetes.io/appgw-ssl-certificate: wildcard-tools-publicos-sapient-com
+  name: edc-redirect-ui
+  namespace: prod-knowhow
+spec:
+  ingressClassName: azure-application-gateway
+  rules:
+  - host: playground-knowhow.tools.publicis.sapient.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: edc-redirect-ui
+            port:
+              number: 80
+        path: /
+        pathType: Exact
+  - host: n2-knowhow.tools.publicis.sapient.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: edc-redirect-ui
+            port:
+              number: 80
+        path: /
+        pathType: Exact
+  - host: node1-knowhow.tools.publicis.sapient.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: edc-redirect-ui
+            port:
+              number: 80
+        path: /
+        pathType: Exact
+status:
+  loadBalancer:
+    ingress:
+    - ip: 52.138.211.153

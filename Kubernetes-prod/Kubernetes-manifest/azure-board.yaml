@@ -72,13 +72,13 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 50017
-          initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-          periodSeconds: 5          # Check every 5 seconds
+          initialDelaySeconds: 40   # Wait for 40 seconds before starting probes
+          periodSeconds: 30          # Check every 30 seconds
         livenessProbe:
           tcpSocket:
             port: 50017
-          initialDelaySeconds: 15
-          periodSeconds: 20
+          initialDelaySeconds: 40
+          periodSeconds: 30
         envFrom:
         - configMapRef:
             name: knowhow-config
