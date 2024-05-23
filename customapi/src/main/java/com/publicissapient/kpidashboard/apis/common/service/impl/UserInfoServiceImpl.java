@@ -665,7 +665,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override 
-	private List<UserAccessApprovalResponseDTO> findAllUnapprovedUsers() {
+	public List<UserAccessApprovalResponseDTO> findAllUnapprovedUsers() {
 		List<UserAccessApprovalResponseDTO> userAccessApprovalResponseDTOList = new ArrayList<>();
 		List<CentralUserInfoDTO> nonApprovedUserList = findAllUnapprovedUsersForCentralAuth();
 		nonApprovedUserList.stream().forEach(userInfoDTO -> {
