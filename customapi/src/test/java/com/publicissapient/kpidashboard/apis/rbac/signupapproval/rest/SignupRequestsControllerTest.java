@@ -28,6 +28,8 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoService
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
+import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -46,6 +48,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -99,18 +102,19 @@ public class SignupRequestsControllerTest {
 	}
 
 	/**
-	 * method to get all unapproved requests when CA switch is Off
+	 * method to get all unapproved requests when CA switch is on
 	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void testGetUnApprovedRequests_ForCentralAuth() throws Exception {
-		List<UserInfoDTO> userInfoDTOS =new ArrayList<>();
-		UserInfoDTO userInfoDTO = new UserInfoDTO();
-		userInfoDTO.setAuthType(AuthType.APIKEY);
-		userInfoDTO.setEmailAddress("abc.test@test.com");
-		userInfoDTOS.add(userInfoDTO);
-		Mockito.when(userInfoService.findAllUnapprovedUsersForCentralAuth()).thenReturn(userInfoDTOS);
+		List<UserAccessApprovalResponseDTO> UserAccessApprovalResponseDTOList =new ArrayList<>();
+		UserAccessApprovalResponseDTO userAccessApprovalResponseDTO = new UserAccessApprovalResponseDTO();
+		userAccessApprovalResponseDTO.setWhitelistDomainEmail(false);
+		userAccessApprovalResponseDTO.setEmail("abc.test@test.com");
+		userAccessApprovalResponseDTO.setApproved(false);
+		UserAccessApprovalResponseDTOList.add(userAccessApprovalResponseDTO);
+		Mockito.when(userInfoService.findAllUnapprovedUsers()).thenReturn(UserAccessApprovalResponseDTOList);
 		mockMvc.perform(MockMvcRequestBuilders.get("/userapprovals/central").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}

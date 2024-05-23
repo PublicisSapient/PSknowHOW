@@ -74,6 +74,7 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
+import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
@@ -548,7 +549,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public List<UserInfoDTO> findAllUnapprovedUsersForCentralAuth() {
+	public List<CentralUserInfoDTO> findAllUnapprovedUsersForCentralAuth() {
 		String apiKey = authProperties.getResourceAPIKey();
 		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
@@ -661,6 +662,25 @@ public class UserInfoServiceImpl implements UserInfoService {
 			return userinfo;
 		}
 		return null;
+	}
+
+	@Override 
+	public List<UserAccessApprovalResponseDTO> findAllUnapprovedUsers() {
+		List<UserAccessApprovalResponseDTO> userAccessApprovalResponseDTOList = new ArrayList<>();
+		List<CentralUserInfoDTO> nonApprovedUserList = findAllUnapprovedUsersForCentralAuth();
+		nonApprovedUserList.stream().forEach(userInfoDTO -> {
+			UserAccessApprovalResponseDTO userAccessApprovalResponseDTO = new UserAccessApprovalResponseDTO();
+			userAccessApprovalResponseDTO.setUsername(userInfoDTO.getUsername());
+			userAccessApprovalResponseDTO.setEmail(userInfoDTO.getEmail());
+			userAccessApprovalResponseDTO.setApproved(userInfoDTO.isApproved());
+			if (CollectionUtils.isNotEmpty(authProperties.getWhiteListDomainForEmail())
+					&& authProperties.getWhiteListDomainForEmail().contains(userInfoDTO.getEmail())) {
+				userAccessApprovalResponseDTO.setWhitelistDomainEmail(true);
+			}
+			userAccessApprovalResponseDTO.setWhitelistDomainEmail(false);
+			userAccessApprovalResponseDTOList.add(userAccessApprovalResponseDTO);
+		});
+		return userAccessApprovalResponseDTOList;
 	}
 
 }

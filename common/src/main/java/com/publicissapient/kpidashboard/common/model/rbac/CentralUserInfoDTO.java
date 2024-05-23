@@ -30,14 +30,7 @@ public class CentralUserInfoDTO {
 	private String displayName;
 	private String createdOn;
 	private String email;
-
-	private String password;
-	private Integer loginAttemptCount;
-	private DateTime lastUnsuccessfulLoginTime;
-	private List<UserRoleData> userRoleAssigned;
-	private String userRole;
 	private boolean approved;
-
 	private String samlEmail;
 
 }
