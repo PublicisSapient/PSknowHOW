@@ -29,6 +29,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
+import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -47,6 +48,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -106,13 +108,14 @@ public class SignupRequestsControllerTest {
 	 */
 	@Test
 	public void testGetUnApprovedRequests_ForCentralAuth() throws Exception {
-		List<CentralUserInfoDTO> userInfoDTOS =new ArrayList<>();
-		CentralUserInfoDTO centralUserInfoDTO = new CentralUserInfoDTO();
-		centralUserInfoDTO.setAuthType(AuthType.SAML);
-		centralUserInfoDTO.setEmail("abc.test@test.com");
-		centralUserInfoDTO.setApproved(false);
-		userInfoDTOS.add(centralUserInfoDTO);
-		//Mockito.when(userInfoService.findAllUnapprovedUsers()).thenReturn(userInfoDTOS);
+		List<UserAccessApprovalResponseDTO> UserAccessApprovalResponseDTOList =new ArrayList<>();
+		UserAccessApprovalResponseDTO userAccessApprovalResponseDTO = new UserAccessApprovalResponseDTO();
+		userAccessApprovalResponseDTO.setWhitelistDomainEmail(false);
+		userAccessApprovalResponseDTO.setEmail("abc.test@test.com");
+		userAccessApprovalResponseDTO.setApproved(false);
+		UserAccessApprovalResponseDTOList.add(userAccessApprovalResponseDTO);
+		when(authProperties.getWhiteListDomainForEmail()).thenReturn(new ArrayList<>(List.of("example.com")));
+		Mockito.when(userInfoService.findAllUnapprovedUsers()).thenReturn(UserAccessApprovalResponseDTOList);
 		mockMvc.perform(MockMvcRequestBuilders.get("/userapprovals/central").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
