@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +51,9 @@ public class JiraIssueJqlWriterListenerTest {
 
 	@InjectMocks
 	private JiraIssueJqlWriterListener listener;
+
+	@Mock
+	JiraProcessorConfig jiraProcessorConfig;
 
 	@Before
 	public void setUp() {

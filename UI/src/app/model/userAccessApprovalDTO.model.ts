@@ -8,6 +8,7 @@ export interface UserAccessApprovalDTO {
     username: string;
     email: string;
     approved: boolean;
+    whitelistDomainEmail: boolean;
 }
 
 export interface UserAccessReqPayload {

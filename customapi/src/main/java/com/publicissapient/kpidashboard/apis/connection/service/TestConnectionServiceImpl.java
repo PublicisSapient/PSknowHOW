@@ -164,6 +164,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			if (connection.getBaseUrl().contains(CLOUD_BITBUCKET_IDENTIFIER))
 				connection.setCloudEnv(true);
 			apiUrl = createBitBucketUrl(connection);
+		} else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_AZUREREPO)) {
+			apiUrl = createAzureApiUrl(connection.getBaseUrl(), Constant.TOOL_AZUREREPO);
 		}
 		return apiUrl != null ? apiUrl.trim() : "";
 	}

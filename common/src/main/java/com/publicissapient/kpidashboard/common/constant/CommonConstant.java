@@ -144,6 +144,8 @@ public final class CommonConstant {
 	public static final String ADDED_ISSUES = "addedIssues";
 	public static final String ADDED = "Added";
 	public static final String REMOVED = "Removed";
+
+	public static final String INITIAL = "Initial";
 	public static final String PUNTED_ISSUES = "puntedIssues";
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";

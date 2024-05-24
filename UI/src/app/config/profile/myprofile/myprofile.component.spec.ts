@@ -32,6 +32,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { of } from 'rxjs';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { MessageService } from 'primeng/api';
 describe('MyprofileComponent', () => {
   let component: MyprofileComponent;
   let fixture: ComponentFixture<MyprofileComponent>;
@@ -39,6 +40,7 @@ describe('MyprofileComponent', () => {
   let httpMock;
   let shared;
   let authService;
+  let messageService;
   const baseUrl = environment.baseUrl;
   const successResponse = { message: 'Email updated successfully', success: true, data: { username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'testuser@gmail.com' } };
   const hierarchyData = [
@@ -652,7 +654,7 @@ describe('MyprofileComponent', () => {
         InputSwitchModule
       ],
       declarations: [MyprofileComponent],
-      providers: [HttpService, ProfileComponent, SharedService , { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, ProfileComponent, SharedService , MessageService, { provide: APP_CONFIG, useValue: AppConfig }]
     })
       .compileComponents();
   }));
@@ -663,8 +665,8 @@ describe('MyprofileComponent', () => {
     httpService = TestBed.inject(HttpService);
     httpMock = TestBed.inject(HttpTestingController);
     shared = TestBed.inject(SharedService);
-    authService = TestBed.inject(GetAuthorizationService)
-
+    authService = TestBed.inject(GetAuthorizationService);
+    messageService = TestBed.inject(MessageService);
     let localStore = {};
 
     spyOn(window.localStorage, 'getItem').and.callFake((key) =>

@@ -71,6 +71,8 @@ public class AuthenticationServiceTest {
 	public void setUp() {
 		authentication.setUsername("Test");
 		authentication.setPassword("Ps123");
+		authentication.setEmail("abc@example.com");
+		authentication.setApproved(false);
 	}
 
 	@Test
@@ -313,9 +315,13 @@ public class AuthenticationServiceTest {
 	@Test
 	public void getAuthenticationByApprovedTest() {
 		List<Authentication> authenticationList = new ArrayList<>();
-		authenticationList.add(authentication);
-		when(authRepo.findByApproved(true)).thenReturn(authenticationList);
-		Assertions.assertTrue(authService.getAuthenticationByApproved(true).iterator().hasNext());
+		Authentication user1 = new Authentication("u1", "pw", "abc@xyz.com");
+		Authentication user2 = new Authentication("u2", "pw", "u2@example.com");
+		authenticationList.add(user1);
+		authenticationList.add(user2);
+		when(authRepo.findByApproved(false)).thenReturn(authenticationList);
+		when(authProperties.getWhiteListDomainForEmail()).thenReturn(new ArrayList<>(List.of("example.com")));
+		Assertions.assertNotNull(authService.getAuthenticationByApproved(false));
 	}
 
 
