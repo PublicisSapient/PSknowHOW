@@ -654,7 +654,7 @@ describe('MyprofileComponent', () => {
         InputSwitchModule
       ],
       declarations: [MyprofileComponent],
-      providers: [HttpService, ProfileComponent, SharedService , MessageService, { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, ProfileComponent, SharedService , MessageService , { provide: APP_CONFIG, useValue: AppConfig }]
     })
       .compileComponents();
   }));
