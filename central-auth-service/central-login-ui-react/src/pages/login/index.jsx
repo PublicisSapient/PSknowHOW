@@ -54,7 +54,6 @@ const LoginPage = ({search}) => {
             password: data.password
         })
             .then((response) => {
-                console.log(response);
                 if (response.status === 200) {
                     const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
 

@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.service.impl;
 
+import java.time.Instant;
 import java.util.*;
 
 import lombok.AllArgsConstructor;
@@ -62,13 +63,14 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@Override
 	public String createJWT(@NotNull String subject, AuthType authType, Collection<? extends GrantedAuthority> authorities) {
-		Date expirationDate = new Date(System.currentTimeMillis() + cookieConfig.getDuration());
+		Instant expirationInstant = Instant.now().plusSeconds(cookieConfig.getDuration());
 
 		return Jwts.builder()
 				   .setSubject(subject)
 				   .claim(DETAILS_CLAIM, authType)
 				   .claim(ROLES_CLAIM, Objects.nonNull(authorities) ? authorities : new HashSet<>())
-				   .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, authProperties.getSecret())
+				   .setExpiration(Date.from(expirationInstant))
+				   .signWith(SignatureAlgorithm.HS512, authProperties.getSecret())
 				   .compact();
 	}
 
