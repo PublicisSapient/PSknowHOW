@@ -201,7 +201,7 @@ public class JobListenerScrum implements JobExecutionListener {
 	private void checkDeltaIssues(ProcessorExecutionTraceLog processorExecutionTraceLog, boolean status) {
 		if (StringUtils.isNotEmpty(processorExecutionTraceLog.getFirstRunDate()) && status) {
 			if (StringUtils.isNotEmpty(processorExecutionTraceLog.getBoardId())) {
-				String query = "updatedDate>='" + processorExecutionTraceLog.getFirstRunDate();
+				String query = "updatedDate>='" + processorExecutionTraceLog.getFirstRunDate() + "' ";
 				Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getCustomIssueClient()
 						.searchBoardIssue(processorExecutionTraceLog.getBoardId(), query, 0, 0,
 								JiraConstants.ISSUE_FIELD_SET);
