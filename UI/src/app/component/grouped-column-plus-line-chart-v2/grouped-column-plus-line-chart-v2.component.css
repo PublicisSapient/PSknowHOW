@@ -86,7 +86,8 @@
 
 :host ::ng-deep.red-bg {
     color: white;
-    background: rgb(210, 22, 22)
+    background: #FF3C4D;
+    padding: 0 4px;
 }
 
 :host ::ng-deep.white-bg {

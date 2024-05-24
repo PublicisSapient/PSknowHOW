@@ -22,7 +22,7 @@
     display: none;
 }
 ::ng-deep .board-menu .p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link:not(.p-disabled):focus, ::ng-deep .board-menu .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link{
-    background: var(--color-blue);
+    background: #0B4BC8;
     color: #fff;
     border-color: #D5DBE1;
 }

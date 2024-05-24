@@ -243,8 +243,8 @@ export class FilterNewComponent implements OnInit {
   }
 
   handlePrimaryFilterChange(event) {
-    if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
-
+    // if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
+    if (event?.length) {
       // Populate additional filters on MyKnowHOW, Speed and Quality
       if (this.selectedTab.toLowerCase() !== 'developer') {
         this.additionalFiltersArr = [];
@@ -346,7 +346,7 @@ export class FilterNewComponent implements OnInit {
 
   populateAdditionalFilters(event) {
     let selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
-    this.additionalFilterConfig.forEach((addtnlFilter, index) => {
+    this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
       if (!this.additionalFiltersArr['filter' + (index + 1)]) {
         this.additionalFiltersArr['filter' + (index + 1)] = [];
       }
@@ -381,7 +381,7 @@ export class FilterNewComponent implements OnInit {
       for (let i = 0; i < uniqueIdsArr.length; i++) {
         let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)][0].filter(f => f.nodeId === uniqueIdsArr[i])[0];
         uniqueObjArr.push({
-          nodeId : uniqueObj.nodeId,
+          nodeId: uniqueObj.nodeId,
           nodeName: uniqueObj.nodeName
         });
         // continue;

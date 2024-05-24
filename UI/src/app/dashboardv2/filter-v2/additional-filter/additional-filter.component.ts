@@ -31,11 +31,11 @@ export class AdditionalFilterComponent implements OnChanges {
       this.filterData1 = new Set();
       this.filterData2 = new Set();
       if (Object.keys(data).length) {
-        data.filter1.forEach(f => {
+        data.filter1?.forEach(f => {
           primarySet1.add(f);
         });
 
-        data.filter2.forEach(f => {
+        data.filter2?.forEach(f => {
           primarySet2.add(f);
         });
 
