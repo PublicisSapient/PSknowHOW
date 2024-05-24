@@ -194,40 +194,44 @@ public class JobListenerKanban implements JobExecutionListener {
 	}
 
 	private void checkDeltaIssues(ProcessorExecutionTraceLog processorExecutionTraceLog, boolean status) {
-		if (StringUtils.isNotEmpty(processorExecutionTraceLog.getFirstRunDate()) && status) {
-			if (StringUtils.isNotEmpty(processorExecutionTraceLog.getBoardId())) {
-				String query = "updatedDate>='" + processorExecutionTraceLog.getFirstRunDate();
-				Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getCustomIssueClient()
-						.searchBoardIssue(processorExecutionTraceLog.getBoardId(), query, 0, 0,
-								JiraConstants.ISSUE_FIELD_SET);
-				SearchResult searchResult = promisedRs.claim();
-				if (searchResult != null && (searchResult.getTotal() != kanbanJiraIssueRepository
-						.countByBasicProjectConfigIdAndExcludeTypeName(projectId, JiraConstants.EPIC))) {
-					processorExecutionTraceLog.setDataMismatch(true);
+		try {
+			if (StringUtils.isNotEmpty(processorExecutionTraceLog.getFirstRunDate()) && status) {
+				if (StringUtils.isNotEmpty(processorExecutionTraceLog.getBoardId())) {
+					String query = "updatedDate>='" + processorExecutionTraceLog.getFirstRunDate() + "' ";
+					Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getCustomIssueClient()
+							.searchBoardIssue(processorExecutionTraceLog.getBoardId(), query, 0, 0,
+									JiraConstants.ISSUE_FIELD_SET);
+					SearchResult searchResult = promisedRs.claim();
+					if (searchResult != null && (searchResult.getTotal() != kanbanJiraIssueRepository
+							.countByBasicProjectConfigIdAndExcludeTypeName(projectId, JiraConstants.EPIC))) {
+						processorExecutionTraceLog.setDataMismatch(true);
 
+					}
+				} else {
+					ProjectConfFieldMapping projectConfig = fetchProjectConfiguration.fetchConfiguration(projectId);
+					String issueTypes = Arrays.stream(projectConfig.getFieldMapping().getJiraIssueTypeNames())
+							.map(array -> "\"" + String.join("\", \"", array) + "\"").collect(Collectors.joining(", "));
+					StringBuilder query = new StringBuilder("project in (")
+							.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") and ");
+
+					String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase()
+							.split(JiraConstants.ORDERBY)[0];
+					query.append(userQuery);
+					query.append(" and issuetype in (").append(issueTypes).append(" ) and updatedDate>='").append(processorExecutionTraceLog.getFirstRunDate()).append("' ");
+					log.info("jql query :{}", query);
+					Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getProcessorSearchClient()
+							.searchJql(query.toString(), 0, 0, JiraConstants.ISSUE_FIELD_SET);
+					SearchResult searchResult = promisedRs.claim();
+					if (searchResult != null && (searchResult.getTotal() != kanbanJiraIssueRepository
+							.countByBasicProjectConfigIdAndExcludeTypeName(projectId, CommonConstant.BLANK))) {
+						processorExecutionTraceLog.setDataMismatch(true);
+
+					}
 				}
-			} else {
-				ProjectConfFieldMapping projectConfig = fetchProjectConfiguration.fetchConfiguration(projectId);
-				String issueTypes = Arrays.stream(projectConfig.getFieldMapping().getJiraIssueTypeNames())
-						.map(array -> "\"" + String.join("\", \"", array) + "\"").collect(Collectors.joining(", "));
-				StringBuilder query = new StringBuilder("project in (")
-						.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") and ");
 
-				String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase()
-						.split(JiraConstants.ORDERBY)[0];
-				query.append(userQuery);
-				query.append(" and issuetype in (").append(issueTypes).append(" ) and updatedDate>='").append(processorExecutionTraceLog.getFirstRunDate()).append("' ");
-				log.info("jql query :{}", query);
-				Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getProcessorSearchClient()
-						.searchJql(query.toString(), 0, 0, JiraConstants.ISSUE_FIELD_SET);
-				SearchResult searchResult = promisedRs.claim();
-				if (searchResult != null && (searchResult.getTotal() != kanbanJiraIssueRepository
-						.countByBasicProjectConfigIdAndExcludeTypeName(projectId, CommonConstant.BLANK))) {
-					processorExecutionTraceLog.setDataMismatch(true);
-
-				}
 			}
-
+		} catch (Exception e){
+			log.error("Some error occured while calculating dataMistch",e);
 		}
 	}
 
