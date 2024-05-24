@@ -342,7 +342,13 @@ export class MultilineComponent implements OnChanges {
         .style('opacity', 0);
   
       /* Add Axis into SVG */
-      const xAxis = d3.axisBottom(xScale);
+      const xAxis = d3.axisBottom(xScale).tickFormat((d,i)=>{
+        if(i===(data[maxObjectNo].value.length -1 ) && selectedProjectCount === 1){
+          return data[maxObjectNo].value[i].sortSprint;
+        }else{
+          return i+1;
+        }
+      });
       /*var xAxis = d3.axisBottom(xScale).ticks(7);
        */
       const yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(function(tickval) {

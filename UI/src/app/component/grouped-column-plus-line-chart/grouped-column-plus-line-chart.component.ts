@@ -162,7 +162,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     d3.select(this.elem).select('#svgLegend').select('div').remove();
     d3.select(this.elem).select('#legendIndicator').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
-    if (viewType === 'large' && selectedProjectCount === 1) {
+    // if (viewType === 'large' && selectedProjectCount === 1) {
       data = data.map(details => {
         let finalResult = {};
         const XValue = details.value[0].sSprintName || details.value[0].date;
@@ -172,7 +172,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
         sprintList.push(removeProject)
         return finalResult
       })
-    }
+    // }
     const isAllBelowFromThreshold = data.every(details => (details.value[0].lineValue < this.thresholdValue))
 
 
@@ -257,7 +257,14 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     const xAxis = d3
       .axisBottom(x0)
       .tickSize(0)
-      .tickPadding(tickPadding);
+      .tickPadding(tickPadding)
+      .tickFormat((d,i)=>{
+        if(i === (data.length-1) && selectedProjectCount === 1){
+          return data[i].sortName;
+        }else{
+          return i+1;
+        }
+      })
     // .orient('bottom');
 
     const yAxis = d3
