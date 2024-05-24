@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,6 +72,8 @@ public class CapacityServiceImplTest {
 	private ProjectBasicConfigRepository projectConfigRepository;
 	@Mock
 	private FieldMappingRepository fieldMappingRepository;
+	@Mock
+	private JiraIterationServiceR jiraService;
 	@InjectMocks
 	private CapacityServiceImpl capacityServiceImpl;
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
@@ -126,7 +129,7 @@ public class CapacityServiceImplTest {
 		when(capacityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		try {
 			KpiElement kpiElement = capacityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {

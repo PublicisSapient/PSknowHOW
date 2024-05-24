@@ -22,10 +22,12 @@ import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDat
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
@@ -36,20 +38,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
+import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
+import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -89,6 +97,12 @@ public class JobListenerKanban implements JobExecutionListener {
 	@Autowired
 	JiraClientService jiraClientService;
 
+	@Autowired
+	KanbanJiraIssueRepository kanbanJiraIssueRepository;
+
+	@Autowired
+	FetchProjectConfiguration fetchProjectConfiguration;
+
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
 		// in future we can use this method to do something before job execution starts
@@ -106,6 +120,8 @@ public class JobListenerKanban implements JobExecutionListener {
 		log.info("********In kanban JobExecution  listener - finishing job ********");
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+				CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRAKANBAN_KPI_CACHE);
 		try {
 			// sending notification in case of job failure
@@ -119,10 +135,10 @@ public class JobListenerKanban implements JobExecutionListener {
 						break;
 					}
 				}
-				setExecutionInfoInTraceLog(false);
+				setExecutionInfoInTraceLog(false, stepFaliureException);
 				sendNotification(stepFaliureException);
 			} else {
-				setExecutionInfoInTraceLog(true);
+				setExecutionInfoInTraceLog(true, null);
 			}
 		} catch (Exception e) {
 			log.error("An Exception has occured in kanban jobListener", e);
@@ -146,7 +162,7 @@ public class JobListenerKanban implements JobExecutionListener {
 		FieldMapping fieldMapping = fieldMappingRepository.findByProjectConfigId(projectId);
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findByStringId(projectId).orElse(null);
 		if (fieldMapping == null || (fieldMapping.getNotificationEnabler() && projectBasicConfig != null)) {
-			handler.sendEmailToProjectAdmin(
+			handler.sendEmailToProjectAdminAndSuperAdmin(
 					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost()
 							+ " for \"" + getProjectName(projectBasicConfig) + "\"",
 					ExceptionUtils.getStackTrace(stepFaliureException), projectId);
@@ -159,15 +175,59 @@ public class JobListenerKanban implements JobExecutionListener {
 		return projectBasicConfig == null ? "" : projectBasicConfig.getProjectName();
 	}
 
-	private void setExecutionInfoInTraceLog(boolean status) {
+	private void setExecutionInfoInTraceLog(boolean status, Throwable stepFailureException) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
-				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Arrays.asList(projectId));
+				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Collections.singletonList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
+				checkDeltaIssues(processorExecutionTraceLog,status);
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(status);
+				if (stepFailureException != null && processorExecutionTraceLog.isProgressStats()) {
+					String failureMessage = "An error occurred. Please check logs.";
+					processorExecutionTraceLog.setErrorMessage(failureMessage);
+					processorExecutionTraceLog.setFailureLog(stepFailureException.getMessage());
+				}
 			}
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);
+		}
+	}
+
+	private void checkDeltaIssues(ProcessorExecutionTraceLog processorExecutionTraceLog, boolean status) {
+		if (StringUtils.isNotEmpty(processorExecutionTraceLog.getFirstRunDate()) && status) {
+			if (StringUtils.isNotEmpty(processorExecutionTraceLog.getBoardId())) {
+				String query = "updatedDate>='" + processorExecutionTraceLog.getFirstRunDate();
+				Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getCustomIssueClient()
+						.searchBoardIssue(processorExecutionTraceLog.getBoardId(), query, 0, 0,
+								JiraConstants.ISSUE_FIELD_SET);
+				SearchResult searchResult = promisedRs.claim();
+				if (searchResult != null && (searchResult.getTotal() != kanbanJiraIssueRepository
+						.countByBasicProjectConfigIdAndExcludeTypeName(projectId, JiraConstants.EPIC))) {
+					processorExecutionTraceLog.setDataMismatch(true);
+
+				}
+			} else {
+				ProjectConfFieldMapping projectConfig = fetchProjectConfiguration.fetchConfiguration(projectId);
+				String issueTypes = Arrays.stream(projectConfig.getFieldMapping().getJiraIssueTypeNames())
+						.map(array -> "\"" + String.join("\", \"", array) + "\"").collect(Collectors.joining(", "));
+				StringBuilder query = new StringBuilder("project in (")
+						.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") and ");
+
+				String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase()
+						.split(JiraConstants.ORDERBY)[0];
+				query.append(userQuery);
+				query.append(" and issuetype in (").append(issueTypes).append(" ) and updatedDate>='").append(processorExecutionTraceLog.getFirstRunDate()).append("' ");
+				log.info("jql query :{}", query);
+				Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getProcessorSearchClient()
+						.searchJql(query.toString(), 0, 0, JiraConstants.ISSUE_FIELD_SET);
+				SearchResult searchResult = promisedRs.claim();
+				if (searchResult != null && (searchResult.getTotal() != kanbanJiraIssueRepository
+						.countByBasicProjectConfigIdAndExcludeTypeName(projectId, CommonConstant.BLANK))) {
+					processorExecutionTraceLog.setDataMismatch(true);
+
+				}
+			}
+
 		}
 	}
 

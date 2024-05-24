@@ -95,7 +95,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					customApiConfig.getForgotPasswordExpiryInterval());
 			log.info("Notification message sent to kafka with key : {}", FORGOT_PASSWORD_NOTIFICATION_KEY);
 			notificationService.sendEmailWithoutKafka(Arrays.asList(email), customData, customApiConfig.getEmailSubject(),
-					FORGOT_PASSWORD_NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(),FORGOT_PASSWORD_TEMPLATE);
+					FORGOT_PASSWORD_NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(), customApiConfig.isNotificationSwitch() , FORGOT_PASSWORD_TEMPLATE);
 			return authentication;
 		}
 		return null;
@@ -116,7 +116,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 */
 	@Override
 	public ResetPasswordTokenStatusEnum validateEmailToken(String token) {
-		log.info("ForgotPasswordServiceImpl: Validate the token {}", token);
 		ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenRepository.findByToken(token);
 		return checkTokenValidity(forgotPasswordToken);
 	}
@@ -141,7 +140,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 */
 	@Override
 	public Authentication resetPassword(ResetPasswordRequest resetPasswordRequest) throws ApplicationException {
-		log.info("ForgotPasswordServiceImpl: Reset token is {}", resetPasswordRequest.getResetToken());
 		ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenRepository
 				.findByToken(resetPasswordRequest.getResetToken());
 		ResetPasswordTokenStatusEnum tokenStatus = checkTokenValidity(forgotPasswordToken);
@@ -156,7 +154,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				return authentication;
 			}
 		} else {
-			log.error("Token is {}", resetPasswordRequest.getResetToken());
 			throw new ApplicationException("Token is " + tokenStatus.name(), ApplicationException.BAD_DATA);
 		}
 	}

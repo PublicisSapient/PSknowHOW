@@ -19,7 +19,6 @@ package com.publicissapient.kpidashboard.jira.reader;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -173,8 +172,8 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 			log.info("fetching project status from trace log for project: {}",
 					projectConfFieldMapping.getProjectName());
 			List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
-					.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA,
-							Arrays.asList(projectConfFieldMapping.getBasicProjectConfigId().toString()));
+					.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(JiraConstants.JIRA,
+							projectConfFieldMapping.getBasicProjectConfigId().toString());
 			if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 				String lastSuccessfulRun = deltaDate;
 				for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
