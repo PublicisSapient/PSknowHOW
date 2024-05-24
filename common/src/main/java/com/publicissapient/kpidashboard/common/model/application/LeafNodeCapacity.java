@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -17,15 +16,8 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.excel;
+package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
-import java.util.List;
-
-import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.AllArgsConstructor;
@@ -36,7 +28,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Represents a Capacity Kpi Data.
+ * The type Project release.
  */
 @Data
 @Builder
@@ -44,20 +36,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "capacity_kpi_data")
-public class CapacityKpiData extends BasicModel {
-	private String sprintID;
-	private String projectName;
-	private String projectId;
-	private Double capacityPerSprint;
-	private ObjectId basicProjectConfigId;
-	private List<LeafNodeCapacity> leafNodeCapacityList;
-	private List<AssigneeCapacity> assigneeCapacity;
+public class LeafNodeCapacity{
+	private String leafNodeId;
+	private Double leafNodeCapacity;
 
-	@Override
-	public String toString() {
-		return "CapacityKpiData{" + "sprintID='" + sprintID + '\'' + ", projectName='" + projectName + '\''
-				+ ", projectId='" + projectId + '\'' + ", capacityPerSprint=" + capacityPerSprint
-				+ ", basicProjectConfigId=" + basicProjectConfigId + '}';
-	}
 }

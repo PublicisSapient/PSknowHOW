@@ -73,4 +73,7 @@ public interface CapacityKpiDataRepository extends CrudRepository<CapacityKpiDat
 	 *            basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
+
+	@Query("{ 'sprintID': ?0, 'leafNodeCapacityList.leafNodeId': { $in: ?1 }, 'basicProjectConfigId': ?2 }")
+	CapacityKpiData findBySprintIDAndLeafNodeIdAndBasicProjectConfigId(String sprintID, List<String> leafNodeIds, ObjectId basicProjectConfigId);
 }

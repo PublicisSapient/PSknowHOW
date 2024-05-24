@@ -3,11 +3,19 @@ package com.publicissapient.kpidashboard.apis.capacity.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.*;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,12 +31,19 @@ import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.Project
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
+import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Week;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.UserRatingData;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -93,17 +108,18 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	}
 
 	private void saveAssigneEmail(CapacityMaster capacityMaster) {
-		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(capacityMaster.getBasicProjectConfigId().toString());
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository
+				.findByBasicProjectConfigId(capacityMaster.getBasicProjectConfigId().toString());
 		List<CapacityKpiData> capacities = (List<CapacityKpiData>) capacityKpiDataRepository.findAll();
-		if(assigneeDetails == null) return ;
+		if (assigneeDetails == null)
+			return;
 		Set<Assignee> assignee = assigneeDetails.getAssignee();
 		Map<String, Assignee> map = new HashMap<>();
-		if(assignee != null && capacityMaster != null && capacityMaster.getAssigneeCapacity()!=null)
-		{
+		if (assignee != null && capacityMaster != null && capacityMaster.getAssigneeCapacity() != null) {
 			assignee.forEach(assignee1 -> map.put(assignee1.getAssigneeId(), assignee1));
 			capacityMaster.getAssigneeCapacity().forEach(capacity -> {
 				Assignee assignee1 = map.get(capacity.getUserId());
-				if(capacity.getEmail() != null)
+				if (capacity.getEmail() != null)
 					assignee1.setEmail(capacity.getEmail());
 				map.put(assignee1.getAssigneeId(), assignee1);
 			});
@@ -115,8 +131,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			assigneeDetailsRepository.save(assigneeDetails);
 
 			capacities.forEach(capacityKpiData1 -> {
-				if(capacityKpiData1.getAssigneeCapacity() != null)
-				{
+				if (capacityKpiData1.getAssigneeCapacity() != null) {
 					capacityKpiData1.getAssigneeCapacity().forEach(ass -> {
 						Assignee assignee1 = map.get(ass.getUserId());
 						if (assignee1 != null && assignee1.getEmail() != null)
@@ -124,7 +139,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					});
 					capacityKpiDataRepository.save(capacityKpiData1);
 				}
- 			});
+			});
 		}
 	}
 
@@ -170,11 +185,13 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			if (capacityKpiData != null) {
 				capacityMaster.setId(capacityKpiData.getId());
 				capacityMaster.setCapacity(Math.round(capacityKpiData.getCapacityPerSprint() * 100) / 100.0);
+				capacityMaster.setLeafNodeCapacityList(capacityKpiData.getLeafNodeCapacityList());
 				if (CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity())
 						&& project.isSaveAssigneeDetails()) {
 					capacityKpiData.getAssigneeCapacity().stream().forEach(assigneeCapacity -> assigneeCapacity
 							.setLeaves(Optional.ofNullable(assigneeCapacity.getLeaves()).orElse(0D)));
-					capacityKpiData.getAssigneeCapacity().stream().forEach(assigneeCapacity -> assigneeCapacity.setHappinessRating(0));
+					capacityKpiData.getAssigneeCapacity().stream()
+							.forEach(assigneeCapacity -> assigneeCapacity.setHappinessRating(0));
 					// Setting most recently submitted happiness index value for a sprint
 					setHappinessIndex(happinessKpiData, capacityKpiData.getAssigneeCapacity());
 					capacityMaster.setAssigneeCapacity(capacityKpiData.getAssigneeCapacity());
@@ -269,6 +286,17 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					capacityMasterKanban.setId(kanbanCapacity.getId());
 					// mutiplying by working days of week
 					capacityMasterKanban.setCapacity(kanbanCapacity.getCapacity() * 5);
+					var leafNodeCapacityList = kanbanCapacity.getLeafNodeCapacityList();
+					if (CollectionUtils.isNotEmpty(leafNodeCapacityList)) {
+						leafNodeCapacityList.forEach(leafNode -> {
+							var leafNodeCapacity = leafNode.getLeafNodeCapacity();
+							if (leafNodeCapacity != null) {
+								leafNode.setLeafNodeCapacity(leafNodeCapacity * 5);
+							}
+						});
+					}
+					capacityMasterKanban.setLeafNodeCapacityList(leafNodeCapacityList);
+
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 					capacityMasterKanban.setStartDate(kanbanCapacity.getStartDate().format(formatter));
 					capacityMasterKanban.setEndDate(kanbanCapacity.getEndDate().format(formatter));
@@ -470,8 +498,26 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d)).sum();
 			data.setAssigneeCapacity(assigneeList);
 			data.setCapacityPerSprint(Math.round(sum * 100) / 100.0);
+			// Group assignees by squad
+			Map<String, List<AssigneeCapacity>> squadWiseAssignees = assigneeList.stream()
+					.filter(assigneeCapacity -> StringUtils.isNotEmpty(assigneeCapacity.getSquad()))
+					.collect(Collectors.groupingBy(AssigneeCapacity::getSquad));
+
+			// Create the list of LeafNodeCapacity
+			List<LeafNodeCapacity> leafNodeCapacityList = squadWiseAssignees.entrySet().stream().map(entry -> {
+				String squad = entry.getKey();
+				double totalCapacity = entry.getValue().stream()
+						.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d))
+						.sum();
+				return new LeafNodeCapacity(squad, Math.round(totalCapacity * 100) / 100.0);
+			}).toList();
+
+			// Set the LeafNodeCapacity list in data
+			data.setLeafNodeCapacityList(leafNodeCapacityList);
+
 		} else {
 			data.setCapacityPerSprint(capacityMaster.getCapacity());
+			data.setLeafNodeCapacityList(capacityMaster.getLeafNodeCapacityList());
 		}
 
 	}
@@ -485,10 +531,40 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			double sum = assigneeList.stream()
 					.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d)).sum();
 			data.setAssigneeCapacity(assigneeList);
+
+			// Group assignees by squad
+			Map<String, List<AssigneeCapacity>> squadWiseAssignees = assigneeList.stream()
+					.filter(assigneeCapacity -> StringUtils.isNotEmpty(assigneeCapacity.getSquad()))
+					.collect(Collectors.groupingBy(AssigneeCapacity::getSquad));
+			// Create the list of LeafNodeCapacity
+			List<LeafNodeCapacity> leafNodeCapacityList = squadWiseAssignees.entrySet().stream().map(entry -> {
+				String squad = entry.getKey();
+				double totalCapacity = entry.getValue().stream()
+						.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d))
+						.sum();
+				return new LeafNodeCapacity(squad, totalCapacity / 5);
+			}).toList();
+
+			// Set the LeafNodeCapacity list in data
+			data.setLeafNodeCapacityList(leafNodeCapacityList);
+
 			// we have to divide capacity by working days of week
 			data.setCapacity(sum / 5);
 		} else {
 			data.setCapacity(capacityMaster.getCapacity() / 5);
+			// dividing each leaf node capacity of full week to single day.
+			List<LeafNodeCapacity> leafNodeCapacityList = capacityMaster.getLeafNodeCapacityList();
+			if (CollectionUtils.isNotEmpty(leafNodeCapacityList)) {
+				leafNodeCapacityList.forEach(leafNode -> {
+					Double leafNodeCapacity = leafNode.getLeafNodeCapacity();
+					if (leafNodeCapacity != null) {
+						leafNode.setLeafNodeCapacity(leafNodeCapacity / 5);
+					}
+				});
+			}
+
+			data.setLeafNodeCapacityList(leafNodeCapacityList);
+
 		}
 
 	}
