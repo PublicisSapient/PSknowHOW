@@ -84,7 +84,7 @@
                                       *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                       <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
                                         <ng-container *ngSwitchCase="'stackedColumn'">
-                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="dataPresentObj[kpi?.kpiId]">
                                             <app-groupstackchart [legendType]="'normal'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                               [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
                                               [filter]="kpiSelectedFilterObj[kpi?.kpiId]" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
@@ -92,7 +92,7 @@
                                               [activeTab]="activeImilesndex"
                                               [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                           </ng-container>
-                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="!dataPresentObj[kpi?.kpiId]">
                                             <ng-container
                                               *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }">
                                             </ng-container>
@@ -107,22 +107,22 @@
                                         </app-group-bar-chart>
 
                                         <ng-container *ngSwitchCase="'pieChart'">
-                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="dataPresentObj[kpi?.kpiId]">
                                             <app-piechart [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                           </ng-container>
-                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="!dataPresentObj[kpi?.kpiId]">
                                             <ng-container
                                               *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
-                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="dataPresentObj[kpi?.kpiId]">
                                             <app-horizontal-percent-bar-chart [kpiId]="kpi?.kpiId"
                                               [kpiWidth]="kpi?.kpiDetail?.kpiWidth" [data]="kpiChartData[kpi?.kpiId]"
                                               [activeTab]="activeIndex">
                                             </app-horizontal-percent-bar-chart>
                                           </ng-container>
-                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="!dataPresentObj[kpi?.kpiId]">
                                             <ng-container
                                               *ngTemplateOutlet="zeroData; context: { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
@@ -243,7 +243,7 @@
                                       *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                       <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
                                         <ng-container *ngSwitchCase="'stackedColumn'">
-                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="dataPresentObj[kpi?.kpiId]">
                                             <app-groupstackchart [legendType]="'normal'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                               [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
                                               [filter]="kpiSelectedFilterObj[kpi?.kpiId]" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
@@ -251,7 +251,7 @@
                                               [activeTab]="activeIndex"
                                               [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                           </ng-container>
-                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="!dataPresentObj[kpi?.kpiId]">
                                             <ng-container
                                               *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }">
                                             </ng-container>
@@ -266,22 +266,22 @@
                                         </app-group-bar-chart>
 
                                         <ng-container *ngSwitchCase="'pieChart'">
-                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="dataPresentObj[kpi?.kpiId]">
                                             <app-piechart [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                           </ng-container>
-                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="!dataPresentObj[kpi?.kpiId]">
                                             <ng-container
                                               *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
-                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="dataPresentObj[kpi?.kpiId]">
                                             <app-horizontal-percent-bar-chart [kpiId]="kpi?.kpiId"
                                               [kpiWidth]="kpi?.kpiDetail?.kpiWidth" [data]="kpiChartData[kpi?.kpiId]"
                                               [activeTab]="activeIndex">
                                             </app-horizontal-percent-bar-chart>
                                           </ng-container>
-                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="!dataPresentObj[kpi?.kpiId]">
                                             <ng-container
                                               *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
@@ -402,7 +402,7 @@
                                       *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                       <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
                                         <ng-container *ngSwitchCase="'stackedColumn'">
-                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="dataPresentObj[kpi?.kpiId]">
                                             <app-groupstackchart [legendType]="'normal'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                               [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
                                               [filter]="kpiSelectedFilterObj[kpi?.kpiId]" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
@@ -410,7 +410,7 @@
                                               [activeTab]="activeIndex"
                                               [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                           </ng-container>
-                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="!dataPresentObj[kpi?.kpiId]">
                                             <ng-container
                                               *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }">
                                             </ng-container>
@@ -425,22 +425,22 @@
                                         </app-group-bar-chart>
 
                                         <ng-container *ngSwitchCase="'pieChart'">
-                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="dataPresentObj[kpi?.kpiId]">
                                             <app-piechart [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                           </ng-container>
-                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="!dataPresentObj[kpi?.kpiId]">
                                             <ng-container
                                               *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
-                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="dataPresentObj[kpi?.kpiId]">
                                             <app-horizontal-percent-bar-chart [kpiId]="kpi?.kpiId"
                                               [kpiWidth]="kpi?.kpiDetail?.kpiWidth" [data]="kpiChartData[kpi?.kpiId]"
                                               [activeTab]="activeIndex">
                                             </app-horizontal-percent-bar-chart>
                                           </ng-container>
-                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="!dataPresentObj[kpi?.kpiId]">
                                             <ng-container
                                               *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
@@ -563,7 +563,7 @@
                                       *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                       <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
                                         <ng-container *ngSwitchCase="'stackedColumn'">
-                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="dataPresentObj[kpi?.kpiId]">
                                             <app-groupstackchart [legendType]="'normal'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                               [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
                                               [filter]="kpiSelectedFilterObj[kpi?.kpiId]" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
@@ -571,7 +571,7 @@
                                               [activeTab]="activeIndex"
                                               [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                           </ng-container>
-                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="!dataPresentObj[kpi?.kpiId]">
                                             <ng-container
                                               *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }">
                                             </ng-container>
@@ -586,22 +586,22 @@
                                         </app-group-bar-chart>
 
                                         <ng-container *ngSwitchCase="'pieChart'">
-                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="dataPresentObj[kpi?.kpiId]">
                                             <app-piechart [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                           </ng-container>
-                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="!dataPresentObj[kpi?.kpiId]">
                                             <ng-container
                                               *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
-                                          <ng-container *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="dataPresentObj[kpi?.kpiId]">
                                             <app-horizontal-percent-bar-chart [kpiId]="kpi?.kpiId"
                                               [kpiWidth]="kpi?.kpiDetail?.kpiWidth" [data]="kpiChartData[kpi?.kpiId]"
                                               [activeTab]="activeIndex">
                                             </app-horizontal-percent-bar-chart>
                                           </ng-container>
-                                          <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
+                                          <ng-container *ngIf="!dataPresentObj[kpi?.kpiId]">
                                             <ng-container
                                               *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
@@ -633,6 +633,7 @@
                           </ng-template>
                           <ng-template #zeroData let-data>
                             <div class="min-ht">
+                              {{data | json}}
                               <div class="no-data">No Data {{ data?.filter1 ? 'for ' + data?.filter1[0] : '' }}</div>
                             </div>
                           </ng-template>
