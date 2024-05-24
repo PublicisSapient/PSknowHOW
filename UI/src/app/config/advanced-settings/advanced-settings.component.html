@@ -93,7 +93,8 @@
               </td>
               <td class='custom-table-cell'>
                 <div class="p-d-flex p-align-center">
-                  <div *ngIf="(!findTraceLogForTool(processor.processorName)?.executionOngoing && processor.processorName === 'Jira') || processor.processorName !== 'Jira'">
+                  
+                  <div class="p-d-flex p-align-center" *ngIf="(!findTraceLogForTool(processor.processorName)?.executionOngoing && processor.processorName === 'Jira') || processor.processorName !== 'Jira'">
                     <div *ngIf="showProcessorLastState(processor.processorName) !== 'NA'" class="status-container"
                       [ngClass]="showProcessorLastState(processor.processorName) === 'Success' ? 'active' : 'inactive'">
                       {{ showProcessorLastState(processor.processorName)}}
@@ -111,7 +112,7 @@
                   icon="{{findTraceLogForTool(processor.processorName)?.executionOngoing === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
                   [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.processorName)?.executionOngoing === true) && processor.processorName !== 'Jira'  "
                   class="p-button-sm p-button-success p-button-raised" (click)="runProcessor(processor.processorName)"></button>
-                  <div  class="action-btns p-ml-3" [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.processorName)?.length > 0 && findTraceLogForTool(processor?.processorName))}" *ngIf="!shouldDisableRunProcessor()"><i class="far fa-trash-alt" (click)="deleteProcessorData(processor)"></i></div>
+                  <div  class="action-btns p-ml-3" [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.processorName)?.length > 0 && findTraceLogForTool(processor?.processorName)) || findTraceLogForTool(processor?.processorName)?.isDeleteDisable}" *ngIf="!shouldDisableRunProcessor()"><i class="far fa-trash-alt" (click)="deleteProcessorData(processor)"></i></div>
               </td>
             </tr>
           </ng-template>
@@ -136,9 +137,9 @@
 </p-confirmDialog>
 
 <p-overlayPanel #op [showCloseIcon]="false">
-  <div class="dialog-body p-mb-4">
+  <div class="progress-dialog-body p-mb-4">
       <p-table [value]="findTraceLogForTool('Jira')?.progressStatusList" [tableStyle]="{ 'min-width': '40rem' }"
-       [scrollable]="true" scrollHeight="300px" *ngIf="findTraceLogForTool('Jira')?.progressStatusList?.length && !(findTraceLogForTool('Jira')?.errorMessage) ; else logError">
+       [scrollable]="true" scrollHeight="200px" *ngIf="findTraceLogForTool('Jira')?.progressStatusList?.length && !(findTraceLogForTool('Jira')?.errorMessage) ; else logError">
         <ng-template pTemplate="header">
             <tr>
               <th>Step Name</th>
@@ -158,5 +159,24 @@
     <ng-template #logError>
       <h3 class="p-text-center" class="error-text"><img src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />{{ findTraceLogForTool('Jira')?.errorMessage}}</h3>
     </ng-template>
+    <ul class="p-pr-1 p-pl-0 list-style-none" *ngIf="dataMismatchObj['Jira']">
+      <li class="tooltip-item p-d-flex p-pt-2">
+        <div class="icon-container">
+          <i class="fas fa-exclamation-triangle text-yellow icon-list"></i>
+        </div>
+        <div>
+          There are some Jira issues that no longer satisfy your Scrum board's JQL condition.
+          This could be due to changes in JQL query or changes in the Jira issue fields.
+        </div>
+      </li>
+      <li class="tooltip-item p-d-flex p-pt-2">
+        <div class="icon-container">
+          <i class="fas fa-bolt text-green icon-list"></i>
+        </div>
+        <div>
+          Delete your Jira processor in Misc Settings and click on "Run Now" to rectify past sprint data.
+        </div>
+      </li>
+    </ul>
   </div>
 </p-overlayPanel>

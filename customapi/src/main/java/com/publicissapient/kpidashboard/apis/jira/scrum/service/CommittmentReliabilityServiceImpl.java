@@ -206,7 +206,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 					totalInitialIssues.removeIf(issue -> sd.getAddedIssues().contains(issue.getNumber()));
 					addedIssues.addAll(sd.getAddedIssues());
 				}
-				Set<String> puntedIssues = sd.getPuntedIssues().stream().map(SprintIssue::getNumber).collect(Collectors.toSet());
+				Set<String> puntedIssues = CollectionUtils.emptyIfNull(sd.getPuntedIssues()).stream().map(SprintIssue::getNumber).collect(Collectors.toSet());
 				Set<JiraIssue> totalCompltdInitialIssues = new HashSet<>(totalInitialIssues);
 				totalCompltdInitialIssues = new HashSet<>(
 						CollectionUtils.intersection(totalCompltdInitialIssues, completedIssues));
