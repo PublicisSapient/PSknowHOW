@@ -185,7 +185,11 @@ public class JobListenerScrum implements JobExecutionListener {
 				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Collections.singletonList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
-				checkDeltaIssues(processorExecutionTraceLog,status);
+				try {
+					checkDeltaIssues(processorExecutionTraceLog, status);
+				} catch (Exception e){
+					log.error("Some error occured while calculating dataMistch",e);
+				}
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(status);
 				if (stepFailureException != null && processorExecutionTraceLog.isProgressStats()) {

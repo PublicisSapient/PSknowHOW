@@ -180,7 +180,11 @@ public class JobListenerKanban implements JobExecutionListener {
 				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Collections.singletonList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
-				checkDeltaIssues(processorExecutionTraceLog,status);
+				try {
+					checkDeltaIssues(processorExecutionTraceLog, status);
+				} catch (Exception e){
+					log.error("Some error occured while calculating dataMistch",e);
+				}
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(status);
 				if (stepFailureException != null && processorExecutionTraceLog.isProgressStats()) {
@@ -196,7 +200,7 @@ public class JobListenerKanban implements JobExecutionListener {
 	private void checkDeltaIssues(ProcessorExecutionTraceLog processorExecutionTraceLog, boolean status) {
 		if (StringUtils.isNotEmpty(processorExecutionTraceLog.getFirstRunDate()) && status) {
 			if (StringUtils.isNotEmpty(processorExecutionTraceLog.getBoardId())) {
-				String query = "updatedDate>='" + processorExecutionTraceLog.getFirstRunDate();
+				String query = "updatedDate>='" + processorExecutionTraceLog.getFirstRunDate() + "' ";
 				Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getCustomIssueClient()
 						.searchBoardIssue(processorExecutionTraceLog.getBoardId(), query, 0, 0,
 								JiraConstants.ISSUE_FIELD_SET);
