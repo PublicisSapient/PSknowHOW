@@ -23,7 +23,6 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
-import com.publicissapient.kpidashboard.apis.auth.service.UserNameRequest;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,8 +116,6 @@ public class SignupRequestsController {
 
 	/**
 	 * Modify an access request data by username
-	 *
-	 * @param userNameRequest
 	 *            access request id
 	 * @param accessRequestDecision
 	 *            decision data
@@ -126,10 +123,9 @@ public class SignupRequestsController {
 	 */
 	@PutMapping
 	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
-	public ResponseEntity<ServiceResponse> modifyAccessRequestById(@Valid @RequestBody UserNameRequest userNameRequest,
-			@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
+	public ResponseEntity<ServiceResponse> modifyAccessRequestById(@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
 		ServiceResponse[] serviceResponse = new ServiceResponse[1];
-		String username = userNameRequest.getUserName();
+		String username = accessRequestDecision.getUserName();
 
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access {}", username);
@@ -166,8 +162,6 @@ public class SignupRequestsController {
 	/**
 	 * Modify an access request data by username for central auth service
 	 *
-	 * @param userNameRequest
-	 *            access request id
 	 * @param accessRequestDecision
 	 *            decision data
 	 * @return updated access request
@@ -175,12 +169,11 @@ public class SignupRequestsController {
 	@PutMapping("/central")
 	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
 	public ResponseEntity<ServiceResponse> modifyAccessRequestByIdForCentral(
-			@Valid @RequestBody UserNameRequest userNameRequest,
 			@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
-		String username = userNameRequest.getUserName();
+		String username = accessRequestDecision.getUserName();
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access For Central Auth {}", username);
-			boolean approvedCentral = userInfoService.updateUserApprovalStatus(userNameRequest);
+			boolean approvedCentral = userInfoService.updateUserApprovalStatus(username);
 			if (approvedCentral) {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ServiceResponse(true, "Granted For that User", true));

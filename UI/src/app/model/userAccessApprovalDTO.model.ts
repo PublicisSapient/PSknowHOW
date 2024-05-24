@@ -14,4 +14,5 @@ export interface UserAccessReqPayload {
     status: string;
     role: string;
     message: string;
+    userName: string;
 }

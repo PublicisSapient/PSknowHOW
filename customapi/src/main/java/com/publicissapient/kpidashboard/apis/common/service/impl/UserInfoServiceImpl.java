@@ -463,13 +463,15 @@ public class UserInfoServiceImpl implements UserInfoService {
 		String apiKey = authProperties.getResourceAPIKey();
 		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
-				authProperties.getFetchUserDetailsEndPoint(), username);
-		HttpEntity<?> entity = new HttpEntity<>(headers);
+				authProperties.getFetchUserDetailsEndPoint(), "");
+		UserNameRequest userNameRequest = new UserNameRequest();
+		userNameRequest.setUserName(username);
+		HttpEntity<?> entity = new HttpEntity<>(userNameRequest, headers);
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response = null;
 		try {
-			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.POST, entity, String.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
 				JSONParser jsonParser = new JSONParser();
@@ -554,11 +556,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public boolean updateUserApprovalStatus(UserNameRequest userNameRequest) {
+	public boolean updateUserApprovalStatus(String userName) {
 		String apiKey = authProperties.getResourceAPIKey();
 		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getUpdateUserApprovalStatus(), "");
+		UserNameRequest userNameRequest = new UserNameRequest();
+		userNameRequest.setUserName(userName);
 		HttpEntity<?> entity = new HttpEntity<>(userNameRequest, headers);
 
 		RestTemplate restTemplate = new RestTemplate();
