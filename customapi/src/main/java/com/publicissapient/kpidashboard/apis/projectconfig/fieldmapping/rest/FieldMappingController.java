@@ -71,9 +71,12 @@ public class FieldMappingController {
 	@Autowired
 	private ConfigHelperService configHelperService;
 
+	/*
+	 * save import functionality
+	 */
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> addFieldMapping(@PathVariable String projectToolConfigId,
-			@RequestBody List<FieldMappingResponse> fieldMappingResponseList) {
+			@RequestBody FieldMappingMeta fieldMappingMeta) {
 
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
 
@@ -89,12 +92,16 @@ public class FieldMappingController {
 			ServiceResponse response;
 			try {
 				FieldMapping fieldMapping = new FieldMapping();
-				boolean allfieldFound = fieldMappingService.convertToFieldMappingAndCheckIsFieldPresent(fieldMappingResponseList, fieldMapping);
-				fieldMappingService.addFieldMapping(projectToolConfigId, fieldMapping, projectToolConfig.getBasicProjectConfigId());
+				boolean allfieldFound = fieldMappingService.convertToFieldMappingAndCheckIsFieldPresent(
+						fieldMappingMeta.getFieldMappingRequests(), fieldMapping);
+				fieldMappingService.addFieldMapping(projectToolConfigId, fieldMapping,
+						projectToolConfig.getBasicProjectConfigId());
 				if (!allfieldFound) {
 					response = new ServiceResponse(true, "field mappings added successfully", null);
 				} else {
-					response = new ServiceResponse(false, "field mappings added successfully but some fields are missing, please verify your imported fields", null);
+					response = new ServiceResponse(false,
+							"field mappings added successfully but some fields are missing, please verify your imported fields",
+							null);
 				}
 			} catch (Exception ex) {
 				response = new ServiceResponse(false, "failed to add field mappings", null);
@@ -105,6 +112,9 @@ public class FieldMappingController {
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "No Tool Configuration Found", ""));
 	}
 
+	/*
+	 * export fieldmapping
+	 */
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getFieldMapping(@PathVariable String projectToolConfigId) {
 
@@ -126,43 +136,49 @@ public class FieldMappingController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-	@RequestMapping(value = "/tools/fieldMapping/{projectToolConfigId}/{kpiId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	/*
+	 * save kpiwise fieldmapping
+	 */
+	@RequestMapping(value = "/tools/fieldMapping/{projectToolConfigId}/{kpiId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getFieldMapping(@PathVariable String projectToolConfigId,
-			@PathVariable String kpiId) {
+			@PathVariable String kpiId, @RequestBody FieldMappingMeta requestData) {
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
-		KPICode kpi = KPICode.getKPI(kpiId);
-		List<FieldMappingResponse> kpiSpecificFieldsAndHistory = new ArrayList<>();
-		if (!Objects.equals(kpi.getKpiId(), KPICode.INVALID.getKpiId())) {
-			try {
-				kpiSpecificFieldsAndHistory = fieldMappingService.getKpiSpecificFieldsAndHistory(kpi,
-						projectToolConfigId);
-			} catch (NoSuchFieldException | IllegalAccessException e) {
-				log.error("Field/ Class not found in FieldMapping collection");
-			}
-		}
-		log.info("getFieldMapping result : {}", kpiSpecificFieldsAndHistory);
+		Optional<ProjectToolConfig> projectToolConfigOptional = getProjectToolConfig(projectToolConfigId);
+
 		ServiceResponse response = null;
-		if (CollectionUtils.isEmpty(kpiSpecificFieldsAndHistory)) {
-			response = new ServiceResponse(false, "no field mapping found for " + projectToolConfigId, null);
-		} else {
-			Optional<ProjectToolConfig> projectToolConfigOptional = getProjectToolConfig(projectToolConfigId);
-			if (projectToolConfigOptional.isPresent()) {
-				ProjectToolConfig projectToolConfig = projectToolConfigOptional.get();
-				if (checkTool(projectToolConfig)) {
-					FieldMappingMeta fieldMappingMeta = new FieldMappingMeta(kpiSpecificFieldsAndHistory,
-							projectToolConfig.getMetadataTemplateCode());
-					response = new ServiceResponse(true, "field mappings", fieldMappingMeta);
+		if (projectToolConfigOptional.isPresent()) {
+			ProjectToolConfig projectToolConfig = projectToolConfigOptional.get();
+			KPICode kpi = KPICode.getKPI(kpiId);
+			List<FieldMappingResponse> kpiSpecificFieldsAndHistory = new ArrayList<>();
+			if (!Objects.equals(kpi.getKpiId(), KPICode.INVALID.getKpiId())) {
+				try {
+					kpiSpecificFieldsAndHistory = fieldMappingService.getKpiSpecificFieldsAndHistory(kpi,
+							projectToolConfig, requestData);
+				} catch (NoSuchFieldException | IllegalAccessException e) {
+					log.error("Field/ Class not found in FieldMapping collection");
 				}
 			}
+			log.info("getFieldMapping result : {}", kpiSpecificFieldsAndHistory);
 
+			if (CollectionUtils.isEmpty(kpiSpecificFieldsAndHistory)) {
+				response = new ServiceResponse(false, "no field mapping found for " + projectToolConfigId, null);
+			} else if (checkTool(projectToolConfig)) {
+				FieldMappingMeta fieldMappingMeta = new FieldMappingMeta(kpiSpecificFieldsAndHistory,
+						projectToolConfig.getMetadataTemplateCode());
+				response = new ServiceResponse(true, "field mappings", fieldMappingMeta);
+
+			}
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
+	/*
+	 * get kpiwise fieldmapping
+	 */
 	@RequestMapping(value = "/tools/saveMapping/{projectToolConfigId}/{kpiId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> saveKpiWiseSpecificFieldmAPPING(@PathVariable String projectToolConfigId,
-			@PathVariable String kpiId, @RequestBody List<FieldMappingResponse> fieldMappingResponse)
+			@PathVariable String kpiId, @RequestBody FieldMappingMeta fieldMappingMeta)
 			throws NoSuchFieldException, IllegalAccessException {
 
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
@@ -180,7 +196,7 @@ public class FieldMappingController {
 			// validating kpicode
 			KPICode kpi = KPICode.getKPI(kpiId);
 			if (!Objects.equals(kpi.getKpiId(), KPICode.INVALID.getKpiId())) {
-				fieldMappingService.updateSpecificFieldsAndHistory(kpi, projectToolConfig, fieldMappingResponse);
+				fieldMappingService.updateSpecificFieldsAndHistory(kpi, projectToolConfig, fieldMappingMeta);
 				ServiceResponse response;
 				if (checkTool(projectToolConfig) && checkCustomTemplateCode(projectToolConfig)) {
 					response = new ServiceResponse(true, "changes are made in customize mappings", false);

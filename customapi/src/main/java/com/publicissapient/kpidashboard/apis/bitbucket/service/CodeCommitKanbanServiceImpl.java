@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -161,7 +162,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		String projectNodeId = node.getId();
 		for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 
-			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
+			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate,
 					kpiRequest.getDuration());
 			List<Tool> reposList = getBitBucketJobs(toolMap, node);
 			if (CollectionUtils.isEmpty(reposList)) {

@@ -17,9 +17,7 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
@@ -178,30 +176,32 @@ public class JiraServiceR {
 
 	/**
 	 * updates the TreeAggregatorDetail object based on the KpiRequest.
+	 * If the selectedMap in the KpiRequest does not contain the HIERARCHY_LEVEL_ID_SPRINT,
+	 * filter out the sprint by sprintCountForKpiCalculation property
 	 *
 	 * @param kpiRequest
-	 * 				The KpiRequest object that contains the label
+	 * 				KpiRequest object containing the selectedMap.
 	 * @param treeAggregatorDetail
 	 * 				The TreeAggregatorDetail object to be updated.
 	 */
 	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
-		if (!kpiRequest.getLabel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())
+				&& CollectionUtils.isEmpty(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
 				&& MapUtils.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes())) {
-			Map<String, List<Node>> sprintMap = new LinkedHashMap<>();
+			List<Node> sprintList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
 				treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT).stream()
 						.collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
 							if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
-								sprintMap
-										.computeIfAbsent(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
-												k -> new ArrayList<>())
-										.addAll(new ArrayList<>(
-												sprints.subList(0, customApiConfig.getSprintCountForKpiCalculation())));
-
+								sprintList.addAll(new ArrayList<>(
+										sprints.subList(0, customApiConfig.getSprintCountForKpiCalculation())));
+							} else {
+								sprintList.addAll(sprints);
 							}
 						});
-				treeAggregatorDetail.setMapOfListOfLeafNodes(sprintMap);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
+						sprintList);
 			}
 		}
 	}

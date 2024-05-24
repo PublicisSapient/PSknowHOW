@@ -33,7 +33,7 @@ public enum FieldMappingEnum {
 					"rootCauseIdentifier", "rootCause", "rootCauseValues", "sprintName", "estimationCriteria",
 					"storyPointToHourMapping", "jiraStoryPointsCustomField", "epicCostOfDelay", "epicRiskReduction",
 					"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize", "additionalFilterConfig",
-					"jiraDueDateField", "jiraDueDateCustomField", "jiraDevDueDateField", "jiraIssueEpicType",
+					"jiraDueDateField", "jiraDueDateCustomField", "jiraDevDueDateField", "jiraDevDueDateCustomField", "jiraIssueEpicType",
 					"storyFirstStatus", "notificationEnabler", "epicLink", "jiraSubTaskDefectType",
 					"jiraSubTaskIdentification")),
 

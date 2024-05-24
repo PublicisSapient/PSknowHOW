@@ -23,7 +23,9 @@ import static org.mockito.Mockito.when;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
@@ -193,6 +195,10 @@ public class CommonServiceImplTest {
 		projectsAccess.setRole("ROLE_SUPERADMIN");
 		projectsAccess.setAccessNodes(accessNodes);
 		user.setProjectsAccess(Arrays.asList(projectsAccess));
+		Map<String, Boolean> notificationEmail = new HashMap<>();
+		notificationEmail.put("accessAlertNotification" , true);
+		notificationEmail.put("errorAlertNotification" , false);
+		user.setNotificationEmail(notificationEmail);
 		List<UserInfo> users = new ArrayList<>();
 		users.add(user);
 
@@ -226,8 +232,10 @@ public class CommonServiceImplTest {
 		ProjectsAccess projectsAccess = new ProjectsAccess();
 		projectsAccess.setRole("");
 		projectsAccess.setAccessNodes(accessNodes);
-		;
-
+		Map<String, Boolean> notificationEmail = new HashMap<>();
+		notificationEmail.put("accessAlertNotification" , true);
+		notificationEmail.put("errorAlertNotification" , false);
+		user.setNotificationEmail(notificationEmail);
 		user.setProjectsAccess(Arrays.asList(projectsAccess));
 		List<UserInfo> users = new ArrayList<>();
 		users.add(user);
@@ -262,6 +270,10 @@ public class CommonServiceImplTest {
 		projectsAccess.setRole("ROLE_SUPERADMIN");
 		projectsAccess.setAccessNodes(accessNodes);
 		user.setProjectsAccess(Arrays.asList(projectsAccess));
+		Map<String, Boolean> notificationEmail = new HashMap<>();
+		notificationEmail.put("accessAlertNotification" , true);
+		notificationEmail.put("errorAlertNotification" , false);
+		user.setNotificationEmail(notificationEmail);
 		List<UserInfo> users = new ArrayList<>();
 		users.add(user);
 
