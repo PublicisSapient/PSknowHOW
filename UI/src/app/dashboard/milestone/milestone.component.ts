@@ -69,6 +69,8 @@ export class MilestoneComponent implements OnInit {
   activeIndex = 0;
   kpiThresholdObj = {};
   chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
+  dataPresentObj: object = {};
+
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
 
     /** When filter dropdown change */
@@ -472,6 +474,28 @@ export class MilestoneComponent implements OnInit {
     } else {
       this.kpiChartData[kpiId] = [];
     }
+
+     /** logic to show no data */
+     if (this.kpiChartData[kpiId]?.length > 0) {
+      for (let i = 0; i < this.kpiChartData[kpiId]?.length; i++) {
+        const element = this.kpiChartData[kpiId][i];
+        if(!isNaN(parseInt(element?.data))) {
+          if(element?.data > 0){
+            this.dataPresentObj[kpiId] = true;
+            break;
+          }
+        } else if(element && element?.value && element?.value?.length > 0) {
+          for (let j = 0; j < element.value.length; i++) {
+            if(!isNaN(parseInt(element.value[j]?.data))) {
+              if(element.value[j]?.data > 0){
+                this.dataPresentObj[kpiId] = true;
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   getKpiChartType(kpiId) {
@@ -638,19 +662,6 @@ export class MilestoneComponent implements OnInit {
 
   handleTabChange(event){
     this.activeIndex = event.index;
-  }
-
-  checkIfDataPresent(data) {
-    let dataCount = 0;
-    if(data[0] && !isNaN(parseInt(data[0].data))) {
-      dataCount = data[0].data;
-    } else if(data[0] && data[0].value && !isNaN(parseInt(data[0].value[0].data))) {
-      dataCount = data[0].value[0].data;
-    }
-    if(parseInt(dataCount + '') > 0) {
-      return true;
-    }
-    return false;
   }
 
   /** unsubscribing all Kpi Request  */

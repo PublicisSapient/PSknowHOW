@@ -1324,20 +1324,20 @@ describe('MilestoneComponent', () => {
         expect(spyObj).toHaveBeenCalled();
     })
 
-    it('should return true if data is present in the first format', () => {
-        const result = component.checkIfDataPresent([{ data: 5 }]);
-        expect(result).toBeTrue();
-      });
+    // it('should return true if data is present in the first format', () => {
+    //     const result = component.checkIfDataPresent([{ data: 5 }]);
+    //     expect(result).toBeTrue();
+    //   });
 
-      it('should return true if data is present in the second format', () => {
-       const result = component.checkIfDataPresent([{ value: [{ data: 10 }] }]);
-        expect(result).toBeTrue();
-      });
+    //   it('should return true if data is present in the second format', () => {
+    //    const result = component.checkIfDataPresent([{ value: [{ data: 10 }] }]);
+    //     expect(result).toBeTrue();
+    //   });
     
-      it('should return false if data is present but not a valid number in the second format', () => {
-        const result = component.checkIfDataPresent([{ value: [{ data: 'xyz' }] }]);
-        expect(result).toBeFalse();
-      });
+    //   it('should return false if data is present but not a valid number in the second format', () => {
+    //     const result = component.checkIfDataPresent([{ value: [{ data: 'xyz' }] }]);
+    //     expect(result).toBeFalse();
+    //   });
 
       it("should createapiarry for radiobutton",()=>{
         const data = {
