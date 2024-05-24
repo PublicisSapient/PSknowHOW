@@ -89,6 +89,8 @@ public class JobScheduler {
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
 				try {
+					// making execution onGoing for project
+					ongoingExecutionsService.markExecutionInProgress(params.getString(PROJECT_ID));
 					jobLauncher.run(fetchIssueScrumBoardJob, params);
 				} catch (Exception e) {
 					log.info(
@@ -120,6 +122,8 @@ public class JobScheduler {
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
 				try {
+					// making execution onGoing for project
+					ongoingExecutionsService.markExecutionInProgress(params.getString(PROJECT_ID));
 					jobLauncher.run(fetchIssueScrumJqlJob, params);
 				} catch (Exception e) {
 					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
@@ -148,6 +152,8 @@ public class JobScheduler {
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
 				try {
+					// making execution onGoing for project
+					ongoingExecutionsService.markExecutionInProgress(params.getString(PROJECT_ID));
 					jobLauncher.run(fetchIssueKanbanBoardJob, params);
 				} catch (Exception e) {
 					log.info(
@@ -179,6 +185,8 @@ public class JobScheduler {
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
 				try {
+					// making execution onGoing for project
+					ongoingExecutionsService.markExecutionInProgress(params.getString(PROJECT_ID));
 					jobLauncher.run(fetchIssueKanbanJqlJob, params);
 				} catch (Exception e) {
 					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
@@ -194,8 +202,6 @@ public class JobScheduler {
 		List<JobParameters> parameterSets = new ArrayList<>();
 
 		scrumBoardbasicProjConfIds.forEach(configId -> {
-			// making execution onGoing for projects
-			ongoingExecutionsService.markExecutionInProgress(configId);
 			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 			// Add dynamic parameters as needed
 			jobParametersBuilder.addString(PROJECT_ID, configId);
