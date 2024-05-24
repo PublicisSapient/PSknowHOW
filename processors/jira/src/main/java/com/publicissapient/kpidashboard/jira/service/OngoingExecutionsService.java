@@ -63,8 +63,8 @@ public class OngoingExecutionsService {
 			processorExecutionTraceLog.setErrorMessage(null); // Clear the error message
 			processorExecutionTraceLog.setFailureLog(null); // Clear the failure log message
 		}
-		log.info("ProjectId {} for processor {} executionOngoing to {} ", basicProjectConfigId, executionOngoing,
-				processorName);
+		log.info("ProjectId {} for processor {} executionOngoing to {} ", basicProjectConfigId, processorName ,
+				executionOngoing);
 		processorExecutionTraceLogRepository.save(processorExecutionTraceLog);
 	}
 
