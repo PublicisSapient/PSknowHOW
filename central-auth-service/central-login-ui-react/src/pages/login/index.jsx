@@ -60,7 +60,9 @@ const LoginPage = ({search}) => {
 
                     setShowLoader(false);
 
-                    window.location.href = redirectUri;
+                    let url = new URL(redirectUri);
+
+                    window.location.href = url.origin + url.pathname;
                 } else {
                     setShowLoader(false);
 
