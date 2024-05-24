@@ -73,8 +73,12 @@
                         </tr>
                     </ng-template>
                 </p-table>
+
             </p-tabPanel>
         </p-tabView>
+        <div *ngIf="noRecommendations" class="p-pt-4">
+            There are no recommendations available for the selected project.
+        </div>
     </div>
-
+    
 </p-dialog>

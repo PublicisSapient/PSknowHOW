@@ -21,6 +21,7 @@ export class RecommendationsComponent implements OnInit {
   filteredMaturity;
   @Input() filterData = {}
   @Input() kpiList = [];
+  noRecommendations: boolean = false;
 
   constructor(private httpService: HttpService,  private messageService: MessageService) { }
 
@@ -35,7 +36,7 @@ export class RecommendationsComponent implements OnInit {
     this.httpService.getRecommendations(this.filterData).subscribe((response) => {
       console.log("response", response);
   
-      if(response){
+      if(response?.['recommendations']?.length > 0){
         // let res = {
         //   "projectId": "AA Data and Reporting_649c00cd1734471c30843d2d",
         //   "lastSprintId": "284d41ca-0ed6-470e-a664-66983a28eeb4_AA Data and Reporting_649c00cd1734471c30843d2d",
@@ -104,6 +105,8 @@ export class RecommendationsComponent implements OnInit {
         
         // console.log(this.recommendationsData);
         
+      }else{
+        this.noRecommendations = true;
       }
     }, error => {
       console.log(error);
