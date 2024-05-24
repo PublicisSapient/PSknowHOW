@@ -198,9 +198,9 @@ public class JobListenerKanban implements JobExecutionListener {
 			if (StringUtils.isNotEmpty(processorExecutionTraceLog.getFirstRunDate()) && status) {
 				if (StringUtils.isNotEmpty(processorExecutionTraceLog.getBoardId())) {
 					String query = "updatedDate>='" + processorExecutionTraceLog.getFirstRunDate() + "' ";
-					Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getCustomIssueClient()
-							.searchBoardIssue(processorExecutionTraceLog.getBoardId(), query, 0, 0,
-									JiraConstants.ISSUE_FIELD_SET);
+					Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId)
+							.getCustomIssueClient().searchBoardIssue(processorExecutionTraceLog.getBoardId(), query, 0,
+									0, JiraConstants.ISSUE_FIELD_SET);
 					SearchResult searchResult = promisedRs.claim();
 					if (searchResult != null && (searchResult.getTotal() != kanbanJiraIssueRepository
 							.countByBasicProjectConfigIdAndExcludeTypeName(projectId, JiraConstants.EPIC))) {
@@ -217,9 +217,11 @@ public class JobListenerKanban implements JobExecutionListener {
 					String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase()
 							.split(JiraConstants.ORDERBY)[0];
 					query.append(userQuery);
-					query.append(" and issuetype in (").append(issueTypes).append(" ) and updatedDate>='").append(processorExecutionTraceLog.getFirstRunDate()).append("' ");
+					query.append(" and issuetype in (").append(issueTypes).append(" ) and updatedDate>='")
+							.append(processorExecutionTraceLog.getFirstRunDate()).append("' ");
 					log.info("jql query :{}", query);
-					Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId).getProcessorSearchClient()
+					Promise<SearchResult> promisedRs = jiraClientService.getRestClientMap(projectId)
+							.getProcessorSearchClient()
 							.searchJql(query.toString(), 0, 0, JiraConstants.ISSUE_FIELD_SET);
 					SearchResult searchResult = promisedRs.claim();
 					if (searchResult != null && (searchResult.getTotal() != kanbanJiraIssueRepository
@@ -230,8 +232,8 @@ public class JobListenerKanban implements JobExecutionListener {
 				}
 
 			}
-		} catch (Exception e){
-			log.error("Some error occured while calculating dataMistch",e);
+		} catch (Exception e) {
+			log.error("Some error occured while calculating dataMistch", e);
 		}
 	}
 
