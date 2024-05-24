@@ -30,8 +30,7 @@ export class RecommendationsComponent implements OnInit {
 
   handleClick(){
     this.displayModal = true;
-    this.filterData['kpiIdList'] = [...this.kpiList]
-    console.log(this.filterData);
+    this.filterData['kpiIdList'] = [...this.kpiList];
     
     this.httpService.getRecommendations(this.filterData).subscribe((response) => {
       console.log("response", response);
