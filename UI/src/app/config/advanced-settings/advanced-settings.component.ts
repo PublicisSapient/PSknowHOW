@@ -243,7 +243,7 @@ export class AdvancedSettingsComponent implements OnInit {
     }
     this.httpService.runProcessor(runProcessorInput)
       .subscribe(response => {
-        if (response[0] !== 'error' && !response.error && response.success) {
+        if (!response.error && response.success) {
           this.messageService.add({ severity: 'success', summary: `${runProcessorInput['processor']} started successfully.` });
           if(runProcessorInput['processor'].toLowerCase() === 'jira'){
             this.jiraStatusContinuePulling = true;
@@ -331,6 +331,7 @@ export class AdvancedSettingsComponent implements OnInit {
           this.processorsTracelogs[jiraInd].executionOngoing = false;
           this.jiraStatusContinuePulling = false;
         }
+        Object.assign(this.findTraceLogForTool('Jira'),response['data'][0])
       }
     })
   }
