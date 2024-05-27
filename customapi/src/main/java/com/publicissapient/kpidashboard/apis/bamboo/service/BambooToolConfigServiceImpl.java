@@ -118,14 +118,7 @@ public class BambooToolConfigServiceImpl {
 			try {
 				connectionService.validateConnectionFlag(connection);
 				if (StringUtils.isNotBlank(jobNameKey)) { // Add input validation for jobNameKey
-					ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-					if (response.getStatusCode() == HttpStatus.OK) {
-						parseBranchesResponse(responseDTOList, response);
-					} else {
-						String statusCode = response.getStatusCode().toString();
-						log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url,
-								statusCode);
-					}
+					apiCallToGetBranches(responseDTOList, url, httpEntity);
 				} else {
 					log.error("Invalid jobNameKey: {}", jobNameKey);
 				}
@@ -136,6 +129,24 @@ public class BambooToolConfigServiceImpl {
 			return responseDTOList;
 		}
 		return responseDTOList;
+	}
+
+	/**
+	 * this method is used to call the api to get branches
+	 * @param responseDTOList
+	 * @param url
+	 * @param httpEntity
+	 * @throws ParseException
+	 */
+	private void apiCallToGetBranches(List<BambooBranchesResponseDTO> responseDTOList, String url, HttpEntity<?> httpEntity) throws ParseException {
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+		if (response.getStatusCode() == HttpStatus.OK) {
+			parseBranchesResponse(responseDTOList, response);
+		} else {
+			String statusCode = response.getStatusCode().toString();
+			log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url,
+					statusCode);
+		}
 	}
 
 	/**
