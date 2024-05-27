@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit,OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -187,8 +187,6 @@ export class AdvancedSettingsComponent implements OnInit {
       this.jiraStatusContinuePulling = false;
     }
 
-
-    //console.log(JSON.stringify( this.selectedProject));
     this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
     this.getAllToolConfigs(this.selectedProject['id']);
 
@@ -228,22 +226,13 @@ export class AdvancedSettingsComponent implements OnInit {
 
   //used to run the processor's run(), called when run button is clicked
   runProcessor(processorName) {
-    let runProcessorInput = null;
+    let runProcessorInput = {
+      processor: processorName,
+      projects: []
+    };;
     if (this.isProjectSelected()) {
-
-      runProcessorInput = {
-        processor: processorName,
-        projects: [this.selectedProject['id']]
-      };
-
-
-    } else {
-      runProcessorInput = {
-        processor: processorName,
-        projects: []
-      };
-
-    }
+      runProcessorInput['projects'] = [this.selectedProject['id']];
+    } 
     const pDetails = this.findTraceLogForTool(processorName)
     if(pDetails){
       pDetails['executionOngoing'] = true;
@@ -254,7 +243,7 @@ export class AdvancedSettingsComponent implements OnInit {
     }
     this.httpService.runProcessor(runProcessorInput)
       .subscribe(response => {
-        if (response[0] !== 'error' && !response.error && response.success) {
+        if (!response.error && response.success) {
           this.messageService.add({ severity: 'success', summary: `${runProcessorInput['processor']} started successfully.` });
           if(runProcessorInput['processor'].toLowerCase() === 'jira'){
             this.jiraStatusContinuePulling = true;
@@ -342,8 +331,7 @@ export class AdvancedSettingsComponent implements OnInit {
           this.processorsTracelogs[jiraInd].executionOngoing = false;
           this.jiraStatusContinuePulling = false;
         }
-        let preLOgs = this.findTraceLogForTool('Jira');
-        preLOgs= Object.assign(preLOgs,response['data'][0])
+        Object.assign(this.findTraceLogForTool('Jira'),response['data'][0])
       }
     })
   }
