@@ -62,21 +62,16 @@ export class AdvancedSettingsComponent implements OnInit {
 
 
     this.selectedView = 'processor_state';
-    // this.getServerRole();
-    // this.getPreCalculatedConfig();
     this.getProcessorData();
     this.getProjects();
   }
 
   // called when user selects a tab from the left menu
   switchView(event) {
-    switch (event.item.label) {
-      case 'Processor State': {
+    if (event.item.label === 'Processor State') {
         this.selectedView = 'processor_state';
         this.getProcessorData();
         this.getProjects();
-      }
-        break;
     }
   }
 
@@ -122,7 +117,6 @@ export class AdvancedSettingsComponent implements OnInit {
         }
 
         if (that.userProjects != null && that.userProjects.length > 0) {
-          //a.localeCompare( b, undefined, { numeric: true } )
           that.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
           that.selectedProject = that.userProjects[0];
           that.getProcessorsTraceLogsForProject(that.selectedProject['id']);
@@ -152,11 +146,9 @@ export class AdvancedSettingsComponent implements OnInit {
     const that = this;
     this.httpService.getProcessorsTraceLogsForProject(basicProjectConfigId)
       .subscribe(response => {
-        //console.log(JSON.stringify(response));
-
         if (response.success) {
           that.processorsTracelogs = response.data;
-          this.processorData['data'].map(pDetails=>{
+          this.processorData['data'].forEach(pDetails=>{
             pDetails['loader'] = false;
           })
         } else {
@@ -167,13 +159,10 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   updateProjectSelection(projectSelectionEvent) {
-    //console.log(JSON.stringify(projectSelectionEvent));
     const currentSelection = projectSelectionEvent.value;
     if (currentSelection) {
       this.selectedProject = currentSelection;
     }
-
-    //console.log(JSON.stringify( this.selectedProject));
     this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
     this.getAllToolConfigs(this.selectedProject['id']);
 
@@ -228,13 +217,12 @@ export class AdvancedSettingsComponent implements OnInit {
       .subscribe(response => {
         if (response[0] !== 'error' && !response.error && response.success) {
           this.messageService.add({ severity: 'success', summary: `${runProcessorInput['processor']} started successfully.` });
-        } else {
-          if(runProcessorInput['processor'].toLowerCase() === 'jira'){
+        } else if(runProcessorInput['processor'].toLowerCase() === 'jira'){
             this.messageService.add({ severity: 'error', summary: response.data });
-          }else{
+        }else{
             this.messageService.add({ severity: 'error', summary: `Error in running ${runProcessorInput['processor']} processor. Please try after some time.` });
-          }
         }
+        
         const pDetails = this.processorData['data'].find(pDetails=>pDetails.processorName === runProcessorInput['processor']);
           if(pDetails){
             pDetails['loader'] = false;
