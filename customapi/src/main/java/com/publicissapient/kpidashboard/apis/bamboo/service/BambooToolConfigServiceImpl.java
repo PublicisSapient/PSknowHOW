@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -116,15 +117,18 @@ public class BambooToolConfigServiceImpl {
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
 				connectionService.validateConnectionFlag(connection);
-				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-				if (response.getStatusCode() == HttpStatus.OK) {
-					parseBranchesResponse(responseDTOList, response);
+				if (StringUtils.isNotBlank(jobNameKey)) { // Add input validation for jobNameKey
+					ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+					if (response.getStatusCode() == HttpStatus.OK) {
+						parseBranchesResponse(responseDTOList, response);
+					} else {
+						String statusCode = response.getStatusCode().toString();
+						log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url,
+								statusCode);
+					}
 				} else {
-					String statusCode = response.getStatusCode().toString();
-					log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url,
-							statusCode);
+					log.error("Invalid jobNameKey: {}", jobNameKey);
 				}
-
 			} catch (Exception exception) {
 				isClientException(connection, exception);
 				log.error("Error while fetching BambooBranchesNameAndKeys from {}:  {}", url, exception.getMessage());
