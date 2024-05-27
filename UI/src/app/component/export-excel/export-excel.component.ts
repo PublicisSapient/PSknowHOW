@@ -33,6 +33,7 @@ export class ExportExcelComponent implements OnInit {
   tableColumnData = {};
   tableColumnForm = {};
   filteredColumn;
+  excludeColumnFilter = [];
 
   constructor(
     private excelService: ExcelService,
@@ -141,6 +142,9 @@ export class ExportExcelComponent implements OnInit {
   }
 
   clearModalDataOnClose() {
+    this.excludeColumnFilter = [];
+    this.tableColumnData = {}
+    this.tableColumnForm = {}
     this.displayModal = false;
     this.modalDetails = {
       header: '',
@@ -165,6 +169,9 @@ export class ExportExcelComponent implements OnInit {
     this.modalDetails['tableHeadings'].forEach(colName => {
       this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
         if (this.typeOf(colData)) {
+          if(!this.excludeColumnFilter.includes(colName)){
+            this.excludeColumnFilter.push(colName)
+          }
           return { name: colData.text, value: colData.text }
         } else {
           return { name: colData, value: colData }
@@ -182,7 +189,6 @@ export class ExportExcelComponent implements OnInit {
     let excelData = [];
     let columns = [];
     if (exportMode === 'all') {
-      console.log(this.kpiExcelData);
       this.excelService.generateExcel(this.kpiExcelData, this.modalDetails['header']);
     } else {
       excelData = this.tableComponent?.filteredValue ? this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
@@ -191,7 +197,7 @@ export class ExportExcelComponent implements OnInit {
       excelData.forEach(colData => {
         let obj = {};
         for (let key in colData) {
-          if (this.typeOf(colData[key])) {
+          if (this.typeOf(colData[key]) && colData[key].hasOwnProperty('hyperlink')) {
             obj[key] = { [colData[key]['text']] : colData[key]['hyperlink']}
           } else {
             obj[key] = colData[key]
