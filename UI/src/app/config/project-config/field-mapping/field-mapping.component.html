@@ -28,7 +28,7 @@
             <input type="button" class="btn-export p-mr-3" value="Export" (click)="export()" />
             <label for="file-upload" class="btn-import-label">Import</label>
             <input style="width:0" id="file-upload" type="file" class="btn-import" name="fileUpload" accept=".json"
-                (change)="onUpload($event)" />
+                (change)="onUpload($event)" [disabled]="disableSave" />
             <span class="p-pl-3">{{uploadedFileName}}</span>
         </div>
     </div>
@@ -42,6 +42,6 @@
         [fieldMappingConfig]="fieldMappingConfig"
         [formData]="selectedFieldMapping"
         [selectedConfig]="selectedConfig"
-        [selectedToolConfig]="selectedToolConfig" [kpiId]="kpiId" [metaDataTemplateCode]="metaDataTemplateCode"></app-field-mapping-form>
+        [selectedToolConfig]="selectedToolConfig"></app-field-mapping-form>
 </div>
 

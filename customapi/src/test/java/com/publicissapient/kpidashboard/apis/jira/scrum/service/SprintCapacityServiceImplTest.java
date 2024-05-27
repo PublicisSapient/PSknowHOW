@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,8 +78,6 @@ public class SprintCapacityServiceImplTest {
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
-	@Mock
-	FilterHelperService filterHelperService;
 	@Mock
 	KpiHelperService kpiHelperService;
 	@InjectMocks
@@ -171,6 +168,7 @@ public class SprintCapacityServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintCapacityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any())).thenReturn(dataList);
+
 		try {
 			KpiElement kpiElement = sprintCapacityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

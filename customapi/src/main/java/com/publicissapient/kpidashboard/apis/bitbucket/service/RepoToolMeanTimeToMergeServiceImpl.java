@@ -157,12 +157,13 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		List<Map<String, Double>> repoWiseMRList = new ArrayList<>();
 		List<String> repoList = new ArrayList<>();
 		List<String> branchList = new ArrayList<>();
+		Map<String, Double> excelDataLoader = new HashMap<>();
+
 		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
 		Map<String, List<Double>> aggMeanTimeToMerge = new HashMap<>();
 		reposList.forEach(repo -> {
 			if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
 					&& repo.getProcessorItemList().get(0).getId() != null) {
-				Map<String, Double> excelDataLoader = new HashMap<>();
 				String branchName = getBranchSubFilter(repo, projectName);
 				Map<String, Double> dateWiseMeanTimeToMerge = new HashMap<>();
 				createDateLabelWiseMap(repoToolKpiMetricRespons, repo.getRepositoryName(), repo.getBranch(),
@@ -171,7 +172,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 				setWeekWiseMeanTimeToMergeForRepoTools(dateWiseMeanTimeToMerge, excelDataLoader, branchName,
 						projectName, aggDataMap, duration, dataPoints);
 				repoWiseMRList.add(excelDataLoader);
-				repoList.add(repo.getRepositoryName());
+				repoList.add(repo.getUrl());
 				branchList.add(repo.getBranch());
 
 			}
@@ -179,7 +180,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		setWeekWiseMeanTimeToMergeForRepoTools(aggMeanTimeToMerge.entrySet().stream().collect(
 						Collectors.toMap(Map.Entry::getKey,
 								e -> e.getValue().stream().mapToDouble(Double::doubleValue).average().orElse(0.0))),
-				new HashMap<>(), Constant.AGGREGATED_VALUE, projectName, aggDataMap, duration, dataPoints);
+				excelDataLoader, Constant.AGGREGATED_VALUE, projectName, aggDataMap, duration, dataPoints);
 
 		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
 		populateExcelDataObject(requestTrackerId, repoWiseMRList, repoList, branchList, excelData, projectLeafNode);
@@ -202,13 +203,13 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		LocalDate currentDate = LocalDate.now();
 		List<DataCount> dataCountList = new ArrayList<>();
 		for (int i = 0; i < dataPoints; i++) {
-			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate, duration);
+			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
 			double meanTimeToMerge = mergeReqList.getOrDefault(dateRange.getStartDate().toString(), 0.0d) * 1000;
 			String date = getDateRange(dateRange, duration);
 			DataCount dataCount = setDataCount(projectName, date, meanTimeToMerge);
 			dataCountList.add(dataCount);
 			excelDataLoader.put(date, (double) KpiHelperService.convertMilliSecondsToHours(meanTimeToMerge));
-			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
+			currentDate = getNextRangeDate(duration, currentDate);
 
 		}
 		Collections.reverse(dataCountList);
@@ -227,6 +228,15 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			range = dateRange.getStartDate().toString();
 		}
 		return range;
+	}
+
+	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
+		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
+			currentDate = currentDate.minusWeeks(1);
+		} else {
+			currentDate = currentDate.minusDays(1);
+		}
+		return currentDate;
 	}
 
 	/**
@@ -298,32 +308,26 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
 		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(REPO_TOOLS,
 				Collections.emptyList());
-		if (CollectionUtils.isEmpty(tools)) {
-			return new ArrayList<>();
+		if (!CollectionUtils.isEmpty(tools)) {
+			projectCodeList.add(node.getId());
 		}
-		projectCodeList.add(node.getId());
 
-		LocalDate startDate = LocalDate.now();
-		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-			startDate = LocalDate.now().minusWeeks(dataPoint);
-			while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
-				startDate = startDate.minusDays(1);
-			}
-		} else {
-			int daysSubtracted = 0;
-			while (daysSubtracted < dataPoint) {
-				// Skip the weekend days
-				if (!(startDate.getDayOfWeek() == DayOfWeek.SATURDAY || startDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
-					daysSubtracted++;
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(projectCodeList)) {
+			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
+			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+				startDate = LocalDate.now().minusWeeks(dataPoint);
+				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+					startDate = startDate.minusDays(1);
 				}
-				startDate = startDate.minusDays(1);
 			}
+			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
+			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
+					customApiConfig.getRepoToolMeanTimeToMergeUrl(), startDate.toString(), endDate.toString(),
+					debbieDuration);
 		}
-		String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
-		return repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
-				customApiConfig.getRepoToolMeanTimeToMergeUrl(), startDate.toString(), endDate.toString(),
-				debbieDuration);
 
+		return repoToolKpiMetricResponseList;
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<Map<String, Double>> repoWiseMRList,

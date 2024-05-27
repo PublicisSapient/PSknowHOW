@@ -36,14 +36,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
@@ -198,7 +196,6 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
-					processorToolConnectionService.validateConnectionFlag(sonar);
 					MDC.put(SONAR_URL, sonar.getUrl());
 					processorExecutionTraceLog.setExecutionStartedAt(startTime);
 					sonar.setPassword(decryptPassword(sonar.getPassword()));
@@ -227,7 +224,6 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 					processorExecutionTraceLog.setExecutionSuccess(true);
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				} catch (Exception ex) {
-					isClientException(sonar, ex);
 					String errorMessage = "Exception in sonar project: url - " + sonar.getUrl() + ", user - "
 							+ sonar.getUsername() + ", toolId - " + sonar.getId() + ", Exception is - "
 							+ ex.getMessage();
@@ -252,23 +248,6 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 		log.info("Sonar Processor execution completed");
 		MDC.clear();
 		return executionStatus;
-	}
-
-	/**
-	 * to check exception happening due to client Server
-	 * 
-	 * @param sonar
-	 *            sonar
-	 * @param ex
-	 *            ex
-	 */
-	private void isClientException(ProcessorToolConnection sonar, Exception ex) {
-		if (ex instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) ex).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) ex).getStatusCode().value())
-					.getReasonPhrase();
-			processorToolConnectionService.updateBreakingConnection(sonar.getConnectionId(), errMsg);
-		}
 	}
 
 	@Override

@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -95,8 +94,6 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 	private List<DataCount> trendValues = new ArrayList<>();
 	@Mock
 	private CommonService commonService;
-	@Mock
-	private CustomApiConfig customApiConfig;
 	private KpiRequest kpiRequest;
 
 	@Before

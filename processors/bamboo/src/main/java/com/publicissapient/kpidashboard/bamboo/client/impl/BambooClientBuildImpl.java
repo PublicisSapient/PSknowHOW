@@ -58,12 +58,10 @@ import org.springframework.web.client.RestTemplate;
 import com.publicissapient.kpidashboard.bamboo.client.BambooClient;
 import com.publicissapient.kpidashboard.bamboo.config.BambooConfig;
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
-import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,8 +93,6 @@ public class BambooClientBuildImpl implements BambooClient {
 	private RestTemplate restClient;
 	@Autowired
 	private BambooConfig settings;
-	@Autowired
-	private ProcessorToolConnectionService processorToolConnectionService;
 
 	/**
 	 * fetch jobs based on job key and branch key
@@ -307,10 +303,6 @@ public class BambooClientBuildImpl implements BambooClient {
 		ResponseEntity<String> response = restClient.exchange(URI.create(sUrl), HttpMethod.GET,
 				getHttpEntity(bambooServer), String.class);
 		if (HttpStatus.OK != response.getStatusCode()) {
-			if (response.getStatusCode().is4xxClientError()) {
-				String errMsg = ClientErrorMessageEnum.fromValue(response.getStatusCode().value()).getReasonPhrase();
-				processorToolConnectionService.updateBreakingConnection(bambooServer.getConnectionId(), errMsg);
-			}
 			log.error("Got response code: {} from URL call: {} ", response.getStatusCode(), sUrl);
 			throw new RestClientException("Got response" + response.toString() + " from URL :" + sUrl);
 		}

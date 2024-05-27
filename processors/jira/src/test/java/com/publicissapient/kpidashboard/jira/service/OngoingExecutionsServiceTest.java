@@ -19,23 +19,17 @@
 
 package com.publicissapient.kpidashboard.jira.service;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OngoingExecutionsServiceTest {
-
-    @Mock
-    ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
     @InjectMocks
     private OngoingExecutionsService ongoingExecutionsService;

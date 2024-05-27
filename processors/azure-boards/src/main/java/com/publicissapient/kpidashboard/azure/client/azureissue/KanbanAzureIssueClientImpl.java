@@ -79,7 +79,6 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHisto
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
@@ -140,8 +139,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-	@Autowired
-	private ProcessorToolConnectionService processorToolConnectionService;
 
 	/**
 	 * Explicitly updates queries for the source system, and initiates the update to
@@ -164,8 +161,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
 		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(projectConfig);
 		try {
-			processorToolConnectionService.validateJiraAzureConnFlag(projectConfig.getProjectToolConfig());
-
 			boolean dataExist = (kanbanJiraRepo
 					.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
 
@@ -696,17 +691,16 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 * @param fieldsMap
 	 *            the fields map
 	 */
-	public void setRCA(FieldMapping fieldMapping, Value issue, KanbanJiraIssue azureIssue,
-			Map<String, Object> fieldsMap) {
+	public void setRCA(FieldMapping fieldMapping, Value issue, KanbanJiraIssue azureIssue, Map<String, Object> fieldsMap) {
 		Fields fields = issue.getFields();
 		List<String> rcaList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
 				.anyMatch(fields.getSystemWorkItemType()::equalsIgnoreCase)) {
 			try {
 				String rootCauseFieldFromFieldMapping = fieldMapping.getRootCause();
-				if (fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(AzureConstants.CUSTOM_FIELD)
-						&& fieldsMap.containsKey(rootCauseFieldFromFieldMapping)
-						&& fieldsMap.get(rootCauseFieldFromFieldMapping) != null) {
+				if (fieldMapping.getRootCauseIdentifier().trim()
+						.equalsIgnoreCase(AzureConstants.CUSTOM_FIELD) && fieldsMap.containsKey(
+						rootCauseFieldFromFieldMapping) && fieldsMap.get(rootCauseFieldFromFieldMapping) != null) {
 					// Introduce enum to standarize the values of RCA
 					String rcaCause = fieldsMap.get(rootCauseFieldFromFieldMapping).toString().toLowerCase();
 					if (azureProcessorConfig.getRcaValuesForCodeIssue().stream().anyMatch(rcaCause::equalsIgnoreCase)) {

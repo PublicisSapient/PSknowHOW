@@ -46,7 +46,6 @@ import { CarouselModule } from 'primeng/carousel';
 import { FeatureFlagDirective } from './custom-directives/feature-flag.directive';
 import { ConditionalInputComponent } from './conditional-input/conditional-input.component';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
 
 @NgModule({
   imports: [
@@ -69,8 +68,7 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
     RadioButtonModule,
     InputSwitchModule,
     CarouselModule,
-    InputNumberModule,
-    OverlayPanelModule
+    InputNumberModule
   ],
   exports: [
     NgSelectModule,

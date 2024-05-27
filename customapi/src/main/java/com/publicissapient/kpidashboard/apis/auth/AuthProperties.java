@@ -69,8 +69,6 @@ public class AuthProperties {// NOPMD
 	private boolean subDomainCookie;
 	private String domain;
 
-	private List<String> whiteListDomainForEmail;
-
 	/**
 	 * Gets expiration time.
 	 *
@@ -345,14 +343,6 @@ public class AuthProperties {// NOPMD
 
 	public void setDomain(String domain) {
 		this.domain = domain;
-	}
-
-	public List<String> getWhiteListDomainForEmail() {
-		return whiteListDomainForEmail;
-	}
-
-	public void setWhiteListDomainForEmail(List<String> whiteListDomainForEmail) {
-		this.whiteListDomainForEmail = whiteListDomainForEmail;
 	}
 
 	/**

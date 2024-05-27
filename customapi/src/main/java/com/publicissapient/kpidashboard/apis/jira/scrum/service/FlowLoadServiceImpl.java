@@ -144,7 +144,7 @@ public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Obje
 		// values after beginning will be incremented by one. Now as increment is only
 		// targeted only till the end of the range, the decrement on index endDate+1
 		// prevents that for every range present after endDate.
-		calculateStatusCountForEachDay(startDate, statusesWithStartAndEndDate, Math.toIntExact(totalDays), finalDateWithStatusCount);
+		calculateStatusCountForEachDay(startDate, statusesWithStartAndEndDate, totalDays, finalDateWithStatusCount);
 		dateWithStatusCount = dateWithStatusCount.entrySet().stream().sorted(Map.Entry.comparingByKey())
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
 						LinkedHashMap::new));
@@ -162,11 +162,11 @@ public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Obje
 	}
 
 	private void calculateStatusCountForEachDay(LocalDate startDate,
-			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate, int totalDays,
+			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate, long totalDays,
 			Map<String, Map<String, Integer>> finalDateWithStatusCount) {
 		statusesWithStartAndEndDate.forEach((status, listOfStartAndEndDate) -> {
-			Integer[] data = new Integer[totalDays];
-			Arrays.fill(data, 0);
+			Integer[] data = new Integer[(int) totalDays];
+			Arrays.fill(data, Integer.valueOf(0));
 			List<Integer> list = Arrays.asList(data);
 			List<Integer> statusCountPresentInEachDay = list;
 			listOfStartAndEndDate.forEach(intervalRange -> {

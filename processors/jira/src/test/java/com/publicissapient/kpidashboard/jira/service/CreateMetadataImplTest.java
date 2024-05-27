@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -100,8 +99,6 @@ public class CreateMetadataImplTest {
 	private FieldMappingRepository fieldMappingRepository;
 	@InjectMocks
 	private CreateMetadataImpl createMetadata;
-	@Mock
-	private ProcessorToolConnectionService processorToolConnectionService;
 
 	@Before
 	public void setup() throws URISyntaxException {

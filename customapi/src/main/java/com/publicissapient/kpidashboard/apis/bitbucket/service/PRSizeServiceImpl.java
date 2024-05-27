@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -68,7 +67,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, Map<String, Object>> {
 
-	public static final String MR_COUNT = "No of PRs";
+	public static final String MR_COUNT = "No of MRs";
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
 	private static final String REPO_TOOLS = "RepoTool";
@@ -173,7 +172,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 				setWeekWisePRSize(dateWisePRSize, dateWiseMRCount, excelDataLoader, branchName, projectName, aggDataMap,
 						kpiRequest);
 				repoWisePRSizeList.add(excelDataLoader);
-				repoList.add(repo.getRepositoryName());
+				repoList.add(repo.getUrl());
 				branchList.add(repo.getBranch());
 
 			}
@@ -241,7 +240,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		Integer dataPoints = kpiRequest.getXAxisDataPoints();
 		String duration = kpiRequest.getDuration();
 		for (int i = 0; i < dataPoints; i++) {
-			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate, duration);
+			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
 			long prSize = weekWisePRSize.getOrDefault(dateRange.getStartDate().toString(), 0l);
 			String date = getDateRange(dateRange, duration);
 			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
@@ -249,7 +248,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 					weekWiseMRCount.getOrDefault(dateRange.getStartDate().toString(), 0l));
 			aggDataMap.get(branchName).add(dataCount);
 			excelDataLoader.put(date, prSize);
-			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
+			currentDate = getNextRangeDate(duration, currentDate);
 
 		}
 
@@ -266,6 +265,15 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 			range = dateRange.getStartDate().toString();
 		}
 		return range;
+	}
+
+	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
+		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
+			currentDate = currentDate.minusWeeks(1);
+		} else {
+			currentDate = currentDate.minusDays(1);
+		}
+		return currentDate;
 	}
 
 	private DataCount setDataCount(String projectName, String week, Long value, Long mrCount) {
@@ -298,30 +306,27 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
 		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(REPO_TOOLS,
 				Collections.emptyList());
-		if (CollectionUtils.isEmpty(tools)) {
-			return new ArrayList<>();
+		if (!CollectionUtils.isEmpty(tools)) {
+			projectCodeList.add(node.getId());
 		}
-		projectCodeList.add(node.getId());
-		LocalDate startDate = LocalDate.now();
-		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-			startDate = LocalDate.now().minusWeeks(dataPoint);
-			while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
-				startDate = startDate.minusDays(1);
-			}
-		} else {
-			int daysSubtracted = 0;
-			while (daysSubtracted < dataPoint) {
-				// Skip the weekend days
-				if (!(startDate.getDayOfWeek() == DayOfWeek.SATURDAY || startDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
-					daysSubtracted++;
-				}
-				startDate = startDate.minusDays(1);
-			}
-		}
-		String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
-		return repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList, customApiConfig.getRepoToolPRSizeUrl(),
-				startDate.toString(), endDate.toString(), debbieDuration);
 
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
+
+		if (CollectionUtils.isNotEmpty(projectCodeList)) {
+			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
+			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+				startDate = LocalDate.now().minusWeeks(dataPoint);
+				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+					startDate = startDate.minusDays(1);
+				}
+			}
+
+			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
+			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
+					customApiConfig.getRepoToolPRSizeUrl(), startDate.toString(), endDate.toString(), debbieDuration);
+		}
+
+		return repoToolKpiMetricResponseList;
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<Map<String, Long>> repoWiseMRList,

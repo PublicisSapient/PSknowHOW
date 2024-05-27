@@ -213,7 +213,7 @@ public class CommonServiceImpl implements CommonService {
 	}
 
 	/**
-	 * This method is to search the email addresses based on roles and which have notification enabled
+	 * This method is to search the email addresses based on roles
 	 * 
 	 * @param roles
 	 * @return list of email addresses
@@ -222,21 +222,16 @@ public class CommonServiceImpl implements CommonService {
 		Set<String> emailAddresses = new HashSet<>();
 		List<UserInfo> superAdminUsersList = userInfoRepository.findByAuthoritiesIn(roles);
 		if (CollectionUtils.isNotEmpty(superAdminUsersList)) {
-			List<UserInfo> notificationEnableUsersList = superAdminUsersList.stream()
-					.filter(userInfo -> userInfo.getNotificationEmail() != null
-							&& userInfo.getNotificationEmail().get(CommonConstant.ACCESS_ALERT_NOTIFICATION))
+			List<String> userNames = superAdminUsersList.stream().map(UserInfo::getUsername)
 					.collect(Collectors.toList());
 			emailAddresses
-					.addAll(notificationEnableUsersList.stream().filter(user -> StringUtils.isNotEmpty(user.getEmailAddress()))
+					.addAll(superAdminUsersList.stream().filter(user -> StringUtils.isNotEmpty(user.getEmailAddress()))
 							.map(UserInfo::getEmailAddress).collect(Collectors.toSet()));
-			List<String> usernameList = notificationEnableUsersList.stream().map(UserInfo::getUsername)
-					.collect(Collectors.toList());
-			if (CollectionUtils.isNotEmpty(usernameList)) {
-				List<Authentication> authentications = authenticationRepository.findByUsernameIn(usernameList);
-				if (CollectionUtils.isNotEmpty(authentications)) {
-					emailAddresses
-							.addAll(authentications.stream().map(Authentication::getEmail).collect(Collectors.toSet()));
-				}
+			List<Authentication> authentications = authenticationRepository.findByUsernameIn(userNames);
+			if (CollectionUtils.isNotEmpty(authentications)) {
+				emailAddresses
+						.addAll(authentications.stream().map(Authentication::getEmail).collect(Collectors.toSet()));
+
 			}
 		}
 		return emailAddresses.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
@@ -253,13 +248,9 @@ public class CommonServiceImpl implements CommonService {
 		Set<String> emailAddresses = new HashSet<>();
 		List<String> usernameList = new ArrayList<>();
 		List<UserInfo> usersList = userInfoRepository.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_PROJECT_ADMIN));
-		List<UserInfo> notificationEnableUsersList = usersList.stream()
-				.filter(userInfo -> userInfo.getNotificationEmail() != null
-						&& userInfo.getNotificationEmail().get(CommonConstant.ACCESS_ALERT_NOTIFICATION))
-				.collect(Collectors.toList());
 		Map<String, String> projectMap = getHierarchyMap(projectConfigId);
-		if (CollectionUtils.isNotEmpty(notificationEnableUsersList)) {
-			notificationEnableUsersList.forEach(action -> {
+		if (CollectionUtils.isNotEmpty(usersList)) {
+			usersList.forEach(action -> {
 				Optional<ProjectsAccess> projectAccess = action.getProjectsAccess().stream()
 						.filter(access -> access.getRole().equalsIgnoreCase(Constant.ROLE_PROJECT_ADMIN)).findAny();
 				if (projectAccess.isPresent()) {

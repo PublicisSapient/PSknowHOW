@@ -566,6 +566,7 @@ public abstract class ToolsKPIService<R, S> {
 
 				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
 				if (CollectionUtils.isNotEmpty(dataCounts)) {
+
 					Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, dataCounts);
 					String aggregateValue = null;
 					String maturity = null;
@@ -687,6 +688,7 @@ public abstract class ToolsKPIService<R, S> {
 					valueMap.remove(Constant.DEFAULT);
 					valueMap.forEach((key, value) -> {
 						List<DataCount> trendValues = new ArrayList<>();
+
 						Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, value);
 						String aggregateValue = null;
 						String maturity = null;

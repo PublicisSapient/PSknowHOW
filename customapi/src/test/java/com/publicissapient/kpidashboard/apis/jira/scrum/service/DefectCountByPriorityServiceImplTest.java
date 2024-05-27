@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,8 +76,6 @@ public class DefectCountByPriorityServiceImplTest {
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
-	@Mock
-	FilterHelperService filterHelperService;
 	private KpiRequest kpiRequest;
 	private SprintDetails sprintDetails;
 	private List<JiraIssue> storyList = new ArrayList<>();

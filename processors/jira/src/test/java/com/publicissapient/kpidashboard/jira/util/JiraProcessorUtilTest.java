@@ -18,12 +18,7 @@
 
 package com.publicissapient.kpidashboard.jira.util;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -37,14 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.scope.context.StepContext;
-import org.springframework.batch.item.ExecutionContext;
 
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.ProgressStatus;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -197,41 +185,5 @@ public class JiraProcessorUtilTest {
 
 		// Assert
 		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void testSaveChunkProgressInTrace_StepContextIsNull() {
-		ProcessorExecutionTraceLog result = JiraProcessorUtil.saveChunkProgressInTrace(new ProcessorExecutionTraceLog(), null);
-        assertNull(result);
-	}
-
-	@Test
-	public void testSaveChunkProgressInTrace_ProcessorExecutionTraceLogIsNull() {
-		StepContext stepContext = mock(StepContext.class);
-		ProcessorExecutionTraceLog result = JiraProcessorUtil.saveChunkProgressInTrace(null, stepContext);
-        assertNull(result);
-	}
-
-	@Test
-	public void testSaveChunkProgressInTrace_BothNotNull() {
-		// Prepare test data
-		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-		StepContext stepContext = mock(StepContext.class);
-		StepExecution stepExecution = mock(StepExecution.class);
-		JobExecution jobExecution = mock(JobExecution.class);
-
-		// Mock methods
-		when(stepContext.getStepExecution()).thenReturn(stepExecution);
-		when(stepExecution.getJobExecution()).thenReturn(jobExecution);
-		when(jobExecution.getExecutionContext()).thenReturn(new ExecutionContext());
-
-		// Call the method
-		ProcessorExecutionTraceLog result = JiraProcessorUtil.saveChunkProgressInTrace(processorExecutionTraceLog, stepContext);
-
-		// Verify the result
-		List<ProgressStatus> progressStatusList = result.getProgressStatusList();
-		assertEquals(1, progressStatusList.size());
-		assertEquals("Process Issues 0 to 0 out of 0", progressStatusList.get(0).getStepName());
-		assertEquals(BatchStatus.COMPLETED.toString(), progressStatusList.get(0).getStatus());
 	}
 }

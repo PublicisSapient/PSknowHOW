@@ -18,15 +18,16 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -39,7 +40,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Document(collection = "field_mapping")
-public class FieldMapping extends FieldMappingHistory {
+public class FieldMapping extends BasicModel {
 
 	public static final String READY_FOR_TESTING = "Ready For Testing";
 	public static final String IN_TESTING = "In Testing";
@@ -374,9 +375,10 @@ public class FieldMapping extends FieldMappingHistory {
 	private String jiraLiveStatusKPI155;
 
 	@Builder.Default
-	private boolean notificationEnabler = true;
+	private boolean notificationEnabler=true;
 	@Builder.Default
-	private boolean excludeUnlinkedDefects = true;
+	private boolean excludeUnlinkedDefects=true;
+
 
 	private List<String> jiraIssueEpicTypeKPI153;
 
@@ -407,11 +409,11 @@ public class FieldMapping extends FieldMappingHistory {
 
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";
-	private Map<String, Integer> startDateCountKPI150;
+	private Integer startDateCountKPI150;
 	private List<String> jiraDevDoneStatusKPI150;
 	private boolean populateByDevDoneKPI150;
 
-	// threshold field
+	//threshold field
 	private String thresholdValueKPI14;
 	private String thresholdValueKPI82;
 	private String thresholdValueKPI111;

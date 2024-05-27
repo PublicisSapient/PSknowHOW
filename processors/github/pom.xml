@@ -23,7 +23,7 @@
   <description>Github processor service</description>
   <packaging>jar</packaging>
   <artifactId>github-processor</artifactId>
-  <version>9.1.0-SNAPSHOT</version>
+  <version>9.0.0-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -99,7 +99,7 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
-        <version>6.1.6</version>
+        <version>6.1.5</version>
       </dependency>
       <dependency>
         <groupId>org.springframework.security</groupId>

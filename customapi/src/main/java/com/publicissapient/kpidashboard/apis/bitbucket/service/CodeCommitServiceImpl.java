@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -194,13 +193,13 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 							mergeCountForRepo);
 					Map<String, Long> excelDataLoader = new HashMap<>();
 					Map<String, Long> mergeRequestExcelDataLoader = new HashMap<>();
-					String repoName = repo.getRepositoryName() != null ? repo.getRepositoryName() : repo.getRepoSlug();
+
 					List<DataCount> dayWiseCount = setDayWiseCountForProject(mergeCountForRepo, commitCountForRepo,
 							excelDataLoader, projectName, mergeRequestExcelDataLoader, duration, dataPoints);
 					aggDataMap.put(getBranchSubFilter(repo, projectName), dayWiseCount);
 					repoWiseCommitList.add(excelDataLoader);
 					repoWiseMergeRequestList.add(mergeRequestExcelDataLoader);
-					repoList.add(repoName);
+					repoList.add(repo.getUrl());
 					branchList.add(repo.getBranch());
 
 				}
@@ -306,7 +305,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		List<DataCount> dayWiseCommitCount = new ArrayList<>();
 		LocalDate currentDate = LocalDate.now();
 		for (int i = 0; i < dataPoints; i++) {
-			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate, duration);
+			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
 			Map<String, Object> hoverValues = new HashMap<>();
 			String date = getDateRange(dateRange, duration);
 			LocalDate startDate = dateRange.getStartDate();
@@ -327,7 +326,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 			excelDataLoader.put(date, commitCountValue);
 			hoverValues.put(NO_CHECKIN, commitCountValue.intValue());
 			dayWiseCommitCount.add(setDataCount(projectName, date, hoverValues, commitCountValue, mergeCountValue));
-			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
+			currentDate = getNextRangeDate(duration, currentDate);
 		}
 		Collections.reverse(dayWiseCommitCount);
 		return dayWiseCommitCount;
@@ -358,7 +357,14 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		return range;
 	}
 
-
+	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
+		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
+			currentDate = currentDate.minusWeeks(1);
+		} else {
+			currentDate = currentDate.minusDays(1);
+		}
+		return currentDate;
+	}
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,

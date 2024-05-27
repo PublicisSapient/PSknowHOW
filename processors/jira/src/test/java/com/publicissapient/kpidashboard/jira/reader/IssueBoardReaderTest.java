@@ -18,9 +18,12 @@
 package com.publicissapient.kpidashboard.jira.reader;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -52,6 +55,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectToo
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfigurationImpl;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -59,7 +63,6 @@ import com.publicissapient.kpidashboard.jira.helper.ReaderRetryHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.service.FetchEpicData;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,7 +72,7 @@ public class IssueBoardReaderTest {
 	private FetchProjectConfigurationImpl fetchProjectConfiguration;
 
 	@Mock
-	private JiraClientService jiraClientService;
+	private JiraClient jiraClient;
 
 	@Mock
 	private JiraCommonService jiraCommonService;
@@ -141,14 +144,13 @@ public class IssueBoardReaderTest {
 		issueIterator = issues.iterator();
 		when(jiraProcessorConfig.getPageSize()).thenReturn(1);
 		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
-		when(jiraClientService.getRestClientMap(null)).thenReturn(client);
-		when(jiraClientService.getKerberosClientMap(null)).thenReturn(krb5Client);
+
 	}
 
 	@Test
 	public void testReadData() throws Exception {
 		//when(mockRetryableOperation.execute()).thenReturn(issues);
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(anyString(), anyString()))
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), anyList()))
 				.thenReturn(pl);
 		//when(retryHelper.executeWithRetry(any())).thenReturn(issues);
 		when(jiraCommonService.fetchIssueBasedOnBoard(any(), any(), anyInt(), anyString(), anyString()))
@@ -186,7 +188,7 @@ public class IssueBoardReaderTest {
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setBoardId("11856");
 		processorExecutionTraceLog.setLastSuccessfulRun("date");
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(any(), any()))
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(any(), any()))
 				.thenReturn(null);
 		issueBoardReader.projectConfFieldMapping = projectConfFieldMapping;
 		// Use reflection to access the private method
@@ -205,7 +207,7 @@ public class IssueBoardReaderTest {
 
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setLastSuccessfulRun("date");
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(any(), any()))
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(any(), any()))
 				.thenReturn(Arrays.asList(processorExecutionTraceLog));
 		issueBoardReader.projectConfFieldMapping = projectConfFieldMapping;
 		// Use reflection to access the private method

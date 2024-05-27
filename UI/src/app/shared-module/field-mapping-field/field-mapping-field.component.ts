@@ -66,9 +66,6 @@ export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor 
       this.onChange(this.value);
     }
     else {
-      if(this.value == null){
-        this.value = 0;
-      }
       this.onChange(this.value);
     }
   }

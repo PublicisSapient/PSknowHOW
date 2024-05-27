@@ -24,8 +24,7 @@ describe('ViewNewUserAuthRequestComponent', () => {
       {
         username: 'testuser8',
         email: 'test8@gmail.com',
-        approved: false,
-        whitelistDomainEmail: false
+        approved: false
       }
     ]
   };
@@ -77,8 +76,7 @@ describe('ViewNewUserAuthRequestComponent', () => {
     const fakeRequest = {
       username: 'testuser8',
       email: 'test8@gmail.com',
-      approved: false,
-      whitelistDomainEmail:false
+      approved: false
     };
     const fakeResponse = {
       message: 'Unapproved User details',
@@ -103,8 +101,7 @@ describe('ViewNewUserAuthRequestComponent', () => {
     const fakeRequest = {
       username: 'testuser8',
       email: 'test8@gmail.com',
-      approved: false,
-      whitelistDomainEmail: false
+      approved: false
     };
     const fakeResponse = {
       message: 'Unapproved User details',

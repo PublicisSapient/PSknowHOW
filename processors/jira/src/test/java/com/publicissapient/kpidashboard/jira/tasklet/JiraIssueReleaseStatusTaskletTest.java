@@ -25,7 +25,6 @@ import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +45,7 @@ public class JiraIssueReleaseStatusTaskletTest {
     private FetchProjectConfiguration fetchProjectConfiguration;
 
     @Mock
-    private JiraClientService jiraClientService;
+    private JiraClient jiraClient;
 
     @Mock
     private CreateJiraIssueReleaseStatus createJiraIssueReleaseStatus;
@@ -77,7 +76,7 @@ public class JiraIssueReleaseStatusTaskletTest {
         when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
 
         ProcessorJiraRestClient client = mock(ProcessorJiraRestClient.class);
-        when(jiraClientService.getRestClientMap(null)).thenReturn(client);
+            when(jiraClient.getClient(projectConfFieldMapping, null)).thenReturn(client);
 
             // Act
             RepeatStatus result = jiraIssueReleaseStatusTasklet.execute(stepContribution, chunkContext);

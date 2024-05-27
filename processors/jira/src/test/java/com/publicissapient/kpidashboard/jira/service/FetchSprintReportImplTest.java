@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
@@ -74,8 +73,6 @@ public class FetchSprintReportImplTest {
 	private JiraProcessorConfig jiraProcessorConfig;
 	@Mock
 	private JiraCommonService jiraCommonService;
-	@Mock
-	private ProcessorToolConnectionService processorToolConnectionService;
 	@InjectMocks
 	private FetchSprintReportImpl fetchSprintReport;
 

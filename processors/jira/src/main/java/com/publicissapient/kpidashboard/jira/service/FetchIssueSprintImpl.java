@@ -44,12 +44,10 @@ import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
-import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
@@ -73,8 +71,7 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 
 	@Autowired
 	JiraProcessorConfig jiraProcessorConfig;
-	@Autowired
-	private ProcessorToolConnectionService processorToolConnectionService;
+
 	@Autowired
 	SprintRepository sprintRepository;
 
@@ -145,10 +142,7 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 				}
 				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 			} catch (RestClientException e) {
-				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 400 && e.getStatusCode().get() < 500) {
-					processorToolConnectionService.updateBreakingConnection(
-							projectConfig.getProjectToolConfig().getConnectionId(),
-							ClientErrorMessageEnum.fromValue(e.getStatusCode().get()).getReasonPhrase());
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
 					log.error(ERROR_MSG_401);
 				} else {
 					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e);

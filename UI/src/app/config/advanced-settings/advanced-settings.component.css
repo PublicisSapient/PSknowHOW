@@ -85,21 +85,3 @@ div.main {
   font-size: 12px;
   font-style: italic;
 }
-.error-text{
-  color: red;max-width: 600px;
-}
-.tooltip-item{
-  word-break: break-word;
-}
-.icon-container{
-  min-width: 35px;
-  margin: 0 auto;
-  text-align: center;
-}
-.icon-list{
-  font-size: 1.5rem;
-}
-::ng-deep .progress-dialog-body{
-  min-width: 300px;
-  max-width: 600px;
-}

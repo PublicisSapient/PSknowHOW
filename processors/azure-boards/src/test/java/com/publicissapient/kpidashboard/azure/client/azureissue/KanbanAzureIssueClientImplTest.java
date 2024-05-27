@@ -45,7 +45,6 @@ import com.publicissapient.kpidashboard.common.model.azureboards.updates.AzureUp
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.WorkItem;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
@@ -70,8 +69,6 @@ public class KanbanAzureIssueClientImplTest {
 	AzureWiqlModel azureWiqlModel;
 	@Mock
 	AzureBoardsWIModel azureBoardsWIModel;
-	@Mock
-	ProcessorToolConnectionService processorToolConnectionService;
 	AzureUpdatesModel azureUpdatesModel;
 	ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 	Fields field;

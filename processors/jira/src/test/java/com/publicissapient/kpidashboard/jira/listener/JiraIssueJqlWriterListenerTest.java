@@ -19,16 +19,14 @@
 
 package com.publicissapient.kpidashboard.jira.listener;
 
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.Optional;
 
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,13 +50,9 @@ public class JiraIssueJqlWriterListenerTest {
 	@InjectMocks
 	private JiraIssueJqlWriterListener listener;
 
-	@Mock
-	JiraProcessorConfig jiraProcessorConfig;
-
 	@Before
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
-		
 	}
 
 	@Test
@@ -112,34 +106,9 @@ public class JiraIssueJqlWriterListenerTest {
 		processorExecutionTraceLog.setBasicProjectConfigId("abc");
 		processorExecutionTraceLog.setBoardId("abc");
 		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
-				eq(JiraConstants.JIRA), anyList()))
-				.thenReturn(List.of(processorExecutionTraceLog));
-		listener.afterWrite(createSampleCompositeResults());
-	}
-	@Test
-	public void testAfterWriteWithTraceLogProgressStatus() {
-		ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
-		processorExecutionTraceLog.setBasicProjectConfigId("abc");
-		processorExecutionTraceLog.setBoardId("abc");
-		processorExecutionTraceLog.setProgressStats(true);
-		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
-				eq(JiraConstants.JIRA), anyList()))
-				.thenReturn(List.of(processorExecutionTraceLog));
-		listener.afterWrite(createSampleCompositeResults());
-	}
-	@Test
-	public void testAfterWriteWithTraceLogProgressStatus_lastSuccessfulRun() {
-		ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
-		processorExecutionTraceLog.setBasicProjectConfigId("abc");
-		processorExecutionTraceLog.setBoardId("abc");
-		processorExecutionTraceLog.setProgressStats(true);
-		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
-		processorExecutionTraceLog.setLastSuccessfulRun("2022-02-02T10:00:00");
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
-				eq(JiraConstants.JIRA), anyList()))
-				.thenReturn(List.of(processorExecutionTraceLog));
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigId(
+				eq(JiraConstants.JIRA), eq("Project1")))
+				.thenReturn(Optional.of(processorExecutionTraceLog));
 		listener.afterWrite(createSampleCompositeResults());
 	}
 

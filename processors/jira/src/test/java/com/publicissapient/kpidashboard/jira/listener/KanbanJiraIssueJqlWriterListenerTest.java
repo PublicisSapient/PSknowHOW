@@ -19,7 +19,6 @@
 
 package com.publicissapient.kpidashboard.jira.listener;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -29,10 +28,9 @@ import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,9 +54,6 @@ public class KanbanJiraIssueJqlWriterListenerTest {
     @InjectMocks
     private KanbanJiraIssueJqlWriterListener listener;
 
-    @Mock
-    JiraProcessorConfig jiraProcessorConfig;
-
     Chunk<CompositeResult> compositeResults = new Chunk<>();
 
     @Before
@@ -76,9 +71,9 @@ public class KanbanJiraIssueJqlWriterListenerTest {
     @Test
     public void testAfterWrite() {
         // Mock the repository's behavior
-        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
-                eq(JiraConstants.JIRA), anyList()))
-                .thenReturn(Collections.emptyList()); // For the case where trace log is not present
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigId(
+                eq(JiraConstants.JIRA), eq("testProjectId")))
+                .thenReturn(Optional.empty()); // For the case where trace log is not present
 
         // Act
         listener.afterWrite(compositeResults);
@@ -115,34 +110,9 @@ public class KanbanJiraIssueJqlWriterListenerTest {
         processorExecutionTraceLog.setBasicProjectConfigId("abc");
         processorExecutionTraceLog.setBoardId("abc");
         processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
-        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
-                eq(JiraConstants.JIRA), anyList()))
-                .thenReturn(List.of(processorExecutionTraceLog));
-        listener.afterWrite(compositeResults);
-    }
-    @Test
-    public void testAfterWriteWithTraceLogStatusTrue() {
-        ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
-        processorExecutionTraceLog.setBasicProjectConfigId("abc");
-        processorExecutionTraceLog.setBoardId("abc");
-        processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
-        processorExecutionTraceLog.setProgressStats(true);
-        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
-                eq(JiraConstants.JIRA), any()))
-                .thenReturn(List.of(processorExecutionTraceLog));
-        listener.afterWrite(compositeResults);
-    }
-    @Test
-    public void testAfterWriteWithTraceLogStatusTrueLastSuccessRun() {
-        ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
-        processorExecutionTraceLog.setBasicProjectConfigId("abc");
-        processorExecutionTraceLog.setBoardId("abc");
-        processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
-        processorExecutionTraceLog.setProgressStats(true);
-        processorExecutionTraceLog.setLastSuccessfulRun("2022-02-02T10:00:00");
-        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(
-                eq(JiraConstants.JIRA), any()))
-                .thenReturn(List.of(processorExecutionTraceLog));
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigId(
+                eq(JiraConstants.JIRA), eq("testProjectId")))
+                .thenReturn(Optional.of(processorExecutionTraceLog));
         listener.afterWrite(compositeResults);
     }
 }

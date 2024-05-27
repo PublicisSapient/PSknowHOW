@@ -238,6 +238,7 @@ public class KerberosClient {
 			String samlUrlStartString, String samlUrlEndString) throws IOException {
 		String samlToken = extractString(loginResponse, samlTokenStartString, samlTokenEndString);
 		String samlURL = extractString(loginResponse, samlUrlStartString, samlUrlEndString);
+		log.debug("Saml Token extracted from login response: {}", samlToken);
 		log.debug("Saml URL extracted from login response: {}", samlURL);
 		HttpUriRequest postRequest = RequestBuilder.post().setUri(samlURL)
 				.setHeader(HttpHeaders.ACCEPT, "application/json")

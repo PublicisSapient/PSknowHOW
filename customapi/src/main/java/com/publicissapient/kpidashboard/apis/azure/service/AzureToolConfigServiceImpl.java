@@ -18,14 +18,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.azure.model.AzurePipelinesResponseDTO;
 import com.publicissapient.kpidashboard.apis.azure.model.AzureTeamsDTO;
-import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
-import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 
@@ -52,8 +49,6 @@ public class AzureToolConfigServiceImpl {
 
 	@Autowired
 	private ConnectionRepository connectionRepository;
-	@Autowired
-	private ConnectionService connectionService;
 
 	public List<AzurePipelinesResponseDTO> getAzurePipelineNameAndDefinitionIdList(String connectionId,
 			String version) {
@@ -71,7 +66,6 @@ public class AzureToolConfigServiceImpl {
 					version);
 
 			try {
-				connectionService.validateConnectionFlag(connection);
 				HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 				ResponseEntity<String> response = restTemplate.exchange(finalUrl, HttpMethod.GET, httpEntity,
 						String.class);
@@ -93,29 +87,10 @@ public class AzureToolConfigServiceImpl {
 				}
 
 			} catch (Exception exception) {
-				isClientException(connection, exception);
 				log.error("Error while fetching ProjectsAndPlanKeyList from {}:  {}", finalUrl, exception.getMessage());
 			}
 		}
 		return responseList;
-	}
-
-	/**
-	 * this method check for the client exception
-	 * 
-	 * @param connection
-	 *            connection
-	 * @param exception
-	 *            exception
-	 */
-	private void isClientException(Connection connection, Exception exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
-			connectionService.updateBreakingConnection(connection, errMsg);
-
-		}
 	}
 
 	public List<AzurePipelinesResponseDTO> getAzureReleaseNameAndDefinitionIdList(String connectionId) {
@@ -193,7 +168,6 @@ public class AzureToolConfigServiceImpl {
 			headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 			final String finalUrl = baseUrl + AZURE_GET_TEAMS_API;
 			try {
-				connectionService.validateConnectionFlag(optConnection.get());
 				HttpEntity<?> httpEntity = new HttpEntity<>(headers);
 				ResponseEntity<String> response = restTemplate.exchange(finalUrl, HttpMethod.GET, httpEntity,
 						String.class);
@@ -213,7 +187,6 @@ public class AzureToolConfigServiceImpl {
 				}
 
 			} catch (Exception exception) {
-				isClientException(optConnection.get(), exception);
 				log.error("Error while fetching teams from {}:  {}", finalUrl, exception.getMessage());
 			}
 		}

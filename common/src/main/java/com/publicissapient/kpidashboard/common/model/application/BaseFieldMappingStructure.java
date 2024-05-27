@@ -54,12 +54,11 @@ public class BaseFieldMappingStructure extends BasicModel {
 	private List<Options> options;
 	private List<String> filterGroup;
 	private String readOnly;
-	private boolean nodeSpecific;
 
 	@Data
 	@Getter
 	@Setter
-	public static class MappingToolTip {
+	class MappingToolTip {
 		String definition;
 		String kpiImpacted;
 		String toggleDefinition;
@@ -68,7 +67,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	@Data
 	@Getter
 	@Setter
-	public static class Options {
+	class Options {
 		String label;
 		Object value;
 		String labelValue;

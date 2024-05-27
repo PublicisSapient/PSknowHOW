@@ -46,7 +46,6 @@ public class ProjectToolConfigDTO {
 	private String toolName;
 	private ObjectId basicProjectConfigId;
 	private ObjectId connectionId;
-	private boolean brokenConnection;
 	private String connectionName;
 	private String projectId;
 	private String projectKey;

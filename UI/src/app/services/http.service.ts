@@ -99,7 +99,6 @@ export class HttpService {
   private deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
   private getAllUsersUrl = this.baseUrl + '/api/userinfo';
   private updateAccessUrl = this.baseUrl + '/api/userinfo/';
-  private notificationPreferencesUrl = this.baseUrl + '/api/userinfo/notificationPreferences';
   private getKPIConfigMetadataUrl =
     this.baseUrl + '/api/editConfig/jira/editKpi/';
   /** KnowHOW Lite */
@@ -364,7 +363,7 @@ export class HttpService {
     };
     if(environment?.['AUTHENTICATION_SERVICE']){
       this.changePasswordUrl = this.baseUrl + '/api/changePassword/central';
-    }
+    }  
     return this.http
       .post(this.changePasswordUrl, postData)
       .pipe(tap((res) => {}));
@@ -555,11 +554,6 @@ export class HttpService {
     return this.http.post(this.updateAccessUrl + username, requestData);
   }
 
-  /** Change Notification Preferences toggle  */
-   notificationEmailToggleChange(notificationEmailObj): Observable<any> {
-      return this.http.post<any>(this.notificationPreferencesUrl, notificationEmailObj);
-    }
-
   /** get all requests for access (RBAC) */
   getAccessRequests(status) {
     return this.http
@@ -571,7 +565,7 @@ export class HttpService {
   getAccessRequestsNotifications() {
     if(environment?.['AUTHENTICATION_SERVICE']){
       this.getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification/central';
-    }
+    }  
     return this.http
       .get<NotificationResponseDTO>(this.getAccessRequestNotificationsUrl)
       .pipe(map((requests) => requests));
@@ -774,26 +768,12 @@ export class HttpService {
     );
   }
 
-    /** Get all Field Mappings with history */
-    getFieldMappingsWithHistory(toolId,kpiId, data) {
-      return this.http.post(
-        this.fieldMappingsUrl + '/fieldMapping/' + toolId + '/'+ kpiId, data
-      );
-    }
-
   /** Save all Field Mappings */
-  setFieldMappings(toolId, mappingConfig,kpiid,isImport?) {
-    if(isImport && isImport === true){
-      return this.http.post(
-        this.fieldMappingsUrl + '/' + toolId + '/fieldMapping',
-        mappingConfig,
-      );
-    }else{
-      return this.http.post(
-        this.fieldMappingsUrl + '/saveMapping/' + toolId + '/' + kpiid,
-        mappingConfig,
-      );
-    }
+  setFieldMappings(toolId, mappingConfig) {
+    return this.http.post(
+      this.fieldMappingsUrl + '/' + toolId + '/fieldMapping',
+      mappingConfig,
+    );
   }
 
   /** Get KPI-field mapping relationships */
@@ -838,9 +818,6 @@ export class HttpService {
         });
         this.sharedService.setCurrentUserDetails({
           projectsAccess: authDetails['projectsAccess'],
-        });
-        this.sharedService.setCurrentUserDetails({
-           notificationEmail: authDetails['notificationEmail'],
         });
         this.sharedService.setCurrentUserDetails({
           authorities: authDetails['authorities'],
@@ -1157,8 +1134,4 @@ export class HttpService {
   getAzureTeams(connectionId) {
       return this.http.get<any>(`${this.baseUrl}/api/azure/teams/${connectionId}`);
     }
-
-  getProgressStatusOfProcessors(data){
-    return this.http.get<any>(`${this.processorTraceLogsUrl}?processorName=${data.processor}&basicProjectConfigId=${data.projects[0]}`);
-  }
 }

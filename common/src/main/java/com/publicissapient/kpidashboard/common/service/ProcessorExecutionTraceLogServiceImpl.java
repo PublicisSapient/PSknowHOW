@@ -18,7 +18,6 @@
 package com.publicissapient.kpidashboard.common.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
@@ -76,28 +74,26 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 
 	@Override
 	public List<ProcessorExecutionTraceLog> getTraceLogs(String processorName, String basicProjectConfigId) {
-        List<ProcessorExecutionTraceLog> resultTraceLogs = new ArrayList<>();
+		List<ProcessorExecutionTraceLog> traceLogs = getTraceLogs();
+		List<ProcessorExecutionTraceLog> resultTraceLogs = new ArrayList<>();
 
 		if (StringUtils.isEmpty(processorName) && StringUtils.isEmpty(basicProjectConfigId)) {
-			resultTraceLogs.addAll(getTraceLogs());
+			resultTraceLogs.addAll(traceLogs);
 		} else if (StringUtils.isNotEmpty(processorName) && StringUtils.isEmpty(basicProjectConfigId)) {
-			List<ProcessorExecutionTraceLog> traceLogsByProcessorName = processorExecutionTraceLogRepository
-					.findByProcessorName(processorName);
+			List<ProcessorExecutionTraceLog> traceLogsByProcessorName = traceLogs.stream()
+					.filter(traceLog -> processorName.equalsIgnoreCase(traceLog.getProcessorName()))
+					.collect(Collectors.toList());
 			resultTraceLogs.addAll(traceLogsByProcessorName);
 		} else if (StringUtils.isEmpty(processorName) && StringUtils.isNotEmpty(basicProjectConfigId)) {
-			List<ProcessorExecutionTraceLog> traceLogsByProject = processorExecutionTraceLogRepository
-					.findByBasicProjectConfigId(basicProjectConfigId);
+			List<ProcessorExecutionTraceLog> traceLogsByProject = traceLogs.stream()
+					.filter(traceLog -> basicProjectConfigId.equalsIgnoreCase(traceLog.getBasicProjectConfigId()))
+					.collect(Collectors.toList());
 			resultTraceLogs.addAll(traceLogsByProject);
-		} else if (processorName.equalsIgnoreCase(ProcessorConstants.JIRA)
-				&& StringUtils.isNotEmpty(basicProjectConfigId)) { // api for jira progress trace log
-			Optional<ProcessorExecutionTraceLog> jiraProgressTraceLog = processorExecutionTraceLogRepository
-					.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(processorName,
-							basicProjectConfigId);
-			return jiraProgressTraceLog.map(Collections::singletonList).orElseGet(Collections::emptyList);
 		} else {
-			List<ProcessorExecutionTraceLog> traceLogsByProcessorAndProject = processorExecutionTraceLogRepository
-					.findByProcessorNameAndBasicProjectConfigIdIn(processorName,
-							Collections.singletonList(basicProjectConfigId));
+			List<ProcessorExecutionTraceLog> traceLogsByProcessorAndProject = traceLogs.stream()
+					.filter(traceLog -> processorName.equalsIgnoreCase(traceLog.getProcessorName()))
+					.filter(traceLog -> basicProjectConfigId.equalsIgnoreCase(traceLog.getBasicProjectConfigId()))
+					.collect(Collectors.toList());
 			resultTraceLogs.addAll(traceLogsByProcessorAndProject);
 
 		}

@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -80,8 +79,6 @@ public class NetOpenTicketCountByRCAServiceImplTest {
 	KpiHelperService kpiHelperService;
 	@Mock
 	private CommonService commonService;
-	@Mock
-	private CustomApiConfig customApiConfig;
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();

@@ -203,7 +203,6 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 
 				onlineProjectConfigMap.forEach(projectConfigMap -> {
 					try {
-						processorToolConnectionService.validateConnectionFlag(projectConfigMap.getProcessorToolConnection());
 						MDC.put("project", projectConfigMap.getProjectName());
 						log.info("Data for project : {}", projectConfigMap.getProjectName());
 						processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());

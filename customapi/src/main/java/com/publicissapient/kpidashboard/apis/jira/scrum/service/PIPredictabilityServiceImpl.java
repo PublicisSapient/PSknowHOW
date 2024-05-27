@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -62,12 +60,6 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
-
-	@Autowired
-	private CacheService cacheService;
-
-	@Autowired
-	private FilterHelperService flterHelperService;
 
 	private static final String EPIC_DATA = "EpicData";
 
@@ -209,7 +201,7 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 		});
 
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.PI_PREDICTABILITY.getColumns(projectLeafNodeList, cacheService, flterHelperService));
+		kpiElement.setExcelColumns(KPIExcelColumn.PI_PREDICTABILITY.getColumns());
 
 	}
 

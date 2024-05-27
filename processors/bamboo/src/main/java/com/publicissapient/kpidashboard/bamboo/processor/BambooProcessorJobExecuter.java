@@ -277,7 +277,6 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, List<Build> activeBuildJobs,
 			List<Deployment> activeDeployJobs, ObjectId processorId, ProjectBasicConfig proBasicConfig) {
 		for (ProcessorToolConnection bambooJobConfig : bambooJobList) {
-			processorToolConnectionService.validateConnectionFlag(bambooJobConfig);
 			String jobType = bambooJobConfig.getJobType();
 			ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLogBamboo(
 					bambooJobConfig.getBasicProjectConfigId().toHexString());

@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.common.repository.application.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -71,6 +72,10 @@ public class ProjectToolConfigRepositoryImpl implements ProjectToolConfigReposit
 			toolObj.setRepoSlug(item.getRepoSlug());
 			toolObj.setRepositoryName(item.getRepositoryName());
 			toolObj.setProcessorItemList(item.getProcessorItemList());
+			if (CollectionUtils.isNotEmpty(item.getConnection())) {
+				String url = item.getConnection().get(0).getBaseUrl();
+				toolObj.setUrl(url);
+			}
 			tools.add(toolObj);
 		}
 		return tools;

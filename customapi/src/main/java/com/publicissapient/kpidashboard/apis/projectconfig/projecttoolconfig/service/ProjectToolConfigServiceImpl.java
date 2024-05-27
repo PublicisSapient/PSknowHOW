@@ -196,7 +196,6 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectToolConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), TIME_FORMAT));
 		projectToolConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), TIME_FORMAT));
 		toolRepository.save(projectToolConfig);
-		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
 		return new ServiceResponse(true, "created and saved new project_tools", projectToolConfig);
@@ -234,7 +233,6 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setToolName(projectToolConfig.getToolName());
 		projectTool.setBasicProjectConfigId(projectToolConfig.getBasicProjectConfigId());
 		projectTool.setConnectionId(projectToolConfig.getConnectionId());
-		projectTool.setBrokenConnection(projectToolConfig.isBrokenConnection());
 		projectTool.setProjectId(projectToolConfig.getProjectId());
 		projectTool.setProjectKey(projectToolConfig.getProjectKey());
 		projectTool.setJobName(projectToolConfig.getJobName());
@@ -395,7 +393,6 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setBranch(e.getBranch());
 			projectConfToolDto.setDefaultBranch(e.getDefaultBranch());
 			projectConfToolDto.setConnectionId(e.getConnectionId());
-			projectConfToolDto.setBrokenConnection(e.isBrokenConnection());
 			projectConfToolDto.setId(e.getId().toString());
 			projectConfToolDto.setToolName(e.getToolName());
 			projectConfToolDto.setProjectId(e.getProjectId());

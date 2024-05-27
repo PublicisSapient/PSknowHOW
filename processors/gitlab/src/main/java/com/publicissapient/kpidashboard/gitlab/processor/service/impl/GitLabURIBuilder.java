@@ -101,26 +101,6 @@ public class GitLabURIBuilder {
 	}
 
 	/**
-	 * build url te get repo details
-	 * @return repo tool
-	 * @throws URISyntaxException
-	 * 				uri syntax exception
-	 */
-	public String repoDetailsUrlBuild() throws URISyntaxException {
-		URI uri = getURI();
-		String scheme = "ssh".equalsIgnoreCase(uri.getScheme()) ? "https" : uri.getScheme();
-		final URIBuilder builder = new URIBuilder(scheme + "://" + uri.getHost() + getRepositoryDetailsPath());
-		if (uri.getPort() > 0) {
-			builder.setPort(uri.getPort());
-		}
-
-		getExtraParams().forEach(builder::addParameter);
-
-		return builder.build().toString();
-	}
-
-
-	/**
 	 * Gets the params.
 	 *
 	 * @return the params
@@ -167,12 +147,6 @@ public class GitLabURIBuilder {
 		StringBuilder sb = new StringBuilder();
 		sb.append(GitLabConstants.GITLAB_API).append("/" + repo.getGitLabProjectId())
 				.append(GitLabConstants.GITLAB_URL_API_MERGEREQUEST);
-		return sb.toString();
-	}
-
-	private String getRepositoryDetailsPath() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(GitLabConstants.GITLAB_API).append("/" + repo.getGitLabProjectId());
 		return sb.toString();
 	}
 

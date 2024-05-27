@@ -155,12 +155,12 @@ public class AdditionalFilterHelper {
 			try {
 				if (fields.get(customField).getValue() instanceof JSONObject) {
 					JSONObject jsonObject = (JSONObject) fields.get(customField).getValue();
-					getValueFromFieldJsonObject(values, jsonObject);
+					getValueFromField(values, jsonObject);
 				} else if (fields.get(customField).getValue() instanceof JSONArray) {
 					JSONArray fieldArray = (JSONArray) fields.get(customField).getValue();
 					if (fieldArray.length() > 0) {
 						for (int i = 0; i < fieldArray.length(); i++) {
-							getValueFromFieldJsonObject(values, (JSONObject) fieldArray.get(i));
+							getValueFromField(values, (JSONObject) fieldArray.get(i));
 						}
 					}
 				} else {
@@ -173,19 +173,13 @@ public class AdditionalFilterHelper {
 		return values;
 	}
 
-	private void getValueFromFieldJsonObject(Set<String> values, JSONObject jsonObject) {
-		if (jsonObject != null) {
-			String value = jsonObject.optString(JiraConstants.VALUE, null);
-			if (StringUtils.isNotBlank(value)) {
-				values.add(value);
-			} else {
-				String name = jsonObject.optString(JiraConstants.NAME, null);
-				if (StringUtils.isNotBlank(name)) {
-					values.add(name);
-				}
+	private void getValueFromField(Set<String> values, JSONObject jsonObject) {
+		try {
+			if (null != jsonObject && StringUtils.isNotBlank((String) jsonObject.get(JiraConstants.VALUE))) {
+				values.add((String) jsonObject.get(JiraConstants.VALUE));
 			}
+		} catch (JSONException e) {
+			throw new RuntimeException(e);
 		}
-
 	}
-
 }

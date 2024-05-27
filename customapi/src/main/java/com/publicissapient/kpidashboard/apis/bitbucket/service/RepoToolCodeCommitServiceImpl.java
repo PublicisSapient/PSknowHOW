@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -54,6 +53,7 @@ import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -192,7 +192,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 				aggDataMap.put(getBranchSubFilter(repo, projectName), dayWiseCount);
 				repoWiseCommitList.add(excelDataLoader);
 				repoWiseMergeRequestList.add(mergeRequestExcelDataLoader);
-				repoList.add(repo.getRepositoryName());
+				repoList.add(repo.getUrl());
 				branchList.add(repo.getBranch());
 
 			}
@@ -258,7 +258,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 		LocalDate currentDate = LocalDate.now();
 		List<DataCount> dayWiseCommitCount = new ArrayList<>();
 		for (int i = 0; i < dataPoints; i++) {
-			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate, duration);
+			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
 			DataCount dataCount = new DataCount();
 			Map<String, Object> hoverValues = new HashMap<>();
 			if (commitCountForRepo != null && commitCountForRepo.get(dateRange.getStartDate().toString()) != null) {
@@ -288,7 +288,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			dataCount.setHoverValue(hoverValues);
 			dataCount.setSProjectName(projectName);
 			dayWiseCommitCount.add(dataCount);
-			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
+			currentDate = getNextRangeDate(duration, currentDate);
 		}
 		Collections.reverse(dayWiseCommitCount);
 		return dayWiseCommitCount;
@@ -306,6 +306,15 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			range = dateRange.getStartDate().toString();
 		}
 		return range;
+	}
+
+	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
+		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
+			currentDate = currentDate.minusWeeks(1);
+		} else {
+			currentDate = currentDate.minusDays(1);
+		}
+		return currentDate;
 	}
 
 	@Override
@@ -333,31 +342,26 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
 		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(REPO_TOOLS,
 				Collections.emptyList());
-		if (CollectionUtils.isEmpty(tools)) {
-			return new ArrayList<>();
+		if (!CollectionUtils.isEmpty(tools)) {
+			projectCodeList.add(node.getId());
 		}
-		projectCodeList.add(node.getId());
 
-		LocalDate startDate = LocalDate.now();
-		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-			startDate = LocalDate.now().minusWeeks(dataPoint);
-			while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
-				startDate = startDate.minusDays(1);
-			}
-		} else {
-			int daysSubtracted = 0;
-			while (daysSubtracted < dataPoint) {
-				// Skip the weekend days
-				if (!(startDate.getDayOfWeek() == DayOfWeek.SATURDAY || startDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
-					daysSubtracted++;
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
+
+		if (CollectionUtils.isNotEmpty(projectCodeList)) {
+			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
+			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+				startDate = LocalDate.now().minusWeeks(dataPoint);
+				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+					startDate = startDate.minusDays(1);
 				}
-				startDate = startDate.minusDays(1);
 			}
+			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
+			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList, kpi,
+					startDate.toString(), endDate.toString(), debbieDuration);
 		}
-		String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
-		return repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList, kpi, startDate.toString(),
-				endDate.toString(), debbieDuration);
 
+		return repoToolKpiMetricResponseList;
 	}
 
 	@Override

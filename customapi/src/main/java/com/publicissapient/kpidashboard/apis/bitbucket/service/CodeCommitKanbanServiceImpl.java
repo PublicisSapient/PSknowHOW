@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -162,7 +161,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		String projectNodeId = node.getId();
 		for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 
-			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate,
+			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
 					kpiRequest.getDuration());
 			List<Tool> reposList = getBitBucketJobs(toolMap, node);
 			if (CollectionUtils.isEmpty(reposList)) {
@@ -225,8 +224,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 				}
 				// if data is there for any branch then only will shown on excel
 				if (MapUtils.isNotEmpty(excelLoader)) {
-					String repoName = tool.getRepositoryName() != null ? tool.getRepositoryName() : tool.getRepoSlug();
-					listOfRepo.add(repoName);
+					listOfRepo.add(tool.getUrl());
 					listOfBranch.add(tool.getBranch());
 					excelLoaderfinal.putAll(excelLoader);
 				}

@@ -49,7 +49,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -66,7 +65,6 @@ import com.publicissapient.kpidashboard.argocd.utils.ArgoCDUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
@@ -149,7 +147,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * PSKnowHow Database for the projects respectively
 	 *
 	 * @param processor
-	 *            ArgoCD Processor
+	 * 					ArgoCD Processor
 	 * @return boolean
 	 */
 	@Override
@@ -182,7 +180,6 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
-					processorToolConnectionService.validateConnectionFlag(argoCDJob);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					String accessToken = argoCDClient.getAuthToken(baseUrl, cred);
 					ApplicationsList listOfApplications = argoCDClient.getApplications(baseUrl, accessToken);
@@ -190,8 +187,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 						for (Application applicationitem : listOfApplications.getItems()) {
 							Application application = argoCDClient.getApplicationByName(baseUrl,
 									applicationitem.getMetadata().getName(), accessToken);
-							count += saveRevisionsInDbAndGetCount(application, deploymentJobs, argoCDJob,
-									processor.getId());
+							count += saveRevisionsInDbAndGetCount(application, deploymentJobs, argoCDJob, processor.getId());
 						}
 					}
 					log.info("Finished ArgoCD Job started at :: {}", startTime);
@@ -200,7 +196,6 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 					processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				} catch (RestClientException exception) {
-					isClientException(argoCDJob, exception);
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -223,24 +218,8 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	}
 
 	/**
-	 * 
-	 * @param argoCDJob
-	 *            argoCDJob
-	 * @param exception
-	 *            exception
-	 */
-	private void isClientException(ProcessorToolConnection argoCDJob, RestClientException exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
-			processorToolConnectionService.updateBreakingConnection(argoCDJob.getConnectionId(), errMsg);
-		}
-	}
-
-	/**
 	 * @param sprintId
-	 *            sprint Id
+	 * 				sprint Id
 	 * @return boolean
 	 */
 	@Override
@@ -252,7 +231,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * Returns the Decrypted value of String
 	 * 
 	 * @param encryptedValue
-	 *            encrypted value of String
+	 * 					encrypted value of String
 	 * @return String
 	 */
 	private String decryptPassword(String encryptedValue) {
@@ -286,7 +265,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * create Processor Trace log
 	 * 
 	 * @param basicProjectConfigId
-	 *            basic Project Configuration Id
+	 * 						basic Project Configuration Id
 	 * @return ProcessorExecutionTraceLog
 	 */
 	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
@@ -306,13 +285,13 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * nodes
 	 * 
 	 * @param application
-	 *            ArgoCD Application
+	 * 					ArgoCD Application
 	 * @param exisitingEntries
-	 *            Existing entries in Database
+	 * 					Existing entries in Database
 	 * @param argoCDJob
-	 *            argoCD process tool connection
+	 * 					argoCD process tool connection
 	 * @param processorId
-	 *            processor Id
+	 * 					processor Id
 	 * @return int
 	 */
 	private int saveRevisionsInDbAndGetCount(Application application, List<Deployment> exisitingEntries,
@@ -337,11 +316,11 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * Model
 	 * 
 	 * @param application
-	 *            ArgoCD Application
+	 * 					ArgoCD Application
 	 * @param argoCDJob
-	 *            argoCD process tool connection
+	 * 					argoCD process tool connection
 	 * @param processorId
-	 *            processor Id
+	 *					processor Id
 	 * @return Map<Pair<String, String>, Deployment>
 	 */
 	private Map<Pair<String, String>, Deployment> mapRevisionsToDeployment(Application application,
@@ -372,10 +351,10 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	/**
 	 * Cleans the cache in the Custom API
 	 * 
-	 * @param cacheEndPoint
-	 *            the cache endpoint
-	 * @param cacheName
-	 *            the cache name
+	 * @param cacheEndPoint 
+	 * 					the cache endpoint
+	 * @param cacheName     
+	 * 					the cache name
 	 */
 	private void cacheRestClient(String cacheEndPoint, String cacheName) {
 		HttpHeaders headers = new HttpHeaders();

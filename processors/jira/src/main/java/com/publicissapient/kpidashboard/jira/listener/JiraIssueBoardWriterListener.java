@@ -20,19 +20,14 @@ package com.publicissapient.kpidashboard.jira.listener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.ItemWriteListener;
-import org.springframework.batch.core.scope.context.StepContext;
-import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.item.Chunk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -44,7 +39,6 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
-import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,12 +49,9 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class JiraIssueBoardWriterListener implements ItemWriteListener<CompositeResult> {
-	public static final String PROG_TRACE_LOG = "progTraceLog";
-	@Autowired
-	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 
 	@Autowired
-	JiraProcessorConfig jiraProcessorConfig;
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 
 	@Override
 	public void beforeWrite(Chunk<? extends CompositeResult> compositeResult) {
@@ -85,19 +76,10 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 		Map<String, Map<String, List<JiraIssue>>> projectBoardWiseIssues = jiraIssues.stream()
 				.filter(issue -> !issue.getTypeName().equalsIgnoreCase(JiraConstants.EPIC)).collect(Collectors
 						.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.groupingBy(JiraIssue::getBoardId)));
-		// getting step context
-		StepContext stepContext = StepSynchronizationManager.getContext();
+
 		for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : projectBoardWiseIssues.entrySet()) {
 			String basicProjectConfigId = entry.getKey();
 			Map<String, List<JiraIssue>> boardWiseIssues = entry.getValue();
-			List<ProcessorExecutionTraceLog> procTraceLogList = processorExecutionTraceLogRepo
-					.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
-							Collections.singletonList(basicProjectConfigId));
-			Map<String, ProcessorExecutionTraceLog> boardWiseTraceLogMap = procTraceLogList.stream()
-					.collect(Collectors.toMap(
-							traceLog -> Optional.ofNullable(traceLog.getBoardId()).orElse(PROG_TRACE_LOG),
-							Function.identity()));
-			ProcessorExecutionTraceLog progressStatsTraceLog = boardWiseTraceLogMap.getOrDefault(PROG_TRACE_LOG, new ProcessorExecutionTraceLog());
 			for (Map.Entry<String, List<JiraIssue>> boardData : boardWiseIssues.entrySet()) {
 				String boardId = boardData.getKey();
 				JiraIssue firstIssue = boardData
@@ -107,23 +89,21 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 										.reversed())
 						.findFirst().orElse(null);
 				if (firstIssue != null) {
-					ProcessorExecutionTraceLog processorExecutionTraceLog;
-					if (boardWiseTraceLogMap.containsKey(boardId)) {
-						processorExecutionTraceLog = boardWiseTraceLogMap.get(boardId);
+					Optional<ProcessorExecutionTraceLog> procTraceLog = processorExecutionTraceLogRepo
+							.findByProcessorNameAndBasicProjectConfigIdAndBoardId(ProcessorConstants.JIRA,
+									basicProjectConfigId, boardId);
+					if (procTraceLog.isPresent()) {
+						ProcessorExecutionTraceLog processorExecutionTraceLog = procTraceLog.get();
+						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId,
+								firstIssue.getChangeDate(), processorExecutionToSave);
 					} else {
-						processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-						processorExecutionTraceLog.setFirstRunDate(DateUtil.dateTimeFormatter(
-								LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()).minusDays(jiraProcessorConfig.getDaysToReduce()),
-								JiraConstants.QUERYDATEFORMAT));
+						ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+						setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId,
+								firstIssue.getChangeDate(), processorExecutionToSave);
 					}
-					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId, firstIssue.getChangeDate(),
-							processorExecutionToSave);
-					progressStatsTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(firstIssue.getChangeDate(),
-							JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
 				}
 			}
-			Optional.ofNullable(JiraProcessorUtil.saveChunkProgressInTrace(progressStatsTraceLog, stepContext))
-					.ifPresent(processorExecutionToSave::add);
+
 		}
 		if (CollectionUtils.isNotEmpty(processorExecutionToSave)) {
 			processorExecutionTraceLogRepo.saveAll(processorExecutionToSave);

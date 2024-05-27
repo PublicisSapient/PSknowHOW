@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -80,9 +79,6 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 	@Autowired
 	private FilterHelperService flterHelperService;
-
-	@Autowired
-	private CacheService cacheService;
 
 	@Autowired
 	private SprintRepository sprintRepository;
@@ -298,10 +294,11 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
-		Map<String, JiraIssue> jiraIssueMap = sprintWiseJiraStoryList.stream().collect(
-				Collectors.toMap(JiraIssue::getNumber, Function.identity(), (existing, replacement) -> existing));
 
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
+
+			Map<String, JiraIssue> jiraIssueMap = sprintWiseJiraStoryList.stream().collect(
+					Collectors.toMap(JiraIssue::getNumber, Function.identity(), (existing, replacement) -> existing));
 
 			sprintDetails.forEach(sd -> {
 				Set<IssueDetails> filterIssueDetailsSet = new HashSet<>();
@@ -344,7 +341,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
 			populateExcelDataObject(requestTrackerId, excelData, currentSprintLeafPredictabilityMap, node,
-					fieldMapping, jiraIssueMap);
+					fieldMapping);
 			log.debug("[SPRINTPREDICTABILITY-SPRINT-WISE][{}]. SPRINTPREDICTABILITY for sprint {}  is {}",
 					requestTrackerId, node.getSprintFilter().getName(), currentNodeIdentifier);
 			if (predictability.get(currentNodeIdentifier) != null) {
@@ -363,7 +360,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			}
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_PREDICTABILITY.getColumns(sprintLeafNodeList,cacheService,flterHelperService));
+		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_PREDICTABILITY.getColumns());
 	}
 
 	@Override
@@ -453,15 +450,15 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	}
 
 	/**
+	 *
 	 * @param requestTrackerId
 	 * @param excelData
 	 * @param currentSprintLeafVelocityMap
 	 * @param node
-	 * @param jiraIssueMap
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-										 Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap, Node node,
-										 FieldMapping fieldMapping, Map<String, JiraIssue> jiraIssueMap) {
+			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap, Node node,
+			FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
@@ -470,7 +467,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 					&& CollectionUtils.isNotEmpty(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
 				Set<IssueDetails> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
 				KPIExcelUtility.populateSprintPredictability(node.getSprintFilter().getName(), issueDetailsSet,
-						excelData, fieldMapping, jiraIssueMap);
+						excelData, fieldMapping);
 			}
 		}
 	}

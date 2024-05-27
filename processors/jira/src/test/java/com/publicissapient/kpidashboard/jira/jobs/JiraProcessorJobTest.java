@@ -31,7 +31,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.builder.SimpleJobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -48,25 +47,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.helper.BuilderFactory;
-import com.publicissapient.kpidashboard.jira.listener.JiraIssueBoardWriterListener;
-import com.publicissapient.kpidashboard.jira.listener.JiraIssueJqlWriterListener;
-import com.publicissapient.kpidashboard.jira.listener.JiraIssueSprintJobListener;
-import com.publicissapient.kpidashboard.jira.listener.JobListenerKanban;
-import com.publicissapient.kpidashboard.jira.listener.JobListenerScrum;
-import com.publicissapient.kpidashboard.jira.listener.JobStepProgressListener;
-import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueJqlWriterListener;
-import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueWriterListener;
+import com.publicissapient.kpidashboard.jira.listener.*;
 import com.publicissapient.kpidashboard.jira.processor.IssueKanbanProcessor;
 import com.publicissapient.kpidashboard.jira.processor.IssueScrumProcessor;
 import com.publicissapient.kpidashboard.jira.reader.IssueBoardReader;
 import com.publicissapient.kpidashboard.jira.reader.IssueJqlReader;
 import com.publicissapient.kpidashboard.jira.reader.IssueSprintReader;
-import com.publicissapient.kpidashboard.jira.tasklet.JiraIssueReleaseStatusTasklet;
-import com.publicissapient.kpidashboard.jira.tasklet.KanbanReleaseDataTasklet;
-import com.publicissapient.kpidashboard.jira.tasklet.MetaDataTasklet;
-import com.publicissapient.kpidashboard.jira.tasklet.ScrumReleaseDataTasklet;
-import com.publicissapient.kpidashboard.jira.tasklet.SprintReportTasklet;
-import com.publicissapient.kpidashboard.jira.tasklet.SprintScrumBoardTasklet;
+import com.publicissapient.kpidashboard.jira.tasklet.*;
 import com.publicissapient.kpidashboard.jira.writer.IssueKanbanWriter;
 import com.publicissapient.kpidashboard.jira.writer.IssueScrumWriter;
 
@@ -135,10 +122,6 @@ public class JiraProcessorJobTest {
 	@Mock
 	private JiraProcessorConfig jiraProcessorConfig;
 
-	@Mock
-	private JobStepProgressListener jobStepProgressListener;
-
-
 	@InjectMocks
 	private JiraProcessorJob jiraProcessorJob;
 
@@ -178,8 +161,6 @@ public class JiraProcessorJobTest {
 		TaskletStep taskletStep = mock(TaskletStep.class);
 		when(builderFactory.getStepBuilder(any(String.class), any(JobRepository.class))).thenReturn(stepBuilder);
 		when(stepBuilder.tasklet(any(Tasklet.class), any(PlatformTransactionManager.class))).thenReturn(taskletStepBuilder);
-		when(taskletStepBuilder.build()).thenReturn(taskletStep);
-		when(taskletStepBuilder.listener(any(StepExecutionListener.class))).thenReturn(taskletStepBuilder);
 		when(taskletStepBuilder.build()).thenReturn(taskletStep);
 		SimpleStepBuilder simpleStepBuilder = mock(SimpleStepBuilder.class);
 		when(stepBuilder.chunk(any(Integer.class), any(PlatformTransactionManager.class))).thenReturn(simpleStepBuilder);

@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.jira.reader;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -36,10 +37,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
+import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -47,7 +50,6 @@ import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.helper.ReaderRetryHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +67,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 	FetchProjectConfiguration fetchProjectConfiguration;
 
 	@Autowired
-	JiraClientService jiraClientService;
+	JiraClient jiraClient;
 
 	@Autowired
 	JiraCommonService jiraCommonService;
@@ -77,24 +79,22 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 	List<Issue> issues = new ArrayList<>();
 	Map<String, String> projectWiseDeltaDate;
 	int issueSize = 0;
-	boolean fetchLastIssue;
+	Boolean fetchLastIssue = false;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 	private Iterator<Issue> issueIterator;
 	ProjectConfFieldMapping projectConfFieldMapping;
 	private ReaderRetryHelper retryHelper;
-    ProcessorJiraRestClient client;
 
-    @Value("#{jobParameters['projectId']}")
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
 
-    public void initializeReader(String projectId) {
-        log.info("**** Jira Issue fetch started * * *");
-        pageSize = jiraProcessorConfig.getPageSize();
-        projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+	public void initializeReader(String projectId) {
+		log.info("**** Jira Issue fetch started * * *");
+		pageSize = jiraProcessorConfig.getPageSize();
+		projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 		retryHelper = new ReaderRetryHelper();
-		client = jiraClientService.getRestClientMap(projectId);
-    }
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -111,29 +111,32 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		if (null != projectConfFieldMapping && !fetchLastIssue) {
-			if (issueIterator == null || !issueIterator.hasNext()) {
-				fetchIssues(client);
-				if (CollectionUtils.isNotEmpty(issues)) {
-					issueIterator = issues.iterator();
+			KerberosClient krb5Client = null;
+			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
+				if (issueIterator == null || !issueIterator.hasNext()) {
+					fetchIssues(client);
+					if (CollectionUtils.isNotEmpty(issues)) {
+						issueIterator = issues.iterator();
+					}
+				}
+
+				if (checkIssueIterator()) {
+					Issue issue = issueIterator.next();
+					readData = new ReadData();
+					readData.setIssue(issue);
+					readData.setProjectConfFieldMapping(projectConfFieldMapping);
+					readData.setSprintFetch(false);
+				}
+
+				if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
+					log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
+					fetchLastIssue = true;
+					return readData;
 				}
 			}
-
-			if (checkIssueIterator()) {
-				Issue issue = issueIterator.next();
-				readData = new ReadData();
-				readData.setIssue(issue);
-				readData.setProjectConfFieldMapping(projectConfFieldMapping);
-				readData.setSprintFetch(false);
-			}
-
-			if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
-				log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
-				fetchLastIssue = true;
-				return readData;
-			}
 		}
-
 		return readData;
+
 	}
 
 	private boolean checkIssueIterator() {
@@ -172,8 +175,8 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 			log.info("fetching project status from trace log for project: {}",
 					projectConfFieldMapping.getProjectName());
 			List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
-					.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(JiraConstants.JIRA,
-							projectConfFieldMapping.getBasicProjectConfigId().toString());
+					.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA,
+							Arrays.asList(projectConfFieldMapping.getBasicProjectConfigId().toString()));
 			if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 				String lastSuccessfulRun = deltaDate;
 				for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {

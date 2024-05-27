@@ -15,45 +15,9 @@
             },
             {
                 "id": "6499c6832d6bfa02cbd16844",
-                "fieldName": "jiraDefectRejectionStatusDIR90",
-                "fieldLabel": "Defect Rejection Status",
-                "fieldType": "text",
-                "fieldCategory": "workflow",
-                "section": "WorkFlow Status Mapping",
-                "processorCommon": false,
-                "tooltip": {
-                    "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
-                }
-            },
-            {
-                "id": "6499c6832d6bfa02cbd16844",
-                "fieldName": "jiraDefectRejectionStatusDIR23",
-                "fieldLabel": "Defect Rejection Status",
-                "fieldType": "number",
-                "fieldCategory": "workflow",
-                "section": "WorkFlow Status Mapping",
-                "processorCommon": false,
-                "tooltip": {
-                    "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
-                }
-            },
-            {
-                "id": "6499c6832d6bfa02cbd16844",
                 "fieldName": "jiraDefectRejectionStatusDIR",
                 "fieldLabel": "Defect Rejection Status",
-                "fieldType": "toggle",
-                "fieldCategory": "workflow",
-                "section": "WorkFlow Status Mapping",
-                "processorCommon": false,
-                "tooltip": {
-                    "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
-                }
-            },
-            {
-                "id": "6499c6832d6bfa02cbd16844",
-                "fieldName": "jiraDefectRejectionStatusDIRtest1",
-                "fieldLabel": "Defect Rejection Status",
-                "fieldType": "number",
+                "fieldType": "text",
                 "fieldCategory": "workflow",
                 "section": "WorkFlow Status Mapping",
                 "processorCommon": false,

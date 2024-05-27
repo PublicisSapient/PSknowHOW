@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -159,13 +158,12 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 						.get(repo.getProcessorItemList().get(0).getId());
 				if (CollectionUtils.isNotEmpty(mergeReqList)) {
 					Map<String, Double> excelDataLoader = new HashMap<>();
-					String repoName = repo.getRepositoryName() != null ? repo.getRepositoryName() : repo.getRepoSlug();
 					aggMergeRequests.addAll(mergeReqList);
 					List<DataCount> dataCountList = setWeekWiseMeanTimeToMerge(mergeReqList, excelDataLoader,
 							projectName, duration, dataPoints);
 					aggDataMap.put(getBranchSubFilter(repo, projectName), dataCountList);
 					repoWiseMRList.add(excelDataLoader);
-					repoList.add(repoName);
+					repoList.add(repo.getUrl());
 					branchList.add(repo.getBranch());
 				}
 			}
@@ -185,7 +183,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		List<DataCount> dataCountList = new ArrayList<>();
 		LocalDate currentDate = LocalDate.now();
 		for (int i = 0; i < dataPoints; i++) {
-			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate, duration);
+			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
 			List<Double> durationList = new ArrayList<>();
 			for (MergeRequests mergeReq : mergeReqList) {
 				LocalDate closedDate = Instant.ofEpochMilli(mergeReq.getClosedDate()).atZone(ZoneId.systemDefault())
@@ -203,7 +201,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 				dataCountList.add(dataCount);
 				excelDataLoader.put(date, (double) TimeUnit.MILLISECONDS.toHours(valueForCurrentLeaf.longValue()));
 			}
-			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
+			currentDate = getNextRangeDate(duration, currentDate);
 		}
 		Collections.reverse(dataCountList);
 		return dataCountList;
@@ -220,6 +218,15 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			range = dateRange.getStartDate().toString();
 		}
 		return range;
+	}
+
+	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
+		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
+			currentDate = currentDate.minusWeeks(1);
+		} else {
+			currentDate = currentDate.minusDays(1);
+		}
+		return currentDate;
 	}
 
 	/**

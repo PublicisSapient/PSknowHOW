@@ -642,20 +642,13 @@ export class MilestoneComponent implements OnInit {
 
   checkIfDataPresent(data) {
     let dataCount = 0;
-    for(let i = 0; i<data?.length; i++){
-      if(data[i]?.data && !isNaN(parseInt(data[i]?.data))) {
-        dataCount += data[i]?.data;
-        if(parseInt(dataCount + '') > 0) {
-          return true;
-        }
-      } else if(data[i].value && !isNaN(parseInt(data[i]?.value[0]?.data))) {
-        for(let j = 0; j < data[i]?.value?.length; j++){
-          dataCount += data[i]?.value[j]?.data;
-          if(parseInt(dataCount + '') > 0) {
-            return true;
-          }
-        }
-      }
+    if(data[0] && !isNaN(parseInt(data[0].data))) {
+      dataCount = data[0].data;
+    } else if(data[0] && data[0].value && !isNaN(parseInt(data[0].value[0].data))) {
+      dataCount = data[0].value[0].data;
+    }
+    if(parseInt(dataCount + '') > 0) {
+      return true;
     }
     return false;
   }

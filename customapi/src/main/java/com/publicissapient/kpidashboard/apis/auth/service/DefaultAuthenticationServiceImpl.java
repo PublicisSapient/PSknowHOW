@@ -24,7 +24,6 @@ import static com.publicissapient.kpidashboard.apis.common.service.impl.UserInfo
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -56,7 +55,6 @@ import com.publicissapient.kpidashboard.apis.errors.APIKeyInvalidException;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -365,24 +363,8 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	 * @return
 	 */
 	@Override
-	public List<UserAccessApprovalResponseDTO> getAuthenticationByApproved(boolean approved) {
-		List<UserAccessApprovalResponseDTO> userAccessApprovalResponseDTOList = new ArrayList<>();
-		List<Authentication> nonApprovedUserList = authenticationRepository.findByApproved(approved);
-		nonApprovedUserList.stream().filter(Objects::nonNull).forEach(userInfoDTO -> {
-			UserAccessApprovalResponseDTO userAccessApprovalResponseDTO = new UserAccessApprovalResponseDTO();
-			userAccessApprovalResponseDTO.setUsername(userInfoDTO.getUsername());
-			userAccessApprovalResponseDTO.setEmail(userInfoDTO.getEmail());
-			userAccessApprovalResponseDTO.setApproved(userInfoDTO.isApproved());
-			List<String> whitelistDomain = authProperties.getWhiteListDomainForEmail();
-			if (CollectionUtils.isNotEmpty(whitelistDomain)
-					&& whitelistDomain.stream().anyMatch(domain -> userInfoDTO.getEmail().contains(domain))) {
-				userAccessApprovalResponseDTO.setWhitelistDomainEmail(true);
-			} else {
-				userAccessApprovalResponseDTO.setWhitelistDomainEmail(false);
-			}
-			userAccessApprovalResponseDTOList.add(userAccessApprovalResponseDTO);
-		});
-		return userAccessApprovalResponseDTOList;
+	public Iterable<Authentication> getAuthenticationByApproved(boolean approved) {
+		return authenticationRepository.findByApproved(approved);
 	}
 
 	@Override

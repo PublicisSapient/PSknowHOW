@@ -36,7 +36,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -52,7 +51,6 @@ import com.publicissapient.kpidashboard.bitbucket.repository.BitbucketProcessorR
 import com.publicissapient.kpidashboard.bitbucket.repository.BitbucketRepoRepository;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -199,7 +197,6 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
-					processorToolConnectionService.validateConnectionFlag(tool);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					BitbucketRepo bitRepo = getBitbucketRepo(tool, processor.getId());
 					if (proBasicConfig.isSaveAssigneeDetails()
@@ -242,8 +239,6 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 					processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				} catch (FetchingCommitException exception) {
-					Throwable cause = exception.getCause();
-					isClientException(tool, (HttpClientErrorException) cause);
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -274,22 +269,6 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 		MDC.clear();
 		return executionStatus;
 	}
-
-	/**
-	 * this method check for the client exception
-	 * 
-	 * @param tool
-	 *            tool
-	 * @param cause
-	 *            cause
-	 */
-	private void isClientException(ProcessorToolConnection tool, HttpClientErrorException cause) {
-		if (cause != null && cause.getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum.fromValue(cause.getStatusCode().value()).getReasonPhrase();
-			processorToolConnectionService.updateBreakingConnection(tool.getConnectionId(), errMsg);
-		}
-	}
-
 	@Override
 	public boolean executeSprint(String sprintId) {
 		return false;

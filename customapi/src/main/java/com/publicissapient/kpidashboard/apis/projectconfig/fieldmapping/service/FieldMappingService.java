@@ -18,16 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service;
 
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.common.model.application.FieldMappingMeta;
-import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-
-import java.util.List;
 
 /**
  * @author anisingh4
@@ -36,7 +30,9 @@ public interface FieldMappingService {
 
 	FieldMapping getFieldMapping(String projectToolConfigId);
 
-	FieldMapping addFieldMapping(String projectToolConfigId, FieldMapping fieldMapping, ObjectId basicProjectConfigId);
+	FieldMapping addFieldMapping(String projectToolConfigId, FieldMapping fieldMapping);
+
+	boolean compareMappingOnSave(String projectToolConfigId, FieldMapping fieldMapping);
 
 	/**
 	 * Gets ProjectBasicConfig object by its id.
@@ -63,30 +59,4 @@ public interface FieldMappingService {
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
-	/**
-	 *
-	 * @param kpi
-	 * @param projectToolConfigId
-	 * @param requestData
-	 * @return
-	 * @throws NoSuchFieldException
-	 * @throws IllegalAccessException
-	 */
-	List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfigId, FieldMappingMeta requestData)
-			throws NoSuchFieldException, IllegalAccessException;
-
-	void updateSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfigId,
-										FieldMappingMeta fieldMappingMeta) throws NoSuchFieldException, IllegalAccessException;
-
-	/**
-	 *
-	 * @param fieldMappingResponseList
-	 *            fieldMappingResponseList
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @return boolean
-	 * @throws IllegalAccessException
-	 *             IllegalAccessException
-	 */
-	boolean convertToFieldMappingAndCheckIsFieldPresent(List<FieldMappingResponse> fieldMappingResponseList, FieldMapping fieldMapping) throws IllegalAccessException;
 }

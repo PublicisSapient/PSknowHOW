@@ -39,20 +39,7 @@ public interface ProcessorExecutionTraceLogRepository extends MongoRepository<Pr
 
 	void deleteByBasicProjectConfigIdAndProcessorName(String basicProjectConfigId, String toolName);
 
-	Optional<ProcessorExecutionTraceLog> findByProcessorNameAndBasicProjectConfigIdAndBoardId(String toolName,
-			String basicProjectConfigId, String boardId);
+    Optional<ProcessorExecutionTraceLog> findByProcessorNameAndBasicProjectConfigIdAndBoardId(String toolName, String basicProjectConfigId, String boardId);
 
-	List<ProcessorExecutionTraceLog> findByProcessorNameAndBasicProjectConfigIdIn(String toolName,
-			List<String> basicProjectConfigIdList);
-
-	List<ProcessorExecutionTraceLog> findByProcessorName(String processorName);
-
-	List<ProcessorExecutionTraceLog> findByBasicProjectConfigId(String basicProjectConfigId);
-
-	Optional<ProcessorExecutionTraceLog> findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(
-			String processorName, String basicProjectConfigId);
-
-	List<ProcessorExecutionTraceLog> findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(
-			String processorName, String basicProjectConfigId);
-
+	List<ProcessorExecutionTraceLog> findByProcessorNameAndBasicProjectConfigIdIn(String toolName, List<String> basicProjectConfigIdList);
 }

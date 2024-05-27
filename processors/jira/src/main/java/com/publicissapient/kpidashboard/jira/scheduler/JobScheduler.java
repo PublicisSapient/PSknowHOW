@@ -34,7 +34,6 @@ import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
-import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,8 +66,6 @@ public class JobScheduler {
 	Job fetchIssueKanbanJqlJob;
 	@Autowired
 	private FetchProjectConfiguration fetchProjectConfiguration;
-	@Autowired
-	private OngoingExecutionsService ongoingExecutionsService;
 
 	/**
 	 * This method is used to start scrum job setup with board
@@ -88,18 +85,12 @@ public class JobScheduler {
 
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
-				final String projectId = params.getString(PROJECT_ID);
-				if (!ongoingExecutionsService.isExecutionInProgress(projectId)) {
-					try {
-						// making execution onGoing for project
-						ongoingExecutionsService.markExecutionInProgress(projectId);
-						jobLauncher.run(fetchIssueScrumBoardJob, params);
-					} catch (Exception e) {
-						log.info(
-								"Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
-								projectId, e);
-						ongoingExecutionsService.markExecutionAsCompleted(projectId);
-					}
+				try {
+					jobLauncher.run(fetchIssueScrumBoardJob, params);
+				} catch (Exception e) {
+					log.info(
+							"Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID), e);
 				}
 			});
 		}
@@ -124,18 +115,11 @@ public class JobScheduler {
 
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
-				final String projectId = params.getString(PROJECT_ID);
-				if (!ongoingExecutionsService.isExecutionInProgress(projectId)) {
-					try {
-						// making execution onGoing for project
-						ongoingExecutionsService.markExecutionInProgress(projectId);
-						jobLauncher.run(fetchIssueScrumJqlJob, params);
-					} catch (Exception e) {
-						log.info(
-								"Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
-								projectId, e);
-						ongoingExecutionsService.markExecutionAsCompleted(projectId);
-					}
+				try {
+					jobLauncher.run(fetchIssueScrumJqlJob, params);
+				} catch (Exception e) {
+					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID), e);
 				}
 			});
 		}
@@ -158,18 +142,12 @@ public class JobScheduler {
 
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
-				final String projectId = params.getString(PROJECT_ID);
-				if (!ongoingExecutionsService.isExecutionInProgress(projectId)) {
-					try {
-						// making execution onGoing for project
-						ongoingExecutionsService.markExecutionInProgress(projectId);
-						jobLauncher.run(fetchIssueKanbanBoardJob, params);
-					} catch (Exception e) {
-						log.info(
-								"Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
-								projectId, e);
-						ongoingExecutionsService.markExecutionAsCompleted(projectId);
-					}
+				try {
+					jobLauncher.run(fetchIssueKanbanBoardJob, params);
+				} catch (Exception e) {
+					log.info(
+							"Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID), e);
 				}
 			});
 		}
@@ -194,18 +172,11 @@ public class JobScheduler {
 
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
-				final String projectId = params.getString(PROJECT_ID);
-				if (!ongoingExecutionsService.isExecutionInProgress(projectId)) {
-					try {
-						// making execution onGoing for project
-						ongoingExecutionsService.markExecutionInProgress(projectId);
-						jobLauncher.run(fetchIssueKanbanJqlJob, params);
-					} catch (Exception e) {
-						log.info(
-								"Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
-								projectId, e);
-						ongoingExecutionsService.markExecutionAsCompleted(projectId);
-					}
+				try {
+					jobLauncher.run(fetchIssueKanbanJqlJob, params);
+				} catch (Exception e) {
+					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID), e);
 				}
 			});
 		}

@@ -116,6 +116,4 @@ public class ProcessorToolConnection {
 	private boolean bearerToken;
 	private boolean azureIterationStatusFieldUpdate;
 	private String projectComponent;
-	private boolean brokenConnection;
-	private String connectionErrorMsg;
 }

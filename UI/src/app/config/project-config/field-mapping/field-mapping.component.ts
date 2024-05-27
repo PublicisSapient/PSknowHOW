@@ -46,8 +46,6 @@ export class FieldMappingComponent implements OnInit {
   uploadedFileName = '';
   fieldMappingConfig = [];
   @ViewChild('fieldMappingFormComp') fieldMappingFormComp : FieldMappingFormComponent;
-  kpiId : string;
-  metaDataTemplateCode : string ;
 
 
   private setting = {
@@ -81,8 +79,7 @@ export class FieldMappingComponent implements OnInit {
   }
 
   getMappings() {
-    this.selectedFieldMapping = this.sharedService.getSelectedFieldMapping()?.fieldMappingResponses;
-    this.metaDataTemplateCode = this.sharedService.getSelectedFieldMapping()?.metaTemplateCode;
+    this.selectedFieldMapping = this.sharedService.getSelectedFieldMapping();
     if (this.selectedFieldMapping && Object.keys(this.selectedFieldMapping).length) {
       for (const obj in this.selectedFieldMapping) {
         if (this.fieldMappingForm && this.fieldMappingForm.controls[obj]) {
@@ -94,7 +91,6 @@ export class FieldMappingComponent implements OnInit {
   }
 
   getKPIFieldMappingRelationships() {
-    this.kpiId = this.selectedConfig?.Type?.toLowerCase() === 'kanban' ? 'kpi1' : 'kpi0';
     const finalMappingURL = this.selectedConfig?.Type?.toLowerCase() === 'kanban' ? `${this.selectedConfig.id}/kpi1` : `${this.selectedConfig.id}/kpi0`
     this.http.getKPIFieldMappingConfig(finalMappingURL).subscribe(response => {
       if(response && response['success']){

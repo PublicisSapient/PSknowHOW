@@ -139,35 +139,16 @@
         </div>
     </p-dialog>
 </div>
-<p-dialog [closable]="true" [(visible)]="displayConfigModel" [modal]="true"
+<p-dialog [header]="'Daily Standup View'" [closable]="true" [(visible)]="displayConfigModel" [modal]="true"
     styleClass="field-mapping">
-    <ng-template pTemplate="header">
-        <div class="inline-flex align-items-center justify-content-center gap-2">
-            <p class="font-bold white-space-nowrap">Daily Standup View</p>
-            <span class="font-bold white-space-nowrap" [ngClass]="{'green': isSyncPassedOrFailed === true, 'red' : ((isSyncPassedOrFailed === false)&& (lastSyncTime !== 'NA'))}">Last Sync: {{lastSyncTime}}
-                <span *ngIf="lastSyncTime !== 'NA'">
-                    <img *ngIf="isSyncPassedOrFailed === true" src="../../../assets/img/icon-success.svg"
-                        alt="Success" class="p-mr-1" />
-                    <img *ngIf="isSyncPassedOrFailed === false" src="../../../assets/img/icon-failure.svg"
-                        alt="Failure" class="p-mr-1" />
-                </span>
-            </span>
-            
-        </div>
-    </ng-template>
     <hr>
-    <div class="p-d-flex p-mt-4 p-mb-4">
-        <b class="p-mr-5"><span>*</span>Mandatory Fields</b>
-        <b><i class="fas fa-sync-alt p-mr-1"></i>Requires processor run</b>
-    </div>
     <ng-template pTemplate="content">
         <app-field-mapping-form #fieldMappingForm
             *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0 && !loading"
             [disableSave]="disableSave" [fieldMappingMetaData]="fieldMappingMetaData"
             [fieldMappingConfig]="fieldMappingConfig" [formData]="selectedFieldMapping"
             [selectedConfig]="selectedConfig" [selectedToolConfig]="selectedToolConfig"
-            (reloadKPI)="reloadKPI()"
-            [kpiId]="kpiData[0].kpiId" [metaDataTemplateCode]="metaDataTemplateCode" [parentComp]="'kpicard'"></app-field-mapping-form>
+            (reloadKPI)="reloadKPI()"></app-field-mapping-form>
     </ng-template>
     <ng-template pTemplate="footer"></ng-template>
     <ng-container *ngIf=" noData && !loading">

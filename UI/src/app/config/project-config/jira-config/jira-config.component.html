@@ -41,7 +41,7 @@
             <ng-template pTemplate="caption">
                 <div class="table-header">
                     Available Connections
-                    <small>( To add new connection, go to "<span class="link" (click)="redirectToConnections()"><em class="fas fa-plug"></em>Connections</span>" )</small>
+                    <small>( To add new connection, go to "<em class="fas fa-plug"></em> Connections" )</small>
                     <span class="p-input-icon-left p-mr-3">
                         <i class="pi pi-search"></i>
                         <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
@@ -58,7 +58,7 @@
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-connection let-columns="columns">
-                <tr [ngClass]="{'broken-conn-row': connection.brokenConnection}" tooltipPosition="top" [pTooltip]="connection.brokenConnection ? connection.connectionErrorMsg : null">
+                <tr>
                     <td>
                         <p-tableRadioButton [value]="connection" (click)="onConnectionSelect(connection)">
                         </p-tableRadioButton>

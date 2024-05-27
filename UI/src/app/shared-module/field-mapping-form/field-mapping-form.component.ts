@@ -50,16 +50,6 @@ export class FieldMappingFormComponent implements OnInit {
   form: FormGroup;
   fieldMappingSectionList = [];
   formConfig: any;
-  isFormDirty : boolean = false;
-  historyList = [];
-  showSpinner: boolean = false;
-  isHistoryPopup : any = {};
-  @Input() kpiId : string;
-  individualFieldHistory = [];
-  @Input() metaDataTemplateCode : any;
-  @Input() parentComp : string;
-  nestedFieldANDParent = {}
-  @Input() nodeId: string = '';
 
 private setting = {
   element: {
@@ -73,13 +63,9 @@ private setting = {
     private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
-    this.historyList = [];
     this.filterHierarchy = JSON.parse(localStorage.getItem('completeHierarchyData')).scrum;
     this.initializeForm();
     this.generateFieldMappingConfiguration();
-    this.form.valueChanges.subscribe(()=>{
-     this.isFormDirty = true;
-    })
   }
 
   generateFieldMappingConfiguration(){
@@ -101,12 +87,9 @@ private setting = {
   initializeForm(){
     const formObj ={};
     for (const field of this.fieldMappingConfig) {
-      this.isHistoryPopup[field.fieldName] = false;
       formObj[field.fieldName] = this.generateFromControlBasedOnFieldType(field)
       if (field.hasOwnProperty('nestedFields')) {
         for (const nField of field.nestedFields) {
-          this.nestedFieldANDParent[nField.fieldName] = field.fieldName;
-          this.isHistoryPopup[nField.fieldName] = false;
           formObj[nField.fieldName] = this.generateFromControlBasedOnFieldType(nField)
         }
       }
@@ -115,18 +98,11 @@ private setting = {
   }
 
   /** This method is taking config as parameter, creating form control and assigning initial value based on fieldtype */
-  generateFromControlBasedOnFieldType(config) {
-    const fieldMapping = this.formData.find(data => data.fieldName === config.fieldName)
-    if (fieldMapping?.history && fieldMapping?.history?.length) {
-      this.historyList.push({
-        fieldName: fieldMapping.fieldName,
-        history: fieldMapping.history
-      })
-    }
-    if (fieldMapping && (fieldMapping?.originalValue || fieldMapping?.originalValue === false) || (!isNaN(fieldMapping?.originalValue) && fieldMapping?.originalValue >= 0)) {
-      return new FormControl(fieldMapping.originalValue);
-    } else {
-      switch (config.fieldType) {
+  generateFromControlBasedOnFieldType(config){
+    if(this.formData?.hasOwnProperty(config.fieldName)){
+      return new FormControl(this.formData[config.fieldName]);
+    }else{
+      switch(config.fieldType){
         case 'text':
           return new FormControl('');
         case 'radiobutton':
@@ -152,13 +128,11 @@ private setting = {
       }
     }
      if (!this.form.invalid) {
-     const finalList = [];
-
-     Object.keys(this.selectedFieldMapping).forEach(fieldName => {
-                 const originalVal = this.selectedFieldMapping[fieldName];
-             finalList.push({ fieldName: fieldName, originalValue: originalVal })
-     });
-     this.saveFieldMapping(finalList,true);
+      this.formData = {...this.formData,...this.selectedFieldMapping};
+      const submitData = {...this.formData};
+      submitData['basicProjectConfigId'] = this.selectedConfig.id;
+      delete submitData.id;
+      this.saveFieldMapping(submitData);
     }
   }
 
@@ -279,22 +253,13 @@ private setting = {
 
   /** Responsible for handle template popup */
   save() {
-    const finalList = [];
-
-    this.formData.forEach(element => {
-      const formValue = this.form.value[element.fieldName];
-      const isChangedFromPreviousOne = this.compareValues(element?.originalValue, formValue);
-      if (!isChangedFromPreviousOne) {
-        finalList.push({ fieldName: element.fieldName, originalValue: formValue, previousValue: element.originalValue })
-        /** Adding parent field value if nested field changes */
-        if (this.nestedFieldANDParent.hasOwnProperty(element.fieldName)) {
-          finalList.push({ fieldName: this.nestedFieldANDParent[element.fieldName], originalValue: this.form.value[this.nestedFieldANDParent[element.fieldName]]})
-        }
-      }
-    });
-
-     if(this.selectedToolConfig[0].toolName.toLowerCase() === 'jira' || this.selectedToolConfig[0].toolName.toLowerCase() === 'azure'){
-          if (!(this.metaDataTemplateCode && this.metaDataTemplateCode === '9' || this.metaDataTemplateCode === '10' )) {
+    const submitData = {...this.formData,...this.form.value};
+    submitData['basicProjectConfigId'] = this.selectedConfig.id;
+    delete submitData.id;
+    if(this.selectedToolConfig[0].toolName.toLowerCase() === 'jira'){
+      this.http.getMappingTemplateFlag(this.selectedToolConfig[0].id, submitData).subscribe(response => {
+        if (response && response['success']) {
+          if (response['data']) {
             this.confirmationService.confirm({
               message: `Please note that change in mappings is a deviation from initially configured template.
               If you continue with the change in mappings then these changes will be mapped to a
@@ -302,41 +267,41 @@ private setting = {
               header: 'Template Change Info',
               key: 'templateInfoDialog',
               accept: () => {
-                this.saveFieldMapping(finalList);
+                this.saveFieldMapping(submitData);
               },
               reject: () => {}
             });
           } else {
-          this.saveFieldMapping(finalList);
+          this.saveFieldMapping(submitData);
           }
+        }else{
+          this.messenger.add({
+            severity: 'error',
+            summary: 'Some error occurred. Please try again later.'
+          });
+        }
+
+      });
     }else{
-      this.saveFieldMapping(finalList);
+      this.saveFieldMapping(submitData);
     }
 
   }
 
   /** Responsible for handle save */
-  saveFieldMapping(mappingData,isImport?) {
-    let mappingObj = {
-      "releaseNodeId": this.nodeId || null,
-      "fieldMappingRequests": [...mappingData]
-    }
-    this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingObj,this.kpiId,isImport).subscribe(response => {
+  saveFieldMapping(mappingData) {
+    this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingData).subscribe(response => {
       if (response && response['success']) {
         this.messenger.add({
           severity: 'success',
           summary: 'Field Mappings submitted!!',
         });
         this.uploadedFileName = '';
-        if(this.parentComp === 'kpicard'){
-          this.reloadKPI.emit();
-        }else{
-          this.refreshFieldMapppingValueANDHistory();
-        }
+        this.reloadKPI.emit();
       } else {
         this.messenger.add({
           severity: 'error',
-          summary: response['message']
+          summary: 'Some error occurred. Please try again later.'
         });
       }
     });
@@ -359,80 +324,5 @@ private setting = {
 
     const event = new MouseEvent('click');
     element.dispatchEvent(event);
-  }
-
-
-compareValues(originalValue: any, previousValue: any): boolean {
-  if (typeof originalValue !== typeof previousValue) {
-      return false; // Different types, not equal
-  }
-
-  if (Array.isArray(originalValue)) {
-      if (!Array.isArray(previousValue) || originalValue.length !== previousValue.length) {
-          return false; // Arrays are of different lengths
-      }
-
-      // Compare array elements recursively
-      for (let i = 0; i < originalValue.length; i++) {
-          if (!this.compareValues(originalValue[i], previousValue[i])) {
-              return false; // Arrays contain different values
-          }
-      }
-      return true; // Arrays are equal
-  } else if (typeof originalValue === 'object' && originalValue !== null) {
-      // Compare objects recursively
-      const keys1 = Object.keys(originalValue);
-      const keys2 = Object.keys(previousValue);
-      if (keys1.length !== keys2.length) {
-          return false; // Objects have different number of keys
-      }
-
-      for (const key of keys1) {
-          if (!this.compareValues(originalValue[key], previousValue[key])) {
-              return false; // Objects have different values for same keys
-          }
-      }
-      return true; // Objects are equal
-  } else {
-      // For strings, numbers, and other primitive types, use simple comparison
-      return originalValue === previousValue;
-  }
-}
-
-  handleBtnClick(fieldName) {
-    this.individualFieldHistory = []
-    Object.keys(this.isHistoryPopup).forEach(key => {
-      if (key !== fieldName) {
-        this.isHistoryPopup[key] = false;
-      }
-    });
-    this.isHistoryPopup[fieldName] = true;
-    this.showSpinner = true;
-    if (this.isHistoryPopup[fieldName]) {
-      const fieldHistory = this.historyList.find(ele => ele.fieldName === fieldName);
-      if (fieldHistory) {
-        this.individualFieldHistory = fieldHistory.history;
-      }
-    }
-    this.showSpinner = false;
-  }
-
-  onMouseOut(fieldName){
-    this.individualFieldHistory = [];
-        this.isHistoryPopup[fieldName] = false;
-  }
-
-  refreshFieldMapppingValueANDHistory(){
-    let obj = {
-      "releaseNodeId": this.nodeId || null
-    }
-    this.http.getFieldMappingsWithHistory(this.selectedToolConfig[0].id,this.kpiId, obj).subscribe(mappings => {
-      if (mappings && mappings['success']) {
-        this.formData = mappings['data'].fieldMappingResponses;
-        this.metaDataTemplateCode = mappings['data'].metaTemplateCode;
-        this.ngOnInit();
-        this.sharedService.setSelectedFieldMapping(mappings['data']);
-      }
-    });
   }
 }

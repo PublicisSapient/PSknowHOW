@@ -32,7 +32,6 @@ import com.publicissapient.kpidashboard.azure.config.AzureProcessorConfig;
 import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.azure.AzureStateCategoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
 
@@ -52,7 +51,6 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 	private MetadataIdentifierRepository metadataIdentifierRepository;
 	private FieldMappingRepository fieldMappingRepository;
 	private AzureRestClientFactory azureRestClientFactory;
-	private AzureStateCategoryRepository azureStateCategoryRepository;
 
 	/**
 	 * Sets the configurations and variables
@@ -84,7 +82,7 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 			ProjectConfFieldMapping onlineprojectConfigMap, String projectKey, AzureIssueClientFactory factory, // NOSONAR
 			AzureProcessorConfig azureConfig, BoardMetadataRepository boardMetadataRepository, // NOSONAR
 			MetadataIdentifierRepository metadataIdentifierRepository, FieldMappingRepository fieldMappingRepository,
-			AzureRestClientFactory azureRestClientFactory, AzureStateCategoryRepository azureStateCategoryRepository)// NOSONAR
+			AzureRestClientFactory azureRestClientFactory)// NOSONAR
 	{
 		this.latch = latch;
 		this.azureAdapter = azureAdapter;
@@ -96,7 +94,6 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 		this.metadataIdentifierRepository = metadataIdentifierRepository;
 		this.fieldMappingRepository = fieldMappingRepository;
 		this.azureRestClientFactory = azureRestClientFactory;
-		this.azureStateCategoryRepository = azureStateCategoryRepository;
 	}
 
 	public AzureOnlineRunnable() {
@@ -164,13 +161,11 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 			long metaDataStart = System.currentTimeMillis();
 			MDC.put("meraDataStartTime", String.valueOf(metaDataStart));
 			MetaDataClientImpl metadata = new MetaDataClientImpl(azureAdapter, boardMetadataRepository,
-					fieldMappingRepository, metadataIdentifierRepository, azureStateCategoryRepository);
+					fieldMappingRepository, metadataIdentifierRepository);
 			boolean isSuccess = metadata.processMetadata(projectConfig);
 			if (isSuccess) {
 				azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_FIELD_MAPPING_MAP);
-				azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
-						CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 				azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 			}

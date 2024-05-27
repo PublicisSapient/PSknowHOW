@@ -26,12 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,13 +48,13 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
 	FetchProjectConfiguration fetchProjectConfiguration;
 
 	@Autowired
+	JiraClient jiraClient;
+
+	@Autowired
 	CreateJiraIssueReleaseStatus createJiraIssueReleaseStatus;
 
 	@Autowired
 	JiraProcessorConfig jiraProcessorConfig;
-
-	@Autowired
-	JiraClientService jiraClientService;
 
 	@Value("#{jobParameters['projectId']}")
 	private String projectId;
@@ -70,9 +71,11 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-        ProcessorJiraRestClient client = jiraClientService.getRestClientMap(projectId);
-		log.info("Fetching release statuses for the project : {}", projConfFieldMapping.getProjectName());
-		createJiraIssueReleaseStatus.processAndSaveProjectStatusCategory(client, projectId);
+		KerberosClient krb5Client = null;
+		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client)) {
+			log.info("Fetching release statuses for the project : {}", projConfFieldMapping.getProjectName());
+			createJiraIssueReleaseStatus.processAndSaveProjectStatusCategory(client, projectId);
+		}
 		return RepeatStatus.FINISHED;
 	}
 

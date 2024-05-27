@@ -146,10 +146,6 @@ export class FilterComponent implements OnInit, OnDestroy {
   displayMessage: boolean = false;
   copyFilteredAddFilters = {};
   loader: boolean = false;
-  backToDashboardLoader : boolean = false;
-  selectedProjectForIteration : any = [];
-  selectedItems: number = 0;
-  isAdditionalFilter: boolean = false;
 
   constructor(
     public service: SharedService,
@@ -171,7 +167,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       },
     });
     if (!this.ssoLogin) {
-
+      
 
       this.appList = [
           {
@@ -536,10 +532,12 @@ export class FilterComponent implements OnInit, OnDestroy {
           arr = this.helperService.makeUniqueArrayList(arr);
           this.additionalFiltersDdn[this.additionalFiltersArr[i]['hierarchyLevelId']] = arr;
           this.toggleDropdownObj[this.additionalFiltersArr[i]['hierarchyLevelId']] = false;
-          if (this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sprint' || this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sqd') {
+          if (this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sprint') {
             this.filterForm.controls['sprintSearch'] = new UntypedFormControl('');
-          }
             this.createFormGroup(this.additionalFiltersArr[i]['hierarchyLevelId'], arr);
+          } else {
+            this.createFormGroup(this.additionalFiltersArr[i]['hierarchyLevelId']);
+          }
         }
       }
       if (!this.noProjects) {
@@ -571,7 +569,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   createFormGroup(level, arr?) {
     if (arr?.length > 0) {
       const obj = {};
-      const alreadySelectedSprints = this.getSprintsWhichWasAlreadySelected(level);
+      const alreadySelectedSprints = this.getSprintsWhichWasAlreadySelected();
       for (let i = 0; i < arr?.length; i++) {
         if(alreadySelectedSprints.includes(arr[i]['nodeId'])){
           obj[arr[i]['nodeId']] = new UntypedFormControl(true);
@@ -641,13 +639,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         for (let i = 0; i < selectedProjects?.length; i++) {
           for (const key in this.additionalFiltersDdn) {
             if (key == 'sprint') {
-              if (this.selectedTab?.toLowerCase() === 'iteration') {
-                this.filteredAddFilters[key] = [...this.additionalFiltersDdn[key]?.filter((x) => x['parentId']?.includes(selectedProjects))];
-              } else {
-                this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter((x) => x['parentId']?.includes(selectedProjects[i]) && x['sprintState']?.toLowerCase() == 'closed')];
-              }
+              this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter((x) => x['parentId']?.includes(selectedProjects[i]) && x['sprintState']?.toLowerCase() == 'closed')];
             } else {
-              this.filteredAddFilters[key] = [...this.additionalFiltersDdn[key]?.filter((x) => x['path'][0]?.includes(Array.isArray(selectedProjects) ? selectedProjects[i] : selectedProjects))];
+              this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter((x) => x['path'][0]?.includes(selectedProjects[i]))];
             }
           }
         }
@@ -664,7 +658,10 @@ export class FilterComponent implements OnInit, OnDestroy {
      /** Refreshing kpiFilter backup when project is changing */
         this.service.setAddtionalFilterBackup({});
         this.service.setKpiSubFilterObj({});
-this.resetAddtionalFIlters();
+
+    this.additionalFiltersArr.forEach((additionalFilter) => {
+      this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
+    });
     this.applyChanges();
     this.totalProjectSelected = this.service.getSelectedTrends().length;
   }
@@ -688,7 +685,7 @@ this.resetAddtionalFIlters();
       if(selectedTrendValues.length === 1){
         this.selectedProjectData = selectedTrendValues[0];
         this.getProcessorsTraceLogsForProject(selectedTrendValues[0]['basicProjectConfigId']);
-      }
+      }   
 
       this.service.setSelectedLevel(selectedLevel);
       this.service.setSelectedTrends(selectedTrendValues);
@@ -712,24 +709,12 @@ this.resetAddtionalFIlters();
           if (additionalFilterFormVal) {
             if (typeof additionalFilterFormVal === 'object' && Object.keys(additionalFilterFormVal)?.length > 0) {
               const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => additionalFilterFormVal[x['nodeId']] == true);
-              if(this.selectedTab?.toLowerCase() != 'backlog' && this.selectedTab?.toLowerCase() != 'value'){
-                for (let j = 0; j < selectedAdditionalFilter?.length; j++) {
-                  let parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
-                  if(parentNodeIdx < 0){
-                    parentNodeIdx = this.selectedFilterArray?.findIndex((x) => selectedAdditionalFilter[j]['path'][0]?.includes(x.nodeId))
-                  }
-                  if (parentNodeIdx >= 0) {
-                    this.selectedFilterArray[parentNodeIdx]['additionalFilters'] =
-                      [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter[j]];
-                  }
+              for (let j = 0; j < selectedAdditionalFilter?.length; j++) {
+                const parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
+                if (parentNodeIdx >= 0) {
+                  this.selectedFilterArray[parentNodeIdx]['additionalFilters'] =
+                    [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter[j]];
                 }
-                if(Object.keys(this.additionalFiltersDdn)[i] != 'sprint' && selectedAdditionalFilter?.length > 0){
-                  this.isAdditionalFilter = true;
-                }else{
-                  this.isAdditionalFilter = false;
-                }
-              }else{
-                this.isAdditionalFilter = false;
               }
             } else {
               const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => x['nodeId'] == additionalFilterFormVal)[0];
@@ -743,7 +728,7 @@ this.resetAddtionalFIlters();
       }
 
       if(this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity'){
-        this.setSelectedSprintOnServiceLayer(applySource);
+        this.setSelectedSprintOnServiceLayer();
       }
 
       if (!applySource) {
@@ -756,6 +741,12 @@ this.resetAddtionalFIlters();
       }
       this.createFilterApplyData();
       this.setMarker();
+      let isAdditionalFilters = false;
+      for (const key in this.additionalFiltersDdn) {
+        if (key != 'sprint' && this.filterForm.get(key)?.value) {
+          isAdditionalFilters = true;
+        }
+      }
       this.getKpiOrderListProjectLevel();
     }
   }
@@ -778,12 +769,7 @@ this.resetAddtionalFIlters();
           }
           this.filterApplyData['label'] = temp[j]?.labelName;
           if (temp[j].labelName != 'sprint' || this.filterApplyData['selectedMap']['sprint']?.length == 0) {
-            if(this.selectedTab.toLowerCase() === 'iteration'){
-              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.parentId[0],this.filterApplyData['selectedMap']['project'])
-              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['sprint'])
-            }else{
-              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['project'])
-            }
+            this.filterApplyData['selectedMap']['project'].push(this.selectedFilterArray[i]?.nodeId);
           }
         }
       } else {
@@ -808,13 +794,6 @@ this.resetAddtionalFIlters();
     this.compileGAData();
   }
 
-  /** This method is using as a helper of createFilterApplyData() */
-  checkAndAssignProjectsInFilterApplyData(value,selectedMap){
-    if(!selectedMap.includes(value)){
-      selectedMap.push(value);
-    }
-  }
-
   checkIfMaturityTabHidden() {
     const maturityBoard = this.kpiListData['others']?.find((board) =>
       board.boardName === 'Kpi Maturity');
@@ -825,7 +804,6 @@ this.resetAddtionalFIlters();
     if (this.selectedTab !== 'Config' && Object.keys(this.kpiListData)?.length > 0) {
       if (this.selectedTab === 'Maturity') {
         if (!this.checkIfMaturityTabHidden()) {
-          this.backToDashboardLoader = false
           this.router.navigateByUrl(
             `/dashboard/Maturity`,
           );
@@ -842,14 +820,13 @@ this.resetAddtionalFIlters();
       }
       this.selectedTab = boardDetails?.boardName;
       this.changeSelectedTab();
-      this.backToDashboardLoader = false
       this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`], {queryParamsHandling: 'merge'});
     }
   }
 
   changeSelectedTab(){
     if(Object.keys(this.kpiListData)?.length > 0){
-      let boardDetails = JSON.parse(JSON.stringify(this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase())
+      let boardDetails = JSON.parse(JSON.stringify(this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase()) 
       || this.kpiListData['others'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase())));
       let kpisShownCount = 0;
       if(boardDetails?.boardName?.toLowerCase() === 'iteration'){
@@ -865,7 +842,6 @@ this.resetAddtionalFIlters();
         this.service.setSelectedTab(this.selectedTab);
         // const selectedTab = this.selectedTab;
         // const selectedType = this.kanban ? 'kanban' : 'scrum';
-        this.backToDashboardLoader = false
         this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
         // this.service.onTypeOrTabRefresh.next({ selectedTab, selectedType });
       }
@@ -879,7 +855,7 @@ this.resetAddtionalFIlters();
       this.projectIndex = 0;
       this.service.setEmptyFilter();
       this.service.setSelectedType('scrum');
-
+      
       this.changeSelectedTab();
     this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
     }
@@ -925,7 +901,7 @@ this.resetAddtionalFIlters();
           this.service.setDashConfigData(this.kpiListData);
           const selectedType = this.kanban ? 'kanban' : 'scrum';
           this.service.setUpdatedBoardList(this.kpiListData, selectedType);
-          this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter);
+          this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
           this.processKpiList();
           this.navigateToSelectedTab();
         }
@@ -1179,6 +1155,7 @@ this.resetAddtionalFIlters();
   checkIfFilterAlreadySelected() {
     const selectedLevel = this.service.getSelectedLevel();
     const selectedTrends = this.service.getSelectedTrends();
+
     if (Object.keys(selectedLevel).length > 0 && selectedTrends?.length > 0) {
       if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release') {
         if (this.previousType || selectedLevel['hierarchyLevelId'] !== 'project') {
@@ -1249,7 +1226,7 @@ this.resetAddtionalFIlters();
     if (hierarchyLevelId == 'sprint') {
       isDisabled = !isProject || !this.filteredAddFilters[hierarchyLevelId] || this.filteredAddFilters[hierarchyLevelId]?.length == 0 || (isProject && projectSelected == 0);
     } else {
-      isDisabled = !isProject || (isProject && projectSelected !== 1 && this.selectedTab?.toLowerCase() !== 'iteration') || !this.filteredAddFilters[hierarchyLevelId] || this.filteredAddFilters[hierarchyLevelId]?.length == 0;
+      isDisabled = !isProject || (isProject && projectSelected !== 1) || !this.filteredAddFilters[hierarchyLevelId] || this.filteredAddFilters[hierarchyLevelId]?.length == 0;
     }
     return isDisabled;
   }
@@ -1339,10 +1316,6 @@ this.resetAddtionalFIlters();
       this.emptyIdsFromQueryParam();
     }
      this.refreshKpiLevelFiltersBackup(level, isChangedFromUI) // Refreshing KPi level filters backup
-     if(level !== 'sqd' && isChangedFromUI === true){
-      this.resetAddtionalFIlters();
-     }
-     this.selectedProjectForIteration = [];
     this.lastSyncData = {};
     this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
@@ -1353,7 +1326,6 @@ this.resetAddtionalFIlters();
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
         this.checkIfProjectHasData();
         this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint?.['nodeId']);
-        this.filterAdditionalFilters();
       }
 
       if (level?.toLowerCase() == 'sprint') {
@@ -1369,18 +1341,6 @@ this.resetAddtionalFIlters();
         this.service.setCurrentSelectedSprint(this.selectedSprint);
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
-         if(this.filterForm.get('sqd')){
-          this.closeAllDropdowns();
-           const AllSqd = this.filterForm.get('sqd').value;
-           const selectedSqd = Object.keys(AllSqd).filter(sq => AllSqd[sq] === true);
-            if (selectedSqd) {
-              const selectedAdditionalFilter = this.additionalFiltersDdn['sqd'].filter(sqd => selectedSqd.includes(sqd['nodeId']));
-              this.selectedFilterArray[0]['additionalFilters'] = selectedAdditionalFilter;
-              this.setSelectedSprintOnServiceLayer('sqd');
-              this.selectedProjectForIteration = this.service.getSelectedTrends();
-              this.selectedProjectForIteration[0]['additionalFilters'] = selectedAdditionalFilter;
-          }
-        }
         this.createFilterApplyData();
         this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
         this.getKpiOrderListProjectLevel()
@@ -1433,16 +1393,12 @@ this.resetAddtionalFIlters();
   removeItem(hierarchyLevelId, nodeId) {
     const hierarchy = this.filterForm.get(hierarchyLevelId);
     if (typeof hierarchy?.value === 'object' && Object.keys(hierarchy?.value)?.length > 0) {
-      this.filterForm.get(hierarchyLevelId)?.['controls']?.[nodeId].setValue(false);
+      this.filterForm.get(hierarchyLevelId).get(nodeId).setValue(false);
     } else {
       this.filterForm.get(hierarchyLevelId).setValue('');
     }
 
-    if(this.selectedTab.toLowerCase() === 'iteration'){
-      this.handleIterationFilters(hierarchyLevelId)
-    }else{
-      this.applyChanges(hierarchyLevelId);
-    }
+    this.applyChanges(hierarchyLevelId);
   }
 
   removeNode(nodeId: string) {
@@ -1501,7 +1457,7 @@ this.resetAddtionalFIlters();
 
   checkIfBtnDisabled(hierarchyLevelId) {
     let isDisabled = true;
-    if (hierarchyLevelId === 'sprint' || hierarchyLevelId === 'sqd') {
+    if (hierarchyLevelId === 'sprint') {
       for (const item in this.filterForm?.get(hierarchyLevelId)?.value) {
         if (this.filterForm?.get(hierarchyLevelId)?.value[item]) {
           isDisabled = null;
@@ -1657,7 +1613,6 @@ this.resetAddtionalFIlters();
 
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
-    this.backToDashboardLoader = true;
     let projectList = [];
     if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
       projectList = this.service.getSelectedTrends().map(data => data.nodeId);
@@ -1923,28 +1878,28 @@ this.resetAddtionalFIlters();
   }
 
   /*Sets the selected sprints on the service layer for storage. */
-  setSelectedSprintOnServiceLayer(level) {
+  setSelectedSprintOnServiceLayer() {
     let selectedSprint = {}
     this.selectedFilterArray?.forEach(element => {
       if (element['additionalFilters'].length) {
-        selectedSprint = { ...selectedSprint, [this.selectedTab.toLowerCase() === 'iteration' ? element['parentId'][0] : element['nodeId']]: element['additionalFilters'] }
+        selectedSprint = { ...selectedSprint, [element['nodeId']]: element['additionalFilters'] }
       }
     });
-  this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), [level] : selectedSprint });
+  this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), sprint: selectedSprint });
   }
 
   /**
   Filters a list of sprints to only include those that were previously selected
   @returns An array containing the node IDs of sprints that were previously selected */
 
-  getSprintsWhichWasAlreadySelected(level) {
+  getSprintsWhichWasAlreadySelected() {
     const sprintsWhichWasAlreadySelected = []
-    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()[level] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity') {
+    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()['sprint'] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity') {
       const selectedProjects = this.service.getSelectedTrends().map(data => data.nodeId);
       selectedProjects.forEach(nodeId => {
-        const projectWhichSprintWasSelected = Object.keys(this.service.getAddtionalFilterBackup()[level]);
+        const projectWhichSprintWasSelected = Object.keys(this.service.getAddtionalFilterBackup()['sprint']);
         if (projectWhichSprintWasSelected && projectWhichSprintWasSelected.length && projectWhichSprintWasSelected.includes(nodeId)) {
-          sprintsWhichWasAlreadySelected.push(...this.service.getAddtionalFilterBackup()[level][nodeId].map(details => details.nodeId));
+          sprintsWhichWasAlreadySelected.push(...this.service.getAddtionalFilterBackup()['sprint'][nodeId].map(details => details.nodeId));
         }
       })
     }
@@ -1968,7 +1923,7 @@ this.resetAddtionalFIlters();
 
     /**
      * Responsible for filter sprint (addtional filters)
-     * @param hierarchyLevelId
+     * @param hierarchyLevelId 
      */
     applySearchFilter(hierarchyLevelId) {
       const sTxt = this.filterForm.controls[hierarchyLevelId+'Search'].value;
@@ -1977,16 +1932,10 @@ this.resetAddtionalFIlters();
       );
     }
 
-    resetAddtionalFIlters() {
-      this.additionalFiltersArr.forEach((additionalFilter) => {
-        this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
-      });
-    }
-
-  /**
+  /** 
    * Validation on sprint addtional filters on speed/quality/value
    * As of now out of scope but in future it can be.Hence please don't delete */
-
+  
   // onCheckboxChange(event) {
   // const selectedProjects = this.filterForm?.get('selectedTrendValue')?.value || [];
   // const sprintWithTrueValues = Object.keys(this.filterForm.controls['sprint'].value).filter(key => this.filterForm.controls['sprint'].value[key] === true);
