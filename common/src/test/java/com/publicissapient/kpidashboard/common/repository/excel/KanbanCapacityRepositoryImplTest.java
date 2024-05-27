@@ -25,6 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,15 +35,13 @@ import java.util.stream.Collectors;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * @author shi6
@@ -58,10 +57,12 @@ public class KanbanCapacityRepositoryImplTest {
 	@Test
 	public void testFindIssuesByType() {
 		// Mock data
-		Map<String, List<ObjectId>> mapOfFilters = new HashMap<>();
+		Map<String, Object> mapOfFilters = new HashMap<>();
 		List<ObjectId> projectList = new ArrayList<>();
 		projectList.add(new ObjectId("61d6d4235c76563333369f02"));
-
+		mapOfFilters.put("additionalFilterCapacityList.filterId", Arrays.asList("sqd"));
+		mapOfFilters.put("additionalFilterCapacityList.nodeCapacityList.additionalFilterId",
+				Arrays.asList("Java_61d6d4235c76563333369f02"));
 		mapOfFilters.put("projectId", projectList.stream().distinct().collect(Collectors.toList()));
 
 		String dateFrom = "2022-01-01";

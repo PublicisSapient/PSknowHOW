@@ -29,6 +29,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 
 import lombok.extern.slf4j.Slf4j;
@@ -81,6 +82,20 @@ public class CapacityKpiDataRepositoryImpl implements CapacityKpiDataCustomRepos
 			query = new Query(criteriaProjectLevelAdded);
 		}
 		List<CapacityKpiData> data = operations.find(query, CapacityKpiData.class);
+		if (mapofFilters.containsKey("additionalFilterCapacityList.nodeCapacityList.additionalFilterId")) {
+			data.stream().forEach(capacityKpiData -> {
+				List<String> additionalFilter = (List<String>) mapofFilters
+						.get("additionalFilterCapacityList.nodeCapacityList.additionalFilterId");
+				List<String> upperCaseKey = ((List<String>) mapofFilters.get("additionalFilterCapacityList.filterId"))
+						.stream().map(String::toUpperCase).toList();
+				capacityKpiData.setCapacityPerSprint(capacityKpiData.getAdditionalFilterCapacityList().stream()
+						.filter(additionalFilterCapacity -> upperCaseKey
+								.contains(additionalFilterCapacity.getFilterId().toUpperCase()))
+						.flatMap(additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
+						.filter(leaf -> additionalFilter.contains(leaf.getAdditionalFilterId()))
+						.mapToDouble(LeafNodeCapacity::getAdditionalFilterCapacity).sum());
+			});
+		}
 		if (CollectionUtils.isEmpty(data)) {
 			log.info("No Data found for filters");
 		}

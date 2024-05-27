@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.common.model.excel;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
 import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -52,7 +53,7 @@ public class KanbanCapacity extends BasicModel {
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private ObjectId basicProjectConfigId;
-	private List<LeafNodeCapacity> leafNodeCapacityList;
+	private List<AdditionalFilterCapacity> additionalFilterCapacityList;
 	private List<AssigneeCapacity> assigneeCapacity;
 
 }

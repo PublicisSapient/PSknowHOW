@@ -33,10 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -47,6 +43,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -66,13 +63,16 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.MasterResponse;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -87,7 +87,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KpiHelperServiceTest {
@@ -155,7 +154,7 @@ public class KpiHelperServiceTest {
 
 	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectConfigMap = new HashMap<>();
 
-	List<AccountHierarchyData> accountHierarchyDataList =new ArrayList<>();
+	List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -290,7 +289,7 @@ public class KpiHelperServiceTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
-		List<JiraIssue> resultList = kpiHelperService.fetchSprintCapacityDataFromDb(leafNodeList);
+		List<JiraIssue> resultList = kpiHelperService.fetchSprintCapacityDataFromDb(kpiRequest, leafNodeList);
 		assertEquals(issueList.size(), resultList.size());
 	}
 
@@ -306,7 +305,7 @@ public class KpiHelperServiceTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
-		List<CapacityKpiData> resultList = kpiHelperService.fetchCapacityDataFromDB(leafNodeList);
+		List<CapacityKpiData> resultList = kpiHelperService.fetchCapacityDataFromDB(kpiRequest, leafNodeList);
 		assertEquals(4, resultList.size());
 	}
 
@@ -414,21 +413,25 @@ public class KpiHelperServiceTest {
 	}
 
 	@Test
-	public void fetchFieldMappingStructureByKpiFieldMappingData(){
+	public void fetchFieldMappingStructureByKpiFieldMappingData() {
 		when(configHelperService.loadFieldMappingStructure()).thenReturn(fieldMappingStructureList);
-		assertNotNull(kpiHelperService.fetchFieldMappingStructureByKpiId("6335363749794a18e8a4479c","kpi0"));
+		assertNotNull(kpiHelperService.fetchFieldMappingStructureByKpiId("6335363749794a18e8a4479c", "kpi0"));
 	}
 
 	@Test
 	public void fetchBackLogReadinessFromdb() throws ApplicationException {
-//		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.SPRINT_VELOCITY.getKpiId());
-//		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
-//				new ArrayList<>(), "hierarchyLevelOne", 5);
-//		List<Node> leafNodeList = new ArrayList<>();
-//		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
-//		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
-//		Map<String, Object> resultMap = kpiHelperService.fetchBackLogReadinessFromdb(leafNodeList, kpiRequest);
-//		assertEquals(2, resultMap.size());
+		// KpiRequest kpiRequest =
+		// kpiRequestFactory.findKpiRequest(KPICode.SPRINT_VELOCITY.getKpiId());
+		// TreeAggregatorDetail treeAggregatorDetail =
+		// KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
+		// new ArrayList<>(), "hierarchyLevelOne", 5);
+		// List<Node> leafNodeList = new ArrayList<>();
+		// leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(),
+		// leafNodeList);
+		// when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
+		// Map<String, Object> resultMap =
+		// kpiHelperService.fetchBackLogReadinessFromdb(leafNodeList, kpiRequest);
+		// assertEquals(2, resultMap.size());
 	}
 
 	@Test
@@ -497,36 +500,36 @@ public class KpiHelperServiceTest {
 	}
 
 	@Test
-	public void getProjectKeyCache(){
+	public void getProjectKeyCache() {
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_INJECTION_RATE.getKpiId());
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		kpiHelperService.getProjectKeyCache(kpiRequest,accountHierarchyDataList,true);
+		kpiHelperService.getProjectKeyCache(kpiRequest, accountHierarchyDataList, true);
 	}
 
 	@Test
-	public void getProjectKeyCache2(){
+	public void getProjectKeyCache2() {
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_INJECTION_RATE.getKpiId());
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
 		String[] projectKey = new String[0];
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		kpiHelperService.getProjectKeyCache(kpiRequest,accountHierarchyDataList,true);
+		kpiHelperService.getProjectKeyCache(kpiRequest, accountHierarchyDataList, true);
 	}
 
 	@Test
-	public void getAuthorizedFilteredList(){
+	public void getAuthorizedFilteredList() {
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_INJECTION_RATE.getKpiId());
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
 		when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList);
-		kpiHelperService.getAuthorizedFilteredList(kpiRequest,accountHierarchyDataList,true);
+		kpiHelperService.getAuthorizedFilteredList(kpiRequest, accountHierarchyDataList, true);
 	}
 
 	@Test
-	public void setIntoApplicationCache(){
-		KpiRequest kpiRequest=createKpiRequest(5);
-		Map<String,Integer> map=new HashMap<>();
-		map.put("sprint",5);
+	public void setIntoApplicationCache() {
+		KpiRequest kpiRequest = createKpiRequest(5);
+		Map<String, Integer> map = new HashMap<>();
+		map.put("sprint", 5);
 		when(flterHelperService.getHierarchyIdLevelMap(anyBoolean())).thenReturn(map);
-		kpiHelperService.setIntoApplicationCache(kpiRequest,new ArrayList<>(),1,new String[0]);
+		kpiHelperService.setIntoApplicationCache(kpiRequest, new ArrayList<>(), 1, new String[0]);
 	}
 
 	private KpiRequest createKpiRequest(int level) {
@@ -547,7 +550,7 @@ public class KpiHelperServiceTest {
 	}
 
 	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category,
-							   String kpiUnit) {
+			String kpiUnit) {
 		KpiElement kpiElement = new KpiElement();
 		kpiElement.setKpiId(kpiId);
 		kpiElement.setKpiName(kpiName);

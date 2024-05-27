@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import static com.publicissapient.kpidashboard.common.constant.CommonConstant.QA;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,7 +39,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -60,6 +61,7 @@ import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.FieldMappingStructureResponse;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -704,7 +706,7 @@ public class KpiHelperService { // NOPMD
 	 *            the leaf node list
 	 * @return the list
 	 */
-	public List<JiraIssue> fetchSprintCapacityDataFromDb(List<Node> leafNodeList) {
+	public List<JiraIssue> fetchSprintCapacityDataFromDb(KpiRequest kpiRequest, List<Node> leafNodeList) {
 
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 
@@ -732,7 +734,8 @@ public class KpiHelperService { // NOPMD
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 		});
-
+		/** additional filter **/
+		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, QA, flterHelperService);
 		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
 				sprintList.stream().distinct().collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
@@ -749,7 +752,7 @@ public class KpiHelperService { // NOPMD
 	 *            the leaf node list
 	 * @return list
 	 */
-	public List<CapacityKpiData> fetchCapacityDataFromDB(List<Node> leafNodeList) {
+	public List<CapacityKpiData> fetchCapacityDataFromDB(KpiRequest kpiRequest, List<Node> leafNodeList) {
 		Map<String, Object> mapOfFilters = new LinkedHashMap<>();
 		List<String> sprintList = new ArrayList<>();
 		List<ObjectId> basicProjectConfigIds = new ArrayList<>();
@@ -760,12 +763,17 @@ public class KpiHelperService { // NOPMD
 			basicProjectConfigIds.add(basicProjectConfigId);
 		});
 
+		/** additional filter **/
+		KpiDataHelper.createAdditionalFilterMapForCapacity(kpiRequest, mapOfFilters, flterHelperService);
+
 		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
 				sprintList.stream().distinct().collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-		return capacityKpiDataRepository.findByFilters(mapOfFilters, uniqueProjectMap);
+		List<CapacityKpiData> byFilters = capacityKpiDataRepository.findByFilters(mapOfFilters, uniqueProjectMap);
+
+		return byFilters;
 	}
 
 	/**
@@ -836,13 +844,13 @@ public class KpiHelperService { // NOPMD
 	public Map<String, Object> fetchTeamCapacityDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest, String capacityKey) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Map<String, List<ObjectId>> mapOfFilters = new LinkedHashMap<>();
+		Map<String, Object> mapOfFilters = new LinkedHashMap<>();
 		List<ObjectId> projectList = new ArrayList<>();
 		leafNodeList.forEach(leaf -> projectList.add(leaf.getProjectFilter().getBasicProjectConfigId()));
-
+		/** additional filter **/
+		KpiDataHelper.createAdditionalFilterMapForCapacity(kpiRequest, mapOfFilters, flterHelperService);
 		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
-
 		resultListMap.put(capacityKey, kanbanCapacityRepository.findIssuesByType(mapOfFilters, startDate, endDate));
 		resultListMap.put(SUBGROUPCATEGORY, Constant.DATE);
 		return resultListMap;
@@ -1400,7 +1408,8 @@ public class KpiHelperService { // NOPMD
 					.filter(t -> t.getBasicProjectConfigId().toString().equals(projectBasicConfigId))
 					.map(ProjectToolConfig::getId).findFirst().orElse(null);
 
-			List<FieldMappingStructure> fieldMappingStructureList1 = getFieldMappingStructure(fieldMappingStructureList, fieldList);
+			List<FieldMappingStructure> fieldMappingStructureList1 = getFieldMappingStructure(fieldMappingStructureList,
+					fieldList);
 
 			fieldMappingStructureResponse.setFieldConfiguration(
 					CollectionUtils.isNotEmpty(fieldMappingStructureList1) ? fieldMappingStructureList1
@@ -1415,10 +1424,10 @@ public class KpiHelperService { // NOPMD
 		return fieldMappingStructureResponse;
 	}
 
-
-	public List<FieldMappingStructure> getFieldMappingStructure(List<FieldMappingStructure> fieldMappingStructureList, List<String> fieldList){
-		return fieldMappingStructureList.stream()
-				.filter(f -> fieldList.contains(f.getFieldName())).collect(Collectors.toList());
+	public List<FieldMappingStructure> getFieldMappingStructure(List<FieldMappingStructure> fieldMappingStructureList,
+			List<String> fieldList) {
+		return fieldMappingStructureList.stream().filter(f -> fieldList.contains(f.getFieldName()))
+				.collect(Collectors.toList());
 
 	}
 

@@ -28,7 +28,7 @@ public class CapacityMaster {
 	private String startDate; // format yyyy-mm-dd
 	private String endDate; // format yyyy-mm-dd
 	private ObjectId basicProjectConfigId;
-	private List<LeafNodeCapacity> leafNodeCapacityList;
+	private List<AdditionalFilterCapacity> additionalFilterCapacityList;
 	private List<AssigneeCapacity> assigneeCapacity;
 	private boolean kanban;
 	private boolean assigneeDetails;

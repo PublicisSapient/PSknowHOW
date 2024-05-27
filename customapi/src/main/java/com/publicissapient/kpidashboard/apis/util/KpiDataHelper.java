@@ -126,6 +126,26 @@ public final class KpiDataHelper {
 		return subGroupCategory;
 	}
 
+	public static void createAdditionalFilterMapForCapacity(KpiRequest kpiRequest, Map<String, Object> mapOfFilters,
+												    FilterHelperService flterHelperService) {
+
+		Map<String, AdditionalFilterCategory> addFilterCat = flterHelperService.getAdditionalFilterHierarchyLevel();
+		Map<String, AdditionalFilterCategory> addFilterCategory = addFilterCat.entrySet().stream()
+				.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
+
+		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())) {
+			for (Map.Entry<String, List<String>> entry : kpiRequest.getSelectedMap().entrySet()) {
+				if (CollectionUtils.isNotEmpty(entry.getValue())
+						&& null != addFilterCategory.get(entry.getKey().toUpperCase())) {
+					mapOfFilters.put("additionalFilterCapacityList.filterId",
+							Arrays.asList(entry.getKey()));
+					mapOfFilters.put("additionalFilterCapacityList.nodeCapacityList.additionalFilterId",
+							entry.getValue());
+				}
+			}
+		}
+	}
+
 	/**
 	 * Creates subcategory wise map.
 	 *

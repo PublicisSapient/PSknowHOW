@@ -26,12 +26,14 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Maps;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
-import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Week;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
@@ -83,6 +85,9 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
+
+	@Autowired
+	private FilterHelperService filterHelperService;
 
 	/**
 	 * This method process the capacity data.
@@ -185,7 +190,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			if (capacityKpiData != null) {
 				capacityMaster.setId(capacityKpiData.getId());
 				capacityMaster.setCapacity(Math.round(capacityKpiData.getCapacityPerSprint() * 100) / 100.0);
-				capacityMaster.setLeafNodeCapacityList(capacityKpiData.getLeafNodeCapacityList());
+				capacityMaster.setAdditionalFilterCapacityList(capacityKpiData.getAdditionalFilterCapacityList());
 				if (CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity())
 						&& project.isSaveAssigneeDetails()) {
 					capacityKpiData.getAssigneeCapacity().stream().forEach(assigneeCapacity -> assigneeCapacity
@@ -286,16 +291,19 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					capacityMasterKanban.setId(kanbanCapacity.getId());
 					// mutiplying by working days of week
 					capacityMasterKanban.setCapacity(kanbanCapacity.getCapacity() * 5);
-					var leafNodeCapacityList = kanbanCapacity.getLeafNodeCapacityList();
-					if (CollectionUtils.isNotEmpty(leafNodeCapacityList)) {
-						leafNodeCapacityList.forEach(leafNode -> {
-							var leafNodeCapacity = leafNode.getLeafNodeCapacity();
-							if (leafNodeCapacity != null) {
-								leafNode.setLeafNodeCapacity(leafNodeCapacity * 5);
+					var additionalFilterCapacityList = kanbanCapacity.getAdditionalFilterCapacityList();
+					if (CollectionUtils.isNotEmpty(additionalFilterCapacityList)) {
+						additionalFilterCapacityList.forEach(leafNode -> {
+							var leafNodeCapacity = leafNode.getNodeCapacityList();
+							if (CollectionUtils.isNotEmpty(leafNodeCapacity)) {
+								leafNodeCapacity.stream()
+										.filter(capacity -> capacity.getAdditionalFilterCapacity() != null)
+										.forEach(capacity -> capacity.setAdditionalFilterCapacity(
+												capacity.getAdditionalFilterCapacity() * 5));
 							}
 						});
 					}
-					capacityMasterKanban.setLeafNodeCapacityList(leafNodeCapacityList);
+					capacityMasterKanban.setAdditionalFilterCapacityList(additionalFilterCapacityList);
 
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 					capacityMasterKanban.setStartDate(kanbanCapacity.getStartDate().format(formatter));
@@ -498,26 +506,12 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d)).sum();
 			data.setAssigneeCapacity(assigneeList);
 			data.setCapacityPerSprint(Math.round(sum * 100) / 100.0);
-			// Group assignees by squad
-			Map<String, List<AssigneeCapacity>> squadWiseAssignees = assigneeList.stream()
-					.filter(assigneeCapacity -> StringUtils.isNotEmpty(assigneeCapacity.getSquad()))
-					.collect(Collectors.groupingBy(AssigneeCapacity::getSquad));
-
-			// Create the list of LeafNodeCapacity
-			List<LeafNodeCapacity> leafNodeCapacityList = squadWiseAssignees.entrySet().stream().map(entry -> {
-				String squad = entry.getKey();
-				double totalCapacity = entry.getValue().stream()
-						.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d))
-						.sum();
-				return new LeafNodeCapacity(squad, Math.round(totalCapacity * 100) / 100.0);
-			}).toList();
-
 			// Set the LeafNodeCapacity list in data
-			data.setLeafNodeCapacityList(leafNodeCapacityList);
+			data.setAdditionalFilterCapacityList(capacityMaster.getAdditionalFilterCapacityList());
 
 		} else {
 			data.setCapacityPerSprint(capacityMaster.getCapacity());
-			data.setLeafNodeCapacityList(capacityMaster.getLeafNodeCapacityList());
+			data.setAdditionalFilterCapacityList(capacityMaster.getAdditionalFilterCapacityList());
 		}
 
 	}
@@ -531,39 +525,16 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			double sum = assigneeList.stream()
 					.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d)).sum();
 			data.setAssigneeCapacity(assigneeList);
-
-			// Group assignees by squad
-			Map<String, List<AssigneeCapacity>> squadWiseAssignees = assigneeList.stream()
-					.filter(assigneeCapacity -> StringUtils.isNotEmpty(assigneeCapacity.getSquad()))
-					.collect(Collectors.groupingBy(AssigneeCapacity::getSquad));
-			// Create the list of LeafNodeCapacity
-			List<LeafNodeCapacity> leafNodeCapacityList = squadWiseAssignees.entrySet().stream().map(entry -> {
-				String squad = entry.getKey();
-				double totalCapacity = entry.getValue().stream()
-						.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d))
-						.sum();
-				return new LeafNodeCapacity(squad, totalCapacity / 5);
-			}).toList();
-
-			// Set the LeafNodeCapacity list in data
-			data.setLeafNodeCapacityList(leafNodeCapacityList);
+			helper(capacityMaster);
+			data.setAdditionalFilterCapacityList(capacityMaster.getAdditionalFilterCapacityList());
 
 			// we have to divide capacity by working days of week
 			data.setCapacity(sum / 5);
 		} else {
 			data.setCapacity(capacityMaster.getCapacity() / 5);
 			// dividing each leaf node capacity of full week to single day.
-			List<LeafNodeCapacity> leafNodeCapacityList = capacityMaster.getLeafNodeCapacityList();
-			if (CollectionUtils.isNotEmpty(leafNodeCapacityList)) {
-				leafNodeCapacityList.forEach(leafNode -> {
-					Double leafNodeCapacity = leafNode.getLeafNodeCapacity();
-					if (leafNodeCapacity != null) {
-						leafNode.setLeafNodeCapacity(leafNodeCapacity / 5);
-					}
-				});
-			}
-
-			data.setLeafNodeCapacityList(leafNodeCapacityList);
+			helper(capacityMaster);
+			data.setAdditionalFilterCapacityList(capacityMaster.getAdditionalFilterCapacityList());
 
 		}
 
@@ -646,6 +617,28 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			kanbanCapacityRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
 		} else {
 			capacityKpiDataRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
+		}
+	}
+
+	public void helper(CapacityMaster capacityMaster) {
+		Map<String, AdditionalFilterCategory> addFilterCat = filterHelperService.getAdditionalFilterHierarchyLevel();
+		Map<String, AdditionalFilterCategory> addFilterCategory = addFilterCat.entrySet().stream()
+				.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
+
+		if (CollectionUtils.isNotEmpty(capacityMaster.getAdditionalFilterCapacityList())) {
+			for (AdditionalFilterCapacity category : capacityMaster.getAdditionalFilterCapacityList()) {
+				if (StringUtils.isNotEmpty(category.getFilterId())
+						&& CollectionUtils.isNotEmpty(category.getNodeCapacityList())
+						&& null != addFilterCategory.get(category.getFilterId().toUpperCase())) {
+
+					category.getNodeCapacityList().forEach(leafNode -> {
+						Double leafNodeCapacity = leafNode.getAdditionalFilterCapacity();
+						if (leafNodeCapacity != null) {
+							leafNode.setAdditionalFilterCapacity(leafNodeCapacity / 5);
+						}
+					});
+				}
+			}
 		}
 	}
 

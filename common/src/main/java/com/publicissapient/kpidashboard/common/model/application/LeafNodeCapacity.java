@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,7 +35,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LeafNodeCapacity{
-	private String leafNodeId;
-	private Double leafNodeCapacity;
+	private String additionalFilterId;
+	private Double additionalFilterCapacity;
 
 }

@@ -138,10 +138,10 @@ public class SprintCapacityServiceImplTest {
 			}
 		});
 		when(customApiConfig.getApplicationDetailedLogger()).thenReturn("Off");
-		when(kpiHelperService.fetchSprintCapacityDataFromDb(Mockito.any())).thenReturn(totalJiraIssueList);
+		when(kpiHelperService.fetchSprintCapacityDataFromDb(Mockito.any(),Mockito.any())).thenReturn(totalJiraIssueList);
 		kpiWiseAggregation.put("sprintCapacity", "average");
 
-		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any())).thenReturn(dataList);
+		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any(),Mockito.any())).thenReturn(dataList);
 		Map<String, Object> capacityListMap = sprintCapacityServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
 		assertThat("Capacity value :", ((List<JiraIssue>) (capacityListMap.get(SPRINTCAPACITYKEY))).size(),
@@ -162,7 +162,7 @@ public class SprintCapacityServiceImplTest {
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put("sprintCapacity", Arrays.asList("-5", "5-25", "25-50", "50-75", "75-"));
 		when(customApiConfig.getApplicationDetailedLogger()).thenReturn("On");
-		when(kpiHelperService.fetchSprintCapacityDataFromDb(Mockito.any())).thenReturn(totalJiraIssueList);
+		when(kpiHelperService.fetchSprintCapacityDataFromDb(Mockito.any(),Mockito.any())).thenReturn(totalJiraIssueList);
 		kpiWiseAggregation.put("sprintCapacity", "average");
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 		// when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
@@ -170,7 +170,7 @@ public class SprintCapacityServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintCapacityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any())).thenReturn(dataList);
+		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any(),Mockito.any())).thenReturn(dataList);
 		try {
 			KpiElement kpiElement = sprintCapacityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
