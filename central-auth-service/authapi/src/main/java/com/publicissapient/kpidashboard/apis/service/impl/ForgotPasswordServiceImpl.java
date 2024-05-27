@@ -1,268 +1,141 @@
-/*******************************************************************************
- * Copyright 2014 CapitalOne, LLC.
- * Further development Copyright 2022 Sapient Corporation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
-
-/**
- * 
- */
 package com.publicissapient.kpidashboard.apis.service.impl;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.apis.config.AuthProperties;
+import com.publicissapient.kpidashboard.apis.config.ForgotPasswordConfig;
 import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
 import com.publicissapient.kpidashboard.apis.entity.ForgotPasswordToken;
 import com.publicissapient.kpidashboard.apis.entity.User;
-import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
-import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.repository.ForgotPasswordTokenRepository;
-import com.publicissapient.kpidashboard.apis.repository.UserRepository;
-import com.publicissapient.kpidashboard.apis.service.CommonService;
-import com.publicissapient.kpidashboard.apis.service.ForgotPasswordService;
-import com.publicissapient.kpidashboard.common.model.ResetPasswordRequestDTO;
+import com.publicissapient.kpidashboard.apis.enums.AuthType;
+import com.publicissapient.kpidashboard.apis.errors.*;
+import com.publicissapient.kpidashboard.apis.service.*;
+import com.publicissapient.kpidashboard.apis.service.dto.ChangePasswordRequestDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
 
-import lombok.extern.slf4j.Slf4j;
 
-/**
- * This class managed all the services for forgot password and reset new
- * password
- * 
- * @author Hiren Babariya
- *
- */
-@Slf4j
+@AllArgsConstructor
 @Service
+@Slf4j
 public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
-	private static final String FORGOT_PASSWORD_TEMPLATE_KEY = "Forgot_Password";
-	private static final String VALIDATE_PATH = "/api/validateEmailToken?token="; // NOSONAR
-	private static final String FORGOT_PASSWORD_NOTIFICATION_KEY = "forgotPassword";
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private ForgotPasswordTokenRepository forgotPasswordTokenRepository;
-	@Autowired
-	private AuthProperties customApiConfig;
-	@Autowired
-	private CommonService commonService;
+	private final ForgotPasswordConfig forgotPasswordConfig;
 
-	/**
-	 * Process forgotPassword request.
-	 * 
-	 * <p>
-	 * processForgotPassword checks whether the email in the ForgotPasswordRequest
-	 * object exists in the database.If the email exists,creates a token for the
-	 * user account and sends an email with token and reset url info
-	 * 
-	 * @param email
-	 * @param url
-	 * @return authentication
-	 */
+	private final UserService userService;
+
+	private final ForgotPasswordTokenService forgotPasswordTokenService;
+
+	private final MessageService messageService;
+
+	private final NotificationService notificationService;
+
 	@Override
-	public User processForgotPassword(String email, String url) {
-		log.info("ForgotPasswordServiceImpl: Requested mail {}", email);
-		User user = userRepository.findByEmail(email);
-		if (user != null) {
-			String token = createForgetPasswordToken(user);
-			Map<String, String> customData = createCustomData(user.getUsername(), token, url,
-					customApiConfig.getForgotPasswordExpiryInterval());
-			commonService.sendEmailNotification(Arrays.asList(email), customData, FORGOT_PASSWORD_NOTIFICATION_KEY,
-					FORGOT_PASSWORD_TEMPLATE_KEY);
-			return user;
-		}
-		return null;
+	public Authentication changePasswordAndReturnAuthentication(ChangePasswordRequestDTO requestDTO) {
+		return changePassword(requestDTO.getEmail(), requestDTO.getOldPassword(), requestDTO.getPassword());
 	}
 
-	/**
-	 * Validates Email Token sent to the user via email.
-	 *
-	 * <p>
-	 * validateEmailToken method checks the token received from request, exists in
-	 * the database.If the token is found in the database method will forward the
-	 * token to validate it
-	 * </p>
-	 *
-	 * @param token
-	 * @return one of the enum <tt>INVALID, VALID, EXPIRED</tt> of type
-	 *         ResetPasswordTokenStatusEnum
-	 */
-	@Override
-	public ResetPasswordTokenStatusEnum validateEmailToken(String token) {
-		log.info("ForgotPasswordServiceImpl: Validate the token {}", token);
-		ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenRepository.findByToken(token);
-		return checkTokenValidity(forgotPasswordToken);
-	}
+	private Authentication changePassword(String email, String oldPassword, String newPassword)
+			throws PasswordContainsUsernameException, IdenticalPasswordException, PasswordPatternException,
+			WrongPasswordException, EmailNotFoundException {
+		Optional<User> userOptional = userService.findByEmail(email);
 
-	/**
-	 * Resets password after validating token
-	 * 
-	 * <p>
-	 * resetPassword checks if the reset token exists in the database.Later checks
-	 * the validity of the token. If the token is valid,searches for the username
-	 * from the <tt>forgotPasswordToken</tt> in the <tt>authentication</tt>
-	 * collection in the database. Saves the reset password if the username exists
-	 * </p>
-	 * 
-	 * @param resetPasswordRequest
-	 * @return authentication if the <tt>token</tt> is valid and <tt>username</tt>
-	 *         from forgotPasswordToken exists in the database
-	 * @throws ApplicationException
-	 *             if either <tt>forgotPasswordToken</tt> is invalid or
-	 *             <tt>username</tt> doen't exist in the database.
-	 * 
-	 */
-	@Override
-	public User resetPassword(ResetPasswordRequestDTO resetPasswordRequest) throws ApplicationException {
-		log.info("ForgotPasswordServiceImpl: Reset token is {}", resetPasswordRequest.getResetToken());
-		ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenRepository
-				.findByToken(resetPasswordRequest.getResetToken());
-		ResetPasswordTokenStatusEnum tokenStatus = checkTokenValidity(forgotPasswordToken);
-		if (tokenStatus.equals(ResetPasswordTokenStatusEnum.VALID)) {
-			User user = userRepository.findByUsername(forgotPasswordToken.getUsername());
-			if (null == user) {
-				log.error("User {} Does not Exist", forgotPasswordToken.getUsername());
-				throw new ApplicationException("User Does not Exist", ApplicationException.BAD_DATA);
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+
+			if (isOldPasswordCorrect(user, oldPassword)) {
+				if (isPasswordPatternValid(newPassword)) {
+					if (isPasswordDifferent(user.getPassword(), newPassword)) {
+						if (!doesPasswordContainUsername(newPassword, user.getUsername())) {
+							return saveNewPasswordAndReturnAuthenticationToken(user, newPassword);
+						} else {
+							throw new PasswordContainsUsernameException();
+						}
+					} else {
+						throw new IdenticalPasswordException();
+					}
+				} else {
+					throw new PasswordPatternException();
+				}
 			} else {
-				validatePasswordRules(forgotPasswordToken.getUsername(), resetPasswordRequest.getPassword(), user);
-				return user;
+				throw new WrongPasswordException();
 			}
 		} else {
-			log.error("Token is {}", resetPasswordRequest.getResetToken());
-			throw new ApplicationException("Token is " + tokenStatus.name(), ApplicationException.BAD_DATA);
+			throw new EmailNotFoundException(email, AuthType.STANDARD);
 		}
 	}
 
-	private boolean isPassContainUser(String reqPassword, String username) {
+	private Authentication saveNewPasswordAndReturnAuthenticationToken(User user, String newPassword) {
+		user.setPassword(newPassword);
+		User savedUser = userService.save(user);
 
-		return !(StringUtils.containsIgnoreCase(reqPassword, username));
-	}
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+				savedUser.getUsername(),
+				savedUser.getPassword(),
+				new ArrayList<>()
+		);
 
-	private boolean isOldPassword(String reqPassword, String savedPassword) {
+		token.setDetails(AuthType.STANDARD);
 
-		return !(StringUtils.containsIgnoreCase(User.hash(reqPassword), savedPassword));
-
-	}
-
-	/**
-	 * Creates UUID token and sets it to ForgotPasswordToken along with username and
-	 * expiry date and saves it to <tt>forgotPasswordToken</tt> collection in
-	 * database.
-	 * 
-	 * @param user
-	 * @return token
-	 */
-	private String createForgetPasswordToken(User user) {
-		String token = UUID.randomUUID().toString();
-		ForgotPasswordToken forgotPasswordToken = new ForgotPasswordToken();
-		forgotPasswordToken.setToken(token);
-		forgotPasswordToken.setUsername(user.getUsername());
-		forgotPasswordToken.setExpiryDate(Integer.parseInt(customApiConfig.getForgotPasswordExpiryInterval()));
-		forgotPasswordTokenRepository.save(forgotPasswordToken);
 		return token;
 	}
 
-	/**
-	 * Checks the validity of <tt>forgotPasswordToken</tt>
-	 * 
-	 * @param forgotPasswordToken
-	 * @return ResetPasswordTokenStatusEnum <tt>INVALID</tt> if token is
-	 *         <tt>null</tt>, <tt>VALID</tt> if token is not expired,
-	 *         <tt>EXPIRED</tt> if token is expired
-	 */
-	private ResetPasswordTokenStatusEnum checkTokenValidity(ForgotPasswordToken forgotPasswordToken) {
-		if (forgotPasswordToken == null) {
-			return ResetPasswordTokenStatusEnum.INVALID;
-		} else if (isExpired(forgotPasswordToken.getExpiryDate())) {
-			return ResetPasswordTokenStatusEnum.EXPIRED;
-		} else {
-			return ResetPasswordTokenStatusEnum.VALID;
-		}
+	private boolean isPasswordDifferent(String oldPassword, String newPassword) {
+		return oldPassword.equals(newPassword);
 	}
 
-	/**
-	 * Validates if the given <tt>expiryDate</tt> is in the past
-	 * <p>
-	 * isExpired method checks the validity of token by comparing the validity of
-	 * token expriy date with current Time and Date
-	 * </p>
-	 * 
-	 * @param expiryDate
-	 * @return boolean <tt>true</tt> if expiryDate is invalid/expired,<tt>false</tt>
-	 *         if token is valid
-	 */
-	private boolean isExpired(Date expiryDate) {
-		return new Date().before(expiryDate);
+	private boolean isPasswordPatternValid(String password) {
+		return Pattern.compile(CommonConstant.PASSWORD_PATTERN).matcher(password).matches();
 	}
 
-	private void validatePasswordRules(String username, String password, User user) throws ApplicationException {
+	private boolean doesPasswordContainUsername(String newPassword, String username) {
+		return newPassword.toLowerCase().contains(username.toLowerCase());
+	}
 
-		Pattern pattern = Pattern.compile(CommonConstant.PASSWORD_PATTERN);
-		Matcher matcher = pattern.matcher(password);
-		if (matcher.matches()) {
-			if (isPassContainUser(password, username)) {
-				if (isOldPassword(password, user.getPassword())) {
-					user.setPassword(password);
-					userRepository.save(user);
-				} else {
-					throw new ApplicationException("Password should not be old password",
-							ApplicationException.BAD_DATA);
-				}
-			} else {
-				throw new ApplicationException("Password should not contain userName", ApplicationException.BAD_DATA);
-			}
-		} else {
-			throw new ApplicationException(
-					"At least 8 characters in length with Lowercase letters, Uppercase letters, Numbers and Special characters($,@,$,!,%,*,?,&)",
-					ApplicationException.BAD_DATA);
+	private boolean isOldPasswordCorrect(User user, String oldPassword) {
+		return user.checkPassword(oldPassword);
+	}
+
+
+	@Override
+	public ServiceResponseDTO validateUserAndSendForgotPasswordEmail(String email) {
+		log.info("ForgotPasswordServiceImpl: Requested mail {}", email);
+
+		Optional<User> userOptional = userService.findByEmail(email);
+
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+
+			String token = createForgetPasswordToken(user);
+
+			notificationService.sendRecoverPasswordEmail(email, user.getUsername(), token);
+
+			return new ServiceResponseDTO(true, messageService.getMessage(
+					"success_forgot_password"), user);
 		}
 
+		return new ServiceResponseDTO(false, messageService.getMessage(
+				"error_email_not_exist"), null);
 	}
 
-	/**
-	 * * create custom data for email
-	 *
-	 * @param username
-	 *            emailId
-	 * @param token
-	 *            token
-	 * @param url
-	 *            url
-	 * @param expiryTime
-	 *            expiryTime in Min
-	 * @return Map<String, String>
-	 */
-	private Map<String, String> createCustomData(String username, String token, String url, String expiryTime) {
-		Map<String, String> customData = new HashMap<>();
-		customData.put("token", token);
-		customData.put("user", username);
-		String resetUrl = url + VALIDATE_PATH + token;
-		customData.put("resetUrl", resetUrl);
-		customData.put("expiryTime", expiryTime);
-		return customData;
-	}
+	private String createForgetPasswordToken(User user) {
+		String token = UUID.randomUUID().toString();
 
+		ForgotPasswordToken forgotPasswordToken = new ForgotPasswordToken();
+		forgotPasswordToken.setToken(token);
+		forgotPasswordToken.setUsername(user.getUsername());
+		forgotPasswordToken.setExpiryDate(forgotPasswordConfig.getExpiryInterval());
+
+		forgotPasswordTokenService.save(forgotPasswordToken);
+
+		return token;
+	}
 }

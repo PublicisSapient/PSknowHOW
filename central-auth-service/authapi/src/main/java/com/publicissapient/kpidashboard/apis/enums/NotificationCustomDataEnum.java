@@ -60,7 +60,9 @@ public enum NotificationCustomDataEnum {
 
 	INVALID("INVALID"),
 
-	ADMIN_EMAIL("Admin_Email"), USER_TOKEN_EXPIRY("User_Token_Expiry"), USER_TOKEN("User_Token");
+	ADMIN_EMAIL("Admin_Email"),
+	USER_TOKEN_EXPIRY("User_Token_Expiry"),
+	USER_TOKEN("User_Token");
 
 	private String value;
 
