@@ -18,7 +18,7 @@ const LoginPage = ({search}) => {
     const [error, setError] = useState('');
     const [showLoader, setShowLoader] = useState(false);
     const [showSAMLLoader, setShowSAMLLoader] = useState(false);
-    const methods = useForm({ mode: 'all' });
+    const methods = useForm({mode: 'all'});
     const userNamePattern = /^[A-Za-z0-9]+$/;
 
     const getSamlUsernameCookie = () => {
