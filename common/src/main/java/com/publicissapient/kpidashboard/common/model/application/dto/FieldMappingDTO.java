@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 
@@ -404,7 +405,7 @@ public class FieldMappingDTO extends FieldMappingHistory {
 
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";
-	private Integer startDateCountKPI150;
+	private Map<String, Integer> startDateCountKPI150;
 	private List<String> jiraDevDoneStatusKPI150;
 	private boolean populateByDevDoneKPI150;
 

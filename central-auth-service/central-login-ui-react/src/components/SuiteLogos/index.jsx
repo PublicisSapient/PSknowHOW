@@ -5,7 +5,6 @@ const bg = ['KnowHOWGroup', 'RetrosGroup', 'APGroup'];
 
 const SuiteLogos = () => {
     const speedSuite = process.env.NODE_ENV === 'production' ? window.env['REACT_APP_SPEED_SUITE'] : process.env.REACT_APP_SPEED_SUITE;
-    console.log("REACT_APP_SPEED_SUITE", process.env['REACT_APP_SPEED_SUITE'], window.env['REACT_APP_SPEED_SUITE'], typeof process.env['REACT_APP_SPEED_SUITE']);
     const isSpeedSuite = speedSuite === 'true' ? true : false;
     
     return (

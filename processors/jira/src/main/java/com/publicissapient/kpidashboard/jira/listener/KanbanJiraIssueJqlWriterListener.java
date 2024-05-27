@@ -20,14 +20,18 @@ package com.publicissapient.kpidashboard.jira.listener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.ItemWriteListener;
+import org.springframework.batch.core.scope.context.StepContext;
+import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.item.Chunk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,6 +43,7 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,10 +54,10 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<CompositeResult> {
-
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
-
+	@Autowired
+	private JiraProcessorConfig jiraProcessorConfig;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -80,31 +85,62 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 
 		Map<String, List<KanbanJiraIssue>> projectWiseIssues = jiraIssues.stream()
 				.collect(Collectors.groupingBy(KanbanJiraIssue::getBasicProjectConfigId));
-
+		// getting step context
+		StepContext stepContext = StepSynchronizationManager.getContext();
 		for (Map.Entry<String, List<KanbanJiraIssue>> entry : projectWiseIssues.entrySet()) {
-			String basicProjectConfigId = entry.getKey();
-			KanbanJiraIssue firstIssue = entry.getValue().stream()
-					.sorted(Comparator
-							.comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(), DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
-							.reversed())
-					.findFirst().orElse(null);
-			if (firstIssue != null) {
-				Optional<ProcessorExecutionTraceLog> procTraceLog = processorExecutionTraceLogRepo
-						.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JIRA, basicProjectConfigId);
-				if (procTraceLog.isPresent()) {
-					ProcessorExecutionTraceLog processorExecutionTraceLog = procTraceLog.get();
-					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
-							processorExecutionToSave);
-				} else {
-					ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-					setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
-							processorExecutionToSave);
-				}
-			}
-
+			processProject(entry, stepContext, processorExecutionToSave);
 		}
 		if (CollectionUtils.isNotEmpty(processorExecutionToSave)) {
 			processorExecutionTraceLogRepo.saveAll(processorExecutionToSave);
+		}
+	}
+
+	private void processProject(Map.Entry<String, List<KanbanJiraIssue>> entry, StepContext stepContext,
+			List<ProcessorExecutionTraceLog> processorExecutionToSave) {
+		String basicProjectConfigId = entry.getKey();
+		List<ProcessorExecutionTraceLog> procTraceLogList = processorExecutionTraceLogRepo
+				.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
+						Collections.singletonList(basicProjectConfigId));
+		ProcessorExecutionTraceLog progressStatsTraceLog = procTraceLogList.stream()
+				.filter(ProcessorExecutionTraceLog::isProgressStats).findFirst()
+				.orElse(new ProcessorExecutionTraceLog());
+		KanbanJiraIssue firstIssue = entry
+				.getValue().stream().sorted(
+						Comparator
+								.comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
+										DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
+								.reversed())
+				.findFirst().orElse(null);
+		if (firstIssue != null) {
+			processTraceLogs(stepContext, processorExecutionToSave, procTraceLogList, basicProjectConfigId, firstIssue,
+					progressStatsTraceLog);
+		}
+	}
+
+	private void processTraceLogs(StepContext stepContext, List<ProcessorExecutionTraceLog> processorExecutionToSave,
+			List<ProcessorExecutionTraceLog> procTraceLogList, String basicProjectConfigId, KanbanJiraIssue firstIssue,
+			ProcessorExecutionTraceLog progressStatsTraceLog) {
+		boolean isAnyLastSuccessfulRunPresent = procTraceLogList.stream().anyMatch(
+				traceLog -> traceLog.getLastSuccessfulRun() != null && !traceLog.getLastSuccessfulRun().isEmpty());
+		if (CollectionUtils.isNotEmpty(procTraceLogList) && isAnyLastSuccessfulRunPresent) {
+			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procTraceLogList) {
+				if (processorExecutionTraceLog.isProgressStats()) {
+					JiraProcessorUtil.saveChunkProgressInTrace(processorExecutionTraceLog, stepContext);
+				}
+				setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
+						processorExecutionToSave);
+			}
+		} else {
+			ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+			processorExecutionTraceLog.setFirstRunDate(DateUtil.dateTimeFormatter(
+					LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()).minusDays(jiraProcessorConfig.getDaysToReduce()),
+					JiraConstants.QUERYDATEFORMAT));
+			setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
+					processorExecutionToSave);
+			progressStatsTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(firstIssue.getChangeDate(),
+					JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT, DateUtil.DATE_TIME_FORMAT));
+			Optional.ofNullable(JiraProcessorUtil.saveChunkProgressInTrace(progressStatsTraceLog, stepContext))
+					.ifPresent(processorExecutionToSave::add);
 		}
 	}
 

@@ -457,8 +457,11 @@ public class ProjectAccessManager {
 			// creating global children map
 			createGlobalChildrenMap(accessLevel, accessRequest.getAccessNode().getAccessItems(), projectBasicConfigNode,
 					globalChildrenMap);
+			boolean isUserExists = existingUserInfo != null && existingUserInfo.getAuthorities().size() == 1
+					&& existingUserInfo.getAuthorities().contains(Constant.ROLE_VIEWER)
+					&& existingUserInfo.getProjectsAccess().isEmpty();
 
-			if (existingUserInfo != null && isNewUser(existingUserInfo)) {
+			if (isUserExists) {
 				updateAuthorities(resultUserInfo, accessRequest.getRole());
 				setFirstProjectsAccess(resultUserInfo, accessRequest.getRole(), accessRequest.getAccessNode());
 
@@ -654,6 +657,7 @@ public class ProjectAccessManager {
 			copyOfUserInfo.setLastName(userInfo.getLastName());
 			copyOfUserInfo.setEmailAddress(userInfo.getEmailAddress());
 			copyOfUserInfo.setProjectsAccess(userInfo.getProjectsAccess());
+			copyOfUserInfo.setNotificationEmail(userInfo.getNotificationEmail());
 		}
 		return copyOfUserInfo;
 	}

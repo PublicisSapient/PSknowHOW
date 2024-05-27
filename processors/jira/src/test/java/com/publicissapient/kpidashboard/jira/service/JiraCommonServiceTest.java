@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.jira.service;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.AssertJUnit.assertEquals;
 
@@ -55,6 +56,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.scope.context.StepContext;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.BeanUtils;
 
 import com.atlassian.jira.rest.client.api.SearchRestClient;
@@ -91,6 +96,7 @@ import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.client.CustomAsynchronousIssueRestClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.dataFactories.ConnectionsDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.ProjectBasicConfigDataFactory;
@@ -134,6 +140,17 @@ public class JiraCommonServiceTest {
 
 	@Mock
 	KerberosClient krb5Client;
+	@Mock
+	private SearchResult mockSearchResult;
+	@Mock
+	private StepContext mockStepContext;
+	@Mock
+	private JobExecution mockJobExecution;
+	@Mock
+	private ExecutionContext mockExecutionContext;
+	@Mock
+	private StepExecution mockStepExecution;
+
 
 	private ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 	@Mock
@@ -460,4 +477,22 @@ public class JiraCommonServiceTest {
 		parseVersionData.setAccessible(true);
 
 	}
-}
+
+	@Test
+	public void testSaveSearchDetailsInContext() {
+		// Arrange
+		int pageStart = 0; // Set your desired page start value
+		int pageSize = 10; // Set your desired page size
+		int totalIssues = 100; // Set your desired total issues count
+		String boardId = "test id";
+		when(mockStepContext.getStepExecution()).thenReturn(mockStepExecution);
+		when(mockStepExecution.getJobExecution()).thenReturn(mockJobExecution);
+		when(mockJobExecution.getExecutionContext()).thenReturn(mockExecutionContext);
+		when(mockSearchResult.getTotal()).thenReturn(totalIssues);
+		// Act
+		jiraCommonService.saveSearchDetailsInContext(mockSearchResult, pageStart,boardId, mockStepContext);
+
+		// Assert
+		verify(mockExecutionContext).putInt(JiraConstants.TOTAL_ISSUES, totalIssues);
+		verify(mockExecutionContext).putInt(JiraConstants.PAGE_START, pageStart);
+	}}

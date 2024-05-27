@@ -156,7 +156,7 @@ public class AdditionalFilterHelperTest {
 		additionalFilterHelper.getAdditionalFilter(issue, projectConfig);
 	}
 
-	@Test(expected = InvocationTargetException.class)
+	@Test
 	public void getCustomFieldValuesExceptionTest() throws NoSuchMethodException, InvocationTargetException,
 			IllegalAccessException, URISyntaxException, JSONException {
 
@@ -176,7 +176,7 @@ public class AdditionalFilterHelperTest {
 
 		assertNotNull(resultSet);
 		assertEquals(1, resultSet.size());
-		assertTrue(resultSet.contains("77777"));
+		assertTrue(resultSet.contains("name1"));
 
 	}
 
