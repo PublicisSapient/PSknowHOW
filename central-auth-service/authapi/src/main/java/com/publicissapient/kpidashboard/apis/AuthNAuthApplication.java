@@ -28,5 +28,4 @@ public class AuthNAuthApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AuthNAuthApplication.class, args);
 	}
-
 }

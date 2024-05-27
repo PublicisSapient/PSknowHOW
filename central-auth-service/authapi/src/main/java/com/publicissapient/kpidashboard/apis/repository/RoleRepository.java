@@ -20,27 +20,13 @@ package com.publicissapient.kpidashboard.apis.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import com.publicissapient.kpidashboard.apis.entity.Role;
+import org.springframework.stereotype.Repository;
 
+
+@Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-	@Query(value = "select * from auth.role r where r.resource_id = (select rs.id from auth.resource rs where rs.name = :name )", nativeQuery = true)
-	List<Role> findByResourceId(@Param("name") String name);
+	List<Role> findByResource_Name(String resourceName);
 
-	@Query(value = "SELECT * FROM auth.role r WHERE r.resource_id = (SELECT id FROM auth.resource WHERE name = :resourceName) AND r.default_role = true ", nativeQuery = true)
-	List<Role> getDefaultRoleForResource(@Param("resourceName") String resourceName);
-
-	Role findByNameAndResourceId(String roleName, Long id);
-
-	@Query(value = "SELECT * FROM auth.role r WHERE r.resource_id = (SELECT id FROM auth.resource WHERE name = :resource) AND r.root_user = true ", nativeQuery = true)
-	List<Role> getRootRoleforResource(String resource);
-
-	@Query(value = "SELECT * FROM auth.role r WHERE r.default_role = true ", nativeQuery = true)
-	List<Role> getAllDefaultRole();
-
-	@Query(value = "SELECT name FROM auth.role r WHERE r.id IN (:roleIDs)", nativeQuery = true)
-	List<String> findByIdIn(@Param("roleIDs") List<Long> roleIDs);
 }
