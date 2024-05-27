@@ -1,0 +1,139 @@
+auth:
+  accountLockedThreshold: 3
+
+  cookie:
+    duration: 3600
+    domain: tools.publicis.sapient.com
+    isSameSite: true
+    isSecure: true
+
+  forgot-password:
+    #Purpose of properties : property used to expire forgot password
+    #possible values : number [1-20]
+    #used in/for : forgot password functionality - In Minute
+    expiryInterval: 30
+    #Set this property only for local setup(eg. 8787). Empty for server.
+    serverPort: ''
+    #uiHost will be "localhost" for local setup and empty for server
+    uiHost: ''
+    #Set this property only for local setup (eg. 3000). Empty for server.
+    uiPort: ''
+
+  ui:
+    #Purpose of properties : property used to reset link open via mail and redirect to UI
+    registerPath: /register
+    #Purpose of properties : property used to reset link open via mail and redirect to UI
+    resetPath: /reset-password?resetToken=
+    #Purpose of properties : property used to verify user via mail and redirect to UI
+    validateUser: /api/verifyUser?token=
+
+  authenticationProviders: SAML,STANDARD
+
+  #Purpose of properties : property used for user token expiration before verification
+  #possible values : number [1-20]
+  #used in/for : user verification functionality - In days
+  verifyUserTokenExpiryDays: 20
+
+  #Purpose of properties : central auth frontend url/domain Name
+  #possible values : https://dev-authnauth.tools.publicis.sapient.com , https://qa-authnauth.tools.publicis.sapient.com
+  # https://uat-authnauth.tools.publicis.sapient.com  , http://localhost:3000
+  #used in/for : back to frontend redirect
+  baseUiUrl: https://dev-authnauth.tools.publicis.sapient.com
+
+  #Purpose of properties : central auth backend url
+  #possible values : http://authnauth:8787 , http://localhost:8787
+  #used in/for : saml login , redirect and validate request
+  baseUrl: http://authnauth:8787
+
+  loginView: login_view
+  logoutView: logout_view
+
+  mailTemplate:
+    Access_Request: Access_Request_Template
+    Approve_User_Reject: Approve_User_Reject_Template
+    Approve_User_Success: Approve_User_Success_Template
+    Forgot_Password: Forgot_Password_Template
+    Pre_Approval: Pre_Approval_Template
+    User_Verification: User_Verification_Template
+    User_Verification_Failed: User_Verification_Failed_Template
+    Submit_Feedback: Feedback_Submit_Template
+
+  notificationSubject:
+    accessRequest: New access request for KnowHOW
+    approvalRequest: Approval Request for KnowHow
+    failedApproval: 'KnowHOW: User Approval Rejected'
+    forgotPassword: Password Reset Request
+    preApproval: 'KnowHOW: New user request'
+    userVerification: User Verification Request
+    userVerificationFailed: User Verification Token Expired
+
+  secret: 3106dd9eee424487884363ce026ea979
+
+  auth-endpoints:
+    authenticated-endpoints:
+      - '**'
+    public-endpoints:
+      - '/saml-login'
+      - '/saml-logout'
+      - '/login'
+
+  mailWithoutKafka: false
+
+kafka:
+  mailtopic: mail-topic
+
+logging:
+  level:
+    root: INFO
+  logType: both
+
+notification:
+  #Purpose of properties : property used to provide smtp service sent mail
+  #possible values : development, production
+  #used in/for : sent mail
+  env: production
+  #Purpose of properties : property used to provide if any instance want to disable mail
+  #possible values : true for mail sent , false for disable
+  #used in/for : sent mail
+  switch: true
+
+server:
+  port: 8787
+  servlet:
+    context-path: /api
+  tomcat:
+    redirect-context-root: false
+spring:
+  datasource:
+    password: sapient@123
+    url: jdbc:postgresql://authdb:5432/authNauth
+    username: authdb
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        default_schema: auth
+  kafka:
+    producer:
+      bootstrap-servers: kafka:9092
+  main:
+    allow-circular-references: false
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  security:
+    filter:
+      dispatcher-types: async, error, request, forward
+    saml2:
+      relyingparty:
+        registration:
+          azure:
+            acs:
+              location: '{baseUrl}/saml/SSO'
+            assertingparty:
+              metadata-uri: https://login.microsoftonline.com/d52c9ea1-7c21-47b1-82a3-33a74b1f74b8/federationmetadata/2007-06/federationmetadata.xml?appid=bf226903-9d44-4e77-af84-e3ad008442ef
+            entity-id: "spn:bf226903-9d44-4e77-af84-e3ad008442ef"
+            singlelogout:
+              binding: POST
+              responseUrl: '{baseUrl}/saml/SingleLogout'
+              url: '{baseUrl}/saml/logout'
