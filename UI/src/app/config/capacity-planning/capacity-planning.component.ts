@@ -226,9 +226,8 @@ export class CapacityPlanningComponent implements OnInit {
     this.selectedFilterData['sprintIncluded'] = ['CLOSED', 'ACTIVE', 'FUTURE'];
     this.filter_kpiRequest = this.http_service.getFilterData(this.selectedFilterData)
       .subscribe(filterData => {
-        if (filterData[0] !== 'error') {
+        if (filterData[0] !== 'error' && filterData?.['data']?.length > 0) {
           this.filterData = filterData['data'];
-          if (this.filterData?.length > 0) {
             this.projectListArr = this.sortAlphabetically(this.filterData.filter(x => x.labelName.toLowerCase() == 'project'));
             this.projectListArr = this.helperService.makeUniqueArrayList(this.projectListArr);
             const defaultSelection = this.selectedProjectBaseConfigId ? false : true;
@@ -238,10 +237,6 @@ export class CapacityPlanningComponent implements OnInit {
               // show error message
               this.messageService.add({ severity: 'error', summary: 'Projects not found.' });
             }
-          } else {
-            this.resetProjectSelection();
-          }
-
 
         } else {
           this.resetProjectSelection();
