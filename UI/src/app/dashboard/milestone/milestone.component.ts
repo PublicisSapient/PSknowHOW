@@ -657,12 +657,6 @@ export class MilestoneComponent implements OnInit {
         }
       }
     }
-    // if(data[0] && !isNaN(parseInt(data[0].data))) {
-    //   dataCount = data[0].data;
-    // } else if(data[0] && data[0].value && !isNaN(parseInt(data[0].value[0].data))) {
-    //   dataCount = data[0].value[0].data;
-    // }
-    
     return false;
   }
 
