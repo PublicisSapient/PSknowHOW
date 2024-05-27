@@ -82,6 +82,8 @@ public class Connection extends BasicModel {
 	private String repositoryName;
 	private String email;
 	private String repoToolProvider;
+	private boolean brokenConnection;
+	private String connectionErrorMsg;
 
 
 	public boolean getIsOAuth() {

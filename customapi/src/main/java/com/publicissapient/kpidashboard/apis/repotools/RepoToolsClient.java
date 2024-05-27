@@ -64,7 +64,7 @@ public class RepoToolsClient {
 		setHttpHeaders(apiKey);
 		Gson gson = new Gson();
 		String payload = gson.toJson(repoToolConfig);
-		log.info("enroll project request {} {}", repoToolsUrl, repoToolConfig);
+		log.info("enroll project request {} {}", repoToolsUrl, payload);
 		URI url = URI.create(repoToolsUrl);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);

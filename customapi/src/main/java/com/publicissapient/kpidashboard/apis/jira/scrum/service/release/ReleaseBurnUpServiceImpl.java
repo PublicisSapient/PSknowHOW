@@ -377,8 +377,9 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 					: LocalDate.parse(endDate.split("T")[0], DATE_TIME_FORMATTER);
 			// increment the startDate w.r.t Count of days field for plotting to start from
 			// updated start date
+			Map<String, Integer> startDateCountKPI150 = Optional.ofNullable(fieldMapping.getStartDateCountKPI150()).orElse(new HashMap<>());
 			startLocalDate = Objects.requireNonNull(startLocalDate)
-					.plusDays(Optional.ofNullable(fieldMapping.getStartDateCountKPI150()).orElse(0));
+					.plusDays(startDateCountKPI150.getOrDefault(latestRelease.getId(), 0));
 			Map<String, Long> durationRangeMap = getDurationRangeMap(startLocalDate, endLocalDate);
 			duration = durationRangeMap.keySet().stream().findFirst().orElse("");
 			range = durationRangeMap.values().stream().findFirst().orElse(0L);
@@ -411,7 +412,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			// be shown
 			if (releaseState.equalsIgnoreCase(CommonConstant.RELEASED) || MapUtils.isEmpty(startDateAdjustedDoneMap)) {
 				// populating only release scope vs progress
-				for (int i = 0; i < range && !startLocalDate.isAfter(endLocalDate); i++) {
+				for (long i = 0; i < range && !startLocalDate.isAfter(endLocalDate); i++) {
 					DataCountGroup issueCount = new DataCountGroup();
 					DataCountGroup issueSize = new DataCountGroup();
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(startLocalDate,
@@ -467,7 +468,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 				predictionDataMap.put(ISSUE_SIZE_PREDICTION, issueSizePrediction);
 				boolean isPredictionBoundary = true; // used to check and add data point of release
 				// scope,progress,prediction at boundary
-				for (int i = 0; i <= range && !startLocalDate.isAfter(predictionEndDate); i++) {
+				for (long i = 0; i <= range && !startLocalDate.isAfter(predictionEndDate); i++) {
 					DataCountGroup issueCount = new DataCountGroup();
 					DataCountGroup issueSize = new DataCountGroup();
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(startLocalDate,

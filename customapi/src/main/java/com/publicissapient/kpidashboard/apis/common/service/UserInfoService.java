@@ -20,8 +20,9 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -125,7 +126,7 @@ public interface UserInfoService {
 	 * @param username
 	 *            username
 	 */
-	ServiceResponse deleteUser(String username , boolean centralAuthService);
+	ServiceResponse deleteUser(String username, boolean centralAuthService);
 
 	List<UserInfo> getUserInfoByAuthType(String userType);
 
@@ -159,7 +160,7 @@ public interface UserInfoService {
 	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
 
 	// ----auth Service Methods started---------
-	List<UserInfoDTO> findAllUnapprovedUsersForCentralAuth();
+	List<CentralUserInfoDTO> findAllUnapprovedUsersForCentralAuth();
 
 	boolean updateUserApprovalStatus(String user);
 
@@ -178,5 +179,19 @@ public interface UserInfoService {
 	boolean getCentralAuthUserDeleteUserToken(String authCookieToken);
 
 	// ----auth Service Methods Ended---------
+
+	/**
+	 * update notification email alert flag user wise
+	 * 
+	 * @param loggedUserName
+	 * @param notificationEmail
+	 * @return
+	 */
+	UserInfo updateNotificationEmail(String loggedUserName, Map<String, Boolean> notificationEmail);
+
+	/**
+	 * all unapproved users from central auth and also flag which is not whitelist domain as per properties
+	 */
+	List<UserAccessApprovalResponseDTO> findAllUnapprovedUsers();
 
 }

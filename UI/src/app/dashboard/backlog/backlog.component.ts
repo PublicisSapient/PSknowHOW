@@ -877,6 +877,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
               "trend": trend,
               "maturity":'M'+trendingList[0]?.maturity,
               "maturityValue":trendingList[0]?.maturityValue,
+              "maturityDenominator": trendingList[0]?.value.length,
               "kpiUnit" : unit
           };
           this.kpiTrendObject[kpiId]?.push(trendObj);
@@ -890,25 +891,17 @@ export class BacklogComponent implements OnInit, OnDestroy {
     if (maturity == undefined) {
       return 'NA';
     }
-    if (item.value.length >= 5) {
-      const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
-      const tempArr = last5ArrItems.filter(x => x.data != 0);
-      if (tempArr.length == 0) {
-        maturity = '--';
-      }
-    } else {
-      maturity = '--';
-    }
-    maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M'+maturity : maturity;
+    maturity = 'M'+maturity;
     return maturity;
   }
 
   checkLatestAndTrendValue(kpiData, item) {
     let latest: string = '';
     let trend: string = '';
+    let unit = '';
     if (item?.value?.length > 0) {
       let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
-      var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
+       unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
       latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
     }
     if (item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {

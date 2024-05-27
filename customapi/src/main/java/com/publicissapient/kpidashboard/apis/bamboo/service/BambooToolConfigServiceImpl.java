@@ -15,12 +15,15 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.bamboo.model.BambooBranchesResponseDTO;
 import com.publicissapient.kpidashboard.apis.bamboo.model.BambooDeploymentProjectsResponseDTO;
 import com.publicissapient.kpidashboard.apis.bamboo.model.BambooPlansResponseDTO;
+import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 
@@ -52,6 +55,8 @@ public class BambooToolConfigServiceImpl {
 
 	@Autowired
 	private ConnectionRepository connectionRepository;
+	@Autowired
+	private ConnectionService connectionService;
 
 	public List<BambooPlansResponseDTO> getProjectsAndPlanKeyList(String connectionId) {
 
@@ -68,9 +73,8 @@ public class BambooToolConfigServiceImpl {
 
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
-
+				connectionService.validateConnectionFlag(connection);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONParser respParser = new JSONParser();
 					JSONObject object = (JSONObject) respParser.parse(response.getBody());
@@ -88,6 +92,7 @@ public class BambooToolConfigServiceImpl {
 				}
 
 			} catch (Exception exception) {
+				isClientException(connection, exception);
 				log.error("Error while fetching ProjectsAndPlanKeyList from {}:  {}", url, exception.getMessage());
 			}
 			return responseDTOList;
@@ -110,9 +115,8 @@ public class BambooToolConfigServiceImpl {
 
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
-
+				connectionService.validateConnectionFlag(connection);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-
 				if (response.getStatusCode() == HttpStatus.OK) {
 					parseBranchesResponse(responseDTOList, response);
 				} else {
@@ -122,11 +126,29 @@ public class BambooToolConfigServiceImpl {
 				}
 
 			} catch (Exception exception) {
+				isClientException(connection, exception);
 				log.error("Error while fetching BambooBranchesNameAndKeys from {}:  {}", url, exception.getMessage());
 			}
 			return responseDTOList;
 		}
 		return responseDTOList;
+	}
+
+	/**
+	 * this method check for the client exception
+	 * 
+	 * @param connection
+	 *            connection
+	 * @param exception
+	 *            exception
+	 */
+	private void isClientException(Connection connection, Exception exception) {
+		if (exception instanceof HttpClientErrorException
+				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum
+					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+			connectionService.updateBreakingConnection(connection, errMsg);
+		}
 	}
 
 	private void parseBranchesResponse(List<BambooBranchesResponseDTO> responseDTOList, ResponseEntity<String> response)
@@ -166,8 +188,8 @@ public class BambooToolConfigServiceImpl {
 			String url = baseUrl + DEPLOYMENTPROJECT_URL_SUFFIX;
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
+				connectionService.validateConnectionFlag(connection);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONParser respParser = new JSONParser();
 					JSONArray searchResults = (JSONArray) ((JSONObject) respParser.parse(response.getBody()))
@@ -190,6 +212,7 @@ public class BambooToolConfigServiceImpl {
 				}
 
 			} catch (Exception exception) {
+				isClientException(connection, exception);
 				log.error("Error while fetching Deployment projects from {}:  {}", url, exception.getMessage());
 			}
 			return responseDTOList;

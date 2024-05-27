@@ -121,8 +121,8 @@ public class KPIExcelData {
 	@JsonProperty("Root Cause")
 	private List<String> rootCause;
 
-	@JsonProperty("Resolved")
-	private String resolvedTickets;
+	@JsonProperty("Resolved Status")
+	private String resolvedStatus;
 
 	@JsonProperty("Defect ID")
 	private Map<String, String> defectId;
@@ -253,8 +253,8 @@ public class KPIExcelData {
 	@JsonProperty("Build Url")
 	private Map<String, String> buildUrl;
 
-	@JsonProperty("Repository Url")
-	private Map<String, String> repositoryURL;
+	@JsonProperty("Repo")
+	private String repo;
 
 	@JsonProperty("Branch")
 	private String branch;
@@ -340,8 +340,8 @@ public class KPIExcelData {
 	@JsonProperty("Count")
 	private Map<String, Integer> count;
 
-	@JsonProperty("Initial Commitment")
-	private String initialCommited;
+	@JsonProperty("Scope")
+	private String scopeValue;
 
 	@JsonProperty("PI Name")
 	private String piName;
@@ -417,6 +417,9 @@ public class KPIExcelData {
 
 	@JsonProperty("Done(Value/Percentage)")
 	private String done;
+
+	@JsonProperty("Squad")
+	private List<String> squads;
 
 
 

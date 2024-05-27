@@ -160,7 +160,6 @@ public class ForgotPasswordController {
 	@RequestMapping(value = "/resetPassword", method = POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> resetPassword(@RequestBody ResetPasswordRequest updatedPasswordRequest) {
 		boolean isSuccess = false;
-		log.info("ForgotPasswordController: requested token for update {}", updatedPasswordRequest.getResetToken());
 		Authentication authentication = null;
 		try {
 			authentication = forgotPasswordService.resetPassword(updatedPasswordRequest);

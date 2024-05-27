@@ -24,12 +24,15 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -75,6 +78,9 @@ public class ZephyrService {
 
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
+
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	private boolean referFromProjectCache = true;
 
@@ -124,6 +130,8 @@ public class ZephyrService {
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
+
+				updateTreeAggregatorDetail(kpiRequest, treeAggregatorDetail);
 
 				kpiRequest.setFilterToShowOnTrend(Constant.PROJECT);
 
@@ -196,6 +204,38 @@ public class ZephyrService {
 					kpiRequest.getSprintIncluded());
 		}
 
+	}
+
+	/**
+	 * updates the TreeAggregatorDetail object based on the KpiRequest.
+	 * If the selectedMap in the KpiRequest does not contain the HIERARCHY_LEVEL_ID_SPRINT,
+	 * filter out the sprint by sprintCountForKpiCalculation property
+	 *
+	 * @param kpiRequest
+	 * 				KpiRequest object containing the selectedMap.
+	 * @param treeAggregatorDetail
+	 * 				The TreeAggregatorDetail object to be updated.
+	 */
+	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
+		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())
+				&& CollectionUtils.isEmpty(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
+				&& MapUtils.isNotEmpty(treeAggregatorDetail.getMapOfListOfLeafNodes())) {
+			List<Node> sprintList = new ArrayList<>();
+			if (CollectionUtils.isNotEmpty(
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT).stream()
+						.collect(Collectors.groupingBy(Node::getParentId)).forEach((proj, sprints) -> {
+							if (sprints.size() > customApiConfig.getSprintCountForKpiCalculation()) {
+								sprintList.addAll(new ArrayList<>(
+										sprints.subList(0, customApiConfig.getSprintCountForKpiCalculation())));
+							} else {
+								sprintList.addAll(sprints);
+							}
+						});
+				treeAggregatorDetail.getMapOfListOfLeafNodes().put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
+						sprintList);
+			}
+		}
 	}
 
 	/**

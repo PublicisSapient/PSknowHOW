@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -99,6 +100,9 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 	@Autowired
 	private KpiHelperService kpiHelperService;
+	
+	@Autowired
+	private CacheService cacheService;
 
 	@Override
 	public String getQualifierType() {
@@ -221,7 +225,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			trendValueList.add(dataCount);
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.FIRST_TIME_PASS_RATE.getColumns());
+		kpiElement.setExcelColumns(
+				KPIExcelColumn.FIRST_TIME_PASS_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 
 	}
 
