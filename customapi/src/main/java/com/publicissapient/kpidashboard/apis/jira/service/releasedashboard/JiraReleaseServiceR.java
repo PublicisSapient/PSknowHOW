@@ -14,11 +14,14 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service.releasedashboard;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -43,6 +46,7 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraNonTrendKPIServiceFactory;
+import com.publicissapient.kpidashboard.apis.jira.model.ReleaseSpecification;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraNonTrendKPIServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -54,12 +58,15 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -94,6 +101,8 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+	@Autowired
+	ProjectReleaseRepo projectReleaseRepo;
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssue> jiraIssueReleaseList;
 	private Set<JiraIssue> subtaskDefectReleaseList;
@@ -132,7 +141,8 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest);
 
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList, referFromProjectCache);
+				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList,
+						referFromProjectCache);
 
 				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest,
 						filteredAccountDataList, referFromProjectCache);
@@ -209,13 +219,13 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest) {
-		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService.cacheAccountHierarchyData();
+		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
+				.cacheAccountHierarchyData();
 
 		String targetNodeId = kpiRequest.getSelectedMap().get(CommonConstant.RELEASE.toLowerCase()).get(0);
 
 		Optional<AccountHierarchyData> optionalData = accountDataListAll.stream()
-				.filter(accountHierarchyData ->
-						accountHierarchyData.getLeafNodeId().equalsIgnoreCase(targetNodeId))
+				.filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId().equalsIgnoreCase(targetNodeId))
 				.findFirst();
 
 		return optionalData.map(List::of).orElse(List.of());
@@ -304,6 +314,73 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 
 	public List<String> getReleaseList() {
 		return releaseList;
+	}
+
+	public Map<String, ReleaseSpecification> getReleasedList(ObjectId basicProjConfigId, FieldMapping fieldMapping) {
+
+		List<String> releasedList = new ArrayList<>();
+		Map<String, ReleaseSpecification> releaseWiseMap = new HashMap<>();
+		List<ProjectVersion> releaseVersionList = projectReleaseRepo.findByConfigId(basicProjConfigId)
+				.getListProjectVersion().stream().filter(ProjectVersion::isReleased).toList();
+		releaseVersionList.forEach(projectVersion -> releasedList.add(projectVersion.getName()));
+		List<JiraIssue> jiraIssues = jiraIssueRepository
+				.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjConfigId.toString(), releasedList);
+		releasedList.forEach(release -> {
+			List<JiraIssue> releaseWiseJiraIssueList = jiraIssues.stream().filter(
+					jiraIssue -> jiraIssue.getReleaseVersions().get(0).getReleaseName().equalsIgnoreCase(release))
+					.collect(Collectors.toList());
+			double releaseIssuesSize = releaseWiseJiraIssueList.size();
+			double releaseTicketsEstimate = getTicketEstimate(releaseWiseJiraIssueList, fieldMapping, 0.0d);
+			ReleaseSpecification releaseSpecification = new ReleaseSpecification();
+			releaseSpecification.setReleaseName(release);
+			releaseSpecification.setReleaseIssueCount(releaseIssuesSize);
+			releaseSpecification.setReleaseStoryPoint(releaseTicketsEstimate);
+			for (ProjectVersion projectVersion : releaseVersionList) {
+				if (projectVersion.getName().equalsIgnoreCase(release)) {
+					LocalDateTime releaseDate = DateUtil
+							.convertDateTimeToLocalDateTime(projectVersion.getReleaseDate());
+					LocalDateTime startDate = DateUtil.convertDateTimeToLocalDateTime(projectVersion.getStartDate());
+
+					if (releaseDate != null && startDate != null) {
+						double duration = DateUtil.calculateWorkingDays(startDate, releaseDate);
+						releaseSpecification.setReleaseDuration(duration);
+						double issueCountVelocity = releaseIssuesSize / duration;
+						double issuesEstimateVelocity = releaseTicketsEstimate / duration;
+						releaseSpecification.setReleaseIssueCountVelocity(issueCountVelocity);
+						releaseSpecification.setReleaseStoryPointVelocity(issuesEstimateVelocity);
+					}
+				}
+			}
+
+			releaseWiseMap.put(release, releaseSpecification);
+		});
+		return releaseWiseMap;
+	}
+
+	/**
+	 * Get Sum of StoryPoint for List of JiraIssue
+	 *
+	 * @param jiraIssueList
+	 *            List<JiraIssue>
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return Sum of Story Point
+	 */
+	public double getTicketEstimate(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping, double ticketEstimate) {
+		if (CollectionUtils.isNotEmpty(jiraIssueList)) {
+			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+				ticketEstimate = jiraIssueList.stream()
+						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
+			} else {
+				double totalOriginalEstimate = jiraIssueList.stream().mapToDouble(
+						jiraIssue -> Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0))
+						.sum();
+				double inHours = totalOriginalEstimate / 60;
+				ticketEstimate = inHours / fieldMapping.getStoryPointToHourMapping();
+			}
+		}
+		return ticketEstimate;
 	}
 
 	public Set<JiraIssue> getSubTaskDefects() {

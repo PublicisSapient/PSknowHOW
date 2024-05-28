@@ -16,14 +16,17 @@ package com.publicissapient.kpidashboard.apis.jira.service.releasedashboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.jira.model.ReleaseSpecification;
 import com.publicissapient.kpidashboard.apis.jira.service.NonTrendKPIService;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -99,6 +102,30 @@ public abstract class JiraReleaseKPIService implements NonTrendKPIService {
 
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass() {
 		return jiraService.getJiraIssuesCustomHistoryForCurrentSprint();
+	}
+
+	/**
+	 * get list of closed release
+	 *
+	 * @return
+	 */
+	public Map<String, ReleaseSpecification> getReleasedList(ObjectId basicProjConfigId, FieldMapping fieldMapping) {
+		return jiraService.getReleasedList(basicProjConfigId, fieldMapping);
+	}
+
+	/**
+	 * Get Sum of StoryPoint for List of JiraIssue
+	 *
+	 * @param jiraIssueList
+	 *            List<JiraIssue>
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return Sum of Story Point
+	 */
+	public Double getStoryPoint(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		double ticketEstimate = 0.0d;
+		ticketEstimate = jiraService.getTicketEstimate(jiraIssueList, fieldMapping, ticketEstimate);
+		return roundingOff(ticketEstimate);
 	}
 
 }

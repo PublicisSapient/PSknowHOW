@@ -37,8 +37,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
+import java.util.stream.Stream;
 
 /**
  * @author narsingh9
@@ -344,6 +346,20 @@ public class DateUtil {
 			result = "NA";
 		}
 		return result;
+	}
+
+	public static double calculateWorkingDays(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+		LocalDate startDate = startDateTime.toLocalDate();
+		LocalDate endDate = endDateTime.toLocalDate();
+
+		if (startDate.isAfter(endDate)) {
+			throw new IllegalArgumentException("Release Start date must be before release end date");
+		}
+
+		return Stream.iterate(startDate, date -> date.plusDays(1))
+				.limit(ChronoUnit.DAYS.between(startDate, endDate) + 1) // +1 to include endDate
+				.filter(date -> !(date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY))
+				.count();
 	}
 
 }

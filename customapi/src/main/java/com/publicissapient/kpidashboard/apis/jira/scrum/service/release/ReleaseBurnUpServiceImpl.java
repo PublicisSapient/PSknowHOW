@@ -41,7 +41,6 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -377,7 +376,8 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 					: LocalDate.parse(endDate.split("T")[0], DATE_TIME_FORMATTER);
 			// increment the startDate w.r.t Count of days field for plotting to start from
 			// updated start date
-			Map<String, Integer> startDateCountKPI150 = Optional.ofNullable(fieldMapping.getStartDateCountKPI150()).orElse(new HashMap<>());
+			Map<String, Integer> startDateCountKPI150 = Optional.ofNullable(fieldMapping.getStartDateCountKPI150())
+					.orElse(new HashMap<>());
 			startLocalDate = Objects.requireNonNull(startLocalDate)
 					.plusDays(startDateCountKPI150.getOrDefault(latestRelease.getId(), 0));
 			Map<String, Long> durationRangeMap = getDurationRangeMap(startLocalDate, endLocalDate);
@@ -430,6 +430,8 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 					issueSizeCountDataGroup.add(issueSize);
 				}
 			} else {
+
+				getReleasedList(latestRelease.getProjectFilter().getBasicProjectConfigId(), fieldMapping);
 				// populating release scope vs release progress followed by its prediction on
 				// avg completion rate
 				Map<String, Object> averageDataMap = getAverageData(fieldMapping, startLocalDate, originalIssueDoneMap);
@@ -695,16 +697,15 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 
 	/**
 	 * DeepClone the map
+	 * 
 	 * @param originalMap
 	 * @return
 	 */
 	public static Map<LocalDate, List<JiraIssue>> deepCopyMap(Map<LocalDate, List<JiraIssue>> originalMap) {
 		return originalMap.entrySet().stream()
-				.collect(Collectors.toMap(
-						Map.Entry::getKey,
-						entry -> new ArrayList<>(entry.getValue())
-				));
+				.collect(Collectors.toMap(Map.Entry::getKey, entry -> new ArrayList<>(entry.getValue())));
 	}
+
 	/**
 	 * Method for calculation x-axis duration & range
 	 *
@@ -815,34 +816,6 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 		issueSize.setFilter(date);
 		issueSize.setDuration(duration);
 		issueSize.setValue(issueSizeDataList);
-
-	}
-
-	/**
-	 * Get Sum of StoryPoint for List of JiraIssue
-	 *
-	 * @param jiraIssueList
-	 *            List<JiraIssue>
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @return Sum of Story Point
-	 */
-	Double getStoryPoint(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		double ticketEstimate = 0.0d;
-		if (CollectionUtils.isNotEmpty(jiraIssueList)) {
-			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				ticketEstimate = jiraIssueList.stream()
-						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
-			} else {
-				double totalOriginalEstimate = jiraIssueList.stream().mapToDouble(
-						jiraIssue -> Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0))
-						.sum();
-				double inHours = totalOriginalEstimate / 60;
-				ticketEstimate = inHours / fieldMapping.getStoryPointToHourMapping();
-			}
-		}
-		return roundingOff(ticketEstimate);
 
 	}
 
