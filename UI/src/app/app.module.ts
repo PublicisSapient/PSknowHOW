@@ -123,6 +123,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { AppInitializerService } from './services/app-initializer.service';
 import { AuthGuard } from './services/auth.guard';
 import { ChartWithFiltersComponent } from './component/chart-with-filters/chart-with-filters.component';
+import { KpiAdditionalFilterComponent } from './component/kpi-additional-filter/kpi-additional-filter.component';
 
 
 /******************************************************/
@@ -190,7 +191,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         BarWithYAxisGroupComponent,
         DeveloperComponent,
         PageNotFoundComponent,
-        ChartWithFiltersComponent
+        ChartWithFiltersComponent,
+        KpiAdditionalFilterComponent
     ],
     imports: [
         DropdownModule,
