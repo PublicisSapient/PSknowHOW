@@ -52,6 +52,7 @@ import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrService;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -151,10 +152,9 @@ public class KpiIntegrationServiceImplTest {
 		kpiRequest.setIds(new String[] { "id1" });
 		kpiRequest.setKpiIdList(Arrays.asList("kpi1", "kpi2"));
 		ProjectWiseKpiRecommendation expectedResponse = new ProjectWiseKpiRecommendation();
-		ResponseEntity<ProjectWiseKpiRecommendation> responseEntity = ResponseEntity.ok(expectedResponse);
 		when(customApiConfig.getRnrRecommendationUrl()).thenReturn("recommendation/%s/%s");
 		when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class),
-				eq(ProjectWiseKpiRecommendation.class))).thenReturn(responseEntity);
+				any(ParameterizedTypeReference.class))).thenReturn(ResponseEntity.ok(Arrays.asList(expectedResponse)));
 		ProjectWiseKpiRecommendation actualResponse = maturityService.getProjectWiseKpiRecommendation(kpiRequest);
 		assertNotNull(actualResponse);
 	}

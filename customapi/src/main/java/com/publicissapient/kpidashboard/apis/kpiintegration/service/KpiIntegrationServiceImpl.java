@@ -79,6 +79,7 @@ public class KpiIntegrationServiceImpl {
 	private static final String KPI_SOURCE_ZEPHYR = "Zypher";
 	private static final String KPI_SOURCE_JENKINS = "Jenkins";
 	private static final String SPRINT_CLOSED = "CLOSED";
+	private static final String RNR_API_HEADER = "X-Custom-Authentication";
 
 	@Autowired
 	KpiMasterRepository kpiMasterRepository;
@@ -319,7 +320,7 @@ public class KpiIntegrationServiceImpl {
 					URLEncoder.encode(kpiRequest.getIds()[0], StandardCharsets.UTF_8),
 					URLEncoder.encode(String.join(",", kpiRequest.getKpiIdList()), StandardCharsets.UTF_8));
 			HttpHeaders httpHeaders = new HttpHeaders();
-			httpHeaders.set("X-Custom-Authentication", customApiConfig.getRnrRecommendationApiKey());
+			httpHeaders.set(RNR_API_HEADER, customApiConfig.getRnrRecommendationApiKey());
 			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 			ResponseEntity<List<ProjectWiseKpiRecommendation>> response = restTemplate.exchange(
