@@ -358,7 +358,7 @@
             <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity'"
                [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
                <div
-                  class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn p-mr-2"
+                  class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn"
                   #showHide [ngClass]="{'active': toggleDropdown['showHide'],'disabled': noProjects}" (click)="toggleDropdown['showHide'] = !toggleDropdown['showHide']">
                   Show/Hide
                </div>
@@ -393,12 +393,12 @@
             </div>
 
             <!-- Download button start -->
-            <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn"
+            <!-- <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn"
                *ngIf="selectedTab?.toLowerCase() != 'maturity' && selectedTab?.toLowerCase() != 'iteration' && selectedTab?.toLowerCase() != 'backlog'"
                id="Filter-Download-Btn" (click)="exportToExcel($event)" [ngClass]="{'disabled': showChart || noProjects}"
                [attr.title]="'Export View'">
                <img src="../../../assets/img/ico-download.svg" alt="Download" />
-            </div>
+            </div> -->
             <!-- Download button end -->
             <!-- Download excel Button error message start -->
             <span class="float-right errMsz alert alert-danger" style="padding: 6px 17px;"
