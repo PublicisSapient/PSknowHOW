@@ -45,8 +45,8 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url",
 					"Weeks")), ISSUE_COUNT("kpi40",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad" )), CODE_COMMIT("kpi11",
-									Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No. Of Commit",
-											"No. of Merge")),
+									Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No Of Commit",
+											"No of Merge")),
 
 	MEAN_TIME_TO_MERGE("kpi84",
 			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks",
@@ -317,7 +317,14 @@ public enum KPIExcelColumn {
 			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live")),
 	REWORK_RATE("kpi173", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Rework Rate")),
 
-	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee"));
+	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee")),
+
+	DEFECT_COUNT_BY("kpi178", Arrays.asList("Issue Id", "Issue Description", "Sprint Name", "Issue Type",
+			"Issue Status", "Root Cause List", "Priority", "Testing Phase", "Assignee")),
+
+	DEFECT_COUNT_BY_EXPORT("kpi178", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
+			"Issue Status", "Root Cause", "Priority", "Testing Phase", "Assignee"));
+
 
 	// @formatter:on
 
