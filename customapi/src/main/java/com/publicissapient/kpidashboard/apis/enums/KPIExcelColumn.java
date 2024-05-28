@@ -45,8 +45,8 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url",
 					"Weeks")), ISSUE_COUNT("kpi40",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad" )), CODE_COMMIT("kpi11",
-									Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No. Of Commit",
-											"No. of Merge")),
+									Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No Of Commit",
+											"No of Merge")),
 
 	MEAN_TIME_TO_MERGE("kpi84",
 			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks",

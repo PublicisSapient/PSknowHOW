@@ -343,7 +343,7 @@
                           </ng-template>
                           <ng-template #noDataForChartWithFilters>
                             <div class="overlay"
-                              *ngIf="(kpiChartData[kpi.kpiId]?.data?.length)|| kpiLoader">
+                              *ngIf="kpiLoader">
 
                               <div class="loading-img"></div>
                             </div>

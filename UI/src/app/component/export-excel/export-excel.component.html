@@ -23,7 +23,7 @@
               <div class="table-head">
                 <span [ngStyle]="{'width':'max-content','margin-right': '1rem'}">{{item}}</span>
                 <div class="p-d-flex">
-                  <p-columnFilter [field]="item" matchMode="in"
+                  <p-columnFilter [field]="item" matchMode="in" *ngIf="!excludeColumnFilter.includes(item)" 
                     [showMenu]="false" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
                     [showClearButton]="false" [showApplyButton]="false" [style]="{'margin-top':'2px'}">
                     <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
@@ -37,7 +37,7 @@
                       </p-multiSelect>
                     </ng-template>
                   </p-columnFilter>
-                  <p-sortIcon [pSortableColumn]="item" [field]="item"></p-sortIcon>
+                  <p-sortIcon [pSortableColumn]="item" [field]="item" *ngIf="!excludeColumnFilter.includes(item)" ></p-sortIcon>
                 </div>
               </div>
             </th>
@@ -72,6 +72,11 @@
               </ng-container>
             </ng-template>
           </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [attr.colspan]="modalDetails['tableHeadings'].length">No data found.</td>
         </tr>
       </ng-template>
     </p-table>

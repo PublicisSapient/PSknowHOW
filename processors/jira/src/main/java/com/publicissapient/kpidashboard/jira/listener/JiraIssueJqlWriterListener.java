@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.scope.context.StepContext;
@@ -55,7 +56,8 @@ import lombok.extern.slf4j.Slf4j;
 public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeResult> {
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
-
+	@Autowired
+	private JiraProcessorConfig jiraProcessorConfig;
 	@Override
 	public void beforeWrite(Chunk<? extends CompositeResult> compositeResult) {
 		// in future we can use this method to do something before saving data in db
@@ -120,6 +122,9 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 			}
 		} else {
 			ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+			processorExecutionTraceLog.setFirstRunDate(DateUtil.dateTimeFormatter(
+					LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()).minusDays(jiraProcessorConfig.getDaysToReduce()),
+					JiraConstants.QUERYDATEFORMAT));
 			setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
 					processorExecutionToSave);
 			progressStatsTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(firstIssue.getChangeDate(),

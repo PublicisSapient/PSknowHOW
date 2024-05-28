@@ -16,47 +16,28 @@
  *
  ******************************************************************************/
 
- ul.project-list{
-    padding-inline-start: 0;
-}
+package com.publicissapient.kpidashboard.common.model.rbac;
 
-ul.project-list li{
-    display: inline-block;
-    background-color: #0af;
-    color: #fff;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-size: 12px;
-    padding: 4px 8px 4px 8px;
-    border-radius: 2px;
-    margin-right: 4px;
-    margin-top: 2px;
-    position: relative;
-}
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-.accept-reject-container button.ui-button {
-    margin-right: 12px;
-    font-size: 12px;
-}
+@Data
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserAccessApprovalResponseDTO {
 
-.accept-reject-container button.ui-button:last-child {
-    margin-right: 0;
-}
+	private String username;
 
-::ng-deep body .content .ui-widget, ::ng-deep body .content .ui-inputtext {
-    font-size: 12px;
-}
+	private String email;
 
-.border-color-dark-grey {
-    border-color: #6c757d !important;
-}
+	private boolean approved;
 
-.form_title {
-    margin: 24px 0px;
-    color: #585858;
-}
-
-.white-list-email-row{
-  background-color: #FFECD7 !important;
-  color : black !important;
+	private boolean whitelistDomainEmail;
 }
