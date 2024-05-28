@@ -19,34 +19,19 @@
 package com.publicissapient.kpidashboard.apis.model;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-/**
- * object used to bind iteration kpi's value
- */
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
-public class IterationKpiModalValue extends IssueKpiModalValue {
-
-	private Map<String, List<String>> statusLogGroup;
-	private Map<String, List<String>> workLogGroup;
-	private Map<String, List<String>> assigneeLogGroup;
-	private String timeWithUser;
-	private String timeWithStatus;
-	private Long loggedWorkInSeconds;
-	private String epicName;
-	private boolean spill;
-	private Long remainingEstimateInSeconds;
-	private Long originalEstimateInSeconds;
-	private Set<String> subTask;
-	private Set<String> parentStory;
-	private boolean preClosed;
-
+@AllArgsConstructor
+public class FilterGroup {
+	List<Filter> filterGroup1;
+	List<Filter> filterGroup2;
 }
