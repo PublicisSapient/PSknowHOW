@@ -27,6 +27,11 @@ td {
     opacity: 0.7;
 }
 
+#legend .legend_link {
+    color: var(--color-blue);
+    text-decoration: underline;
+}
+
 /** Primeng style overrides **/
 
 :host ::ng-deep .p-selectbutton .p-button {

@@ -26,8 +26,7 @@
               <div class="color_indicator" [ngStyle]="{'background-color': item.color}"></div>
             </td>
             <td>
-              <span (click)="exploreData(item.key)" style="cursor: pointer;">{{ item.key }} <i
-                  class="pi pi-angle-double-down"></i></span>
+              <span class="legend_link" (click)="exploreData(item.key)" style="cursor: pointer;">{{ item.key }}</span>
             </td>
             <td>{{ item.value }}</td>
             <td>{{ item.percentage }}</td>
