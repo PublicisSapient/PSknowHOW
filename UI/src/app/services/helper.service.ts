@@ -76,9 +76,9 @@ export class HelperService {
             if (type && type !== '' && !isNaN(type)) {
                 condition = (obj.groupId && obj.groupId === type) && condition;
             }
-            // if (obj?.kpiCategory) {
-            //     condition = obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
-            // }
+            if (obj?.kpiCategory) {
+                condition = obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
+            }
 
             if (kpiIdsForCurrentBoard && kpiIdsForCurrentBoard.length && obj?.kpiId) {
                 condition = kpiIdsForCurrentBoard.includes(obj.kpiId) && condition;
