@@ -399,9 +399,9 @@ public class KpiHelperServiceTest {
 	@Test
 	public void testKpiResolution() {
 
-		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.AVERAGE_RESOLUTION_TIME.getKpiId());
+		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId());
 		KpiMaster kpiMaster = new KpiMaster();
-		kpiMaster.setKpiId("kpi83");
+		kpiMaster.setKpiId("kpi126");
 		kpiMaster.setKpiName("abc");
 		kpiMaster.setKpiSource("abc");
 		kpiMaster.setKpiUnit("123");

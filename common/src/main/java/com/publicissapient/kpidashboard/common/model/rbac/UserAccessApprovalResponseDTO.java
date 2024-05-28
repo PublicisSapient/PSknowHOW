@@ -16,37 +16,28 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.model;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+package com.publicissapient.kpidashboard.common.model.rbac;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-/**
- * object used to bind iteration kpi's value
- */
-@EqualsAndHashCode(callSuper = true)
 @Data
+@Builder
+@Getter
+@Setter
 @NoArgsConstructor
-public class IterationKpiModalValue extends IssueKpiModalValue {
+@AllArgsConstructor
+public class UserAccessApprovalResponseDTO {
 
-	private Map<String, List<String>> statusLogGroup;
-	private Map<String, List<String>> workLogGroup;
-	private Map<String, List<String>> assigneeLogGroup;
-	private String timeWithUser;
-	private String timeWithStatus;
-	private Long loggedWorkInSeconds;
-	private String epicName;
-	private boolean spill;
-	private Long remainingEstimateInSeconds;
-	private Long originalEstimateInSeconds;
-	private Set<String> subTask;
-	private Set<String> parentStory;
-	private boolean preClosed;
+	private String username;
 
+	private String email;
+
+	private boolean approved;
+
+	private boolean whitelistDomainEmail;
 }
