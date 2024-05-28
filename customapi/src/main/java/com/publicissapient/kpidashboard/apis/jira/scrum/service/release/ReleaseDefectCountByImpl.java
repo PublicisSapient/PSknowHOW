@@ -54,6 +54,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ReleaseDefectCountByImpl extends JiraReleaseKPIService {
 
 	private static final String TOTAL_DEFECT = "totalDefects";
+	private static final String SINGLE = "Single";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -133,13 +134,13 @@ public class ReleaseDefectCountByImpl extends JiraReleaseKPIService {
 		FilterGroup filterGroup = new FilterGroup();
 		// for the first group by selection
 		List<Filter> filterList = new ArrayList<>();
-		filterList.add(createFilter("Single", "Status", "Issue Status", 1));
-		filterList.add(createFilter("Single", "Priority", "Priority", 2));
+		filterList.add(createFilter(SINGLE, "Status", "Issue Status", 1));
+		filterList.add(createFilter(SINGLE, "Priority", "Priority", 2));
 		filterList.add(createFilter("Multi", "RCA", "Root Cause List", 3));
 		filterGroup.setFilterGroup1(filterList);
 		// for the additional filter selection
 		List<Filter> filterGroupList2 = new ArrayList<>();
-		filterGroupList2.add(createFilter("Single", "Assignee", "Assignee", 1));
+		filterGroupList2.add(createFilter(SINGLE, "Assignee", "Assignee", 1));
 		filterGroupList2.add(createFilter("Multi", "Testing Phase", "Testing Phase", 2));
 		filterGroup.setFilterGroup2(filterGroupList2);
 		return filterGroup;
