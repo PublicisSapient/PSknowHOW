@@ -142,3 +142,7 @@
 a{
     margin : 3px;
 }
+
+:host ::ng-deep .p-datatable-scrollable .p-datatable-wrapper{
+    min-height: 300px;
+}
