@@ -2397,7 +2397,7 @@ describe('CapacityPlanningComponent', () => {
       component.getFilterDataOnLoad();
       fixture.detectChanges();
       expect(httpService.getFilterData).toHaveBeenCalledWith(component.selectedFilterData);
-      expect(component.filterData).toBeUndefined();
+      expect(component.filterData).toBeNull();
       expect(component.resetProjectSelection).toHaveBeenCalled();
       // expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Projects not found.' });
       expect(component.loader).toBe(false);
