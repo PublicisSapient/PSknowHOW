@@ -35,7 +35,7 @@
                                 <p-columnFilter field="maturity" matchMode="in" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                         <p-multiSelect [ngModel]="value" [options]="maturities"
-                                            placeholder="Select maturity" (onChange)="checkSelected($event.value); filter($event.value)" optionLabel="name" optionValue="value">
+                                            placeholder="Select maturity" (onChange)="filter($event.value)" optionLabel="name" optionValue="value">
                                             <ng-template let-option pTemplate="item">
                                                 <div class="inline-block vertical-align-middle">
                                                     <span class="ml-1 mt-1">{{option.name }}</span>
