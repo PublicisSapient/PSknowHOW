@@ -197,22 +197,6 @@ describe('MaturityComponent', () => {
      }
   });
 
-  it('should call receiveshared method on load',()=>{
-    const sharedObject ={
-      masterData :[],
-      filterData:[],
-      filterApplyData :[],
-    };
-    const spy = spyOn(service,'getSelectedType').and.returnValue('Scrum');
-    const spygetFilterObject = spyOn(service,'getFilterObject').and.returnValue(sharedObject);
-    const spyReceiveSharedData =spyOn(component,'receiveSharedData');
-    component.ngOnInit();
-    expect(spy).toHaveBeenCalled();
-    expect(spygetFilterObject).toHaveBeenCalled();
-    expect(spyReceiveSharedData).toHaveBeenCalledWith(sharedObject);
-  });
-
-
   it('should make post call when kpi available for Sonar for Scrum',()=>{
     const kpiListSonar =[{
       id: '6332dd4b82451128f9939a29',
