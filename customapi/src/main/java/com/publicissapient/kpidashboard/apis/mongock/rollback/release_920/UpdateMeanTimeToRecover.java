@@ -12,7 +12,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author girpatha
  */
-@ChangeUnit(id = "r_update_meantime_to_recover", order = "9206", author = "girpatha", systemVersion = "9.2.0")
+@ChangeUnit(id = "r_update_meantime_to_recover", order = "09206", author = "girpatha", systemVersion = "9.2.0")
 public class UpdateMeanTimeToRecover {
 
 	private final MongoTemplate mongoTemplate;
