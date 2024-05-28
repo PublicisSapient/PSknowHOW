@@ -197,22 +197,6 @@ describe('MaturityComponent', () => {
      }
   });
 
-  it('should call receiveshared method on load',()=>{
-    const sharedObject ={
-      masterData :[],
-      filterData:[],
-      filterApplyData :[],
-    };
-    const spy = spyOn(service,'getSelectedType').and.returnValue('Scrum');
-    const spygetFilterObject = spyOn(service,'getFilterObject').and.returnValue(sharedObject);
-    const spyReceiveSharedData =spyOn(component,'receiveSharedData');
-    component.ngOnInit();
-    expect(spy).toHaveBeenCalled();
-    expect(spygetFilterObject).toHaveBeenCalled();
-    expect(spyReceiveSharedData).toHaveBeenCalledWith(sharedObject);
-  });
-
-
   it('should make post call when kpi available for Sonar for Scrum',()=>{
     const kpiListSonar =[{
       id: '6332dd4b82451128f9939a29',
@@ -767,11 +751,10 @@ describe('MaturityComponent', () => {
   const postMethods =['postSonarKpi','postJenkinsKpi','postZypherKpi','postJiraKpi','postBitBucketKpi'];
   const fakeResponses = [fakeSonarResponse,fakeJenkinsResponse,fakeZypherResponse,fakeJiraGroupId1,fakeBitbucketResponse];
   const fakePayloads =[fakeSonarPayload,fakeJenkinsPayload,fakeZypherPayload,fakeJiraPayload,fakeBitbucketPayload];
-  for(let i=0; i<postMethods.length;i++ ){
-   httpService.postKpi = jasmine.createSpy().and.returnValue(of(fakeResponses[i]));
+  for(let i=0; i<postMethods.length;i++ ){  
+    httpService.postKpi = jasmine.createSpy().and.returnValue(of(fakeResponses[i]));
     component[postMethods[i]](fakePayloads[i],sources[i]);
   }
-
   tick();
   expect(Object.keys(component.sonarKpiData).length).toEqual(0);
   expect(Object.keys(component.jenkinsKpiData).length).toEqual(jenkinsKpiData.length);

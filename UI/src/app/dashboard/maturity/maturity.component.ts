@@ -92,7 +92,6 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
         this.subscription.push(this.service.setNoData.subscribe(data =>{
             this.noDataForFilter = data;
-            this.receiveSharedData(this.service.getFilterObject());
         }));
         this.selectedtype = this.service.getSelectedType();
 
@@ -160,9 +159,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                  this.isKanban= this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
               }));
 
-        if (this.service.getFilterObject()) {
-            this.receiveSharedData(this.service.getFilterObject());
-        }else{
+        if (!this.service.getFilterObject()) {
             this.showNoDataMsg = true;
         }
     }
@@ -573,7 +570,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     };
                     const categoryKpis = allKpis.filter(kpi => tabCategory[category].includes(kpi.kpiId) && kpisInOverAllTab.includes(kpi.kpiId));
                     const sumOfMaturityForCategory = categoryKpis.reduce((sum, kpi) => sum + +kpi.maturity, 0);
-                    tab['maturity'] = getAverageMaturityValue(sumOfMaturityForCategory !== 0 ? (sumOfMaturityForCategory / categoryKpis.length).toFixed(2) : 'NA');
+                    tab['maturity'] = getAverageMaturityValue(sumOfMaturityForCategory !== 0 ? (sumOfMaturityForCategory / getFinalChildrenCount(categoryKpis)).toFixed(2) : 'NA');
                     if(tab['maturity'] > 0){
                         sumOfMatirity += tab['maturity'];
                         children.push(tab);

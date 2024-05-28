@@ -21,12 +21,8 @@ package com.publicissapient.kpidashboard.apis.rbac.accessrequests.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -42,11 +38,13 @@ import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.autoapprove.service.AutoApproveAccessService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NotificationEnum;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
+import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.NotificationDataDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.rbac.AccessRequestsRepository;
@@ -63,7 +61,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperService {
 
-	@Autowired CustomApiConfig customApiConfig;
+	@Autowired
+	CustomApiConfig customApiConfig;
 
 	private static final String SUPERADMINROLENAME = "ROLE_SUPERADMIN";
 	/**
@@ -262,7 +261,7 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 	 *         is found,false if not data found
 	 */
 	@Override
-	public ServiceResponse getNotificationByStatus(String status , boolean centralAuthService) {
+	public ServiceResponse getNotificationByStatus(String status, boolean centralAuthService) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		List<AccessRequest> accessRequest = null;
 		String message = "Found Pending Approval Count";
@@ -321,8 +320,7 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 	}
 
 	private NotificationDataDTO newCentralAuthUserApprovalRequestNotification() {
-		List<UserInfoDTO> nonApprovedUserList =
-				userInfoServiceImpl.findAllUnapprovedUsersForCentralAuth();
+		List<CentralUserInfoDTO> nonApprovedUserList = userInfoServiceImpl.findAllUnapprovedUsersForCentralAuth();
 		NotificationDataDTO notificationDataDTO = new NotificationDataDTO();
 		notificationDataDTO.setType(NotificationEnum.USER_APPROVAL.getValue());
 		if (CollectionUtils.isEmpty(nonApprovedUserList)) {
