@@ -159,9 +159,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                  this.isKanban= this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
               }));
 
-        if (this.service.getFilterObject()) {
-            this.receiveSharedData(this.service.getFilterObject());
-        }else{
+        if (!this.service.getFilterObject()) {
             this.showNoDataMsg = true;
         }
     }
