@@ -171,6 +171,8 @@ export class AdvancedSettingsComponent implements OnInit {
             that.getProcessorCompletionSteps(runProcessorInput);
           }else{
             that.jiraStatusContinuePulling = false;
+            const jiraDAta = that.findTraceLogForTool('Jira');
+            jiraDAta.executionOngoing = false;
           }
           
         } else {
@@ -363,15 +365,14 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   decideWheatherLoaderORNot(jiraLogDetails){
-    if(jiraLogDetails && jiraLogDetails.executionOngoing){
+    if(jiraLogDetails && jiraLogDetails.executionOngoing && jiraLogDetails.progressStatusList.length){
       const logs = jiraLogDetails.progressStatusList;
       const lastLOgTime = logs[logs.length-1].endTime;
       const currentTime = new Date().getTime();
       var differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
-      var differenceInMinutes = Math.abs((differenceInMilliseconds / (1000 * 60)));
-      if(differenceInMinutes > 10){
+      if(differenceInMilliseconds > 600000){
         return false;
-      }else if(differenceInMinutes <= 10){
+      }else if(differenceInMilliseconds <= 600000){
         return true;
       }else{
         return false;
