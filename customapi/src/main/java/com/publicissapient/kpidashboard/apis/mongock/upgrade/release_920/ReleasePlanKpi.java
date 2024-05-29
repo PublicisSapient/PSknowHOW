@@ -45,7 +45,7 @@ public class ReleasePlanKpi {
                                 "kpiLinkDetail",
                                 new Document().append("text", "Detailed Information at").append("link",
                                         "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/147652609/Release+Release+Plan")))))
-                .append("kpiSubCategory", "Speed").append("kpiWidth", 100);
+                .append("kpiSubCategory", "Speed").append("kpiWidth", 100).append("boxType","chart");
         // Insert the document into the collection
         mongoTemplate.getCollection(KPI_MASTER).insertOne(kpiDocument);
     }
