@@ -450,7 +450,12 @@ describe('AdvancedSettingsComponent', () => {
     component.processorsTracelogs = [
       {
         processorName : 'Jira',
-        executionOngoing : true
+        executionOngoing : true,
+        progressStatusList : [{
+          "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
+          "endTime" : 1716799109813,
+          "status" : "COMPLETED"
+        }],
       },
       {
         processorName : 'Github',
@@ -462,7 +467,12 @@ describe('AdvancedSettingsComponent', () => {
       data :[
         {
           processorName : 'Jira',
-          executionOngoing : true
+          executionOngoing : true,
+          progressStatusList : [{
+            "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
+            "endTime" : 1716799109813,
+            "status" : "COMPLETED"
+          }]
         }
       ]
     }
