@@ -1,0 +1,101 @@
+<div id="chartWithFilter_Container">
+  <div class="p-d-flex p-jc-between">
+    <p-selectButton [options]="filters?.filterGroup1" [(ngModel)]="selectedMainFilter"
+      (onOptionClick)="mainFilterSelect($event)" optionLabel="filterName"></p-selectButton>
+    <p-button label="Apply Filters" icon="pi pi-filter" styleClass="filter-btn" (click)="op.toggle($event)"></p-button>
+  </div>
+  <p-overlayPanel #op>
+    <app-kpi-additional-filter [data]="data" [dataCopy]="dataCopy" [modifiedData]="modifiedData" 
+    [selectedFilter2]="selectedFilter2" [selectedMainFilter]="selectedMainFilter" [filters]="filters"
+    (modifiedDataResult)="applyAdditionalFilters($event)"></app-kpi-additional-filter>
+  </p-overlayPanel>
+  <div class="p-d-flex p-jc-between" *ngIf="modifiedData?.length">
+    <div id="legend">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>{{selectedMainFilter.filterKey}} </th>
+            <th>Count</th>
+            <th>%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of legendData">
+            <td>
+              <div class="color_indicator" [ngStyle]="{'background-color': item.color}"></div>
+            </td>
+            <td>
+              <span class="legend_link" (click)="exploreData(item.key)" style="cursor: pointer;">{{ item.key }}</span>
+            </td>
+            <td>{{ item.value }}</td>
+            <td>{{ item.percentage }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="chart">
+
+    </div>
+  </div>
+  <div class="min-ht" *ngIf="!legendData?.length">
+    <div class="no-data">No data for selected filters</div>
+  </div>
+</div>
+
+
+<p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true"
+  (onHide)="clearModalDataOnClose()">
+  <p-header>
+    {{modalDetails['header']}}
+  </p-header>
+
+  <div class="dialog-body p-mb-4">
+    <p-table *ngIf="modalDetails['tableValues'].length > 0 ; else showNoDataMessage"
+      [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines" loadingIcon="loading-img"
+      [autoLayout]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <ng-container *ngFor="let col of modalDetails['tableHeadings']">
+            <th id="{{col}}" scope="col">{{col}}</th>
+          </ng-container>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData>
+        <tr>
+          <td class="font-small" *ngFor="let column of modalDetails['tableHeadings']">
+            <ng-container *ngIf="!checkIfArray(rowData[column]); else displayArrayData">
+              <a *ngIf="column === 'Issue Id'; else displayCellData" [href]="rowData['Issue URL']" class="text-blue"
+                rel="noopener" target="_blank">{{rowData['Issue Id']}}</a>
+              <ng-template #displayCellData>
+                <ng-container *ngIf="column.toLowerCase() === 'sprint rating'; else showOtherData">
+                  <img [src]="sprintRatingObj[rowData[column]]" alt="rating" />
+                </ng-container>
+                <ng-template #showOtherData>
+                  {{rowData[column]?.length > 60 ? (rowData[column].slice(0,60)+'...') :
+                  rowData[column]}}
+                </ng-template>
+              </ng-template>
+            </ng-container>
+
+            <ng-template #displayArrayData>
+              <ng-container *ngFor="let data of rowData[column]">
+                <a *ngIf="data?.hasOwnProperty('Issue URL') ; else displayData" [href]="data['Issue URL']"
+                  class="text-blue column-content-spacing" rel="noopener" target="_blank">{{data['text']}}</a>
+                <ng-template #displayData>
+                  <p class="column-content-spacing">{{data}}</p>
+                </ng-template>
+                <br>
+              </ng-container>
+            </ng-template>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <ng-template #showNoDataMessage>
+      <hr>
+      <h2 class="p-text-center">No Data Available</h2>
+    </ng-template>
+  </div>
+
+</p-dialog>
