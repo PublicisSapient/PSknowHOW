@@ -17,8 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.jobs;
 
-import com.publicissapient.kpidashboard.jira.helper.BuilderFactory;
-import com.publicissapient.kpidashboard.jira.listener.JobListenerKanban;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -26,19 +24,26 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.helper.BuilderFactory;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueBoardWriterListener;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueJqlWriterListener;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueSprintJobListener;
+import com.publicissapient.kpidashboard.jira.listener.JiraIssueV2BoardWriterListener;
+import com.publicissapient.kpidashboard.jira.listener.JiraIssueV2JqlWriterListener;
+import com.publicissapient.kpidashboard.jira.listener.JobListenerKanban;
 import com.publicissapient.kpidashboard.jira.listener.JobListenerScrum;
+import com.publicissapient.kpidashboard.jira.listener.JobListenerScrumV2;
 import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueJqlWriterListener;
 import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueWriterListener;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.processor.IssueKanbanProcessor;
 import com.publicissapient.kpidashboard.jira.processor.IssueScrumProcessor;
+import com.publicissapient.kpidashboard.jira.processor.JiraIssueV2ScrumProcessor;
 import com.publicissapient.kpidashboard.jira.reader.IssueBoardReader;
 import com.publicissapient.kpidashboard.jira.reader.IssueJqlReader;
 import com.publicissapient.kpidashboard.jira.reader.IssueSprintReader;
@@ -46,11 +51,13 @@ import com.publicissapient.kpidashboard.jira.tasklet.JiraIssueReleaseStatusTaskl
 import com.publicissapient.kpidashboard.jira.tasklet.KanbanReleaseDataTasklet;
 import com.publicissapient.kpidashboard.jira.tasklet.MetaDataTasklet;
 import com.publicissapient.kpidashboard.jira.tasklet.ScrumReleaseDataTasklet;
+import com.publicissapient.kpidashboard.jira.tasklet.ScrumReleaseDataV2Tasklet;
 import com.publicissapient.kpidashboard.jira.tasklet.SprintReportTasklet;
 import com.publicissapient.kpidashboard.jira.tasklet.SprintScrumBoardTasklet;
+import com.publicissapient.kpidashboard.jira.tasklet.SprintV2ScrumTasklet;
 import com.publicissapient.kpidashboard.jira.writer.IssueKanbanWriter;
 import com.publicissapient.kpidashboard.jira.writer.IssueScrumWriter;
-import org.springframework.transaction.PlatformTransactionManager;
+import com.publicissapient.kpidashboard.jira.writer.IssueScrumWriterV2;
 
 /**
  * @author pankumar8
@@ -72,7 +79,11 @@ public class JiraProcessorJob {
 	IssueScrumProcessor issueScrumProcessor;
 
 	@Autowired
+	JiraIssueV2ScrumProcessor jiraIssueV2ScrumProcessor;
+	@Autowired
 	IssueScrumWriter issueScrumWriter;
+	@Autowired
+	IssueScrumWriterV2 issueScrumWriterV2;
 
 	@Autowired
 	IssueKanbanWriter issueKanbanWriter;
@@ -82,6 +93,8 @@ public class JiraProcessorJob {
 
 	@Autowired
 	SprintScrumBoardTasklet sprintScrumBoardTasklet;
+	@Autowired
+	SprintV2ScrumTasklet SprintV2ScrumTasklet;
 
 	@Autowired
 	JiraIssueReleaseStatusTasklet jiraIssueReleaseStatusTasklet;
@@ -91,18 +104,26 @@ public class JiraProcessorJob {
 
 	@Autowired
 	ScrumReleaseDataTasklet scrumReleaseDataTasklet;
+	@Autowired
+	ScrumReleaseDataV2Tasklet scrumReleaseDataV2Tasklet;
 
 	@Autowired
 	KanbanReleaseDataTasklet kanbanReleaseDataTasklet;
 
 	@Autowired
 	JiraIssueBoardWriterListener jiraIssueBoardWriterListener;
+	@Autowired
+	JiraIssueV2BoardWriterListener jiraissueV2BoardWriterListener;
 
 	@Autowired
 	JiraIssueJqlWriterListener jiraIssueJqlWriterListener;
+	@Autowired
+	JiraIssueV2JqlWriterListener jiraissueV2JqlWriterListener;
 
 	@Autowired
 	JobListenerScrum jobListenerScrum;
+	@Autowired
+	JobListenerScrumV2 jobListenerScrumV2;
 
 	@Autowired
 	JobListenerKanban jobListenerKanban;
@@ -266,6 +287,53 @@ public class JiraProcessorJob {
 
 	private Integer getChunkSize() {
 		return jiraProcessorConfig.getChunkSize();
+	}
+
+	/* Scrum AI Board Job Start **/
+
+	@TrackExecutionTime
+	@Bean
+	public Job fetchScrumAIIssueScrumBoardJob() {
+		return builderFactory.getJobBuilder("Fetch Scrum AI Project Data-Board", jobRepository)
+				.incrementer(new RunIdIncrementer()).start(scrumAISprintReportStep())
+				.next(fetchIssueScrumAIBoardChunkStep()).next(scrumMasterReleaseDataStep()).listener(jobListenerScrumV2)
+				.build();
+	}
+
+	private Step scrumAISprintReportStep() {
+		return builderFactory.getStepBuilder("Fetch Scrum AI Sprint Report-Board", jobRepository)
+				.tasklet(SprintV2ScrumTasklet, transactionManager).build();
+	}
+
+	@TrackExecutionTime
+	private Step fetchIssueScrumAIBoardChunkStep() {
+		return builderFactory.getStepBuilder("Fetch Scrum AI Issue-Scrum-Board", jobRepository)
+				.<ReadData, CompositeResult>chunk(getChunkSize(), transactionManager).reader(issueBoardReader)
+				.processor(jiraIssueV2ScrumProcessor).writer(issueScrumWriterV2)
+				.listener(jiraissueV2BoardWriterListener).build();
+	}
+
+	private Step scrumMasterReleaseDataStep() {
+		return builderFactory.getStepBuilder("Scrum Master ReleaseData-Scrum-board", jobRepository)
+				.tasklet(scrumReleaseDataV2Tasklet, transactionManager).build();
+	}
+
+	/* Scrum AI Board Job End **/
+
+	@TrackExecutionTime
+	@Bean
+	public Job fetchScrumAIIssueScrumJqlJob() {
+		return builderFactory.getJobBuilder("Fetch Scrum AI IssueScrum JQL Job", jobRepository)
+				.incrementer(new RunIdIncrementer()).start(fetchScrumAIIssueScrumJqlChunkStep())
+				.next(scrumMasterReleaseDataStep()).listener(jobListenerScrumV2).build();
+	}
+
+	@TrackExecutionTime
+	private Step fetchScrumAIIssueScrumJqlChunkStep() {
+		return builderFactory.getStepBuilder("Fetch Scrum AI Issue-Scrum-Jql", jobRepository)
+				.<ReadData, CompositeResult>chunk(getChunkSize(), this.transactionManager).reader(issueJqlReader)
+				.processor(jiraIssueV2ScrumProcessor).writer(issueScrumWriterV2)
+				.listener(jiraissueV2JqlWriterListener).build();
 	}
 
 }

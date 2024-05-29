@@ -62,6 +62,7 @@ public final class JiraConstants {
 	public static final String AGGREGATED_TIME_SPENT = "aggregatetimespent";
 	public static final String AGGREGATED_TIME_ORIGINAL = "aggregatetimeoriginalestimate";
 	public static final String AGGREGATED_TIME_REMAIN = "aggregatetimeestimate";
+	public static final String TIME_ESTIMATE = "timeestimate";
 	public static final String ID = "id";
 	public static final String COMPONENT = "Component";
 	public static final String JIRA = "Jira";
@@ -82,7 +83,7 @@ public final class JiraConstants {
 	public static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
 
 	static {
-		ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");
+		ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-votes,-watches");
 	}
 	
 	private JiraConstants(){ }

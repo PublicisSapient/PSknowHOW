@@ -19,11 +19,11 @@ package com.publicissapient.kpidashboard.jira.reader;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
@@ -56,8 +57,6 @@ import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.util.StringUtils;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @author pankumar8
@@ -222,22 +221,13 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		log.info("fetching project status from trace log for project: {} board id :{}",
 				getProjectName(), boardId);
 
-		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
-				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA,
-						Arrays.asList(projectConfFieldMapping.getBasicProjectConfigId().toString()));
+		Optional<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JIRA_V2,
+						projectConfFieldMapping.getBasicProjectConfigId().toString());
 
-		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
-			Map<String, String> boardWiseDate = new HashMap<>();
-			String lastSuccessfulRun = deltaDate;
-
-			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
-				lastSuccessfulRun = processorExecutionTraceLog.getLastSuccessfulRun();
-
-				if (!StringUtils.isBlank(processorExecutionTraceLog.getBoardId())) {
-					boardWiseDate.put(processorExecutionTraceLog.getBoardId(), lastSuccessfulRun);
-				}
-			}
-
+		if (procExecTraceLogs.isPresent()) {
+			Map<String, String> boardWiseDate = procExecTraceLogs.get().getBoardWiseLastSyncDate();
+			String lastSuccessfulRun = procExecTraceLogs.get().getLastSuccessfulRun();
 			if (MapUtils.isEmpty(boardWiseDate)) {
 				log.info("project: {} found but board {} not found in trace log so data will be fetched from beginning",
 						getProjectName(), boardId);

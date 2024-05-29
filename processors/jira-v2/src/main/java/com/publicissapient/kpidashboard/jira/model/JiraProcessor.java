@@ -36,7 +36,7 @@ public class JiraProcessor extends Processor {
 	 */
 	public static JiraProcessor prototype() {
 		JiraProcessor protoType = new JiraProcessor();
-		protoType.setProcessorName(ProcessorConstants.JIRA);
+		protoType.setProcessorName(ProcessorConstants.JIRA_V2);
 		protoType.setOnline(true);
 		protoType.setActive(true);
 		protoType.setLastSuccess(false);

@@ -7,9 +7,11 @@ import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHi
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueV2;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetailsV2;
 
 import lombok.Data;
 
@@ -17,9 +19,11 @@ import lombok.Data;
 public class CompositeResult {
 
 	private JiraIssue jiraIssue;
+	private JiraIssueV2 jiraIssueV2;
 	private JiraIssueCustomHistory jiraIssueCustomHistory;
 	private Set<AccountHierarchy> accountHierarchies;
 	private Set<SprintDetails> sprintDetailsSet;
+	private Set<SprintDetailsV2> sprintDetailsV2Set;
 	private AssigneeDetails assigneeDetails;
 	private KanbanJiraIssue kanbanJiraIssue;
 	private KanbanIssueCustomHistory kanbanIssueCustomHistory;

@@ -52,6 +52,8 @@ import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.model.ProjectVersionV2;
+import com.publicissapient.kpidashboard.common.model.ReleaseWorkItem;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -387,6 +389,36 @@ public class JiraCommonService {
 		}
 		return projectVersionList;
 	}
+	/**
+	 * @param projectConfig
+	 *            projectConfig
+	 * @param krb5Client
+	 *            krb5Client
+	 * @return List of ProjectVersion
+	 * @throws IOException
+	 *             IOException
+	 * @throws ParseException
+	 *             ParseException
+	 */
+	public List<ProjectVersionV2> getMasterVersion(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
+			throws IOException, ParseException {
+		List<ProjectVersionV2> projectVersionList = new ArrayList<>();
+		try {
+			JiraToolConfig jiraToolConfig = projectConfig.getJira();
+			if (null != jiraToolConfig) {
+				URL url = getVersionUrl(projectConfig);
+				final String versionDataFromClient = getDataFromClient(projectConfig, url, krb5Client);
+				parseMasterVersionData(versionDataFromClient, projectVersionList, projectConfig,krb5Client);
+			}
+		} catch (RestClientException rce) {
+			log.error("Client exception when fetching versions " + rce);
+			throw rce;
+		} catch (MalformedURLException mfe) {
+			log.error("Malformed url for fetching versions", mfe);
+			throw mfe;
+		}
+		return projectVersionList;
+	}
 
 	private URL getVersionUrl(ProjectConfFieldMapping projectConfig) throws MalformedURLException {
 
@@ -438,6 +470,52 @@ public class JiraCommonService {
 		}
 	}
 
+	private void parseMasterVersionData(String dataFromServer, List<ProjectVersionV2> projectVersionDetailList,
+			ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) throws ParseException {
+		if (StringUtils.isNotBlank(dataFromServer)) {
+			try {
+				JSONArray obj = (JSONArray) new JSONParser().parse(dataFromServer);
+				if (null != obj) {
+					((JSONArray) new JSONParser().parse(dataFromServer)).forEach(values -> {
+						ProjectVersionV2 projectVersion = new ProjectVersionV2();
+						projectVersion.setId(
+								Long.valueOf(Objects.requireNonNull(getOptionalString((JSONObject) values, "id"))));
+						projectVersion.setName(getOptionalString((JSONObject) values, "name"));
+						projectVersion.setDescription(getOptionalString((JSONObject) values, "description"));
+						projectVersion
+								.setArchived(Boolean.parseBoolean(getOptionalString((JSONObject) values, "archived")));
+						projectVersion
+								.setReleased(Boolean.parseBoolean(getOptionalString((JSONObject) values, "released")));
+						if (getOptionalString((JSONObject) values, "startDate") != null) {
+							projectVersion.setStartDate(DateUtil.stringToDateTime(
+									Objects.requireNonNull(getOptionalString((JSONObject) values, "startDate")),
+									"yyyy-MM-dd"));
+						}
+						if (getOptionalString((JSONObject) values, "releaseDate") != null) {
+							projectVersion.setReleaseDate(DateUtil.stringToDateTime(
+									Objects.requireNonNull(getOptionalString((JSONObject) values, "releaseDate")),
+									"yyyy-MM-dd"));
+						}
+						log.info("Parsing api data for release {}", projectVersion.getName());
+						try {
+							projectVersion.setReleaseWorkItems(
+									getReleaseRelatedWorkItem(projectConfig, krb5Client, projectVersion.getId()));
+						} catch (IOException e) {
+							log.error("IOException occurred while getting release related work items", e);
+						} catch (ParseException e) {
+							log.error("ParseException occurred while getting release related work items", e);
+						}
+						projectVersionDetailList.add(projectVersion);
+					});
+				}
+			} catch (Exception pe) {
+				log.error("Parser exception when parsing versions", pe);
+				throw pe;
+			}
+
+		}
+	}
+
 	private String getOptionalString(final JSONObject jsonObject, final String attributeName) {
 		final Object res = jsonObject.get(attributeName);
 		if (res == null) {
@@ -465,6 +543,65 @@ public class JiraCommonService {
 		}
 
 		return urlPath.toString();
+	}
+
+	public List<ReleaseWorkItem> getReleaseRelatedWorkItem(ProjectConfFieldMapping projectConfig,
+			KerberosClient krb5Client, Long versionId) throws IOException, ParseException {
+		List<ReleaseWorkItem> releaseWorkItemList = new ArrayList<>();
+		try {
+			JiraToolConfig jiraToolConfig = projectConfig.getJira();
+			if (null != jiraToolConfig) {
+				URL url = getRelatedWorkItemsUrl(projectConfig, versionId);
+				log.info("Fetching release related work item for version id : {}", versionId);
+				parseRelatedWorkItemsData(getDataFromClient(projectConfig, url, krb5Client), releaseWorkItemList);
+			}
+		} catch (RestClientException rce) {
+			log.error("Client exception when fetching versions " + rce);
+			throw rce;
+		} catch (MalformedURLException mfe) {
+			log.error("Malformed url for fetching versions", mfe);
+			throw mfe;
+		}
+		return releaseWorkItemList;
+	}
+
+	private URL getRelatedWorkItemsUrl(ProjectConfFieldMapping projectConfig, Long versionId)
+			throws MalformedURLException {
+
+		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+		boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
+		String serverURL = jiraProcessorConfig.getJiraVersionRelatedWork();
+		if (isCloudEnv) {
+			serverURL = jiraProcessorConfig.getJiraCloudVersionRelatedWork();
+		}
+		serverURL = serverURL.replace("{id}", versionId.toString());
+		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
+
+	}
+
+	private void parseRelatedWorkItemsData(String dataFromServer, List<ReleaseWorkItem> releaseWorkItemList)
+			throws ParseException {
+		if (StringUtils.isNotBlank(dataFromServer)) {
+			try {
+				JSONArray obj = (JSONArray) new JSONParser().parse(dataFromServer);
+				if (null != obj) {
+					((JSONArray) new JSONParser().parse(dataFromServer)).forEach(values -> {
+						ReleaseWorkItem projectVersion = new ReleaseWorkItem();
+						projectVersion.setCategory(getOptionalString((JSONObject) values, "category"));
+						projectVersion.setIssueId(getOptionalString((JSONObject) values, "issueId"));
+						projectVersion.setRelatedWorkId(getOptionalString((JSONObject) values, "relatedWorkId"));
+						projectVersion.setTitle(getOptionalString((JSONObject) values, "title"));
+						projectVersion.setUrl(getOptionalString((JSONObject) values, "url"));
+						releaseWorkItemList.add(projectVersion);
+					});
+				}
+			} catch (Exception pe) {
+				log.error("Parser exception when parsing versions", pe);
+				throw pe;
+			}
+
+		}
 	}
 
 }

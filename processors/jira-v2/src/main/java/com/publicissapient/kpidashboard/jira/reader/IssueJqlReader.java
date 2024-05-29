@@ -19,11 +19,11 @@ package com.publicissapient.kpidashboard.jira.reader;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -174,14 +175,11 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 				.isBlank(projectWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
 			log.info("fetching project status from trace log for project: {}",
 					projectConfFieldMapping.getProjectName());
-			List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
-					.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA,
-							Arrays.asList(projectConfFieldMapping.getBasicProjectConfigId().toString()));
-			if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
-				String lastSuccessfulRun = deltaDate;
-				for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
-					lastSuccessfulRun = processorExecutionTraceLog.getLastSuccessfulRun();
-				}
+			Optional<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
+					.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JIRA_V2,
+							projectConfFieldMapping.getBasicProjectConfigId().toString());
+			if (procExecTraceLogs.isPresent()) {
+				String lastSuccessfulRun = procExecTraceLogs.get().getLastSuccessfulRun();
 				log.info("project: {}  found in trace log. Data will be fetched from one day before {}",
 						projectConfFieldMapping.getProjectName(), lastSuccessfulRun);
 				projectWiseDeltaDate = new HashMap<>();

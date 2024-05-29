@@ -37,6 +37,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetailsV2;
 import com.publicissapient.kpidashboard.common.util.JsonUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -141,8 +142,46 @@ public class JiraProcessorUtil {
 
 		return sprints;
 	}
+	/**
+	 * Processes Sprint Data
+	 *
+	 * @param data
+	 *            Sprint Data object
+	 * @return List of sprints
+	 * @throws ParseException
+	 *             ParseException
+	 * @throws JSONException
+	 *             JSONException
+	 */
+	public static List<SprintDetailsV2> processSprintV2Detail(Object data) throws ParseException, JSONException {
+		List<SprintDetailsV2> sprints = new ArrayList<>();
+
+		if (data instanceof JSONArray) {
+			for (Object obj : (JSONArray) data) {
+				String dataStr = obj == null ? null : obj.toString();
+
+				SprintDetailsV2 sprint = processSingleSprintV2(dataStr);
+				addSprintV2ToList(sprints, sprint);
+			}
+		} else if (data instanceof org.codehaus.jettison.json.JSONArray) {
+			org.codehaus.jettison.json.JSONArray jsonArray = (org.codehaus.jettison.json.JSONArray) data;
+			for (int i = 0; i < jsonArray.length(); ++i) {
+				Object obj = jsonArray.get(i);
+				String dataStr = obj == null ? null : obj.toString();
+				SprintDetailsV2 sprint = processSingleSprintV2(dataStr);
+				addSprintV2ToList(sprints, sprint);
+			}
+		}
+
+		return sprints;
+	}
 
 	private static void addSprintToList(List<SprintDetails> sprints, SprintDetails sprint) {
+		if (sprint != null) {
+			sprints.add(sprint);
+		}
+	}
+	private static void addSprintV2ToList(List<SprintDetailsV2> sprints, SprintDetailsV2 sprint) {
 		if (sprint != null) {
 			sprints.add(sprint);
 		}
@@ -161,6 +200,28 @@ public class JiraProcessorUtil {
 		SprintDetails sprint = null;
 		if (StringUtils.isNotBlank(sprintData)) {
 			sprint = new SprintDetails();
+			if (JsonUtils.isValidJSON(sprintData)) {
+				setSprintDetailsFromJson(sprintData, sprint);
+			} else {
+				setSprintDetailsFromString(sprintData, sprint);
+			}
+
+		}
+		return sprint;
+	}
+	/**
+	 * Process Single Sprint Data
+	 *
+	 * @param sprintData
+	 *            single sprint data
+	 * @return Sprint object
+	 */
+
+	public static SprintDetailsV2 processSingleSprintV2(String sprintData) {
+
+		SprintDetailsV2 sprint = null;
+		if (StringUtils.isNotBlank(sprintData)) {
+			sprint = new SprintDetailsV2();
 			if (JsonUtils.isValidJSON(sprintData)) {
 				setSprintDetailsFromJson(sprintData, sprint);
 			} else {
@@ -232,8 +293,104 @@ public class JiraProcessorUtil {
 		}
 		return null;
 	}
+	public static Object setSprintDetailsFromString(String sprintData, SprintDetailsV2 sprint) {
+		sprintData = sprintData.trim().replaceAll("\\s", " ");
+		String sprintDataStr = sprintData.substring(sprintData.indexOf('[') + 1, sprintData.length() - 1);
+		String[] splitStringList = sprintDataStr.split(SPRINT_SPLIT);
+
+		for (String splitString : splitStringList) {
+			int equalIndex = splitString.indexOf('=');
+
+			// just in case logic changes above
+			if (equalIndex > 0) {
+				String key = splitString.charAt(0) == ',' ? splitString.substring(1, equalIndex)
+						: splitString.substring(0, equalIndex);
+				String valueAsStr = equalIndex == splitString.length() - 1 ? ""
+						: splitString.substring(equalIndex + 1, splitString.length());
+
+				if ("<null>".equalsIgnoreCase(valueAsStr)) {
+					valueAsStr = null;
+				}
+				switch (key) {
+				case ID:
+					sprint.setOriginalSprintId(valueAsStr);
+					sprint.setSprintID(valueAsStr);
+					break;
+				case STATE:
+					sprint.setState(valueAsStr);
+					break;
+				case RAPIDVIEWID:
+					List<String> rapidViewIdList = new ArrayList<>();
+					rapidViewIdList.add(valueAsStr);
+					sprint.setOriginBoardId(rapidViewIdList);
+					break;
+				case NAME:
+					sprint.setSprintName(valueAsStr);
+					break;
+				case STARTDATE:
+					sprint.setStartDate(getFormattedDateForSprintDetails(valueAsStr));
+					break;
+				case ENDDATE:
+					sprint.setEndDate(getFormattedDateForSprintDetails(valueAsStr));
+					break;
+				case COMPLETEDATE:
+					sprint.setCompleteDate(getFormattedDateForSprintDetails(valueAsStr));
+					break;
+				case ACTIVATEDDATE:
+					sprint.setActivatedDate(getFormattedDateForSprintDetails(valueAsStr));
+					break;
+				case GOAL:
+					sprint.setGoal(valueAsStr);
+					break;
+				case BOARDID:
+					List<String> boardList = new ArrayList<>();
+					boardList.add(valueAsStr);
+					sprint.setOriginBoardId(boardList);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		return null;
+	}
 
 	private static void setSprintDetailsFromJson(String sprintData, SprintDetails sprint) {
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		try {
+			JsonNode jsonNode = objectMapper.readTree(sprintData);
+			sprint.setSprintID(jsonNode.get(ID) == null ? null : jsonNode.get(ID).asText());
+			sprint.setOriginalSprintId(jsonNode.get(ID) == null ? null : jsonNode.get(ID).asText());
+			sprint.setState(jsonNode.get(STATE) == null ? null : jsonNode.get(STATE).asText());
+			String boardId = null;
+
+			if (jsonNode.get(RAPIDVIEWID) == null) {
+				if (jsonNode.get(BOARDID) != null) {
+					boardId = jsonNode.get(BOARDID).asText();
+				}
+			} else {
+				boardId = jsonNode.get(RAPIDVIEWID).asText();
+			}
+			List<String> boardIdList = new ArrayList<>();
+			boardIdList.add(boardId);
+			sprint.setOriginBoardId(boardIdList);
+			sprint.setSprintName(jsonNode.get(NAME) == null ? null : jsonNode.get(NAME).asText());
+			sprint.setStartDate(jsonNode.get(STARTDATE) == null ? null
+					: getFormattedDateForSprintDetails(jsonNode.get(STARTDATE).asText()));
+			sprint.setEndDate(jsonNode.get(ENDDATE) == null ? null
+					: getFormattedDateForSprintDetails(jsonNode.get(ENDDATE).asText()));
+			sprint.setCompleteDate(jsonNode.get(COMPLETEDATE) == null ? null
+					: getFormattedDateForSprintDetails(jsonNode.get(COMPLETEDATE).asText()));
+			sprint.setActivatedDate(jsonNode.get(ACTIVATEDDATE) == null ? null
+					: getFormattedDateForSprintDetails(jsonNode.get(ACTIVATEDDATE).asText()));
+			sprint.setGoal(jsonNode.get(GOAL) == null ? null : jsonNode.get(GOAL).asText());
+
+		} catch (JsonProcessingException e) {
+			log.error("Error in parsing sprint data : " + sprintData, e);
+		}
+	}
+	private static void setSprintDetailsFromJson(String sprintData, SprintDetailsV2 sprint) {
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		try {

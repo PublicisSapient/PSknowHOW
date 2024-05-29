@@ -40,6 +40,7 @@ import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetailsV2;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
@@ -50,6 +51,14 @@ import lombok.extern.slf4j.Slf4j;
 public final class JiraIssueClientUtil {
 
 	public static final Comparator<SprintDetails> SPRINT_COMPARATOR = (SprintDetails o1, SprintDetails o2) -> {
+		int cmp1 = ObjectUtils.compare(o1.getStartDate(), o2.getStartDate());
+		if (cmp1 != 0) {
+			return cmp1;
+		}
+		return ObjectUtils.compare(o1.getEndDate(), o2.getEndDate());
+	};
+
+	public static final Comparator<SprintDetailsV2> MASTER_SPRINT_COMPARATOR = (SprintDetailsV2 o1, SprintDetailsV2 o2) -> {
 		int cmp1 = ObjectUtils.compare(o1.getStartDate(), o2.getStartDate());
 		if (cmp1 != 0) {
 			return cmp1;

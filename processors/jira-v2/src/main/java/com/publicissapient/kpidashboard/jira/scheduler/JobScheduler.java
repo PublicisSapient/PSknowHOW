@@ -58,6 +58,12 @@ public class JobScheduler {
 	@Qualifier("fetchIssueScrumJqlJob")
 	@Autowired
 	Job fetchIssueScrumJqlJob;
+	@Qualifier("fetchScrumAIIssueScrumBoardJob")
+	@Autowired
+	Job fetchScrumAIIssueScrumBoardJob;
+	@Qualifier("fetchScrumAIIssueScrumJqlJob")
+	@Autowired
+	Job fetchScrumAIIssueScrumJqlJob;
 	@Qualifier("fetchIssueKanbanBoardJob")
 	@Autowired
 	Job fetchIssueKanbanBoardJob;
@@ -72,7 +78,7 @@ public class JobScheduler {
 	 *
 	 */
 	@Async
-	@Scheduled(cron = "${jira.scrumBoardCron}")
+//	@Scheduled(cron = "${jira.scrumBoardCron}")
 	public void startScrumBoardJob() {
 		log.info("Request come for job for Scrum project configured with board via cron");
 
@@ -102,7 +108,7 @@ public class JobScheduler {
 	 *
 	 */
 	@Async
-	@Scheduled(cron = "${jira.scrumJqlCron}")
+//	@Scheduled(cron = "${jira.scrumJqlCron}")
 	public void startScrumJqlJob() {
 		log.info("Request coming for job for Scrum project configured with JQL via cron");
 
@@ -131,7 +137,7 @@ public class JobScheduler {
 	 *
 	 */
 	@Async
-	@Scheduled(cron = "${jira.kanbanBoardCron}")
+//	@Scheduled(cron = "${jira.kanbanBoardCron}")
 	public void startKanbanJob() {
 		log.info("Request coming for job for Kanban project configured with Board via cron");
 		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
@@ -159,7 +165,7 @@ public class JobScheduler {
 	 *
 	 */
 	@Async
-	@Scheduled(cron = "${jira.kanbanJqlCron}")
+//	@Scheduled(cron = "${jira.kanbanJqlCron}")
 	public void startKanbanJqlJob() {
 		log.info("Request coming for job for Kanban project configured with JQL via cron");
 
@@ -198,6 +204,65 @@ public class JobScheduler {
 		});
 
 		return parameterSets;
+	}
+
+	/**
+	 * This method is used to start scrum ScrumAI job setup with board
+	 *
+	 */
+	@Async
+	@Scheduled(cron = "${jira.scrumAIBoardCron}")
+	public void startScrumAIScrumBoardJob() {
+		log.info("Request come for job for Scrum project configured with board via cron");
+
+		List<String> scrumBoardBasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
+				false, false);
+		log.info("Scrum - Board Wise Projects : {}", scrumBoardBasicProjConfIds);
+		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardBasicProjConfIds);
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+		for (JobParameters params : parameterSets) {
+			executorService.submit(() -> {
+				try {
+					jobLauncher.run(fetchScrumAIIssueScrumBoardJob, params);
+				} catch (Exception e) {
+					log.info(
+							"Jira ScrumAI Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID), e);
+				}
+			});
+		}
+		executorService.shutdown();
+	}
+
+	/**
+	 * This method is used to start scrum job setup with JQL
+	 *
+	 */
+	@Async
+	@Scheduled(cron = "${jira.scrumAIJqlCron}")
+	public void startScrumAIScrumJqlJob() {
+		log.info("Request coming for job for Scrum project configured with JQL via cron");
+
+		List<String> scrumBoardBasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
+				true, false);
+
+		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardBasicProjConfIds);
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+		for (JobParameters params : parameterSets) {
+			executorService.submit(() -> {
+				try {
+					jobLauncher.run(fetchScrumAIIssueScrumJqlJob, params);
+				} catch (Exception e) {
+					log.info("Jira ScrumAI Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID), e);
+				}
+			});
+		}
+		executorService.shutdown();
 	}
 
 }

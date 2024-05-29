@@ -81,6 +81,8 @@ public class JiraProcessorConfig {
 	private String jiraCloudVersionApi;
 	private String jiraServerVersionReportApi;
 	private String jiraCloudVersionReportApi;
+	private String jiraVersionRelatedWork;
+	private String jiraCloudVersionRelatedWork;
 	private Integer prevMonthCountToFetchData;
 	private Integer daysToReduce;
 	private Integer chunkSize;
