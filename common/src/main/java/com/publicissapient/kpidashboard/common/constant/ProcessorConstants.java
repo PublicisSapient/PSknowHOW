@@ -76,6 +76,10 @@ public final class ProcessorConstants {
 	public static final String REPO_TOOLS = "RepoTool";
 
 	public static final String ARGOCD = "ArgoCD";
+	/**
+	 * The constant JIRA2
+	 */
+	public static final String JIRA_V2 = "Jira-v2";
 
 	private ProcessorConstants() {
 		// This class should not be instantiable

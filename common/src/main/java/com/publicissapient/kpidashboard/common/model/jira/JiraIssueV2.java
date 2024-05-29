@@ -43,8 +43,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Document(collection = "master_jira_issue")
-public class MasterJiraIssue extends BasicModel implements Cloneable {
+@Document(collection = "jira_issue_v2")
+public class JiraIssueV2 extends BasicModel implements Cloneable {
 	/**
 	 * Scrum AI Issue fields
 	 */
@@ -61,21 +61,21 @@ public class MasterJiraIssue extends BasicModel implements Cloneable {
 	private String assigneeSelf;
 	private String reporterName;
 	private String createdDate;
-	private String updatedDate;
+//	private String updatedDate;
 	private String dueDate;
 	private List<Field> fields;
 	private List<SubTaskDetails> subTasks;
-	private String aggregateTimeEstimate;
-	private String timeOriginalEstimate;
-	private String timeEstimate;
+	private Integer aggregateTimeEstimate;
+	private Integer timeOriginalEstimate;
+	private Integer timeEstimate;
 	private List<String> labels;
 	private String projectKey;
-	private String resolutionDate;
+	private String resolutionDate;//pending
 	private String resolutionName;
 	private List<CommentDetails> comments;
 	private String storyPoints;
-	private String sprintId;
-	private String acceptanceCriteria;
+//	private String sprintId;
+	private String acceptanceCriteria;//pending
 	private List<IssueLinkDetail> issueLinks;
 	private List<ReleaseVersion> fixVersions;
 	private String boardId;
@@ -297,7 +297,7 @@ public class MasterJiraIssue extends BasicModel implements Cloneable {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		MasterJiraIssue jiraIssue = (MasterJiraIssue) o;
+		JiraIssueV2 jiraIssue = (JiraIssueV2) o;
 		return Objects.equals(key, jiraIssue.key);
 	}
 

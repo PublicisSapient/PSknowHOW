@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class ReleaseWorkItem {
 	private String category;
-	private int issueId;
+	private String issueId;
 	private String relatedWorkId;
 	private String title;
 	private String url;

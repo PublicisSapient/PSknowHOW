@@ -39,8 +39,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "master_sprint_details")
-public class MasterSprintDetails extends BasicModel implements Cloneable, Serializable {
+@Document(collection = "sprint_details_v2")
+public class SprintDetailsV2 extends BasicModel implements Cloneable, Serializable {
 
 	public static final String SPRINT_STATE_CLOSED = "CLOSED";
 	public static final String SPRINT_STATE_ACTIVE = "ACTIVE";
@@ -58,12 +58,12 @@ public class MasterSprintDetails extends BasicModel implements Cloneable, Serial
 	private String goal;
 	private ObjectId basicProjectConfigId;
 	private ObjectId processorId;
-	private Set<MasterSprintIssue> completedIssues;
-	private Set<MasterSprintIssue> notCompletedIssues;
-	private Set<MasterSprintIssue> puntedIssues;
-	private Set<MasterSprintIssue> completedIssuesAnotherSprint;
+	private Set<SprintIssueV2> completedIssues;
+	private Set<SprintIssueV2> notCompletedIssues;
+	private Set<SprintIssueV2> puntedIssues;
+	private Set<SprintIssueV2> completedIssuesAnotherSprint;
 	private Set<String> addedIssues;
-	private Set<MasterSprintIssue> totalIssues;
+	private Set<SprintIssueV2> totalIssues;
 
 	@Override
 	public boolean equals(Object o) {
@@ -71,7 +71,7 @@ public class MasterSprintDetails extends BasicModel implements Cloneable, Serial
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		MasterSprintDetails sprintDetails = (MasterSprintDetails) o;
+		SprintDetailsV2 sprintDetails = (SprintDetailsV2) o;
 		return Objects.equals(sprintID, sprintDetails.sprintID);
 	}
 
@@ -82,7 +82,7 @@ public class MasterSprintDetails extends BasicModel implements Cloneable, Serial
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		MasterSprintDetails clonedSprintDetails = (MasterSprintDetails) super.clone();
+		SprintDetailsV2 clonedSprintDetails = (SprintDetailsV2) super.clone();
 
 		if(CollectionUtils.isNotEmpty(this.getCompletedIssues())) {
 			clonedSprintDetails.setCompletedIssues(deepCloneIssueSet(this.getCompletedIssues()));
@@ -111,11 +111,11 @@ public class MasterSprintDetails extends BasicModel implements Cloneable, Serial
 		return clonedSprintDetails;
 	}
 
-	private Set<MasterSprintIssue> deepCloneIssueSet(Set<MasterSprintIssue> originalSet) throws CloneNotSupportedException {
-		Set<MasterSprintIssue> clonedSet = new HashSet<>();
+	private Set<SprintIssueV2> deepCloneIssueSet(Set<SprintIssueV2> originalSet) throws CloneNotSupportedException {
+		Set<SprintIssueV2> clonedSet = new HashSet<>();
 		if(CollectionUtils.isNotEmpty(originalSet)) {
-			for (MasterSprintIssue issue : originalSet) {
-				clonedSet.add((MasterSprintIssue) issue.clone());
+			for (SprintIssueV2 issue : originalSet) {
+				clonedSet.add((SprintIssueV2) issue.clone());
 			}
 			return clonedSet;
 		}

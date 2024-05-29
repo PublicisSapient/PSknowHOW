@@ -32,14 +32,7 @@ import lombok.Setter;
 @Data
 public class SubTaskDetails {
 	private String key;
-
 	private String summary;
-
-	private String issueTypeId;
-
 	private String issueTypeName;
-
 	private String status;
-
-	private String subtaskPriority;
 }

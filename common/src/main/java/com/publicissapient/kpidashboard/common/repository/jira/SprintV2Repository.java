@@ -22,7 +22,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.publicissapient.kpidashboard.common.model.jira.MasterSprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetailsV2;
 
 /**
  * @author yasbano
@@ -30,30 +30,30 @@ import com.publicissapient.kpidashboard.common.model.jira.MasterSprintDetails;
  */
 
 @Repository
-public interface MasterSprintRepository extends MongoRepository<MasterSprintDetails, ObjectId> {
+public interface SprintV2Repository extends MongoRepository<SprintDetailsV2, ObjectId> {
 
 	/**
 	 * @param basicProjectConfigId
 	 *            basicProjectConfigId
-	 * @return MasterSprintDetails
+	 * @return SprintDetailsV2
 	 */
-	MasterSprintDetails findTopByBasicProjectConfigId(ObjectId basicProjectConfigId);
+	SprintDetailsV2 findTopByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
 	 * @param basicProjectConfigId
 	 *            basicProjectConfigId in object form
 	 * @param state
 	 *            state
-	 * @return MasterSprintDetails
+	 * @return SprintDetailsV2
 	 */
-	MasterSprintDetails findTopByBasicProjectConfigIdAndState(ObjectId basicProjectConfigId, String state);
+	SprintDetailsV2 findTopByBasicProjectConfigIdAndState(ObjectId basicProjectConfigId, String state);
 
 	/**
 	 * @param id
 	 *            id
-	 * @return MasterSprintDetails
+	 * @return SprintDetailsV2
 	 */
-	MasterSprintDetails findBySprintID(String id);
+	SprintDetailsV2 findBySprintID(String id);
 
 	/**
 	 * Find all which matches provided ids
@@ -62,7 +62,7 @@ public interface MasterSprintRepository extends MongoRepository<MasterSprintDeta
 	 *            sprint ids
 	 * @return list of sprint details
 	 */
-	List<MasterSprintDetails> findBySprintIDIn(List<String> sprintIDs);
+	List<SprintDetailsV2> findBySprintIDIn(List<String> sprintIDs);
 
 	/**
 	 * delete using project basic config id
@@ -79,7 +79,7 @@ public interface MasterSprintRepository extends MongoRepository<MasterSprintDeta
 	 *            basicProjectConfigId
 	 * @return list of sprints
 	 */
-	List<MasterSprintDetails> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
+	List<SprintDetailsV2> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
 	 * find all sprints of projects and based on status of sprint
@@ -88,11 +88,11 @@ public interface MasterSprintRepository extends MongoRepository<MasterSprintDeta
 	 *            basicProjectConfigIds
 	 * @param sprintStatusList
 	 *            sprintStatusList
-	 * @return MasterSprintDetails
+	 * @return SprintDetailsV2
 	 */
 	@Query(value = "{ 'basicProjectConfigId' : { $in: ?0 }, 'state' : { $in: ?1} }", fields = "{ 'sprintID' : 1, 'state': 1, 'basicProjectConfigId' : 1, 'notCompletedIssues' : 1, 'completedIssues' : 1, 'sprintName' : 1, 'startDate' : 1, 'completeDate' : 1, 'totalIssues' : 1}", sort = "{ 'startDate' : -1 }")
-	List<MasterSprintDetails> findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(Set<ObjectId> basicProjectConfigIds,
-			List<String> sprintStatusList);
+	List<SprintDetailsV2> findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(Set<ObjectId> basicProjectConfigIds,
+                                                                                     List<String> sprintStatusList);
 
 	/**
 	 * Find all which matches provided ids
@@ -102,9 +102,9 @@ public interface MasterSprintRepository extends MongoRepository<MasterSprintDeta
 	 * @return list of sprint details
 	 */
 	@Query(value = "{ 'sprintID' : { $in: ?0 } }", fields = "{ 'sprintID' : 1, 'state' : 1 , 'startDate' : 1 , 'endDate': 1 }")
-	List<MasterSprintDetails> findBySprintIDInGetStatus(List<String> sprintIDs);
+	List<SprintDetailsV2> findBySprintIDInGetStatus(List<String> sprintIDs);
 
 	@Query(value = "{ 'basicProjectConfigId' : ?0, 'state' : { $in: [?1] } }", fields = "{'sprintName' : 1, 'startDate' : 1}", sort = "{ 'startDate' : 1 }")
-	List<MasterSprintDetails> findByBasicProjectConfigIdAndStateIgnoreCaseOrderByStartDateASC(ObjectId basicProjectConfigId,
-			String sprintState);
+	List<SprintDetailsV2> findByBasicProjectConfigIdAndStateIgnoreCaseOrderByStartDateASC(ObjectId basicProjectConfigId,
+                                                                                          String sprintState);
 }

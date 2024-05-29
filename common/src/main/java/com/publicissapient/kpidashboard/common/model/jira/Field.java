@@ -28,5 +28,5 @@ public class Field {
 	private String id;
 	private String name;
 	private String type;
-	private String value;
+	private Object value;
 }

@@ -24,13 +24,13 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import com.publicissapient.kpidashboard.common.model.application.MasterProjectRelease;
+import com.publicissapient.kpidashboard.common.model.application.ProjectReleaseV2;
 
 /**
  * The interface Project release repo.
  */
 @Repository
-public interface MasterProjectReleaseRepo extends MongoRepository<MasterProjectRelease, ObjectId> {
+public interface ProjectReleaseV2Repo extends MongoRepository<ProjectReleaseV2, ObjectId> {
 
 	/**
 	 * Find by config id project release.
@@ -39,7 +39,7 @@ public interface MasterProjectReleaseRepo extends MongoRepository<MasterProjectR
 	 *            the config id
 	 * @return the project release
 	 */
-	MasterProjectRelease findByConfigId(ObjectId configId);
+	ProjectReleaseV2 findByConfigId(ObjectId configId);
 
 	/**
 	 * Deletes all documents that matches with given basicProjectConfigId.
@@ -56,6 +56,6 @@ public interface MasterProjectReleaseRepo extends MongoRepository<MasterProjectR
 	 *            the config ids
 	 * @return the project releases
 	 */
-	List<MasterProjectRelease> findByConfigIdIn(List<ObjectId> configIds);
+	List<ProjectReleaseV2> findByConfigIdIn(List<ObjectId> configIds);
 
 }

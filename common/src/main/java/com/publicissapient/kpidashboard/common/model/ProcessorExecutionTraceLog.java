@@ -56,4 +56,6 @@ public class ProcessorExecutionTraceLog {
 	private String errorMessage;
 	private String failureLog;
 	private List<ProgressStatus> progressStatusList;
+
+	Map<String, String> boardWiseLastSyncDate;
 }

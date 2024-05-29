@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class MasterSprintIssue implements Cloneable, Serializable {
+public class SprintIssueV2 implements Cloneable, Serializable {
 	private String key;
 	private String originBoardId;
 	private String priority;
@@ -29,7 +29,7 @@ public class MasterSprintIssue implements Cloneable, Serializable {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		MasterSprintIssue sprintDetails = (MasterSprintIssue) o;
+		SprintIssueV2 sprintDetails = (SprintIssueV2) o;
 		return Objects.equals(key, sprintDetails.key);
 	}
 

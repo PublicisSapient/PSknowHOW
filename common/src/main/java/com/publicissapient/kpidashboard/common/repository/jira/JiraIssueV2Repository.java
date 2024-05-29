@@ -26,14 +26,14 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.publicissapient.kpidashboard.common.model.jira.MasterJiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueV2;
 
 /**
  * Repository for FeatureCollector.
  */
 @Repository
-public interface MasterJiraIssueRepository
-		extends CrudRepository<MasterJiraIssue, ObjectId> {
+public interface JiraIssueV2Repository
+		extends CrudRepository<JiraIssueV2, ObjectId> {
 	/**
 	 * This essentially returns the max change date from the collection, based on
 	 * the last change date (or default delta change date property) available
@@ -46,8 +46,8 @@ public interface MasterJiraIssueRepository
 	 *         collection
 	 */
 	@Query
-	List<MasterJiraIssue> findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId,
-																					  String changeDate);
+	List<JiraIssueV2> findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId,
+                                                                                        String changeDate);
 
 	/**
 	 * This essentially returns the max change date from the collection, based on
@@ -65,8 +65,8 @@ public interface MasterJiraIssueRepository
 	 */
 	@Deprecated
 	@Query
-	List<MasterJiraIssue> findTopByProcessorIdAndProjectKeyAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId,
-																								   String projectKey, String changeDate);
+	List<JiraIssueV2> findTopByProcessorIdAndProjectKeyAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId,
+                                                                                                     String projectKey, String changeDate);
 
 	/**
 	 * This essentially returns the max change date from the collection, based on
@@ -83,7 +83,7 @@ public interface MasterJiraIssueRepository
 	 *         collection
 	 */
 	@Query
-	List<MasterJiraIssue> findTopByProcessorIdAndBasicProjectConfigIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+	List<JiraIssueV2> findTopByProcessorIdAndBasicProjectConfigIdAndChangeDateGreaterThanOrderByChangeDateDesc(
 			ObjectId processorId, String basicProjectConfigId, String changeDate);
 
 	/**
@@ -99,10 +99,10 @@ public interface MasterJiraIssueRepository
 	 *            issue type
 	 * @param changeDate
 	 *            change date
-	 * @return MasterJiraIssue object
+	 * @return JiraIssueV2 object
 	 */
 	@Query
-	MasterJiraIssue findTopByProcessorIdAndBasicProjectConfigIdAndTypeNameAndChangeDateGreaterThanOrderByChangeDateDesc(
+    JiraIssueV2 findTopByProcessorIdAndBasicProjectConfigIdAndTypeNameAndChangeDateGreaterThanOrderByChangeDateDesc(
 			ObjectId processorId, String basicProjectConfigId, String typeName, String changeDate);
 
 	/**
@@ -115,7 +115,7 @@ public interface MasterJiraIssueRepository
 	 * @return the feature id by id
 	 */
 	@Query(fields = "{'issueId' : 1}")
-	MasterJiraIssue findByIssueIdAndBasicProjectConfigId(String issueId, String basicProjectConfigId);
+    JiraIssueV2 findByIssueIdAndBasicProjectConfigId(String issueId, String basicProjectConfigId);
 
 	/**
 	 * Gets story by number.
@@ -125,18 +125,18 @@ public interface MasterJiraIssueRepository
 	 * @return the story by number
 	 */
 	@Query(" {'number' : ?0 }")
-	List<MasterJiraIssue> getStoryByNumber(String number);
+	List<JiraIssueV2> getStoryByNumber(String number);
 
-	List<MasterJiraIssue> findByNumberAndBasicProjectConfigId(String number, String basicProjectConfigId);
+	List<JiraIssueV2> findByNumberAndBasicProjectConfigId(String number, String basicProjectConfigId);
 
 	/**
 	 * Find one document for given basicProjectConfigId.
 	 *
 	 * @param basicProjectConfigId
 	 *            basicProjectConfigId
-	 * @return MasterJiraIssue
+	 * @return JiraIssueV2
 	 */
-	MasterJiraIssue findTopByBasicProjectConfigId(String basicProjectConfigId);
+	JiraIssueV2 findTopByBasicProjectConfigId(String basicProjectConfigId);
 
 	/**
 	 * Deletes all documents that matches with given basicProjectConfigId.
@@ -153,9 +153,9 @@ public interface MasterJiraIssueRepository
 	 *
 	 * @param basicProjectConfigId basicProjectConfigId
 	 *
-	 * @return MasterJiraIssue
+	 * @return JiraIssueV2
 	 */
-	List<MasterJiraIssue> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);
+	List<JiraIssueV2> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);
 
 	/*
 	 * Find documents for given numbers and basicProjectConfigId.
@@ -163,15 +163,15 @@ public interface MasterJiraIssueRepository
 	 *
 	 * @param basicProjectConfigId basicProjectConfigId
 	 *
-	 * @return MasterJiraIssue
+	 * @return JiraIssueV2
 	 */
-	List<MasterJiraIssue> findByBasicProjectConfigIdIn(String basicProjectConfigId);
+	List<JiraIssueV2> findByBasicProjectConfigIdIn(String basicProjectConfigId);
 
-	List<MasterJiraIssue> findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(String projectConfigId,
-																			  List<String> releaseVersions);
+	List<JiraIssueV2> findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(String projectConfigId,
+                                                                                List<String> releaseVersions);
 
-	Set<MasterJiraIssue> findByBasicProjectConfigIdAndDefectStoryIDInAndOriginalTypeIn(String basicProjectConfigID,
-																				 Set<String> storyIDs, List<String> originalType);
+	Set<JiraIssueV2> findByBasicProjectConfigIdAndDefectStoryIDInAndOriginalTypeIn(String basicProjectConfigID,
+                                                                                   Set<String> storyIDs, List<String> originalType);
 
 	/*
 	 * Find documents for given types and basicProjectConfigId.
@@ -181,11 +181,11 @@ public interface MasterJiraIssueRepository
 	 *
 	 * @param typeName
 	 *
-	 * @return MasterJiraIssue
+	 * @return JiraIssueV2
 	 */
-	List<MasterJiraIssue> findByBasicProjectConfigIdAndOriginalTypeIn(String basicProjectConfigId, List<String> typeName);
+	List<JiraIssueV2> findByBasicProjectConfigIdAndOriginalTypeIn(String basicProjectConfigId, List<String> typeName);
 
-	List<MasterJiraIssue> findByBasicProjectConfigId(String basicProjectConfigId);
+	List<JiraIssueV2> findByBasicProjectConfigId(String basicProjectConfigId);
 
 	/**
 	 * Find set of jira Issues of particular types
@@ -199,23 +199,23 @@ public interface MasterJiraIssueRepository
 	 * @return set of jiraIssues
 	 */
 	@Query(value = "{ 'number' : { $in: ?0 }, 'basicProjectConfigId' : ?1, 'typeName' : ?2  }", fields = "{ 'number' : 1, 'basicProjectConfigId' : 1,'url':1, 'name':1, 'status':1 }")
-	Set<MasterJiraIssue> findNumberInAndBasicProjectConfigIdAndTypeName(List<String> numberIds, String basicProjectConfigId,
-																  String typeName);
+	Set<JiraIssueV2> findNumberInAndBasicProjectConfigIdAndTypeName(List<String> numberIds, String basicProjectConfigId,
+                                                                    String typeName);
 
-	Set<MasterJiraIssue> findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(String configId,
-																					   Set<String> parentStoryIds, List<String> originalTypes);
+	Set<JiraIssueV2> findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(String configId,
+                                                                                   Set<String> parentStoryIds, List<String> originalTypes);
 
 	@Query("{ 'basicProjectConfigId' : ?0, 'boardId' : ?1 }")
-	List<MasterJiraIssue> findByBasicProjectConfigIdAndBoardId(String basicProjectConfigId, String boardId);
-	List<MasterJiraIssue> findByBasicProjectConfigIdAndIssueIdIn(String basicProjectConfigId, List<String> issueIds);
+	List<JiraIssueV2> findByBasicProjectConfigIdAndBoardId(String basicProjectConfigId, String boardId);
+	List<JiraIssueV2> findByBasicProjectConfigIdAndIssueIdIn(String basicProjectConfigId, List<String> issueIds);
 	@Query("{ 'basicProjectConfigId' : ?0, 'boardId' : ?1, 'sprintId' : { $in: ?2 } }")
-	List<MasterJiraIssue> findByProjectIdAndBoardIdAndSprintIdIn(String projectId, String boardId, List<String> sprintIds);
+	List<JiraIssueV2> findByProjectIdAndBoardIdAndSprintIdIn(String projectId, String boardId, List<String> sprintIds);
 
 	@Query(value = "{ 'boardId' : ?0 }", fields = "{ 'issueType' : 1 }")
-	List<MasterJiraIssue> findIssueTypesByBoardId(String boardId);
+	List<JiraIssueV2> findIssueTypesByBoardId(String boardId);
 
 	@Query(value = "{ 'projectKey' : ?0 }", fields = "{ 'issueType' : 1 }")
-	List<MasterJiraIssue> findIssueTypesByProjectKey(String projectKey);
+	List<JiraIssueV2> findIssueTypesByProjectKey(String projectKey);
 
-	List<MasterJiraIssue> findByProjectKey(String projectKey);
+	List<JiraIssueV2> findByProjectKey(String projectKey);
 }

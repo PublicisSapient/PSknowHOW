@@ -23,7 +23,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.publicissapient.kpidashboard.common.model.MasterProjectVersion;
+import com.publicissapient.kpidashboard.common.model.ProjectVersionV2;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.AllArgsConstructor;
@@ -42,11 +42,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "master_project_release")
-public class MasterProjectRelease extends BasicModel {
+@Document(collection = "project_release_v2")
+public class ProjectReleaseV2 extends BasicModel {
 	private String projectName;
 	private String projectId;
 	private ObjectId configId;
-	private List<MasterProjectVersion> listProjectVersion;
+	private List<ProjectVersionV2> listProjectVersion;
 
 }

@@ -42,7 +42,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class MasterProjectVersion {
+public class ProjectVersionV2 {
 	private Long id;
 	private String description;
 	private String name;
@@ -54,8 +54,8 @@ public class MasterProjectVersion {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof MasterProjectVersion) {
-			MasterProjectVersion that = (MasterProjectVersion) obj;
+		if (obj instanceof ProjectVersionV2) {
+			ProjectVersionV2 that = (ProjectVersionV2) obj;
 			return Objects.equal(this.id, that.id) && Objects.equal(this.name, that.name)
 					&& Objects.equal(this.description, that.description)
 					&& Objects.equal(this.isArchived, that.isArchived)
