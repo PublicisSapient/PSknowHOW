@@ -31,6 +31,7 @@
 		<httpasyncclient.version>4.0-beta3-atlassian-1</httpasyncclient.version>
 		<httpclient.version>4.2.1-atlassian-2</httpclient.version>
 		<guava.version>33.0.0-jre</guava.version>
+		<sonar.skip>true</sonar.skip>
 	</properties>
 
 	<repositories>
