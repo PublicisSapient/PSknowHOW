@@ -11,70 +11,70 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.projectdata.service.ProjectDataService;
-import com.publicissapient.kpidashboard.common.model.application.MasterProjectRelease;
+import com.publicissapient.kpidashboard.common.model.application.ProjectReleaseV2;
 import com.publicissapient.kpidashboard.common.model.jira.DataRequest;
-import com.publicissapient.kpidashboard.common.model.jira.MasterJiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.MasterSprintDetails;
-import com.publicissapient.kpidashboard.common.repository.application.MasterProjectReleaseRepo;
-import com.publicissapient.kpidashboard.common.repository.jira.MasterJiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.MasterSprintRepository;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueV2;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetailsV2;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseV2Repo;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueV2Repository;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintV2Repository;
 
 @Service
 public class ProjectDataServiceImpl implements ProjectDataService {
 
 	@Autowired
-	MasterJiraIssueRepository masterJiraIssueRepository;
+	JiraIssueV2Repository jiraIssueV2Repository;
 	@Autowired
-	MasterSprintRepository masterSprintRepository;
+	SprintV2Repository sprintV2Repository;
 	@Autowired
-	MasterProjectReleaseRepo masterProjectReleaseRepo;
+	ProjectReleaseV2Repo projectReleaseV2Repo;
 
 	@Override
-	public List<MasterJiraIssue> getProjectJiraIssues(DataRequest dataRequest) {
-		List<MasterJiraIssue> masterJiraIssueList = new ArrayList<>();
+	public List<JiraIssueV2> getProjectJiraIssues(DataRequest dataRequest) {
+		List<JiraIssueV2> jiraIssueV2List = new ArrayList<>();
 		if (dataRequest.getBoardId() != null && dataRequest.getProjectId() != null) {
-			masterJiraIssueList.addAll(masterJiraIssueRepository
+			jiraIssueV2List.addAll(jiraIssueV2Repository
 					.findByBasicProjectConfigIdAndBoardId(dataRequest.getProjectId(), dataRequest.getBoardId()));
 		}
 		if (CollectionUtils.isNotEmpty(dataRequest.getIssueIds()) && dataRequest.getProjectId() != null) {
-			masterJiraIssueList.addAll(masterJiraIssueRepository
+			jiraIssueV2List.addAll(jiraIssueV2Repository
 					.findByBasicProjectConfigIdAndIssueIdIn(dataRequest.getProjectId(), dataRequest.getIssueIds()));
 		}
 		if (dataRequest.getProjectId() != null && dataRequest.getBoardId() != null
 				&& CollectionUtils.isNotEmpty(dataRequest.getSprintIds())) {
-			masterJiraIssueList.addAll(masterJiraIssueRepository.findByProjectIdAndBoardIdAndSprintIdIn(
+			jiraIssueV2List.addAll(jiraIssueV2Repository.findByProjectIdAndBoardIdAndSprintIdIn(
 					dataRequest.getProjectId(), dataRequest.getBoardId(), dataRequest.getSprintIds()));
 		}
 		if (dataRequest.getProjectKey() != null) {
-			masterJiraIssueList.addAll(masterJiraIssueRepository.findByProjectKey(dataRequest.getProjectKey()));
+			jiraIssueV2List.addAll(jiraIssueV2Repository.findByProjectKey(dataRequest.getProjectKey()));
 		}
-		return masterJiraIssueList;
+		return jiraIssueV2List;
 	}
 
 	@Override
 	public List<String> getIssueTypes(DataRequest dataRequest) {
 		if (dataRequest.getBoardId() != null)
-			return masterJiraIssueRepository.findIssueTypesByBoardId(dataRequest.getBoardId()).stream()
-					.map(MasterJiraIssue::getIssueType).distinct().collect(Collectors.toList());
+			return jiraIssueV2Repository.findIssueTypesByBoardId(dataRequest.getBoardId()).stream()
+					.map(JiraIssueV2::getIssueType).distinct().collect(Collectors.toList());
 		if (dataRequest.getProjectKey() != null)
-			return masterJiraIssueRepository.findIssueTypesByProjectKey(dataRequest.getProjectKey()).stream()
-					.map(MasterJiraIssue::getIssueType).distinct().collect(Collectors.toList());
+			return jiraIssueV2Repository.findIssueTypesByProjectKey(dataRequest.getProjectKey()).stream()
+					.map(JiraIssueV2::getIssueType).distinct().collect(Collectors.toList());
 
 		return Collections.emptyList();
 	}
 
 	@Override
-	public List<MasterSprintDetails> getProjectSprints(DataRequest dataRequest) {
+	public List<SprintDetailsV2> getProjectSprints(DataRequest dataRequest) {
 		if (dataRequest.getProjectId() != null) {
-			return masterSprintRepository.findByBasicProjectConfigId(new ObjectId(dataRequest.getProjectId()));
+			return sprintV2Repository.findByBasicProjectConfigId(new ObjectId(dataRequest.getProjectId()));
 		}
 		return List.of();
 	}
 
 	@Override
-	public MasterProjectRelease getProjectReleases(DataRequest dataRequest) {
+	public ProjectReleaseV2 getProjectReleases(DataRequest dataRequest) {
 		if (dataRequest.getProjectId() != null) {
-			return masterProjectReleaseRepo.findByConfigId(new ObjectId(dataRequest.getProjectId()));
+			return projectReleaseV2Repo.findByConfigId(new ObjectId(dataRequest.getProjectId()));
 		}
 		return null;
 	}

@@ -4,18 +4,18 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.common.model.application.MasterProjectRelease;
+import com.publicissapient.kpidashboard.common.model.application.ProjectReleaseV2;
 import com.publicissapient.kpidashboard.common.model.jira.DataRequest;
-import com.publicissapient.kpidashboard.common.model.jira.MasterJiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.MasterSprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueV2;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetailsV2;
 
 @Service
 public interface ProjectDataService {
-    List<MasterJiraIssue> getProjectJiraIssues(DataRequest dataRequest);
+    List<JiraIssueV2> getProjectJiraIssues(DataRequest dataRequest);
 
     List<String> getIssueTypes(DataRequest dataRequest);
 
-    List<MasterSprintDetails> getProjectSprints(DataRequest dataRequest);
+    List<SprintDetailsV2> getProjectSprints(DataRequest dataRequest);
 
-    MasterProjectRelease getProjectReleases(DataRequest dataRequest);
+    ProjectReleaseV2 getProjectReleases(DataRequest dataRequest);
 }

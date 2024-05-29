@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.projectdata.service.impl.ProjectDataServiceImpl;
-import com.publicissapient.kpidashboard.common.model.application.MasterProjectRelease;
+import com.publicissapient.kpidashboard.common.model.application.ProjectReleaseV2;
 import com.publicissapient.kpidashboard.common.model.jira.DataRequest;
-import com.publicissapient.kpidashboard.common.model.jira.MasterJiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.MasterSprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueV2;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetailsV2;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -38,15 +38,15 @@ public class ProjectDataController {
 	private CustomApiConfig customApiConfig;
 
 	@PostMapping(value = "/issues", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<MasterJiraIssue>> getProjectData(HttpServletRequest request,
-			@NotNull @RequestBody DataRequest dataRequest) {
+	public ResponseEntity<List<JiraIssueV2>> getProjectData(HttpServletRequest request,
+															@NotNull @RequestBody DataRequest dataRequest) {
 		log.info("Received {} request for /issues for request {}", request.getMethod(), dataRequest.toString());
 		Boolean isApiAuth = customApiConfig.getxApiKey().equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (Boolean.FALSE.equals(isApiAuth)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
 		}
 
-		List<MasterJiraIssue> responseList = projectDataService.getProjectJiraIssues(dataRequest);
+		List<JiraIssueV2> responseList = projectDataService.getProjectJiraIssues(dataRequest);
 		if (responseList.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
 		} else {
@@ -72,15 +72,15 @@ public class ProjectDataController {
 	}
 
 	@PostMapping(value = "/sprints", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<MasterSprintDetails>> getProjectSprints(HttpServletRequest request,
-			@NotNull @RequestBody DataRequest dataRequest) {
+	public ResponseEntity<List<SprintDetailsV2>> getProjectSprints(HttpServletRequest request,
+																   @NotNull @RequestBody DataRequest dataRequest) {
 		log.info("Received {} request for /sprints for request {}", request.getMethod(), dataRequest.toString());
 		Boolean isApiAuth = customApiConfig.getxApiKey().equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (Boolean.FALSE.equals(isApiAuth)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
 		}
 
-		List<MasterSprintDetails> responseList = projectDataService.getProjectSprints(dataRequest);
+		List<SprintDetailsV2> responseList = projectDataService.getProjectSprints(dataRequest);
 		if (responseList.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
 		} else {
@@ -89,15 +89,15 @@ public class ProjectDataController {
 	}
 
 	@PostMapping(value = "/releases", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<MasterProjectRelease> getProjectReleases(HttpServletRequest request,
-			@NotNull @RequestBody DataRequest dataRequest) {
+	public ResponseEntity<ProjectReleaseV2> getProjectReleases(HttpServletRequest request,
+															   @NotNull @RequestBody DataRequest dataRequest) {
 		log.info("Received {} request for /releases for request {}", request.getMethod(), dataRequest.toString());
 		Boolean isApiAuth = customApiConfig.getxApiKey().equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (Boolean.FALSE.equals(isApiAuth)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		}
 
-		MasterProjectRelease response = projectDataService.getProjectReleases(dataRequest);
+		ProjectReleaseV2 response = projectDataService.getProjectReleases(dataRequest);
 		if (response == null) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 		} else {

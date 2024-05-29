@@ -35,21 +35,21 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.publicissapient.kpidashboard.common.model.jira.DataRequest;
-import com.publicissapient.kpidashboard.common.model.jira.MasterJiraIssue;
-import com.publicissapient.kpidashboard.common.repository.application.MasterProjectReleaseRepo;
-import com.publicissapient.kpidashboard.common.repository.jira.MasterJiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.MasterSprintRepository;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueV2;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseV2Repo;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueV2Repository;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintV2Repository;
 
 class ProjectDataServiceImplTest {
 
 	@Mock
-	MasterJiraIssueRepository masterJiraIssueRepository;
+	JiraIssueV2Repository jiraIssueV2Repository;
 
 	@Mock
-	MasterSprintRepository masterSprintRepository;
+	SprintV2Repository SprintV2Repository;
 
 	@Mock
-	MasterProjectReleaseRepo masterProjectReleaseRepo;
+    ProjectReleaseV2Repo projectReleaseV2Repo;
 
 	@InjectMocks
 	ProjectDataServiceImpl projectDataService;
@@ -65,7 +65,7 @@ class ProjectDataServiceImplTest {
 		dataRequest.setBoardId("boardId");
 		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
 		projectDataService.getProjectJiraIssues(dataRequest);
-		verify(masterJiraIssueRepository, times(1)).findByBasicProjectConfigIdAndBoardId(anyString(), anyString());
+		verify(jiraIssueV2Repository, times(1)).findByBasicProjectConfigIdAndBoardId(anyString(), anyString());
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class ProjectDataServiceImplTest {
 		DataRequest dataRequest = new DataRequest();
 		dataRequest.setBoardId("boardId");
 		projectDataService.getIssueTypes(dataRequest);
-		verify(masterJiraIssueRepository, times(1)).findIssueTypesByBoardId(anyString());
+		verify(jiraIssueV2Repository, times(1)).findIssueTypesByBoardId(anyString());
 	}
 
 	@Test
@@ -81,7 +81,7 @@ class ProjectDataServiceImplTest {
 		DataRequest dataRequest = new DataRequest();
 		dataRequest.setProjectKey("key");
 		projectDataService.getIssueTypes(dataRequest);
-		verify(masterJiraIssueRepository, times(1)).findIssueTypesByProjectKey(anyString());
+		verify(jiraIssueV2Repository, times(1)).findIssueTypesByProjectKey(anyString());
 	}
 
 	@Test
@@ -89,7 +89,7 @@ class ProjectDataServiceImplTest {
 		DataRequest dataRequest = new DataRequest();
 		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
 		projectDataService.getProjectSprints(dataRequest);
-		verify(masterSprintRepository, times(1)).findByBasicProjectConfigId(any());
+		verify(SprintV2Repository, times(1)).findByBasicProjectConfigId(any());
 	}
 
 	@Test
@@ -97,36 +97,36 @@ class ProjectDataServiceImplTest {
 		DataRequest dataRequest = new DataRequest();
 		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
 		projectDataService.getProjectReleases(dataRequest);
-		verify(masterProjectReleaseRepo, times(1)).findByConfigId(any());
+		verify(projectReleaseV2Repo, times(1)).findByConfigId(any());
 	}
 
 	@Test
 	void testGetProjectJiraIssuesWithNullBoardIdAndProjectId() {
 		DataRequest dataRequest = new DataRequest();
 		projectDataService.getProjectJiraIssues(dataRequest);
-		verify(masterJiraIssueRepository, times(0)).findByBasicProjectConfigIdAndBoardId(anyString(), anyString());
+		verify(jiraIssueV2Repository, times(0)).findByBasicProjectConfigIdAndBoardId(anyString(), anyString());
 	}
 
 	@Test
 	void testGetIssueTypesWithNullBoardIdAndProjectKey() {
 		DataRequest dataRequest = new DataRequest();
 		projectDataService.getIssueTypes(dataRequest);
-		verify(masterJiraIssueRepository, times(0)).findIssueTypesByBoardId(anyString());
-		verify(masterJiraIssueRepository, times(0)).findIssueTypesByProjectKey(anyString());
+		verify(jiraIssueV2Repository, times(0)).findIssueTypesByBoardId(anyString());
+		verify(jiraIssueV2Repository, times(0)).findIssueTypesByProjectKey(anyString());
 	}
 
 	@Test
 	void testGetProjectSprintsWithNullProjectId() {
 		DataRequest dataRequest = new DataRequest();
 		projectDataService.getProjectSprints(dataRequest);
-		verify(masterSprintRepository, times(0)).findByBasicProjectConfigId(any());
+		verify(SprintV2Repository, times(0)).findByBasicProjectConfigId(any());
 	}
 
 	@Test
 	void testGetProjectReleasesWithNullProjectId() {
 		DataRequest dataRequest = new DataRequest();
 		projectDataService.getProjectReleases(dataRequest);
-		verify(masterProjectReleaseRepo, times(0)).findByConfigId(any());
+		verify(projectReleaseV2Repo, times(0)).findByConfigId(any());
 	}
 
 	@Test
@@ -134,9 +134,9 @@ class ProjectDataServiceImplTest {
 		DataRequest dataRequest = new DataRequest();
 		dataRequest.setBoardId("boardId");
 		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
-		when(masterJiraIssueRepository.findByBasicProjectConfigIdAndBoardId(anyString(), anyString()))
+		when(jiraIssueV2Repository.findByBasicProjectConfigIdAndBoardId(anyString(), anyString()))
 				.thenReturn(Collections.emptyList());
-		List<MasterJiraIssue> result = projectDataService.getProjectJiraIssues(dataRequest);
+		List<JiraIssueV2> result = projectDataService.getProjectJiraIssues(dataRequest);
 		assertTrue(result.isEmpty());
 	}
 
@@ -144,8 +144,8 @@ class ProjectDataServiceImplTest {
 	void testGetProjectJiraIssuesWithProjectKey() {
 		DataRequest dataRequest = new DataRequest();
 		dataRequest.setProjectKey("key");
-		when(masterJiraIssueRepository.findByProjectKey(anyString())).thenReturn(Collections.emptyList());
-		List<MasterJiraIssue> result = projectDataService.getProjectJiraIssues(dataRequest);
+		when(jiraIssueV2Repository.findByProjectKey(anyString())).thenReturn(Collections.emptyList());
+		List<JiraIssueV2> result = projectDataService.getProjectJiraIssues(dataRequest);
 		assertTrue(result.isEmpty());
 	}
 
@@ -155,7 +155,7 @@ class ProjectDataServiceImplTest {
 		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
 		dataRequest.setIssueIds(Collections.singletonList("issueId"));
 		projectDataService.getProjectJiraIssues(dataRequest);
-		verify(masterJiraIssueRepository, times(1)).findByBasicProjectConfigIdAndIssueIdIn(anyString(), anyList());
+		verify(jiraIssueV2Repository, times(1)).findByBasicProjectConfigIdAndIssueIdIn(anyString(), anyList());
 	}
 
 	@Test
@@ -165,7 +165,7 @@ class ProjectDataServiceImplTest {
 		dataRequest.setBoardId("boardId");
 		dataRequest.setSprintIds(Collections.singletonList("sprintId"));
 		projectDataService.getProjectJiraIssues(dataRequest);
-		verify(masterJiraIssueRepository, times(1)).findByProjectIdAndBoardIdAndSprintIdIn(anyString(), anyString(),
+		verify(jiraIssueV2Repository, times(1)).findByProjectIdAndBoardIdAndSprintIdIn(anyString(), anyString(),
 				anyList());
 	}
 
