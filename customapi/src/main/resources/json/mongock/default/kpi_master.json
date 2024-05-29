@@ -4526,5 +4526,34 @@
         }
       ]
     }
-  }
+  },
+    {
+      "kpiId" : "kpi178" ,
+      "kpiName" : "Defect Count By" ,
+      "isDeleted" : "False" ,
+      "defaultOrder" : 1 ,
+      "kpiCategory" : "Release" ,
+      "kpiSubCategory" : "Quality" ,
+      "kpiSource": "Jira",
+      "combinedKpiSource": "Jira/Azure",
+      "groupId" : 9 ,
+      "kanban" : false ,
+      "chartType" : "chartWithFilter" ,
+      "kpiInfo" : {
+        "definition" : "It shows the breakup of all defects tagged to a release grouped by Status, Priority, or RCA.",
+        "details" : [
+          {
+            "type" : "link" ,
+            "kpiLinkDetail" : {
+              "text" : "Detailed Information at" ,
+              "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/144146433/Release+Defect+count+by"
+            }
+          }
+        ]
+      } ,
+      "isAdditionalFilterSupport" : false ,
+      "kpiFilter" : "" ,
+      "boxType" : "chart" ,
+      "calculateMaturity" : false
+    }
 ]
