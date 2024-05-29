@@ -2115,7 +2115,8 @@ public class KPIExcelUtility {
 									+ roundingOff(totalOriginalEstimate) + " hrs");
 				}
 				excelData.setDueDate(
-						DateUtil.dateTimeConverter(jiraIssue.getDueDate(),DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+						(StringUtils.isNotEmpty(jiraIssue.getDueDate())) ? DateUtil.dateTimeConverter(
+								jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : "-");
 				kpiExcelData.add(excelData);
 			});
 		}
