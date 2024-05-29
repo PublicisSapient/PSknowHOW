@@ -329,7 +329,7 @@ export class AdvancedSettingsComponent implements OnInit {
       switchMap(() => this.httpService.getProgressStatusOfProcessors(runProcessorInput))
     ).subscribe(response => {
       if (response && response['success']) {
-        if (response['data'][0]['executionOngoing']) {
+        if (this.decideWheatherLoaderORNot(response['data'][0])) {
             this.processorsTracelogs[jiraInd].executionOngoing = true;
             this.jiraStatusContinuePulling = true
         } else {
