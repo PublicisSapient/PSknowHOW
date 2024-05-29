@@ -27,12 +27,13 @@ export class GroupBarChartComponent implements OnChanges {
   isXaxisGapRequired : any;
   customisedGroup : any ;
   customiseGroupIndex : number
-
+  plannedDueDate: any;
   elem;
   maxYValue = 0;
   dataPoints = 2;
   dataLength = 0;
   currentDayIndex;
+  plannedDueDateIndex;
   subGroups = [];
   lineGroups = [];
 
@@ -47,6 +48,8 @@ export class GroupBarChartComponent implements OnChanges {
     }
     // only run when property "data" changed
     if (changes['data']) {
+      console.log(this.kpiId, this.data);
+      
       this.dataPoints = this.data.length;
       this.dataLength = this.data.length;
       this.elem = this.viewContainerRef.element.nativeElement;
@@ -74,12 +77,14 @@ export class GroupBarChartComponent implements OnChanges {
     let data = this.data[0]?.dataGroup;
     this.isXaxisGapRequired = this.data[0]?.additionalInfo?.isXaxisGapRequired;
     this.customisedGroup = this.data[0]?.additionalInfo?.customisedGroup;
+    this.plannedDueDate = this.data[0]?.additionalInfo?.plannedDueDate;
     data = this.formatData(data);
 
     const subgroups = this.subGroups;
     const groups = d3.map(data, (d) => d.group);
 
     const currentDayIndex = this.currentDayIndex;
+    const plannedDueDateIndex = this.plannedDueDateIndex;
     const barWidth = 18;
 
     const spacingVariable = 50;
@@ -200,12 +205,19 @@ export class GroupBarChartComponent implements OnChanges {
 
 
     if (currentDayIndex) {
-        this.generateVerticleLine(currentDayIndex,0,'solid',svgX,x,y)
+      console.log(this.kpiId+ " currentDayIndex", currentDayIndex);
+      
+        this.generateVerticleLine(currentDayIndex,0,'solid',svgX,x,y,'#944075')
+    }
+    
+    if(plannedDueDateIndex){
+      console.log(this.kpiId + " plannedDueDateIndex", plannedDueDateIndex);
+      this.generateVerticleLine(plannedDueDateIndex,0,'solid',svgX,x,y, 'red')
     }
 
     this.customiseGroupIndex = data.findIndex(d => d.hasOwnProperty(this.customisedGroup))
     if(this.customiseGroupIndex && this.customiseGroupIndex > -1){
-        this.generateVerticleLine(this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1],0,data[this.customiseGroupIndex][this.customisedGroup]?.lineType,svgX,x,y)
+        this.generateVerticleLine(this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1],0,data[this.customiseGroupIndex][this.customisedGroup]?.lineType,svgX,x,y, '#944075')
     }
 
      /** Showing  data point for current plot */
@@ -501,6 +513,11 @@ export class GroupBarChartComponent implements OnChanges {
         const today = new Date();
         const startOfCurrentWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
         const endOfCurrentWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + (6 - today.getDay()));
+        if(this.plannedDueDate){
+          const plannedDueDate = new Date(this.plannedDueDate);
+          this.plannedDueDateIndex = `${(plannedDueDate.getDate() < 10) ? ('0' + plannedDueDate.getDate()) : plannedDueDate.getDate()}/${(plannedDueDate.getMonth() + 1) < 10 ? '0' + (plannedDueDate.getMonth() + 1) : plannedDueDate.getMonth() + 1}`;
+          console.log("plannedDueDateIndex "+this.kpiId, this.plannedDueDateIndex)
+        }
         const formatedWeek = `${(date1.getDate() < 10) ? ('0' + date1.getDate()) : date1.getDate()}/${(date1.getMonth() + 1) < 10 ? '0' + (date1.getMonth() + 1) : date1.getMonth() + 1} - `+
         `${(date2.getDate() < 10) ? ('0' + date2.getDate()) : date2.getDate()}/${(date2.getMonth() + 1) < 10 ? '0' + (date2.getMonth() + 1) : date2.getMonth() + 1}`;
         if (date1 <= endOfCurrentWeek && date2 >= startOfCurrentWeek) {
@@ -516,6 +533,11 @@ export class GroupBarChartComponent implements OnChanges {
           this.currentDayIndex = formatedDate;
         }
         d['group'] = formatedDate;
+        if(this.plannedDueDate){
+          const plannedDueDate = new Date(this.plannedDueDate);
+          this.plannedDueDateIndex = `${(plannedDueDate?.getDate() < 10) ? ('0' + plannedDueDate?.getDate()) : plannedDueDate?.getDate()}/${(plannedDueDate?.getMonth() + 1) < 10 ? '0' + (plannedDueDate?.getMonth() + 1) : plannedDueDate?.getMonth() + 1}`;
+          console.log("plannedDueDateIndex "+this.kpiId, this.plannedDueDateIndex)
+        }
       return d;
       }else {
         const date = new Date(d['group']);
@@ -529,13 +551,13 @@ export class GroupBarChartComponent implements OnChanges {
       }
     });
   }
-generateVerticleLine(xCoordinates,yCordinates,type,svg,xAxis,yAxis){
+generateVerticleLine(xCoordinates,yCordinates,type,svg,xAxis,yAxis, color){
     svg.append('line')
     .attr('x1', xAxis(xCoordinates)+ 18)
     .attr('y1', yAxis(yCordinates))
     .attr('x2', xAxis(xCoordinates)+18)
     .attr('y2', yAxis(this.maxYValue))
-    .attr('stroke', '#944075')
+    .attr('stroke', color)
     .attr('stroke-width', 2)
     .attr('stroke-dasharray', (d) => type === 'dotted' ? '8,3 ' : 'none' )
 }
