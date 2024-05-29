@@ -169,6 +169,8 @@ export class AdvancedSettingsComponent implements OnInit {
               projects: [this.selectedProject['id']]
             };
             that.getProcessorCompletionSteps(runProcessorInput);
+          }else{
+            that.jiraStatusContinuePulling = false;
           }
           
         } else {
@@ -366,7 +368,7 @@ export class AdvancedSettingsComponent implements OnInit {
       const lastLOgTime = logs[logs.length-1].endTime;
       const currentTime = new Date().getTime();
       var differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
-      var differenceInMinutes = differenceInMilliseconds / (1000 * 60);
+      var differenceInMinutes = Math.abs((differenceInMilliseconds / (1000 * 60)));
       if(differenceInMinutes > 10){
         return false;
       }else if(differenceInMinutes <= 10){
