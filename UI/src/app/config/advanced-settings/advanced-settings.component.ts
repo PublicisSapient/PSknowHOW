@@ -161,7 +161,8 @@ export class AdvancedSettingsComponent implements OnInit {
               }
           })
 
-          if(that.findTraceLogForTool('Jira')?.executionOngoing){
+          
+          if(this.decideWheatherLoaderORNot(that.findTraceLogForTool('Jira'))){
             that.jiraStatusContinuePulling = true;
             const runProcessorInput = {
               processor: 'Jira',
@@ -357,6 +358,26 @@ export class AdvancedSettingsComponent implements OnInit {
       this.processorsTracelogs.push({processorName : 'Jira',errorMessage : '',progressStatusList : [],executionOngoing : false,executionEndedAt : 0,isDeleteDisable : true});
       return  this.processorsTracelogs.length;
     }
+  }
+
+  decideWheatherLoaderORNot(jiraLogDetails){
+    if(jiraLogDetails && jiraLogDetails.executionOngoing){
+      const logs = jiraLogDetails.progressStatusList;
+      const lastLOgTime = logs[logs.length-1].endTime;
+      const currentTime = new Date().getTime();
+      var differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
+      var differenceInMinutes = differenceInMilliseconds / (1000 * 60);
+      if(differenceInMinutes > 10){
+        return false;
+      }else if(differenceInMinutes <= 10){
+        return true;
+      }else{
+        return false;
+      }
+    }else{
+      return false;
+    }
+
   }
 
   ngOnDestroy(): void {
