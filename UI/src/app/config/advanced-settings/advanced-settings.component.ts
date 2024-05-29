@@ -162,7 +162,7 @@ export class AdvancedSettingsComponent implements OnInit {
           })
 
           
-          if(this.decideWheatherLoaderORNot(that.findTraceLogForTool('Jira'))){
+          if(this.decideWhetherLoaderOrNot(that.findTraceLogForTool('Jira'))){
             that.jiraStatusContinuePulling = true;
             const runProcessorInput = {
               processor: 'Jira',
@@ -329,7 +329,7 @@ export class AdvancedSettingsComponent implements OnInit {
       switchMap(() => this.httpService.getProgressStatusOfProcessors(runProcessorInput))
     ).subscribe(response => {
       if (response && response['success']) {
-        if (this.decideWheatherLoaderORNot(response['data'][0])) {
+        if (this.decideWhetherLoaderOrNot(response['data'][0])) {
             this.processorsTracelogs[jiraInd].executionOngoing = true;
             this.jiraStatusContinuePulling = true
         } else {
@@ -364,7 +364,7 @@ export class AdvancedSettingsComponent implements OnInit {
     }
   }
 
-  decideWheatherLoaderORNot(jiraLogDetails){
+  decideWhetherLoaderOrNot(jiraLogDetails){
     if(jiraLogDetails && jiraLogDetails.executionOngoing && jiraLogDetails.progressStatusList.length){
       const logs = jiraLogDetails.progressStatusList;
       const lastLOgTime = logs[logs.length-1].endTime;
