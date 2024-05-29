@@ -4238,8 +4238,8 @@
       ],
       "maturityLevels": []
     },
-    "xaxisLabel": "Weeks",
-    "yaxisLabel": "Hours",
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Hours",
     "isPositiveTrend": false,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
