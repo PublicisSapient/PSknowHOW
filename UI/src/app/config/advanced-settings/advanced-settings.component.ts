@@ -330,6 +330,7 @@ export class AdvancedSettingsComponent implements OnInit {
         } else {
           this.processorsTracelogs[jiraInd].executionOngoing = false;
           this.jiraStatusContinuePulling = false;
+          this.getProcessorsTraceLogsForProject(this.selectedProject['id'])
         }
         Object.assign(this.findTraceLogForTool('Jira'),response['data'][0])
       }
