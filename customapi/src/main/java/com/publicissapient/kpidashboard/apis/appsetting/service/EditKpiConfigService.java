@@ -31,12 +31,12 @@ import com.publicissapient.kpidashboard.common.model.jira.MetadataValue;
 public interface EditKpiConfigService {
 	/**
 	 * Gets data by type for the Edit config.
-	 * 
-	 * @param projectconfigid
 	 *
+	 * @param projectconfigid
+	 * @param kpiCode
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
-	Map<String, List<MetadataValue>> getDataForType(String projectconfigid);
+	Map<String, List<MetadataValue>> getDataForType(String projectconfigid, String kpiCode);
 
 }

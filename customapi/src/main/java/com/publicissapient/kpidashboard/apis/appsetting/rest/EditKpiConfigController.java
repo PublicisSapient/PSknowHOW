@@ -59,11 +59,12 @@ public class EditKpiConfigController {
 	 * 
 	 * @return responseEntity with data,message and status
 	 */
-	@RequestMapping(value = "/jira/editKpi/{projectBasicConfigId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponse> fetchTypeValues(@PathVariable String projectBasicConfigId) {
+	@RequestMapping(value = "/jira/editKpi/{projectBasicConfigId}/{kpiCode}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	public ResponseEntity<ServiceResponse> fetchTypeValues(@PathVariable String projectBasicConfigId, @PathVariable String kpiCode) {
 		projectBasicConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectBasicConfigId);
+		kpiCode = CommonUtils.handleCrossScriptingTaintedValue(kpiCode);
 		log.info("Fetching data in KPI edit configuration for :{}", projectBasicConfigId);
-		Map<String, List<MetadataValue>> data = editKpiConfigService.getDataForType(projectBasicConfigId);
+		Map<String, List<MetadataValue>> data = editKpiConfigService.getDataForType(projectBasicConfigId, kpiCode);
 		ServiceResponse serviceResponse = new ServiceResponse(true, "Success", data);
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 	}

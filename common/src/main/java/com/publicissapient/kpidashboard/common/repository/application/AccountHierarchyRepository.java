@@ -85,6 +85,20 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 	List<AccountHierarchy> findByLabelNameAndBasicProjectConfigId(String labelName, ObjectId basicProjectConfigId);
 
 	/**
+	 * Find by label and project configId and release state.
+	 *
+	 * @param labelName
+	 *            the label name
+	 * @param basicProjectConfigId
+	 *            the basic project config id
+	 * @param state
+	 *            the release state
+	 * @return the {@link AccountHierarchy} list
+	 */
+	List<AccountHierarchy> findByLabelNameAndBasicProjectConfigIdAndReleaseState(String labelName,
+			ObjectId basicProjectConfigId, String state);
+
+	/**
 	 * Find by label and nodeId.
 	 *
 	 * @param labelName
