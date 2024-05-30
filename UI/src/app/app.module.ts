@@ -222,7 +222,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         GroupedColumnPlusLineChartV2Component,
         MultilineStyleV2Component,
         TooltipV2Component,
-        HorizontalPercentBarChartv2Component
+        HorizontalPercentBarChartv2Component,
         PageNotFoundComponent,
         ChartWithFiltersComponent,
         KpiAdditionalFilterComponent
