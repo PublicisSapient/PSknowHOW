@@ -42,6 +42,8 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectReleaseV2;
 import com.publicissapient.kpidashboard.common.model.jira.DataRequest;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueV2;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetailsV2;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseV2Repo;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueV2Repository;
@@ -53,7 +55,7 @@ class ProjectDataServiceImplTest {
 	JiraIssueV2Repository jiraIssueV2Repository;
 
 	@Mock
-	SprintV2Repository SprintV2Repository;
+	SprintV2Repository sprintV2Repository;
 
 	@Mock
 	ProjectReleaseV2Repo projectReleaseV2Repo;
@@ -99,7 +101,7 @@ class ProjectDataServiceImplTest {
 		DataRequest dataRequest = new DataRequest();
 		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
 		projectDataService.getProjectSprints(dataRequest);
-		verify(SprintV2Repository, times(1)).findByBasicProjectConfigId(any());
+		verify(sprintV2Repository, times(1)).findByBasicProjectConfigId(any());
 	}
 
 	@Test
@@ -129,7 +131,7 @@ class ProjectDataServiceImplTest {
 	void testGetProjectSprintsWithNullProjectId() {
 		DataRequest dataRequest = new DataRequest();
 		projectDataService.getProjectSprints(dataRequest);
-		verify(SprintV2Repository, times(0)).findByBasicProjectConfigId(any());
+		verify(sprintV2Repository, times(0)).findByBasicProjectConfigId(any());
 	}
 
 	@Test
@@ -254,4 +256,84 @@ class ProjectDataServiceImplTest {
 		verify(projectReleaseV2Repo, times(1)).findByConfigId(any());
 	}
 
+	@Test
+	void testGetProjectJiraIssuesWhenIssuesExist() {
+		// Arrange
+		DataRequest dataRequest = new DataRequest();
+		dataRequest.setProjectKey("Test");
+		List<JiraIssueV2> mockJiraIssues = new ArrayList<>();
+		mockJiraIssues.add(new JiraIssueV2());
+		when(jiraIssueV2Repository.findByProjectKey(any())).thenReturn(mockJiraIssues);
+
+		// Act
+		ServiceResponse response = projectDataService.getProjectJiraIssues(dataRequest);
+
+		// Assert
+		assertNotNull(response);
+		assertTrue(response.getSuccess());
+		assertEquals("Scrum project issue details fetched successfully", response.getMessage());
+		assertNotNull(response.getData());
+		assertEquals(mockJiraIssues, response.getData());
+	}
+	
+	@Test
+	void testGetIssueTypesWhenIssueTypesExist() {
+		// Arrange
+		DataRequest dataRequest = new DataRequest();
+		dataRequest.setBoardId("boardId");
+		List<JiraIssueV2> mockIssueTypes = new ArrayList<>();
+		mockIssueTypes.add(new JiraIssueV2());
+		when(jiraIssueV2Repository.findIssueTypesByBoardId(any())).thenReturn(mockIssueTypes);
+
+		// Act
+		ServiceResponse response = projectDataService.getIssueTypes(dataRequest);
+
+		// Assert
+		assertNotNull(response);
+		assertTrue(response.getSuccess());
+		assertEquals("Issue types have been successfully retrieved using the provided 'boardId'.",
+				response.getMessage());
+		assertNotNull(response.getData());
+		verify(jiraIssueV2Repository, times(1)).findIssueTypesByBoardId(any());
+	}
+	@Test
+	void testGetIssueTypesWhenIssueTypesExist_byProjectKey() {
+		// Arrange
+		DataRequest dataRequest = new DataRequest();
+		dataRequest.setProjectKey("dummyKey");
+		List<JiraIssueV2> mockIssueTypes = new ArrayList<>();
+		mockIssueTypes.add(new JiraIssueV2());
+			when(jiraIssueV2Repository.findIssueTypesByProjectKey(any())).thenReturn(mockIssueTypes);
+
+		// Act
+		ServiceResponse response = projectDataService.getIssueTypes(dataRequest);
+
+		// Assert
+		assertNotNull(response);
+		assertTrue(response.getSuccess());
+		assertNotNull(response.getData());
+		verify(jiraIssueV2Repository, times(1)).findIssueTypesByProjectKey(any());
+	}
+	
+	@Test
+	void testGetProjectSprintsWhenSprintDetailsExist() {
+		// Arrange
+		DataRequest dataRequest = new DataRequest();
+		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
+		List<SprintDetailsV2> mockSprintDetails = new ArrayList<>();
+		mockSprintDetails.add(new SprintDetailsV2());
+		when(sprintV2Repository.findByBasicProjectConfigId(any())).thenReturn(mockSprintDetails);
+
+		// Act
+		ServiceResponse response = projectDataService.getProjectSprints(dataRequest);
+
+		// Assert
+		assertNotNull(response);
+		assertTrue(response.getSuccess());
+		assertEquals("The sprint details for the Scrum project have been successfully retrieved.",
+				response.getMessage());
+		assertNotNull(response.getData());
+		assertEquals(mockSprintDetails, response.getData());
+		verify(sprintV2Repository, times(1)).findByBasicProjectConfigId(any());
+	}
 }
