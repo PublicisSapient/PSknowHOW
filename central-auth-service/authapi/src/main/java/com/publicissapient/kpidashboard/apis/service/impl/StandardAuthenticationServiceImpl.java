@@ -250,7 +250,7 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	 *                              <tt>username</tt> doen't exist in the database.
 	 */
 	@Override
-	public User resetPassword(ResetPasswordRequestDTO resetPasswordRequest) throws ApplicationException {
+	public UserDTO resetPassword(ResetPasswordRequestDTO resetPasswordRequest) throws ApplicationException {
 		log.info("ForgotPasswordServiceImpl: Reset token is {}", resetPasswordRequest.getResetToken());
 		Optional<ForgotPasswordToken> forgotPasswordTokenOptional = forgotPasswordTokenService.findByToken(
 				resetPasswordRequest.getResetToken());
@@ -268,7 +268,7 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 					validatePasswordRules(forgotPasswordToken.getUsername(), resetPasswordRequest.getPassword(),
 										  user.get()
 					);
-					return user.get();
+					return userService.getUserDTO(user.get());
 				}
 			} else {
 				log.error("Token is {}", resetPasswordRequest.getResetToken());

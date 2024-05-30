@@ -76,6 +76,12 @@ auth:
       - '/saml-login'
       - '/saml-logout'
       - '/login'
+      - '/register-user'
+      - '/forgot-password'
+      - '/reset-password'
+      - '/change-password'
+      - '/verifyUser'
+      - '/validateEmailToken'
 
   mailWithoutKafka: false
 
