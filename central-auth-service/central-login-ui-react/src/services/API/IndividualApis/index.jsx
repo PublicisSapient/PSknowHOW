@@ -24,7 +24,7 @@ const apiProvider = {
     },
 
     handlePasswordReset: (data) => {
-        return axios.post(`${API_BASE_URL}/api/resetPassword`, data);
+        return axios.post(`${API_BASE_URL}/api/reset-password`, data);
     },
 
     getStandardLoginStatus: () => {

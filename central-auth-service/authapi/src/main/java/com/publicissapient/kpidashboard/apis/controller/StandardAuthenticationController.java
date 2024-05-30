@@ -100,16 +100,16 @@ public class StandardAuthenticationController {
 	 * incase of a invalid request appends the logError message with
 	 * response code <tt>-14</tt>
 	 */
-	@PostMapping(value = "/resetPassword", produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@PostMapping(value = "/reset-password", produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponseDTO> resetPassword(@RequestBody ResetPasswordRequestDTO updatedPasswordRequest) {
 		boolean isSuccess = false;
 		log.info("ForgotPasswordController: requested token for update {}", updatedPasswordRequest.getResetToken());
-		User user = null;
+		UserDTO user = null;
 		try {
 			user = standardAuthenticationService.resetPassword(updatedPasswordRequest);
 			if (null != user) {
 				isSuccess = true;
-				User auth = new User();
+				UserDTO auth = new UserDTO();
 				auth.setEmail(user.getEmail().toLowerCase());
 				user = auth;
 			}
@@ -132,7 +132,7 @@ public class StandardAuthenticationController {
 	 * @throws IOException      the io exception
 	 * @throws ServletException the servlet exception
 	 */
-	@PostMapping(value = "/changePassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/change-password", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponseDTO> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request,
 															 HttpServletResponse response) { // NOSONAR
 		return ResponseEntity.ok().body(standardAuthenticationService.changePassword(request, response));
