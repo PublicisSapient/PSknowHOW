@@ -365,7 +365,7 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   decideWhetherLoaderOrNot(jiraLogDetails){
-    if(jiraLogDetails && jiraLogDetails.executionOngoing && jiraLogDetails.progressStatusList.length){
+    if(jiraLogDetails && jiraLogDetails?.executionOngoing && jiraLogDetails?.progressStatusList?.length){
       const logs = jiraLogDetails.progressStatusList;
       const lastLOgTime = logs[logs.length-1].endTime;
       const currentTime = new Date().getTime();
