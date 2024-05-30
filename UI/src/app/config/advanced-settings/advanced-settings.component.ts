@@ -312,6 +312,7 @@ export class AdvancedSettingsComponent implements OnInit {
         } else {
           this.messageService.add({ severity: 'success', summary: 'Data deleted Successfully.', detail: '' });
           this.getAllToolConfigs(selectedProject?.id);
+          this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
         }
       }, error => {
         this.messageService.add({ severity: 'error', summary: 'Something went wrong. Please try again after sometime.' });
