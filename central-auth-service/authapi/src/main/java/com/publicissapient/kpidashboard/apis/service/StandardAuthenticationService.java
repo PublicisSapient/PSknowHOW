@@ -44,7 +44,7 @@ public interface StandardAuthenticationService {
 	 * @return Authentication
 	 * @throws ApplicationException
 	 */
-	User resetPassword(ResetPasswordRequestDTO updatedPasswordRequest) throws ApplicationException;
+	UserDTO resetPassword(ResetPasswordRequestDTO updatedPasswordRequest) throws ApplicationException;
 
 
 	ServiceResponseDTO changePassword(ChangePasswordRequestDTO request, HttpServletResponse response);
