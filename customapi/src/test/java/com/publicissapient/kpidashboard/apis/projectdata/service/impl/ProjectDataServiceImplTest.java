@@ -17,6 +17,9 @@
 
 package com.publicissapient.kpidashboard.apis.projectdata.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.any;
@@ -25,6 +28,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,8 +38,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectReleaseV2;
 import com.publicissapient.kpidashboard.common.model.jira.DataRequest;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueV2;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseV2Repo;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueV2Repository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintV2Repository;
@@ -49,7 +56,10 @@ class ProjectDataServiceImplTest {
 	SprintV2Repository SprintV2Repository;
 
 	@Mock
-    ProjectReleaseV2Repo projectReleaseV2Repo;
+	ProjectReleaseV2Repo projectReleaseV2Repo;
+
+	@Mock
+	ProjectBasicConfigRepository projectBasicConfigRepository;
 
 	@InjectMocks
 	ProjectDataServiceImpl projectDataService;
@@ -136,8 +146,8 @@ class ProjectDataServiceImplTest {
 		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
 		when(jiraIssueV2Repository.findByBasicProjectConfigIdAndBoardId(anyString(), anyString()))
 				.thenReturn(Collections.emptyList());
-		List<JiraIssueV2> result = projectDataService.getProjectJiraIssues(dataRequest);
-		assertTrue(result.isEmpty());
+		ServiceResponse result = projectDataService.getProjectJiraIssues(dataRequest);
+		assertNull(result.getData());
 	}
 
 	@Test
@@ -145,8 +155,8 @@ class ProjectDataServiceImplTest {
 		DataRequest dataRequest = new DataRequest();
 		dataRequest.setProjectKey("key");
 		when(jiraIssueV2Repository.findByProjectKey(anyString())).thenReturn(Collections.emptyList());
-		List<JiraIssueV2> result = projectDataService.getProjectJiraIssues(dataRequest);
-		assertTrue(result.isEmpty());
+		ServiceResponse result = projectDataService.getProjectJiraIssues(dataRequest);
+		assertNull(result.getData());
 	}
 
 	@Test
@@ -167,6 +177,81 @@ class ProjectDataServiceImplTest {
 		projectDataService.getProjectJiraIssues(dataRequest);
 		verify(jiraIssueV2Repository, times(1)).findByProjectIdAndBoardIdAndSprintIdIn(anyString(), anyString(),
 				anyList());
+	}
+
+	@Test
+	void testGetScrumProjects() {
+		// Arrange
+		List<ProjectBasicConfig> mockScrumProjects = new ArrayList<>();
+		mockScrumProjects.add(new ProjectBasicConfig());
+		when(projectBasicConfigRepository.findByKanban(false)).thenReturn(mockScrumProjects);
+
+		// Act
+		ServiceResponse response = projectDataService.getScrumProjects();
+
+		// Assert
+		assertNotNull(response);
+		assertTrue(response.getSuccess());
+		assertEquals("The list of Scrum projects has been successfully retrieved.", response.getMessage());
+		assertNotNull(response.getData());
+		assertEquals(mockScrumProjects, response.getData());
+		verify(projectBasicConfigRepository, times(1)).findByKanban(false);
+	}
+
+	@Test
+	void testGetScrumProjectsWhenListIsEmpty() {
+		// Arrange
+		when(projectBasicConfigRepository.findByKanban(false)).thenReturn(Collections.emptyList());
+
+		// Act
+		ServiceResponse response = projectDataService.getScrumProjects();
+
+		// Assert
+		assertNotNull(response);
+		assertTrue(response.getSuccess());
+		assertEquals("No Scrum projects were found.", response.getMessage());
+		assertNull(response.getData());
+		verify(projectBasicConfigRepository, times(1)).findByKanban(false);
+	}
+
+	@Test
+	void testGetScrumProjectsWhenListIsNotEmpty() {
+		// Arrange
+		List<ProjectBasicConfig> mockScrumProjects = new ArrayList<>();
+		mockScrumProjects.add(new ProjectBasicConfig());
+		when(projectBasicConfigRepository.findByKanban(false)).thenReturn(mockScrumProjects);
+
+		// Act
+		ServiceResponse response = projectDataService.getScrumProjects();
+
+		// Assert
+		assertNotNull(response);
+		assertTrue(response.getSuccess());
+		assertEquals("The list of Scrum projects has been successfully retrieved.", response.getMessage());
+		assertNotNull(response.getData());
+		assertEquals(mockScrumProjects, response.getData());
+		verify(projectBasicConfigRepository, times(1)).findByKanban(false);
+	}
+
+	@Test
+	void testGetProjectReleasesWhenReleaseDetailsExist() {
+		// Arrange
+		DataRequest dataRequest = new DataRequest();
+		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
+		ProjectReleaseV2 mockProjectReleaseDetails = new ProjectReleaseV2();
+		when(projectReleaseV2Repo.findByConfigId(any())).thenReturn(mockProjectReleaseDetails);
+
+		// Act
+		ServiceResponse response = projectDataService.getProjectReleases(dataRequest);
+
+		// Assert
+		assertNotNull(response);
+		assertTrue(response.getSuccess());
+		assertEquals("The release details for the Scrum project have been successfully retrieved.",
+				response.getMessage());
+		assertNotNull(response.getData());
+		assertEquals(mockProjectReleaseDetails, response.getData());
+		verify(projectReleaseV2Repo, times(1)).findByConfigId(any());
 	}
 
 }
