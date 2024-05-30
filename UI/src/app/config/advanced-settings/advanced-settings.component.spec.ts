@@ -310,13 +310,26 @@ describe('AdvancedSettingsComponent', () => {
       {
         processorName : 'Jira',
         executionOngoing : true,
-        errorMessage : "test"
+        errorMessage : "",
+        progressStatusList : [{
+          "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
+          "endTime" : 1716799109813,
+          "status" : "COMPLETED"
+        }]
       }
     ]
-    const response = { success: true, data: [{ executionOngoing: true, errorMessage: null }] };
+    const response = { success: true, data: [{ executionOngoing: true, errorMessage: null,progressStatusList : [{
+      "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
+      "endTime" : 1716799109813,
+      "status" : "COMPLETED"
+    }] }] };
     spyOn(httpService,'runProcessor').and.returnValue(of(response));
      let jiraStatusContinuePulling = true;
-     const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: true }] };
+     const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: true,progressStatusList : [{
+      "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
+      "endTime" : 1716799109813,
+      "status" : "COMPLETED"
+    }] }] };
      const continueCall = spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
        return of(mockProgressStatusResponse).pipe(
          takeWhile(() => jiraStatusContinuePulling)
@@ -437,7 +450,12 @@ describe('AdvancedSettingsComponent', () => {
     component.processorsTracelogs = [
       {
         processorName : 'Jira',
-        executionOngoing : true
+        executionOngoing : true,
+        progressStatusList : [{
+          "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
+          "endTime" : 1716799109813,
+          "status" : "COMPLETED"
+        }],
       },
       {
         processorName : 'Github',
@@ -449,7 +467,12 @@ describe('AdvancedSettingsComponent', () => {
       data :[
         {
           processorName : 'Jira',
-          executionOngoing : true
+          executionOngoing : true,
+          progressStatusList : [{
+            "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
+            "endTime" : 1716799109813,
+            "status" : "COMPLETED"
+          }]
         }
       ]
     }
