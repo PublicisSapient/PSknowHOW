@@ -265,10 +265,10 @@ public class KPIExcelData {
 	@JsonProperty("Day")
 	private String days;
 
-	@JsonProperty("No. Of Commit")
+	@JsonProperty("No Of Commit")
 	private String numberOfCommit;
 
-	@JsonProperty("No. of Merge")
+	@JsonProperty("No of Merge")
 	private String numberOfMerge;
 
 	@JsonProperty("Created Date")
@@ -340,8 +340,8 @@ public class KPIExcelData {
 	@JsonProperty("Count")
 	private Map<String, Integer> count;
 
-	@JsonProperty("Initial Commitment")
-	private String initialCommited;
+	@JsonProperty("Scope")
+	private String scopeValue;
 
 	@JsonProperty("PI Name")
 	private String piName;

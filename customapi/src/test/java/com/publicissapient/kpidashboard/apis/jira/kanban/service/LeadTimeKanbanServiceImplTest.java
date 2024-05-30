@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,6 +80,8 @@ public class LeadTimeKanbanServiceImplTest {
 	KanbanJiraIssueHistoryRepository kanbanJiraIssueHistoryRepository;
 	@Mock
 	private CommonService commonService;
+	@Mock
+	private CustomApiConfig customApiConfig;
 	private List<KanbanIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();

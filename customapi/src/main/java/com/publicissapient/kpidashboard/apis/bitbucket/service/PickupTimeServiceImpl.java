@@ -70,7 +70,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Object>, Map<String, Object>> {
 
-	public static final String MR_COUNT = "No of MRs";
+	public static final String MR_COUNT = "No of PRs";
 	private static final String REPO_TOOLS = "RepoTool";
 	private static final String ASSIGNEE = "assignee";
 	@Autowired
@@ -337,6 +337,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 		dataCount.setHoverValue(hoverValues);
 		dataCountMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dataCount);
 	}
+
+
 
 	/**
 	 * populate excel data

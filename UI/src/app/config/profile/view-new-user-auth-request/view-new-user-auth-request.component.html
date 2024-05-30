@@ -17,7 +17,7 @@
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-request let-expanded="expanded">
-                <tr>
+                <tr [ngClass]="{'white-list-email-row': !request.whitelistDomainEmail}" tooltipPosition="top" [pTooltip]="request.whitelistDomainEmail ? null : 'Email domain not whitelisted. Please verify before approving the access request'">
                   <td class='custom-table-cell  text-truncate'>{{request.username}}</td>
                   <td class='custom-table-cell  text-truncate'>{{request.email}}</td>
                   <td class='custom-table-cell'>

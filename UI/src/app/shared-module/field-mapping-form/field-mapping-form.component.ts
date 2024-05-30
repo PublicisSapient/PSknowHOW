@@ -59,6 +59,7 @@ export class FieldMappingFormComponent implements OnInit {
   @Input() metaDataTemplateCode : any;
   @Input() parentComp : string;
   nestedFieldANDParent = {}
+  @Input() nodeId: string = '';
 
 private setting = {
   element: {
@@ -122,7 +123,7 @@ private setting = {
         history: fieldMapping.history
       })
     }
-    if (fieldMapping && (fieldMapping?.originalValue || fieldMapping?.originalValue === false)) {
+    if (fieldMapping && (fieldMapping?.originalValue || fieldMapping?.originalValue === false) || (!isNaN(fieldMapping?.originalValue) && fieldMapping?.originalValue >= 0)) {
       return new FormControl(fieldMapping.originalValue);
     } else {
       switch (config.fieldType) {
@@ -292,7 +293,7 @@ private setting = {
       }
     });
 
-     if(this.selectedToolConfig[0].toolName.toLowerCase() === 'jira'){
+     if(this.selectedToolConfig[0].toolName.toLowerCase() === 'jira' || this.selectedToolConfig[0].toolName.toLowerCase() === 'azure'){
           if (!(this.metaDataTemplateCode && this.metaDataTemplateCode === '9' || this.metaDataTemplateCode === '10' )) {
             this.confirmationService.confirm({
               message: `Please note that change in mappings is a deviation from initially configured template.
@@ -316,7 +317,11 @@ private setting = {
 
   /** Responsible for handle save */
   saveFieldMapping(mappingData,isImport?) {
-    this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingData,this.kpiId,isImport).subscribe(response => {
+    let mappingObj = {
+      "releaseNodeId": this.nodeId || null,
+      "fieldMappingRequests": [...mappingData]
+    }
+    this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingObj,this.kpiId,isImport).subscribe(response => {
       if (response && response['success']) {
         this.messenger.add({
           severity: 'success',
@@ -418,7 +423,10 @@ compareValues(originalValue: any, previousValue: any): boolean {
   }
 
   refreshFieldMapppingValueANDHistory(){
-    this.http.getFieldMappingsWithHistory(this.selectedToolConfig[0].id,this.kpiId).subscribe(mappings => {
+    let obj = {
+      "releaseNodeId": this.nodeId || null
+    }
+    this.http.getFieldMappingsWithHistory(this.selectedToolConfig[0].id,this.kpiId, obj).subscribe(mappings => {
       if (mappings && mappings['success']) {
         this.formData = mappings['data'].fieldMappingResponses;
         this.metaDataTemplateCode = mappings['data'].metaTemplateCode;

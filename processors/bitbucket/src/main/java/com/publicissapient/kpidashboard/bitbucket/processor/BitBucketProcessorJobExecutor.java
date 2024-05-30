@@ -52,6 +52,7 @@ import com.publicissapient.kpidashboard.bitbucket.repository.BitbucketProcessorR
 import com.publicissapient.kpidashboard.bitbucket.repository.BitbucketRepoRepository;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -198,6 +199,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
+					processorToolConnectionService.validateConnectionFlag(tool);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					BitbucketRepo bitRepo = getBitbucketRepo(tool, processor.getId());
 					if (proBasicConfig.isSaveAssigneeDetails()
@@ -283,7 +285,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	 */
 	private void isClientException(ProcessorToolConnection tool, HttpClientErrorException cause) {
 		if (cause != null && cause.getStatusCode().is4xxClientError()) {
-			String errMsg = cause.getStatusCode().toString();
+			String errMsg = ClientErrorMessageEnum.fromValue(cause.getStatusCode().value()).getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(tool.getConnectionId(), errMsg);
 		}
 	}

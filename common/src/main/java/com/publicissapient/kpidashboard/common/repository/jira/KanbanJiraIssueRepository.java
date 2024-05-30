@@ -160,4 +160,8 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 	List<KanbanJiraIssue> findAll();
 
     List<KanbanJiraIssue> findByBasicProjectConfigId(String basicProjectConfigId);
+
+
+	@Query(value = "{ 'basicProjectConfigId' : ?0, 'typeName' : { $ne : ?1 } }", count = true)
+	long countByBasicProjectConfigIdAndExcludeTypeName(String basicProjectConfigId, String typeName);
 }

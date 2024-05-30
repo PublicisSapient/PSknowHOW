@@ -53,9 +53,9 @@
 
 :root {
   --color-blue: #2196f3;
-  --color-green: #1b9a59;
+  --color-green: #15BA40;
   --color-red: #dc3545;
-  --color-yellow: #f7c223;
+  --color-yellow: #fbcf5f;
   --color-pink: pink;
   --color-white: #ffffff;
   --color-black: #707070;
@@ -2053,6 +2053,12 @@ p-dialog .p-button-cancel.p-button-secondary {
 }
 
 .broken-conn-row{
-  background-color: rgb(201, 56, 56) !important;
-  color : white !important;
+  background-color: #ffecd7 !important;
+  color : black !important;
+}
+.text-yellow{
+  color: var(--color-yellow);
+}
+.list-style-none{
+  list-style-type: none;
 }

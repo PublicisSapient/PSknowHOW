@@ -44,6 +44,7 @@ import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.JiraBoardListResponse;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeDetailsDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
@@ -104,6 +105,7 @@ public class JiraToolConfigServiceImpl {
 		try {
 			if (optConnection.isPresent()) {
 				Connection connection = optConnection.get();
+				connectionService.validateConnectionFlag(connection);
 				String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 				HttpEntity<?> httpEntity = getHttpEntity(connection);
 				fetchBoardDetailsRestAPICall(boardRequestDTO, responseList, baseUrl, httpEntity, connection);
@@ -125,7 +127,8 @@ public class JiraToolConfigServiceImpl {
 	private void isClientException(Optional<Connection> optConnection, RestClientException exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			String errMsg = ClientErrorMessageEnum
+					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
 			optConnection.ifPresent(connection -> connectionService.updateBreakingConnection(connection, errMsg));
 		}
 	}
@@ -160,7 +163,9 @@ public class JiraToolConfigServiceImpl {
 			} catch (Exception exception) {
 				if (exception instanceof HttpClientErrorException
 						&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-					String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+					String errMsg = ClientErrorMessageEnum
+							.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
+							.getReasonPhrase();
 					connectionService.updateBreakingConnection(connection, errMsg);
 				}
 				log.error("Error while fetching boardList for projectKey Id {}:  {}", boardRequestDTO.getProjectKey(),

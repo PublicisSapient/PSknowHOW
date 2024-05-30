@@ -17,9 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
-import static com.publicissapient.kpidashboard.jira.constant.JiraConstants.ERROR_MSG_401;
-import static com.publicissapient.kpidashboard.jira.constant.JiraConstants.ERROR_MSG_NO_RESULT_WAS_AVAILABLE;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -47,14 +44,17 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.scope.context.StepContext;
+import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -185,9 +185,9 @@ public class JiraCommonService {
 		if (matcher.find()) {
 			String statusCodeString = matcher.group(1);
 			int statusCode = Integer.parseInt(statusCodeString);
-			if (statusCode >= 401 && statusCode < 500 && connectionOptional.isPresent()) {
-				processorToolConnectionService.updateBreakingConnection(connectionOptional.get().getId(),
-						HttpStatus.valueOf(statusCode).getReasonPhrase());
+			if (statusCode >= 400 && statusCode < 500 && connectionOptional.isPresent()) {
+				String errMsg = ClientErrorMessageEnum.fromValue(statusCode).getReasonPhrase();
+				processorToolConnectionService.updateBreakingConnection(connectionOptional.get().getId(), errMsg);
 			}
 		}
 	}
@@ -287,21 +287,49 @@ public class JiraCommonService {
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
 				if (searchResult != null) {
+					saveSearchDetailsInContext(searchResult, pageStart, null, StepSynchronizationManager.getContext());
 					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
 							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
 							searchResult.getTotal()));
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-					log.error(ERROR_MSG_401);
-				} else {
-					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e);
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 400 && e.getStatusCode().get() < 500) {
+					String errMsg = ClientErrorMessageEnum.fromValue(e.getStatusCode().get()).getReasonPhrase();
+					processorToolConnectionService
+							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 				}
 				throw e;
 			}
 
 		}
 		return searchResult;
+	}
+
+	/**
+	 * Method to save the search details in context.
+	 * 
+	 * @param searchResult
+	 *            searchResult
+	 * @param pageStart
+	 *            pageStart
+	 * @param stepContext
+	 *            stepContext
+	 */
+	public void saveSearchDetailsInContext(SearchResult searchResult, int pageStart, String boardId,
+			StepContext stepContext) {
+		if (stepContext == null) {
+			log.error("StepContext is null");
+			return;
+		}
+		JobExecution jobExecution = stepContext.getStepExecution().getJobExecution();
+		int total = searchResult.getTotal();
+		int processed = Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, total);
+
+		// Saving Progress details in context
+		jobExecution.getExecutionContext().putInt(JiraConstants.TOTAL_ISSUES, total);
+		jobExecution.getExecutionContext().putInt(JiraConstants.PROCESSED_ISSUES, processed);
+		jobExecution.getExecutionContext().putInt(JiraConstants.PAGE_START, pageStart);
+		jobExecution.getExecutionContext().putString(JiraConstants.BOARD_ID, boardId);
 	}
 
 	/**
@@ -370,15 +398,17 @@ public class JiraCommonService {
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
 				if (searchResult != null) {
+					saveSearchDetailsInContext(searchResult, pageStart, boardId,
+							StepSynchronizationManager.getContext());
 					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
 							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
 							searchResult.getTotal()));
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-					log.error(ERROR_MSG_401);
-				} else {
-					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e);
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 400 && e.getStatusCode().get() < 500) {
+					String errMsg = ClientErrorMessageEnum.fromValue(e.getStatusCode().get()).getReasonPhrase();
+					processorToolConnectionService
+							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 				}
 				throw e;
 			}
@@ -408,6 +438,12 @@ public class JiraCommonService {
 				parseVersionData(getDataFromClient(projectConfig, url, krb5Client), projectVersionList);
 			}
 		} catch (RestClientException rce) {
+			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 400
+					&& rce.getStatusCode().get() < 500) {
+				String errMsg = ClientErrorMessageEnum.fromValue(rce.getStatusCode().get()).getReasonPhrase();
+				processorToolConnectionService
+						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
+			}
 			log.error("Client exception when fetching versions " + rce);
 			throw rce;
 		} catch (MalformedURLException mfe) {

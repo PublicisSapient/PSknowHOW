@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -23,6 +24,7 @@ import com.publicissapient.kpidashboard.apis.bamboo.model.BambooDeploymentProjec
 import com.publicissapient.kpidashboard.apis.bamboo.model.BambooPlansResponseDTO;
 import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 
@@ -72,9 +74,8 @@ public class BambooToolConfigServiceImpl {
 
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
-
+				connectionService.validateConnectionFlag(connection);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONParser respParser = new JSONParser();
 					JSONObject object = (JSONObject) respParser.parse(response.getBody());
@@ -115,17 +116,12 @@ public class BambooToolConfigServiceImpl {
 
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
-
-				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-
-				if (response.getStatusCode() == HttpStatus.OK) {
-					parseBranchesResponse(responseDTOList, response);
+				connectionService.validateConnectionFlag(connection);
+				if (StringUtils.isNotBlank(jobNameKey)) { // Add input validation for jobNameKey
+					apiCallToGetBranches(responseDTOList, url, httpEntity);
 				} else {
-					String statusCode = response.getStatusCode().toString();
-					log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url,
-							statusCode);
+					log.error("Invalid jobNameKey: {}", jobNameKey);
 				}
-
 			} catch (Exception exception) {
 				isClientException(connection, exception);
 				log.error("Error while fetching BambooBranchesNameAndKeys from {}:  {}", url, exception.getMessage());
@@ -133,6 +129,24 @@ public class BambooToolConfigServiceImpl {
 			return responseDTOList;
 		}
 		return responseDTOList;
+	}
+
+	/**
+	 * this method is used to call the api to get branches
+	 * @param responseDTOList
+	 * @param url
+	 * @param httpEntity
+	 * @throws ParseException
+	 */
+	private void apiCallToGetBranches(List<BambooBranchesResponseDTO> responseDTOList, String url, HttpEntity<?> httpEntity) throws ParseException {
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+		if (response.getStatusCode() == HttpStatus.OK) {
+			parseBranchesResponse(responseDTOList, response);
+		} else {
+			String statusCode = response.getStatusCode().toString();
+			log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url,
+					statusCode);
+		}
 	}
 
 	/**
@@ -146,7 +160,8 @@ public class BambooToolConfigServiceImpl {
 	private void isClientException(Connection connection, Exception exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			String errMsg = ClientErrorMessageEnum
+					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
 			connectionService.updateBreakingConnection(connection, errMsg);
 		}
 	}
@@ -188,8 +203,8 @@ public class BambooToolConfigServiceImpl {
 			String url = baseUrl + DEPLOYMENTPROJECT_URL_SUFFIX;
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
+				connectionService.validateConnectionFlag(connection);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONParser respParser = new JSONParser();
 					JSONArray searchResults = (JSONArray) ((JSONObject) respParser.parse(response.getBody()))

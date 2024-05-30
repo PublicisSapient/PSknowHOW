@@ -122,7 +122,7 @@ public class KpiElement implements Serializable { // NOPMD
 	private List<KPIExcelColumnInfo> excelColumnInfo;
 	private transient Object filterDuration;
 	// used by second screen of DSV for sending all data
-	private transient Set<IterationKpiModalValue> issueData;
+	private transient Set<IssueKpiModalValue> issueData;
 	// used by first scrren of DSV for filtering
 	private transient List<Filter> filterData;
 	// used by second screen of DSV for filtering on status
@@ -131,6 +131,9 @@ public class KpiElement implements Serializable { // NOPMD
 	private Boolean isAggregationStacks;
 //	maturity key for overall filter
 	private String overallMaturity;
+
+	//for consolidated one kpi for all Pie charts where grouping happens on some key
+	private transient FilterGroup filterGroup;
 
 	public void setResponseCode(String responseCode) {
 		this.responseCode = responseCode;
@@ -863,11 +866,11 @@ public class KpiElement implements Serializable { // NOPMD
 		this.filterDuration = filterDuration;
 	}
 
-	public Set<IterationKpiModalValue> getIssueData() {
+	public Set<IssueKpiModalValue> getIssueData() {
 		return issueData;
 	}
 
-	public void setIssueData(Set<IterationKpiModalValue> issueData) {
+	public void setIssueData(Set<IssueKpiModalValue> issueData) {
 		this.issueData = issueData;
 	}
 
@@ -911,6 +914,14 @@ public class KpiElement implements Serializable { // NOPMD
 
 	public void setAggregationStacks(Boolean aggregationStacks) {
 		isAggregationStacks = aggregationStacks;
+	}
+
+	public FilterGroup getFilterGroup() {
+		return filterGroup;
+	}
+
+	public void setFilterGroup(FilterGroup filterGroup) {
+		this.filterGroup = filterGroup;
 	}
 
 }

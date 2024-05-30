@@ -566,7 +566,6 @@ public abstract class ToolsKPIService<R, S> {
 
 				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
 				if (CollectionUtils.isNotEmpty(dataCounts)) {
-					dataCounts = filterDataCountForMaturity(kpiRequest, dataCounts);
 					Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, dataCounts);
 					String aggregateValue = null;
 					String maturity = null;
@@ -581,25 +580,6 @@ public abstract class ToolsKPIService<R, S> {
 			}
 		}
 		return trendValues;
-	}
-
-	/**
-	 * filter initial data points by property to get latest for maturity
-	 *
-	 * @param kpiRequest
-	 *            kpi request
-	 * @param dataCounts
-	 *            data counts
-	 * @return filtered data counts
-	 */
-	private List<DataCount> filterDataCountForMaturity(KpiRequest kpiRequest, List<DataCount> dataCounts) {
-
-		if (kpiRequest.getLabel().equalsIgnoreCase(Constant.PROJECT)
-				&& dataCounts.size() > customApiConfig.getSprintCountForKpiCalculation()) {
-			dataCounts = dataCounts.subList(0, customApiConfig.getSprintCountForKpiCalculation());
-		}
-		return dataCounts;
-
 	}
 
 	/**
@@ -707,7 +687,6 @@ public abstract class ToolsKPIService<R, S> {
 					valueMap.remove(Constant.DEFAULT);
 					valueMap.forEach((key, value) -> {
 						List<DataCount> trendValues = new ArrayList<>();
-
 						Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, value);
 						String aggregateValue = null;
 						String maturity = null;

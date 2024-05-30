@@ -407,7 +407,7 @@ public class FieldMapping extends FieldMappingHistory {
 
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";
-	private Integer startDateCountKPI150;
+	private Map<String, Integer> startDateCountKPI150;
 	private List<String> jiraDevDoneStatusKPI150;
 	private boolean populateByDevDoneKPI150;
 

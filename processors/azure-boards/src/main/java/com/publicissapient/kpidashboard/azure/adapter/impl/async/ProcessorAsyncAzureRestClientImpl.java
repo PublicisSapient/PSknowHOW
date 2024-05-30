@@ -49,6 +49,7 @@ import com.publicissapient.kpidashboard.azure.model.AzureServer;
 import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.azure.util.AzureConstants;
 import com.publicissapient.kpidashboard.azure.util.AzureProcessorUtil;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.azureboards.AzureBoardsWIModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.iterations.AzureIterationsModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.AzureUpdatesModel;
@@ -339,7 +340,8 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 
 		} else {
 			if (responseEntity.getStatusCode().is4xxClientError()) {
-				String errMsg = responseEntity.getStatusCode().toString();
+				String errMsg = ClientErrorMessageEnum.fromValue(responseEntity.getStatusCode().value())
+						.getReasonPhrase();
 				processorToolConnectionService
 						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 			}

@@ -1652,6 +1652,27 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
+	 * gets next date excluding weekends
+	 *
+	 * @param duration
+	 *            time duration
+	 * @param currentDate
+	 *            current date
+	 * @return next local date excluding weekends
+	 */
+	public static LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
+		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
+			currentDate = currentDate.minusWeeks(1);
+		} else {
+			currentDate = currentDate.minusDays(1);
+			while (currentDate.getDayOfWeek() == DayOfWeek.SATURDAY || currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+				currentDate = currentDate.minusDays(1);
+			}
+		}
+		return currentDate;
+	}
+
+	/**
 	 * get date range
 	 *
 	 * @param dateRange
@@ -1673,66 +1694,36 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * gets next date
+	 * get date range excluding weekends
 	 *
-	 * @param duration
-	 * 		time duration
-	 * @param currentDate
-	 * 		current date
-	 * @return next local date
+	 * @param date
+	 *            start date
+	 * @param period
+	 *            week or day
+	 * @return CustomDateRange
 	 */
-	public static LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
-		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
-			currentDate = currentDate.minusWeeks(1);
-		} else {
-			currentDate = currentDate.minusDays(1);
-		}
-		return currentDate;
-	}
-
-	/**
-	 * get kpi data from repo tools api
-	 *
-	 * @param endDate
-	 * 		end date
-	 * @param toolMap
-	 * 		tool map from cache
-	 * @param node
-	 * 		project node
-	 * @param dataPoint
-	 * 		no of days/weeks
-	 * @param duration
-	 * 		time duration
-	 * @return lis of RepoToolKpiMetricResponse object
-	 */
-	public List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
-			Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node, String duration, Integer dataPoint, String repoToolKpi) {
-
-		List<String> projectCodeList = new ArrayList<>();
-		ProjectFilter accountHierarchyData = node.getProjectFilter();
-		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap())
-				.getOrDefault(Constant.REPO_TOOLS, Collections.emptyList());
-		if (!CollectionUtils.isEmpty(tools)) {
-			projectCodeList.add(node.getId());
-		}
-
-		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(projectCodeList)) {
-			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
-			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-				startDate = LocalDate.now().minusWeeks(dataPoint);
-				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
-					startDate = startDate.minusDays(1);
-				}
+	public static CustomDateRange getStartAndEndDateExcludingWeekends(LocalDate date, String period) {
+		CustomDateRange dateRange = new CustomDateRange();
+		LocalDate startDate = null;
+		LocalDate endDate = null;
+		if (period.equalsIgnoreCase(CommonConstant.WEEK)) {
+			LocalDate monday = date;
+			while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
+				monday = monday.minusDays(1);
 			}
-			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
-			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
-					repoToolKpi, startDate.toString(), endDate.toString(),
-					debbieDuration);
+			startDate = monday;
+			LocalDate friday = date;
+			while (friday.getDayOfWeek() != DayOfWeek.FRIDAY) {
+				friday = friday.plusDays(1);
+			}
+			endDate = friday;
+		} else {
+			startDate = date;
+			endDate = date;
 		}
-
-		return repoToolKpiMetricResponseList;
+		dateRange.setStartDate(startDate);
+		dateRange.setEndDate(endDate);
+		return dateRange;
 	}
 
 	/**
@@ -1820,6 +1811,51 @@ public class KpiHelperService { // NOPMD
 						priorityValues);
 			}
 		}
+	}
+
+	/**
+	 * get kpi data from repo tools api
+	 *
+	 * @param endDate
+	 * 		end date
+	 * @param toolMap
+	 * 		tool map from cache
+	 * @param node
+	 * 		project node
+	 * @param dataPoint
+	 * 		no of days/weeks
+	 * @param duration
+	 * 		time duration
+	 * @return lis of RepoToolKpiMetricResponse object
+	 */
+	public List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
+			Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node, String duration, Integer dataPoint, String repoToolKpi) {
+
+		List<String> projectCodeList = new ArrayList<>();
+		ProjectFilter accountHierarchyData = node.getProjectFilter();
+		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap())
+				.getOrDefault(Constant.REPO_TOOLS, Collections.emptyList());
+		if (!CollectionUtils.isEmpty(tools)) {
+			projectCodeList.add(node.getId());
+		}
+
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(projectCodeList)) {
+			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
+			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+				startDate = LocalDate.now().minusWeeks(dataPoint);
+				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+					startDate = startDate.minusDays(1);
+				}
+			}
+			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
+			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
+					repoToolKpi, startDate.toString(), endDate.toString(),
+					debbieDuration);
+		}
+
+		return repoToolKpiMetricResponseList;
 	}
 
 	/**

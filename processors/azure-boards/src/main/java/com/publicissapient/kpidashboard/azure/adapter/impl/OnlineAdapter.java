@@ -42,6 +42,7 @@ import com.publicissapient.kpidashboard.azure.config.AzureProcessorConfig;
 import com.publicissapient.kpidashboard.azure.model.AzureServer;
 import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.azure.util.AzureConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.azureboards.AzureBoardsWIModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.iterations.AzureIterationsModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.AzureUpdatesModel;
@@ -73,6 +74,7 @@ public class OnlineAdapter implements AzureAdapter {
 
 	public OnlineAdapter() {
 	}
+
 	/**
 	 * @param azureProcessorConfig
 	 *            azure processor configuration
@@ -115,7 +117,8 @@ public class OnlineAdapter implements AzureAdapter {
 			} catch (RestClientException rce) {
 				if (rce instanceof HttpClientErrorException
 						&& ((HttpClientErrorException) rce).getStatusCode().is4xxClientError()) {
-					String errMsg = ((HttpClientErrorException) rce).getStatusCode().toString();
+					String errMsg = ClientErrorMessageEnum
+							.fromValue(((HttpClientErrorException) rce).getStatusCode().value()).getReasonPhrase();
 					processorToolConnectionService
 							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 				}

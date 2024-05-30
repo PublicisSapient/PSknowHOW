@@ -44,6 +44,7 @@ import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -144,9 +145,10 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 				}
 				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 			} catch (RestClientException e) {
-				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 400 && e.getStatusCode().get() < 500) {
 					processorToolConnectionService.updateBreakingConnection(
-							projectConfig.getProjectToolConfig().getConnectionId(), ERROR_MSG_401);
+							projectConfig.getProjectToolConfig().getConnectionId(),
+							ClientErrorMessageEnum.fromValue(e.getStatusCode().get()).getReasonPhrase());
 					log.error(ERROR_MSG_401);
 				} else {
 					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e);

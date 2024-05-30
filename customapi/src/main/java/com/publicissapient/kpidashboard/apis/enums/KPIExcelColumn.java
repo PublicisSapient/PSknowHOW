@@ -45,7 +45,7 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url",
 					"Weeks")), ISSUE_COUNT("kpi40",
 			Arrays.asList("Sprint Name", "Story ID", "Issue Description")), CODE_COMMIT("kpi11",
-			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "No. Of Commit",
+			Arrays.asList("Project Name", "Repo", "Branch", "Developer", "Days/Weeks", "No. Of Commit",
 					"No. of Merge")),
 
 	MEAN_TIME_TO_MERGE("kpi84",
@@ -71,8 +71,8 @@ public enum KPIExcelColumn {
 											Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad",
 													"Original Time Estimate (in hours)",
 													"Total Time Spent (in hours)")), COMMITMENT_RELIABILITY("kpi72",
-															Arrays.asList("Sprint Name", "Story ID", "Squad", "Issue Status","Issue Type",
-																	"Initial Commitment", "Size(story point/hours)")),
+															Arrays.asList("Sprint Name", "Story ID", "Squad", "Issue Status","Issue Type", "Scope" ,
+																	"Size(story point/hours)")),
 
 	DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad", "Linked Defects")),
 
@@ -317,7 +317,14 @@ public enum KPIExcelColumn {
 			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live")),
 	REWORK_RATE("kpi173", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Rework Rate")),
 
-	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee"));
+	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee")),
+
+	DEFECT_COUNT_BY("kpi178", Arrays.asList("Issue Id", "Issue Description", "Sprint Name", "Issue Type",
+			"Issue Status", "Root Cause List", "Priority", "Testing Phase", "Assignee")),
+
+	DEFECT_COUNT_BY_EXPORT("kpi178", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
+			"Issue Status", "Root Cause", "Priority", "Testing Phase", "Assignee"));
+
 
 	// @formatter:on
 

@@ -382,6 +382,109 @@ export class MilestoneComponent implements OnInit {
   getChartData(kpiId, idx, aggregationType?) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
     this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
+
+    if (kpiId === 'kpi178') {
+      this.kpiChartData[kpiId] = [];
+      this.kpiChartData[kpiId].push({
+        data: this.allKpiArray[idx]?.issueData,
+        filters: this.allKpiArray[idx]?.filterGroup,
+        modalHeads:  this.allKpiArray[idx]?.modalHeads
+      });
+
+    } else {
+      /**if trendValueList is an object */
+      if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
+        if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
+          && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
+          let tempArr = [];
+          const preAggregatedValues = [];
+          /** tempArr: array with combination of all items of filter1 and filter2 */
+          tempArr = this.helperService.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
+          for (let i = 0; i < tempArr?.length; i++) {
+            preAggregatedValues?.push(...trendValueList['value']?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
+          }
+          if (preAggregatedValues?.length > 1) {
+            this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+          } else {
+            this.kpiChartData[kpiId] = [...preAggregatedValues];
+          }
+        } else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1'))
+          || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2'))) {
+          const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
+          let preAggregatedValues = [];
+          for (let i = 0; i < filters?.length; i++) {
+            preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
+          }
+          if (preAggregatedValues?.length > 1) {
+            this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+          } else {
+            this.kpiChartData[kpiId] = [...preAggregatedValues];
+          }
+        }
+        else {
+          /** when there are no kpi level filters */
+          this.kpiChartData[kpiId] = [];
+          if (trendValueList && trendValueList?.hasOwnProperty('value') && trendValueList['value']?.length > 0) {
+            this.kpiChartData[kpiId]?.push(trendValueList['value']?.filter((x) => x['filter1'] == 'Overall')[0]);
+          } else if (trendValueList?.length > 0) {
+            this.kpiChartData[kpiId] = [...trendValueList];
+          } else {
+            const obj = JSON.parse(JSON.stringify(trendValueList));
+            this.kpiChartData[kpiId]?.push(obj);
+          }
+        }
+      }
+      /**if trendValueList is an array */
+      else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
+        if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
+          let tempArr = [];
+          const preAggregatedValues = [];
+          /** tempArr: array with combination of all items of filter1 and filter2 */
+          tempArr = this.helperService.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
+          for (let i = 0; i < tempArr?.length; i++) {
+            preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
+          }
+          if (preAggregatedValues?.length > 1) {
+            if (this.getKpiChartType(kpiId) === 'GroupBarChart' || this.getKpiChartType(kpiId) === 'horizontalPercentBarChart') {
+              this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
+            } else {
+              this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+            }
+          } else {
+            this.kpiChartData[kpiId] = [...preAggregatedValues];
+          }
+        } else if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') || this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
+          let filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
+          let preAggregatedValues = [];
+          // for single select dropdown filters
+          if (!Array.isArray(filters)) {
+            filters = [filters];
+          }
+          for (let i = 0; i < filters?.length; i++) {
+            preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
+          }
+          if (preAggregatedValues?.length > 1) {
+            if (this.getKpiChartType(kpiId) === 'GroupBarChart' || this.getKpiChartType(kpiId) === 'horizontalPercentBarChart') {
+              this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
+            } else {
+              this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+            }
+          } else {
+            if (preAggregatedValues[0]?.hasOwnProperty('value')) {
+              this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
+            } else {
+              this.kpiChartData[kpiId] = [...preAggregatedValues];
+            }
+          }
+        } else {
+          this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
+        }
+      }
+      else if (trendValueList?.length > 0) {
+        this.kpiChartData[kpiId] = [...trendValueList[0]?.value];
+      } else {
+        this.kpiChartData[kpiId] = [];
+      }
     /**if trendValueList is an object */
     if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
       if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
@@ -625,8 +728,8 @@ export class MilestoneComponent implements OnInit {
     const nodes = this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId;
     const level = this.filterApplyData?.level;
     const nodeChildId = this.filterApplyData['selectedMap']?.release[0];
-    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
-  
+    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj, nodes, level, nodeChildId, this.updatedConfigGlobalData, kpiId)
+
 
   }
 
@@ -645,13 +748,20 @@ export class MilestoneComponent implements OnInit {
 
   checkIfDataPresent(data) {
     let dataCount = 0;
-    if (data[0] && !isNaN(parseInt(data[0].data))) {
-      dataCount = data[0].data;
-    } else if (data[0] && data[0].value && !isNaN(parseInt(data[0].value[0].data))) {
-      dataCount = data[0].value[0].data;
-    }
-    if (parseInt(dataCount + '') > 0) {
-      return true;
+    for(let i = 0; i<data?.length; i++){
+      if(data[i]?.data && !isNaN(parseInt(data[i]?.data))) {
+        dataCount += data[i]?.data;
+        if(parseInt(dataCount + '') > 0) {
+          return true;
+        }
+      } else if(data[i].value && !isNaN(parseInt(data[i]?.value[0]?.data))) {
+        for(let j = 0; j < data[i]?.value?.length; j++){
+          dataCount += data[i]?.value[j]?.data;
+          if(parseInt(dataCount + '') > 0) {
+            return true;
+          }
+        }
+      }
     }
     return false;
   }

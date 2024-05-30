@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -150,6 +151,7 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 		processorToolConnection.setOffline(connection.isOffline());
 		processorToolConnection.setOfflineFilePath(connection.getOfflineFilePath());
 		processorToolConnection.setCloudEnv(connection.isCloudEnv());
+		processorToolConnection.setBrokenConnection(connection.isBrokenConnection());
 		processorToolConnection.setAccessTokenEnabled(connection.isAccessTokenEnabled());
 		processorToolConnection.setRegressionAutomationLabels(toolConfig.getRegressionAutomationLabels());
 		processorToolConnection.setTestAutomationStatusLabel(toolConfig.getTestAutomationStatusLabel());
@@ -185,6 +187,28 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 	}
 
 	/**
+	 *
+	 * @param toolConnection
+	 *            toolConnection
+	 */
+	public void validateConnectionFlag(ProcessorToolConnection toolConnection) {
+		if (toolConnection.isBrokenConnection()) {
+			updateBreakingConnection(toolConnection.getConnectionId(), null);
+		}
+	}
+
+	/**
+	 * Method to validate the broken connection and update the flag for Jira and
+	 * Azure
+	 * 
+	 * @param toolConnection
+	 *            toolConnection
+	 */
+	public void validateJiraAzureConnFlag(ProjectToolConfig toolConnection) {
+		updateBreakingConnection(toolConnection.getConnectionId(), null);
+	}
+
+	/**
 	 * update breaking connection detail
 	 * 
 	 * @param connection
@@ -200,8 +224,13 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 			Optional<Connection> existingConnOpt = connectionRepository.findById(connection);
 			if (existingConnOpt.isPresent()) {
 				Connection existingConnection = existingConnOpt.get();
-				existingConnection.setBrokenConnection(true);
-				existingConnection.setConnectionErrorMsg(conErrorMsg);
+				if (StringUtils.isEmpty(conErrorMsg)) {
+					existingConnection.setBrokenConnection(false);
+					existingConnection.setConnectionErrorMsg(conErrorMsg);
+				} else {
+					existingConnection.setBrokenConnection(true);
+					existingConnection.setConnectionErrorMsg(conErrorMsg);
+				}
 				connectionRepository.save(existingConnection);
 			}
 

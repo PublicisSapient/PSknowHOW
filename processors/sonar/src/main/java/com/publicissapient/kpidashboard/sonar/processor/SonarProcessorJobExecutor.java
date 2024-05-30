@@ -43,6 +43,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
@@ -197,6 +198,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
+					processorToolConnectionService.validateConnectionFlag(sonar);
 					MDC.put(SONAR_URL, sonar.getUrl());
 					processorExecutionTraceLog.setExecutionStartedAt(startTime);
 					sonar.setPassword(decryptPassword(sonar.getPassword()));
@@ -263,7 +265,8 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 	private void isClientException(ProcessorToolConnection sonar, Exception ex) {
 		if (ex instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) ex).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) ex).getStatusCode().toString();
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) ex).getStatusCode().value())
+					.getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(sonar.getConnectionId(), errMsg);
 		}
 	}

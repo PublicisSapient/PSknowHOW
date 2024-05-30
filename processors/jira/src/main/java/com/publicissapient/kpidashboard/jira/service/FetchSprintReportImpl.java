@@ -45,6 +45,7 @@ import org.springframework.stereotype.Service;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -496,6 +497,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			KerberosClient krb5Client) throws IOException {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		try {
+			processorToolConnectionService.validateJiraAzureConnFlag(projectConfig.getProjectToolConfig());
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
 			if (null != jiraToolConfig) {
 				boolean isLast = false;
@@ -510,9 +512,9 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 			}
 		} catch (RestClientException rce) {
-			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 401
+			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 400
 					&& rce.getStatusCode().get() < 500) {
-				String errMsg = rce.getStatusCode().toString();
+				String errMsg = ClientErrorMessageEnum.fromValue(rce.getStatusCode().get()).getReasonPhrase();
 				processorToolConnectionService
 						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 			}

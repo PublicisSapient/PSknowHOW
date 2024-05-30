@@ -145,6 +145,22 @@ public class RepoToolCodeCommitServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
 		Mockito.when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn("trackerid");
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+
+		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+
+		String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
+				.thenReturn(kpiRequestTrackerId);
+		try (MockedStatic<LocalDate> localDateMockedStatic = mockStatic(LocalDate.class)) {
+			// Define the specific date you want to return
+			LocalDate specificDate = LocalDate.of(2023, 7, 1);
+
+			// Mock the behavior of LocalDate.now()
+			localDateMockedStatic.when(LocalDate::now).thenReturn(specificDate);
+		}
+		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any()))
+				.thenReturn(repoToolKpiMetricResponseList);
 
 		setTreadValuesDataCount();
 		AssigneeDetails assigneeDetails = new AssigneeDetails();
@@ -224,22 +240,32 @@ public class RepoToolCodeCommitServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+		try {
+			KpiElement kpiElement = repoToolCodeCommitService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
+				String projectName = data.getFilter();
+				switch (projectName) {
+				case "Overall":
+					assertThat("Overall Commit Details:", data.getValue().size(), equalTo(2));
+					break;
 
-		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+				case "master":
+					assertThat("Branch1 Commit Details:", data.getValue().size(), equalTo(2));
+					break;
 
-		String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
-				.thenReturn(kpiRequestTrackerId);
-		try (MockedStatic<LocalDate> localDateMockedStatic = mockStatic(LocalDate.class)) {
-			// Define the specific date you want to return
-			LocalDate specificDate = LocalDate.of(2023, 7, 1);
-
-			// Mock the behavior of LocalDate.now()
-			localDateMockedStatic.when(LocalDate::now).thenReturn(specificDate);
+				}
+			});
+		} catch (ApplicationException e) {
+			e.printStackTrace();
 		}
-		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
-				repoToolKpiMetricResponseList);
+	}
+
+	@Test
+	public void testGetKpiDataDays() throws ApplicationException {
+		kpiRequest.setDuration(Constant.DAYS);
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		try {
 			KpiElement kpiElement = repoToolCodeCommitService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));

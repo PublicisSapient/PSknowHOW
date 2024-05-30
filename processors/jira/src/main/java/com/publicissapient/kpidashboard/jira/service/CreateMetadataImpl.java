@@ -39,6 +39,7 @@ import com.atlassian.jira.rest.client.api.domain.Status;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.MetadataType;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.model.jira.Identifier;
@@ -86,6 +87,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 	@Override
 	public void collectMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client,
 			String isScheduler) {
+		processorToolConnectionService.validateJiraAzureConnFlag(projectConfig.getProjectToolConfig());
 		if (isScheduler.equalsIgnoreCase("false") || null == boardMetadataRepository
 				.findByProjectBasicConfigId(projectConfig.getBasicProjectConfigId())) {
 			boardMetadataRepository.deleteByProjectBasicConfigId(projectConfig.getBasicProjectConfigId());
@@ -94,6 +96,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 			if (isSuccess) {
 				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_FIELD_MAPPING_MAP);
+				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+						CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 			}
@@ -107,7 +111,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 	private boolean processMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client) {
 		boolean isSuccess = false;
 		List<Field> fieldList = getField(client, projectConfig);
-		List<IssueType> issueTypeList = getIssueType(client);
+		List<IssueType> issueTypeList = getIssueType(client, projectConfig);
 		List<Status> statusList = JiraHelper.getStatus(client);
 		if (CollectionUtils.isNotEmpty(fieldList) && CollectionUtils.isNotEmpty(issueTypeList)
 				&& CollectionUtils.isNotEmpty(statusList)) {
@@ -153,8 +157,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 					fieldList = Lists.newArrayList(fieldIt.iterator());
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 401 && e.getStatusCode().get() < 500) {
-					String errMsg = e.getStatusCode().toString();
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 400 && e.getStatusCode().get() < 500) {
+					String errMsg = ClientErrorMessageEnum.fromValue(e.getStatusCode().get()).getReasonPhrase();
 					processorToolConnectionService
 							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
 				}
@@ -166,7 +170,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 		return fieldList;
 	}
 
-	private List<IssueType> getIssueType(ProcessorJiraRestClient client) {
+	private List<IssueType> getIssueType(ProcessorJiraRestClient client, ProjectConfFieldMapping projectConfig) {
 		List<IssueType> issueTypeList = new ArrayList<>();
 
 		if (client == null) {
@@ -180,6 +184,11 @@ public class CreateMetadataImpl implements CreateMetadata {
 					issueTypeList = Lists.newArrayList(fieldIt.iterator());
 				}
 			} catch (RestClientException e) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() >= 400 && e.getStatusCode().get() < 500) {
+					String errMsg = ClientErrorMessageEnum.fromValue(e.getStatusCode().get()).getReasonPhrase();
+					processorToolConnectionService
+							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
+				}
 				JiraHelper.exceptionBlockProcess(e);
 				throw e;
 			}

@@ -47,6 +47,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.Build;
@@ -153,6 +154,7 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 						proBasicConfig.getId().toHexString());
 
 				try {
+					processorToolConnectionService.validateConnectionFlag(gitHubActions);
 					log.info("Fetching jobs : {}", gitHubActions.getJobName());
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					MDC.put("ProjectDataStartTime", String.valueOf(System.currentTimeMillis()));
@@ -203,7 +205,8 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 	private void isClientException(ProcessorToolConnection gitHubActions, Exception exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ((HttpClientErrorException) exception).getStatusCode().toString();
+			String errMsg = ClientErrorMessageEnum
+					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
 			processorToolConnectionService.updateBreakingConnection(gitHubActions.getConnectionId(), errMsg);
 		}
 	}

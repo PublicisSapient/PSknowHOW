@@ -226,6 +226,21 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 	}
 
 	@Test
+	public void testGetKpiDataDays() throws Exception {
+		kpiRequest.setDuration(Constant.DAYS);
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		Map<String, String> aggregationMap = new HashMap<>();
+		aggregationMap.put("meanTimeToMerge", "average");
+
+		KpiElement kpiElement = meanTimeToMergeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+		List<BranchMergeReqCount> out = (List<BranchMergeReqCount>) kpiElement.getTrendValueList();
+		assertThat("merge requests", out.size(), equalTo(2));
+	}
+
+	@Test
 	public void testGetQualifierType() {
 		String result = meanTimeToMergeServiceImpl.getQualifierType();
 		assertEquals(result, KPICode.REPO_TOOL_MEAN_TIME_TO_MERGE.name());

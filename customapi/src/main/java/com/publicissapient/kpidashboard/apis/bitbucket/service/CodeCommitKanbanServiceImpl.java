@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -160,7 +161,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
 		for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 
-			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
+			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate,
 					kpiRequest.getDuration());
 			List<Tool> reposList = getBitBucketJobs(toolMap, node);
 			if (CollectionUtils.isEmpty(reposList)) {
@@ -186,6 +187,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	}
 
 	/**
+	 * loop tool wise to fetch data for each day
 	 *
 	 * @param reposList
 	 * @param dateRange

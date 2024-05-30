@@ -144,6 +144,7 @@ public final class CommonConstant {
 	public static final String ADDED_ISSUES = "addedIssues";
 	public static final String ADDED = "Added";
 	public static final String REMOVED = "Removed";
+	public static final String INITIAL = "Initial";
 	public static final String PUNTED_ISSUES = "puntedIssues";
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
@@ -327,7 +328,8 @@ public final class CommonConstant {
 
 	//-- auth-N-auth changes starts here --
 	public static final String ACTION_POLICY_RULES_CACHE = "actionPolicyRules";
-
+	public static final String ACCESS_ALERT_NOTIFICATION = "accessAlertNotification";
+	public static final String ERROR_ALERT_NOTIFICATION = "errorAlertNotification";
 	//-- auth-N-auth changes ends here --
 
 	public static final String KPI_PASSED= "200";

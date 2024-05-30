@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -206,13 +207,16 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest) {
-		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
-				.cacheAccountHierarchyData();
+		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService.cacheAccountHierarchyData();
 
-		return accountDataListAll.stream()
-				.filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId()
-						.equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.RELEASE.toLowerCase()).get(0)))
-				.toList();
+		String targetNodeId = kpiRequest.getSelectedMap().get(CommonConstant.RELEASE.toLowerCase()).get(0);
+
+		Optional<AccountHierarchyData> optionalData = accountDataListAll.stream()
+				.filter(accountHierarchyData ->
+						accountHierarchyData.getLeafNodeId().equalsIgnoreCase(targetNodeId))
+				.findFirst();
+
+		return optionalData.map(List::of).orElse(List.of());
 	}
 
 	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
