@@ -53,6 +53,7 @@ public class ReleaseBurnUPEnhc {
 
 		Document thresholdValueMapping = new Document(FIELD_NAME, "releaseListKPI150")
 				.append("fieldLabel", "Select releases to define team velocity").append("fieldType", "chips")
+				.append("fieldCategory", "releases")
 				.append("section", "Custom Fields Mapping").append("tooltip", new Document(DEFINITION,
 						"Select release to predict the release prediction end date of active release on the basis of average velocity"));
 
