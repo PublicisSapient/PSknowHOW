@@ -147,6 +147,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   getProcessorsTraceLogsForProject(basicProjectConfigId) {
     const that = this;
+    this.dataMismatchObj = {};
     this.httpService.getProcessorsTraceLogsForProject(basicProjectConfigId)
       .subscribe(response => {
         this.jiraExecutionSteps = []
@@ -308,7 +309,6 @@ export class AdvancedSettingsComponent implements OnInit {
           this.messageService.add({ severity: 'success', summary: 'Data deleted Successfully.', detail: '' });
           this.getAllToolConfigs(selectedProject?.id);
           this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
-          this.dataMismatchObj = {};
         }
       }, error => {
         this.messageService.add({ severity: 'error', summary: 'Something went wrong. Please try again after sometime.' });
