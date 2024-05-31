@@ -81,6 +81,12 @@ public class JobController {
 	@Qualifier("fetchIssueKanbanBoardJob")
 	@Autowired
 	Job fetchIssueKanbanBoardJob;
+	@Qualifier("fetchScrumAIIssueScrumBoardJob")
+	@Autowired
+	Job fetchScrumAIIssueScrumBoardJob;
+	@Qualifier("fetchScrumAIIssueScrumJqlJob")
+	@Autowired
+	Job fetchScrumAIIssueScrumJqlJob;
 	@Qualifier("fetchIssueKanbanJqlJob")
 	@Autowired
 	Job fetchIssueKanbanJqlJob;
@@ -366,6 +372,73 @@ public class JobController {
 			// Mark the execution as completed
 			ongoingExecutionsService.markExecutionAsCompleted(basicProjectConfigId);
 		}
+	}
+
+	/**
+	 * This method is used to start Scrum AI job for the Scrum projects with JQL setup
+	 *
+	 * @return ResponseEntity
+	 */
+
+	@GetMapping("/startScrumAiJqlJob")
+	public ResponseEntity<String> startScrumAiJqlJob() {
+		log.info("Request come for job for Scrum AI project configured with JQL via controller");
+
+		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
+				true, false);
+
+		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
+
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+		for (JobParameters params : parameterSets) {
+			executorService.submit(() -> {
+				try {
+					jobLauncher.run(fetchScrumAIIssueScrumJqlJob, params);
+				} catch (Exception e) {
+					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID), e);
+				}
+			});
+		}
+		executorService.shutdown();
+		return ResponseEntity.ok().body("job started for scrum AI JQL Project");
+	}
+
+	/**
+	 * This method is used to start Scrum AI job for the Scrum projects with board setup
+	 *
+	 * @return ResponseEntity
+	 */
+
+	@GetMapping("/fetchScrumAIScrumBoardJob")
+	public ResponseEntity<String> startScrumGenAiBoardJob() {
+		log.info("Request come for job for Scrum AI project configured with board via controller");
+		int totalProjects = 0;
+		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
+				false, false);
+		totalProjects = scrumBoardbasicProjConfIds.size();
+		log.info("Total projects to fun for Scrum - Board Wise : {}", totalProjects);
+		log.info("Scrum - Board Wise Projects : {}", scrumBoardbasicProjConfIds);
+		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+		for (JobParameters params : parameterSets) {
+			executorService.submit(() -> {
+				try {
+					jobLauncher.run(fetchScrumAIIssueScrumBoardJob, params);
+				} catch (Exception e) {
+					log.info(
+							"Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID), e);
+				}
+			});
+
+		}
+		executorService.shutdown();
+		return ResponseEntity.ok().body("job started for scrum AI board Project");
 	}
 
 }
