@@ -36,7 +36,6 @@ export class GroupBarChartComponent implements OnChanges {
   subGroups = [];
   lineGroups = [];
   plannedDueDate: any;
-  // plannedDueDateIndex;
   releaseEndDateIndex;
   lineColor: string = '';
 
@@ -209,8 +208,6 @@ export class GroupBarChartComponent implements OnChanges {
       let htmlDiv = `${new Date(this.plannedDueDate).getTime() > new Date(this.releaseEndDate).getTime() 
         ? (htmlReleaseDueDate + ' > ' + htmlReleaseEndDate) 
         : (htmlReleaseDueDate + ' < ' + htmlReleaseEndDate)}`;
-      console.log("htmlDiv", htmlDiv) 
-      console.log("date-container " + d3.select(this.elem))
       d3.select(elem).select('#date-container').append('text')
         .attr('x', ((d3.select(elem).select('#groupstackchart').node().offsetWidth - 70) / 2) - 24)
         .attr('y', 44)
