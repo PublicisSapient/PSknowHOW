@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ import com.publicissapient.kpidashboard.common.model.jira.Metadata;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataValue;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 /**
  * This class provides various methods related to operations on Edit KPI
@@ -99,7 +101,17 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 						}
 					}).reversed()).limit(10).map(accountHierarchy -> {
 						MetadataValue metadataValue = new MetadataValue();
-						String releaseName = accountHierarchy.getNodeName().split("_")[0];
+						double duration = 0;
+						if (StringUtils.isNotEmpty(accountHierarchy.getBeginDate())
+								&& StringUtils.isNotEmpty(accountHierarchy.getEndDate())) {
+							LocalDateTime startDate = DateUtil.convertingStringToLocalDateTime(
+									accountHierarchy.getBeginDate(), DateUtil.TIME_FORMAT);
+							LocalDateTime releaseDate = DateUtil.convertingStringToLocalDateTime(
+									accountHierarchy.getEndDate(), DateUtil.TIME_FORMAT);
+							duration = DateUtil.calculateWorkingDays(startDate, releaseDate);
+						}
+						String releaseName = accountHierarchy.getNodeName().split("_")[0] + " (duration " + duration
+								+ ")";
 						metadataValue.setKey(releaseName);
 						metadataValue.setData(releaseName);
 						return metadataValue;
