@@ -99,8 +99,9 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 						}
 					}).reversed()).limit(10).map(accountHierarchy -> {
 						MetadataValue metadataValue = new MetadataValue();
-						metadataValue.setKey(accountHierarchy.getNodeId());
-						metadataValue.setData(accountHierarchy.getNodeName().split("_")[0]);
+						String releaseName = accountHierarchy.getNodeName().split("_")[0];
+						metadataValue.setKey(releaseName);
+						metadataValue.setData(releaseName);
 						return metadataValue;
 					}).collect(Collectors.toList());
 
