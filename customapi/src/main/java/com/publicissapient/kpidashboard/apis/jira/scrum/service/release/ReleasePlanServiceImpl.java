@@ -436,6 +436,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 		LocalDate startDate = dateRange.getStartDate();
 		LocalDate endDate = dateRange.getEndDate();
 
+		//gives issue count whose dueDate falls between start and endDate
 		long matchingIssueCount = overallIssues.stream().map(JiraIssue::getDueDate).filter(Objects::nonNull)
 				.filter(dueDateStr -> !dueDateStr.isBlank()).filter(dueDateStr -> {
 					LocalDate dueDate = LocalDate.parse(dueDateStr.split("T")[0], DATE_TIME_FORMATTER);
@@ -448,6 +449,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 				.map(dueDate -> LocalDate.parse(dueDate.split("T")[0], DATE_TIME_FORMATTER))
 				.max(Comparator.naturalOrder()).orElse(null);
 
+		//gives max planned dueDate of a Issue in a release
 		if (plannedDueDate != null && (maxPlannedDueDate == null || plannedDueDate.isAfter(maxPlannedDueDate))) {
 			maxPlannedDueDate = plannedDueDate;
 		}
