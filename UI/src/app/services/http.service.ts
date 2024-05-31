@@ -659,8 +659,8 @@ export class HttpService {
   }
 
   /** Get KPI Config metadata */
-  getKPIConfigMetadata(toolId): Observable<any> {
-    return this.http.get<any>(this.getKPIConfigMetadataUrl + toolId);
+  getKPIConfigMetadata(toolId,kpiid?): Observable<any> {
+    return this.http.get<any>(this.getKPIConfigMetadataUrl + toolId+'/'+kpiid);
   }
 
   /** KnowHow Lite */

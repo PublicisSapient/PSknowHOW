@@ -287,7 +287,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
           this.fieldMappingConfig = data?.data['fieldConfiguration'];
           const kpiSource = data?.data['kpiSource']?.toLowerCase();
           const toolConfigID = data?.data['projectToolConfigId'];
-          this.selectedToolConfig = [{ id: toolConfigID, toolName: kpiSource }];
+          this.selectedToolConfig = [{ id: selectedTrend[0]?.basicProjectConfigId, toolName: kpiSource }];
           if (this.fieldMappingConfig.length > 0) {
             this.selectedConfig = { ...selectedTrend[0], id: selectedTrend[0]?.basicProjectConfigId }
             this.getFieldMapping();
@@ -329,7 +329,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   }
 
   getFieldMappingMetaData(kpiSource) {
-    this.http.getKPIConfigMetadata(this.selectedToolConfig[0].id).subscribe(Response => {
+    this.http.getKPIConfigMetadata(this.selectedToolConfig[0].id,this.kpiData?.kpiId).subscribe(Response => {
       if (Response.success) {
         this.fieldMappingMetaData = Response.data;
         this.service.setFieldMappingMetaData({
