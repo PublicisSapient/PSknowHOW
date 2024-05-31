@@ -23,19 +23,22 @@ export class GroupBarChartComponent implements OnChanges {
   @Input() maxValue?: any;
   @Input() selectedtype: string;
   @Input() legendType: string;
+  @Input() releaseEndDate: string;
   VisibleXAxisLbl = [];
   isXaxisGapRequired : any;
   customisedGroup : any ;
   customiseGroupIndex : number
-  plannedDueDate: any;
   elem;
   maxYValue = 0;
   dataPoints = 2;
   dataLength = 0;
   currentDayIndex;
-  plannedDueDateIndex;
   subGroups = [];
   lineGroups = [];
+  plannedDueDate: any;
+  // plannedDueDateIndex;
+  releaseEndDateIndex;
+  lineColor: string = '';
 
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
@@ -48,7 +51,6 @@ export class GroupBarChartComponent implements OnChanges {
     }
     // only run when property "data" changed
     if (changes['data']) {
-      console.log(this.kpiId, this.data);
       
       this.dataPoints = this.data.length;
       this.dataLength = this.data.length;
@@ -73,18 +75,20 @@ export class GroupBarChartComponent implements OnChanges {
     d3.select(elem).select('#svgLegend').select('svg').remove();
     d3.select(elem).select('#legendIndicator').select('svg').remove();
     d3.select(elem).select('#xCaptionContainer').select('text').remove();
+    d3.select(elem).select('#date-container').select('text').remove();
     d3.select(elem).select('#horizontalSVG').select('.current-week-tooltip').selectAll('.tooltip').remove();
     let data = this.data[0]?.dataGroup;
     this.isXaxisGapRequired = this.data[0]?.additionalInfo?.isXaxisGapRequired;
     this.customisedGroup = this.data[0]?.additionalInfo?.customisedGroup;
     this.plannedDueDate = this.data[0]?.additionalInfo?.plannedDueDate;
+    
     data = this.formatData(data);
 
     const subgroups = this.subGroups;
     const groups = d3.map(data, (d) => d.group);
 
     const currentDayIndex = this.currentDayIndex;
-    const plannedDueDateIndex = this.plannedDueDateIndex;
+    const releaseEndDateIndex = this.releaseEndDateIndex;
     const barWidth = 18;
 
     const spacingVariable = 50;
@@ -196,6 +200,23 @@ export class GroupBarChartComponent implements OnChanges {
       .attr('y', 44)
       .attr('transform', 'rotate(0)')
       .text(this.xCaption);
+    if(this.plannedDueDate){
+      const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const plannedDueDate = new Date(this.plannedDueDate).getDate() + '/' + month[new Date(this.plannedDueDate).getMonth()] +'/' + new Date(this.plannedDueDate).getFullYear();
+      const releaseEndDate = new Date(this.releaseEndDate).getDate() + '/' + month[new Date(this.releaseEndDate).getMonth()] +'/' + new Date(this.releaseEndDate).getFullYear();
+      let htmlReleaseDueDate = `Release Due Date (${plannedDueDate})`;
+      let htmlReleaseEndDate = `Release End Date (${releaseEndDate})`;
+      let htmlDiv = `${new Date(this.plannedDueDate).getTime() > new Date(this.releaseEndDate).getTime() 
+        ? (htmlReleaseDueDate + ' > ' + htmlReleaseEndDate) 
+        : (htmlReleaseDueDate + ' < ' + htmlReleaseEndDate)}`;
+      console.log("htmlDiv", htmlDiv) 
+      console.log("date-container " + d3.select(this.elem))
+      d3.select(elem).select('#date-container').append('text')
+        .attr('x', ((d3.select(elem).select('#groupstackchart').node().offsetWidth - 70) / 2) - 24)
+        .attr('y', 44)
+        .attr('transform', 'rotate(0)')
+        .text(htmlDiv);
+    }
 
     svgX
       .select('.xAxis')
@@ -205,14 +226,15 @@ export class GroupBarChartComponent implements OnChanges {
 
 
     if (currentDayIndex) {
-      console.log(this.kpiId+ " currentDayIndex", currentDayIndex);
-      
         this.generateVerticleLine(currentDayIndex,0,'solid',svgX,x,y,'#944075')
     }
     
-    if(plannedDueDateIndex){
-      console.log(this.kpiId + " plannedDueDateIndex", plannedDueDateIndex);
-      this.generateVerticleLine(plannedDueDateIndex,0,'solid',svgX,x,y, 'red')
+    if(releaseEndDateIndex && this.plannedDueDate){
+      this.lineColor = '#15BA40';
+      if(new Date(this.plannedDueDate).getTime() > new Date(this.releaseEndDate).getTime()){
+        this.lineColor = '#dc3545';
+      }
+      this.generateVerticleLine(releaseEndDateIndex,0,'solid',svgX,x,y, this.lineColor)
     }
 
     this.customiseGroupIndex = data.findIndex(d => d.hasOwnProperty(this.customisedGroup))
@@ -221,7 +243,7 @@ export class GroupBarChartComponent implements OnChanges {
     }
 
      /** Showing  data point for current plot */
-    const currentWeekTooltipContainer = d3.select('#horizontalSVG').select('.current-week-tooltip');
+    const currentWeekTooltipContainer = d3.select(this.elem).select('#horizontalSVG').select('.current-week-tooltip');
     // let top = (height / 2) - 30;
     // for (const kpiGroup of this.lineGroups) {
     //   const lineData = data[data.length - 1];
@@ -322,17 +344,17 @@ export class GroupBarChartComponent implements OnChanges {
       .attr("y", d=> y(d.value))
       .attr("height", d=> height - y(d.value) - spacingVariable);
 
-      const tooltipContainer = d3.select('#horizontalSVG').select('.tooltip-container');
+      const tooltipContainer = d3.select(this.elem).select('#horizontalSVG').select('.tooltip-container');
       const showTooltip = (linedata) => {
         currentWeekTooltipContainer.style('display','none');
         tooltipContainer
           .selectAll('div')
-          .data(linedata.filter(data=>this.VisibleXAxisLbl.includes(data.filter))) // Tooltip will come only for Visible label
+          .data(linedata.filter(data=> this.VisibleXAxisLbl.includes(data.filter))) // Tooltip will come only for Visible label
           .join('div')
           .attr('class', 'tooltip')
           .style('left', d => x(d.filter)  + 0 + 'px')
           .style('top', d => y(d.value) + 6 + 'px')
-          .text(d => d.value)
+          .text(d =>d.value)
           .transition()
           .duration(500)
           .style('display', 'block')
@@ -397,7 +419,7 @@ export class GroupBarChartComponent implements OnChanges {
               .duration(500)
               .style('cursor', 'pointer')
               .attr('r', 3);
-            showTooltip(lineData);
+              showTooltip(lineData);
           })
           .on('mouseout', function(event, d) {
             d3.select(this)
@@ -432,6 +454,10 @@ export class GroupBarChartComponent implements OnChanges {
     })
     if(currentDayIndex){
       htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: #944075"></div> : Today</div>`;
+    }
+
+    if(releaseEndDateIndex && this.plannedDueDate){
+      htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: ${this.lineColor}"></div> : Release End Date</div>`;
     }
 
     if(this.customiseGroupIndex && this.customiseGroupIndex > -1){
@@ -513,15 +539,18 @@ export class GroupBarChartComponent implements OnChanges {
         const today = new Date();
         const startOfCurrentWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
         const endOfCurrentWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + (6 - today.getDay()));
-        if(this.plannedDueDate){
-          const plannedDueDate = new Date(this.plannedDueDate);
-          this.plannedDueDateIndex = `${(plannedDueDate.getDate() < 10) ? ('0' + plannedDueDate.getDate()) : plannedDueDate.getDate()}/${(plannedDueDate.getMonth() + 1) < 10 ? '0' + (plannedDueDate.getMonth() + 1) : plannedDueDate.getMonth() + 1}`;
-          console.log("plannedDueDateIndex "+this.kpiId, this.plannedDueDateIndex)
-        }
         const formatedWeek = `${(date1.getDate() < 10) ? ('0' + date1.getDate()) : date1.getDate()}/${(date1.getMonth() + 1) < 10 ? '0' + (date1.getMonth() + 1) : date1.getMonth() + 1} - `+
         `${(date2.getDate() < 10) ? ('0' + date2.getDate()) : date2.getDate()}/${(date2.getMonth() + 1) < 10 ? '0' + (date2.getMonth() + 1) : date2.getMonth() + 1}`;
         if (date1 <= endOfCurrentWeek && date2 >= startOfCurrentWeek) {
           this.currentDayIndex = formatedWeek;
+        }
+        if(this.releaseEndDate){
+          const releaseEndDate = new Date(this.releaseEndDate);
+          const startOfreleaseEndDateWeek = new Date(releaseEndDate.getFullYear(), releaseEndDate.getMonth(), releaseEndDate.getDate() - releaseEndDate.getDay());
+          const endOfreleaseEndDateWeek = new Date(releaseEndDate.getFullYear(), releaseEndDate.getMonth(), releaseEndDate.getDate() + (6 - releaseEndDate.getDay()));
+          if (date1 <= endOfreleaseEndDateWeek && date2 >= startOfreleaseEndDateWeek) {
+            this.releaseEndDateIndex = formatedWeek;
+          }
         }
         d['group'] = formatedWeek
       return d;
@@ -533,10 +562,11 @@ export class GroupBarChartComponent implements OnChanges {
           this.currentDayIndex = formatedDate;
         }
         d['group'] = formatedDate;
-        if(this.plannedDueDate){
-          const plannedDueDate = new Date(this.plannedDueDate);
-          this.plannedDueDateIndex = `${(plannedDueDate?.getDate() < 10) ? ('0' + plannedDueDate?.getDate()) : plannedDueDate?.getDate()}/${(plannedDueDate?.getMonth() + 1) < 10 ? '0' + (plannedDueDate?.getMonth() + 1) : plannedDueDate?.getMonth() + 1}`;
-          console.log("plannedDueDateIndex "+this.kpiId, this.plannedDueDateIndex)
+        if(this.releaseEndDate){
+          const releaseEndDate = new Date(this.releaseEndDate);
+          if(date.toDateString() === releaseEndDate.toDateString()){
+            this.releaseEndDateIndex = formatedDate;
+          }s
         }
       return d;
       }else {
