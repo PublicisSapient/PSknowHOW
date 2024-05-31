@@ -36,7 +36,6 @@ export class GroupBarChartComponent implements OnChanges {
   subGroups = [];
   lineGroups = [];
   plannedDueDate: any;
-  // plannedDueDateIndex;
   releaseEndDateIndex;
   lineColor: string = '';
 
