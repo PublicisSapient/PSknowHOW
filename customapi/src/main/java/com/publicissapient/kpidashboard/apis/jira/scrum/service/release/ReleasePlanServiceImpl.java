@@ -65,8 +65,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * This service for managing Release plan Kpi on Release Board. Gives analysis
- * of release scope vs plan.
- * {@link JiraReleaseKPIService}
+ * of release scope vs plan. {@link JiraReleaseKPIService}
  *
  * @author purgupta2
  */
@@ -268,8 +267,8 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 			range = durationRangeMap.values().stream().findFirst().orElse(0L);
 			fullReleaseIssueMap = prepareIssueBeforeStartDate(fullReleaseIssueMap, startLocalDate);
 
-            assert startLocalDate != null;
-            tempStartDate = LocalDate.parse(startLocalDate.toString());
+			assert startLocalDate != null;
+			tempStartDate = LocalDate.parse(startLocalDate.toString());
 			allReleaseTaggedIssue.clear();
 			fullReleaseIssueMap.forEach((k, v) -> allReleaseTaggedIssue.addAll(v));
 			List<JiraIssue> overallIssues = new ArrayList<>();
@@ -417,14 +416,19 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	/**
 	 * Method for population of Release Scope,Progress & Prediction
 	 *
-	 * @param filterWiseGroupedMap Map<String, List<JiraIssue>>
-	 * @param issueCount           DataCountGroup of Issue Count
-	 * @param date                 Date of x-axis
-	 * @param duration             Duration
-	 * @param dateRange            date range
+	 * @param filterWiseGroupedMap
+	 *            Map<String, List<JiraIssue>>
+	 * @param issueCount
+	 *            DataCountGroup of Issue Count
+	 * @param date
+	 *            Date of x-axis
+	 * @param duration
+	 *            Duration
+	 * @param dateRange
+	 *            date range
 	 */
 	private void populateFilterWiseDataMap(Map<String, List<JiraIssue>> filterWiseGroupedMap, DataCountGroup issueCount,
-										   String date, String duration, CustomDateRange dateRange) {
+			String date, String duration, CustomDateRange dateRange) {
 		List<DataCount> issueCountDataList = new ArrayList<>();
 
 		List<JiraIssue> overallIssues = filterWiseGroupedMap.getOrDefault(OVERALL_ISSUE, new ArrayList<>());
@@ -432,19 +436,14 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 		LocalDate startDate = dateRange.getStartDate();
 		LocalDate endDate = dateRange.getEndDate();
 
-		long matchingIssueCount = overallIssues.stream()
-				.map(JiraIssue::getDueDate)
-				.filter(Objects::nonNull)
-				.filter(dueDateStr -> !dueDateStr.isBlank())
-				.filter(dueDateStr -> {
+		long matchingIssueCount = overallIssues.stream().map(JiraIssue::getDueDate).filter(Objects::nonNull)
+				.filter(dueDateStr -> !dueDateStr.isBlank()).filter(dueDateStr -> {
 					LocalDate dueDate = LocalDate.parse(dueDateStr.split("T")[0], DATE_TIME_FORMATTER);
 					return ((dueDate.isEqual(startDate) || dueDate.isAfter(startDate))
 							&& (dueDate.isEqual(endDate) || dueDate.isBefore(endDate)));
 				}).count();
 
-		LocalDate plannedDueDate = overallIssues.stream()
-				.map(JiraIssue::getDueDate)
-				.filter(Objects::nonNull)
+		LocalDate plannedDueDate = overallIssues.stream().map(JiraIssue::getDueDate).filter(Objects::nonNull)
 				.filter(dueDate -> !dueDate.isBlank())
 				.map(dueDate -> LocalDate.parse(dueDate.split("T")[0], DATE_TIME_FORMATTER))
 				.max(Comparator.naturalOrder()).orElse(null);
