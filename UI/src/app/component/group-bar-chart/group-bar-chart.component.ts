@@ -566,7 +566,7 @@ export class GroupBarChartComponent implements OnChanges {
           const releaseEndDate = new Date(this.releaseEndDate);
           if(date.toDateString() === releaseEndDate.toDateString()){
             this.releaseEndDateIndex = formatedDate;
-          }s
+          }
         }
       return d;
       }else {
