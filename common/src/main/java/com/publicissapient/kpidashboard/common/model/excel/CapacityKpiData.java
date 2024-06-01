@@ -21,12 +21,10 @@ package com.publicissapient.kpidashboard.common.model.excel;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
-import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
@@ -55,6 +53,7 @@ public class CapacityKpiData extends BasicModel {
 	private ObjectId basicProjectConfigId;
 	private List<AdditionalFilterCapacity> additionalFilterCapacityList;
 	private List<AssigneeCapacity> assigneeCapacity;
+
 
 	@Override
 	public String toString() {

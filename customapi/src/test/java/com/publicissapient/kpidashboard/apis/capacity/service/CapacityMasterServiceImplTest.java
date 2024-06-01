@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.collections4.CollectionUtils;
@@ -91,6 +92,8 @@ public class CapacityMasterServiceImplTest {
 	private KanbanCapacityRepository kanbanCapacityRepository;
 	@Mock
 	private CacheService cacheService;
+	@Mock
+	private FilterHelperService filterHelperService;
 	@Mock
 	private CustomApiConfig customApiConfig;
 	@Mock
