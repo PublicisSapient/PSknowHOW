@@ -61,8 +61,12 @@ public class CapacityKpiDataRepositoryImpl implements CapacityKpiDataCustomRepos
 
 		// map of common filters Project, Project and Sprint
 		for (Map.Entry<String, Object> entry : mapofFilters.entrySet()) {
-			if (CollectionUtils.isNotEmpty((List<Pattern>) entry.getValue())) {
-				criteria = criteria.and(entry.getKey()).in((List<Pattern>) entry.getValue());
+			String key = entry.getKey();
+			if (!key.equalsIgnoreCase("additionalFilterCapacityList.nodeCapacityList.additionalFilterId")
+					&& !key.equalsIgnoreCase("additionalFilterCapacityList.filterId")) {
+				if (CollectionUtils.isNotEmpty((List<Pattern>) entry.getValue())) {
+					criteria = criteria.and(key).in((List<Pattern>) entry.getValue());
+				}
 			}
 		}
 		// Project level storyType filters

@@ -851,6 +851,7 @@ public class KpiHelperService { // NOPMD
 		KpiDataHelper.createAdditionalFilterMapForCapacity(kpiRequest, mapOfFilters, flterHelperService);
 		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
+
 		resultListMap.put(capacityKey, kanbanCapacityRepository.findIssuesByType(mapOfFilters, startDate, endDate));
 		resultListMap.put(SUBGROUPCATEGORY, Constant.DATE);
 		return resultListMap;

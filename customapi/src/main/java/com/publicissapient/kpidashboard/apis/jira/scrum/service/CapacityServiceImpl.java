@@ -113,7 +113,7 @@ public class CapacityServiceImpl extends JiraIterationKPIService {
 									.equals(additionalFilterCapacity.getFilterId().toUpperCase()))
 							.flatMap(
 									additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
-							.filter(leaf -> additionalFilter.contains(leaf.getAdditionalFilterId()))
+							.filter(leaf -> additionalFilter.contains(leaf.getAdditionalFilterId()) && leaf.getAdditionalFilterCapacity()!=null)
 							.mapToDouble(LeafNodeCapacity::getAdditionalFilterCapacity).sum();
 				}
 			}

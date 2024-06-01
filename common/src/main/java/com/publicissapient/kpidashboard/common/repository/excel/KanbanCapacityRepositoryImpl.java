@@ -18,12 +18,12 @@
 
 package com.publicissapient.kpidashboard.common.repository.excel;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +52,17 @@ public class KanbanCapacityRepositoryImpl implements KanbanCapacityRepoCustom {
 		DateTime endDateTime = DateTimeFormat.forPattern(DATE_PATTERN).parseDateTime(dateTo).withTime(0, 0, 0, 0);
 		// map of common filters Project and Sprint
 		for (Map.Entry<String, Object> entry : mapOfFilters.entrySet()) {
-			if (CollectionUtils.isNotEmpty(Collections.singleton(entry.getValue()))) {
-				criteria = criteria.and(entry.getKey()).in(entry.getValue());
+			String key = entry.getKey();
+			if (!key.equalsIgnoreCase("additionalFilterCapacityList.nodeCapacityList.additionalFilterId")
+					&& !key.equalsIgnoreCase("additionalFilterCapacityList.filterId")) {
+				if (ObjectUtils.isNotEmpty(entry.getValue())) {
+					if (entry.getValue() instanceof List<?>) {
+						List<ObjectId> value = (List<ObjectId>) entry.getValue();
+						criteria = criteria.and(key).in(value);
+					} else {
+						criteria = criteria.and(key).in(entry.getValue());
+					}
+				}
 			}
 		}
 		criteria = criteria.and(START_DATE).lte(endDateTime.withTime(0, 0, 0, 0));

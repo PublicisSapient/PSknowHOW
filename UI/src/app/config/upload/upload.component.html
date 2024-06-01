@@ -184,7 +184,7 @@
                                   <h3 class="color-grey">Added Users</h3>&nbsp;&nbsp;
                                   <p> (*If the desired Domain name is not visible, kindly contact us on knowhowfeedback@publicissapient.com)</p>
                                 </div>
-                                <p-button styleClass="p-button-secondary p-button-sm edit-button" (click)="onSprintCapacityEdit(item)"
+                                <p-button styleClass="p-button-secondary p-button-sm edit-button" (click)="FonSprintCapacityEdit(item)"
                                   *ngIf="!projectCapacityEditMode" [disabled]="!item?.assigneeCapacity?.length > 0">
                                   <img alt="edit logo" src="../../../assets/img/edit.svg" style="width: 0.75rem" />
                                   <span class="p-pl-2">Edit</span>
@@ -199,7 +199,7 @@
                           <th pSortableColumn="userName" class="expanded-table-header-cell" [style]="{'width':'25%'}" scope="col">User Name <p-sortIcon field="userName">
                             </p-sortIcon>
                           </th>
-                
+
                           <th pSortableColumn="role" class="expanded-table-header-cell" [style]="{'width':'25%'}" scope="col">Domain <p-sortIcon
                               field="role"></p-sortIcon>
                           </th>
@@ -217,7 +217,7 @@
                       <ng-template pTemplate="body" let-assignee let-rowIndex="rowIndex">
                         <tr class="expanded-table-body-row">
                           <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName : '- -'}}</td>
-      
+
                           <td class="expanded-table-body-cell">
                             <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles" optionLabel="name" optionValue="value" *ngIf="projectCapacityEditMode;else showRole" [style]="{'width':'200px'}"
                             [formControl]="selectedSprintAssigneFormArray[rowIndex]?.role" (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'role')"></p-dropdown>
