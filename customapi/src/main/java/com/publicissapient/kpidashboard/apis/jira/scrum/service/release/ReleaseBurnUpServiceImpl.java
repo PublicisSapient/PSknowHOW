@@ -676,22 +676,30 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			List<DataCountGroup> issueSizeCountDataGroup, ReleaseSpecification releaseSpecification) {
 		if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
 			String issueCountAvgVelocity = AVERAGE_VELOCITY_IS + releaseSpecification.getReleaseIssueCountVelocity()
-					+ FOR + releaseSpecification.getReleaseIssueCount() + ISSUE_COUNT_IN + releaseSpecification.getReleaseDuration()  + DAYS;
+					+ FOR + releaseSpecification.getReleaseIssueCount() + ISSUE_COUNT_IN
+					+ releaseSpecification.getReleaseDuration() + DAYS;
 			String storyPointAvgVelocity = AVERAGE_VELOCITY_IS + releaseSpecification.getReleaseStoryPointVelocity()
-					+ FOR + releaseSpecification.getReleaseStoryPoint() + SPS_IN + releaseSpecification.getReleaseDuration()  + DAYS;
-			Map<String, Object> additionalInfoMap = new HashMap<>();
-			additionalInfoMap.put("isXaxisGapRequired", true);
-			additionalInfoMap.put("customisedGroup", RELEASE_PREDICTION);
-			additionalInfoMap.put("issueCountAvgVelocity", issueCountAvgVelocity);
-			additionalInfoMap.put("stroyPointAvgVelocity", storyPointAvgVelocity);
+					+ FOR + releaseSpecification.getReleaseStoryPoint() + SPS_IN
+					+ releaseSpecification.getReleaseDuration() + DAYS;
+			Map<String, Object> additionalInfoIssueMap = new HashMap<>();
+
+			additionalInfoIssueMap.put("isXaxisGapRequired", true);
+			additionalInfoIssueMap.put("customisedGroup", RELEASE_PREDICTION);
+			additionalInfoIssueMap.put("issueCountAvgVelocity", issueCountAvgVelocity);
+
+			Map<String, Object> additionalInfoSPMap = new HashMap<>();
+			additionalInfoSPMap.put("isXaxisGapRequired", true);
+			additionalInfoSPMap.put("customisedGroup", RELEASE_PREDICTION);
+			additionalInfoSPMap.put("stroyPointAvgVelocity", storyPointAvgVelocity);
+
 			IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 			kpiValueIssueCount.setDataGroup(issueCountDataGroup);
 			kpiValueIssueCount.setFilter1(ISSUE_COUNT);
-			kpiValueIssueCount.setAdditionalInfo(additionalInfoMap);
+			kpiValueIssueCount.setAdditionalInfo(additionalInfoIssueMap);
 			IterationKpiValue kpiValueSizeCount = new IterationKpiValue();
 			kpiValueSizeCount.setDataGroup(issueSizeCountDataGroup);
 			kpiValueSizeCount.setFilter1(STORY_POINT);
-			kpiValueSizeCount.setAdditionalInfo(additionalInfoMap);
+			kpiValueSizeCount.setAdditionalInfo(additionalInfoSPMap);
 			iterationKpiValueList.add(kpiValueSizeCount);
 			iterationKpiValueList.add(kpiValueIssueCount);
 
