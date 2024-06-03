@@ -107,6 +107,7 @@ describe('RecommendationsComponent', () => {
   }))
   
   it('should display error message on error', fakeAsync(() => {
+    component.filterData = filterData;
     // Arrange
     const errorMessage = 'Error in Kpi Column Configurations. Please try after sometime!';
     // spyOn(component, 'handleClick').and.callThrough();
