@@ -319,10 +319,6 @@ public enum KPICode {
      */
     RELEASE_PROGRESS("kpi147", KPISource.JIRA.name()),
     /**
-     * Release Plan
-     */
-    RELEASE_PLAN("kpi179", KPISource.JIRA.name()),
-    /**
      * Scope Change
      */
     ITERATION_COMMITMENT("kpi120", KPISource.JIRA.name()),

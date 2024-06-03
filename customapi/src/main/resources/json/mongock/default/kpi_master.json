@@ -4527,70 +4527,33 @@
       ]
     }
   },
-  {
-    "kpiId" : "kpi178" ,
-    "kpiName" : "Defect Count By" ,
-    "isDeleted" : "False" ,
-    "defaultOrder" : 1 ,
-    "kpiCategory" : "Release" ,
-    "kpiSubCategory" : "Quality" ,
-    "kpiSource": "Jira",
-    "combinedKpiSource": "Jira/Azure",
-    "groupId" : 9 ,
-    "kanban" : false ,
-    "chartType" : "chartWithFilter" ,
-    "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects tagged to a release grouped by Status, Priority, or RCA.",
-      "details" : [
-        {
-          "type" : "link" ,
-          "kpiLinkDetail" : {
-            "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/144146433/Release+Defect+count+by"
+    {
+      "kpiId" : "kpi178" ,
+      "kpiName" : "Defect Count By" ,
+      "isDeleted" : "False" ,
+      "defaultOrder" : 1 ,
+      "kpiCategory" : "Release" ,
+      "kpiSubCategory" : "Quality" ,
+      "kpiSource": "Jira",
+      "combinedKpiSource": "Jira/Azure",
+      "groupId" : 9 ,
+      "kanban" : false ,
+      "chartType" : "chartWithFilter" ,
+      "kpiInfo" : {
+        "definition" : "It shows the breakup of all defects tagged to a release grouped by Status, Priority, or RCA.",
+        "details" : [
+          {
+            "type" : "link" ,
+            "kpiLinkDetail" : {
+              "text" : "Detailed Information at" ,
+              "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/144146433/Release+Defect+count+by"
+            }
           }
-        }
-      ]
-    } ,
-    "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "" ,
-    "boxType" : "chart" ,
-    "calculateMaturity" : false
-  },
-  {
-    "kpiId" : "kpi179" ,
-    "kpiName" : "Release Plan" ,
-    "maxValue" : "" ,
-    "kpiUnit" : "Count" ,
-    "isDeleted" : "False" ,
-    "defaultOrder" : 1 ,
-    "kpiCategory" : "Release" ,
-    "kpiSubCategory" : "Speed" ,
-    "kpiSource": "Jira",
-    "combinedKpiSource": "Jira/Azure",
-    "groupId" : 9 ,
-    "thresholdValue" : "" ,
-    "kanban" : false ,
-    "chartType" : "CumulativeMultilineChart" ,
-    "kpiInfo" : {
-      "definition" : "Displays the cumulative daily planned dues of the release based on the due dates of work items within the release scope.\n\nAdditionally, it provides an overview of the entire release scope.",
-      "details" : [
-        {
-          "type" : "link",
-          "kpiLinkDetail" : {
-            "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/147652609/Release+Release+Plan"
-          }
-        }
-      ]
-    } ,
-    "xaxisLabel" : "" ,
-    "yaxisLabel" : "Count" ,
-    "kpiWidth" : 100 ,
-    "isPositiveTrend" : true ,
-    "showTrend" : false ,
-    "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "" ,
-    "boxType" : "chart" ,
-    "calculateMaturity" : false
-  }
+        ]
+      } ,
+      "isAdditionalFilterSupport" : false ,
+      "kpiFilter" : "" ,
+      "boxType" : "chart" ,
+      "calculateMaturity" : false
+    }
 ]
