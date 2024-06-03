@@ -57,9 +57,10 @@ public class SAMLAuthenticationServiceImpl implements SAMLAuthenticationService 
 		User userData = createUserFromSamlPrincipal(principal);
 
 		Optional<User> existingUserOptional = this.userService.findByUsername(userData.getUsername());
-		existingUserOptional.ifPresent(user -> userData.setId(user.getId()));
 
-		this.userService.save(userData);
+		if (existingUserOptional.isEmpty()) {
+			this.userService.save(userData);
+		}
 	}
 
 	private User createUserFromSamlPrincipal(Saml2AuthenticatedPrincipal principal) {
