@@ -3,7 +3,7 @@ auth:
 
   cookie:
     duration: 86400
-    domain: publicissapient.com
+    domain: tools.publicis.sapient.com
     isSameSite: true
     isSecure: true
 
