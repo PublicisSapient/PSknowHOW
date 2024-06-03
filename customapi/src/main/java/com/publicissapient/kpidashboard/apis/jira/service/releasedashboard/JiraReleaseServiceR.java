@@ -346,10 +346,10 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 			double issuesEstimateVelocity = releaseTicketsEstimate / totalDurations;
 
 			releaseSpecification.setReleaseIssueCount(releaseIssuesSize);
-			releaseSpecification.setReleaseStoryPoint(releaseTicketsEstimate +" SPs");
+			releaseSpecification.setReleaseStoryPoint(releaseTicketsEstimate);
 			releaseSpecification.setReleaseIssueCountVelocity(roundingOff(issueCountVelocity));
 			releaseSpecification.setReleaseStoryPointVelocity(roundingOff(issuesEstimateVelocity));
-			releaseSpecification.setReleaseDuration(totalDurations + " days");
+			releaseSpecification.setReleaseDuration(totalDurations);
 			averageDataMap.put(AVG_ISSUE_COUNT, roundingOff(issueCountVelocity));
 			averageDataMap.put(AVG_STORY_POINT, roundingOff(issuesEstimateVelocity));
 

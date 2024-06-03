@@ -157,7 +157,7 @@ public class DateUtil {
 	 * @return converted date
 	 */
 	public static String dateTimeConverterUsingFromAndTo(DateTime dateTime, final String fromFormat,
-														 final String toFormat) {
+			final String toFormat) {
 		if (dateTime != null) {
 			try {
 				org.joda.time.format.DateTimeFormatter sourceFormatter = DateTimeFormat.forPattern(fromFormat);
@@ -348,6 +348,15 @@ public class DateUtil {
 		return result;
 	}
 
+	/**
+	 * Calculating total no. of working days between two dates
+	 * 
+	 * @param startDateTime
+	 *            startDateTime
+	 * @param endDateTime
+	 *            endDateTime
+	 * @return no. of days
+	 */
 	public static double calculateWorkingDays(LocalDateTime startDateTime, LocalDateTime endDateTime) {
 		LocalDate startDate = startDateTime.toLocalDate();
 		LocalDate endDate = endDateTime.toLocalDate();

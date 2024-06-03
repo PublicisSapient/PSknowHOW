@@ -104,6 +104,11 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	public static final String IS_STORY_POINT_ACHIEVED = "isStoryPointAchieved";
 	public static final String OVERALL_ISSUE = "OVERALL ISSUE";
 	public static final String DEV_COMPLETE_DATE_MAP = "devCompleteDateMap";
+	public static final String AVERAGE_VELOCITY_IS = "Average velocity is ";
+	public static final String ISSUE_COUNT_IN = " issueCount in ";
+	public static final String DAYS = " days";
+	public static final String SPS_IN = " SPs in ";
+	public static final String FOR = " for ";
 	ReleaseSpecification releaseSpecification = new ReleaseSpecification();
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -642,10 +647,10 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			averageDataMap.put(AVG_STORY_POINT, roundingOff(avgStoryPoint));
 
 			releaseSpecification.setReleaseIssueCount(completedIssuesTillTodayList.size());
-			releaseSpecification.setReleaseStoryPoint(getStoryPoint(completedIssuesTillTodayList, fieldMapping) + " SPs");
-			releaseSpecification.setReleaseIssueCountVelocity(avgIssueCount);
-			releaseSpecification.setReleaseStoryPointVelocity(avgStoryPoint);
-			releaseSpecification.setReleaseDuration(countOfDaysTillToday + " days");
+			releaseSpecification.setReleaseStoryPoint(getStoryPoint(completedIssuesTillTodayList, fieldMapping));
+			releaseSpecification.setReleaseIssueCountVelocity(roundingOff(avgIssueCount));
+			releaseSpecification.setReleaseStoryPointVelocity(roundingOff(avgStoryPoint));
+			releaseSpecification.setReleaseDuration(countOfDaysTillToday);
 		}
 
 		return averageDataMap;
@@ -670,10 +675,15 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			List<IterationKpiValue> iterationKpiValueList, List<DataCountGroup> issueCountDataGroup,
 			List<DataCountGroup> issueSizeCountDataGroup, ReleaseSpecification releaseSpecification) {
 		if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
+			String issueCountAvgVelocity = AVERAGE_VELOCITY_IS + releaseSpecification.getReleaseIssueCountVelocity()
+					+ FOR + releaseSpecification.getReleaseIssueCount() + ISSUE_COUNT_IN + releaseSpecification.getReleaseDuration()  + DAYS;
+			String storyPointAvgVelocity = AVERAGE_VELOCITY_IS + releaseSpecification.getReleaseStoryPointVelocity()
+					+ FOR + releaseSpecification.getReleaseStoryPoint() + SPS_IN + releaseSpecification.getReleaseDuration()  + DAYS;
 			Map<String, Object> additionalInfoMap = new HashMap<>();
 			additionalInfoMap.put("isXaxisGapRequired", true);
 			additionalInfoMap.put("customisedGroup", RELEASE_PREDICTION);
-			additionalInfoMap.put("totalAvgVelocity", releaseSpecification);
+			additionalInfoMap.put("issueCountAvgVelocity", issueCountAvgVelocity);
+			additionalInfoMap.put("stroyPointAvgVelocity", storyPointAvgVelocity);
 			IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 			kpiValueIssueCount.setDataGroup(issueCountDataGroup);
 			kpiValueIssueCount.setFilter1(ISSUE_COUNT);

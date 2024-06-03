@@ -27,10 +27,10 @@ import lombok.Data;
 @Data
 public class ReleaseSpecification {
 
-	private String releaseDuration;
+	private double releaseDuration;
 	private double releaseIssueCountVelocity;
 	private double releaseIssueCount;
-	private String releaseStoryPoint;
+	private double releaseStoryPoint;
 	private double releaseStoryPointVelocity;
 
 }
