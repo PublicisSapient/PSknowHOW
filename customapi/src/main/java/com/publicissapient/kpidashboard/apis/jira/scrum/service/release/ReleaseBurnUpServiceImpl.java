@@ -685,12 +685,12 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 
 			additionalInfoIssueMap.put("isXaxisGapRequired", true);
 			additionalInfoIssueMap.put("customisedGroup", RELEASE_PREDICTION);
-			additionalInfoIssueMap.put("issueCountAvgVelocity", issueCountAvgVelocity);
+			additionalInfoIssueMap.put("totalAvgVelocity", issueCountAvgVelocity);
 
 			Map<String, Object> additionalInfoSPMap = new HashMap<>();
 			additionalInfoSPMap.put("isXaxisGapRequired", true);
 			additionalInfoSPMap.put("customisedGroup", RELEASE_PREDICTION);
-			additionalInfoSPMap.put("stroyPointAvgVelocity", storyPointAvgVelocity);
+			additionalInfoSPMap.put("totalAvgVelocity", storyPointAvgVelocity);
 
 			IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 			kpiValueIssueCount.setDataGroup(issueCountDataGroup);
