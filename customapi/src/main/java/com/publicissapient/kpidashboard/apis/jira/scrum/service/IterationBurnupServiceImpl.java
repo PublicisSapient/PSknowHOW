@@ -212,13 +212,15 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 			List<JiraHistoryChangeLog> sprintUpdationLog) {
 		LocalDate startDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0], DATE_TIME_FORMATTER);
 		LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("T")[0], DATE_TIME_FORMATTER);
-		List<JiraIssue> jiraIssueList = new ArrayList<>(getRespectiveJiraIssue(totalIssueList, issueHistory));
+
 		int lastIndex = sprintUpdationLog.size() - 1;
 		sprintUpdationLog.stream()
 				.filter(updateLogs -> updateLogs.getChangedTo().equalsIgnoreCase(sprintDetails.getSprintName())
 						|| (updateLogs.getChangedFrom().equalsIgnoreCase(sprintDetails.getSprintName()) && DateUtil
 								.isWithinDateRange(updateLogs.getUpdatedOn().toLocalDate(), startDate, sprintEndDate)))
 				.forEach(updateLogs -> {
+					List<JiraIssue> jiraIssueList = new ArrayList<>(
+							getRespectiveJiraIssue(totalIssueList, issueHistory));
 					if (updateLogs.getChangedTo().equalsIgnoreCase(sprintDetails.getSprintName())) {
 						if (sprintUpdationLog.get(lastIndex).getUpdatedOn().toLocalDate()
 								.isBefore(startDate.plusDays(1))) {
