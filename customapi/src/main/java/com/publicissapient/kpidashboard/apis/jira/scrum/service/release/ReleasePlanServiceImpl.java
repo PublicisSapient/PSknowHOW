@@ -106,6 +106,91 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	}
 
 	/**
+	 * Populate Release Wise Leaf Node Value
+	 *
+	 * @param latestRelease
+	 *            List<Node>
+	 * @param kpiElement
+	 *            kpiElement
+	 * @param kpiRequest
+	 *            kpiRequest
+	 */
+	@SuppressWarnings("unchecked")
+	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, // NOSONAR
+										  KpiRequest kpiRequest) {
+		String requestTrackerId = getRequestTrackerId();
+		List<KPIExcelData> excelData = new ArrayList<>();
+		String startDate = latestRelease.getReleaseFilter().getStartDate();
+		String endDate = latestRelease.getReleaseFilter().getEndDate();
+
+		Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
+		List<JiraIssue> releaseIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
+		Map<LocalDate, List<JiraIssue>> addedIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+				.get(ADDED_TO_RELEASE);
+		Map<LocalDate, List<JiraIssue>> fullReleaseIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+				.get(FULL_RELEASE);
+		Map<LocalDate, List<JiraIssue>> removeIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+				.get(REMOVED_FROM_RELEASE);
+
+		IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
+		long range;
+		String duration;
+		if (CollectionUtils.isNotEmpty(releaseIssues) && MapUtils.isNotEmpty(fullReleaseIssueMap)) {
+			Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+			/*
+			 * if start-time is absent, then the date at which issue was added and remained
+			 * added in the entire release is considered to be the start date if end date is
+			 * absent then it means that issue is unreleased, so till today we can consider
+			 * as end date
+			 */
+			LocalDate startLocalDate = StringUtils.isEmpty(startDate) ? fullReleaseIssueMap.keySet().stream()
+					.filter(Objects::nonNull).min(LocalDate::compareTo).orElse(null)
+					: LocalDate.parse(startDate.split("T")[0], DATE_TIME_FORMATTER);
+			LocalDate endLocalDate = StringUtils.isEmpty(endDate) ? LocalDate.now()
+					: LocalDate.parse(endDate.split("T")[0], DATE_TIME_FORMATTER);
+			Map<String, Long> durationRangeMap = getDurationRangeMap(startLocalDate, endLocalDate);
+			duration = durationRangeMap.keySet().stream().findFirst().orElse("");
+			range = durationRangeMap.values().stream().findFirst().orElse(0L);
+			fullReleaseIssueMap = prepareIssueBeforeStartDate(fullReleaseIssueMap, startLocalDate);
+
+			assert startLocalDate != null;
+			tempStartDate = LocalDate.parse(startLocalDate.toString());
+			allReleaseTaggedIssue.clear();
+			fullReleaseIssueMap.forEach((k, v) -> allReleaseTaggedIssue.addAll(v));
+			List<JiraIssue> overallIssues = new ArrayList<>();
+			List<DataCountGroup> issueCountDataGroup = new ArrayList<>();
+
+			// populating release scope vs planned
+			for (int i = 0; i < range && !startLocalDate.isAfter(endLocalDate); i++) {
+				DataCountGroup issueCount = new DataCountGroup();
+				CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(startLocalDate, duration);
+				Map<String, List<JiraIssue>> filterWiseGroupedMap = createFilterWiseGroupedMap(dateRange,
+						addedIssuesMap, removeIssueMap, fullReleaseIssueMap, overallIssues);
+				String date = getRange(dateRange, duration);
+				populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, date, duration, dateRange);
+				startLocalDate = getNextRangeDate(duration, startLocalDate, endLocalDate);
+				issueCountDataGroup.add(issueCount);
+			}
+			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
+			if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
+				Map<String, Object> additionalInfoMap = new HashMap<>();
+				additionalInfoMap.put("isXaxisGapRequired", true);
+				additionalInfoMap.put("plannedDueDate", String.valueOf(maxPlannedDueDate));
+				kpiValueIssueCount.setDataGroup(issueCountDataGroup);
+				kpiValueIssueCount.setFilter1(CommonConstant.OVERALL);
+				kpiValueIssueCount.setAdditionalInfo(additionalInfoMap);
+
+				kpiElement.setModalHeads(KPIExcelColumn.RELEASE_PLAN.getColumns());
+				kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_PLAN.getColumns());
+				kpiElement.setExcelData(excelData);
+			}
+
+		}
+		kpiElement.setTrendValueList(kpiValueIssueCount);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -216,91 +301,6 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 		return totalIssueList.stream()
 				.filter(jiraIssue -> jiraIssue.getNumber().equalsIgnoreCase(issueHistory.getStoryID()))
 				.collect(Collectors.toList());
-	}
-
-	/**
-	 * Populate Release Wise Leaf Node Value
-	 *
-	 * @param latestRelease
-	 *            List<Node>
-	 * @param kpiElement
-	 *            kpiElement
-	 * @param kpiRequest
-	 *            kpiRequest
-	 */
-	@SuppressWarnings("unchecked")
-	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, // NOSONAR
-			KpiRequest kpiRequest) {
-		String requestTrackerId = getRequestTrackerId();
-		List<KPIExcelData> excelData = new ArrayList<>();
-		String startDate = latestRelease.getReleaseFilter().getStartDate();
-		String endDate = latestRelease.getReleaseFilter().getEndDate();
-
-		Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
-		List<JiraIssue> releaseIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
-		Map<LocalDate, List<JiraIssue>> addedIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
-				.get(ADDED_TO_RELEASE);
-		Map<LocalDate, List<JiraIssue>> fullReleaseIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
-				.get(FULL_RELEASE);
-		Map<LocalDate, List<JiraIssue>> removeIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
-				.get(REMOVED_FROM_RELEASE);
-
-		IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
-		long range;
-		String duration;
-		if (CollectionUtils.isNotEmpty(releaseIssues) && MapUtils.isNotEmpty(fullReleaseIssueMap)) {
-			Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			/*
-			 * if start-time is absent, then the date at which issue was added and remained
-			 * added in the entire release is considered to be the start date if end date is
-			 * absent then it means that issue is unreleased, so till today we can consider
-			 * as end date
-			 */
-			LocalDate startLocalDate = StringUtils.isEmpty(startDate) ? fullReleaseIssueMap.keySet().stream()
-					.filter(Objects::nonNull).min(LocalDate::compareTo).orElse(null)
-					: LocalDate.parse(startDate.split("T")[0], DATE_TIME_FORMATTER);
-			LocalDate endLocalDate = StringUtils.isEmpty(endDate) ? LocalDate.now()
-					: LocalDate.parse(endDate.split("T")[0], DATE_TIME_FORMATTER);
-			Map<String, Long> durationRangeMap = getDurationRangeMap(startLocalDate, endLocalDate);
-			duration = durationRangeMap.keySet().stream().findFirst().orElse("");
-			range = durationRangeMap.values().stream().findFirst().orElse(0L);
-			fullReleaseIssueMap = prepareIssueBeforeStartDate(fullReleaseIssueMap, startLocalDate);
-
-			assert startLocalDate != null;
-			tempStartDate = LocalDate.parse(startLocalDate.toString());
-			allReleaseTaggedIssue.clear();
-			fullReleaseIssueMap.forEach((k, v) -> allReleaseTaggedIssue.addAll(v));
-			List<JiraIssue> overallIssues = new ArrayList<>();
-			List<DataCountGroup> issueCountDataGroup = new ArrayList<>();
-
-			// populating release scope vs planned
-			for (int i = 0; i < range && !startLocalDate.isAfter(endLocalDate); i++) {
-				DataCountGroup issueCount = new DataCountGroup();
-				CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(startLocalDate, duration);
-				Map<String, List<JiraIssue>> filterWiseGroupedMap = createFilterWiseGroupedMap(dateRange,
-						addedIssuesMap, removeIssueMap, fullReleaseIssueMap, overallIssues);
-				String date = getRange(dateRange, duration);
-				populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, date, duration, dateRange);
-				startLocalDate = getNextRangeDate(duration, startLocalDate, endLocalDate);
-				issueCountDataGroup.add(issueCount);
-			}
-			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
-			if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
-				Map<String, Object> additionalInfoMap = new HashMap<>();
-				additionalInfoMap.put("isXaxisGapRequired", true);
-				additionalInfoMap.put("plannedDueDate", String.valueOf(maxPlannedDueDate));
-				kpiValueIssueCount.setDataGroup(issueCountDataGroup);
-				kpiValueIssueCount.setFilter1(CommonConstant.OVERALL);
-				kpiValueIssueCount.setAdditionalInfo(additionalInfoMap);
-
-				kpiElement.setModalHeads(KPIExcelColumn.RELEASE_PLAN.getColumns());
-				kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_PLAN.getColumns());
-				kpiElement.setExcelData(excelData);
-			}
-
-		}
-		kpiElement.setTrendValueList(kpiValueIssueCount);
 	}
 
 	/**
