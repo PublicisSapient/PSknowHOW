@@ -47,7 +47,7 @@ public class ReleaseBurnUPEnhc {
 	@Execution
 	public void execution() {
 		MongoCollection<Document> fieldMappingStructure = mongoTemplate.getCollection("field_mapping_structure");
-		fieldMappingStructure.deleteMany(
+		fieldMappingStructure.deleteOne(
 				new Document(FIELD_NAME, new Document("$in", Collections.singletonList("releaseListKPI150"))));
 
 	}

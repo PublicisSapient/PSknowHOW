@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -105,12 +104,12 @@ public abstract class JiraReleaseKPIService implements NonTrendKPIService {
 	}
 
 	/**
-	 * get list of closed release
+	 * get Average Velocity of selected releases
 	 *
 	 * @return
 	 */
-	public Map<String, ReleaseSpecification> getReleasedList(ObjectId basicProjConfigId, FieldMapping fieldMapping) {
-		return jiraService.getReleasedList(basicProjConfigId, fieldMapping);
+	public Map<String, Object> getClosedReleaseAvgData(FieldMapping fieldMapping, ReleaseSpecification releaseSpecification) {
+		return jiraService.getAvgVelocity(fieldMapping, releaseSpecification);
 	}
 
 	/**

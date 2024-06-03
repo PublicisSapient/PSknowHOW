@@ -111,7 +111,7 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 							duration = DateUtil.calculateWorkingDays(startDate, releaseDate);
 						}
 						String releaseName = accountHierarchy.getNodeName().split("_")[0] + " (duration " + duration
-								+ ")";
+								+ " days)";
 						metadataValue.setKey(releaseName);
 						metadataValue.setData(releaseName);
 						return metadataValue;

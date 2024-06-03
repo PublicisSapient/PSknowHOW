@@ -14,7 +14,8 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service.releasedashboard;
 
-import java.time.LocalDateTime;
+import static com.publicissapient.kpidashboard.apis.util.KPIExcelUtility.roundingOff;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,6 +28,8 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -58,7 +61,6 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
@@ -66,7 +68,6 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectRel
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -109,6 +110,8 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 	private List<String> releaseList;
 	private boolean referFromProjectCache = true;
+	private static final String AVG_ISSUE_COUNT = "avgIssueCount";
+	private static final String AVG_STORY_POINT = "avgStoryPoint";
 
 	/**
 	 * This method process scrum jira based release kpis request, cache data and
@@ -316,45 +319,43 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 		return releaseList;
 	}
 
-	public Map<String, ReleaseSpecification> getReleasedList(ObjectId basicProjConfigId, FieldMapping fieldMapping) {
+	public Map<String, Object> getAvgVelocity(FieldMapping fieldMapping, ReleaseSpecification releaseSpecification) {
 
-		List<String> releasedList = new ArrayList<>();
-		Map<String, ReleaseSpecification> releaseWiseMap = new HashMap<>();
-		List<ProjectVersion> releaseVersionList = projectReleaseRepo.findByConfigId(basicProjConfigId)
-				.getListProjectVersion().stream().filter(ProjectVersion::isReleased).toList();
-		releaseVersionList.forEach(projectVersion -> releasedList.add(projectVersion.getName()));
-		List<JiraIssue> jiraIssues = jiraIssueRepository
-				.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjConfigId.toString(), releasedList);
-		releasedList.forEach(release -> {
-			List<JiraIssue> releaseWiseJiraIssueList = jiraIssues.stream().filter(
-					jiraIssue -> jiraIssue.getReleaseVersions().get(0).getReleaseName().equalsIgnoreCase(release))
-					.collect(Collectors.toList());
-			double releaseIssuesSize = releaseWiseJiraIssueList.size();
-			double releaseTicketsEstimate = getTicketEstimate(releaseWiseJiraIssueList, fieldMapping, 0.0d);
-			ReleaseSpecification releaseSpecification = new ReleaseSpecification();
-			releaseSpecification.setReleaseName(release);
-			releaseSpecification.setReleaseIssueCount(releaseIssuesSize);
-			releaseSpecification.setReleaseStoryPoint(releaseTicketsEstimate);
-			for (ProjectVersion projectVersion : releaseVersionList) {
-				if (projectVersion.getName().equalsIgnoreCase(release)) {
-					LocalDateTime releaseDate = DateUtil
-							.convertDateTimeToLocalDateTime(projectVersion.getReleaseDate());
-					LocalDateTime startDate = DateUtil.convertDateTimeToLocalDateTime(projectVersion.getStartDate());
+		Map<String, Object> averageDataMap = new HashMap<>();
+		String regex = "^(.*?)\\s*\\(duration\\s*(\\d+\\.\\d+)\\s*days\\)$";
+		Pattern pattern = Pattern.compile(regex);
+		List<String> releaseNames = new ArrayList<>();
+		double totalDurations = 0.0;
 
-					if (releaseDate != null && startDate != null) {
-						double duration = DateUtil.calculateWorkingDays(startDate, releaseDate);
-						releaseSpecification.setReleaseDuration(duration);
-						double issueCountVelocity = releaseIssuesSize / duration;
-						double issuesEstimateVelocity = releaseTicketsEstimate / duration;
-						releaseSpecification.setReleaseIssueCountVelocity(issueCountVelocity);
-						releaseSpecification.setReleaseStoryPointVelocity(issuesEstimateVelocity);
-					}
-				}
+		for (String release : fieldMapping.getReleaseListKPI150()) {
+			Matcher matcher = pattern.matcher(release);
+			if (matcher.find()) {
+				String releaseName = matcher.group(1).trim();
+				double duration = Double.parseDouble(matcher.group(2));
+				totalDurations = duration + totalDurations;
+				releaseNames.add(releaseName);
 			}
+		}
 
-			releaseWiseMap.put(release, releaseSpecification);
-		});
-		return releaseWiseMap;
+		List<JiraIssue> jiraIssues = jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(
+				fieldMapping.getBasicProjectConfigId().toString(), releaseNames);
+		if (totalDurations != 0 && CollectionUtils.isNotEmpty(jiraIssues)) {
+			double releaseIssuesSize = jiraIssues.size();
+			double releaseTicketsEstimate = getTicketEstimate(jiraIssues, fieldMapping, 0.0d);
+			double issueCountVelocity = releaseIssuesSize / totalDurations;
+			double issuesEstimateVelocity = releaseTicketsEstimate / totalDurations;
+
+			releaseSpecification.setReleaseIssueCount(releaseIssuesSize);
+			releaseSpecification.setReleaseStoryPoint(releaseTicketsEstimate +" SPs");
+			releaseSpecification.setReleaseIssueCountVelocity(roundingOff(issueCountVelocity));
+			releaseSpecification.setReleaseStoryPointVelocity(roundingOff(issuesEstimateVelocity));
+			releaseSpecification.setReleaseDuration(totalDurations + " days");
+			averageDataMap.put(AVG_ISSUE_COUNT, roundingOff(issueCountVelocity));
+			averageDataMap.put(AVG_STORY_POINT, roundingOff(issuesEstimateVelocity));
+
+		}
+
+		return averageDataMap;
 	}
 
 	/**

@@ -45,6 +45,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.model.ReleaseSpecification;
 import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
@@ -103,6 +104,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	public static final String IS_STORY_POINT_ACHIEVED = "isStoryPointAchieved";
 	public static final String OVERALL_ISSUE = "OVERALL ISSUE";
 	public static final String DEV_COMPLETE_DATE_MAP = "devCompleteDateMap";
+	ReleaseSpecification releaseSpecification = new ReleaseSpecification();
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -431,10 +433,16 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 				}
 			} else {
 
-				getReleasedList(latestRelease.getProjectFilter().getBasicProjectConfigId(), fieldMapping);
 				// populating release scope vs release progress followed by its prediction on
 				// avg completion rate
-				Map<String, Object> averageDataMap = getAverageData(fieldMapping, startLocalDate, originalIssueDoneMap);
+				Map<String, Object> averageDataMap;
+				if (CollectionUtils.isNotEmpty(fieldMapping.getReleaseListKPI150())) {
+					averageDataMap = getClosedReleaseAvgData(fieldMapping, releaseSpecification);
+				} else {
+					averageDataMap = getAverageData(fieldMapping, startLocalDate, originalIssueDoneMap,
+							releaseSpecification);
+				}
+
 				double avgIssueCount = (double) averageDataMap.getOrDefault(AVG_ISSUE_COUNT, 0d);
 				double avgStoryPoint = (double) averageDataMap.getOrDefault(AVG_STORY_POINT, 0d);
 
@@ -498,7 +506,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, originalFullReleaseMap,
 					originalCompletedIssueMap, originalDevCompletedIssueMap, fieldMapping);
 			createExcelDataAndTrendValueList(kpiElement, excelData, iterationKpiValueList, issueCountDataGroup,
-					issueSizeCountDataGroup);
+					issueSizeCountDataGroup, releaseSpecification);
 
 		}
 		kpiElement.setTrendValueList(iterationKpiValueList);
@@ -603,10 +611,11 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	 *            startDate
 	 * @param completedReleaseMap
 	 *            Map<LocalDate, List<JiraIssue>>
+	 * @param releaseSpecification
 	 * @return Map of Avg Issue Count, Story Point
 	 */
 	private Map<String, Object> getAverageData(FieldMapping fieldMapping, LocalDate startLocalDate,
-			Map<LocalDate, List<JiraIssue>> completedReleaseMap) {
+			Map<LocalDate, List<JiraIssue>> completedReleaseMap, ReleaseSpecification releaseSpecification) {
 		Map<String, Object> averageDataMap = new HashMap<>();
 		double avgIssueCount;
 		double avgStoryPoint;
@@ -631,7 +640,14 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			avgStoryPoint = getStoryPoint(completedIssuesTillTodayList, fieldMapping) / countOfDaysTillToday;
 			averageDataMap.put(AVG_ISSUE_COUNT, roundingOff(avgIssueCount));
 			averageDataMap.put(AVG_STORY_POINT, roundingOff(avgStoryPoint));
+
+			releaseSpecification.setReleaseIssueCount(completedIssuesTillTodayList.size());
+			releaseSpecification.setReleaseStoryPoint(getStoryPoint(completedIssuesTillTodayList, fieldMapping) + " SPs");
+			releaseSpecification.setReleaseIssueCountVelocity(avgIssueCount);
+			releaseSpecification.setReleaseStoryPointVelocity(avgStoryPoint);
+			releaseSpecification.setReleaseDuration(countOfDaysTillToday + " days");
 		}
+
 		return averageDataMap;
 	}
 
@@ -648,14 +664,16 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	 *            List<DataCountGroup>
 	 * @param issueSizeCountDataGroup
 	 *            List<DataCountGroup>
+	 * @param releaseSpecification
 	 */
 	private void createExcelDataAndTrendValueList(KpiElement kpiElement, List<KPIExcelData> excelData,
 			List<IterationKpiValue> iterationKpiValueList, List<DataCountGroup> issueCountDataGroup,
-			List<DataCountGroup> issueSizeCountDataGroup) {
+			List<DataCountGroup> issueSizeCountDataGroup, ReleaseSpecification releaseSpecification) {
 		if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
 			Map<String, Object> additionalInfoMap = new HashMap<>();
 			additionalInfoMap.put("isXaxisGapRequired", true);
 			additionalInfoMap.put("customisedGroup", RELEASE_PREDICTION);
+			additionalInfoMap.put("totalAvgVelocity", releaseSpecification);
 			IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 			kpiValueIssueCount.setDataGroup(issueCountDataGroup);
 			kpiValueIssueCount.setFilter1(ISSUE_COUNT);
