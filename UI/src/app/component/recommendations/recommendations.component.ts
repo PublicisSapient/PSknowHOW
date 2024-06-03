@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-recommendations',
@@ -22,19 +23,21 @@ export class RecommendationsComponent implements OnInit {
   @Input() filterData = {}
   @Input() kpiList = [];
   noRecommendations: boolean = false;
+  selectedSprint:object = {};
+  loading:boolean = false;
 
-  constructor(private httpService: HttpService,  private messageService: MessageService) { }
+  constructor(private httpService: HttpService,  private messageService: MessageService, private service: SharedService) { }
 
   ngOnInit(): void {
+    this.selectedSprint = this.service.getSprintForRnR();
   }
 
   handleClick(){
     this.displayModal = true;
     this.filterData['kpiIdList'] = [...this.kpiList];
-    
+    this.filterData['selectedMap']['sprint'] = [this.selectedSprint?.['nodeId']];
+    this.loading = true;
     this.httpService.getRecommendations(this.filterData).subscribe((response) => {
-      console.log("response", response);
-  
       if(response?.['recommendations']?.length > 0){
         this.recommendationsData = response['recommendations'];
         this.recommendationsData.forEach((item) => {
@@ -46,20 +49,14 @@ export class RecommendationsComponent implements OnInit {
         this.recommendationsData.forEach((item) => {
           this.tabsContent[item['recommendationType']] = [...this.tabsContent[item['recommendationType']], item]
         });
-        console.log(this.tabs);
-        console.log(this.maturities);
-        
-        console.log(this.tabsContent);
-        
-        // console.log(this.recommendationsData);
-        
       }else{
         this.noRecommendations = true;
       }
+      this.loading = false;
     }, error => {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error in Kpi Column Configurations. Please try after sometime!' });
-      
+      this.loading = false;
     })
   }
 }

@@ -11,6 +11,7 @@
         </div>
     </p-header>
     <div class="dialog-body p-mb-4">
+        <h5 class="p-m-0" *ngIf="selectedSprint">Sprint: {{selectedSprint?.nodeName}}</h5>
         <p-tabView>
             <p-tabPanel *ngFor="let tab of tabs" [header]="tab"
                 [headerStyleClass]="'tab-'+tab.split(' ').join('-')?.toLowerCase()">
