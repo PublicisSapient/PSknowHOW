@@ -22,8 +22,8 @@ public class LogoutController {
 	// logs out the user from the central auth application
 	@GetMapping("/sso-logout")
 	public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-		CookieUtil.deleteCookie(request, response, CookieUtil.COOKIE_NAME);
-		CookieUtil.deleteCookie(request, response, CookieUtil.EXPIRY_COOKIE_NAME);
+		CookieUtil.deleteCookie(request, response, CookieUtil.COOKIE_NAME, CookieUtil.API_COOKIE_PATH);
+		CookieUtil.deleteCookie(request, response, CookieUtil.EXPIRY_COOKIE_NAME, CookieUtil.DEFAULT_COOKIE_PATH);
 
 		return ResponseEntity.ok().build();
 	}

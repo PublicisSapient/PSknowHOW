@@ -29,9 +29,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @NoArgsConstructor
 public class CookieUtil {
-	private static final String DEFAULT_COOKIE_PATH = "/";
+	public static final String DEFAULT_COOKIE_PATH = "/";
 
-	private static final String API_COOKIE_PATH = "/api";
+	public static final String API_COOKIE_PATH = "/api";
 
 	public static final String COOKIE_NAME = "authCookie";
 
@@ -88,12 +88,15 @@ public class CookieUtil {
 	}
 
 	public static void deleteCookie(
-			@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull String name
+			@NotNull HttpServletRequest request,
+			@NotNull HttpServletResponse response,
+			@NotNull String name,
+			@NotNull String path
 	) {
 		getCookie(request, name).ifPresent(foundCookie -> {
 			foundCookie.setMaxAge(0);
 			foundCookie.setValue("");
-			foundCookie.setPath(DEFAULT_COOKIE_PATH);
+			foundCookie.setPath(path);
 			response.addCookie(foundCookie);
 		});
 	}
