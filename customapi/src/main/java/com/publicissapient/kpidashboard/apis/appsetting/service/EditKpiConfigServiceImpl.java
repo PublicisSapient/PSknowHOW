@@ -89,6 +89,23 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 					.collect(Collectors.toMap(Metadata::getType, Metadata::getValue));
 		}
 
+		getClosedReleaseName(projectBasicConfigid, kpiCode, data);
+
+		return data;
+	}
+
+	/**
+	 * get list of closed releases
+	 * 
+	 * @param projectBasicConfigid
+	 *            projectBasicConfigid
+	 * @param kpiCode
+	 *            kpiCode
+	 * @param data
+	 *            data
+	 */
+	private void getClosedReleaseName(String projectBasicConfigid, String kpiCode,
+			Map<String, List<MetadataValue>> data) {
 		if (kpiCode.equalsIgnoreCase(KPICode.RELEASE_BURNUP.getKpiId())) {
 			List<MetadataValue> metadataValueList = accountHierarchyRepository
 					.findByLabelNameAndBasicProjectConfigIdAndReleaseState(LABEL_NAME,
@@ -99,7 +116,7 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 						} else {
 							return LocalDateTime.MIN;
 						}
-					}).reversed()).limit(10).map(accountHierarchy -> {
+					}).reversed()).map(accountHierarchy -> {
 						MetadataValue metadataValue = new MetadataValue();
 						double duration = 0;
 						if (StringUtils.isNotEmpty(accountHierarchy.getBeginDate())
@@ -110,8 +127,14 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 									accountHierarchy.getEndDate(), DateUtil.TIME_FORMAT);
 							duration = DateUtil.calculateWorkingDays(startDate, releaseDate);
 						}
-						String releaseName = accountHierarchy.getNodeName().split("_")[0] + " (duration " + duration
-								+ " days)";
+						String releaseName;
+						if (duration == 0) {
+							releaseName = accountHierarchy.getNodeName().split("_")[0] + " (duration - days)";
+						} else {
+							releaseName = accountHierarchy.getNodeName().split("_")[0] + " (duration " + duration
+									+ " days)";
+						}
+
 						metadataValue.setKey(releaseName);
 						metadataValue.setData(releaseName);
 						return metadataValue;
@@ -119,8 +142,6 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 
 			data.put(RELEASE_KEY, metadataValueList);
 		}
-
-		return data;
 	}
 
 }
