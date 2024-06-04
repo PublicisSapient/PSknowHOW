@@ -147,6 +147,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   getProcessorsTraceLogsForProject(basicProjectConfigId) {
     const that = this;
+    this.dataMismatchObj = {};
     this.httpService.getProcessorsTraceLogsForProject(basicProjectConfigId)
       .subscribe(response => {
         this.jiraExecutionSteps = []
