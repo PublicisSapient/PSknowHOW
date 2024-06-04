@@ -30,9 +30,9 @@ describe('RecommendationsComponent', () => {
     ],
     "label": "sprint"
   };
-  const recommendationsRes = {
+  const recommendationsRes = [{
       "projectId": "xyz",
-      "lastSprintId": "xyz_123",
+      "sprintId": "xyz_123",
       "recommendations": [
           {
               "kpiId": "kpi14",
@@ -62,7 +62,7 @@ describe('RecommendationsComponent', () => {
             "filter": "Overall"
           },
         ] 
-    }
+    }]
 
   beforeEach(async () => {
     service = new SharedService();

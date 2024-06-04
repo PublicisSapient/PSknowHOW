@@ -9,14 +9,16 @@
         <div>
             Recommendations for Optimising KPIs
         </div>
+        <h5 class="p-m-0" *ngIf="selectedSprint">
+            Sprint: {{selectedSprint?.nodeName}}
+        </h5>
     </p-header>
     <div class="dialog-body p-mb-4">
-        <h5 class="p-m-0" *ngIf="selectedSprint">Sprint: {{selectedSprint?.nodeName}}</h5>
         <p-tabView>
             <p-tabPanel *ngFor="let tab of tabs" [header]="tab"
                 [headerStyleClass]="'tab-'+tab.split(' ').join('-')?.toLowerCase()">
 
-                <p-table #dt1 [value]="tabsContent[tab]" dataKey="kpiId" [loading]="loading"
+                <p-table #dt1 [value]="tabsContent[tab]" dataKey="tab" [loading]="loading"
                     [tableStyle]="{ 'min-width': '70rem'}"
                     [globalFilterFields]="['kpiName', 'maturity']" class="p-mt-3">
                     <ng-template pTemplate="header">
@@ -70,7 +72,9 @@
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
                         <tr>
-                            <td colspan="7">No recommendations found.</td>
+                            <td [attr.colspan]="4">
+                                No records found
+                            </td>
                         </tr>
                     </ng-template>
                 </p-table>
@@ -78,7 +82,7 @@
             </p-tabPanel>
         </p-tabView>
         <div *ngIf="noRecommendations" class="p-pt-4">
-            There are no recommendations available for the selected project.
+            There are no recommendations available for the selected sprint.
         </div>
     </div>
     
