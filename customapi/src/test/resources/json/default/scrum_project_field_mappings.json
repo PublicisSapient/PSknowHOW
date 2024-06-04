@@ -162,6 +162,9 @@
     "jiraDodKPI155" : [ "Done", "Closed" ],
     "jiraLiveStatusKPI155" : "LIVE",
     "isUploadDataKPI42" : true,
+    "startDateCountKPI150": {
+      "node1": 10
+    },
     "isUploadDataKPI16" : true,
     "getJiraDodKPI163" : ["Done", "Closed"],
     "jiraStoryIdentificationKPI164" : ["Story", "Enabler Story"],
@@ -179,6 +182,7 @@
     "jiraIssueClosedStateKPI170": [ "Done", "Closed", "Dropped"],
     "jiraIssueRiskTypeKPI176": ["Risk"],
     "jiraIssueDependencyTypeKPI176": ["Dependency"]
+
   },
   {
     "_id":

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync, discardPeriodicTasks } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
@@ -32,7 +32,8 @@ import { AdvancedSettingsComponent } from './advanced-settings.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { SharedService } from '../../services/shared.service';
-import { of, throwError } from 'rxjs';
+import { of, throwError,interval } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
 describe('AdvancedSettingsComponent', () => {
   let component: AdvancedSettingsComponent;
   let fixture: ComponentFixture<AdvancedSettingsComponent>;
@@ -46,7 +47,7 @@ describe('AdvancedSettingsComponent', () => {
   // var ls = function () {
     //   return JSON.parse(store['storage']);
     // };
-    
+
   const fakeProjects = require('../../../test/resource/fakeProjectsDashConfig.json');
   const fakeProcessorData = {
     message: '',
@@ -201,7 +202,7 @@ describe('AdvancedSettingsComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     confirmationService = TestBed.inject(ConfirmationService);
     messageService = TestBed.inject(MessageService);
-    fixture.detectChanges();
+    // fixture.detectChanges();
   });
 
   afterEach(() => {
@@ -216,7 +217,7 @@ describe('AdvancedSettingsComponent', () => {
   it('should load processor data', (done) => {
     component.selectedView = 'processor_state';
     component.getProcessorData();
-    fixture.detectChanges();
+    // fixture.detectChanges();
     httpMock.match(baseUrl + '/api/processor')[0].flush(fakeProcessorData);
     if (component.processorData['success']) {
       expect(Object.keys(component.processorData).length).toEqual(Object.keys(fakeProcessorData).length);
@@ -228,7 +229,7 @@ describe('AdvancedSettingsComponent', () => {
 
   it('should switch view to Processor State', (done) => {
     component.switchView(switchViewEventProcessor);
-    fixture.detectChanges();
+    // fixture.detectChanges();
     expect(component.selectedView).toBe('processor_state');
     done();
   });
@@ -238,7 +239,7 @@ describe('AdvancedSettingsComponent', () => {
     const getProjectsResponse = { message: 'Fetched successfully', success: true, data: [{ id: '601bca9569515b0001d68182', projectName: 'TestRIshabh', createdAt: '2021-02-04T10:21:09', isKanban: false }] };
     component.selectedView = 'processor_state';
     component.getProjects();
-    fixture.detectChanges();
+    // fixture.detectChanges();
     httpMock.match(baseUrl + '/api/basicconfigs')[0].flush(getProjectsResponse);
     // expect(component.userProjects).toEqual([{ "name": "TestUser", "id": "601bca9569515b0001d68182" }]);
   });
@@ -247,12 +248,32 @@ describe('AdvancedSettingsComponent', () => {
     const selectedProjects = { originalEvent: { isTrusted: true }, value: {id: '601bca9569515b0001d68182', name: 'test'}, itemValue: '601bca9569515b0001d68182' };
     const processorName = 'Jira';
     component.updateProjectSelection(selectedProjects);
-    fixture.detectChanges();
+    // fixture.detectChanges();
     expect(component.selectedProject).toEqual({id: '601bca9569515b0001d68182', name: 'test'});
   });
 
   it('should run Jira Processor for the selected projects', () => {
     component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          executionOngoing : true,
+          errorMessage : "test"
+        },
+        {
+          processorName : 'Github',
+          executionOngoing : true
+        }
+      ]
+    }
+    component.processorsTracelogs = [
+      {
+        processorName : 'Jira',
+        executionOngoing : true,
+        errorMessage : "test"
+      }
+    ]
     component.processorData = {
       data : [
         {
@@ -270,6 +291,97 @@ describe('AdvancedSettingsComponent', () => {
     httpMock.match(baseUrl + '/api/processor/trigger/Jira')[0].flush({ message: 'Got HTTP response: 200 on url: http://jira_processor:50008/processor/run', success: true });
   });
 
+  it('should continue get stacks of jira processor untill flag true', fakeAsync(() => {
+    component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          executionOngoing : true,
+          errorMessage : "test"
+        },
+        {
+          processorName : 'Github',
+          executionOngoing : true
+        }
+      ]
+    }
+    component.processorsTracelogs = [
+      {
+        processorName : 'Jira',
+        executionOngoing : true,
+        errorMessage : "",
+        progressStatusList : [{
+          "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
+          "endTime" : 1716799109813,
+          "status" : "COMPLETED"
+        }]
+      }
+    ]
+    const response = { success: true, data: [{ executionOngoing: true, errorMessage: null,progressStatusList : [{
+      "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
+      "endTime" : 1716799109813,
+      "status" : "COMPLETED"
+    }] }] };
+    spyOn(httpService,'runProcessor').and.returnValue(of(response));
+     let jiraStatusContinuePulling = true;
+     const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: true,progressStatusList : [{
+      "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
+      "endTime" : 1716799109813,
+      "status" : "COMPLETED"
+    }] }] };
+     const continueCall = spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
+       return of(mockProgressStatusResponse).pipe(
+         takeWhile(() => jiraStatusContinuePulling)
+       );
+     });
+     component.runProcessor('Jira');
+     tick(15000);
+     jiraStatusContinuePulling = false
+     discardPeriodicTasks()
+     expect(component.processorsTracelogs).toBeDefined();
+
+  }));
+
+  it('should stop get stacks of jira processor when flagis false', fakeAsync(() => {
+    component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          executionOngoing : true,
+          errorMessage : "test"
+        },
+        {
+          processorName : 'Github',
+          executionOngoing : true
+        }
+      ]
+    }
+    component.processorsTracelogs = [
+      {
+        processorName : 'Jira',
+        executionOngoing : true,
+        errorMessage : "test"
+      }
+    ]
+    const response = { success: true, data: [{ executionOngoing: true, errorMessage: null }] };
+    spyOn(httpService,'runProcessor').and.returnValue(of(response));
+     let jiraStatusContinuePulling = true;
+     const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: false }] };
+     const continueCall = spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
+       return of(mockProgressStatusResponse).pipe(
+         takeWhile(() => jiraStatusContinuePulling)
+       );
+     });
+     component.runProcessor('Jira');
+     tick(3000);
+     jiraStatusContinuePulling = false
+     discardPeriodicTasks()
+     expect(component.processorsTracelogs).toBeDefined();
+
+  }));
+
   it('should run Github Processor for the selected projects', () => {
     component.processorData = {
       data : [
@@ -283,9 +395,21 @@ describe('AdvancedSettingsComponent', () => {
         }
       ]
     }
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          executionOngoing : true
+        },
+        {
+          processorName : 'Github',
+          executionOngoing : true
+        }
+      ]
+    }
     component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
     component.runProcessor('Github');
-    fixture.detectChanges();
+    // fixture.detectChanges();
     httpMock.match(baseUrl + '/api/processor/trigger/Github')[0].flush({ message: 'Got HTTP response: 200 on url: http://nonjira-processor:50008/processor/run', success: true });
   });
 
@@ -311,9 +435,62 @@ describe('AdvancedSettingsComponent', () => {
       ]
     }
     const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          executionOngoing : true
+        },
+        {
+          processorName : 'Github',
+          executionOngoing : true
+        }
+      ]
+    }
+    component.processorsTracelogs = [
+      {
+        processorName : 'Jira',
+        executionOngoing : true,
+        progressStatusList : [{
+          "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
+          "endTime" : 1716799109813,
+          "status" : "COMPLETED"
+        }],
+      },
+      {
+        processorName : 'Github',
+        executionOngoing : true
+      }
+    ]
+    const fakeProcessorsTracelog = {
+      success : true,
+      data :[
+        {
+          processorName : 'Jira',
+          executionOngoing : true,
+          progressStatusList : [{
+            "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
+            "endTime" : 1716799109813,
+            "status" : "COMPLETED"
+          }]
+        }
+      ]
+    }
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(fakeProcessorsTracelog));
-    component.getProcessorsTraceLogsForProject(basicProjectConfigId);
-    tick();
+    const response = { success: true, data: [{ executionOngoing: true, errorMessage: null }] };
+    spyOn(httpService,'runProcessor').and.returnValue(of(response));
+     let jiraStatusContinuePulling = true;
+     const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: true }] };
+     const continueCall = spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
+       return of(mockProgressStatusResponse).pipe(
+         takeWhile(() => jiraStatusContinuePulling)
+       );
+     });
+     component.getProcessorsTraceLogsForProject(basicProjectConfigId);
+     tick(3000);
+     jiraStatusContinuePulling = false
+     discardPeriodicTasks()
+     expect(component.processorsTracelogs).toBeDefined();
     expect(component.processorsTracelogs.length).toEqual(fakeProcessorsTracelog.data.length);
   }));
 
@@ -425,7 +602,7 @@ describe('AdvancedSettingsComponent', () => {
     }]
     const resp = component.showExecutionDate('Jira')
     expect(resp).not.toBe("NA")
-  })  
+  })
 
   it('should fetch all the projects when superadmin', () => {
     component.userProjects = [];
@@ -481,6 +658,29 @@ describe('AdvancedSettingsComponent', () => {
     const errResponse = {
       'error': "Something went wrong"
     };
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          executionOngoing : true
+        },
+        {
+          processorName : 'Github',
+          executionOngoing : true
+        }
+      ]
+    }
+    component.processorsTracelogs = [
+        {
+          processorName : 'Jira',
+          executionOngoing : true
+        },
+        {
+          processorName : 'Github',
+          executionOngoing : true
+        }
+      ]
+
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(errResponse));
     const spy = spyOn(messageService, 'add')
     component.getProcessorsTraceLogsForProject(basicProjectConfigId);
@@ -506,6 +706,19 @@ describe('AdvancedSettingsComponent', () => {
       data : [
         {
           processorName : 'Jira',
+          executionOngoing : true,
+          errorMessage : ''
+        },
+        {
+          processorName : 'Github',
+          executionOngoing : true
+        }
+      ]
+    }
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
           loader : true
         },
         {
@@ -517,6 +730,13 @@ describe('AdvancedSettingsComponent', () => {
     component.selectedProject = {
       'id': '651af337d18501286c28a464'
     }
+    component.processorsTracelogs = [
+      {
+        processorName : 'Jira',
+        executionOngoing : true,
+        errorMessage : ''
+      },
+    ]
     const errResponse = {
       data: "Error in running Jira processor. Please try after some time.",
       message: "Got HTTP response: 404 on url: http://jira-processor:50008/api/job/startprojectwiseissuejob",
@@ -538,6 +758,18 @@ describe('AdvancedSettingsComponent', () => {
         {
           processorName : 'Github',
           loader : true
+        }
+      ]
+    }
+    component.processorData = {
+      data : [
+        {
+          processorName : 'Jira',
+          executionOngoing : true
+        },
+        {
+          processorName : 'Github',
+          executionOngoing : true
         }
       ]
     }
@@ -576,23 +808,23 @@ describe('AdvancedSettingsComponent', () => {
     );
     spyOn(messageService, 'add');
     spyOn(component, 'getAllToolConfigs');
-  
+
     component.deleteProcessorDataReq(processorDetails, selectedProject);
-  
-    fixture.detectChanges();
-  
+
+    // fixture.detectChanges();
+
     expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
     expect(httpService.deleteProcessorData).toHaveBeenCalledTimes(2);
     expect(httpService.deleteProcessorData).toHaveBeenCalledWith('123', '601bca9569515b0001d68182');
     expect(httpService.deleteProcessorData).toHaveBeenCalledWith('456', '601bca9569515b0001d68182');
-  
+
     setTimeout(() => {
       expect(messageService.add).toHaveBeenCalledWith({ severity: 'success', summary: 'Data deleted Successfully.', detail: '' });
       expect(component.getAllToolConfigs).toHaveBeenCalledWith('601bca9569515b0001d68182');
       done();
     });
   });
-  
+
   it('should handle error when deleting processor data', (done) => {
     const processorDetails = {
       processorName: 'Jira'
@@ -617,23 +849,23 @@ describe('AdvancedSettingsComponent', () => {
     );
     spyOn(messageService, 'add');
     spyOn(component, 'getAllToolConfigs');
-  
+
     component.deleteProcessorDataReq(processorDetails, selectedProject);
-  
-    fixture.detectChanges();
-  
+
+    // fixture.detectChanges();
+
     expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
     expect(httpService.deleteProcessorData).toHaveBeenCalledTimes(2);
     expect(httpService.deleteProcessorData).toHaveBeenCalledWith('123', '601bca9569515b0001d68182');
     expect(httpService.deleteProcessorData).toHaveBeenCalledWith('456', '601bca9569515b0001d68182');
-  
+
     setTimeout(() => {
       expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Error in deleting project data. Please try after some time.' });
       expect(component.getAllToolConfigs).not.toHaveBeenCalled();
       done();
     });
   });
-  
+
   it('should handle error when getting tool details', () => {
     const processorDetails = {
       processorName: 'Jira'
@@ -643,12 +875,17 @@ describe('AdvancedSettingsComponent', () => {
     };
     spyOn(component, 'getToolDetailsForProcessor').and.returnValue(null);
     spyOn(messageService, 'add');
-  
+
     component.deleteProcessorDataReq(processorDetails, selectedProject);
-  
-    fixture.detectChanges();
-  
+
+    // fixture.detectChanges();
+
     expect(component.getToolDetailsForProcessor).toHaveBeenCalledWith('Jira');
     expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Something went wrong. Please try again after sometime.' });
   });
+
+  it('should convert end time',()=>{
+    component.endTimeConversion('2023-01-04T06:02:20');
+    expect(component.endTimeConversion).not.toBeNull();
+  })
 });

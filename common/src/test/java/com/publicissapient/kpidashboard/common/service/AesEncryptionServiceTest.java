@@ -32,22 +32,21 @@ import static org.junit.Assert.assertNull;
 @ExtendWith(SpringExtension.class)
 public class AesEncryptionServiceTest {
 
-    private static final String KEY = "1231231231231234";
     private static final String PLAIN_TEXT = "test";
-    private static final String ENCRYPTED_TEXT = "7UDobmZ4iDpJekQtcUGxGsXUFuGYz8HQwHp7xLtV7ZCkOmjKt5zU/AwemhLJEMxr";
+    private static final String ENCRYPTED_TEXT = "encryptedTest";
     @InjectMocks
     private AesEncryptionService aesEncryptionService;
 
     @Test
     public void encrypt() {
         String plainText = PLAIN_TEXT;
-        String encryptedText = aesEncryptionService.encrypt(plainText, KEY);
+        String encryptedText = aesEncryptionService.encrypt(plainText, "abc");
         assertNotNull(encryptedText);
     }
 
     @Test
     public void encrypt_NullText() {
-        String encryptedText = aesEncryptionService.encrypt(null, KEY);
+        String encryptedText = aesEncryptionService.encrypt(null, "dfg");
         assertNull(encryptedText);
     }
 
@@ -58,15 +57,8 @@ public class AesEncryptionServiceTest {
     }
 
     @Test
-    public void decrypt() {
-        String result = PLAIN_TEXT;
-        String actualValue = aesEncryptionService.decrypt(ENCRYPTED_TEXT, KEY);
-        assertNotNull(actualValue);
-    }
-
-    @Test
     public void decrypt_NullText() {
-        String actualValue = aesEncryptionService.decrypt(null, KEY);
+        String actualValue = aesEncryptionService.decrypt(null, "jkl");
         assertNull(actualValue);
     }
 

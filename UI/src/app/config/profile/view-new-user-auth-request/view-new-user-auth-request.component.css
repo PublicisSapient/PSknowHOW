@@ -55,3 +55,8 @@ ul.project-list li{
     margin: 24px 0px;
     color: #585858;
 }
+
+.white-list-email-row{
+  background-color: #FFECD7 !important;
+  color : black !important;
+}

@@ -60,6 +60,7 @@ import { CompareStartEndWithCurrentDatePipe } from './pipes/compareStartEndWithC
 import { ManageAssigneeComponent } from './manage-assignee/manage-assignee.component';
 import { RatingComponent } from './rating/rating.component';
 import { CapacityPlanningComponent } from './capacity-planning/capacity-planning.component';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 
 @NgModule({
   imports: [
@@ -92,7 +93,8 @@ import { CapacityPlanningComponent } from './capacity-planning/capacity-planning
     CardModule,
     DialogModule,
     TabViewModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    OverlayPanelModule
   ],
   declarations: [
     ConfigComponent,
