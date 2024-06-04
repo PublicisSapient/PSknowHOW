@@ -70,12 +70,12 @@ public class JiraIssueV2 extends BasicModel implements Cloneable {
 	private Integer timeEstimate;
 	private List<String> labels;
 	private String projectKey;
-	private String resolutionDate;//pending
+	private String resolutionDate;
 	private String resolutionName;
 	private List<CommentDetails> comments;
 	private String storyPoints;
 //	private String sprintId;
-	private String acceptanceCriteria;//pending
+	private String acceptanceCriteria;
 	private List<IssueLinkDetail> issueLinks;
 	private List<ReleaseVersion> fixVersions;
 	private String boardId;

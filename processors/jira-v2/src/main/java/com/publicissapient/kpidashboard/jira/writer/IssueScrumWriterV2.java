@@ -83,7 +83,7 @@ public class IssueScrumWriterV2 implements ItemWriter<CompositeResult> {
 
 		for (CompositeResult compositeResult : compositeResults) {
 			if (null != compositeResult.getJiraIssueV2()) {
-				String key = compositeResult.getJiraIssueV2().getNumber() + ","
+				String key = compositeResult.getJiraIssueV2().getKey() + ","
 						+ compositeResult.getJiraIssueV2().getBasicProjectConfigId();
 				jiraIssues.putIfAbsent(key, compositeResult.getJiraIssueV2());
 			}
