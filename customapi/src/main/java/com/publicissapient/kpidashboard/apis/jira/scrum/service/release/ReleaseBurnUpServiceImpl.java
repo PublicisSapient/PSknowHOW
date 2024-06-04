@@ -111,7 +111,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	public static final String IS_XAXIS_GAP_REQUIRED = "isXaxisGapRequired";
 	public static final String CUSTOMISED_GROUP = "customisedGroup";
 	public static final String TOTAL_AVG_VELOCITY = "totalAvgVelocity";
-	ReleaseSpecification releaseSpecification = new ReleaseSpecification();
+
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -308,7 +308,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	 *            Dev or Qa Done Status
 	 * @param fieldMapping
 	 *            fieldMapping
-	 * @return Map<String,LocalDate>
+	 * @return Map<String, LocalDate>
 	 */
 	private static LocalDate getDoneDateBasedOnStatus(List<JiraHistoryChangeLog> statusUpdateLog,
 			List<String> devOrQaDoneStatus, FieldMapping fieldMapping) {
@@ -417,6 +417,14 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			List<DataCountGroup> issueCountDataGroup = new ArrayList<>();
 			List<DataCountGroup> issueSizeCountDataGroup = new ArrayList<>();
 			Map<String, Object> predictionDataMap = new HashMap<>();
+
+			// populating release predication date on the basis of latest closed selected
+			// releases
+			Map<String, Object> averageDataMap = new HashMap<>();
+			ReleaseSpecification releaseSpecification = new ReleaseSpecification();
+			if (CollectionUtils.isNotEmpty(fieldMapping.getReleaseListKPI150())) {
+				averageDataMap = getClosedReleaseAvgData(fieldMapping, releaseSpecification);
+			}
 			// if no issue is closed & status is "Released" in a release prediction will not
 			// be shown
 			if (releaseState.equalsIgnoreCase(CommonConstant.RELEASED) || MapUtils.isEmpty(startDateAdjustedDoneMap)) {
@@ -442,10 +450,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 
 				// populating release scope vs release progress followed by its prediction on
 				// avg completion rate
-				Map<String, Object> averageDataMap;
-				if (CollectionUtils.isNotEmpty(fieldMapping.getReleaseListKPI150())) {
-					averageDataMap = getClosedReleaseAvgData(fieldMapping, releaseSpecification);
-				} else {
+				if (CollectionUtils.isEmpty(fieldMapping.getReleaseListKPI150())) {
 					averageDataMap = getAverageData(fieldMapping, startLocalDate, originalIssueDoneMap,
 							releaseSpecification);
 				}
@@ -735,7 +740,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 
 	/**
 	 * DeepClone the map
-	 * 
+	 *
 	 * @param originalMap
 	 * @return
 	 */
@@ -899,7 +904,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	 *            Map<LocalDate, List<JiraIssue>>
 	 * @param overallCompletedIssues
 	 *            List<JiraIssue>
-	 * @return Map<String, List<JiraIssue>>
+	 * @return Map<String, List < JiraIssue>>
 	 */
 	@SuppressWarnings("unchecked")
 	private Map<String, List<JiraIssue>> createFilterWiseGroupedMap(CustomDateRange dateRange,

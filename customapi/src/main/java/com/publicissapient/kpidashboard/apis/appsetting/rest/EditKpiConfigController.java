@@ -60,7 +60,8 @@ public class EditKpiConfigController {
 	 * @return responseEntity with data,message and status
 	 */
 	@RequestMapping(value = "/jira/editKpi/{projectBasicConfigId}/{kpiCode}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponse> fetchTypeValues(@PathVariable String projectBasicConfigId, @PathVariable String kpiCode) {
+	public ResponseEntity<ServiceResponse> fetchTypeValues(@PathVariable String projectBasicConfigId,
+			@PathVariable String kpiCode) {
 		projectBasicConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectBasicConfigId);
 		kpiCode = CommonUtils.handleCrossScriptingTaintedValue(kpiCode);
 		log.info("Fetching data in KPI edit configuration for :{}", projectBasicConfigId);

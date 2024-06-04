@@ -33,7 +33,9 @@ public interface EditKpiConfigService {
 	 * Gets data by type for the Edit config.
 	 *
 	 * @param projectconfigid
+	 *            projectconfigid
 	 * @param kpiCode
+	 *            kpiCode
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
