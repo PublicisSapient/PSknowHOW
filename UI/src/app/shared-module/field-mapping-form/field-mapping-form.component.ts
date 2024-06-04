@@ -205,6 +205,9 @@ private setting = {
         break;
       case 'releases':
         if (this.fieldMappingMetaData && this.fieldMappingMetaData.releases) {
+          this.fieldMappingMetaData.releases.forEach((item : any) => (
+              item['disabled']= item.data.includes("duration 0.0 days")
+          ));
           this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.releases;
         } else {
           this.fieldMappingMultiSelectValues = [];
