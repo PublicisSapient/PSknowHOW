@@ -86,9 +86,9 @@ public class KpiIntegrationController {
 	 * @return kpi recommendation
 	 */
 	@PostMapping(value = "/kpiRecommendation", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ProjectWiseKpiRecommendation> getKpiRecommendation(
+	public ResponseEntity<List<ProjectWiseKpiRecommendation>> getKpiRecommendation(
 			@NotNull @RequestBody KpiRequest kpiRequest) {
-		ProjectWiseKpiRecommendation response = kpiIntegrationService.getProjectWiseKpiRecommendation(kpiRequest);
+		List<ProjectWiseKpiRecommendation> response = kpiIntegrationService.getProjectWiseKpiRecommendation(kpiRequest);
 		return ResponseEntity.ok().body(response);
 	}
 

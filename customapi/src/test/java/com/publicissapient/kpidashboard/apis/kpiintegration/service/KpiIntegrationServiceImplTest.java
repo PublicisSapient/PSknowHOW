@@ -25,14 +25,18 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
 import com.publicissapient.kpidashboard.apis.model.ProjectWiseKpiRecommendation;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import org.junit.Before;
@@ -150,12 +154,15 @@ public class KpiIntegrationServiceImplTest {
 	public void testGetProjectWiseKpiRecommendation() {
 		KpiRequest kpiRequest = new KpiRequest();
 		kpiRequest.setIds(new String[] { "id1" });
+		Map<String, List<String>> selectedMap = new HashMap<>();
+		selectedMap.put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, Arrays.asList("sprint1"));
+		kpiRequest.setSelectedMap(selectedMap);
 		kpiRequest.setKpiIdList(Arrays.asList("kpi1", "kpi2"));
 		ProjectWiseKpiRecommendation expectedResponse = new ProjectWiseKpiRecommendation();
-		when(customApiConfig.getRnrRecommendationUrl()).thenReturn("recommendation/%s/%s");
+		when(customApiConfig.getRnrRecommendationUrl()).thenReturn("recommendation/%s/%s/%s");
 		when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class),
 				any(ParameterizedTypeReference.class))).thenReturn(ResponseEntity.ok(Arrays.asList(expectedResponse)));
-		ProjectWiseKpiRecommendation actualResponse = maturityService.getProjectWiseKpiRecommendation(kpiRequest);
+		List<ProjectWiseKpiRecommendation> actualResponse = maturityService.getProjectWiseKpiRecommendation(kpiRequest);
 		assertNotNull(actualResponse);
 	}
 }

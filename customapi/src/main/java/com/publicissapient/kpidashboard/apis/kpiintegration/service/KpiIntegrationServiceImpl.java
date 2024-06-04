@@ -34,7 +34,6 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.NonTrendServiceFactory;
 import com.publicissapient.kpidashboard.apis.model.ProjectWiseKpiRecommendation;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
@@ -62,7 +61,6 @@ import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -313,26 +311,25 @@ public class KpiIntegrationServiceImpl {
 		kpiElement.setGroupId(kpiMaster.getGroupId());
 		return kpiElement;
 	}
-
-	public ProjectWiseKpiRecommendation getProjectWiseKpiRecommendation(KpiRequest kpiRequest) {
+	public List<ProjectWiseKpiRecommendation> getProjectWiseKpiRecommendation(KpiRequest kpiRequest) {
 		try {
+			Optional<String> sprintId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+					.stream().findFirst();
 			String recommendationUrl = String.format(customApiConfig.getRnrRecommendationUrl(),
 					URLEncoder.encode(kpiRequest.getIds()[0], StandardCharsets.UTF_8),
+					URLEncoder.encode(sprintId.isPresent() ? sprintId.get() : "", StandardCharsets.UTF_8),
 					URLEncoder.encode(String.join(",", kpiRequest.getKpiIdList()), StandardCharsets.UTF_8));
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.set(RNR_API_HEADER, customApiConfig.getRnrRecommendationApiKey());
 			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 			ResponseEntity<List<ProjectWiseKpiRecommendation>> response = restTemplate.exchange(
-					URI.create(recommendationUrl),
-					HttpMethod.GET,
-					entity,
-					new ParameterizedTypeReference<List<ProjectWiseKpiRecommendation>>() {}
-			);
-			return response.getBody().get(0);
+					URI.create(recommendationUrl), HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
+					});
+			return response.getBody();
 		} catch (Exception ex) {
 			log.error("Exception hitting recommendation api ", ex);
-			return new ProjectWiseKpiRecommendation();
+			return new ArrayList<>();
 		}
 	}
 
