@@ -38,7 +38,7 @@ import java.util.List;
 public class ProjectWiseKpiRecommendation {
 
 	private String projectId;
-	private String lastSprintId;
+	private String sprintId;
 	private List<GenericKpiRecommendation> recommendations;
 
 }
