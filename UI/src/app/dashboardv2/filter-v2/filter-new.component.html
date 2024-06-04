@@ -1,10 +1,10 @@
 <div class="filter-container p-grid p-m-0">
-    <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch" *ngIf="kanbanRequired">
+    <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch">
         <div class="tabs">
-            <div class="tab" (click)="setSelectedType('Scrum')" [ngClass]="{ 'active': selectedType === 'scrum' }">Scrum
+            <div class="tab" (click)="setSelectedType('Scrum')" [ngClass]="{ 'active': selectedType === 'scrum', 'disabled': !kanbanRequired?.enabled }">Scrum
             </div>
             <div class="tab" (click)="setSelectedType('Kanban')"
-                [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': !kanbanRequired }">
+                [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': !kanbanRequired?.enabled }">
                 Kanban</div>
         </div>
     </div>

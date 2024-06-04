@@ -18,7 +18,7 @@ export class FilterNewComponent implements OnInit {
   selectedLevel: any = 'project';
   kanban: boolean = false;
   boardData: object = {};
-  kanbanRequired: boolean = false;
+  kanbanRequired: any = {};
   parentFilterConfig: any = {};
   primaryFilterConfig: any = {};
   additionalFilterConfig: any = {};
@@ -122,7 +122,7 @@ export class FilterNewComponent implements OnInit {
         newMasterData['kpiList'].push(element);
       });
       this.masterData['kpiList'] = newMasterData.kpiList;
-      this.kanbanRequired = selectedBoard.filters.kanbanRequired;
+      this.kanbanRequired = selectedBoard.filters.projectTypeSwitch;
       this.parentFilterConfig = selectedBoard.filters.parentFilter;
       if (!this.parentFilterConfig) {
         this.selectedLevel = null;
