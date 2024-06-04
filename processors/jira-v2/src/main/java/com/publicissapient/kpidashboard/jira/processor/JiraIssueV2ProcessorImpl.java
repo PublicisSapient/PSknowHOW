@@ -433,7 +433,7 @@ public class JiraIssueV2ProcessorImpl implements JiraIssueV2Processor {
 //		jiraIssue.setName(JiraProcessorUtil.deodeUTF8String(issue.getSummary()));
 		jiraIssue.setSummary(JiraProcessorUtil.deodeUTF8String(issue.getSummary()));
 		jiraIssue.setDescription(JiraProcessorUtil.deodeUTF8String(issue.getDescription()));
-//		log.debug("Issue : {}", jiraIssue.getNumber());
+		log.debug("Issue : {}", jiraIssue.getKey());
 		jiraIssue.setStatus(JiraProcessorUtil.deodeUTF8String(status));
 		jiraIssue.setState(JiraProcessorUtil.deodeUTF8String(status));
 
