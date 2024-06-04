@@ -105,7 +105,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	public static final String OVERALL_ISSUE = "OVERALL ISSUE";
 	public static final String DEV_COMPLETE_DATE_MAP = "devCompleteDateMap";
 	public static final String AVERAGE_VELOCITY_IS = "Average velocity is ";
-	public static final String ISSUE_COUNT_IN = " issueCount in ";
+	public static final String ISSUE_COUNT_IN = " Issue Count in ";
 	public static final String DAYS = " days)";
 	public static final String SPS_IN = " SPs in ";
 	public static final String IS_XAXIS_GAP_REQUIRED = "isXaxisGapRequired";
@@ -678,10 +678,10 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			List<DataCountGroup> issueSizeCountDataGroup, ReleaseSpecification releaseSpecification) {
 		if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
 			String issueCountAvgVelocity = AVERAGE_VELOCITY_IS + releaseSpecification.getReleaseIssueCountVelocity()
-					+ " ( " + releaseSpecification.getReleaseIssueCount() + ISSUE_COUNT_IN
+					+ " (" + releaseSpecification.getReleaseIssueCount() + ISSUE_COUNT_IN
 					+ releaseSpecification.getReleaseDuration() + DAYS;
 			String storyPointAvgVelocity = AVERAGE_VELOCITY_IS + releaseSpecification.getReleaseStoryPointVelocity()
-					+ " ( " + releaseSpecification.getReleaseStoryPoint() + SPS_IN
+					+ " (" + releaseSpecification.getReleaseStoryPoint() + SPS_IN
 					+ releaseSpecification.getReleaseDuration() + DAYS;
 			Map<String, Object> additionalInfoIssueMap = new HashMap<>();
 
