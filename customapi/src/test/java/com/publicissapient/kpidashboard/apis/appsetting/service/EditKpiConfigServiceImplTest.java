@@ -113,14 +113,23 @@ public class EditKpiConfigServiceImplTest {
 		ac.setEndDate("2023-10-31T00:00:00.000Z");
 		ac.setLabelName("release");
 		ac.setReleaseState("Released");
+		AccountHierarchy ac1 = new AccountHierarchy();
+		ac1.setNodeName("KnowHOW v8.0.0_PSknowHOW");
+		ac1.setBasicProjectConfigId(new ObjectId(testProjectconfigid));
+		ac1.setBeginDate("");
+		ac1.setEndDate("2023-10-31T00:00:00.000Z");
+		ac1.setLabelName("release");
+		ac1.setReleaseState("Released");
+
 		List<AccountHierarchy> ahlist = new ArrayList<>();
 		ahlist.add(ac);
+		ahlist.add(ac1);
 		testType = "Test";
 		List<BoardMetadata> testListBoardMetadata = new ArrayList<>();
 		testListBoardMetadata.add(testBoardMetadata);
 		when(boardMetadataRepository.findByProjectBasicConfigId(new ObjectId(testProjectconfigid)))
 				.thenReturn(testBoardMetadata);
-		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigIdAndReleaseState("release",
+		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigIdAndReleaseStateOrderByEndDateDesc("release",
 				new ObjectId(testProjectconfigid), "Released")).thenReturn(ahlist);
 		Map<String, List<MetadataValue>> data = editKpiConfigServiceImpl.getDataForType(testProjectconfigid, "kpi150");
 		assertThat("Count : ", data.size(), equalTo(2));

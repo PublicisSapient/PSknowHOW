@@ -677,6 +677,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	 * @param issueSizeCountDataGroup
 	 *            List<DataCountGroup>
 	 * @param releaseSpecification
+	 *            releaseSpecification
 	 */
 	private void createExcelDataAndTrendValueList(KpiElement kpiElement, List<KPIExcelData> excelData,
 			List<IterationKpiValue> iterationKpiValueList, List<DataCountGroup> issueCountDataGroup,

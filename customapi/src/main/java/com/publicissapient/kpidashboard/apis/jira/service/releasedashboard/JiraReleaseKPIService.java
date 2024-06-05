@@ -104,11 +104,15 @@ public abstract class JiraReleaseKPIService implements NonTrendKPIService {
 	}
 
 	/**
-	 * get Average Velocity of selected releases
-	 *
-	 * @return
+	 * 
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @param releaseSpecification
+	 *            releaseSpecification
+	 * @return total average velocity of selected closed releases
 	 */
-	public Map<String, Object> getClosedReleaseAvgData(FieldMapping fieldMapping, ReleaseSpecification releaseSpecification) {
+	public Map<String, Object> getClosedReleaseAvgData(FieldMapping fieldMapping,
+			ReleaseSpecification releaseSpecification) {
 		return jiraService.getAvgVelocity(fieldMapping, releaseSpecification);
 	}
 
@@ -119,7 +123,7 @@ public abstract class JiraReleaseKPIService implements NonTrendKPIService {
 	 *            List<JiraIssue>
 	 * @param fieldMapping
 	 *            fieldMapping
-	 * @return Sum of Story Point
+	 * @return Sum of Story Points
 	 */
 	public Double getStoryPoint(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
 		double ticketEstimate = 0.0d;

@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,40 +107,64 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 			Map<String, List<MetadataValue>> data) {
 		if (kpiCode.equalsIgnoreCase(KPICode.RELEASE_BURNUP.getKpiId())) {
 			List<MetadataValue> metadataValueList = accountHierarchyRepository
-					.findByLabelNameAndBasicProjectConfigIdAndReleaseState(LABEL_NAME,
+					.findByLabelNameAndBasicProjectConfigIdAndReleaseStateOrderByEndDateDesc(LABEL_NAME,
 							new ObjectId(projectBasicConfigid), STATE)
-					.stream().sorted(Comparator.comparing((AccountHierarchy ah) -> {
-						if (ah.getEndDate() != null && !ah.getEndDate().isEmpty()) {
-							return LocalDateTime.parse(ah.getEndDate(), formatter);
-						} else {
-							return LocalDateTime.MIN;
-						}
-					}).reversed()).map(accountHierarchy -> {
-						MetadataValue metadataValue = new MetadataValue();
-						double duration = 0;
-						if (StringUtils.isNotEmpty(accountHierarchy.getBeginDate())
-								&& StringUtils.isNotEmpty(accountHierarchy.getEndDate())) {
-							LocalDateTime startDate = DateUtil.convertingStringToLocalDateTime(
-									accountHierarchy.getBeginDate(), DateUtil.TIME_FORMAT);
-							LocalDateTime releaseDate = DateUtil.convertingStringToLocalDateTime(
-									accountHierarchy.getEndDate(), DateUtil.TIME_FORMAT);
-							duration = DateUtil.calculateWorkingDays(startDate, releaseDate);
-						}
-						String releaseName;
-						if (duration == 0) {
-							releaseName = accountHierarchy.getNodeName().split("_")[0] + " (duration - days)";
-						} else {
-							releaseName = accountHierarchy.getNodeName().split("_")[0] + " (duration " + duration
-									+ " days)";
-						}
+					.stream().map(accountHierarchy -> {
 
+						String releaseName;
+						double duration = 0;
+						duration = getDurationInDays(accountHierarchy, duration);
+						releaseName = getReleaseName(accountHierarchy, duration);
+
+						MetadataValue metadataValue = new MetadataValue();
 						metadataValue.setKey(releaseName);
 						metadataValue.setData(releaseName);
 						return metadataValue;
+
 					}).collect(Collectors.toList());
 
 			data.put(RELEASE_KEY, metadataValueList);
 		}
+	}
+
+	/**
+	 * 
+	 * @param accountHierarchy
+	 *            accountHierarchy
+	 * @param duration
+	 *            duration
+	 * @return return closed release name
+	 */
+	private static String getReleaseName(AccountHierarchy accountHierarchy, double duration) {
+		String releaseName;
+		if (duration == 0) {
+			releaseName = accountHierarchy.getNodeName().split("_")[0] + " (duration - days)";
+		} else {
+			releaseName = accountHierarchy.getNodeName().split("_")[0] + " (duration " + duration + " days)";
+		}
+		return releaseName;
+	}
+
+	/**
+	 * This method calculate no. of working days between start and end date by
+	 * excluding saturday and sunday
+	 * 
+	 * @param accountHierarchy
+	 *            accountHierarchy
+	 * @param duration
+	 *            duration
+	 * @return duration between start and end date in days
+	 */
+	private static double getDurationInDays(AccountHierarchy accountHierarchy, double duration) {
+		if (StringUtils.isNotEmpty(accountHierarchy.getBeginDate())
+				&& StringUtils.isNotEmpty(accountHierarchy.getEndDate())) {
+			LocalDateTime startDate = DateUtil.convertingStringToLocalDateTime(accountHierarchy.getBeginDate(),
+					DateUtil.TIME_FORMAT);
+			LocalDateTime releaseDate = DateUtil.convertingStringToLocalDateTime(accountHierarchy.getEndDate(),
+					DateUtil.TIME_FORMAT);
+			duration = DateUtil.calculateWorkingDays(startDate, releaseDate);
+		}
+		return duration;
 	}
 
 }

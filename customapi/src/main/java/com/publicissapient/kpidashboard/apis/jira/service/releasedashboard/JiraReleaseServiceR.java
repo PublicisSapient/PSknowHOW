@@ -319,6 +319,14 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 		return releaseList;
 	}
 
+	/**
+	 * 
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @param releaseSpecification
+	 *            releaseSpecification
+	 * @return averageDataMap
+	 */
 	public Map<String, Object> getAvgVelocity(FieldMapping fieldMapping, ReleaseSpecification releaseSpecification) {
 
 		Map<String, Object> averageDataMap = new HashMap<>();
