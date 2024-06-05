@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
@@ -167,7 +168,33 @@ public class JiraReleaseKPIServiceTest {
         when(jiraService.getReleaseList()).thenReturn(releaseList);
         assertNotNull(jiraKPIService.getReleaseList());
     }
+    @Test
+    public void testGetStoryPoint_withValidJiraIssueList() {
+        FieldMapping fieldMapping = mock(FieldMapping.class);
+        List<JiraIssue> jiraIssueList = List.of(new JiraIssue(), new JiraIssue());
 
+        when(jiraService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0d)).thenReturn(5.5d);
+
+        Double result = jiraKPIService.getStoryPoint(jiraIssueList, fieldMapping);
+
+        assertNotNull(result);
+        assertEquals(5.5d, result);
+    }
+
+    @Test
+    public void testGetStoryPoint_withRoundedEstimate() {
+        FieldMapping fieldMapping = mock(FieldMapping.class);
+
+        List<JiraIssue> jiraIssueList = List.of(new JiraIssue(), new JiraIssue());
+
+        when(jiraService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0d)).thenReturn(5.567d);
+
+        Double result = jiraKPIService.getStoryPoint(jiraIssueList, fieldMapping);
+
+        assertNotNull(result);
+        // Assuming roundingOff method rounds to 2 decimal places
+        assertEquals(5.57d, result);
+    }
     public static class JiraReleaseKPIServiceTestImpl extends JiraReleaseKPIService {
 
         @Override
