@@ -702,7 +702,8 @@ public class KpiHelperService { // NOPMD
 	/**
 	 * Fetches sprint capacity data from db based upon leaf node list.
 	 *
-	 * @param leafNodeList the leaf node list
+	 * @param leafNodeList
+	 *            the leaf node list
 	 * @return the list
 	 */
 	public Map<String, Object> fetchSprintCapacityDataFromDb(List<Node> leafNodeList) {
@@ -713,7 +714,7 @@ public class KpiHelperService { // NOPMD
 		List<String> basicProjectConfigIds = new ArrayList<>();
 
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		Map<String,Object> resultListMap= new HashMap<>();
+		Map<String, Object> resultListMap = new HashMap<>();
 
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
@@ -748,12 +749,14 @@ public class KpiHelperService { // NOPMD
 		});
 
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
-			List<JiraIssue> jiraIssueList=jiraIssueRepository.findIssueByNumberAndType(mapOfFilters, totalIssue, uniqueProjectMap);
+			List<JiraIssue> jiraIssueList = jiraIssueRepository.findIssueByNumberAndType(mapOfFilters, totalIssue,
+					uniqueProjectMap);
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
-					.findByStoryIDInAndBasicProjectConfigIdIn(jiraIssueList.stream().map(JiraIssue::getNumber).toList(), basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+					.findByStoryIDInAndBasicProjectConfigIdIn(jiraIssueList.stream().map(JiraIssue::getNumber).toList(),
+							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 			resultListMap.put(STORY_LIST, jiraIssueList);
 			resultListMap.put(SPRINTSDETAILS, sprintDetails);
-			resultListMap.put(JIRA_ISSUE_HISTORY_DATA,jiraIssueCustomHistoryList);
+			resultListMap.put(JIRA_ISSUE_HISTORY_DATA, jiraIssueCustomHistoryList);
 		}
 
 		return resultListMap;
