@@ -640,7 +640,7 @@ public class KPIExcelUtility {
 	public static void populateSprintCapacity(String sprintName, List<JiraIssue> totalStoriesList,
 											  List<KPIExcelData> kpiExcelData, Map<String, Double> loggedTimeIssueMap) {
 		if (CollectionUtils.isNotEmpty(totalStoriesList)) {
-			totalStoriesList.stream().forEach(issue -> {
+			totalStoriesList.forEach(issue -> {
 
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setSprintName(sprintName);
@@ -650,9 +650,7 @@ public class KPIExcelUtility {
 				excelData.setIssueDesc(checkEmptyName(issue));
 				setSquads(excelData, issue);
 				String daysEstimated = "0.0";
-				if (loggedTimeIssueMap.get(issue.getNumber())!=null) {
-					excelData.setTotalTimeSpent(String.valueOf(roundingOff(loggedTimeIssueMap.get(issue.getNumber()))));
-				}
+				excelData.setTotalTimeSpent(String.valueOf(roundingOff(loggedTimeIssueMap.getOrDefault(issue.getNumber(),0d))));
 
 				if (issue.getAggregateTimeOriginalEstimateMinutes() != null
 						&& issue.getAggregateTimeOriginalEstimateMinutes() > 0) {
