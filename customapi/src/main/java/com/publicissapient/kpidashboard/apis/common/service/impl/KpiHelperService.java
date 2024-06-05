@@ -741,7 +741,7 @@ public class KpiHelperService { // NOPMD
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
 		Set<String> totalIssue = new HashSet<>();
-		sprintDetails.stream().forEach(dbSprintDetail -> {
+		sprintDetails.forEach(dbSprintDetail -> {
 			if (CollectionUtils.isNotEmpty(dbSprintDetail.getTotalIssues())) {
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(dbSprintDetail,
 						CommonConstant.TOTAL_ISSUES));
