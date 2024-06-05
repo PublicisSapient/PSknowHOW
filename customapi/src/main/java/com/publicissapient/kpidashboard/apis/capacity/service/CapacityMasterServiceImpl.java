@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import com.publicissapient.kpidashboard.common.model.application.AdditionalFilte
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
+import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Week;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
@@ -508,11 +510,11 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			data.setAssigneeCapacity(assigneeList);
 			data.setCapacityPerSprint(Math.round(sum * 100) / 100.0);
 			// Set the LeafNodeCapacity list in data
-			data.setAdditionalFilterCapacityList(capacityMaster.getAdditionalFilterCapacityList());
+			data.setAdditionalFilterCapacityList(saveAdditionalFilterCapacity(capacityMaster));
 
 		} else {
 			data.setCapacityPerSprint(capacityMaster.getCapacity());
-			data.setAdditionalFilterCapacityList(capacityMaster.getAdditionalFilterCapacityList());
+			data.setAdditionalFilterCapacityList(saveAdditionalFilterCapacity(capacityMaster));
 		}
 
 	}
@@ -527,7 +529,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d)).sum();
 			data.setAssigneeCapacity(assigneeList);
 			helper(capacityMaster);
-			data.setAdditionalFilterCapacityList(capacityMaster.getAdditionalFilterCapacityList());
+			data.setAdditionalFilterCapacityList(saveAdditionalFilterCapacity(capacityMaster));
 
 			// we have to divide capacity by working days of week
 			data.setCapacity(sum / 5);
@@ -535,7 +537,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			data.setCapacity(capacityMaster.getCapacity() / 5);
 			// dividing each leaf node capacity of full week to single day.
 			helper(capacityMaster);
-			data.setAdditionalFilterCapacityList(capacityMaster.getAdditionalFilterCapacityList());
+			data.setAdditionalFilterCapacityList(saveAdditionalFilterCapacity(capacityMaster));
 
 		}
 
@@ -641,6 +643,41 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				}
 			}
 		}
+	}
+
+	private List<AdditionalFilterCapacity> saveAdditionalFilterCapacity(CapacityMaster capacityMaster) {
+		if (CollectionUtils.isNotEmpty(capacityMaster.getAdditionalFilterCapacityList())) {
+			List<AdditionalFilterCapacity> additionalFilterCapacityList = capacityMaster
+					.getAdditionalFilterCapacityList();
+			List<AdditionalFilterCapacity> dbSaveAdditionalList = new ArrayList<>();
+
+			for (AdditionalFilterCapacity additionalFilterCapacity : additionalFilterCapacityList) {
+				if (StringUtils.isNotEmpty(additionalFilterCapacity.getFilterId())) {
+					List<LeafNodeCapacity> nodeCapacityList = additionalFilterCapacity.getNodeCapacityList();
+					List<LeafNodeCapacity> dbNodeCapacityList = new ArrayList<>();
+
+					if (CollectionUtils.isNotEmpty(nodeCapacityList)) {
+						for (LeafNodeCapacity nodeCapacity : nodeCapacityList) {
+							if (StringUtils.isNotEmpty(nodeCapacity.getAdditionalFilterId())
+									&& ObjectUtils.isNotEmpty(nodeCapacity.getAdditionalFilterCapacity())) {
+								LeafNodeCapacity dbCapacity = new LeafNodeCapacity(nodeCapacity.getAdditionalFilterId(),
+										nodeCapacity.getAdditionalFilterCapacity());
+								dbNodeCapacityList.add(dbCapacity);
+							}
+						}
+					}
+
+					if (CollectionUtils.isNotEmpty(dbNodeCapacityList)) {
+						AdditionalFilterCapacity dbFilterCapacity = new AdditionalFilterCapacity();
+						dbFilterCapacity.setFilterId(additionalFilterCapacity.getFilterId());
+						dbFilterCapacity.setNodeCapacityList(dbNodeCapacityList);
+						dbSaveAdditionalList.add(dbFilterCapacity);
+					}
+				}
+			}
+			return dbSaveAdditionalList;
+		}
+		return null;
 	}
 
 }
