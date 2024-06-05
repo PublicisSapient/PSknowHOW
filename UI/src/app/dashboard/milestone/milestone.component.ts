@@ -69,8 +69,6 @@ export class MilestoneComponent implements OnInit {
   activeIndex = 0;
   kpiThresholdObj = {};
   chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
-  releaseEndDate: string = '';
-
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
 
     /** When filter dropdown change */
@@ -193,7 +191,6 @@ export class MilestoneComponent implements OnInit {
             const selectedRelease = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['release'][0] && x.labelName.toLowerCase() === 'release')[0];
             const today = new Date().toISOString().split('T')[0];
             const endDate = new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0];
-            this.releaseEndDate = endDate;
             this.timeRemaining = this.calcBusinessDays(today, endDate);
             this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
             this.groupJiraKpi(kpiIdsForCurrentBoard);

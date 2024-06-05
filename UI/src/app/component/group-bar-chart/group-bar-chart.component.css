@@ -176,8 +176,3 @@
     stroke: #000;
     stroke-width: 3px;
   }
-:host #date-container{
-  position: absolute;
-  right: 10px;
-  font-size: 12px;
-}
