@@ -93,6 +93,9 @@ describe('RecommendationsComponent', () => {
   });
 
   it('should get recommendations based on kpiIdList', fakeAsync(() => {
+    component.selectedSprint = {};
+    const sprintObj = { nodeId: 'xyz_123', 'nodeName':'xyz' };
+    spyOn(service, 'getSprintForRnR').and.returnValue(sprintObj);
     component.filterData = filterData;
     component.displayModal = true;
     component.tabs = [];
