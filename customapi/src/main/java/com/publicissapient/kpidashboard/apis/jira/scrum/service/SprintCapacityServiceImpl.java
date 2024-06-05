@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.LoggedTimePerIssue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -45,6 +44,7 @@ import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.LoggedTimePerIssue;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
@@ -130,7 +130,8 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.SPRINT_CAPACITY_UTILIZATION);
 		// 3rd change : remove code to set trendValuelist and call
 		// getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.SPRINT_CAPACITY_UTILIZATION);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.SPRINT_CAPACITY_UTILIZATION);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
 	}
@@ -151,7 +152,7 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		Map<String, Object> resultListMap=kpiHelperService.fetchSprintCapacityDataFromDb(leafNodeList);
+		Map<String, Object> resultListMap = kpiHelperService.fetchSprintCapacityDataFromDb(leafNodeList);
 		List<CapacityKpiData> estimateTimeList = kpiHelperService.fetchCapacityDataFromDB(leafNodeList);
 		resultListMap.put(ESTIMATE_TIME, estimateTimeList);
 		return resultListMap;
@@ -163,7 +164,6 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	 *            sprintCapacityMap
 	 * @return timeLogged in seconds
 	 */
-	@SuppressWarnings(UNCHECKED)
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> sprintCapacityMap) {
 		return null;
@@ -243,7 +243,8 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 			mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_CAPACITY_UTILIZATION.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_CAPACITY_UTILIZATION.getColumns(sprintLeafNodeList,
+				cacheService, flterHelperService));
 	}
 
 	/**
@@ -280,14 +281,16 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 					for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistoryList) {
 						if (issueList.contains(jiraIssueCustomHistory.getStoryID())
 								&& jiraIssueCustomHistory.getWorkLog() != null) {
-							//timeLoggedForAnIssueInSeconds will give work log of an issue between the time period of sprint startDate to endDate
+							// timeLoggedForAnIssueInSeconds will give work log of an issue between the time
+							// period of sprint startDate to endDate
 							double timeLoggedForAnIssueInSeconds = KpiDataHelper.getWorkLogs(
 									jiraIssueCustomHistory.getWorkLog(), sd.getStartDate(), sd.getEndDate());
-							//this will be used to create map for excel population
+							// this will be used to create map for excel population
 							loggedTimePerIssueList.add(new LoggedTimePerIssue(sd.getBasicProjectConfigId().toString(),
 									sd.getSprintID(), jiraIssueCustomHistory.getStoryID(),
 									timeLoggedForAnIssueInSeconds / (60 * 60)));
-							//timeLoggedInSeconds will give work log of all issue between the time period of sprint startDate to endDate
+							// timeLoggedInSeconds will give work log of all issue between the time period
+							// of sprint startDate to endDate
 							timeLoggedInSeconds = timeLoggedInSeconds + timeLoggedForAnIssueInSeconds;
 
 						}
@@ -314,13 +317,18 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	 * Populates validation data node of the KPI element.
 	 *
 	 * @param requestTrackerId
+	 *            requestTrackerId
 	 * @param excelData
+	 *            excelData
 	 * @param sprintCapacityList
+	 *            sprintCapacityList
 	 * @param node
+	 *            node
 	 * @param loggedTimePerIssueList
+	 *            loggedTimePerIssueList
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-										 List<JiraIssue> sprintCapacityList, Node node, List<LoggedTimePerIssue> loggedTimePerIssueList) {
+			List<JiraIssue> sprintCapacityList, Node node, List<LoggedTimePerIssue> loggedTimePerIssueList) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
@@ -330,13 +338,14 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 
 			// Filter loggedTimePerIssueList based on projectConfigId and sprintId
 			List<LoggedTimePerIssue> filteredLoggedTimeList = loggedTimePerIssueList.stream()
-					.filter(item -> item.getProjectConfigId().equalsIgnoreCase(projectConfigId) && item.getSprintId().equalsIgnoreCase(sprintId))
+					.filter(item -> item.getProjectConfigId().equalsIgnoreCase(projectConfigId)
+							&& item.getSprintId().equalsIgnoreCase(sprintId))
 					.toList();
 
 			// Create a map of storyId and loggedTimeInHours from filtered list
-			Map<String, Double> storyIdToLoggedTimeMap = filteredLoggedTimeList.stream()
-					.collect(Collectors.toMap(LoggedTimePerIssue::getStoryId, LoggedTimePerIssue::getLoggedTimeInHours));
-			
+			Map<String, Double> storyIdToLoggedTimeMap = filteredLoggedTimeList.stream().collect(
+					Collectors.toMap(LoggedTimePerIssue::getStoryId, LoggedTimePerIssue::getLoggedTimeInHours));
+
 			KPIExcelUtility.populateSprintCapacity(sprintName, sprintCapacityList, excelData, storyIdToLoggedTimeMap);
 		}
 	}
