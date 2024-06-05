@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
@@ -291,6 +292,7 @@ public class KpiHelperServiceTest {
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
 		kpiHelperService.fetchSprintCapacityDataFromDb(leafNodeList);
+		assertEquals(5,leafNodeList.size());
 	}
 
 	@Test

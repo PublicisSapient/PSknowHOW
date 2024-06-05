@@ -22,13 +22,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.bson.types.ObjectId;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,6 +75,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class SprintCapacityServiceImplTest {
@@ -129,6 +135,8 @@ public class SprintCapacityServiceImplTest {
 		sprintDetailsList = sprintDetailsDataFactory.getSprintDetails();
 		JiraIssueHistoryDataFactory jiraIssueCustomHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
 		jiraIssueCustomHistories = jiraIssueCustomHistoryDataFactory.getJiraIssueCustomHistory();
+		JiraHistoryChangeLog worklog=new JiraHistoryChangeLog("","28800", LocalDateTime.of(2022, 8, 10, 12, 0,0,0));
+		jiraIssueCustomHistories.stream().filter(j->j.getStoryID().equalsIgnoreCase("TEST-17918")).toList().get(0).setWorkLog(Collections.singletonList(worklog));
 		CapacityKpiData capacityKpiData=new CapacityKpiData();
 		capacityKpiData.setCapacityPerSprint(22d);
 		capacityKpiData.setBasicProjectConfigId(new ObjectId("6658551f9851452c969edaaa"));
@@ -167,8 +175,7 @@ public class SprintCapacityServiceImplTest {
 		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any())).thenReturn(dataList);
 		Map<String, Object> capacityListMap = sprintCapacityServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
-//		assertThat("Capacity value :", ((List<JiraIssue>) (capacityListMap.get(SPRINTCAPACITYKEY))).size(),
-//				equalTo(44));
+		Assert.assertNull(capacityListMap.get(SPRINTCAPACITYKEY));
 	}
 
 	@SuppressWarnings("unchecked")

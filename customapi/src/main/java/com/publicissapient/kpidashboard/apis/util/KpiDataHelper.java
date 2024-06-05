@@ -1062,8 +1062,22 @@ public final class KpiDataHelper {
 
 		return issueDateMap;
 	}
-
-	//function to calculate worklog of given issue with time frame
+	
+	/**
+	 * Calculates the total work logs within a specified sprint date range.
+	 *
+	 * @param worklogHistory
+	 *            A list of {@link JiraHistoryChangeLog} objects representing the
+	 *            work log history.
+	 * @param sprintStartDate
+	 *            The start date of the sprint in ISO-8601 format (e.g.,
+	 *            "yyyy-MM-dd'T'HH:mm:ss").
+	 * @param sprintEndDate
+	 *            The end date of the sprint in ISO-8601 format (e.g.,
+	 *            "yyyy-MM-dd'T'HH:mm:ss").
+	 * @return The total work logs within the specified date range as a
+	 *         {@link Double}. Returns 0.0 if no logs are found.
+	 */
 	public static Double getWorkLogs(List<JiraHistoryChangeLog> worklogHistory, String sprintStartDate,
 			String sprintEndDate) {
 		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();

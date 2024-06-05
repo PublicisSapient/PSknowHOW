@@ -344,7 +344,7 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 
 			// Create a map of storyId and loggedTimeInHours from filtered list
 			Map<String, Double> storyIdToLoggedTimeMap = filteredLoggedTimeList.stream().collect(
-					Collectors.toMap(LoggedTimePerIssue::getStoryId, LoggedTimePerIssue::getLoggedTimeInHours));
+					Collectors.toMap(LoggedTimePerIssue::getStoryId, LoggedTimePerIssue::getLoggedTimeInHours,(e1,e2)->e1));
 
 			KPIExcelUtility.populateSprintCapacity(sprintName, sprintCapacityList, excelData, storyIdToLoggedTimeMap);
 		}
