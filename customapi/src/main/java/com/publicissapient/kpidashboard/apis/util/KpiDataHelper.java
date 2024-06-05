@@ -89,6 +89,8 @@ public final class KpiDataHelper {
 	private static final String CLOSED = "closed";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	private static final DecimalFormat df = new DecimalFormat(".##");
+	private static final DateTimeFormatter DATE_FORMATTER
+			= DateTimeFormatter. ofPattern("yyyy-MM-dd");
 
 	private KpiDataHelper() {
 	}
@@ -1059,6 +1061,27 @@ public final class KpiDataHelper {
 		});
 
 		return issueDateMap;
+	}
+
+	//function to calculate worklog of given issue with time frame
+	public static Double getWorkLogs(List<JiraHistoryChangeLog> worklogHistory, String sprintStartDate,
+			String sprintEndDate) {
+		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(worklogHistory)) {
+			filterStatusUpdationLogs = worklogHistory.stream()
+					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(jiraIssueSprint.getUpdatedOn().toLocalDate(),
+							LocalDate.parse(sprintStartDate.split("T")[0], DATE_FORMATTER),
+							LocalDate.parse(sprintEndDate.split("T")[0], DATE_FORMATTER)))
+					.collect(Collectors.toList());
+		}
+
+		if (CollectionUtils.isNotEmpty(filterStatusUpdationLogs)) {
+			String firstChangedFrom = StringUtils.isEmpty(filterStatusUpdationLogs.get(0).getChangedFrom()) ? "0"
+					: filterStatusUpdationLogs.get(0).getChangedFrom();
+			String lastChangedTo = filterStatusUpdationLogs.get(filterStatusUpdationLogs.size() - 1).getChangedTo();
+			return Double.parseDouble(lastChangedTo) - Double.parseDouble(firstChangedFrom);
+		}
+		return 0D;
 	}
 
 }

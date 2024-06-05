@@ -283,4 +283,6 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 
 	List<JiraIssue> findIssueByNumberWithAdditionalFilter(Set<String> storyNumber,
 										  Map<String, Map<String, Object>> uniqueProjectMap);
+
+	List<JiraIssue> findIssueByNumberAndType(Map<String, List<String>> mapOfFilters, Set<String> totalIssue, Map<String, Map<String, Object>> uniqueProjectMap);
 }
