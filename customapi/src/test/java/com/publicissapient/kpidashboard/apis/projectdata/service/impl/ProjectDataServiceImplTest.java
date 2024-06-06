@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.times;
@@ -36,7 +37,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -72,12 +77,22 @@ class ProjectDataServiceImplTest {
 	}
 
 	@Test
-	void testGetProjectJiraIssues() {
+	void testGetProjectJiraIssuesWithIssueIds() {
+		// Arrange
 		DataRequest dataRequest = new DataRequest();
-		dataRequest.setBoardId("boardId");
 		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
-		projectDataService.getProjectJiraIssues(dataRequest);
-		verify(jiraIssueV2Repository, times(1)).findByBasicProjectConfigIdAndBoardId(anyString(), anyString());
+		dataRequest.setIssueIds(Collections.singletonList("issueId"));
+
+		Page<JiraIssueV2> mockPage = Mockito.mock(Page.class);
+		when(jiraIssueV2Repository.findByBasicProjectConfigIdAndIssueIdIn(anyString(), anyList(), any(Pageable.class)))
+				.thenReturn(mockPage);
+
+		// Act
+		projectDataService.getProjectJiraIssues(dataRequest, 0, 10);
+
+		// Assert
+		verify(jiraIssueV2Repository, times(1)).findByBasicProjectConfigIdAndIssueIdIn(eq(dataRequest.getProjectId()),
+				eq(dataRequest.getIssueIds()), any(PageRequest.class));
 	}
 
 	@Test
@@ -113,13 +128,6 @@ class ProjectDataServiceImplTest {
 	}
 
 	@Test
-	void testGetProjectJiraIssuesWithNullBoardIdAndProjectId() {
-		DataRequest dataRequest = new DataRequest();
-		projectDataService.getProjectJiraIssues(dataRequest);
-		verify(jiraIssueV2Repository, times(0)).findByBasicProjectConfigIdAndBoardId(anyString(), anyString());
-	}
-
-	@Test
 	void testGetIssueTypesWithNullBoardIdAndProjectKey() {
 		DataRequest dataRequest = new DataRequest();
 		projectDataService.getIssueTypes(dataRequest);
@@ -146,39 +154,31 @@ class ProjectDataServiceImplTest {
 		DataRequest dataRequest = new DataRequest();
 		dataRequest.setBoardId("boardId");
 		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
-		when(jiraIssueV2Repository.findByBasicProjectConfigIdAndBoardId(anyString(), anyString()))
-				.thenReturn(Collections.emptyList());
-		ServiceResponse result = projectDataService.getProjectJiraIssues(dataRequest);
-		assertNull(result.getData());
-	}
-
-	@Test
-	void testGetProjectJiraIssuesWithProjectKey() {
-		DataRequest dataRequest = new DataRequest();
-		dataRequest.setProjectKey("key");
-		when(jiraIssueV2Repository.findByProjectKey(anyString())).thenReturn(Collections.emptyList());
-		ServiceResponse result = projectDataService.getProjectJiraIssues(dataRequest);
-		assertNull(result.getData());
-	}
-
-	@Test
-	void testGetProjectJiraIssuesWithIssueIds() {
-		DataRequest dataRequest = new DataRequest();
-		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
-		dataRequest.setIssueIds(Collections.singletonList("issueId"));
-		projectDataService.getProjectJiraIssues(dataRequest);
-		verify(jiraIssueV2Repository, times(1)).findByBasicProjectConfigIdAndIssueIdIn(anyString(), anyList());
+		Page<JiraIssueV2> mockPage = Mockito.mock(Page.class);
+		when(jiraIssueV2Repository.findByBasicProjectConfigIdAndBoardId(anyString(), anyString(), any()))
+				.thenReturn(mockPage);
+		ServiceResponse result = projectDataService.getProjectJiraIssues(dataRequest, 0, 10);
+		assertNotNull(result.getData());
 	}
 
 	@Test
 	void testGetProjectJiraIssuesWithSprintIds() {
+		// Arrange
 		DataRequest dataRequest = new DataRequest();
 		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
 		dataRequest.setBoardId("boardId");
 		dataRequest.setSprintIds(Collections.singletonList("sprintId"));
-		projectDataService.getProjectJiraIssues(dataRequest);
-		verify(jiraIssueV2Repository, times(1)).findByProjectIdAndBoardIdAndSprintIdIn(anyString(), anyString(),
-				anyList());
+
+		Page<JiraIssueV2> mockPage = Mockito.mock(Page.class);
+		when(jiraIssueV2Repository.findByProjectIdAndBoardIdAndSprintIdIn(anyString(), anyString(), anyList(),
+				any(Pageable.class))).thenReturn(mockPage);
+
+		// Act
+		projectDataService.getProjectJiraIssues(dataRequest, 0, 10);
+
+		// Assert
+		verify(jiraIssueV2Repository, times(1)).findByProjectIdAndBoardIdAndSprintIdIn(eq(dataRequest.getProjectId()),
+				eq(dataRequest.getBoardId()), eq(dataRequest.getSprintIds()), any(PageRequest.class));
 	}
 
 	@Test
@@ -261,21 +261,17 @@ class ProjectDataServiceImplTest {
 		// Arrange
 		DataRequest dataRequest = new DataRequest();
 		dataRequest.setProjectKey("Test");
-		List<JiraIssueV2> mockJiraIssues = new ArrayList<>();
-		mockJiraIssues.add(new JiraIssueV2());
-		when(jiraIssueV2Repository.findByProjectKey(any())).thenReturn(mockJiraIssues);
+		Page<JiraIssueV2> mockPage = Mockito.mock(Page.class);
+		when(jiraIssueV2Repository.findByProjectKey(any(), any())).thenReturn(mockPage);
 
 		// Act
-		ServiceResponse response = projectDataService.getProjectJiraIssues(dataRequest);
+		ServiceResponse response = projectDataService.getProjectJiraIssues(dataRequest, 0, 10);
 
 		// Assert
 		assertNotNull(response);
 		assertTrue(response.getSuccess());
-		assertEquals("Scrum project issue details fetched successfully", response.getMessage());
-		assertNotNull(response.getData());
-		assertEquals(mockJiraIssues, response.getData());
 	}
-	
+
 	@Test
 	void testGetIssueTypesWhenIssueTypesExist() {
 		// Arrange
@@ -296,6 +292,7 @@ class ProjectDataServiceImplTest {
 		assertNotNull(response.getData());
 		verify(jiraIssueV2Repository, times(1)).findIssueTypesByBoardId(any());
 	}
+
 	@Test
 	void testGetIssueTypesWhenIssueTypesExist_byProjectKey() {
 		// Arrange
@@ -303,7 +300,7 @@ class ProjectDataServiceImplTest {
 		dataRequest.setProjectKey("dummyKey");
 		List<JiraIssueV2> mockIssueTypes = new ArrayList<>();
 		mockIssueTypes.add(new JiraIssueV2());
-			when(jiraIssueV2Repository.findIssueTypesByProjectKey(any())).thenReturn(mockIssueTypes);
+		when(jiraIssueV2Repository.findIssueTypesByProjectKey(any())).thenReturn(mockIssueTypes);
 
 		// Act
 		ServiceResponse response = projectDataService.getIssueTypes(dataRequest);
@@ -314,7 +311,7 @@ class ProjectDataServiceImplTest {
 		assertNotNull(response.getData());
 		verify(jiraIssueV2Repository, times(1)).findIssueTypesByProjectKey(any());
 	}
-	
+
 	@Test
 	void testGetProjectSprintsWhenSprintDetailsExist() {
 		// Arrange

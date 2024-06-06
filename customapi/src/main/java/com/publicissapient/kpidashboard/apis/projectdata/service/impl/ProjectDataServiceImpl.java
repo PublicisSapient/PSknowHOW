@@ -1,11 +1,13 @@
 package com.publicissapient.kpidashboard.apis.projectdata.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -33,28 +35,29 @@ public class ProjectDataServiceImpl implements ProjectDataService {
 	ProjectBasicConfigRepository projectBasicConfigRepository;
 
 	@Override
-	public ServiceResponse getProjectJiraIssues(DataRequest dataRequest) {
-		List<JiraIssueV2> jiraIssueV2List = new ArrayList<>();
+	public ServiceResponse getProjectJiraIssues(DataRequest dataRequest, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<JiraIssueV2> jiraIssueV2Page = null;
 		if (dataRequest.getBoardId() != null && dataRequest.getProjectId() != null) {
-			jiraIssueV2List.addAll(jiraIssueV2Repository
-					.findByBasicProjectConfigIdAndBoardId(dataRequest.getProjectId(), dataRequest.getBoardId()));
+			jiraIssueV2Page = jiraIssueV2Repository.findByBasicProjectConfigIdAndBoardId(dataRequest.getProjectId(),
+					dataRequest.getBoardId(), pageable);
 		}
 		if (CollectionUtils.isNotEmpty(dataRequest.getIssueIds()) && dataRequest.getProjectId() != null) {
-			jiraIssueV2List.addAll(jiraIssueV2Repository
-					.findByBasicProjectConfigIdAndIssueIdIn(dataRequest.getProjectId(), dataRequest.getIssueIds()));
+			jiraIssueV2Page = jiraIssueV2Repository.findByBasicProjectConfigIdAndIssueIdIn(dataRequest.getProjectId(),
+					dataRequest.getIssueIds(), pageable);
 		}
 		if (dataRequest.getProjectId() != null && dataRequest.getBoardId() != null
 				&& CollectionUtils.isNotEmpty(dataRequest.getSprintIds())) {
-			jiraIssueV2List.addAll(jiraIssueV2Repository.findByProjectIdAndBoardIdAndSprintIdIn(
-					dataRequest.getProjectId(), dataRequest.getBoardId(), dataRequest.getSprintIds()));
+			jiraIssueV2Page = jiraIssueV2Repository.findByProjectIdAndBoardIdAndSprintIdIn(dataRequest.getProjectId(),
+					dataRequest.getBoardId(), dataRequest.getSprintIds(), pageable);
 		}
 		if (dataRequest.getProjectKey() != null) {
-			jiraIssueV2List.addAll(jiraIssueV2Repository.findByProjectKey(dataRequest.getProjectKey()));
+			jiraIssueV2Page = jiraIssueV2Repository.findByProjectKey(dataRequest.getProjectKey(), pageable);
 		}
-		if (CollectionUtils.isEmpty(jiraIssueV2List)) {
+		if (jiraIssueV2Page == null || jiraIssueV2Page.isEmpty()) {
 			return new ServiceResponse(true, "No Jira issues were found for the provided project details.", null);
 		} else {
-			return new ServiceResponse(true, "Scrum project issue details fetched successfully", jiraIssueV2List);
+			return new ServiceResponse(true, "Scrum project issue details fetched successfully", jiraIssueV2Page);
 		}
 	}
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -35,14 +36,15 @@ public class ProjectDataController {
 
 	@PostMapping(value = "/issues", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getProjectData(HttpServletRequest request,
-															@NotNull @RequestBody DataRequest dataRequest) {
+			@NotNull @RequestBody DataRequest dataRequest, @RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
 		log.info("Received {} request for /issues for request {}", request.getMethod(), dataRequest.toString());
 		Boolean isApiAuth = customApiConfig.getxApiKey().equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (Boolean.FALSE.equals(isApiAuth)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		}
 
-		ServiceResponse response = projectDataService.getProjectJiraIssues(dataRequest);
+		ServiceResponse response = projectDataService.getProjectJiraIssues(dataRequest, page, size);
 		if (response == null) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 		} else {
@@ -69,7 +71,7 @@ public class ProjectDataController {
 
 	@PostMapping(value = "/sprints", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getProjectSprints(HttpServletRequest request,
-																   @NotNull @RequestBody DataRequest dataRequest) {
+			@NotNull @RequestBody DataRequest dataRequest) {
 		log.info("Received {} request for /sprints for request {}", request.getMethod(), dataRequest.toString());
 		Boolean isApiAuth = customApiConfig.getxApiKey().equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (Boolean.FALSE.equals(isApiAuth)) {
@@ -86,7 +88,7 @@ public class ProjectDataController {
 
 	@PostMapping(value = "/releases", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getProjectReleases(HttpServletRequest request,
-															   @NotNull @RequestBody DataRequest dataRequest) {
+			@NotNull @RequestBody DataRequest dataRequest) {
 		log.info("Received {} request for /releases for request {}", request.getMethod(), dataRequest.toString());
 		Boolean isApiAuth = customApiConfig.getxApiKey().equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (Boolean.FALSE.equals(isApiAuth)) {

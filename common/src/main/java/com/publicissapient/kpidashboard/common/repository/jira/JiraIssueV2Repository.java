@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -205,17 +207,21 @@ public interface JiraIssueV2Repository
 	Set<JiraIssueV2> findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(String configId,
                                                                                    Set<String> parentStoryIds, List<String> originalTypes);
 
-	@Query("{ 'basicProjectConfigId' : ?0, 'boardId' : ?1 }")
-	List<JiraIssueV2> findByBasicProjectConfigIdAndBoardId(String basicProjectConfigId, String boardId);
-	List<JiraIssueV2> findByBasicProjectConfigIdAndIssueIdIn(String basicProjectConfigId, List<String> issueIds);
-	@Query("{ 'basicProjectConfigId' : ?0, 'boardId' : ?1, 'sprintId' : { $in: ?2 } }")
-	List<JiraIssueV2> findByProjectIdAndBoardIdAndSprintIdIn(String projectId, String boardId, List<String> sprintIds);
-
 	@Query(value = "{ 'boardId' : ?0 }", fields = "{ 'issueType' : 1 }")
 	List<JiraIssueV2> findIssueTypesByBoardId(String boardId);
 
 	@Query(value = "{ 'projectKey' : ?0 }", fields = "{ 'issueType' : 1 }")
 	List<JiraIssueV2> findIssueTypesByProjectKey(String projectKey);
 
-	List<JiraIssueV2> findByProjectKey(String projectKey);
+	Page<JiraIssueV2> findByBasicProjectConfigIdAndBoardId(String basicProjectConfigId, String boardId,
+			Pageable pageable);
+
+	Page<JiraIssueV2> findByBasicProjectConfigIdAndIssueIdIn(String basicProjectConfigId, List<String> issueIds,
+			Pageable pageable);
+
+	@Query("{ 'basicProjectConfigId' : ?0, 'boardId' : ?1, 'sprintId' : { $in: ?2 } }")
+	Page<JiraIssueV2> findByProjectIdAndBoardIdAndSprintIdIn(String basicProjectConfigId, String boardId,
+			List<String> sprintIds, Pageable pageable);
+
+	Page<JiraIssueV2> findByProjectKey(String projectKey, Pageable pageable);
 }
