@@ -43,14 +43,14 @@ public class UpdateBuildFrequency {
 	@Execution
 	public void execution() {
 		Update update = new Update();
-		update.set("maturityRange", Arrays.asList("1-2", "2-4", "5-8", "8-10", "10-"));
+		update.set("maturityRange", Arrays.asList("-1", "2-4", "5-8", "8-10", "10-"));
 		mongoTemplate.updateFirst(getQueryByKpiId(), update, "kpi_master");
 	}
 
 	@RollbackExecution
 	public void rollback() {
 		Update update = new Update();
-		update.set("maturityRange", Arrays.asList("-2", "2-4", "5-8", "8-10", "10-"));
+		update.set("maturityRange", Arrays.asList("1-2", "2-4", "5-8", "8-10", "10-"));
 		mongoTemplate.updateFirst(getQueryByKpiId(), update, "kpi_master");
 	}
 
