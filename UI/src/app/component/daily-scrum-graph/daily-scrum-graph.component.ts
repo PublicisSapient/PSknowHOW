@@ -932,7 +932,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
   }
 
   getFieldMappingMetaData(kpiSource) {
-    this.http.getKPIConfigMetadata(this.selectedToolConfig[0].id).subscribe(Response => {
+    this.http.getKPIConfigMetadata(this.service.getSelectedTrends()[0]?.basicProjectConfigId,this.kpiData[0].kpiId).subscribe(Response => {
       if (Response.success) {
         this.fieldMappingMetaData = Response.data;
         this.service.setFieldMappingMetaData({

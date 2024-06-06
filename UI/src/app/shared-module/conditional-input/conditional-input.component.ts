@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-conditional-input',
   templateUrl: './conditional-input.component.html',
   styleUrls: ['./conditional-input.component.css']
 })
-export class ConditionalInputComponent implements OnInit {
+export class ConditionalInputComponent implements OnChanges {
   @Input() id;
   @Input() fieldConfig;
   @Input() valueObj;
@@ -15,8 +15,8 @@ export class ConditionalInputComponent implements OnInit {
   templateLabels = [];
   constructor() { }
 
-  ngOnInit(): void {
-    if (this.valueObj && this.valueObj.length) {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.valueObj && this.valueObj.length) {
       this.templateLabels = this.valueObj.map((val) => val.labelValue);
       this.templateData = this.fieldConfig.options.filter((opt) => this.templateLabels.includes(opt.labelValue));
       this.finalValue = [...this.templateData];

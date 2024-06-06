@@ -38,6 +38,7 @@ export class GroupBarChartComponent implements OnChanges {
   plannedDueDate: any;
   releaseEndDateIndex;
   lineColor: string = '';
+  totalAvgVelocity : string = '';
 
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
@@ -80,6 +81,8 @@ export class GroupBarChartComponent implements OnChanges {
     this.isXaxisGapRequired = this.data[0]?.additionalInfo?.isXaxisGapRequired;
     this.customisedGroup = this.data[0]?.additionalInfo?.customisedGroup;
     this.plannedDueDate = this.data[0]?.additionalInfo?.plannedDueDate;
+    this.totalAvgVelocity = this.data[0]?.additionalInfo?.totalAvgVelocity;
+
     
     data = this.formatData(data);
 
@@ -213,6 +216,14 @@ export class GroupBarChartComponent implements OnChanges {
         .attr('y', 44)
         .attr('transform', 'rotate(0)')
         .text(htmlDiv);
+    }
+
+    if(this.totalAvgVelocity){
+     d3.select(elem).select('#date-container').append('text')
+        .attr('x', ((d3.select(elem).select('#groupstackchart').node().offsetWidth - 70) / 2) - 24)
+        .attr('y', 44)
+        .attr('transform', 'rotate(0)')
+        .text(this.totalAvgVelocity);
     }
 
     svgX
