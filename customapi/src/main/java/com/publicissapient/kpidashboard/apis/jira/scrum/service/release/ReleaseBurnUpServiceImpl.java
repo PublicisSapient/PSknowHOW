@@ -203,11 +203,11 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			List<JiraHistoryChangeLog> fixVersionUpdateLog = issueHistory.getFixVersionUpdationLog();
 			fixVersionUpdateLog.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 			int lastIndex = fixVersionUpdateLog.size() - 1;
+			List<JiraIssue> jiraIssueList = getRespectiveJiraIssue(releaseIssue, issueHistory);
 			fixVersionUpdateLog.stream()
 					.filter(updateLogs -> updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName)
 							|| updateLogs.getChangedFrom().toLowerCase().contains(finalReleaseName))
 					.forEach(updateLogs -> {
-						List<JiraIssue> jiraIssueList = getRespectiveJiraIssue(releaseIssue, issueHistory);
 						LocalDate updatedLog;
 						if (updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName)) {
 							if (fixVersionUpdateLog.get(lastIndex).getChangedTo().toLowerCase()
