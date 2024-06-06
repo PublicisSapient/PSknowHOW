@@ -48,7 +48,7 @@
 .disabled {
     pointer-events: none;
     background-color: #dedede;
-    opacity: 0;
+    opacity: 1;
 }
 
 /* Scrum/Kanban tabs end*/
