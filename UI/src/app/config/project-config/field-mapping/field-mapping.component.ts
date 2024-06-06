@@ -67,7 +67,7 @@ export class FieldMappingComponent implements OnInit {
     } else {
       this.router.navigate(['./dashboard/Config/ProjectList']);
     }
-
+   this.kpiId = this.selectedConfig?.Type?.toLowerCase() === 'kanban' ? 'kpi1' : 'kpi0';
     if (this.sharedService.getSelectedToolConfig()) {
       this.selectedToolConfig = this.sharedService.getSelectedToolConfig().filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
       if (!this.selectedToolConfig || !this.selectedToolConfig.length) {
@@ -94,7 +94,6 @@ export class FieldMappingComponent implements OnInit {
   }
 
   getKPIFieldMappingRelationships() {
-    this.kpiId = this.selectedConfig?.Type?.toLowerCase() === 'kanban' ? 'kpi1' : 'kpi0';
     const finalMappingURL = this.selectedConfig?.Type?.toLowerCase() === 'kanban' ? `${this.selectedConfig.id}/kpi1` : `${this.selectedConfig.id}/kpi0`
     this.http.getKPIFieldMappingConfig(finalMappingURL).subscribe(response => {
       if(response && response['success']){
@@ -105,7 +104,7 @@ export class FieldMappingComponent implements OnInit {
 
   getDropdownData() {
     if (this.selectedToolConfig && this.selectedToolConfig.length && this.selectedToolConfig[0].id) {
-      this.http.getKPIConfigMetadata(this.selectedToolConfig[0].id).subscribe(Response => {
+      this.http.getKPIConfigMetadata(this.sharedService.getSelectedProject().id,this.kpiId).subscribe(Response => {
         if (Response.success) {
           this.fieldMappingMetaData = Response.data;
         } else {

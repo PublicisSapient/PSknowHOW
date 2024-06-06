@@ -695,10 +695,13 @@ describe('FieldMappingComponent', () => {
 
   it('should fetch dropdown metadata on load', () => {
     component.selectedToolConfig = fakeSelectedTool;
+    spyOn(sharedService,'getSelectedProject').and.returnValue({id : "project1"})
     spyOn(httpService, 'getKPIConfigMetadata').and.callThrough();
+    const kpiId = 'kpi123';
+    component.kpiId = 'kpi123'
     component.getDropdownData();
     expect(httpService.getKPIConfigMetadata).toHaveBeenCalledTimes(1);
-    const metadataReq = httpMock.expectOne(baseUrl + '/api/editConfig/jira/editKpi/' + sharedService.getSelectedToolConfig()[0].id);
+    const metadataReq = httpMock.expectOne(baseUrl + '/api/editConfig/jira/editKpi/' +'project1/'+kpiId);
     expect(metadataReq.request.method).toBe('GET');
     metadataReq.flush(dropDownMetaData);
     expect(Object.keys(component.fieldMappingMetaData)).toEqual(Object.keys(dropDownMetaData.data));

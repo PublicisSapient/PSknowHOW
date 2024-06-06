@@ -35,6 +35,7 @@ export class GroupBarChartComponent implements OnChanges {
   currentDayIndex;
   subGroups = [];
   lineGroups = [];
+  totalAvgVelocity : string = '';
 
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
@@ -70,10 +71,13 @@ export class GroupBarChartComponent implements OnChanges {
     d3.select(elem).select('#svgLegend').select('svg').remove();
     d3.select(elem).select('#legendIndicator').select('svg').remove();
     d3.select(elem).select('#xCaptionContainer').select('text').remove();
+    d3.select(elem).select('#date-container').select('text').remove();
     d3.select(elem).select('#horizontalSVG').select('.current-week-tooltip').selectAll('.tooltip').remove();
     let data = this.data[0]?.dataGroup;
     this.isXaxisGapRequired = this.data[0]?.additionalInfo?.isXaxisGapRequired;
     this.customisedGroup = this.data[0]?.additionalInfo?.customisedGroup;
+   this.totalAvgVelocity = this.data[0]?.additionalInfo?.totalAvgVelocity;
+    
     data = this.formatData(data);
 
     const subgroups = this.subGroups;
@@ -191,6 +195,14 @@ export class GroupBarChartComponent implements OnChanges {
       .attr('y', 44)
       .attr('transform', 'rotate(0)')
       .text(this.xCaption);
+
+    if(this.totalAvgVelocity){
+     d3.select(elem).select('#date-container').append('text')
+        .attr('x', ((d3.select(elem).select('#groupstackchart').node().offsetWidth - 70) / 2) - 24)
+        .attr('y', 44)
+        .attr('transform', 'rotate(0)')
+        .text(this.totalAvgVelocity);
+    }
 
     svgX
       .select('.xAxis')
