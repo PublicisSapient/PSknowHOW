@@ -80,7 +80,7 @@ public class EditKpiConfigControllerTest {
 	public void getTestDataForType() throws NullPointerException {
 
 		try {
-			mockMvc.perform(MockMvcRequestBuilders.get("/editConfig/jira/editKpi/5f7ee917485b2c09bc8bac7a")
+			mockMvc.perform(MockMvcRequestBuilders.get("/editConfig/jira/editKpi/5f7ee917485b2c09bc8bac7a/kpi150")
 					.contentType(TestUtil.APPLICATION_JSON_UTF8)).andExpect(status().isOk());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
