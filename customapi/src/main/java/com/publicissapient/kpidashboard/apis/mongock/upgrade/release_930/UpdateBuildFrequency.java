@@ -30,7 +30,7 @@ import java.util.Arrays;
 /**
  * @author kunkambl
  */
-@ChangeUnit(id = "update_build_frequency", order = "9301", author = "kunkambl", systemVersion = "9.3.0")
+@ChangeUnit(id = "update_build_frequency", order = "9302", author = "kunkambl", systemVersion = "9.3.0")
 public class UpdateBuildFrequency {
 
 	private final MongoTemplate mongoTemplate;
