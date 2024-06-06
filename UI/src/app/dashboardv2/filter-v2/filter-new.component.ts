@@ -33,6 +33,7 @@ export class FilterNewComponent implements OnInit {
   selectedDateValue: string;
   toggleDateDropdown = false;
   additionalFiltersArr = [];
+  filterType: string = '';
 
   constructor(
     private httpService: HttpService,
@@ -259,6 +260,15 @@ export class FilterNewComponent implements OnInit {
       this.filterApplyData['label'] = event[0].labelName;
       this.filterApplyData['selectedMap'] = {};
       console.log(this.selectedLevel);
+
+      if(typeof this.selectedLevel === 'object' && this.selectedLevel !== null) {
+        this.filterType = `${this.selectedLevel.emittedLevel}:`;
+      } else if(typeof this.selectedLevel === 'string') {
+        this.filterType = `${this.selectedLevel}:`;
+      } else {
+        this.filterType = '';
+      }
+
       if (typeof this.selectedLevel === 'string') {
         Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
           if (filterLevel !== this.selectedLevel.toLowerCase()) {
