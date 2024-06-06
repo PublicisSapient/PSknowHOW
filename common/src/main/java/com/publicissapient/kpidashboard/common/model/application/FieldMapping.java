@@ -410,6 +410,7 @@ public class FieldMapping extends FieldMappingHistory {
 	private Map<String, Integer> startDateCountKPI150;
 	private List<String> jiraDevDoneStatusKPI150;
 	private boolean populateByDevDoneKPI150;
+	private List<String> releaseListKPI150;
 
 	// threshold field
 	private String thresholdValueKPI14;
