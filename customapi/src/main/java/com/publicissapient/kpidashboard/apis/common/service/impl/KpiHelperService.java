@@ -708,8 +708,6 @@ public class KpiHelperService { // NOPMD
 	 */
 	public Map<String, Object> fetchSprintCapacityDataFromDb(List<Node> leafNodeList) {
 
-		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
-
 		List<String> sprintList = new ArrayList<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
 
@@ -736,9 +734,6 @@ public class KpiHelperService { // NOPMD
 
 		});
 
-		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
 		Set<String> totalIssue = new HashSet<>();
 		sprintDetails.forEach(dbSprintDetail -> {
@@ -749,7 +744,7 @@ public class KpiHelperService { // NOPMD
 		});
 
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
-			List<JiraIssue> jiraIssueList = jiraIssueRepository.findIssueByNumberAndType(mapOfFilters, totalIssue,
+			List<JiraIssue> jiraIssueList = jiraIssueRepository.findIssueByNumberAndType(totalIssue,
 					uniqueProjectMap);
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
 					.findByStoryIDInAndBasicProjectConfigIdIn(jiraIssueList.stream().map(JiraIssue::getNumber).toList(),

@@ -137,39 +137,6 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	}
 
 	/**
-	 * Fetches KPI Data from DB
-	 *
-	 * @param leafNodeList
-	 *            leafNodeList
-	 * @param startDate
-	 *            startDate
-	 * @param endDate
-	 *            endDate
-	 * @param kpiRequest
-	 *            kpiRequest
-	 * @return {@code Map<String, Object>}
-	 */
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
-		Map<String, Object> resultListMap = kpiHelperService.fetchSprintCapacityDataFromDb(leafNodeList);
-		List<CapacityKpiData> estimateTimeList = kpiHelperService.fetchCapacityDataFromDB(leafNodeList);
-		resultListMap.put(ESTIMATE_TIME, estimateTimeList);
-		return resultListMap;
-
-	}
-
-	/**
-	 * @param sprintCapacityMap
-	 *            sprintCapacityMap
-	 * @return timeLogged in seconds
-	 */
-	@Override
-	public Double calculateKPIMetrics(Map<String, Object> sprintCapacityMap) {
-		return null;
-	}
-
-	/**
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint wise.
 	 *
@@ -245,6 +212,29 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_CAPACITY_UTILIZATION.getColumns(sprintLeafNodeList,
 				cacheService, flterHelperService));
+	}
+
+	/**
+	 * Fetches KPI Data from DB
+	 *
+	 * @param leafNodeList
+	 *            leafNodeList
+	 * @param startDate
+	 *            startDate
+	 * @param endDate
+	 *            endDate
+	 * @param kpiRequest
+	 *            kpiRequest
+	 * @return {@code Map<String, Object>}
+	 */
+	@Override
+	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+												  KpiRequest kpiRequest) {
+		Map<String, Object> resultListMap = kpiHelperService.fetchSprintCapacityDataFromDb(leafNodeList);
+		List<CapacityKpiData> estimateTimeList = kpiHelperService.fetchCapacityDataFromDB(leafNodeList);
+		resultListMap.put(ESTIMATE_TIME, estimateTimeList);
+		return resultListMap;
+
 	}
 
 	/**
@@ -359,5 +349,15 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI46(),
 				KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId());
+	}
+
+	/**
+	 * @param sprintCapacityMap
+	 *            sprintCapacityMap
+	 * @return timeLogged in seconds
+	 */
+	@Override
+	public Double calculateKPIMetrics(Map<String, Object> sprintCapacityMap) {
+		return null;
 	}
 }

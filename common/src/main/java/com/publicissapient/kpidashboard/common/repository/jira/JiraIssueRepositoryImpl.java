@@ -230,12 +230,10 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	}
 
     @Override
-	public List<JiraIssue> findIssueByNumberAndType(Map<String, List<String>> mapOfFilters, Set<String> storyNumber,
+	public List<JiraIssue> findIssueByNumberAndType(Set<String> storyNumber,
 			Map<String, Map<String, Object>> uniqueProjectMap) {
 		Criteria criteria = new Criteria();
 
-		// map of common filters Project and Sprint
-		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
 		// Project level storyType filters
 		List<Criteria> projectCriteriaList = new ArrayList<>();
 		uniqueProjectMap.forEach((project, filterMap) -> {
