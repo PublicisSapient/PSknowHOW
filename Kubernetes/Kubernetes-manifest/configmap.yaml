@@ -8,7 +8,7 @@ data:
   keystorefile: "/usr/lib/jvm/java-17-amazon-corretto/lib/security/cacerts"
   spring.data.mongodb.database: "kpidashboard"
   flag.mailWithoutKafka: "false"
-  notification.switch: "false"
+  notification.switch: "true"
   sendGridEnabled: "false"
 
   # customapi Config
@@ -18,8 +18,8 @@ data:
   auth.domain: "tools.publicis.sapient.com"
   forgotPassword.uiHost: "stage-psknowhow.tools.publicis.sapient.com"
   corsFilterValidOrigin: "stage-psknowhow.tools.publicis.sapient.com"
-  isRepoToolEnable: "true"
-  versionnumber: "9.1.0"
+  isRepoToolEnable: "false"
+  versionnumber: "9.2.0"
   analytics.switch: "true"
   priority.P1: "p1,P1 - Blocker, blocker, 1, 0, p0, Urgent"
   priority.P2: "p2, critical, P2 - Critical, 2"

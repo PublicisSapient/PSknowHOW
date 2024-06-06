@@ -27,7 +27,7 @@ spec:
       #   command: ['sh', '-c', "until nslookup ui-knowhow.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for ui-knowhow; sleep 2; done"]
       containers:
       - name: jira-processor
-        image: speedtools.azurecr.io/knowhow-jira-processor:9.1.0
+        image: speedtools.azurecr.io/knowhow-jira-processor:9.2.0
         imagePullPolicy: Always
         env:
             - name: spring.data.mongodb.uri
@@ -64,7 +64,7 @@ spec:
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
             - name:  notification.switch
-              value: "false"
+              value: "true"
             #Adding cron expressions
             - name: jira.scrumBoardCron
               value: "0 0 */8 * * *"
@@ -80,10 +80,13 @@ spec:
 
         ports:
         - containerPort: 50008
-        # resources:
-        #   requests:
-        #     memory: "1Gi"
-        #     cpu: "0.5"
+        resources:
+          #requests:
+          #  memory: "1Gi"
+          #  cpu: "0.5"
+          limits:
+            memory: "4Gi"
+            cpu: "1"
         readinessProbe:
           tcpSocket:
             port: 50008

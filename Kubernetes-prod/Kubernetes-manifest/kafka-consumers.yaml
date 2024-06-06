@@ -27,7 +27,7 @@ spec:
       #   command: ['sh', '-c', "until nslookup ui-knowhow.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for ui-knowhow; sleep 2; done"]
       containers:
       - name: kafka-consumers
-        image: speedtools.azurecr.io/knowhow-kafka-consumers:9.1.0
+        image: speedtools.azurecr.io/knowhow-kafka-consumers:9.2.0
         # env:
         #     - name: spring.data.mongodb.uri
         #       valueFrom:
@@ -73,16 +73,16 @@ spec:
         #   requests:
         #     memory: "1Gi"
         #     cpu: "0.5"
-        readinessProbe:
-          tcpSocket:
-            port: 50020
-          initialDelaySeconds: 40   # Wait for 40 seconds before starting probes
-          periodSeconds: 30          # Check every 30 seconds
-        livenessProbe:
-          tcpSocket:
-            port: 50020
-          initialDelaySeconds: 40
-          periodSeconds: 30
+        # readinessProbe:
+        #  tcpSocket:
+        #    port: 50020
+        #  initialDelaySeconds: 40   # Wait for 40 seconds before starting probes
+        #  periodSeconds: 30          # Check every 30 seconds
+        #livenessProbe:
+        #  tcpSocket:
+        #    port: 50020
+        #  initialDelaySeconds: 40
+        # periodSeconds: 30
 
         envFrom:
           - configMapRef:
