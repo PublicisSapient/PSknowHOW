@@ -1,3 +1,4 @@
+import { SimpleChange  } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ConditionalInputComponent } from './conditional-input.component';
@@ -66,7 +67,9 @@ describe('ConditionalInputComponent', () => {
       { labelValue: 'p2', countValue: 5 },
     ];
 
-    component.ngOnInit();
+    component.ngOnChanges({
+      valueObj: new SimpleChange(null, component.valueObj, true)
+    });
 
     expect(component.templateLabels).toEqual(['p1', 'p2']);
     expect(component.templateData).toEqual([
@@ -107,7 +110,6 @@ describe('ConditionalInputComponent', () => {
 
   it('should not initialize templateLabels, templateData, finalValue, and countValue if valueObj is empty', () => {
     component.valueObj = [];
-    component.ngOnInit();
 
     expect(component.templateLabels).toEqual([]);
     expect(component.templateData).toEqual([]);
