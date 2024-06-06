@@ -83,6 +83,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 	private static final String OVERALL = "Overall";
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String COMPLETED_ISSUES = "completedIssue";
+	private static final String NOT_APPLICABLE = "N/A";
 	public static final DecimalFormat decformat = new DecimalFormat("#0.00");
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -552,6 +553,11 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 			});
 			jiraIssueModalObject.setLinkedStories(linkedStoriesMap);
 			jiraIssueModalObject.setLinkedStoriesSize(storyPoint.get().toString());
+		}
+		else{
+			Map<String, String> dummyMap = new HashMap<>();
+			dummyMap.put(NOT_APPLICABLE , NOT_APPLICABLE);
+			jiraIssueModalObject.setLinkedDefefect(dummyMap);
 		}
 	}
 }

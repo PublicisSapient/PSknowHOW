@@ -18,14 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.util;
 
-import com.publicissapient.kpidashboard.common.model.application.Week;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.ISODateTimeFormat;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -37,8 +29,20 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.ObjectUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.ISODateTimeFormat;
+
+import com.publicissapient.kpidashboard.common.model.application.Week;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author narsingh9
@@ -155,7 +159,7 @@ public class DateUtil {
 	 * @return converted date
 	 */
 	public static String dateTimeConverterUsingFromAndTo(DateTime dateTime, final String fromFormat,
-														 final String toFormat) {
+			final String toFormat) {
 		if (dateTime != null) {
 			try {
 				org.joda.time.format.DateTimeFormatter sourceFormatter = DateTimeFormat.forPattern(fromFormat);
@@ -344,6 +348,29 @@ public class DateUtil {
 			result = "NA";
 		}
 		return result;
+	}
+
+	/**
+	 * Calculating total no. of working days between two dates
+	 * 
+	 * @param startDateTime
+	 *            startDateTime
+	 * @param endDateTime
+	 *            endDateTime
+	 * @return no. of days
+	 */
+	public static double calculateWorkingDays(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+		LocalDate startDate = startDateTime.toLocalDate();
+		LocalDate endDate = endDateTime.toLocalDate();
+
+		if (startDate.isAfter(endDate)) {
+			throw new IllegalArgumentException("Release Start date must be before release end date");
+		}
+
+		return Stream.iterate(startDate, date -> date.plusDays(1))
+				.limit(ChronoUnit.DAYS.between(startDate, endDate) + 1) // +1 to include endDate
+				.filter(date -> !(date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY))
+				.count();
 	}
 
 }
