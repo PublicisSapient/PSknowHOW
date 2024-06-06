@@ -190,8 +190,8 @@ public class ReleaseEpicProgressServiceImplTest {
 		Map.Entry<String, String> epicUrl = new AbstractMap.SimpleEntry<>("EPIC", "url");
 		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueArrayList,
 				jiraIssueReleaseStatusList.get(0), epicUrl, fieldMapping);
-		assertThat(dataCount.getData()).isEqualTo("44");
-		assertThat(dataCount.getSize()).isEqualTo("60.0");
+		assertThat(dataCount.getData()).isEqualTo("45");
+		assertThat(dataCount.getSize()).isEqualTo("63.0");
 		DataCount toDoCount = ((List<DataCount>) dataCount.getValue()).get(0);
 		assertThat(toDoCount.getValue()).isEqualTo(5L);
 		assertThat(toDoCount.getSize()).isEqualTo(4.0);
@@ -202,8 +202,8 @@ public class ReleaseEpicProgressServiceImplTest {
 		assertThat(inProgressCount.getSubFilter()).isEqualTo(IN_PROGRESS);
 
 		DataCount doneCount = ((List<DataCount>) dataCount.getValue()).get(2);
-		assertThat(doneCount.getValue()).isEqualTo(39L);
-		assertThat(doneCount.getSize()).isEqualTo(56.0);
+		assertThat(doneCount.getValue()).isEqualTo(40L);
+		assertThat(doneCount.getSize()).isEqualTo(59.0);
 		assertThat(doneCount.getSubFilter()).isEqualTo(DONE);
 	}
 

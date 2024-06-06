@@ -17,6 +17,8 @@ package com.publicissapient.kpidashboard.apis.jira.service.releasedashboard;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -35,6 +37,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
+import com.publicissapient.kpidashboard.apis.jira.model.ReleaseSpecification;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -290,6 +293,29 @@ public class JiraReleaseServiceRTest {
 		List<KpiElement> resultList = jiraServiceR.processWithExposedApiToken(kpiRequest);
 		assertEquals(0, resultList.size());
 	}
+
+	@Test
+	public void testGetAvgVelocity_withValidData() {
+		FieldMapping fieldMapping = new FieldMapping();
+		ReleaseSpecification releaseSpecification = new ReleaseSpecification();
+		fieldMapping.setReleaseListKPI150(Arrays.asList(
+				"KnowHOW v9.0.0 (duration 62.0 days)",
+				"KnowHOW v9.1.0 (duration 6.0 days)"
+		));
+		fieldMapping.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
+
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		when(jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(anyString(), anyList()))
+				.thenReturn(jiraIssueDataFactory.getJiraIssues());
+
+		Map<String, Object> result = jiraServiceR.getAvgVelocity(fieldMapping, releaseSpecification);
+
+		assertNotNull(result);
+		assertEquals(2, result.size());
+		assertTrue(result.containsKey("avgIssueCount"));
+		assertTrue(result.containsKey("avgStoryPoint"));
+	}
+
 
 	@Test
 	public void getJiraIssueReleaseForProject(){

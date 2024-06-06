@@ -1,7 +1,7 @@
 version: "2"
 services:
   authdb:
-    image: psknowhow/authdb:<TAG VERSION>
+    image: psknowhow/postgres-auth-scm:<TAG VERSION>
     tty: true
     container_name: authdb
     restart: always
