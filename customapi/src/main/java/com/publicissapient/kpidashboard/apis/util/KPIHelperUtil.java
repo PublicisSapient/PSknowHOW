@@ -260,8 +260,9 @@ public final class KPIHelperUtil {
 		if (null == root) {
 			throw new ApplicationException(KpiRequest.class, "kpiRequestTrackerId", sanitizeUserInput(kpiRequest.getRequestTrackerId()));
 		}
-
-		log.debug("[CREATED-TREE][{}]. Tree created from nodes {}", sanitizeUserInput(kpiRequest.getRequestTrackerId()), root);
+		if (kpiRequest.getRequestTrackerId().matches("\\w*")) {
+			log.debug("[CREATED-TREE][{}]. Tree created from nodes {}", kpiRequest.getRequestTrackerId(), root);
+		}
 
 		List<Node> leafNodeList = new ArrayList<>();
 		List<Node> projectNodeList = new ArrayList<>();
