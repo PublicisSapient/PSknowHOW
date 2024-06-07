@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.Node;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -636,25 +637,20 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateSprintCapacity(String sprint, List<JiraIssue> totalStoriesList,
-			List<KPIExcelData> kpiExcelData) {
-
+	public static void populateSprintCapacity(String sprintName, List<JiraIssue> totalStoriesList,
+											  List<KPIExcelData> kpiExcelData, Map<String, Double> loggedTimeIssueMap) {
 		if (CollectionUtils.isNotEmpty(totalStoriesList)) {
-			totalStoriesList.stream().forEach(issue -> {
+			totalStoriesList.forEach(issue -> {
 
 				KPIExcelData excelData = new KPIExcelData();
-				excelData.setSprintName(sprint);
+				excelData.setSprintName(sprintName);
 				Map<String, String> storyDetails = new HashMap<>();
 				storyDetails.put(issue.getNumber(), checkEmptyURL(issue));
 				excelData.setStoryId(storyDetails);
 				excelData.setIssueDesc(checkEmptyName(issue));
 				setSquads(excelData, issue);
-				String daysLogged = "0.0";
 				String daysEstimated = "0.0";
-				if (issue.getTimeSpentInMinutes() != null && issue.getTimeSpentInMinutes() > 0) {
-					daysLogged = String.valueOf(roundingOff(Double.valueOf(issue.getTimeSpentInMinutes()) / 60));
-				}
-				excelData.setTotalTimeSpent(daysLogged);
+				excelData.setTotalTimeSpent(String.valueOf(roundingOff(loggedTimeIssueMap.getOrDefault(issue.getNumber(),0d))));
 
 				if (issue.getAggregateTimeOriginalEstimateMinutes() != null
 						&& issue.getAggregateTimeOriginalEstimateMinutes() > 0) {
@@ -2091,4 +2087,34 @@ public class KPIExcelUtility {
 		}
 	}
 
+	public static void populateReleasePlanExcelData(List<JiraIssue> jiraIssues, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+			jiraIssues.forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				Map<String, String> issueDetails = new HashMap<>();
+				issueDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setIssueID(issueDetails);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setIssueStatus(jiraIssue.getStatus());
+				excelData.setIssueType(jiraIssue.getTypeName());
+				populateAssignee(jiraIssue, excelData);
+				excelData.setPriority(jiraIssue.getPriority());
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));
+					excelData.setStoryPoint(Double.toString(roundingOff));
+				} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
+					double totalOriginalEstimate = Double.valueOf(jiraIssue.getAggregateTimeOriginalEstimateMinutes())
+							/ 60;
+					excelData.setStoryPoint(
+							roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
+									+ roundingOff(totalOriginalEstimate) + " hrs");
+				}
+				excelData.setDueDate(
+						(StringUtils.isNotEmpty(jiraIssue.getDueDate())) ? DateUtil.dateTimeConverter(
+								jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : "-");
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
 }

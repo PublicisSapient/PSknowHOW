@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -282,15 +284,15 @@ public class KpiHelperServiceTest {
 	public void testFetchSprintCapacityDataFromDb() throws ApplicationException {
 
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId());
-		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(issueList);
+		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
 				new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
-		List<JiraIssue> resultList = kpiHelperService.fetchSprintCapacityDataFromDb(kpiRequest, leafNodeList);
-		assertEquals(issueList.size(), resultList.size());
+		Map<String, Object> resultMap = kpiHelperService.fetchSprintCapacityDataFromDb(kpiRequest, leafNodeList);
+		Assert.assertNotNull(resultMap);
 	}
 
 	@Test
@@ -416,22 +418,6 @@ public class KpiHelperServiceTest {
 	public void fetchFieldMappingStructureByKpiFieldMappingData() {
 		when(configHelperService.loadFieldMappingStructure()).thenReturn(fieldMappingStructureList);
 		assertNotNull(kpiHelperService.fetchFieldMappingStructureByKpiId("6335363749794a18e8a4479c", "kpi0"));
-	}
-
-	@Test
-	public void fetchBackLogReadinessFromdb() throws ApplicationException {
-		// KpiRequest kpiRequest =
-		// kpiRequestFactory.findKpiRequest(KPICode.SPRINT_VELOCITY.getKpiId());
-		// TreeAggregatorDetail treeAggregatorDetail =
-		// KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
-		// new ArrayList<>(), "hierarchyLevelOne", 5);
-		// List<Node> leafNodeList = new ArrayList<>();
-		// leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(),
-		// leafNodeList);
-		// when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
-		// Map<String, Object> resultMap =
-		// kpiHelperService.fetchBackLogReadinessFromdb(leafNodeList, kpiRequest);
-		// assertEquals(2, resultMap.size());
 	}
 
 	@Test
