@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -65,6 +66,7 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("PMD.GodClass")
 @Slf4j
 public final class KPIHelperUtil {
+	private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("[^a-zA-Z0-9]");
 
 	private KPIHelperUtil() {
 	}
@@ -256,17 +258,17 @@ public final class KPIHelperUtil {
 		}
 
 		if (null == root) {
-			throw new ApplicationException(KpiRequest.class, "kpiRequestTrackerId", kpiRequest.getRequestTrackerId());
+			throw new ApplicationException(KpiRequest.class, "kpiRequestTrackerId", sanitizeUserInput(kpiRequest.getRequestTrackerId()));
 		}
 
-		log.debug("[CREATED-TREE][{}]. Tree created from nodes {}", kpiRequest.getRequestTrackerId(), root);
+		log.debug("[CREATED-TREE][{}]. Tree created from nodes {}", sanitizeUserInput(kpiRequest.getRequestTrackerId()), root);
 
 		List<Node> leafNodeList = new ArrayList<>();
 		List<Node> projectNodeList = new ArrayList<>();
 		getLeafNodes(root, leafNodeList);
 		getProjectNodes(root, projectNodeList);
 
-		log.debug("[LEAF_NODES][{}]. Leaf nodes of the tree {}", kpiRequest.getRequestTrackerId(), leafNodeList);
+		log.debug("[LEAF_NODES][{}]. Leaf nodes of the tree {}", sanitizeUserInput(kpiRequest.getRequestTrackerId()), leafNodeList);
 
 		Map<String, List<Node>> result = leafNodeList.stream().distinct()
 				.collect(Collectors.groupingBy(Node::getGroupName, Collectors.toList()));
@@ -277,6 +279,10 @@ public final class KPIHelperUtil {
 
 	private static void cloneNode(List<Node> nodeList, List<Node> aggregatedTreeNodeList) {
 		nodeList.forEach(node -> aggregatedTreeNodeList.add((Node) SerializationUtils.clone(node)));
+	}
+
+	private static String sanitizeUserInput(String input) {
+		return ALPHANUMERIC_PATTERN.matcher(input).replaceAll("");
 	}
 
 	/**
