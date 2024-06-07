@@ -22,8 +22,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -42,6 +42,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.testng.Assert;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -63,6 +64,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -282,10 +284,50 @@ public class ReleaseBurnUpServiceImplTest {
 		fieldMapping.setReleaseListKPI150(
 				Arrays.asList("KnowHOW v9.0.0 (duration 62.0 days)", "KnowHOW v9.1.0 (duration 6.0 days)"));
 		fieldMapping.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
-
 		Map<String, Object> result = releaseBurnUpService.getAvgVelocity(fieldMapping, releaseSpecification);
-
 		Assertions.assertNotNull(result);
 	}
+
+	@Test
+	public void testGetTicketEstimate_StoryPointCriteria() {
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> jiraIssueList = jiraIssueDataFactory.getJiraIssues();
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
+		double result = releaseBurnUpService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0);
+		assertEquals(63.0, result, 0.01);
+	}
+
+	@Test
+	public void testGetTicketEstimate_TimeCriteria() {
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> jiraIssueList = jiraIssueDataFactory.getJiraIssues();
+		when(fieldMapping.getEstimationCriteria()).thenReturn("time");
+		when(fieldMapping.getStoryPointToHourMapping()).thenReturn(1.0);
+		double result = releaseBurnUpService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0);
+		assertEquals(0.0, result, 0.01);
+	}
+
+	/*@Test
+	public void testGetStoryPoint_withValidJiraIssueList() {
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		List<JiraIssue> jiraIssueList = List.of(new JiraIssue(), new JiraIssue());
+		when(releaseBurnUpService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0d)).thenReturn(5.5d);
+		Double result = releaseBurnUpService.getStoryPoint(jiraIssueList, fieldMapping);
+		Assert.assertNotNull(result);
+		Assertions.assertEquals(5.5d, result);
+	}*/
+
+	/*@Test
+	public void testGetStoryPoint_withRoundedEstimate() {
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		List<JiraIssue> jiraIssueList = List.of(new JiraIssue(), new JiraIssue());
+		when(releaseBurnUpService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0d)).thenReturn(5.567d);
+		Double result = releaseBurnUpService.getStoryPoint(jiraIssueList, fieldMapping);
+		Assert.assertNotNull(result);
+		// Assuming roundingOff method rounds to 2 decimal places
+		Assertions.assertEquals(5.57d, result);
+	}*/
 
 }

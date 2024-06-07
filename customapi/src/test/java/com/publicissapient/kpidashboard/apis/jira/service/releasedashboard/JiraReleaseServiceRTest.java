@@ -318,26 +318,6 @@ public class JiraReleaseServiceRTest {
 	}
 
 	@Test
-	public void testGetTicketEstimate_StoryPointCriteria() {
-		FieldMapping fieldMapping = mock(FieldMapping.class);
-		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
-		List<JiraIssue> jiraIssueList = jiraIssueDataFactory.getJiraIssues();
-		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
-		double result = jiraServiceR.getTicketEstimate(jiraIssueList, fieldMapping, 0.0);
-		assertEquals(63.0, result, 0.01);
-	}
-	@Test
-	public void testGetTicketEstimate_TimeCriteria() {
-		FieldMapping fieldMapping = mock(FieldMapping.class);
-		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
-		List<JiraIssue> jiraIssueList = jiraIssueDataFactory.getJiraIssues();
-		when(fieldMapping.getEstimationCriteria()).thenReturn("time");
-		when(fieldMapping.getStoryPointToHourMapping()).thenReturn(1.0);
-		double result = jiraServiceR.getTicketEstimate(jiraIssueList, fieldMapping, 0.0);
-		assertEquals(0.0, result, 0.01);
-	}
-
-	@Test
 	public void getJiraIssueReleaseForProject() {
 		jiraServiceR.getJiraIssueReleaseForProject();
 	}

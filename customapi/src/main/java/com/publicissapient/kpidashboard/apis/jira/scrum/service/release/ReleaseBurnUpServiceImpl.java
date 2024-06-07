@@ -1150,6 +1150,47 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	}
 
 	/**
+	 * Get Sum of StoryPoint for List of JiraIssue
+	 *
+	 * @param jiraIssueList
+	 *            List<JiraIssue>
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return Sum of Story Points
+	 */
+	public Double getStoryPoint(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		double ticketEstimate = 0.0d;
+		ticketEstimate = getTicketEstimate(jiraIssueList, fieldMapping, ticketEstimate);
+		return roundingOff(ticketEstimate);
+	}
+
+	/**
+	 * Get Sum of StoryPoint for List of JiraIssue
+	 *
+	 * @param jiraIssueList
+	 *            List<JiraIssue>
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return Sum of Story Point
+	 */
+	public double getTicketEstimate(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping, double ticketEstimate) {
+		if (CollectionUtils.isNotEmpty(jiraIssueList)) {
+			if (org.apache.commons.lang.StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+				ticketEstimate = jiraIssueList.stream()
+						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
+			} else {
+				double totalOriginalEstimate = jiraIssueList.stream().mapToDouble(
+						jiraIssue -> Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0))
+						.sum();
+				double inHours = totalOriginalEstimate / 60;
+				ticketEstimate = inHours / fieldMapping.getStoryPointToHourMapping();
+			}
+		}
+		return ticketEstimate;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override

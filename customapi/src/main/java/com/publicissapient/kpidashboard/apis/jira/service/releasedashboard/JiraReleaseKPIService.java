@@ -113,19 +113,5 @@ public abstract class JiraReleaseKPIService implements NonTrendKPIService {
 		return jiraService.getJiraIssuesList(fieldMapping, releaseNameList);
 	}
 
-	/**
-	 * Get Sum of StoryPoint for List of JiraIssue
-	 *
-	 * @param jiraIssueList
-	 *            List<JiraIssue>
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @return Sum of Story Points
-	 */
-	public Double getStoryPoint(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		double ticketEstimate = 0.0d;
-		ticketEstimate = jiraService.getTicketEstimate(jiraIssueList, fieldMapping, ticketEstimate);
-		return roundingOff(ticketEstimate);
-	}
 
 }
