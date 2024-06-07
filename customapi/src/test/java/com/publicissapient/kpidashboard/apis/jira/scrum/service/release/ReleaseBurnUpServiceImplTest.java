@@ -20,21 +20,24 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -52,12 +55,15 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.model.ReleaseSpecification;
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -74,6 +80,8 @@ public class ReleaseBurnUpServiceImplTest {
 	private ReleaseBurnUpServiceImpl releaseBurnUpService;
 	@Mock
 	private JiraReleaseServiceR jiraService;
+	@Mock
+	private JiraReleaseKPIService jiraReleaseKPIService;
 
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
@@ -160,7 +168,6 @@ public class ReleaseBurnUpServiceImplTest {
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
-
 	@Test
 	public void getKpiData2() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
@@ -171,7 +178,7 @@ public class ReleaseBurnUpServiceImplTest {
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
 
-		jiraIssues2.forEach(a->a.setAggregateTimeOriginalEstimateMinutes(0));
+		jiraIssues2.forEach(a -> a.setAggregateTimeOriginalEstimateMinutes(0));
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues2);
 		when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap2);
@@ -267,6 +274,43 @@ public class ReleaseBurnUpServiceImplTest {
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
+	}
+
+	@Test
+	public void testGetAvgVelocity_withValidData() {
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> jiraIssueList = jiraIssueDataFactory.getJiraIssues();
+		FieldMapping fieldMapping = new FieldMapping();
+		ReleaseSpecification releaseSpecification = new ReleaseSpecification();
+		fieldMapping.setReleaseListKPI150(
+				Arrays.asList("KnowHOW v9.0.0 (duration 62.0 days)", "KnowHOW v9.1.0 (duration 6.0 days)"));
+		fieldMapping.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
+		List<String> releaseNames = Arrays.asList("KnowHOW v9.0.0", "KnowHOW v9.1.0");
+		when(jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(
+				fieldMapping.getBasicProjectConfigId().toString(), releaseNames)).thenReturn(jiraIssueList);
+		Map<String, Object> result = releaseBurnUpService.getAvgVelocity(fieldMapping, releaseSpecification);
+		Assertions.assertNotNull(result);
+	}
+
+	@Test
+	public void testGetTicketEstimate_StoryPointCriteria() {
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> jiraIssueList = jiraIssueDataFactory.getJiraIssues();
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
+		double result = releaseBurnUpService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0);
+		assertEquals(63.0, result, 0.01);
+	}
+
+	@Test
+	public void testGetTicketEstimate_TimeCriteria() {
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> jiraIssueList = jiraIssueDataFactory.getJiraIssues();
+		when(fieldMapping.getEstimationCriteria()).thenReturn("time");
+		when(fieldMapping.getStoryPointToHourMapping()).thenReturn(1.0);
+		double result = releaseBurnUpService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0);
+		assertEquals(0.0, result, 0.01);
 	}
 
 }
