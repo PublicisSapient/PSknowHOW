@@ -16,7 +16,6 @@ package com.publicissapient.kpidashboard.apis.jira.service.releasedashboard;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.jira.model.ReleaseSpecification;
 import com.publicissapient.kpidashboard.apis.jira.service.NonTrendKPIService;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -107,13 +105,12 @@ public abstract class JiraReleaseKPIService implements NonTrendKPIService {
 	 * 
 	 * @param fieldMapping
 	 *            fieldMapping
-	 * @param releaseSpecification
-	 *            releaseSpecification
-	 * @return total average velocity of selected closed releases
+	 * @param releaseNameList
+	 *            releaseNameList
+	 * @return total jira issues list of selected closed releases
 	 */
-	public Map<String, Object> getClosedReleaseAvgData(FieldMapping fieldMapping,
-			ReleaseSpecification releaseSpecification) {
-		return jiraService.getAvgVelocity(fieldMapping, releaseSpecification);
+	public List<JiraIssue> getClosedReleaseJiraIssueList(FieldMapping fieldMapping, List<String> releaseNameList) {
+		return jiraService.getJiraIssuesList(fieldMapping, releaseNameList);
 	}
 
 	/**

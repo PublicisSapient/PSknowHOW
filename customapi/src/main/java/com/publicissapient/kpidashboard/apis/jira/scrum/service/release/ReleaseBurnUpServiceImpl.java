@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -423,7 +425,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			Map<String, Object> averageDataMap = new HashMap<>();
 			ReleaseSpecification releaseSpecification = new ReleaseSpecification();
 			if (CollectionUtils.isNotEmpty(fieldMapping.getReleaseListKPI150())) {
-				averageDataMap = getClosedReleaseAvgData(fieldMapping, releaseSpecification);
+				averageDataMap = getAvgVelocity(fieldMapping, releaseSpecification);
 			}
 			// if no issue is closed & status is "Released" in a release prediction will not
 			// be shown
@@ -1081,6 +1083,70 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			currentDate = currentDate.plusDays(1);
 		}
 		return currentDate;
+	}
+
+	/**
+	 *
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @param releaseSpecification
+	 *            releaseSpecification
+	 * @return averageDataMap
+	 */
+	public Map<String, Object> getAvgVelocity(FieldMapping fieldMapping, ReleaseSpecification releaseSpecification) {
+
+		Map<String, Object> averageDataMap = new HashMap<>();
+		String regex = "^(.*?)\\s*\\(duration\\s*(\\d+\\.\\d+)\\s*days\\)$";
+		Pattern pattern = Pattern.compile(regex);
+		List<String> releaseNames = new ArrayList<>();
+		double totalDurations = 0.0;
+
+		for (String release : fieldMapping.getReleaseListKPI150()) {
+			Matcher matcher = pattern.matcher(release);
+			if (matcher.find()) {
+				String releaseName = matcher.group(1).trim();
+				double duration = Double.parseDouble(matcher.group(2));
+				totalDurations = duration + totalDurations;
+				releaseNames.add(releaseName);
+			}
+		}
+
+		List<JiraIssue> jiraIssues = getClosedReleaseJiraIssueList(fieldMapping, releaseNames);
+		getAverageData(fieldMapping, releaseSpecification, averageDataMap, totalDurations, jiraIssues);
+
+		return averageDataMap;
+	}
+
+	/**
+	 * 
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @param releaseSpecification
+	 *            releaseSpecification
+	 * @param averageDataMap
+	 *            averageDataMap
+	 * @param totalDurations
+	 *            totalDurations
+	 * @param jiraIssues
+	 *            jiraIssues
+	 */
+	private void getAverageData(FieldMapping fieldMapping, ReleaseSpecification releaseSpecification,
+			Map<String, Object> averageDataMap, double totalDurations, List<JiraIssue> jiraIssues) {
+		if (totalDurations != 0 && CollectionUtils.isNotEmpty(jiraIssues)) {
+			double releaseIssuesSize = jiraIssues.size();
+			double releaseTicketsEstimate = getStoryPoint(jiraIssues, fieldMapping);
+			double issueCountVelocity = releaseIssuesSize / totalDurations;
+			double issuesEstimateVelocity = releaseTicketsEstimate / totalDurations;
+
+			releaseSpecification.setReleaseIssueCount(releaseIssuesSize);
+			releaseSpecification.setReleaseStoryPoint(releaseTicketsEstimate);
+			releaseSpecification.setReleaseIssueCountVelocity(roundingOff(issueCountVelocity));
+			releaseSpecification.setReleaseStoryPointVelocity(roundingOff(issuesEstimateVelocity));
+			releaseSpecification.setReleaseDuration(totalDurations);
+			averageDataMap.put(AVG_ISSUE_COUNT, roundingOff(issueCountVelocity));
+			averageDataMap.put(AVG_STORY_POINT, roundingOff(issuesEstimateVelocity));
+
+		}
 	}
 
 	/**
