@@ -101,17 +101,4 @@ public abstract class JiraReleaseKPIService implements NonTrendKPIService {
 		return jiraService.getJiraIssuesCustomHistoryForCurrentSprint();
 	}
 
-	/**
-	 * 
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @param releaseNameList
-	 *            releaseNameList
-	 * @return total jira issues list of selected closed releases
-	 */
-	public List<JiraIssue> getClosedReleaseJiraIssueList(FieldMapping fieldMapping, List<String> releaseNameList) {
-		return jiraService.getJiraIssuesList(fieldMapping, releaseNameList);
-	}
-
-
 }

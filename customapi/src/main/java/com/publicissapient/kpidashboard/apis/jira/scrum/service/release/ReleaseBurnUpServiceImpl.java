@@ -1111,7 +1111,8 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			}
 		}
 
-		List<JiraIssue> jiraIssues = getClosedReleaseJiraIssueList(fieldMapping, releaseNames);
+		List<JiraIssue> jiraIssues = jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(
+				fieldMapping.getBasicProjectConfigId().toString(), releaseNames);
 		getAverageData(fieldMapping, releaseSpecification, averageDataMap, totalDurations, jiraIssues);
 
 		return averageDataMap;

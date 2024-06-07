@@ -170,15 +170,6 @@ public class JiraReleaseKPIServiceTest {
 		when(jiraService.getReleaseList()).thenReturn(releaseList);
 		assertNotNull(jiraKPIService.getReleaseList());
 	}
-	@Test
-	public void testGetClosedReleaseJiraIssueList() {
-		FieldMapping fieldMapping = mock(FieldMapping.class);
-		List<String> releaseNames = Arrays.asList("Release 1", "Release 2");
-		List<JiraIssue> expectedJiraIssues = Arrays.asList(new JiraIssue(), new JiraIssue());
-		when(jiraKPIService.getClosedReleaseJiraIssueList(fieldMapping, releaseNames)).thenReturn(expectedJiraIssues);
-		List<JiraIssue> actualJiraIssues = jiraKPIService.getClosedReleaseJiraIssueList(fieldMapping, releaseNames);
-		assertEquals(expectedJiraIssues, actualJiraIssues);
-	}
 
 	public static class JiraReleaseKPIServiceTestImpl extends JiraReleaseKPIService {
 

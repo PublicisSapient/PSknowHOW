@@ -42,7 +42,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.testng.Assert;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -279,11 +278,16 @@ public class ReleaseBurnUpServiceImplTest {
 
 	@Test
 	public void testGetAvgVelocity_withValidData() {
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> jiraIssueList = jiraIssueDataFactory.getJiraIssues();
 		FieldMapping fieldMapping = new FieldMapping();
 		ReleaseSpecification releaseSpecification = new ReleaseSpecification();
 		fieldMapping.setReleaseListKPI150(
 				Arrays.asList("KnowHOW v9.0.0 (duration 62.0 days)", "KnowHOW v9.1.0 (duration 6.0 days)"));
 		fieldMapping.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
+		List<String> releaseNames = Arrays.asList("KnowHOW v9.0.0", "KnowHOW v9.1.0");
+		when(jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(
+				fieldMapping.getBasicProjectConfigId().toString(), releaseNames)).thenReturn(jiraIssueList);
 		Map<String, Object> result = releaseBurnUpService.getAvgVelocity(fieldMapping, releaseSpecification);
 		Assertions.assertNotNull(result);
 	}
@@ -308,26 +312,5 @@ public class ReleaseBurnUpServiceImplTest {
 		double result = releaseBurnUpService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0);
 		assertEquals(0.0, result, 0.01);
 	}
-
-	/*@Test
-	public void testGetStoryPoint_withValidJiraIssueList() {
-		FieldMapping fieldMapping = mock(FieldMapping.class);
-		List<JiraIssue> jiraIssueList = List.of(new JiraIssue(), new JiraIssue());
-		when(releaseBurnUpService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0d)).thenReturn(5.5d);
-		Double result = releaseBurnUpService.getStoryPoint(jiraIssueList, fieldMapping);
-		Assert.assertNotNull(result);
-		Assertions.assertEquals(5.5d, result);
-	}*/
-
-	/*@Test
-	public void testGetStoryPoint_withRoundedEstimate() {
-		FieldMapping fieldMapping = mock(FieldMapping.class);
-		List<JiraIssue> jiraIssueList = List.of(new JiraIssue(), new JiraIssue());
-		when(releaseBurnUpService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0d)).thenReturn(5.567d);
-		Double result = releaseBurnUpService.getStoryPoint(jiraIssueList, fieldMapping);
-		Assert.assertNotNull(result);
-		// Assuming roundingOff method rounds to 2 decimal places
-		Assertions.assertEquals(5.57d, result);
-	}*/
 
 }

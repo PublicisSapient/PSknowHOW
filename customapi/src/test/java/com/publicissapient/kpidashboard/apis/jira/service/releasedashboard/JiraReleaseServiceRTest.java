@@ -298,25 +298,6 @@ public class JiraReleaseServiceRTest {
 		List<KpiElement> resultList = jiraServiceR.processWithExposedApiToken(kpiRequest);
 		assertEquals(0, resultList.size());
 	}
-
-	@Test
-	public void testGetJiraIssuesList() {
-		FieldMapping fieldMapping = new FieldMapping();
-		fieldMapping.setReleaseListKPI150(
-				Arrays.asList("KnowHOW v9.0.0 (duration 62.0 days)", "KnowHOW v9.1.0 (duration 6.0 days)"));
-		fieldMapping.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
-		List<String> releaseNames = Arrays.asList("KnowHOW v9.0.0", "KnowHOW v9.1.0");
-
-		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
-		when(jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(anyString(), anyList()))
-				.thenReturn(jiraIssueDataFactory.getJiraIssues());
-		List<JiraIssue> jiraIssuesList = jiraServiceR.getJiraIssuesList(fieldMapping, releaseNames);
-
-		assertNotNull(jiraIssuesList);
-		assertEquals(45, jiraIssuesList.size());
-
-	}
-
 	@Test
 	public void getJiraIssueReleaseForProject() {
 		jiraServiceR.getJiraIssueReleaseForProject();
