@@ -250,7 +250,7 @@ public class KPIExcelUtilityTest {
 		excelUtility.populateRefinementRejectionExcelData(excelDataList, jiraIssues, weekAndTypeMap, jiraDateMap);
 
 		// Assert
-		assertEquals(44, excelDataList.size());
+		assertEquals(45, excelDataList.size());
 	}
 
 	@Test
@@ -510,7 +510,7 @@ public class KPIExcelUtilityTest {
 		KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssues, excelDataList, fieldMapping);
 
 		// Assert
-		assertEquals(44, excelDataList.size());
+		assertEquals(45, excelDataList.size());
 	}
 
 	@Test
@@ -525,7 +525,7 @@ public class KPIExcelUtilityTest {
 		KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssues, excelDataList, fieldMapping);
 
 		// Assert
-		assertEquals(44, excelDataList.size());
+		assertEquals(45, excelDataList.size());
 	}
 
 	@Test
@@ -540,7 +540,7 @@ public class KPIExcelUtilityTest {
 		KPIExcelUtility.populateBacklogCountExcelData(jiraIssues, excelDataList);
 
 		// Assert
-		assertEquals(44, excelDataList.size());
+		assertEquals(45, excelDataList.size());
 	}
 
 	@Test

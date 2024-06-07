@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,11 +43,11 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.model.ReleaseSpecification;
 import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
@@ -104,6 +106,14 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	public static final String IS_STORY_POINT_ACHIEVED = "isStoryPointAchieved";
 	public static final String OVERALL_ISSUE = "OVERALL ISSUE";
 	public static final String DEV_COMPLETE_DATE_MAP = "devCompleteDateMap";
+	public static final String AVERAGE_VELOCITY_IS = "Average velocity is ";
+	public static final String ISSUE_COUNT_IN = " Issue Count in ";
+	public static final String DAYS = " days)";
+	public static final String SPS_IN = " SPs in ";
+	public static final String IS_XAXIS_GAP_REQUIRED = "isXaxisGapRequired";
+	public static final String CUSTOMISED_GROUP = "customisedGroup";
+	public static final String TOTAL_AVG_VELOCITY = "totalAvgVelocity";
+
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -195,11 +205,11 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			List<JiraHistoryChangeLog> fixVersionUpdateLog = issueHistory.getFixVersionUpdationLog();
 			fixVersionUpdateLog.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 			int lastIndex = fixVersionUpdateLog.size() - 1;
+			List<JiraIssue> jiraIssueList = getRespectiveJiraIssue(releaseIssue, issueHistory);
 			fixVersionUpdateLog.stream()
 					.filter(updateLogs -> updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName)
 							|| updateLogs.getChangedFrom().toLowerCase().contains(finalReleaseName))
 					.forEach(updateLogs -> {
-						List<JiraIssue> jiraIssueList = getRespectiveJiraIssue(releaseIssue, issueHistory);
 						LocalDate updatedLog;
 						if (updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName)) {
 							if (fixVersionUpdateLog.get(lastIndex).getChangedTo().toLowerCase()
@@ -300,7 +310,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	 *            Dev or Qa Done Status
 	 * @param fieldMapping
 	 *            fieldMapping
-	 * @return Map<String,LocalDate>
+	 * @return Map<String, LocalDate>
 	 */
 	private static LocalDate getDoneDateBasedOnStatus(List<JiraHistoryChangeLog> statusUpdateLog,
 			List<String> devOrQaDoneStatus, FieldMapping fieldMapping) {
@@ -377,7 +387,8 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 					: LocalDate.parse(endDate.split("T")[0], DATE_TIME_FORMATTER);
 			// increment the startDate w.r.t Count of days field for plotting to start from
 			// updated start date
-			Map<String, Integer> startDateCountKPI150 = Optional.ofNullable(fieldMapping.getStartDateCountKPI150()).orElse(new HashMap<>());
+			Map<String, Integer> startDateCountKPI150 = Optional.ofNullable(fieldMapping.getStartDateCountKPI150())
+					.orElse(new HashMap<>());
 			startLocalDate = Objects.requireNonNull(startLocalDate)
 					.plusDays(startDateCountKPI150.getOrDefault(latestRelease.getId(), 0));
 			Map<String, Long> durationRangeMap = getDurationRangeMap(startLocalDate, endLocalDate);
@@ -408,6 +419,14 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			List<DataCountGroup> issueCountDataGroup = new ArrayList<>();
 			List<DataCountGroup> issueSizeCountDataGroup = new ArrayList<>();
 			Map<String, Object> predictionDataMap = new HashMap<>();
+
+			// populating release predication date on the basis of latest closed selected
+			// releases
+			Map<String, Object> averageDataMap = new HashMap<>();
+			ReleaseSpecification releaseSpecification = new ReleaseSpecification();
+			if (CollectionUtils.isNotEmpty(fieldMapping.getReleaseListKPI150())) {
+				averageDataMap = getAvgVelocity(fieldMapping, releaseSpecification);
+			}
 			// if no issue is closed & status is "Released" in a release prediction will not
 			// be shown
 			if (releaseState.equalsIgnoreCase(CommonConstant.RELEASED) || MapUtils.isEmpty(startDateAdjustedDoneMap)) {
@@ -430,9 +449,14 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 					issueSizeCountDataGroup.add(issueSize);
 				}
 			} else {
+
 				// populating release scope vs release progress followed by its prediction on
 				// avg completion rate
-				Map<String, Object> averageDataMap = getAverageData(fieldMapping, startLocalDate, originalIssueDoneMap);
+				if (CollectionUtils.isEmpty(fieldMapping.getReleaseListKPI150())) {
+					averageDataMap = getAverageData(fieldMapping, startLocalDate, originalIssueDoneMap,
+							releaseSpecification);
+				}
+
 				double avgIssueCount = (double) averageDataMap.getOrDefault(AVG_ISSUE_COUNT, 0d);
 				double avgStoryPoint = (double) averageDataMap.getOrDefault(AVG_STORY_POINT, 0d);
 
@@ -496,7 +520,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, originalFullReleaseMap,
 					originalCompletedIssueMap, originalDevCompletedIssueMap, fieldMapping);
 			createExcelDataAndTrendValueList(kpiElement, excelData, iterationKpiValueList, issueCountDataGroup,
-					issueSizeCountDataGroup);
+					issueSizeCountDataGroup, releaseSpecification);
 
 		}
 		kpiElement.setTrendValueList(iterationKpiValueList);
@@ -601,10 +625,11 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	 *            startDate
 	 * @param completedReleaseMap
 	 *            Map<LocalDate, List<JiraIssue>>
+	 * @param releaseSpecification
 	 * @return Map of Avg Issue Count, Story Point
 	 */
 	private Map<String, Object> getAverageData(FieldMapping fieldMapping, LocalDate startLocalDate,
-			Map<LocalDate, List<JiraIssue>> completedReleaseMap) {
+			Map<LocalDate, List<JiraIssue>> completedReleaseMap, ReleaseSpecification releaseSpecification) {
 		Map<String, Object> averageDataMap = new HashMap<>();
 		double avgIssueCount;
 		double avgStoryPoint;
@@ -629,7 +654,14 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			avgStoryPoint = getStoryPoint(completedIssuesTillTodayList, fieldMapping) / countOfDaysTillToday;
 			averageDataMap.put(AVG_ISSUE_COUNT, roundingOff(avgIssueCount));
 			averageDataMap.put(AVG_STORY_POINT, roundingOff(avgStoryPoint));
+
+			releaseSpecification.setReleaseIssueCount(completedIssuesTillTodayList.size());
+			releaseSpecification.setReleaseStoryPoint(getStoryPoint(completedIssuesTillTodayList, fieldMapping));
+			releaseSpecification.setReleaseIssueCountVelocity(roundingOff(avgIssueCount));
+			releaseSpecification.setReleaseStoryPointVelocity(roundingOff(avgStoryPoint));
+			releaseSpecification.setReleaseDuration(countOfDaysTillToday);
 		}
+
 		return averageDataMap;
 	}
 
@@ -646,22 +678,38 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	 *            List<DataCountGroup>
 	 * @param issueSizeCountDataGroup
 	 *            List<DataCountGroup>
+	 * @param releaseSpecification
+	 *            releaseSpecification
 	 */
 	private void createExcelDataAndTrendValueList(KpiElement kpiElement, List<KPIExcelData> excelData,
 			List<IterationKpiValue> iterationKpiValueList, List<DataCountGroup> issueCountDataGroup,
-			List<DataCountGroup> issueSizeCountDataGroup) {
+			List<DataCountGroup> issueSizeCountDataGroup, ReleaseSpecification releaseSpecification) {
 		if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
-			Map<String, Object> additionalInfoMap = new HashMap<>();
-			additionalInfoMap.put("isXaxisGapRequired", true);
-			additionalInfoMap.put("customisedGroup", RELEASE_PREDICTION);
+			String issueCountAvgVelocity = AVERAGE_VELOCITY_IS + releaseSpecification.getReleaseIssueCountVelocity()
+					+ " (" + releaseSpecification.getReleaseIssueCount() + ISSUE_COUNT_IN
+					+ releaseSpecification.getReleaseDuration() + DAYS;
+			String storyPointAvgVelocity = AVERAGE_VELOCITY_IS + releaseSpecification.getReleaseStoryPointVelocity()
+					+ " (" + releaseSpecification.getReleaseStoryPoint() + SPS_IN
+					+ releaseSpecification.getReleaseDuration() + DAYS;
+			Map<String, Object> additionalInfoIssueMap = new HashMap<>();
+
+			additionalInfoIssueMap.put(IS_XAXIS_GAP_REQUIRED, true);
+			additionalInfoIssueMap.put(CUSTOMISED_GROUP, RELEASE_PREDICTION);
+			additionalInfoIssueMap.put(TOTAL_AVG_VELOCITY, issueCountAvgVelocity);
+
+			Map<String, Object> additionalInfoSPMap = new HashMap<>();
+			additionalInfoSPMap.put(IS_XAXIS_GAP_REQUIRED, true);
+			additionalInfoSPMap.put(CUSTOMISED_GROUP, RELEASE_PREDICTION);
+			additionalInfoSPMap.put(TOTAL_AVG_VELOCITY, storyPointAvgVelocity);
+
 			IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 			kpiValueIssueCount.setDataGroup(issueCountDataGroup);
 			kpiValueIssueCount.setFilter1(ISSUE_COUNT);
-			kpiValueIssueCount.setAdditionalInfo(additionalInfoMap);
+			kpiValueIssueCount.setAdditionalInfo(additionalInfoIssueMap);
 			IterationKpiValue kpiValueSizeCount = new IterationKpiValue();
 			kpiValueSizeCount.setDataGroup(issueSizeCountDataGroup);
 			kpiValueSizeCount.setFilter1(STORY_POINT);
-			kpiValueSizeCount.setAdditionalInfo(additionalInfoMap);
+			kpiValueSizeCount.setAdditionalInfo(additionalInfoSPMap);
 			iterationKpiValueList.add(kpiValueSizeCount);
 			iterationKpiValueList.add(kpiValueIssueCount);
 
@@ -695,16 +743,15 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 
 	/**
 	 * DeepClone the map
+	 *
 	 * @param originalMap
 	 * @return
 	 */
 	public static Map<LocalDate, List<JiraIssue>> deepCopyMap(Map<LocalDate, List<JiraIssue>> originalMap) {
 		return originalMap.entrySet().stream()
-				.collect(Collectors.toMap(
-						Map.Entry::getKey,
-						entry -> new ArrayList<>(entry.getValue())
-				));
+				.collect(Collectors.toMap(Map.Entry::getKey, entry -> new ArrayList<>(entry.getValue())));
 	}
+
 	/**
 	 * Method for calculation x-axis duration & range
 	 *
@@ -819,34 +866,6 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	}
 
 	/**
-	 * Get Sum of StoryPoint for List of JiraIssue
-	 *
-	 * @param jiraIssueList
-	 *            List<JiraIssue>
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @return Sum of Story Point
-	 */
-	Double getStoryPoint(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		double ticketEstimate = 0.0d;
-		if (CollectionUtils.isNotEmpty(jiraIssueList)) {
-			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				ticketEstimate = jiraIssueList.stream()
-						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
-			} else {
-				double totalOriginalEstimate = jiraIssueList.stream().mapToDouble(
-						jiraIssue -> Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0))
-						.sum();
-				double inHours = totalOriginalEstimate / 60;
-				ticketEstimate = inHours / fieldMapping.getStoryPointToHourMapping();
-			}
-		}
-		return roundingOff(ticketEstimate);
-
-	}
-
-	/**
 	 * Method to Populate the DataCount Object
 	 *
 	 * @param value
@@ -888,7 +907,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	 *            Map<LocalDate, List<JiraIssue>>
 	 * @param overallCompletedIssues
 	 *            List<JiraIssue>
-	 * @return Map<String, List<JiraIssue>>
+	 * @return Map<String, List < JiraIssue>>
 	 */
 	@SuppressWarnings("unchecked")
 	private Map<String, List<JiraIssue>> createFilterWiseGroupedMap(CustomDateRange dateRange,
@@ -1064,6 +1083,112 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			currentDate = currentDate.plusDays(1);
 		}
 		return currentDate;
+	}
+
+	/**
+	 *
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @param releaseSpecification
+	 *            releaseSpecification
+	 * @return averageDataMap
+	 */
+	public Map<String, Object> getAvgVelocity(FieldMapping fieldMapping, ReleaseSpecification releaseSpecification) {
+
+		Map<String, Object> averageDataMap = new HashMap<>();
+		String regex = "^(.*?)\\s*\\(duration\\s*(\\d+\\.\\d+)\\s*days\\)$";
+		Pattern pattern = Pattern.compile(regex);
+		List<String> releaseNames = new ArrayList<>();
+		double totalDurations = 0.0;
+
+		for (String release : fieldMapping.getReleaseListKPI150()) {
+			Matcher matcher = pattern.matcher(release);
+			if (matcher.find()) {
+				String releaseName = matcher.group(1).trim();
+				double duration = Double.parseDouble(matcher.group(2));
+				totalDurations = duration + totalDurations;
+				releaseNames.add(releaseName);
+			}
+		}
+
+		List<JiraIssue> jiraIssues = jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(
+				fieldMapping.getBasicProjectConfigId().toString(), releaseNames);
+		getAverageData(fieldMapping, releaseSpecification, averageDataMap, totalDurations, jiraIssues);
+
+		return averageDataMap;
+	}
+
+	/**
+	 * 
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @param releaseSpecification
+	 *            releaseSpecification
+	 * @param averageDataMap
+	 *            averageDataMap
+	 * @param totalDurations
+	 *            totalDurations
+	 * @param jiraIssues
+	 *            jiraIssues
+	 */
+	private void getAverageData(FieldMapping fieldMapping, ReleaseSpecification releaseSpecification,
+			Map<String, Object> averageDataMap, double totalDurations, List<JiraIssue> jiraIssues) {
+		if (totalDurations != 0 && CollectionUtils.isNotEmpty(jiraIssues)) {
+			double releaseIssuesSize = jiraIssues.size();
+			double releaseTicketsEstimate = getStoryPoint(jiraIssues, fieldMapping);
+			double issueCountVelocity = releaseIssuesSize / totalDurations;
+			double issuesEstimateVelocity = releaseTicketsEstimate / totalDurations;
+
+			releaseSpecification.setReleaseIssueCount(releaseIssuesSize);
+			releaseSpecification.setReleaseStoryPoint(releaseTicketsEstimate);
+			releaseSpecification.setReleaseIssueCountVelocity(roundingOff(issueCountVelocity));
+			releaseSpecification.setReleaseStoryPointVelocity(roundingOff(issuesEstimateVelocity));
+			releaseSpecification.setReleaseDuration(totalDurations);
+			averageDataMap.put(AVG_ISSUE_COUNT, roundingOff(issueCountVelocity));
+			averageDataMap.put(AVG_STORY_POINT, roundingOff(issuesEstimateVelocity));
+
+		}
+	}
+
+	/**
+	 * Get Sum of StoryPoint for List of JiraIssue
+	 *
+	 * @param jiraIssueList
+	 *            List<JiraIssue>
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return Sum of Story Points
+	 */
+	public Double getStoryPoint(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		double ticketEstimate = 0.0d;
+		ticketEstimate = getTicketEstimate(jiraIssueList, fieldMapping, ticketEstimate);
+		return roundingOff(ticketEstimate);
+	}
+
+	/**
+	 * Get Sum of StoryPoint for List of JiraIssue
+	 *
+	 * @param jiraIssueList
+	 *            List<JiraIssue>
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return Sum of Story Point
+	 */
+	public double getTicketEstimate(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping, double ticketEstimate) {
+		if (CollectionUtils.isNotEmpty(jiraIssueList)) {
+			if (org.apache.commons.lang.StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+				ticketEstimate = jiraIssueList.stream()
+						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
+			} else {
+				double totalOriginalEstimate = jiraIssueList.stream().mapToDouble(
+						jiraIssue -> Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0))
+						.sum();
+				double inHours = totalOriginalEstimate / 60;
+				ticketEstimate = inHours / fieldMapping.getStoryPointToHourMapping();
+			}
+		}
+		return ticketEstimate;
 	}
 
 	/**

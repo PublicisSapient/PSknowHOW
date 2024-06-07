@@ -233,6 +233,7 @@
     "jiraBugRaisedByIdentification" : "",
     "jiraBugRaisedByValue" : [ ],
     "jiraBugRaisedByCustomField" : "",
+    "releaseListKPI150" : [ "KnowHOW v9.0.0 (duration 62.0 days)" ],
     "jiraIssueTypeKPI35" : [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraDefectRemovalIssueTypeKPI34" : [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraStoryPointsCustomField" : "customfield_20803",
