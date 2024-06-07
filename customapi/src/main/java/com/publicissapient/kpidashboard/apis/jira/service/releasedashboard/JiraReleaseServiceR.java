@@ -440,8 +440,8 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 		} catch (Exception exception) {
 			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
 			log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), exception);
-			return kpiElement;
 		}
+		return kpiElement;
 	}
 
 	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {

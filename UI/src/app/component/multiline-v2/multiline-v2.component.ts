@@ -709,11 +709,11 @@ export class MultilineV2Component implements OnChanges {
           let htmlString = '<div class="legend_item" style="display:flex; align-items:center;"><div>';
 
 
-          colorArr.forEach((d, i) => {
-            htmlString += `<div class="legend_color_indicator" style="margin:0 5px 2px 0;width:15px; border-width:2px; border-style:dashed; border-color: ${color[i]}"></div>`;
-          });
+          // colorArr.forEach((d, i) => {
+          //   htmlString += `<div class="legend_color_indicator" style="margin:0 5px 2px 0;width:15px; border-width:2px; border-style:dashed; border-color: ${color[i]}"></div>`;
+          // });
 
-          htmlString += '</div><div class="font-small"> Average Coverage</div></div>'
+          // htmlString += '</div><div class="font-small"> Average Coverage</div></div>'
 
           legendDiv.html(htmlString);
         }
