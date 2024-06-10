@@ -50,11 +50,11 @@ services:
     mem_limit: 1024m
     mem_reservation: 256m
     ports:
-      - 82:80  # If you are not installing Auth service make this port 80:80
-      - 445:443  # If you are not installing Auth service make this port 443:443
+      - 80:80  # If you are not installing Auth service make this port 82:80
+      - 443:443  # If you are not installing Auth service make this port 445:443
     volumes:
       - uivol:/var/log/nginx
-      #- uivol:/etc/ssl/certs/ # If you have your SSL certificate uncomment it and copy to /app/apps/certs directory 
+      #- /app/apps/certs/:/etc/ssl/certs/ # If you have your SSL certificate uncomment it and copy to /app/apps/certs directory 
     links:
       - CustomAPI:customapi
     environment:
@@ -195,58 +195,128 @@ services:
     networks:
       - Network_apps
 
-  scm-processor-postgres:
-    container_name: scm-processor-postgres
-    image: postgres:11.1
-    environment:
-      # add env variable as mentioned https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#SCM-tool%3A
-    volumes:
-      - scm-processor-postgres-data:/var/lib/postgresql/data
-    restart: always
-    ports:
-      - '8001:5432'
-    networks:
-      - Network_apps
 
-  scm-processor-rabbitmq:
-    container_name: scm-processor-rabbitmq
-    image: rabbitmq:3.8-management
-    environment:
-      # add env variable as mentioned https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#SCM-tool%3A
-    ports:
-      - "8002:5672"
-      - "8003:15672"
-    cpus: 0.1
-    networks:
-      - Network_apps
+########     The following services scm-processor-postgres, scm-processor-rabbitmq, scm-processor-api & scm-processor-core is a Source code manager processor . Uncomment the services and volumes below if you want to integrate with the Knowhow application to fetch Data from SCM tools.
 
-  scm-processor-api:
-    container_name: scm-processor-api
-    image: psknowhow/scm-processor-api:latest
-    ports:
-      - '8000:8000'
-    environment:
-      # add env variable as mentioned https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#SCM-tool%3A
-    depends_on:
-      - scm-processor-postgres
-      - scm-processor-rabbitmq
-    restart: always
-    networks:
-      - Network_apps
 
-  scm-processor-core:
-    container_name: scm-processor-core
-    image: psknowhow/scm-processor-core:latest
-    restart: always
-    environment:
-      # add env variable as mentioned https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#SCM-tool%3A
-    volumes:
-      - scm-processor-scanner-storage:/scm-processor-storage
-    depends_on:
-      - scm-processor-postgres
-      - scm-processor-rabbitmq
-    networks:
-      - Network_apps
+  # scm-processor-postgres:
+  #   container_name: scm-processor-postgres
+  #   image: postgres:11.1
+  #   environment:
+  #     # add env variable as mentioned https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#SCM-tool%3A
+  #   volumes:
+  #     - scm-processor-postgres-data:/var/lib/postgresql/data
+  #   restart: always
+  #   ports:
+  #     - '8001:5432'
+  #   networks:
+  #     - Network_apps
+
+  # scm-processor-rabbitmq:
+  #   container_name: scm-processor-rabbitmq
+  #   image: rabbitmq:3.8-management
+  #   environment:
+  #     # add env variable as mentioned https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#SCM-tool%3A
+  #   ports:
+  #     - "8002:5672"
+  #     - "8003:15672"
+  #   cpus: 0.1
+  #   networks:
+  #     - Network_apps
+
+  # scm-processor-api:
+  #   container_name: scm-processor-api
+  #   image: psknowhow/scm-processor-api:latest
+  #   ports:
+  #     - '8000:8000'
+  #   environment:
+  #     # add env variable as mentioned https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#SCM-tool%3A
+  #   depends_on:
+  #     - scm-processor-postgres
+  #     - scm-processor-rabbitmq
+  #   restart: always
+  #   networks:
+  #     - Network_apps
+
+  # scm-processor-core:
+  #   container_name: scm-processor-core
+  #   image: psknowhow/scm-processor-core:latest
+  #   restart: always
+  #   environment:
+  #     # add env variable as mentioned https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#SCM-tool%3A
+  #   volumes:
+  #     - scm-processor-scanner-storage:/scm-processor-storage
+  #   depends_on:
+  #     - scm-processor-postgres
+  #     - scm-processor-rabbitmq
+  #   networks:
+  #     - Network_apps
+
+
+
+####   The following services are for authentication and authorization applications using SAML. Uncomment the services below if you want to integrate with the Knowhow application. And the volumes
+
+  # authdb:
+  #   image: psknowhow/postgres-auth-scm:<TAG VERSION>
+  #   tty: true
+  #   container_name: authdb
+  #   restart: always
+  #   cpus: 0.2
+  #   mem_limit: 2048m
+  #   mem_reservation: 1024m
+  #   volumes:
+  #     - authdata:/var/lib/postgresql/data
+  #     - /etc/localtime:/etc/localtime:ro
+  #   environment:
+  #    # add environment variables as mentioned here https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#AuthnAuth-Specific-Variables%3A-Use-Only-When-Deploying-Knowhow-with-Auth-Application
+  #   networks:
+  #     - Network_apps
+
+
+  ###   If you are not running postgres as scp processor you can uncomment the above "authdb" docker service.  
+  
+  # authnauth:
+  #   image: psknowhow/authnauth:<TAG VERSION>
+  #   depends_on:
+  #     - authdb
+  #   restart: always
+  #   tty: true
+  #   cpus: 0.2
+  #   container_name: authnauth
+  #   mem_limit: 2048m
+  #   mem_reservation: 1024m
+  #   environment:
+  #     # add environment variables as mentioned here https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#AuthnAuth-Specific-Variables%3A-Use-Only-When-Deploying-Knowhow-with-Auth-Application
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   links:
+  #     - authdb:authdb
+  #   networks:
+  #     - Network_apps
+
+  # authnauth-ui:
+  #   image: psknowhow/authnauth-ui:<TAG VERSION>
+  #   depends_on:
+  #     - authdb
+  #     - authnauth
+  #   restart: always
+  #   tty: true
+  #   cpus: 0.2
+  #   container_name: authnauth-ui
+  #   mem_limit: 512m
+  #   mem_reservation: 256m
+  #   ports:
+  #     - 443:443
+  #   environment:
+  #     # add environment variables as mentioned here https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/45711363/Docker+Environmental+variables#AuthnAuth-Specific-Variables%3A-Use-Only-When-Deploying-Knowhow-with-Auth-Application
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #    #- /app/apps/certs/:/etc/ssl/certs/ # If you have your SSL certificate uncomment it and copy to /app/apps/certs directory 
+  #   links:
+  #     - authdb:authdb
+  #   networks:
+  #     - Network_apps
+
       
 volumes:
   kafka-consumersrvol:
@@ -257,8 +327,9 @@ volumes:
   uivol:
   customapivol:
   mongodbvol:
-  scm-processor-scanner-storage:
-  scm-processor-postgres-data:
+  # scm-processor-scanner-storage:
+  # scm-processor-postgres-data:
+  # authdata:
 
 networks:
   Network_apps:
