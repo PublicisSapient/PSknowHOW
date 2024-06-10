@@ -592,7 +592,7 @@ public final class CommonUtils {
 	public static String sanitizeUserInput(String input) {
 		String sanitizedString = StringEscapeUtils.escapeHtml(input);
 		return StringUtils.isNotBlank(sanitizedString)
-				? sanitizedString.replace("\\r", "").replace("\\n", "").replaceAll("[^a-zA-Z0-9_\\-+/]", "")
+				? sanitizedString.replace("\\r", "").replace("\\n", "").replace("\\t", "").replaceAll("[^a-zA-Z0-9_\\-+/]", "")
 				: sanitizedString;
 	}
 
