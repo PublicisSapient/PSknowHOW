@@ -96,8 +96,6 @@ public class UserInfoController {
 			@Valid @RequestBody UserInfoDTO userInfoDto) {
 		ModelMapper modelMapper = new ModelMapper();
 		UserInfo userInfo = modelMapper.map(userInfoDto, UserInfo.class);
-
-		log.info("user info ");
 		ServiceResponse response = userInfoService.updateUserRole(username, userInfo);
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);

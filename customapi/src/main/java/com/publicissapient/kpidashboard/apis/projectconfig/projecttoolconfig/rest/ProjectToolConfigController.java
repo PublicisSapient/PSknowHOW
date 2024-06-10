@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.re
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -137,7 +138,8 @@ public class ProjectToolConfigController {
 	@DeleteMapping(value = "/basicconfigs/{basicProjectConfigId}/tools/clean/{projectToolId}")
 	public ResponseEntity<ServiceResponse> cleanToolData(@PathVariable String basicProjectConfigId,
 			@PathVariable String projectToolId) {
-
+		CommonUtils.sanitizeUserInput(basicProjectConfigId);
+		CommonUtils.sanitizeUserInput(projectToolId);
 		boolean isDeleted = toolService.cleanToolData(basicProjectConfigId, projectToolId);
 		ServiceResponse serviceResponse = null;
 		if (isDeleted) {
