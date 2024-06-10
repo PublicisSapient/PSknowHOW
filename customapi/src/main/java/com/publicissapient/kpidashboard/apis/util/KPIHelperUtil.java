@@ -256,17 +256,18 @@ public final class KPIHelperUtil {
 		}
 
 		if (null == root) {
-			throw new ApplicationException(KpiRequest.class, "kpiRequestTrackerId", kpiRequest.getRequestTrackerId());
+			throw new ApplicationException(KpiRequest.class, "kpiRequestTrackerId", CommonUtils.sanitizeUserInput(kpiRequest.getRequestTrackerId()));
 		}
-
-		log.debug("[CREATED-TREE][{}]. Tree created from nodes {}", kpiRequest.getRequestTrackerId(), root);
+		if (kpiRequest.getRequestTrackerId().matches("\\w*")) {
+			log.debug("[CREATED-TREE][{}]. Tree created from nodes {}", kpiRequest.getRequestTrackerId(), root);
+		}
 
 		List<Node> leafNodeList = new ArrayList<>();
 		List<Node> projectNodeList = new ArrayList<>();
 		getLeafNodes(root, leafNodeList);
 		getProjectNodes(root, projectNodeList);
 
-		log.debug("[LEAF_NODES][{}]. Leaf nodes of the tree {}", kpiRequest.getRequestTrackerId(), leafNodeList);
+		log.debug("[LEAF_NODES][{}]. Leaf nodes of the tree {}", CommonUtils.sanitizeUserInput(kpiRequest.getRequestTrackerId()), leafNodeList);
 
 		Map<String, List<Node>> result = leafNodeList.stream().distinct()
 				.collect(Collectors.groupingBy(Node::getGroupName, Collectors.toList()));
