@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.connection.rest;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,7 @@ public class ConnectionController {
 	@PreAuthorize("hasPermission(#type,'CONNECTION_ACCESS')")
 	public ResponseEntity<ServiceResponse> getAllConnection(
 			@RequestParam(name = "type", required = false) String type) {
+		type = CommonUtils.sanitizeUserInput(type);
 		if (StringUtils.isEmpty(type)) {
 			log.info("Fetching all connection");
 			return ResponseEntity.status(HttpStatus.OK).body(connectionService.getAllConnection());
@@ -115,7 +117,6 @@ public class ConnectionController {
 	@PreAuthorize("hasPermission(#id,'CONNECTION_ACCESS')")
 	public ResponseEntity<ServiceResponse> modifyConnectionById(@PathVariable String id,
 			@Valid @RequestBody ConnectionDTO connectionDTO) {
-		log.info("conn@{} updated", connectionDTO.getId());
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection conn = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK).body(connectionService.updateConnection(id, conn));
