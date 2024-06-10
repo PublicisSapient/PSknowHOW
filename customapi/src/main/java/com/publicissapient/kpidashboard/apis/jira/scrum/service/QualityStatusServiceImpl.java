@@ -382,7 +382,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 							jiraIssue1 -> jiraIssue1.getNumber() + " ( " + jiraIssue1.getPriority() + " ) ",
 							JiraIssue::getUrl));
 			jiraIssueModalObject.setLinkedDefefect(linkedDefects);
-			jiraIssueModalObject.setDefectInjectRate((double) defects.size());
+			jiraIssueModalObject.setDefectInjectRate(String.valueOf(defects.size()));
 			jiraIssueModalObject
 					.setDefectDensity(String.valueOf(calculateDefectDensity(jiraIssueList, defects, fieldMapping)));
 			if (jiraIssueModalObject.getIssueSize() == null)
@@ -559,7 +559,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 			Map<String, String> dummyMap = new HashMap<>();
 			dummyMap.put(NOT_APPLICABLE, NOT_APPLICABLE);
 			jiraIssueModalObject.setLinkedDefefect(dummyMap);
-			jiraIssueModalObject.setDefectInjectRate(Double.NaN);
+			jiraIssueModalObject.setDefectInjectRate(NOT_APPLICABLE);
 			jiraIssueModalObject.setDefectDensity(NOT_APPLICABLE);
 		}
 	}
