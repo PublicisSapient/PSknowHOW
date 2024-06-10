@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -77,7 +78,7 @@ public class SignupRequestsController {
 	UserInfoServiceImpl userInfoService;
 
 	/**
-	 * Gets all unapproved requests data.l
+	 * Gets all unapproved requests data.
 	 *
 	 * @return responseEntity with data,message and information
 	 */
@@ -116,6 +117,8 @@ public class SignupRequestsController {
 
 	/**
 	 * Modify an access request data by username
+	 *
+	 * @param username
 	 *            access request id
 	 * @param accessRequestDecision
 	 *            decision data
@@ -126,7 +129,7 @@ public class SignupRequestsController {
 	public ResponseEntity<ServiceResponse> modifyAccessRequestById(@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
 		ServiceResponse[] serviceResponse = new ServiceResponse[1];
 		String username = accessRequestDecision.getUserName();
-
+		username = CommonUtils.sanitizeUserInput(username);
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access {}", username);
 
@@ -162,6 +165,8 @@ public class SignupRequestsController {
 	/**
 	 * Modify an access request data by username for central auth service
 	 *
+	 * @param username
+	 *            access request id
 	 * @param accessRequestDecision
 	 *            decision data
 	 * @return updated access request
@@ -170,7 +175,7 @@ public class SignupRequestsController {
 	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
 	public ResponseEntity<ServiceResponse> modifyAccessRequestByIdForCentral(
 			@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
-		String username = accessRequestDecision.getUserName();
+		String username = CommonUtils.sanitizeUserInput(accessRequestDecision.getUserName());
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access For Central Auth {}", username);
 			boolean approvedCentral = userInfoService.updateUserApprovalStatus(username);
