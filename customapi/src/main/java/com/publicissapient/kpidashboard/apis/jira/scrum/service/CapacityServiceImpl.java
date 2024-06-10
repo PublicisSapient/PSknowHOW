@@ -48,8 +48,8 @@ public class CapacityServiceImpl extends JiraIterationKPIService {
 	private CapacityKpiDataRepository capacityKpiDataRepository;
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-								 Node filteredNode) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node filteredNode)
+			throws ApplicationException {
 		DataCount trendValue = new DataCount();
 		projectWiseLeafNodeValue(filteredNode, trendValue, kpiElement, kpiRequest);
 		return kpiElement;
@@ -61,7 +61,8 @@ public class CapacityServiceImpl extends JiraIterationKPIService {
 	}
 
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate, KpiRequest kpiRequest) {
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
+			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		if (null != leafNode) {
 			log.info("Capacity -> Requested sprint : {}", leafNode.getName());

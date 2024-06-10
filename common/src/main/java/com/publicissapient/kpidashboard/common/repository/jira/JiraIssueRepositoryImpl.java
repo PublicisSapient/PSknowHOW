@@ -229,6 +229,55 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 
+    @Override
+	public List<JiraIssue> findIssueByNumberAndType(Set<String> storyNumber,
+			Map<String, Map<String, Object>> uniqueProjectMap) {
+		Criteria criteria = new Criteria();
+
+		// Project level storyType filters
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			projectCriteria.and(CONFIG_ID).is(project);
+			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
+			projectCriteriaList.add(projectCriteria);
+		});
+		criteria = criteria.and(NUMBER).in(storyNumber);
+
+		Query query = new Query(criteria);
+		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+
+			query = new Query(criteriaProjectLevelAdded);
+		}
+		query.fields().include(CONFIG_ID);
+		query.fields().include(NUMBER);
+		query.fields().include(STATUS);
+		query.fields().include(RESOLUTION);
+		query.fields().include(PROJECT_NAME);
+		query.fields().include(SPRINT_ID);
+		query.fields().include(SPRINT_NAME);
+		query.fields().include(STORY_POINTS);
+		query.fields().include(JIRA_ISSUE_STATUS);
+		query.fields().include(DEFECT_STORY_ID);
+		query.fields().include(ORIGINAL_ESTIMATE_MINUTES);
+		query.fields().include(ESTIMATE);
+		query.fields().include(URL);
+		query.fields().include(NAME);
+		query.fields().include(TYPE_NAME);
+		query.fields().include(PRIORITY);
+		query.fields().include(AGGREGATE_TIME_REMAINING_ESTIMATE_MINUTES);
+		query.fields().include(AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES);
+		query.fields().include(LOGGED_WORK_MINUTES);
+		query.fields().include(SPRINT_ASSET_STATE);
+		query.fields().include(SPRINT_END_DATE);
+		query.fields().include(ADDITIONAL_FILTER);
+		return operations.find(query, JiraIssue.class);
+
+	}
+
 	/**
 	 * Find issues by sprint and type list.
 	 *

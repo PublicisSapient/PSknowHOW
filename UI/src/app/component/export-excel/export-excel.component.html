@@ -46,7 +46,7 @@
       </ng-template>
       <ng-template pTemplate="body" let-rowData>
         <tr>
-          <td class="font-small min-max-width" *ngFor="let column of modalDetails['tableHeadings']">
+          <td class="font-small min-max-width multidata-col" *ngFor="let column of modalDetails['tableHeadings']">
             <ng-container *ngIf="!checkIfArray(rowData[column]); else displayArrayData">
               <a *ngIf="rowData[column]?.hasOwnProperty('hyperlink') ; else displayCellData"
                 [href]="rowData[column]['hyperlink']" class="text-blue" rel="noopener" target="_blank">{{rowData[column]['text']}}</a>
@@ -68,7 +68,6 @@
                 <ng-template #displayData>
                   <p class="column-content-spacing">{{data}}</p>
                 </ng-template>
-                <br>
               </ng-container>
             </ng-template>
           </td>

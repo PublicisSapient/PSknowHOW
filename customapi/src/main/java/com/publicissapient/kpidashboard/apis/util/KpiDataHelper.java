@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.IssueKpiModalValue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -88,6 +89,8 @@ public final class KpiDataHelper {
 	private static final String CLOSED = "closed";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	private static final DecimalFormat df = new DecimalFormat(".##");
+	private static final DateTimeFormatter DATE_FORMATTER
+			= DateTimeFormatter. ofPattern("yyyy-MM-dd");
 
 	private KpiDataHelper() {
 	}
@@ -653,6 +656,17 @@ public final class KpiDataHelper {
 				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IterationKpiModalValue()));
 	}
 
+	/**
+	 * To create Map of Modal Object
+	 *
+	 * @param jiraIssueList
+	 * @return
+	 */
+	public static Map<String, IssueKpiModalValue> createMapOfIssueModal(List<JiraIssue> jiraIssueList) {
+		return jiraIssueList.stream()
+				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IssueKpiModalValue()));
+	}
+
 	public static SprintDetails processSprintBasedOnFieldMappings(SprintDetails dbSprintDetail,
 			List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus,
 			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate) {
@@ -1047,6 +1061,41 @@ public final class KpiDataHelper {
 		});
 
 		return issueDateMap;
+	}
+	
+	/**
+	 * Calculates the total work logs within a specified sprint date range.
+	 *
+	 * @param worklogHistory
+	 *            A list of {@link JiraHistoryChangeLog} objects representing the
+	 *            work log history.
+	 * @param sprintStartDate
+	 *            The start date of the sprint in ISO-8601 format (e.g.,
+	 *            "yyyy-MM-dd'T'HH:mm:ss").
+	 * @param sprintEndDate
+	 *            The end date of the sprint in ISO-8601 format (e.g.,
+	 *            "yyyy-MM-dd'T'HH:mm:ss").
+	 * @return The total work logs within the specified date range as a
+	 *         {@link Double}. Returns 0.0 if no logs are found.
+	 */
+	public static Double getWorkLogs(List<JiraHistoryChangeLog> worklogHistory, String sprintStartDate,
+			String sprintEndDate) {
+		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(worklogHistory)) {
+			filterStatusUpdationLogs = worklogHistory.stream()
+					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(jiraIssueSprint.getUpdatedOn().toLocalDate(),
+							LocalDate.parse(sprintStartDate.split("T")[0], DATE_FORMATTER),
+							LocalDate.parse(sprintEndDate.split("T")[0], DATE_FORMATTER)))
+					.collect(Collectors.toList());
+		}
+
+		if (CollectionUtils.isNotEmpty(filterStatusUpdationLogs)) {
+			String firstChangedFrom = StringUtils.isEmpty(filterStatusUpdationLogs.get(0).getChangedFrom()) ? "0"
+					: filterStatusUpdationLogs.get(0).getChangedFrom();
+			String lastChangedTo = filterStatusUpdationLogs.get(filterStatusUpdationLogs.size() - 1).getChangedTo();
+			return Double.parseDouble(lastChangedTo) - Double.parseDouble(firstChangedFrom);
+		}
+		return 0D;
 	}
 
 }
