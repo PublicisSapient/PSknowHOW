@@ -174,8 +174,6 @@ public class ProjectBasicConfigController {
 		basicConfigId = CommonUtils.handleCrossScriptingTaintedValue(basicConfigId);
 		policy.checkPermission(projectBasicConfigDTO, "UPDATE_PROJECT");
 
-		log.info(UPDATING_PROJECT_CONFIGURATIONS, projectBasicConfigDTO.toString());
-
 		ServiceResponse serviceResp = projectBasicConfigService.updateBasicConfig(basicConfigId, projectBasicConfigDTO);
 
 		ProjectConfigResponse projectConfigResponse = new ProjectConfigResponse(
