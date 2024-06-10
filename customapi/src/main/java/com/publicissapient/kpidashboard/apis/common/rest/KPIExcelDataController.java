@@ -75,8 +75,8 @@ public class KPIExcelDataController {
 		Boolean isApiAuth = StringUtils.isNotEmpty(
 				apiKey) && apiKey.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		String kpiRequestStr = kpiRequest.toString();
-		kpiID = CommonUtils.handleCrossScriptingTaintedValue(kpiID);
-		kpiRequestStr = CommonUtils.handleCrossScriptingTaintedValue(kpiRequestStr);
+		kpiID = CommonUtils.sanitizeUserInput(kpiID);
+		kpiRequestStr = CommonUtils.sanitizeUserInput(kpiRequestStr);
 		log.info("[KPI-EXCEL-DATA][]. Received Specific Excel KPI Data request for {} with kpiRequest {}", kpiID,
 				kpiRequestStr);
 
