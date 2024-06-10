@@ -201,7 +201,7 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraDodKPI163", "excludeRCAFromKPI163", "testingPhaseDefectCustomField",
 					"testingPhaseDefectsIdentifier", "testingPhaseDefectValue", "testingPhaseDefectComponentValue")),
 
-	KPI150("Release BurnUp", KPISource.JIRA.name(), Arrays.asList("startDateCountKPI150","populateByDevDoneKPI150","jiraDevDoneStatusKPI150")),
+	KPI150("Release BurnUp", KPISource.JIRA.name(), Arrays.asList("startDateCountKPI150","populateByDevDoneKPI150","jiraDevDoneStatusKPI150", "releaseListKPI150")),
 
 	KPI17("Unit Test Coverage", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI17")),
 

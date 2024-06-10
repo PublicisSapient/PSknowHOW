@@ -204,6 +204,16 @@ private setting = {
           this.fieldMappingMultiSelectValues = [];
         }
         break;
+      case 'releases':
+        if (this.fieldMappingMetaData && this.fieldMappingMetaData.releases) {
+          this.fieldMappingMetaData.releases.forEach((item : any) => (
+              item['disabled']= item.data.includes("duration - days")
+          ));
+          this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.releases;
+        } else {
+          this.fieldMappingMultiSelectValues = [];
+        }
+        break;
       default:
         this.fieldMappingMultiSelectValues = [];
         break;

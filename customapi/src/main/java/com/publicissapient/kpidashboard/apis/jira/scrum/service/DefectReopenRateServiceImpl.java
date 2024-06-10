@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.IssueKpiModalValue;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -225,11 +226,19 @@ public class DefectReopenRateServiceImpl extends JiraBacklogKPIService<Double, L
 
 		String duration = KpiDataHelper.calWeekHours(closedHistory, reopenHistory);
 
-		return IterationKpiModalValue.builder().issueId(issue.getNumber()).issueURL(issue.getUrl())
-				.description(issue.getName()).priority(issue.getPriority()).issueStatus(issue.getStatus())
-				.closedDate(DateUtil.dateTimeConverter(closedHistory, TIME_FORMAT_WITH_SEC))
-				.reopenDate(DateUtil.dateTimeConverter(reopenHistory, TIME_FORMAT_WITH_SEC))
-				.durationToReopen(duration + "Hrs").build();
+
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+
+		iterationKpiModalValue.setIssueId(issue.getNumber());
+		iterationKpiModalValue.setIssueURL(issue.getUrl());
+		iterationKpiModalValue.setDescription(issue.getName());
+		iterationKpiModalValue.setPriority(issue.getPriority());
+		iterationKpiModalValue.setIssueStatus(issue.getStatus());
+		iterationKpiModalValue.setClosedDate(DateUtil.dateTimeConverter(closedHistory, TIME_FORMAT_WITH_SEC));
+		iterationKpiModalValue.setReopenDate(DateUtil.dateTimeConverter(reopenHistory, TIME_FORMAT_WITH_SEC));
+		iterationKpiModalValue.setDurationToReopen(duration + "Hrs");
+		return iterationKpiModalValue;
+
 	}
 
 	/**

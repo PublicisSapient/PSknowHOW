@@ -59,27 +59,25 @@
        // api integration to get kpis data
         this.httpService.getShowHideKpi(projectID).subscribe((response) => {
           this.loader = false;
-          if (response[0] === 'error') {
-            this.messageService.add({ severity: 'error', summary: 'Internal Server Error !!!' });
-          } else {
-            if (response.success === true) {
-              this.kpiListData = response.data;
-              this.setFormControlData();
-              const kpiObjects = Object.keys(this.kpiListData);
-              for(const i of kpiObjects) {
-                  if (typeof this.kpiListData[i] === 'object') {
-                    //removing Capacity kpi from iteration
-                      if(i === 'scrum'){
-                        const iterationData = this.kpiListData[i].find(boardDetails => boardDetails.boardName.toLowerCase() === 'iteration');
-                        const kpiIndex= iterationData.kpis.findIndex(kpi => kpi.kpiId === 'kpi121');
-                        this.kpiToBeHidden = iterationData.kpis.splice(kpiIndex,1);
-                      }
-                      this.tabListContent[i] =  this.kpiListData[i];
-                      if(!this.tabHeaders.includes(i))
-                      this.tabHeaders.push(i);
-                  }
-              }
+          if (response?.success === true) {
+            this.kpiListData = response.data;
+            this.setFormControlData();
+            const kpiObjects = Object.keys(this.kpiListData);
+            for(const i of kpiObjects) {
+                if (typeof this.kpiListData[i] === 'object') {
+                  //removing Capacity kpi from iteration
+                    if(i === 'scrum'){
+                      const iterationData = this.kpiListData[i].find(boardDetails => boardDetails.boardName.toLowerCase() === 'iteration');
+                      const kpiIndex= iterationData.kpis.findIndex(kpi => kpi.kpiId === 'kpi121');
+                      this.kpiToBeHidden = iterationData.kpis.splice(kpiIndex,1);
+                    }
+                    this.tabListContent[i] =  this.kpiListData[i];
+                    if(!this.tabHeaders.includes(i))
+                    this.tabHeaders.push(i);
+                }
             }
+          }else{
+            this.messageService.add({ severity: 'error', summary: 'Internal Server Error !!!' });
           }
         });
      }
