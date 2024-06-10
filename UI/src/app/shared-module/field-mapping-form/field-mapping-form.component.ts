@@ -28,13 +28,13 @@ import { MessageService,ConfirmationService } from 'primeng/api';
 })
 export class FieldMappingFormComponent implements OnInit {
   @Input() fieldMappingMetaData;
-  @Input() disableSave= false;
   @Input() fieldMappingConfig;
   @Input() formData;
   @Input() selectedConfig;
   @Input() selectedToolConfig;
   @Input() thresholdUnit;
   @Output() reloadKPI = new EventEmitter();
+  disableSave = false;
   populateDropdowns = true;
   selectedField = '';
   singleSelectionDropdown = false;
@@ -289,6 +289,7 @@ private setting = {
 
   /** Responsible for handle template popup */
   save() {
+    this.disableSave = true;
     const finalList = [];
 
     this.formData.forEach(element => {

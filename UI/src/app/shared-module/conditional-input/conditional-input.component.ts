@@ -18,10 +18,10 @@ export class ConditionalInputComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.valueObj && this.valueObj.length) {
       this.templateLabels = this.valueObj.map((val) => val.labelValue);
-      this.templateData = this.fieldConfig.options.filter((opt) => this.templateLabels.includes(opt.labelValue));
+      this.templateData = this.fieldConfig.options.filter((opt) => this.templateLabels.map(val => val.toLowerCase()).includes(opt.labelValue));
       this.finalValue = [...this.templateData];
       this.valueObj.forEach(element => {
-        let opt = this.fieldConfig.options.filter((opt) => opt.labelValue === element.labelValue)[0];
+        let opt = this.fieldConfig.options.filter((opt) => opt.labelValue.toLowerCase() === element.labelValue.toLowerCase())[0];
         if (opt) {
           opt['countValue'] = element.countValue;
         }
