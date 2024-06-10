@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.bamboo.rest;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,6 +57,7 @@ public class BambooController {
 	public ResponseEntity<ServiceResponse> getBambooBranchesNameAndKeys(@PathVariable String connectionId,
 			@PathVariable String jobNameKey) {
 		ServiceResponse response;
+		jobNameKey = CommonUtils.sanitizeUserInput(jobNameKey);
 		List<BambooBranchesResponseDTO> projectKeyList = bambooToolConfigService
 				.getBambooBranchesNameAndKeys(connectionId, jobNameKey);
 		if (CollectionUtils.isEmpty(projectKeyList)) {
