@@ -26,6 +26,7 @@ import java.io.File;
 import java.net.UnknownHostException;
 import java.util.UUID;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -95,7 +96,6 @@ public class ForgotPasswordController {
 	public ResponseEntity<ServiceResponse> processForgotPassword(@RequestBody ForgotPasswordRequest request,
 			HttpServletRequest httpServletRequest) {
 		boolean isSuccess = false;
-		log.info("ForgotPasswordController: requested mail {}", request.getEmail());
 		Authentication authentication = null;
 		try {
 			String serverPath = httpServletRequest.getScheme() + getApiHost() + httpServletRequest.getContextPath();
@@ -109,7 +109,7 @@ public class ForgotPasswordController {
 			return ResponseEntity.ok().body(new ServiceResponse(isSuccess, "Success", authentication));
 		} catch (UnknownHostException e) {
 			log.error("UnknownHostException", e);
-			log.error("ForgotPasswordController: Mail can not be sent to {}", request.getEmail());
+			log.error("ForgotPasswordController: Mail can not be sent to {}", CommonUtils.sanitizeUserInput(request.getEmail()));
 			return ResponseEntity.badRequest().body(new ServiceResponse(isSuccess, "logError", null));
 		}
 	}
