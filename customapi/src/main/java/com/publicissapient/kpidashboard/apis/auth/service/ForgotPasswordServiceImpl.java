@@ -87,7 +87,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 */
 	@Override
 	public Authentication processForgotPassword(String email, String url) {
-		log.info("ForgotPasswordServiceImpl: Requested mail {}", email);
 		Authentication authentication = getEmailExistsInDB(email);
 		if (authentication != null) {
 			String token = createForgetPasswordToken(authentication);

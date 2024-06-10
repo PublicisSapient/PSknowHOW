@@ -66,7 +66,6 @@ public class AutoApproveAccessController {
 			@Valid @RequestBody AutoApproveAccessConfigDTO autoAcessDTO) {
 		ModelMapper modelMapper = new ModelMapper();
 		AutoApproveAccessConfig autoApproveRole = modelMapper.map(autoAcessDTO, AutoApproveAccessConfig.class);
-
 		if (!ObjectId.isValid(id)) {
 			log.info("Id not valid");
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
@@ -74,7 +73,6 @@ public class AutoApproveAccessController {
 		}
 
 		AutoApproveAccessConfig autoApproveData = autoApproveService.modifyAutoApprovConfigById(id, autoApproveRole);
-		log.info("Modifying request@{}", id);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new ServiceResponse(true, "modified access_request@" + id, Arrays.asList(autoApproveData)));
 	}
