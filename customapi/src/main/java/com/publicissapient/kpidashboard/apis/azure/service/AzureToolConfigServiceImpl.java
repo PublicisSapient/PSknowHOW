@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
@@ -88,7 +89,7 @@ public class AzureToolConfigServiceImpl {
 					}
 				} else {
 					String statusCode = response.getStatusCode().toString();
-					log.error("Error while fetching ProjectsAndPlanKeyList from {}. with status {}", finalUrl,
+					log.error("Error while fetching ProjectsAndPlanKeyList from {}. with status {}", CommonUtils.sanitizeUserInput(finalUrl),
 							statusCode);
 				}
 
