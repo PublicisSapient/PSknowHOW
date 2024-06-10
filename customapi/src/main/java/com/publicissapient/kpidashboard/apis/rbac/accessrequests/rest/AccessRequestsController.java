@@ -100,7 +100,7 @@ public class AccessRequestsController {
 	@GetMapping(value = "/{id}")
 	@PreAuthorize("hasPermission(null,'GET_ACCESS_REQUEST')")
 	public ResponseEntity<ServiceResponse> getAccessRequestById(@PathVariable("id") String id) {
-
+		id = CommonUtils.sanitizeUserInput(id);
 		log.info("Getting request@{}", id);
 		return ResponseEntity.status(HttpStatus.OK).body(accessRequestsHelperService.getAccessRequestById(id));
 	}
@@ -115,7 +115,7 @@ public class AccessRequestsController {
 	@GetMapping(value = "/user/{username}")
 	@PreAuthorize("hasPermission(#username,'GET_ACCESS_REQUESTS_OF_USER')")
 	public ResponseEntity<ServiceResponse> getAccessRequestByUsername(@PathVariable("username") String username) {
-		CommonUtils.sanitizeUserInput(username);
+		username = CommonUtils.sanitizeUserInput(username);
 		log.info("Getting all requests under user {}", username);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(accessRequestsHelperService.getAccessRequestByUsername(username));
@@ -131,7 +131,7 @@ public class AccessRequestsController {
 	@GetMapping(value = "/status/{status}")
 	@PreAuthorize("hasPermission(#status,'ACCESS_REQUEST_STATUS')")
 	public ResponseEntity<ServiceResponse> getAccessRequestByStatus(@PathVariable("status") String status) {
-		CommonUtils.sanitizeUserInput(status);
+		status = CommonUtils.sanitizeUserInput(status);
 		log.info("Getting all requests with current status {}", status);
 		return ResponseEntity.status(HttpStatus.OK).body(accessRequestsHelperService.getAccessRequestByStatus(status));
 	}
@@ -151,7 +151,7 @@ public class AccessRequestsController {
 			@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
 
 		ServiceResponse[] serviceResponse = new ServiceResponse[1];
-		CommonUtils.sanitizeUserInput(id);
+		id = CommonUtils.sanitizeUserInput(id);
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access {}", id);
 
@@ -232,7 +232,7 @@ public class AccessRequestsController {
 	 */
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ServiceResponse> deleteAccessRequestById(@PathVariable("id") String id) {
-		id = CommonUtils.handleCrossScriptingTaintedValue(id);
+		id = CommonUtils.sanitizeUserInput(id);
 		log.info("request received for deleting access request with id @{}", id);
 		ServiceResponse response = null;
 
@@ -257,7 +257,7 @@ public class AccessRequestsController {
 	@RequestMapping(value = "/{status}/notification", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getNotificationByStatus(@PathVariable("status") String status,
 			HttpServletRequest request) {
-		CommonUtils.sanitizeUserInput(status);
+		status = CommonUtils.sanitizeUserInput(status);
 		log.info("Getting requests count with current status {}", status);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(accessRequestsHelperService.getNotificationByStatus(status , false));
@@ -274,7 +274,7 @@ public class AccessRequestsController {
 	@RequestMapping(value = "/{status}/notification/central", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getNotificationByStatusForCentral(@PathVariable("status") String status,
 			HttpServletRequest request) {
-		CommonUtils.sanitizeUserInput(status);
+		status = CommonUtils.sanitizeUserInput(status);
 		log.info("Getting requests count with current status {}", status);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(accessRequestsHelperService.getNotificationByStatus(status , true));
