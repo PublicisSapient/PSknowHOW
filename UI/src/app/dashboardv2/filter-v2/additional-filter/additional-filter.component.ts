@@ -12,19 +12,17 @@ export class AdditionalFilterComponent implements OnChanges {
   @Input() selectedType: string = '';
   @Input() selectedTab: string = '';
   @Input() additionalFilterConfig = [];
-  selectedFilters: any;
   subscriptions: any[] = [];
   filterData1 = new Set();
   filterData2 = new Set();
   filterSet: any;
   filterData = [];
   appliedFilters = {};
-  filterDisplayValue: any;
+  selectedFilters: any;
 
   constructor(private service: SharedService, private helperService: HelperService) {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       this.filterData = [];
-      this.filterSet = new Set();
       this.filterSet = new Set();
       let primarySet1 = new Set();
       let primarySet2 = new Set();
@@ -38,9 +36,6 @@ export class AdditionalFilterComponent implements OnChanges {
         data.filter2?.forEach(f => {
           primarySet2.add(f);
         });
-
-        console.log(primarySet1);
-        console.log(primarySet2);
 
         primarySet1.forEach((f: any) => {
           f.forEach(element => {
@@ -69,10 +64,10 @@ export class AdditionalFilterComponent implements OnChanges {
               filterArray.splice(filterArray.indexOf('Overall'), 1);
               filterArray.unshift('Overall');
               fakeEvent['value'] = 'Overall';
-              this.filterDisplayValue = 'Overall';
+              this.selectedFilters = 'Overall';
             } else {
               fakeEvent['value'] = filterArray[0];
-              this.filterDisplayValue = filterArray[0];
+              this.selectedFilters = filterArray[0];
             }
 
             setTimeout(() => {
@@ -80,9 +75,6 @@ export class AdditionalFilterComponent implements OnChanges {
             }, 0)
           });
         }
-
-        console.log(this.filterData);
-
       }
     }));
   }
@@ -95,14 +87,18 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   applyAdditionalFilter(e, index, multi = false) {
-    if (!this.appliedFilters['filter' + index]) {
-      this.appliedFilters['filter' + index] = [];
-    }
-    if (multi) {
-      this.appliedFilters['filter' + index].push(e.value);
+    if (this.selectedTab.toLowerCase() === 'developer') {
+      if (!this.appliedFilters['filter' + index]) {
+        this.appliedFilters['filter' + index] = [];
+      }
+      if (!multi) {
+        this.appliedFilters['filter' + index].push(e.value);
+      } else {
+        this.appliedFilters['filter' + index] = [...e];
+      }
+      this.service.applyAdditionalFilters(this.appliedFilters);
     } else {
-      this.appliedFilters['filter' + index] = [e.value];
+      console.log(this.appliedFilters);
     }
-    this.service.applyAdditionalFilters(this.appliedFilters);
   }
 }

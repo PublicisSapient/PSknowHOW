@@ -36,17 +36,17 @@
     <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()"
         [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' }" class="kpi-filter p-pr-5 p-pl-5"
         #kpiFilterContainer>
-        <div *ngSwitchCase="'dropdown'" class="p-d-flex p-justify-between">
+        <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
             <ng-container *ngFor="let filter of dropdownArr;let k = index">
                 <p-dropdown *ngIf="dropdownArr?.length && filter?.options?.length" [options]="filter?.options"
-                    [(ngModel)]="filterOptions['filter'+(k+1)]" placeholder="Select {{ filter?.filterType }}"
+                    [(ngModel)]="filterOptions['filter'+(k+1)]" [autoDisplayFirst]="true"
                     [style]="{'width':'115px', 'max-width': '100%', 'margin-left': '5px', 'height': '32px'}"
                     (onChange)="handleChange('single',k)" [virtualScroll]="true" [virtualScrollItemSize]="30"
                     [panelStyle]="{ 'min-width': 'min(100vw, 300px)', 'overflow-x': 'hidden' }"></p-dropdown>
 
             </ng-container>
         </div>
-        <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-justify-between">
+        <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-jc-end">
             <ng-container *ngFor="let filter of dropdownArr;let k = index">
                 <ng-select *ngIf="filter?.options?.length && filter.filterType === 'Duration'"
                     [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'"
@@ -61,7 +61,7 @@
 
                 <p-multiSelect *ngIf="filter?.options?.length && filter.filterType !== 'Duration'" #multiSelect
                     inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
-                    [(ngModel)]="selectedFilters" (onChange)="handleChange('multi')"
+                    (onChange)="handleChange('multi')" 
                     (onClear)="handleClearAll('filter'+(k+1))" [style]="{'max-width': '100%', 'height': '32px'}"
                     [showClear]="true" defaultLabel="{{filter?.filterType}}"
                     [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">

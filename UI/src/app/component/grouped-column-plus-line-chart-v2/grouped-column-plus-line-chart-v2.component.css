@@ -97,7 +97,7 @@
 
 :host ::ng-deep.tooltip-container {
     position: relative;
-    z-index: 999;
+    z-index: 899;
 }
 
 :host ::ng-deep .y-axis-grid .domain {
