@@ -71,7 +71,6 @@ public class RolesController {
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getRoleById(@PathVariable("id") String id) {
-		log.info("Fetching role@{}", id);
 		return ResponseEntity.status(HttpStatus.OK).body(rolesHelperService.getRoleById(id));
 	}
 
@@ -91,8 +90,6 @@ public class RolesController {
 			@Valid @RequestBody RoleDataDTO roleDTO) {
 		final ModelMapper modelMapper = new ModelMapper();
 		RoleData role = modelMapper.map(roleDTO, RoleData.class);
-
-		log.info("role@{} updated", id);
 		return ResponseEntity.status(HttpStatus.OK).body(rolesHelperService.modifyRoleById(id, role));
 	}
 

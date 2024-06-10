@@ -83,7 +83,6 @@ public class CommentsServiceImpl implements CommentsService {
 			mappedCollection.put("kpiId", kpiId);
 			mappedCollection.put("CommentsInfo", finalCommentsInfo);
 		}
-		log.info("Final filter comments of matching kpiId {}", mappedCollection);
 		return mappedCollection;
 	}
 
@@ -151,8 +150,6 @@ public class CommentsServiceImpl implements CommentsService {
 	 */
 	@Override
 	public boolean submitComment(CommentSubmitDTO comment) {
-
-		log.debug("CommentSubmitDTO info {}", comment);
 		List<CommentsInfo> commentsInfo = comment.getCommentsInfo();
 		if (CollectionUtils.isNotEmpty(commentsInfo)) {
 			for (CommentsInfo commentInfo : commentsInfo) {
