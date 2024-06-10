@@ -57,6 +57,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -94,6 +95,8 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+	@Autowired
+	ProjectReleaseRepo projectReleaseRepo;
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssue> jiraIssueReleaseList;
 	private Set<JiraIssue> subtaskDefectReleaseList;
@@ -132,7 +135,8 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest);
 
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList, referFromProjectCache);
+				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList,
+						referFromProjectCache);
 
 				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest,
 						filteredAccountDataList, referFromProjectCache);
@@ -209,13 +213,13 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest) {
-		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService.cacheAccountHierarchyData();
+		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
+				.cacheAccountHierarchyData();
 
 		String targetNodeId = kpiRequest.getSelectedMap().get(CommonConstant.RELEASE.toLowerCase()).get(0);
 
 		Optional<AccountHierarchyData> optionalData = accountDataListAll.stream()
-				.filter(accountHierarchyData ->
-						accountHierarchyData.getLeafNodeId().equalsIgnoreCase(targetNodeId))
+				.filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId().equalsIgnoreCase(targetNodeId))
 				.findFirst();
 
 		return optionalData.map(List::of).orElse(List.of());
@@ -255,9 +259,9 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 		return processedList;
 	}
 
-	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList) {
+	public void fetchJiraIssues(String basicProjectConfigId, List<String> releaseList) {
 		jiraIssueReleaseList = jiraIssueRepository
-				.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, sprintIssuesList);
+				.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, releaseList);
 		Set<String> storyIDs = jiraIssueReleaseList.stream()
 				.filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase(NormalizedJira.DEFECT_TYPE.getValue()))
 				.map(JiraIssue::getNumber).collect(Collectors.toSet());
@@ -304,6 +308,19 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 
 	public List<String> getReleaseList() {
 		return releaseList;
+	}
+
+	/**
+	 * 
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @param releaseNames
+	 *            releaseNames
+	 * @return JiraIssueList
+	 */
+	public List<JiraIssue> getJiraIssuesList(FieldMapping fieldMapping, List<String> releaseNames) {
+		return jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(
+				fieldMapping.getBasicProjectConfigId().toString(), releaseNames);
 	}
 
 	public Set<JiraIssue> getSubTaskDefects() {

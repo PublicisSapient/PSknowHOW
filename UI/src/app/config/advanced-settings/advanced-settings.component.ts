@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit,OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -147,6 +147,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   getProcessorsTraceLogsForProject(basicProjectConfigId) {
     const that = this;
+    this.dataMismatchObj = {};
     this.httpService.getProcessorsTraceLogsForProject(basicProjectConfigId)
       .subscribe(response => {
         this.jiraExecutionSteps = []
@@ -161,13 +162,18 @@ export class AdvancedSettingsComponent implements OnInit {
               }
           })
 
-          if(that.findTraceLogForTool('Jira')?.executionOngoing){
+          
+          if(this.decideWhetherLoaderOrNot(that.findTraceLogForTool('Jira'))){
             that.jiraStatusContinuePulling = true;
             const runProcessorInput = {
               processor: 'Jira',
               projects: [this.selectedProject['id']]
             };
             that.getProcessorCompletionSteps(runProcessorInput);
+          }else{
+            that.jiraStatusContinuePulling = false;
+            const jiraDAta = that.findTraceLogForTool('Jira');
+            jiraDAta.executionOngoing = false;
           }
           
         } else {
@@ -187,8 +193,6 @@ export class AdvancedSettingsComponent implements OnInit {
       this.jiraStatusContinuePulling = false;
     }
 
-
-    //console.log(JSON.stringify( this.selectedProject));
     this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
     this.getAllToolConfigs(this.selectedProject['id']);
 
@@ -228,22 +232,13 @@ export class AdvancedSettingsComponent implements OnInit {
 
   //used to run the processor's run(), called when run button is clicked
   runProcessor(processorName) {
-    let runProcessorInput = null;
+    let runProcessorInput = {
+      processor: processorName,
+      projects: []
+    };;
     if (this.isProjectSelected()) {
-
-      runProcessorInput = {
-        processor: processorName,
-        projects: [this.selectedProject['id']]
-      };
-
-
-    } else {
-      runProcessorInput = {
-        processor: processorName,
-        projects: []
-      };
-
-    }
+      runProcessorInput['projects'] = [this.selectedProject['id']];
+    } 
     const pDetails = this.findTraceLogForTool(processorName)
     if(pDetails){
       pDetails['executionOngoing'] = true;
@@ -254,7 +249,7 @@ export class AdvancedSettingsComponent implements OnInit {
     }
     this.httpService.runProcessor(runProcessorInput)
       .subscribe(response => {
-        if (response[0] !== 'error' && !response.error && response.success) {
+        if (!response.error && response.success) {
           this.messageService.add({ severity: 'success', summary: `${runProcessorInput['processor']} started successfully.` });
           if(runProcessorInput['processor'].toLowerCase() === 'jira'){
             this.jiraStatusContinuePulling = true;
@@ -318,6 +313,7 @@ export class AdvancedSettingsComponent implements OnInit {
         } else {
           this.messageService.add({ severity: 'success', summary: 'Data deleted Successfully.', detail: '' });
           this.getAllToolConfigs(selectedProject?.id);
+          this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
         }
       }, error => {
         this.messageService.add({ severity: 'error', summary: 'Something went wrong. Please try again after sometime.' });
@@ -335,15 +331,15 @@ export class AdvancedSettingsComponent implements OnInit {
       switchMap(() => this.httpService.getProgressStatusOfProcessors(runProcessorInput))
     ).subscribe(response => {
       if (response && response['success']) {
-        if (response['data'][0]['executionOngoing']) {
+        if (this.decideWhetherLoaderOrNot(response['data'][0])) {
             this.processorsTracelogs[jiraInd].executionOngoing = true;
             this.jiraStatusContinuePulling = true
         } else {
           this.processorsTracelogs[jiraInd].executionOngoing = false;
           this.jiraStatusContinuePulling = false;
+          this.getProcessorsTraceLogsForProject(this.selectedProject['id'])
         }
-        let preLOgs = this.findTraceLogForTool('Jira');
-        preLOgs= Object.assign(preLOgs,response['data'][0])
+        Object.assign(this.findTraceLogForTool('Jira'),response['data'][0])
       }
     })
   }
@@ -368,6 +364,25 @@ export class AdvancedSettingsComponent implements OnInit {
       this.processorsTracelogs.push({processorName : 'Jira',errorMessage : '',progressStatusList : [],executionOngoing : false,executionEndedAt : 0,isDeleteDisable : true});
       return  this.processorsTracelogs.length;
     }
+  }
+
+  decideWhetherLoaderOrNot(jiraLogDetails){
+    if(jiraLogDetails && jiraLogDetails?.executionOngoing && jiraLogDetails?.progressStatusList?.length){
+      const logs = jiraLogDetails.progressStatusList;
+      const lastLOgTime = logs[logs.length-1].endTime;
+      const currentTime = new Date().getTime();
+      var differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
+      if(differenceInMilliseconds > 600000){
+        return false;
+      }else if(differenceInMilliseconds <= 600000){
+        return true;
+      }else{
+        return false;
+      }
+    }else{
+      return false;
+    }
+
   }
 
   ngOnDestroy(): void {

@@ -261,10 +261,6 @@ public enum KPICode {
     /**
      * Average Resolution Time
      */
-    AVERAGE_RESOLUTION_TIME("kpi83", KPISource.JIRA.name()),
-    /**
-     * Average Resolution Time
-     */
     MEAN_TIME_TO_MERGE("kpi84", KPISource.BITBUCKET.name()),
     /**
      * Change Failure Rate kpi code
@@ -286,10 +282,6 @@ public enum KPICode {
      * Work Remaining
      */
     WORK_REMAINING("kpi119", KPISource.JIRA.name()),
-    /**
-     * Iteration Status
-     */
-    ITERATION_STATUS("kpi130", KPISource.JIRA.name()),
     /**
      * Defect Count By RCA (Iteration)
      */
@@ -326,6 +318,10 @@ public enum KPICode {
      * Release Progress
      */
     RELEASE_PROGRESS("kpi147", KPISource.JIRA.name()),
+    /**
+     * Release Plan
+     */
+    RELEASE_PLAN("kpi179", KPISource.JIRA.name()),
     /**
      * Scope Change
      */
@@ -508,6 +504,12 @@ public enum KPICode {
      * Rework Rate (Developer)
      */
     REWORK_RATE("kpi173", KPISource.BITBUCKET.name()),
+    /**
+     * Defect Count By (Release->Quality)
+     */
+    DEFECT_COUNT_BY("kpi178", KPISource.JIRA.name()),
+
+
 
 
 

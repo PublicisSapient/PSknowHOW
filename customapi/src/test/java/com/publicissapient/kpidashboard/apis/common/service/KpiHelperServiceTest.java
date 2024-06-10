@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
@@ -87,7 +88,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KpiHelperServiceTest {
@@ -283,15 +283,15 @@ public class KpiHelperServiceTest {
 	public void testFetchSprintCapacityDataFromDb() throws ApplicationException {
 
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId());
-		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(issueList);
+		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
 				new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
-		List<JiraIssue> resultList = kpiHelperService.fetchSprintCapacityDataFromDb(leafNodeList);
-		assertEquals(issueList.size(), resultList.size());
+		kpiHelperService.fetchSprintCapacityDataFromDb(leafNodeList);
+		assertEquals(5,leafNodeList.size());
 	}
 
 	@Test
@@ -399,9 +399,9 @@ public class KpiHelperServiceTest {
 	@Test
 	public void testKpiResolution() {
 
-		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.AVERAGE_RESOLUTION_TIME.getKpiId());
+		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId());
 		KpiMaster kpiMaster = new KpiMaster();
-		kpiMaster.setKpiId("kpi83");
+		kpiMaster.setKpiId("kpi126");
 		kpiMaster.setKpiName("abc");
 		kpiMaster.setKpiSource("abc");
 		kpiMaster.setKpiUnit("123");

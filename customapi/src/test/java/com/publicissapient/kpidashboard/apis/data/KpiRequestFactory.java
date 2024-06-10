@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 public class KpiRequestFactory {
 
 	private static final String FILE_PATH_KPI_REQUEST = "/json/default/kpi_request.json";
-	private static final String FILE_PATH_KPI_LIST = "/json/default/kpi_list.json";
+	private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/kpi_master.json";
 
 	private ObjectMapper mapper = null;
 
