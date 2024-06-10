@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 
 /**
@@ -193,7 +194,7 @@ public class KpiRequest implements Serializable {
 	 * @return the request tracker id
 	 */
 	public String getRequestTrackerId() {
-		return requestTrackerId;
+		return CommonUtils.sanitizeUserInput(requestTrackerId);
 	}
 
 	/**
