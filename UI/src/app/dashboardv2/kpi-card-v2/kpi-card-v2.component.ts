@@ -271,7 +271,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   getFieldMappingMetaData(kpiSource) {
-    this.http.getKPIConfigMetadata(this.selectedToolConfig[0].id).subscribe(Response => {
+    this.http.getKPIConfigMetadata(this.selectedToolConfig[0].id,this.kpiData.kpiId).subscribe(Response => {
       if (Response.success) {
         this.fieldMappingMetaData = Response.data;
         this.service.setFieldMappingMetaData({

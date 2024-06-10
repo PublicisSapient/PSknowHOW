@@ -22,12 +22,15 @@ export class HeaderComponent implements OnInit {
   activeItem: MenuItem | undefined;
   userDetails: object = {};
   userMenuItems: MenuItem[] | undefined;
+  backToDashboardLoader : boolean = false;
+  kpiListDataProjectLevel : any = {};
+  kpiListData: any = {};
 
   constructor(
     private httpService: HttpService,
-    private sharedService: SharedService,
+    public sharedService: SharedService,
     private getAuthorizationService: GetAuthorizationService,
-    private router: Router,
+    public router: Router,
     private helperService: HelperService) { }
 
   ngOnInit(): void {
@@ -42,15 +45,15 @@ export class HeaderComponent implements OnInit {
 
     this.userMenuItems = [
       {
-        label: 'Settings', 
-        icon: 'fas fa-cog', 
+        label: 'Settings',
+        icon: 'fas fa-cog',
         command: () => {
           this.router.navigate(['/dashboard/Config/ProjectList']);
         },
       },
       {
-        label: 'Logout', 
-        icon: 'fas fa-sign-out-alt', 
+        label: 'Logout',
+        icon: 'fas fa-sign-out-alt',
         command: () => {
           this.logout();
         }
@@ -90,6 +93,39 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  handleRedirection(userLevelData){
+    this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, userLevelData)
+      this.sharedService.setDashConfigData(this.kpiListData);
+      this.getNotification();
+      this.selectedFilterData.kanban = this.kanban;
+      this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
+      this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
+        this.previousType = this.kanban;
+        this.filterData = filterApiData['data'];
+        const selectedLevel = this.sharedService.getSelectedLevel();
+        if (Object.keys(selectedLevel).length > 0) {
+          this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() === selectedLevel['hierarchyLevelId'].toLowerCase());
+          this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
+          this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
+        }
+        this.sharedService.setFilterData(JSON.parse(JSON.stringify(filterApiData)));
+        const selectedTrends = this.sharedService.getSelectedTrends();
+        const selectedTrendNodeIds = selectedTrends.map(trend => trend.nodeId);
+        const filteredTrendValue = this.trendLineValueList.filter(trend => selectedTrendNodeIds.includes(trend.nodeId));
+        this.sharedService.setSelectedTrends(filteredTrendValue);
+        if (filteredTrendValue.length === 0) {
+          this.checkIfFilterAlreadySelected();
+        }
+        this.navigateToSelectedTab();
+      });
+
+      // reset date filter
+      this.selectedDayType = 'Days';
+      this.sharedService.setSelectedDateFilter(this.selectedDayType);
+      this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
+      this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
+  }
+
   navigateToHomePage() {
     const previousSelectedTab = this.router.url.split('/')[2];
     if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
@@ -97,6 +133,29 @@ export class HeaderComponent implements OnInit {
       this.sharedService.setSelectedType('scrum');
       this.router.navigateByUrl(`/dashboard/iteration`);
     }
+  }
+
+  /** when user clicks on Back to dashboard or logo*/
+  navigateToDashboard() {
+    this.backToDashboardLoader = true;
+    let projectList = [];
+    if (this.sharedService.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
+      projectList = this.sharedService.getSelectedTrends().map(data => data.nodeId);
+    }
+    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
+      this.sharedService.setSideNav(false);
+      this.sharedService.setVisibleSideBar(false);
+      this.kpiListDataProjectLevel = response.data;
+      let userLevelData = this.sharedService.getDashConfigData();
+      if(!userLevelData){
+        this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(boardResponse => {
+          userLevelData = boardResponse.data;
+          this.handleRedirection(userLevelData)
+        })
+      }else{
+        this.handleRedirection(userLevelData);
+      }
+    });
   }
 
   getNotification() {

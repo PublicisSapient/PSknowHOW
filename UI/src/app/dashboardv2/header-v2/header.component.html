@@ -16,7 +16,7 @@
                    <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
                       Last Sync
                    </h4>
- 
+
                 </div>
                 <p class="last-sync-date p-m-0 p-text-right">
                    {{selectedProjectLastSyncDate != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
@@ -34,6 +34,12 @@
                 <span *ngIf="notificationCount > 0" class="count noti-count">{{notificationCount}}</span>
             </div>
             <p-menu #notification [popup]="true" [model]="notificationList" class="custom-menu"></p-menu>
+
+            <div class="back-btn-wraper">
+              <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3">
+                 <button pButton pRipple class="back-btn" [disabled] = "backToDashboardLoader" routerLinkActive="active" icon="{{ backToDashboardLoader ? 'pi pi-spin pi-spinner' : '' }}" iconPos="left" label="BACK TO DASHBOARD" (click)="navigateToDashboard()"></button>
+              </div>
+            </div>
 
             <div class="p-d-flex p-align-center p-jc-between" role="button" (click)="usermenu.toggle($event)">
                 <i class="far fa-user custom-user p-ml-2 p-mr-2"></i>
