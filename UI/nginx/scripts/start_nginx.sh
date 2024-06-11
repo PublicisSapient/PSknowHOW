@@ -44,8 +44,12 @@ else
             -out /etc/ssl/certs/knowhow_ssl.cer \
             -keyout /etc/ssl/certs/knowhow_ssl.key \
             -subj "/C=IN/ST=HR/L=ggn/O=Security/OU=IT Department/CN=${DNS_SSL}"
-    echo "Welcome@123" > /etc/ssl/certs/knowhow_ssl_passphrase.txt
     echo "Self-signed certificate created"
+fi
+# Check if the passphrase file exists
+if [ ! -e /etc/ssl/certs/knowhow_ssl_passphrase.txt ]; then
+    echo "sapient@123" > /etc/ssl/certs/knowhow_ssl_passphrase.txt
+    echo "Passphrase file created"
 fi
 
 envsubst < /var/lib/nginx/ui2/assets/env.template.json > /var/lib/nginx/ui2/assets/env.json 
