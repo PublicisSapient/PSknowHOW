@@ -343,16 +343,6 @@ export class FilterNewComponent implements OnInit {
           this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
         }
 
-        // if(this.filterApplyData['label'] !== 'project' && this.filterApplyData['label'] !== 'sqd') {
-        //   this.filterApplyData['selectedMap']['project'] = [];
-        //   this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
-        //   this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
-        // } else if(this.filterApplyData['label'] === 'sqd') {
-        //   this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
-        //   this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
-        // }
-
-
         // if Additional Filters are selected
         if(this.filterApplyData['level'] > 4) {
           this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
