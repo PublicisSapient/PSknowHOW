@@ -235,7 +235,7 @@ export class CapacityPlanningComponent implements OnInit {
         if (filterData[0] !== 'error' && filterData?.['data']?.length > 0) {
           this.filterData = filterData['data'];
             this.projectListArr = this.sortAlphabetically(this.filterData.filter(x => x.labelName.toLowerCase() == 'project'));
-            this.squadListArr = this.sortAlphabetically(this.filterData.filter(x => x.labelName.toLowerCase() == 'sqd'));
+            this.squadListArr = this.getSortedAdditonalFilter(this.projectListArr);
             this.projectListArr = this.makeUniqueArrayList(this.projectListArr);
             this.squadListArr = this.makeUniqueArrayList(this.squadListArr);
             const defaultSelection = this.selectedProjectBaseConfigId ? false : true;
@@ -507,6 +507,7 @@ export class CapacityPlanningComponent implements OnInit {
       this.selectedSprintAssigneFormArray.push(
         {
           role: new FormControl(assignee.role),
+          squad: new FormControl(assignee.squad),
           plannedCapacity: new FormControl({ value: assignee.plannedCapacity, disabled: !assignee.role }, [Validators.pattern('[0-9]*')]),
           leaves: new FormControl({ value: assignee.leaves, disabled: !(assignee?.role && assignee?.plannedCapacity) }, [Validators.min(0), Validators.max(assignee.plannedCapacity)])
         }
@@ -881,6 +882,15 @@ getNodeName(assignee) {
     return squad ? squad.nodeName : '- -';
   }
   return '- -';
+}
+
+
+getSortedAdditonalFilter(projectListArr) {
+//Get the levels of the projects in projectListArr
+ let projectMap= projectListArr.map(project => project.level);
+// Step 3: Filter out the objects from filterData which have a level that is exactly 2 levels above any project level
+ return this.sortAlphabetically(this.filterData.filter(data => projectMap.includes(data.level - 2)));
+
 }
 
 }
