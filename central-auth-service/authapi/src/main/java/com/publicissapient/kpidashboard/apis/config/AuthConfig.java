@@ -68,9 +68,4 @@ public class AuthConfig {
 
 	private String verifyUserTokenExpiryInterval;
 
-	@Value("${max-age-seconds}")
-	private long maxAgeInSeconds;
-	@Value("${include-subdomains}")
-	private boolean includeSubDomains;
-
 }
