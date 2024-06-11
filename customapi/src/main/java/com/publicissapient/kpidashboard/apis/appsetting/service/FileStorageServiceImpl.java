@@ -65,6 +65,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 	private static final String INVALID_UPLOAD_TYPE = "202";
 	private static final String FILE_SAVE_ERROR = "203";
 	private static final ModelMapper modelMapper = new ModelMapper();
+	private static final long MAX_FILE_SIZE = 100000;// Maximum file size in bytes
 	@Autowired
 	CustomApiConfig customApiConfig;
 	@Autowired
@@ -84,10 +85,21 @@ public class FileStorageServiceImpl implements FileStorageService {
 		try {
 			multipartFile = modelMapper.map(multifile, MultiPartFileDTO.class);
 			writeToFile(multipartFile.getOriginalFilename(), multipartFile.getBytes());
+			String extension = multipartFile.getOriginalFilename();
+			boolean isValidFileExtension = (null != extension) && (extension.matches(".*\\.(pg|PG|png|PNG|JPEG|jpeg|jpg|JPG|gif|GIF|bmp|BMP)$"));
+			if (!isValidFileExtension) {
+				return new ServiceResponse(false, "Invalid upload type", INVALID_UPLOAD_TYPE);
+			}
+			boolean isValidSize = multipartFile.getSize() > 0 && multipartFile.getSize() <= MAX_FILE_SIZE;
+			if (!isValidSize) {
+				return new ServiceResponse(false, "Invalid upload Size", INVALID_UPLOAD_TYPE);
+			}
+
 		} catch (IOException e) {
 
 			log.error(UPLOAD_FAIL, e);
 		}
+
 		try (InputStream imageInputStream = Files.newInputStream(Paths.get(multipartFile.getOriginalFilename()))) {
 			DBObject metaData = new BasicDBObject();
 			String fileName = Constant.LOGO_FIL_NAME;

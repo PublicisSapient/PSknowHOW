@@ -79,23 +79,23 @@ public class AuthenticationServiceTest {
 	public void testOldPwAuthentication() throws Exception {
 		final String pw = "pass1";
 
-		Authentication nonHashPass = new Authentication("u1", pw, "abc@xyz.com");
+		Authentication nonHashPass = new Authentication("four", pw, "abc@xyz.com");
 		Field pwField = nonHashPass.getClass().getDeclaredField("password");
 		pwField.setAccessible(true);
 		pwField.set(nonHashPass, pw);
 		nonHashPass.setApproved(true);
 		when(authRepo.findByUsername(Mockito.anyString())).thenReturn(nonHashPass);
-		Assertions.assertNotNull(authService.authenticate("u1", "pass1"));
+		Assertions.assertNotNull(authService.authenticate("four", "pass1"));
 	}
 
 	@Test
 	public void testHashedPwAuthentication() throws Exception {
 		final String pw = "pass1";
 
-		Authentication auth = new Authentication("u1", pw, "abc@xyz.com");
+		Authentication auth = new Authentication("u123", pw, "abc@xyz.com");
 		auth.setApproved(true);
 		when(authRepo.findByUsername(Mockito.anyString())).thenReturn(auth);
-		Assertions.assertNotNull(authService.authenticate("u1", "pass1"));
+		Assertions.assertNotNull(authService.authenticate("u123", "pass1"));
 	}
 
 	@Test

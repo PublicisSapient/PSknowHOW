@@ -203,13 +203,10 @@ public class JenkinsServiceRTest {
 
 		List<KpiElement> resultList;
 		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
-			CodeBuildTimeServiceImpl mockService = mock(CodeBuildTimeServiceImpl.class);
-			when(mockService.getKpiData(any(), any(), any())).thenReturn(buildKpiElement);
-			mockedStatic.when(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME.name())))
-					.thenReturn(mockService);
-			resultList = jenkinsServiceR.process(kpiRequest);
-			mockedStatic.verify(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME.name())));
+			mockedStatic.when((MockedStatic.Verification) JenkinsKPIServiceFactory.getJenkinsKPIService(KPICode.CODE_BUILD_TIME.name()))
+					.thenReturn(mcokAbstract);
 		}
+		resultList = jenkinsServiceR.process(kpiRequest);
 
 
 

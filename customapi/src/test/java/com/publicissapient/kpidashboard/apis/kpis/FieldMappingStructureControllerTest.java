@@ -19,8 +19,10 @@
 
 package com.publicissapient.kpidashboard.apis.kpis;
 
+import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.model.FieldMappingStructureResponse;
+import com.publicissapient.kpidashboard.apis.util.ProjectAccessUtil;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import org.junit.After;
 import org.junit.Before;
@@ -35,6 +37,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -57,6 +60,11 @@ public class FieldMappingStructureControllerTest {
     private List<FieldMappingStructure> fieldMappingStructureList = new ArrayList<>();
     private FieldMappingStructureResponse fieldMappingStructureResponse= new FieldMappingStructureResponse();
 
+    @Mock
+    private ProjectAccessUtil projectAccessUtil;
+
+    @Mock
+    private UserAuthorizedProjectsService userAuthorizedProjectsService;
     @Before
     public void before() {
         mockMvc = MockMvcBuilders.standaloneSetup(fieldMappingStructureController).build();
@@ -73,6 +81,7 @@ public class FieldMappingStructureControllerTest {
     @Test
     public void fetchFieldMappingStructureByKpiId() throws Exception {
         when(kpiHelperService.fetchFieldMappingStructureByKpiId("1234","kpi0")).thenReturn(fieldMappingStructureResponse);
+        when(projectAccessUtil.configIdHasUserAccess(any())).thenReturn(true);
         mockMvc.perform(get("/kpiFieldMapping/1234/kpi0")).andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType("application/json"));
     }

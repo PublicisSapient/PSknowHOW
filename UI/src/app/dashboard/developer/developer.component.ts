@@ -82,6 +82,8 @@ export class DeveloperComponent implements OnInit {
   showChart = 'chart';
   iSAdditionalFilterSelected = false;
   kpiThresholdObj = {};
+  kpiList:Array<string> = [];
+  
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService) {
 
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -186,7 +188,7 @@ export class DeveloperComponent implements OnInit {
     }
     if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event?.selectedTab?.toLowerCase() === 'developer') {
       this.configGlobalData = this.service.getDashConfigData()[this.service.getSelectedType().toLowerCase() === 'kanban' ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()))[0]?.kpis;
-      this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
+      this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
       if (JSON.stringify(this.filterApplyData) !== JSON.stringify($event.filterApplyData) || this.configGlobalData) {
         if (this.serviceObject['makeAPICall']) {
           this.allKpiArray = [];
@@ -241,7 +243,9 @@ export class DeveloperComponent implements OnInit {
     // user can nable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByeUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+    this.kpiList = this.configGlobalData.map((kpi) => kpi.kpiId)
+    console.log(this.kpiList);
     if (this.updatedConfigGlobalData?.length === 0) {
       this.noKpis = true;
     } else {
@@ -309,7 +313,7 @@ export class DeveloperComponent implements OnInit {
 
   // Used for grouping all BitBucket kpi of kanban from master data and calling BitBucket kpi.
   groupBitBucketKanbanKpi(kpiIdsForCurrentBoard) {
-    this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
+    this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', true, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
     if (this.kpiBitBucket?.kpiList?.length > 0) {
       this.postBitBucketKanbanKpi(this.kpiBitBucket, 'bitbucket');
     }
@@ -317,7 +321,7 @@ export class DeveloperComponent implements OnInit {
 
   // Used for grouping all BitBucket kpi of scrum from master data and calling BitBucket kpi.
   groupBitBucketKpi(kpiIdsForCurrentBoard) {
-    this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
+    this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
     if (this.kpiBitBucket?.kpiList?.length > 0) {
       this.postBitBucketKpi(this.kpiBitBucket, 'bitbucket');
     }
@@ -529,7 +533,7 @@ export class DeveloperComponent implements OnInit {
       this.allKpiArray.splice(idx, 1);
     }
     const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
-    const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, event.kpiDetail?.groupId, 'developer');
+    const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, event.kpiDetail?.groupId, 'developer');
     if (currentKPIGroup?.kpiList?.length > 0) {
       if (this.service.getSelectedType().toLowerCase() === 'kanban') {
         this.postBitBucketKanbanKpi(currentKPIGroup, 'bitbucket');

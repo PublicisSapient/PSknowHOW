@@ -16,17 +16,6 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.appsetting.service;
-
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-
-/**
- *
- * @author pansharm5
- *
- */
-public interface GlobalConfigService {
-
-	ServiceResponse getZephyrCloudUrlDetails();
-
+ export interface UserNameRequestDTO {
+    userName: string;
 }

@@ -757,6 +757,23 @@ this.resetAddtionalFIlters();
       this.createFilterApplyData();
       this.setMarker();
       this.getKpiOrderListProjectLevel();
+      if(this.copyFilteredAddFilters['sprint']?.length > 0){
+        let addFilters = this.service.getAddtionalFilterBackup()
+        let lastSelectedSprint = {};
+        if(addFilters['sprint']){
+          for(let key in addFilters['sprint']){
+            if(Object.values(addFilters['sprint'][key] > 0)){
+              lastSelectedSprint = addFilters['sprint'][key][addFilters['sprint'][key].length - 1];
+            }
+          }
+          if(lastSelectedSprint){
+            this.service.setSprintForRnR(lastSelectedSprint);
+          }
+        }else{
+          let len = this.copyFilteredAddFilters['sprint']?.length;
+          this.service.setSprintForRnR(this.copyFilteredAddFilters['sprint'][len-1]);
+        }
+      }
     }
   }
 
