@@ -107,7 +107,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	public static final String OVERALL_ISSUE = "OVERALL ISSUE";
 	public static final String DEV_COMPLETE_DATE_MAP = "devCompleteDateMap";
 	public static final String AVERAGE_VELOCITY_IS = "Average velocity is ";
-	public static final String ISSUE_COUNT_IN = " Issue Count in ";
+	public static final String ISSUE_COUNT_IN = " Issues in ";
 	public static final String DAYS = " days)";
 	public static final String SPS_IN = " SPs in ";
 	public static final String IS_XAXIS_GAP_REQUIRED = "isXaxisGapRequired";
@@ -1134,7 +1134,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	private void getAverageData(FieldMapping fieldMapping, ReleaseSpecification releaseSpecification,
 			Map<String, Object> averageDataMap, double totalDurations, List<JiraIssue> jiraIssues) {
 		if (totalDurations != 0 && CollectionUtils.isNotEmpty(jiraIssues)) {
-			double releaseIssuesSize = jiraIssues.size();
+			int releaseIssuesSize = jiraIssues.size();
 			double releaseTicketsEstimate = getStoryPoint(jiraIssues, fieldMapping);
 			double issueCountVelocity = releaseIssuesSize / totalDurations;
 			double issuesEstimateVelocity = releaseTicketsEstimate / totalDurations;
