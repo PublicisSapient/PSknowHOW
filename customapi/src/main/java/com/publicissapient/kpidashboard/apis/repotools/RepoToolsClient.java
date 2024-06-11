@@ -69,7 +69,6 @@ public class RepoToolsClient {
 		URI url = URI.create(repoToolsUrl);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-		log.debug(response.getBody());
 		return response.getStatusCode().value();
 	}
 

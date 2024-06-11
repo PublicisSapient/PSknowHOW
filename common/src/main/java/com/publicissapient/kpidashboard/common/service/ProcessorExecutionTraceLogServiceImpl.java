@@ -47,12 +47,6 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 
 	@Override
 	public void save(ProcessorExecutionTraceLog processorExecutionTracelog) {
-		log.info(
-				"last execution time of {} for project {} is {}. status is {} and lastSuccessfulRun is {} and LastEnableAssigneeToggleState is {} ",
-				processorExecutionTracelog.getProcessorName(), processorExecutionTracelog.getBasicProjectConfigId(),
-				processorExecutionTracelog.getExecutionEndedAt(), processorExecutionTracelog.isExecutionSuccess(),
-				processorExecutionTracelog.getLastSuccessfulRun(),
-				processorExecutionTracelog.isLastEnableAssigneeToggleState());
 
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(processorExecutionTracelog.getProcessorName(),
