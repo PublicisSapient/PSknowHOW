@@ -283,6 +283,7 @@ public class KpiHelperServiceTest {
 	public void testFetchSprintCapacityDataFromDb() throws ApplicationException {
 
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId());
+		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(issueList);
 		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
