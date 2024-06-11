@@ -113,7 +113,7 @@ public class JiraReleaseKPIServiceTest {
 	@Test
 	public void testGetJiraIssuesCustomHistoryFromBaseClass_WithNoParam() {
 		List<JiraIssueCustomHistory> jiraIssueCustomHistories = getJiraIssueCustomHistories();
-		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistories);
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentRelease()).thenReturn(jiraIssueCustomHistories);
 		assertNotNull(jiraKPIService.getJiraIssuesCustomHistoryFromBaseClass());
 	}
 

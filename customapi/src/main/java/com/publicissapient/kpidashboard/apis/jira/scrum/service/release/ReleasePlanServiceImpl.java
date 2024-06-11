@@ -100,6 +100,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
 			throws ApplicationException {
+		maxPlannedDueDate=null;
 		releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
 		log.info("ReleasePlanServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
@@ -433,15 +434,13 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 
 		List<JiraIssue> overallIssues = filterWiseGroupedMap.getOrDefault(OVERALL_ISSUE, new ArrayList<>());
 
-		LocalDate startDate = dateRange.getStartDate();
 		LocalDate endDate = dateRange.getEndDate();
 
 		//gives issue count whose dueDate falls between start and endDate
 		long matchingIssueCount = overallIssues.stream().map(JiraIssue::getDueDate).filter(Objects::nonNull)
 				.filter(dueDateStr -> !dueDateStr.isBlank()).filter(dueDateStr -> {
 					LocalDate dueDate = LocalDate.parse(dueDateStr.split("T")[0], DATE_TIME_FORMATTER);
-					return ((dueDate.isEqual(startDate) || dueDate.isAfter(startDate))
-							&& (dueDate.isEqual(endDate) || dueDate.isBefore(endDate)));
+					return (dueDate.isEqual(endDate) || dueDate.isBefore(endDate));
 				}).count();
 
 		LocalDate plannedDueDate = overallIssues.stream().map(JiraIssue::getDueDate).filter(Objects::nonNull)
