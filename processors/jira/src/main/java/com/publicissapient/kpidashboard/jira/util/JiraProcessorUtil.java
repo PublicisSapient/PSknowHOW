@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.joda.time.DateTime;
@@ -352,6 +353,19 @@ public class JiraProcessorUtil {
 		progressStatusList.add(progressStatus);
 		processorExecutionTraceLog.setProgressStatusList(progressStatusList);
 		return processorExecutionTraceLog;
+	}
+
+	/**
+	 * this method uses for removed non-sanitize text. for remove security issue
+	 *
+	 * @param input
+	 * @return
+	 */
+	public static String sanitizeUserInput(String input) {
+		String sanitizedString = StringEscapeUtils.escapeHtml3(input);
+		return StringUtils.isNotBlank(sanitizedString)
+				? sanitizedString.replace("\\r", "").replace("\\n", "").replace("\\t", "").replaceAll("[^a-zA-Z0-9_\\-+/]", "")
+				: sanitizedString;
 	}
 
 }

@@ -24,6 +24,7 @@ package com.publicissapient.kpidashboard.apis.testexecution.rest;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -85,7 +86,7 @@ public class TestExecutionController {
 	@GetMapping("/{basicProjectConfigId}")
 	public ResponseEntity<ServiceResponse> getTestExecutions(@PathVariable String basicProjectConfigId) {
 		ServiceResponse response = null;
-
+		basicProjectConfigId = CommonUtils.sanitizeUserInput(basicProjectConfigId);
 		List<TestExecutionData> testExecutions = testExecutionService.getTestExecutions(basicProjectConfigId);
 		if (CollectionUtils.isNotEmpty(testExecutions)) {
 			response = new ServiceResponse(true, "Test Execution Data", testExecutions);

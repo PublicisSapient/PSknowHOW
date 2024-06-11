@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +76,7 @@ public class CapacityMasterController {
 	@GetMapping("/{basicProjectConfigId}")
 	public ResponseEntity<ServiceResponse> getCapacities(@PathVariable String basicProjectConfigId) {
 		ServiceResponse response = null;
-
+		basicProjectConfigId = CommonUtils.sanitizeUserInput(basicProjectConfigId);
 		List<CapacityMaster> capacities = capacityMasterService.getCapacities(basicProjectConfigId);
 		if (CollectionUtils.isNotEmpty(capacities)) {
 			response = new ServiceResponse(true, "Capacity Data", capacities);
