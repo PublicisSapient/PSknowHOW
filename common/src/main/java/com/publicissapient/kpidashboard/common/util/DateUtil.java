@@ -212,6 +212,10 @@ public class DateUtil {
 		return targetDate.isBefore(startDate) || targetDate.isEqual(startDate);
 	}
 
+	public static boolean equalAndBeforTime(LocalDate targetDate, LocalDate endDate) {
+		return targetDate.isEqual(endDate) || targetDate.isBefore(endDate) ;
+	}
+
 	public static String convertMillisToDateTime(long milliSeconds) {
 		return convertMillisToLocalDateTime(milliSeconds).toString();
 	}
