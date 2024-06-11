@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -13,69 +13,46 @@ export class AdditionalFilterComponent implements OnChanges {
   @Input() selectedTab: string = '';
   @Input() additionalFilterConfig = [];
   subscriptions: any[] = [];
-  filterData1 = new Set();
-  filterData2 = new Set();
+
   filterSet: any;
   filterData = [];
   appliedFilters = {};
-  selectedFilters: any;
+  selectedFilters = [];
+  @Output() onPrimaryFilterChange = new EventEmitter();
 
   constructor(private service: SharedService, private helperService: HelperService) {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       this.filterData = [];
-      this.filterSet = new Set();
-      let primarySet1 = new Set();
-      let primarySet2 = new Set();
-      this.filterData1 = new Set();
-      this.filterData2 = new Set();
-      if (Object.keys(data).length) {
-        data.filter1?.forEach(f => {
-          primarySet1.add(f);
+
+      Object.keys(data).forEach((f, index) => {
+        this.filterData.push(...data[f]);
+      });
+
+      if (this.selectedTab !== 'developer') {
+        this.filterData.forEach(filterGroup => {
+          filterGroup = this.helperService.sortAlphabetically(filterGroup);
         });
-
-        data.filter2?.forEach(f => {
-          primarySet2.add(f);
-        });
-
-        primarySet1.forEach((f: any) => {
-          f.forEach(element => {
-            this.filterData1.add(element);
-          });
-        });
-
-        primarySet2.forEach((f: any) => {
-          f.forEach(element => {
-            this.filterData2.add(element);
-          });
-        });
-        this.filterSet.add(this.filterData1);
-        this.filterSet.add(this.filterData2);
-
-        this.filterSet = Array.from(this.filterSet);
-        this.filterSet.forEach((f, index) => {
-          f = Array.from(f);
-          this.filterData[index] = f;
-        });
-
-        if (this.selectedTab.toLowerCase() === 'developer') {
-          this.filterData.forEach((filterArray, index) => {
-            let fakeEvent = {};
-            if (filterArray.includes('Overall')) {
-              filterArray.splice(filterArray.indexOf('Overall'), 1);
-              filterArray.unshift('Overall');
-              fakeEvent['value'] = 'Overall';
-              this.selectedFilters = 'Overall';
-            } else {
-              fakeEvent['value'] = filterArray[0];
-              this.selectedFilters = filterArray[0];
-            }
-
-            setTimeout(() => {
-              this.applyAdditionalFilter(fakeEvent, index + 1);
-            }, 0)
-          });
-        }
       }
+
+      // Apply the first/ Overall filter
+      if (this.selectedTab.toLowerCase() === 'developer') {
+        let fakeEvent = {};
+        if (this.filterData.map(f => f.nodeName).includes('Overall')) {
+          this.filterData.splice(this.filterData.map(f => f.nodeName).indexOf('Overall'), 1);
+          this.filterData.unshift({ nodeId: 'Overall', nodeName: 'Overall' });
+          fakeEvent['value'] = 'Overall';
+          this.selectedFilters = ['Overall'];
+        } else {
+          fakeEvent['value'] = this.filterData[0][0].nodeId;
+          this.selectedFilters = [this.filterData[0][0]];
+        }
+
+        setTimeout(() => {
+          this.applyAdditionalFilter(fakeEvent, 0 + 1);
+        }, 0);
+
+      }
+
     }));
   }
 
@@ -83,22 +60,35 @@ export class AdditionalFilterComponent implements OnChanges {
     if (changes['selectedTab']) {
       this.filterData = [];
       this.filterSet = new Set();
+      this.selectedFilters = [];
     }
   }
 
   applyAdditionalFilter(e, index, multi = false) {
     if (this.selectedTab.toLowerCase() === 'developer') {
-      if (!this.appliedFilters['filter' + index]) {
-        this.appliedFilters['filter' + index] = [];
-      }
-      if (!multi) {
-        this.appliedFilters['filter' + index].push(e.value);
+      if (this.filterData.length === 1) {
+
+        this.appliedFilters['filter'] = [];
+
+        if (!multi) {
+          this.appliedFilters['filter'].push(e.value);
+        } else {
+          this.appliedFilters['filter'] = [...e];
+        }
+        this.service.applyAdditionalFilters(this.appliedFilters['filter'][0].nodeId);
       } else {
-        this.appliedFilters['filter' + index] = [...e];
+        if (!this.appliedFilters['filter' + index]) {
+          this.appliedFilters['filter' + index] = [];
+        }
+        if (!multi) {
+          this.appliedFilters['filter' + index].push(e.value);
+        } else {
+          this.appliedFilters['filter' + index] = [...e];
+        }
+        this.service.applyAdditionalFilters(this.appliedFilters['filter' + index]);
       }
-      this.service.applyAdditionalFilters(this.appliedFilters);
     } else {
-      console.log(this.appliedFilters);
+      this.onPrimaryFilterChange.emit(e[index - 1]);
     }
   }
 }

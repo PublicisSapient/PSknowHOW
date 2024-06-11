@@ -24,7 +24,7 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
-import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, mergeMap } from 'rxjs/operators';
 import * as Excel from 'exceljs';
 import * as fs from 'file-saver';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
@@ -114,7 +114,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   loading: boolean = false;
   tabsArr = new Set();
   selectedKPITab: string;
-  additionalFiltersArr = [];
+  additionalFiltersArr = {};
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
@@ -852,6 +852,40 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   getChartData(kpiId, idx, aggregationType, kpiFilterChange = false) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
     this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
+
+    // this block populates additional filters on developer dashboard because on developer dashboard, the 
+    // additional filters depend on KPI response
+    if (this.selectedTab.toLowerCase() === 'developer') {
+      if (trendValueList?.length) {
+        let filterPropArr = Object.keys(trendValueList[0]).filter((prop) => prop.includes('filter'));
+        filterPropArr.forEach((filterProp) => {
+          if (!this.additionalFiltersArr[filterProp]?.size) {
+            this.additionalFiltersArr[filterProp] = new Set();
+          }
+
+          this.additionalFiltersArr[filterProp].add(JSON.stringify(trendValueList.map((x) => x[filterProp])));
+          this.additionalFiltersArr[filterProp] = Array.from(this.additionalFiltersArr[filterProp]).map((item: string) => JSON.parse(item));
+        });
+
+        if (!kpiFilterChange) {
+
+          Object.keys(this.additionalFiltersArr).forEach((filterProp) => {
+            // this.additionalFiltersArr[filterProp] = new Set(this.additionalFiltersArr[filterProp]);
+            for (let i = 0; i < this.additionalFiltersArr[filterProp].length; i++) {
+              this.additionalFiltersArr[filterProp][i] = this.additionalFiltersArr[filterProp][i].map((f) => {
+                return {
+                  nodeId: f,
+                  nodeName: f
+                }
+              })
+            }
+          });
+          this.service.setAdditionalFilters(this.additionalFiltersArr);
+        }
+      }
+    }
+
+
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
       if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
         if (kpiId === 'kpi17') {
@@ -905,33 +939,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           preAggregatedValues = [...preAggregatedValues, ...(trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
         }
         this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
-
-
-        // this block populates additional filters on developer dashboard because on developer dashboard, the 
-        // additional filters depend on KPI response
-        if (this.selectedTab.toLowerCase() === 'developer') {
-          if (!this.additionalFiltersArr['filter1']) {
-            this.additionalFiltersArr['filter1'] = [];
-          }
-
-          if (!this.additionalFiltersArr['filter2']) {
-            this.additionalFiltersArr['filter2'] = [];
-          }
-          this.additionalFiltersArr['filter1'].push(trendValueList.map((x) => x.filter1));
-          this.additionalFiltersArr['filter2'].push(trendValueList.map((x) => x.filter2));
-
-          if (!kpiFilterChange) {
-            this.additionalFiltersArr.forEach((filterSet) => {
-              filterSet[0] = filterSet[0].map((f) => {
-                return {
-                  nodeId: f,
-                  nodeName: f
-                }
-              })
-            });
-            this.service.setAdditionalFilters(this.additionalFiltersArr);
-          }
-        }
       }
       else {
         this.kpiChartData[kpiId] = [];
@@ -1485,27 +1492,27 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.kpiSelectedFilterObj[kpi?.kpiId] = [];
     if (kpi.kpiId === "kpi72") {
       if (event.hasOwnProperty('filter1') || event.hasOwnProperty('filter2')) {
-          if (!Array.isArray(event.filter1) || !Array.isArray(event.filter2)) {
-              const outputObject = {};
-              for (const key in event) {
-                  outputObject[key] = [event[key]];
-              }
-              event = outputObject;
+        if (!Array.isArray(event.filter1) || !Array.isArray(event.filter2)) {
+          const outputObject = {};
+          for (const key in event) {
+            outputObject[key] = [event[key]];
           }
+          event = outputObject;
+        }
       }
       if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
 
-          for (const key in event) {
-              if (event[key]?.length == 0) {
-                  delete event[key];
-              }
+        for (const key in event) {
+          if (event[key]?.length == 0) {
+            delete event[key];
           }
-          this.kpiSelectedFilterObj[kpi?.kpiId] = event;
+        }
+        this.kpiSelectedFilterObj[kpi?.kpiId] = event;
       } else {
-          this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
+        this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
       }
 
-  }
+    }
     else {
       if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
         for (const key in event) {
