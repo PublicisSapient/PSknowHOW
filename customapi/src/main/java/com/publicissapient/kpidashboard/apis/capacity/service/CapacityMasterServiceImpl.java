@@ -639,17 +639,33 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 		}
 	}
 
+	/**
+	 * Helper method to process the additional filter capacity list in the given
+	 * CapacityMaster. If a filter ID and its node capacities are valid, it divides
+	 * each node capacity by 5.
+	 *
+	 * @param capacityMaster
+	 *            the CapacityMaster object containing additional filter capacities
+	 */
 	public void helper(CapacityMaster capacityMaster) {
+		// Retrieve the additional filter hierarchy levels and convert keys to uppercase
+		// for case-insensitive matching
 		Map<String, AdditionalFilterCategory> addFilterCat = filterHelperService.getAdditionalFilterHierarchyLevel();
 		Map<String, AdditionalFilterCategory> addFilterCategory = addFilterCat.entrySet().stream()
 				.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
 
+		// Check if the additional filter capacity list in CapacityMaster is not empty
 		if (CollectionUtils.isNotEmpty(capacityMaster.getAdditionalFilterCapacityList())) {
+			// Iterate through each additional filter capacity
 			for (AdditionalFilterCapacity category : capacityMaster.getAdditionalFilterCapacityList()) {
+				// Check if the filter ID is not empty, node capacity list is not empty, and the
+				// filter ID exists in additional filter categories
 				if (StringUtils.isNotEmpty(category.getFilterId())
 						&& CollectionUtils.isNotEmpty(category.getNodeCapacityList())
-						&& null != addFilterCategory.get(category.getFilterId().toUpperCase())) {
+						&& addFilterCategory.get(category.getFilterId().toUpperCase()) != null) {
 
+					// For each node capacity, divide the additional filter capacity by 5 if it's
+					// not null
 					category.getNodeCapacityList().forEach(leafNode -> {
 						Double leafNodeCapacity = leafNode.getAdditionalFilterCapacity();
 						if (leafNodeCapacity != null) {
