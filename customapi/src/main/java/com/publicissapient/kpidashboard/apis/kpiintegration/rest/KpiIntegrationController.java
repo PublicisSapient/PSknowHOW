@@ -64,7 +64,6 @@ public class KpiIntegrationController {
 	@PostMapping(value = "/kpiIntegrationValues", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<KpiElement>> getMaturityValues(HttpServletRequest request,
 			@NotNull @RequestBody KpiRequest kpiRequest) {
-		log.info("Received {} request for /kpiIntegrationValues", request.getMethod());
 		Boolean isApiAuth = customApiConfig.getxApiKey().equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (Boolean.FALSE.equals(isApiAuth)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
