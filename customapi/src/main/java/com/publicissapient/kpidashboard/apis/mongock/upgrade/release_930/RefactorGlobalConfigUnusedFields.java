@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_920;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_930;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -13,7 +13,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author pawkandp
  */
-@ChangeUnit(id = "refactor_global_config_unused_fields", order = "9203", author = "pawkandp", systemVersion = "9.2.0")
+@ChangeUnit(id = "refactor_global_config_unused_fields", order = "9303", author = "pawkandp", systemVersion = "9.3.0")
 public class RefactorGlobalConfigUnusedFields {
 	private final MongoTemplate mongoTemplate;
 
