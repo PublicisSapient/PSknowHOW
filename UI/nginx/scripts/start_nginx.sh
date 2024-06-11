@@ -44,6 +44,7 @@ else
             -out /etc/ssl/certs/knowhow_ssl.cer \
             -keyout /etc/ssl/certs/knowhow_ssl.key \
             -subj "/C=IN/ST=HR/L=ggn/O=Security/OU=IT Department/CN=${DNS_SSL}"
+    echo "Welcome@123" > /etc/ssl/certs/knowhow_ssl_passphrase.txt
     echo "Self-signed certificate created"
 fi
 
