@@ -91,11 +91,10 @@ public interface UserService {
 	/**
 	 * update user profile
 	 * 
-	 * @param username
 	 * @param request
 	 * @return
 	 */
-	boolean updateUserProfile(String username, UserDTO request);
+	boolean updateUserProfile(UserDTO request);
 
 	/**
 	 * check new password is not same as old password

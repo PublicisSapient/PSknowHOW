@@ -25,7 +25,6 @@ import java.util.Set;
 import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 
-import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 
@@ -52,12 +51,11 @@ public interface TokenAuthenticationService {
 	/**
 	 * Gets authentication.
 	 *
-	 * @param request
+	 * @param httpServletRequest
 	 *            the request
 	 * @return the authentication
 	 */
-	Authentication getAuthentication(UserTokenAuthenticationDTO request, HttpServletRequest httpServletRequest,
-			HttpServletResponse response);
+	Authentication getAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse response);
 
 	/**
 	 *
@@ -75,11 +73,10 @@ public interface TokenAuthenticationService {
 
 	/**
 	 *
-	 * @param userTokenAuthenticationDTO
 	 * @param httpServletRequest
 	 * @return
 	 */
-	String getAuthToken(UserTokenAuthenticationDTO userTokenAuthenticationDTO, HttpServletRequest httpServletRequest);
+	String getAuthToken(HttpServletRequest httpServletRequest);
 
 	/**
 	 * validate token

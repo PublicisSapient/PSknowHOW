@@ -213,20 +213,10 @@ export class AppInitializerService {
         if (!environment['AUTHENTICATION_SERVICE'] == true) {
             this.router.resetConfig([...this.routes]);
             this.router.navigate([location]);
-            //this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
         } else {
-            // TODO: find right property to avoid string manipulation - Rishabh 3/4/2024
-            let url = window.location.href; 
-
-            let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
-            if (authToken) {
-                this.sharedService.setAuthToken(authToken);
-            } else {
-                authToken = this.sharedService.getAuthToken();
-            }
+           
             let obj = {
                 'resource': environment.RESOURCE,
-                'authToken': authToken
             };
             // Make API call or initialization logic here...
             this.httpService.getUserValidation(obj).subscribe((response) => {
@@ -235,9 +225,7 @@ export class AppInitializerService {
                     this.router.resetConfig([...this.routesAuth]);
                     localStorage.setItem("user_name", response?.['data']?.user_name);
                     localStorage.setItem("user_email", response?.['data']?.user_email);
-                    if (authToken) {
-                        this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
-                    }
+                    this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
                 }
                 if(location){
                     this.router.navigateByUrl(location);

@@ -42,8 +42,8 @@ export class ViewNewUserAuthRequestComponent implements OnInit {
           status: approvalStatus ? 'Approved' : 'Rejected',
           role: 'ROLE_PROJECT_ADMIN',
           message: '',
-        },
-        req.username,
+          userName : req.username,
+        }
       )
       .subscribe((data) => {
         this.showLoader = false;
