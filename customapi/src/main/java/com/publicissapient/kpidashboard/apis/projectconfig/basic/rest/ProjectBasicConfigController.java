@@ -150,8 +150,6 @@ public class ProjectBasicConfigController {
 			});
 		}
 
-		log.info(ADDING_PROJECT_CONFIGURATIONS, projectBasicConfigDTO.toString());
-
 		ServiceResponse serviceResp = projectBasicConfigService.addBasicConfig(projectBasicConfigDTO);
 
 		List<RoleWiseProjects> projectAccess = projectAccessManager
