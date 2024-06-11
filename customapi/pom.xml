@@ -554,7 +554,7 @@
 							<goal>build</goal>
 						</goals>
 						<configuration>
-							<dockerfile>customapi/Dockerfile</dockerfile>
+							<dockerfile>Dockerfile</dockerfile>
 							<repository>${final.name}</repository>
 							<tag>${project.version}</tag>
 							<buildArgs>
