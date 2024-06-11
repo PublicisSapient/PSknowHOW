@@ -581,4 +581,15 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return connection.getPassword() != null ? connection.getPassword() : connection.getApiKey();
 	}
 
+	@Override
+	public ServiceResponse getZephyrCloudUrlDetails() {
+		boolean success = false;
+		String zephyrCloudUrl = customApiConfig.getZephyrCloudBaseUrl();
+		if (zephyrCloudUrl != null) {
+			success = true;
+		}
+
+		return new ServiceResponse(success, "Fetched Zephyr Cloud Base Url successfully", zephyrCloudUrl);
+	}
+
 }

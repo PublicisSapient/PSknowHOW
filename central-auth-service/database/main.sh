@@ -16,3 +16,6 @@ psql -v ON_ERROR_STOP=0 -h localhost --username "$POSTGRES_USER" --dbname "$POST
 
 echo "############ insert master data `date` ###########"
 psql -v ON_ERROR_STOP=0 -h localhost --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -f $DIR_PATH"dml/insert_master_data.sql"
+
+echo "############ Alter table column type `date` ###########"
+psql -v ON_ERROR_STOP=0 -h localhost --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -f $DIR_PATH"ddl/alter_table_column_type_ddl.sql"
