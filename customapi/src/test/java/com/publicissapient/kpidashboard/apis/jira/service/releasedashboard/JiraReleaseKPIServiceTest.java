@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,7 +38,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.model.ReleaseSpecification;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
@@ -169,38 +169,6 @@ public class JiraReleaseKPIServiceTest {
 		List<String> releaseList = List.of("release8.1");
 		when(jiraService.getReleaseList()).thenReturn(releaseList);
 		assertNotNull(jiraKPIService.getReleaseList());
-	}
-
-	@Test
-	public void testGetStoryPoint_withValidJiraIssueList() {
-		FieldMapping fieldMapping = mock(FieldMapping.class);
-		List<JiraIssue> jiraIssueList = List.of(new JiraIssue(), new JiraIssue());
-		when(jiraService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0d)).thenReturn(5.5d);
-		Double result = jiraKPIService.getStoryPoint(jiraIssueList, fieldMapping);
-		assertNotNull(result);
-		assertEquals(5.5d, result);
-	}
-
-	@Test
-	public void testGetClosedReleaseAvgData() {
-		FieldMapping fieldMapping = new FieldMapping();
-		ReleaseSpecification releaseSpecification = new ReleaseSpecification();
-		Map<String, Object> expectedResult = Map.of("key1", "value1", "key2", "value2");
-		when(jiraService.getAvgVelocity(fieldMapping, releaseSpecification)).thenReturn(expectedResult);
-		Map<String, Object> result = jiraKPIService.getClosedReleaseAvgData(fieldMapping, releaseSpecification);
-		assertEquals(expectedResult, result);
-
-	}
-
-	@Test
-	public void testGetStoryPoint_withRoundedEstimate() {
-		FieldMapping fieldMapping = mock(FieldMapping.class);
-		List<JiraIssue> jiraIssueList = List.of(new JiraIssue(), new JiraIssue());
-		when(jiraService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0d)).thenReturn(5.567d);
-		Double result = jiraKPIService.getStoryPoint(jiraIssueList, fieldMapping);
-		assertNotNull(result);
-		// Assuming roundingOff method rounds to 2 decimal places
-		assertEquals(5.57d, result);
 	}
 
 	public static class JiraReleaseKPIServiceTestImpl extends JiraReleaseKPIService {

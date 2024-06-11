@@ -37,6 +37,7 @@ public final class CORSConstants {
 	public static final String HEADER_NAME_ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
 	public static final String HEADER_VALUE_EXPOSE_HEADERS = "xsrf-token, auth-details-updated";
 	public static final String REQUEST_ID = "request-Id";
+	public static final String STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security";
 
 	private CORSConstants() {
 	}

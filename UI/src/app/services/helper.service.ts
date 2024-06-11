@@ -68,17 +68,17 @@ export class HelperService {
         const kpiRequestObject = <any>{};
 
         kpiRequestObject.kpiList = <any>[];
-        for (let i = 0; i < masterData?.kpiList?.length; i++) {
-            const obj = { ...masterData.kpiList[i] };
+        for (let i = 0; i < masterData?.length; i++) {
+            const obj = { ...masterData[i]?.kpiDetail };
             obj['chartType'] = '';
             let condition = obj.kpiSource === kpiSource && obj.kanban === isKanban;
 
             if (type && type !== '' && !isNaN(type)) {
                 condition = (obj.groupId && obj.groupId === type) && condition;
             }
-            if (obj?.kpiCategory) {
-                condition = obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
-            }
+            // if (obj?.kpiCategory) {
+            //     condition = obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
+            // }
 
             if (kpiIdsForCurrentBoard && kpiIdsForCurrentBoard.length && obj?.kpiId) {
                 condition = kpiIdsForCurrentBoard.includes(obj.kpiId) && condition;

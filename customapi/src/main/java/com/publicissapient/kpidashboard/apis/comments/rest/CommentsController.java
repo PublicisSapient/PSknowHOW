@@ -69,7 +69,6 @@ public class CommentsController {
 	 */
 	@PostMapping("/submitComments")
 	public ResponseEntity<ServiceResponse> submitComments(@Valid @RequestBody CommentSubmitDTO comment) {
-
 		boolean responseStatus = commentsService.submitComment(comment);
 		if (responseStatus) {
 			return ResponseEntity.status(HttpStatus.OK)

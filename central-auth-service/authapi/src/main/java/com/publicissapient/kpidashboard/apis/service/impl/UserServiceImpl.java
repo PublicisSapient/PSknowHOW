@@ -92,7 +92,6 @@ public class UserServiceImpl implements UserService {
 	public static final String ERROR_INVALID_USER = "error_invalid_user";
 	public static final String INVALID_USER = "error_invalid_user";
 	private static final String STANDARD = "STANDARD";
-	private static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -155,25 +154,30 @@ public class UserServiceImpl implements UserService {
 		if (fullEmail != null && fullEmail.contains("@") && !authType.equals(STANDARD)) {
 			username = fullEmail.substring(0, fullEmail.indexOf("@"));
 		}
+
 		String password = (String) authentication.getCredentials();
+
+
 		User dbUsers = getUserObject(authentication, authType, username);
 
+		if (!Pattern.matches(CommonConstant.USERNAME_PATTERN, username) || dbUsers == null) {
+			throw new BadCredentialsException("Login Failed: The username or password entered is incorrect");
+		}
 		if (checkForResetFailAttempts(dbUsers, LocalDateTime.now())) {
 			resetFailAttempts(username);
 		} else if (checkForLockedUser(dbUsers)) {
 			throw new LockedException("Account Locked: Invalid Login Limit Reached " + username);
 		}
 
-		if (dbUsers != null && !dbUsers.isUserVerified()) {
+		if (!dbUsers.isUserVerified()) {
 			throw new PendingApprovalException(
 					"Login Failed: Your verification is pending. Please check your registered mail for verification");
 		}
 
-		if (dbUsers != null && !dbUsers.isApproved()) {
+		if (!dbUsers.isApproved()) {
 			throw new PendingApprovalException("Login Failed: Your access request is pending for approval");
 		}
 
-		if (dbUsers != null) {
 			UserDTO userDTO = getUserDTO(dbUsers);
 			if (authType.equalsIgnoreCase(AuthType.SAML.name())) {
 				return new UsernamePasswordAuthenticationToken(userDTO, null, new ArrayList<>());
@@ -187,9 +191,7 @@ public class UserServiceImpl implements UserService {
 					throw new BadCredentialsException("Login Failed: The username or password entered is incorrect");
 				}
 			}
-		}
 
-		throw new BadCredentialsException("Login Failed: The username or password entered is incorrect");
 	}
 
 	/**
@@ -516,6 +518,12 @@ public class UserServiceImpl implements UserService {
 	 * @return boolean
 	 */
 	private boolean validateUserDetails(UserDTO request) {
+		if (!Pattern.matches(CommonConstant.USERNAME_PATTERN, request.getUsername())) {
+			throw new GenericException("Cannot complete the registration process, Invalid Username");
+		} else if (!Pattern.matches(CommonConstant.EMAIL_PATTERN, request.getEmail())) {
+			throw new GenericException("Cannot complete the registration process, Invalid Email");
+		}
+
 		Pattern pattern = Pattern.compile(CommonConstant.PASSWORD_PATTERN);
 		Matcher matcher = pattern.matcher(request.getPassword());
 		boolean flag = matcher.matches();
@@ -524,8 +532,6 @@ public class UserServiceImpl implements UserService {
 
 		if (isUsernameExists)
 			throw new GenericException("Cannot complete the registration process, Try with different username");
-		if (!Pattern.compile(EMAIL_PATTERN).matcher(request.getEmail()).matches())
-			throw new GenericException("Cannot complete the registration process, Invalid Email");
 		if (isEmailExist)
 			throw new GenericException("Cannot complete the registration process, Try with different email");
 		return flag;
@@ -578,16 +584,14 @@ public class UserServiceImpl implements UserService {
 	/**
 	 * Update user profile
 	 *
-	 * @param username
 	 * @param request
 	 * @return
 	 */
 	@Override
-	public boolean updateUserProfile(String username, UserDTO request) {
+	public boolean updateUserProfile(UserDTO request) {
 
-		User user = userRepository.findByUsername(username);
+		User user = userRepository.findByUsername(request.getUsername());
 		if (user != null) {
-			user.setUsername(request.getUsername());
 			user.setEmail(request.getEmail().toLowerCase());
 			user.setFirstName(request.getFirstName());
 			user.setLastName(request.getLastName());

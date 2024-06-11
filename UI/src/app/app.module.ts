@@ -106,7 +106,7 @@ import { CommentsComponent } from './component/comments/comments.component';
 import { MilestoneComponent } from './dashboard/milestone/milestone.component';
 import { HorizontalPercentBarChartComponent } from './component/horizontal-percent-bar-chart/horizontal-percent-bar-chart.component';
 import { CumulativeLineChartComponent } from './component/cumulative-line-chart/cumulative-line-chart.component';
-
+import { InputTextModule } from 'primeng/inputtext';
 import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
 import { FeedbackComponent } from './feedback/feedback.component';
 import { KpiTableComponent } from './dashboard/kpi-table/kpi-table.component';
@@ -138,6 +138,7 @@ import { GroupedColumnPlusLineChartV2Component } from './component/grouped-colum
 import { MultilineStyleV2Component } from './component/multiline-style-v2/multiline-style-v2.component';
 import { TooltipV2Component } from './component/tooltip-v2/tooltip-v2.component';
 import { HorizontalPercentBarChartv2Component } from './component/horizontal-percent-bar-chartv2/horizontal-percent-bar-chartv2.component';
+import { RecommendationsComponent } from './component/recommendations/recommendations.component';
 import { ChartWithFiltersComponent } from './component/chart-with-filters/chart-with-filters.component';
 import { KpiAdditionalFilterComponent } from './component/kpi-additional-filter/kpi-additional-filter.component';
 
@@ -224,6 +225,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         TooltipV2Component,
         HorizontalPercentBarChartv2Component,
         PageNotFoundComponent,
+        RecommendationsComponent,
         ChartWithFiltersComponent,
         KpiAdditionalFilterComponent
     ],
@@ -258,7 +260,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         OverlayPanelModule,
         MenuModule,
         SkeletonModule,
-        SharedModuleModule
+        SharedModuleModule,
+        InputTextModule
     ],
     providers: [
         ExcelService,

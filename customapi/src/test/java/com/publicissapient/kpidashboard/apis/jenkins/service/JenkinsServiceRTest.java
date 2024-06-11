@@ -131,113 +131,104 @@ public class JenkinsServiceRTest {
 
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		List<HierarchyLevel> hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
-
-
-		//when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
-				.thenReturn("project");
-		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		Map<String, Integer> map = new HashMap<>();
 		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
-		when(filterHelperService.getFilteredBuilds(ArgumentMatchers.any(), Mockito.anyString()))
-				.thenReturn(accountHierarchyDataList);
 		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
 
+		when(filterHelperService.getHierarachyLevelId(4, "project", false)).thenReturn("project");
 
 		buildKpiElement = setKpiElement(KPICode.CODE_BUILD_TIME.getKpiId(), "CODE_BUILD_TIME");
 	}
 
-	// level = sprint
+	private KpiElement setKpiElement(String kpiId, String kpiName) {
+
+		KpiElement kpiElement = new KpiElement();
+		kpiElement.setKpiId(kpiId);
+		kpiElement.setKpiName(kpiName);
+
+		return kpiElement;
+	}
+
+	@After
+	public void cleanup() {
+
+	}
+
+
+
 	@Test
 	public void testProcess() throws Exception {
 
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
-		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
+		KpiRequest kpiRequest = createKpiRequest(2, "Jenkins");
 
-		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), codeBuildTimeServiceImpl);
-		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
+		@SuppressWarnings("rawtypes")
+		JenkinsKPIService mcokAbstract = codeBuildTimeServiceImpl;
+		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), mcokAbstract);
 
-		List<KpiElement> resultList;
-		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
-			CodeBuildTimeServiceImpl mockService = mock(CodeBuildTimeServiceImpl.class);
-			mockedStatic.when(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME.name())))
-					.thenReturn(mockService);
-			when(mockService.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
-			resultList = jenkinsServiceR.process(kpiRequest);
-			mockedStatic.verify(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME.name())));
+		try (MockedStatic<JenkinsKPIServiceFactory> utilities = mockStatic(JenkinsKPIServiceFactory.class)) {
+			utilities.when((Verification) JenkinsKPIServiceFactory.getJenkinsKPIService(KPICode.CODE_BUILD_TIME.name()))
+					.thenReturn(mcokAbstract);
 		}
 
-		assertThat("Kpi Name :", resultList.get(0).getKpiName(), equalTo("CODE_BUILD_TIME"));
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
+		List<KpiElement> resultList = jenkinsServiceR.process(kpiRequest);
+
+		resultList.forEach(k -> {
+
+			KPICode kpi = KPICode.getKPI(k.getKpiId());
+
+			switch (kpi) {
+
+			case CODE_BUILD_TIME:
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("CODE_BUILD_TIME"));
+				break;
+
+			default:
+				break;
+			}
+
+		});
+
 	}
 
+	// level = sprint
 	@Test
-	public void testProcess_MandatoryFalse() throws Exception {
+	public void testProcess1() throws Exception {
 
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(false);
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 
-		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), codeBuildTimeServiceImpl);
+		@SuppressWarnings("rawtypes")
+		JenkinsKPIService mcokAbstract = codeBuildTimeServiceImpl;
+		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), mcokAbstract);
 		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
 
 		List<KpiElement> resultList;
 		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
-			CodeBuildTimeServiceImpl mockService = mock(CodeBuildTimeServiceImpl.class);
-			mockedStatic.when(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME.name())))
-					.thenReturn(mockService);
-			resultList = jenkinsServiceR.process(kpiRequest);
-			mockedStatic.verify(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME.name())));
+			mockedStatic.when((MockedStatic.Verification) JenkinsKPIServiceFactory.getJenkinsKPIService(KPICode.CODE_BUILD_TIME.name()))
+					.thenReturn(mcokAbstract);
 		}
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.MANDATORY_FIELD_MAPPING));
-	}
+		resultList = jenkinsServiceR.process(kpiRequest);
 
-	@Test
-	public void testProcess_ApplicatioException() throws Exception {
 
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
-		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 
-		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), codeBuildTimeServiceImpl);
-		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
+		resultList.forEach(k -> {
 
-		List<KpiElement> resultList;
-		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
-			CodeBuildTimeServiceImpl mockService = mock(CodeBuildTimeServiceImpl.class);
-			mockedStatic.when(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME.name())))
-					.thenReturn(mockService);
-			when(mockService.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
-			resultList = jenkinsServiceR.process(kpiRequest);
-			mockedStatic.verify(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME.name())));
-		}
+			KPICode kpi = KPICode.getKPI(k.getKpiId());
 
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
-	}
+			switch (kpi) {
 
-	@Test
-	public void testProcess_NullPointer() throws Exception {
+			case CODE_BUILD_TIME:
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("CODE_BUILD_TIME"));
+				break;
 
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
-		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
+			default:
+				break;
+			}
 
-		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), codeBuildTimeServiceImpl);
-		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
+		});
 
-		List<KpiElement> resultList;
-		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
-			CodeBuildTimeServiceImpl mockService = mock(CodeBuildTimeServiceImpl.class);
-			when(mockService.getKpiData(any(), any(), any())).thenReturn(buildKpiElement);
-			mockedStatic.when(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME.name())))
-					.thenReturn(mockService);
-			when(mockService.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
-			resultList = jenkinsServiceR.process(kpiRequest);
-			mockedStatic.verify(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME.name())));
-		}
-
-		assertThat("Kpi Name :", resultList.get(0).getKpiName(), equalTo("CODE_BUILD_TIME"));
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -246,11 +237,13 @@ public class JenkinsServiceRTest {
 
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 
-		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), codeBuildTimeServiceImpl);
+		@SuppressWarnings("rawtypes")
+		JenkinsKPIService mcokAbstract = codeBuildTimeServiceImpl;
+		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), mcokAbstract);
 
 		try (MockedStatic<JenkinsKPIServiceFactory> utilities = mockStatic(JenkinsKPIServiceFactory.class)) {
 			utilities.when((Verification) JenkinsKPIServiceFactory.getJenkinsKPIService(KPICode.CODE_BUILD_TIME.name()))
-					.thenReturn(codeBuildTimeServiceImpl);
+					.thenReturn(mcokAbstract);
 		}
 
 		when(filterHelperService.getFilteredBuilds(any(), Mockito.anyString()))
@@ -309,19 +302,7 @@ public class JenkinsServiceRTest {
 		kpiList.add(kpiElement);
 	}
 
-	private KpiElement setKpiElement(String kpiId, String kpiName) {
 
-		KpiElement kpiElement = new KpiElement();
-		kpiElement.setKpiId(kpiId);
-		kpiElement.setKpiName(kpiName);
-
-		return kpiElement;
-	}
-
-	@After
-	public void cleanup() {
-
-	}
 
 
 

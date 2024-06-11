@@ -56,6 +56,7 @@ export class SharedService {
   public boardId = 1;
   public isDownloadExcel;
   private authToken = '';
+  public sprintForRnR;
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
@@ -495,6 +496,14 @@ export class SharedService {
       }
     }
     this.boardNamesListSubject.next(boardNameArr);
+  }
+
+  getSprintForRnR(){
+    return this.sprintForRnR;
+  }
+
+  setSprintForRnR(sprint){
+    this.sprintForRnR = sprint;
   }
 }
 

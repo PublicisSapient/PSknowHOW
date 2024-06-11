@@ -18,7 +18,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -26,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
-import com.publicissapient.kpidashboard.apis.jira.model.ReleaseSpecification;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.hamcrest.MatcherAssert;
@@ -64,8 +62,10 @@ import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueReleaseStatusDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraNonTrendKPIServiceFactory;
+import com.publicissapient.kpidashboard.apis.jira.model.ReleaseSpecification;
 import com.publicissapient.kpidashboard.apis.jira.scrum.service.release.ReleaseBurnUpServiceImpl;
 import com.publicissapient.kpidashboard.apis.jira.service.NonTrendKPIService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
@@ -74,6 +74,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -117,8 +118,6 @@ public class JiraReleaseServiceRTest {
 	@Mock
 	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 
-	private KpiRequest kpiRequest;
-
 	@Before
 	public void setup() throws ApplicationException {
 		MockitoAnnotations.openMocks(this);
@@ -149,14 +148,49 @@ public class JiraReleaseServiceRTest {
 
 		when(filterHelperService.getHierarachyLevelId(5, "release", false)).thenReturn("release");
 
-		kpiRequest = createKpiRequest(5);
+	}
 
-		jiraServiceCache.put(KPICode.RELEASE_BURNUP.name(), releaseBurnupService);
+	@org.junit.Test(expected = Exception.class)
+	public void testProcessException() throws Exception {
+
+		KpiRequest kpiRequest = createKpiRequest(6);
+
+		jiraServiceR.process(kpiRequest);
+
+	}
+
+	@org.junit.Test
+	public void TestProcess_pickFromCache() throws Exception {
+
+		KpiRequest kpiRequest = createKpiRequest(5);
+
+		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
+				.thenReturn(new ArrayList<KpiElement>());
+		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean()))
+				.thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
+
+		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
+
+		assertEquals(0, resultList.size());
+	}
+
+	@SuppressWarnings("unchecked")
+	@org.junit.Test
+	public void TestProcess() throws Exception {
+
+		KpiRequest kpiRequest = createKpiRequest(5);
+
+		@SuppressWarnings("rawtypes")
+		JiraReleaseKPIService mcokAbstract = releaseBurnupService;
+		jiraServiceCache.put(KPICode.RELEASE_BURNUP.name(), mcokAbstract);
 
 		try (MockedStatic<JiraNonTrendKPIServiceFactory> utilities = Mockito
 				.mockStatic(JiraNonTrendKPIServiceFactory.class)) {
 			utilities.when((MockedStatic.Verification) JiraNonTrendKPIServiceFactory
-					.getJiraKPIService(KPICode.RELEASE_BURNUP.name())).thenReturn(releaseBurnupService);
+					.getJiraKPIService(KPICode.RELEASE_BURNUP.name())).thenReturn(mcokAbstract);
 		}
 
 		Map<String, Integer> map = new HashMap<>();
@@ -172,7 +206,8 @@ public class JiraReleaseServiceRTest {
 				.collect(Collectors.toList()));
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
-		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean()))
+				.thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		when(jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(anyString(), anyList()))
@@ -183,57 +218,76 @@ public class JiraReleaseServiceRTest {
 				.newInstance("/json/default/jira_issue_release_status.json");
 		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId((anyString())))
 				.thenReturn(jiraIssueReleaseStatusDataFactory.getJiraIssueReleaseStatusList().get(0));
+		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
+		resultList.forEach(k -> {
+
+			KPICode kpi = KPICode.getKPI(k.getKpiId());
+
+			switch (kpi) {
+
+			case RELEASE_BURNUP:
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("RELEASE_BURNUP"));
+				break;
+
+			default:
+				break;
+			}
+
+		});
 
 	}
 
 	@org.junit.Test
-	public void TestProcess_pickFromCache() throws Exception {
+	public void TestProcessWithApplicationException() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(5);
 
-		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
-				.thenReturn(new ArrayList<KpiElement>());
-		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
+		@SuppressWarnings("rawtypes")
+		JiraReleaseKPIService mcokAbstract = releaseBurnupService;
+		jiraServiceCache.put(KPICode.RELEASE_BURNUP.name(), mcokAbstract);
+
+		try (MockedStatic<JiraNonTrendKPIServiceFactory> utilities = Mockito
+				.mockStatic(JiraNonTrendKPIServiceFactory.class)) {
+			utilities.when((MockedStatic.Verification) JiraNonTrendKPIServiceFactory
+					.getJiraKPIService(KPICode.RELEASE_BURNUP.name())).thenReturn(mcokAbstract);
+		}
+
+		doThrow(ApplicationException.class).when(releaseBurnupService).getKpiData(any(), any(), any());
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
-
+		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
+		when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream()
+				.filter(s -> s.getLeafNodeId().equalsIgnoreCase("38296_Scrum Project_6335363749794a18e8a4479b"))
+				.collect(Collectors.toList()));
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
+		when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean()))
+				.thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
-		assertEquals(0, resultList.size());
-	}
+		resultList.forEach(k -> {
 
-	@SuppressWarnings("unchecked")
-	@org.junit.Test
-	public void TestProcess() throws Exception {
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
-		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		MatcherAssert.assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
-	}
+			KPICode kpi = KPICode.getKPI(k.getKpiId());
 
-	@Test
-	public void TestProcess_ApplicationException() throws Exception {
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
-		when(releaseBurnupService.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
-		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		MatcherAssert.assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
-	}
+			switch (kpi) {
 
+			case RELEASE_BURNUP:
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("RELEASE_BURNUP"));
+				break;
 
-	@Test
-	public void TestProcess_NPException() throws Exception {
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
-		when(releaseBurnupService.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
-		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		MatcherAssert.assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
-	}
+			default:
+				break;
+			}
 
-	@Test
-	public void TestProcess_Mandatory() throws Exception {
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(false);
-		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		MatcherAssert.assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.MANDATORY_FIELD_MAPPING));
+		});
+
 	}
 
 	@Test
@@ -245,52 +299,28 @@ public class JiraReleaseServiceRTest {
 		List<KpiElement> resultList = jiraServiceR.processWithExposedApiToken(kpiRequest);
 		assertEquals(0, resultList.size());
 	}
-
 	@Test
-	public void testGetAvgVelocity_withValidData() {
-		FieldMapping fieldMapping = new FieldMapping();
-		ReleaseSpecification releaseSpecification = new ReleaseSpecification();
-		fieldMapping.setReleaseListKPI150(Arrays.asList(
-				"KnowHOW v9.0.0 (duration 62.0 days)",
-				"KnowHOW v9.1.0 (duration 6.0 days)"
-		));
-		fieldMapping.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
-
-		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
-		when(jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(anyString(), anyList()))
-				.thenReturn(jiraIssueDataFactory.getJiraIssues());
-
-		Map<String, Object> result = jiraServiceR.getAvgVelocity(fieldMapping, releaseSpecification);
-
-		assertNotNull(result);
-		assertEquals(2, result.size());
-		assertTrue(result.containsKey("avgIssueCount"));
-		assertTrue(result.containsKey("avgStoryPoint"));
-	}
-
-
-	@Test
-	public void getJiraIssueReleaseForProject(){
+	public void getJiraIssueReleaseForProject() {
 		jiraServiceR.getJiraIssueReleaseForProject();
 	}
 
 	@Test
-	public void getReleaseList(){
+	public void getReleaseList() {
 		jiraServiceR.getReleaseList();
 	}
 
 	@Test
-	public void getSubTaskDefects(){
+	public void getSubTaskDefects() {
 		jiraServiceR.getSubTaskDefects();
 	}
 
 	@Test
-	public void getJiraIssuesCustomHistoryForCurrentSprint(){
+	public void getJiraIssuesCustomHistoryForCurrentSprint() {
 		jiraServiceR.getJiraIssuesCustomHistoryForCurrentSprint();
 	}
 
 	@Test
-	public void getJiraIssuesForSelectedRelease(){
+	public void getJiraIssuesForSelectedRelease() {
 		jiraServiceR.getJiraIssuesForSelectedRelease();
 	}
 

@@ -15,6 +15,7 @@
                     <div *ngIf="board.fullWidthKpis.length > 0; else fullPageLoader" class="subKPi p-sm-12" cdkDropList (cdkDropListDropped)="drop($event,board)"
                       [cdkDropListData]="board.fullWidthKpis">
                       <ng-container *ngFor="let kpi of board.fullWidthKpis">
+                        <ng-container *ngIf="kpi['isEnabled']">
                         <div class="card-type-1" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
                           <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
@@ -100,7 +101,7 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                         [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [board]="'backlog'" 
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [board]="'backlog'"
                                         [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
                                       </app-multiline>
                                       <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'"
@@ -132,6 +133,7 @@
                             </app-kpi-card>
                           </div>
                         </ng-template>
+                        </ng-container>
                         <ng-template #noData>
                           <div class="overlay noData"
                             *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader || kpiSpecificLoader.includes(kpi.kpiId)">
@@ -152,10 +154,11 @@
                     </div>
                     <!-- full width kpi render end -->
                     <!-- kpi part 1 render start -->
-                    
+
                     <div class="subKPi p-sm-6" cdkDropList (cdkDropListDropped)="drop($event,board)"
                       [cdkDropListData]="board.kpiPart1">
                       <ng-container *ngFor="let kpi of board.kpiPart1">
+                        <ng-container *ngIf="kpi['isEnabled']">
                         <div class="card-type-1 p-pb-3" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
                           <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
@@ -241,7 +244,7 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                         [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [board]="'backlog'" 
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [board]="'backlog'"
                                         [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
                                       </app-multiline>
                                       <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'"
@@ -273,6 +276,7 @@
                             </app-kpi-card>
                           </div>
                         </ng-template>
+                        </ng-container>
                         <ng-template #noData>
                           <div class="overlay noData"
                             *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader || kpiSpecificLoader.includes(kpi.kpiId)">
@@ -296,6 +300,7 @@
                     <div class="subKPi p-sm-6" cdkDropList (cdkDropListDropped)="drop($event,board)"
                       [cdkDropListData]="board.kpiPart2">
                       <ng-container *ngFor="let kpi of board.kpiPart2">
+                        <ng-container *ngIf="kpi['isEnabled']">
                         <div class="card-type-1 p-pb-3" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
                           <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
@@ -380,7 +385,7 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                         [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [board]="'backlog'" 
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [board]="'backlog'"
                                         [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
                                       </app-multiline>
                                       <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'"
@@ -412,6 +417,7 @@
                             </app-kpi-card>
                           </div>
                         </ng-template>
+                        </ng-container>
                         <ng-template #noData>
                           <div class="overlay noData"
                             *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader || kpiSpecificLoader.includes(kpi.kpiId)">
@@ -438,6 +444,7 @@
                     <div class="subKPi p-sm-12" cdkDropList (cdkDropListDropped)="drop($event,board)"
                       [cdkDropListData]="board.kpis">
                       <ng-container *ngFor="let kpi of board.kpis">
+                        <ng-container *ngIf="kpi['isEnabled']">
                         <div class="card-type-1 p-sm-12" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
                           <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
@@ -523,7 +530,7 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                         [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [board]="'backlog'" 
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [board]="'backlog'"
                                         [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
                                       </app-multiline>
                                       <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'"
@@ -555,6 +562,7 @@
                             </app-kpi-card>
                           </div>
                         </ng-template>
+                        </ng-container>
                         <ng-template #noData>
                           <div class="overlay"
                             *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader || kpiSpecificLoader.includes(kpi.kpiId)">
@@ -658,3 +666,6 @@
 </p-dialog>
 
 <app-export-excel #exportExcel></app-export-excel>
+<ng-container *ngIf="(filterApplyData?.label == 'project' || filterApplyData?.label == 'sprint') && filterApplyData?.ids?.length == 1">
+  <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
+</ng-container>
