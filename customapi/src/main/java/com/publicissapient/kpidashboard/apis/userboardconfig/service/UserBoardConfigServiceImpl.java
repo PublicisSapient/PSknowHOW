@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -680,7 +681,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	public void deleteUser(String userName) {
 		log.info("UserBoardConfigServiceImpl::deleteUser start");
 		userBoardConfigRepository.deleteByUsername(userName);
-		log.info(userName + " deleted Successfully from user_board_config");
+		log.info(CommonUtils.sanitizeUserInput(userName) + " deleted Successfully from user_board_config");
 	}
 
 	/**

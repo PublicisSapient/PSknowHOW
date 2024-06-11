@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
@@ -44,7 +45,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.SymbolValueUnit;
@@ -60,6 +60,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class CommonUtils {
+	private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("[^a-zA-Z0-9]");
 
 	public static final int FIFTH_DAY_OF_WEEK = 5;
 
@@ -581,4 +582,18 @@ public final class CommonUtils {
 	}
 
 	// -- auth-N-auth changes ends here ------
+
+	/**
+	 * this method uses for removed non-sanitize text. for remove security issue
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static String sanitizeUserInput(String input) {
+		String sanitizedString = StringEscapeUtils.escapeHtml(input);
+		return StringUtils.isNotBlank(sanitizedString)
+				? sanitizedString.replace("\\r", "").replace("\\n", "").replace("\\t", "").replaceAll("[^a-zA-Z0-9_\\-+/]", "")
+				: sanitizedString;
+	}
+
 }

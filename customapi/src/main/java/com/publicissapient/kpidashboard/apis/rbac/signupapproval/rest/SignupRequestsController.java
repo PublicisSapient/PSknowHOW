@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -127,6 +128,7 @@ public class SignupRequestsController {
 	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
 	public ResponseEntity<ServiceResponse> modifyAccessRequestById(@PathVariable("username") String username,
 			@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
+		username = CommonUtils.sanitizeUserInput(username);
 		ServiceResponse[] serviceResponse = new ServiceResponse[1];
 
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
@@ -174,6 +176,7 @@ public class SignupRequestsController {
 	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
 	public ResponseEntity<ServiceResponse> modifyAccessRequestByIdForCentral(@PathVariable("username") String username,
 			@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
+		username = CommonUtils.sanitizeUserInput(username);
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access For Central Auth {}", username);
 			boolean approvedCentral = userInfoService.updateUserApprovalStatus(username);

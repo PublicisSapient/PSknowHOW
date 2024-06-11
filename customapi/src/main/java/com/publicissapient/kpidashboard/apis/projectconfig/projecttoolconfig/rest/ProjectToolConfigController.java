@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.re
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -61,6 +62,8 @@ public class ProjectToolConfigController {
 	@RequestMapping(value = "/basicconfigs/{basicConfigId}/tools", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getProjectTools(@PathVariable String basicConfigId,
 			@RequestParam(name = "toolType", required = false) String toolType) {
+		basicConfigId = CommonUtils.sanitizeUserInput(basicConfigId);
+		toolType = CommonUtils.sanitizeUserInput(toolType);
 		ServiceResponse response;
 		if (StringUtils.isEmpty(StringUtils.trim(toolType))) {
 			log.info("Fetching all tools");
@@ -108,6 +111,8 @@ public class ProjectToolConfigController {
 	@RequestMapping(value = "/basicconfigs/{basicProjectConfigId}/tools/{projectToolId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> modifyConnectionById(@PathVariable String basicProjectConfigId,
 			@PathVariable String projectToolId, @Valid @RequestBody ProjectToolConfigDTO projectToolDTO) {
+		basicProjectConfigId = CommonUtils.sanitizeUserInput(basicProjectConfigId);
+		projectToolId = CommonUtils.sanitizeUserInput(projectToolId);
 		log.info("projectTool updated", projectToolDTO.getProjectId());
 		final ModelMapper modelMapper = new ModelMapper();
 		final ProjectToolConfig projectToolConfig = modelMapper.map(projectToolDTO, ProjectToolConfig.class);
@@ -121,7 +126,8 @@ public class ProjectToolConfigController {
 	@RequestMapping(value = "/basicconfigs/{basicProjectConfigId}/tools/{projectToolId}", method = RequestMethod.DELETE)
 	public ResponseEntity<ServiceResponse> deleteTool(@PathVariable String basicProjectConfigId,
 			@PathVariable String projectToolId) {
-
+		basicProjectConfigId = CommonUtils.sanitizeUserInput(basicProjectConfigId);
+		projectToolId = CommonUtils.sanitizeUserInput(projectToolId);
 		boolean isDeleted = toolService.deleteTool(basicProjectConfigId, projectToolId);
 		ServiceResponse serviceResponse = null;
 		if (isDeleted) {
@@ -137,7 +143,8 @@ public class ProjectToolConfigController {
 	@DeleteMapping(value = "/basicconfigs/{basicProjectConfigId}/tools/clean/{projectToolId}")
 	public ResponseEntity<ServiceResponse> cleanToolData(@PathVariable String basicProjectConfigId,
 			@PathVariable String projectToolId) {
-
+		basicProjectConfigId = CommonUtils.sanitizeUserInput(basicProjectConfigId);
+		projectToolId = CommonUtils.sanitizeUserInput(projectToolId);
 		boolean isDeleted = toolService.cleanToolData(basicProjectConfigId, projectToolId);
 		ServiceResponse serviceResponse = null;
 		if (isDeleted) {
