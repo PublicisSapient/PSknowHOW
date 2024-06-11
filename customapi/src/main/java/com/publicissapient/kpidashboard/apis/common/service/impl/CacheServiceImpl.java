@@ -79,7 +79,7 @@ public class CacheServiceImpl implements CacheService {
 		if (cache != null) {
 			cache.clear();
 			cache.evict(cacheName);
-			log.info("Clearing Cache ==>> {}", cacheName);
+			log.info("Clearing Cache ==>> {}", CommonUtils.sanitizeUserInput(cacheName));
 		}
 	}
 

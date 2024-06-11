@@ -72,8 +72,6 @@ public class BitBucketServiceR {
 	@SuppressWarnings("unchecked")
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
-		log.info("[BITBUCKET][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
-				kpiRequest.getKpiList());
 		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
 				.collect(Collectors.toList());
 		List<KpiElement> responseList = new ArrayList<>();
@@ -99,8 +97,6 @@ public class BitBucketServiceR {
 					groupId, kpiRequest.getSprintIncluded());
 			if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 					&& null != cachedData) {
-				log.info("[BITBUCKET][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
-						kpiRequest.getIds());
 				return (List<KpiElement>) cachedData;
 			}
 
@@ -125,8 +121,7 @@ public class BitBucketServiceR {
 		}
 
 		} catch (Exception e) {
-			log.error("[BITBUCKET][{}]. Error while KPI calculation for data {} {}", kpiRequest.getRequestTrackerId(),
-					kpiRequest.getKpiList(), e);
+			log.error("[BITBUCKET][{}]. Error while KPI calculation for data {}", kpiRequest.getRequestTrackerId(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
 		}
 

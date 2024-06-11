@@ -73,8 +73,6 @@ public class SonarServiceKanbanR {
 	@SuppressWarnings({ "unchecked", "PMD.AvoidCatchingGenericException" })
 	public List<KpiElement> process(KpiRequest kpiRequest) {
 
-		log.info("[SONAR KANBAN][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
-				kpiRequest.getKpiList());
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] kanbanProjectKeyCache = null;
 		try {
@@ -123,8 +121,8 @@ public class SonarServiceKanbanR {
 
 		} catch (EntityNotFoundException | ApplicationException enfe) {
 
-			log.error("[SONAR KANBAN][{}]. Error while KPI calculation for data. No data found {} {}",
-					kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), enfe);
+			log.error("[SONAR KANBAN][{}]. Error while KPI calculation for data. No data found {}",
+					kpiRequest.getRequestTrackerId(), enfe);
 		}
 		return responseList;
 	}
@@ -183,8 +181,6 @@ public class SonarServiceKanbanR {
 				groupId, null);
 		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& null != cachedData) {
-			log.info("[SONAR KANBAN][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
-					kpiRequest.getIds());
 			return (List<KpiElement>) cachedData;
 		}
 		return new ArrayList<>();
