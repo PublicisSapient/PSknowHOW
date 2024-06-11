@@ -320,7 +320,7 @@ export class FilterNewComponent implements OnInit {
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
 
       // set selected projects(trends)
-      this.service.setSelectedTrends([...new Set(event.map((item) => item.basicProjectConfigId))]);
+      this.service.setSelectedTrends(event);
 
       if (this.selectedLevel) {
         if (typeof this.selectedLevel === 'string') {
@@ -350,7 +350,7 @@ export class FilterNewComponent implements OnInit {
         }
 
         // set selected projects(trends)
-        this.service.setSelectedTrends([...new Set(event.map((item) => item.basicProjectConfigId))]);
+        this.service.setSelectedTrends(event);
   
         if (this.selectedLevel) {
           if (typeof this.selectedLevel === 'string') {
