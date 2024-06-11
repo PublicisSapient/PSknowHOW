@@ -440,7 +440,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 		long matchingIssueCount = overallIssues.stream().map(JiraIssue::getDueDate).filter(Objects::nonNull)
 				.filter(dueDateStr -> !dueDateStr.isBlank()).filter(dueDateStr -> {
 					LocalDate dueDate = LocalDate.parse(dueDateStr.split("T")[0], DATE_TIME_FORMATTER);
-					return DateUtil.equalAndBeforTime(dueDate,endDate);
+					return DateUtil.equalAndBeforeTime(dueDate,endDate);
 				}).count();
 
 		LocalDate plannedDueDate = overallIssues.stream().map(JiraIssue::getDueDate).filter(Objects::nonNull)

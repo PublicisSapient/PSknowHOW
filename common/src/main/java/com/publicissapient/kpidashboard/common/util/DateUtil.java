@@ -212,7 +212,19 @@ public class DateUtil {
 		return targetDate.isBefore(startDate) || targetDate.isEqual(startDate);
 	}
 
-	public static boolean equalAndBeforTime(LocalDate targetDate, LocalDate endDate) {
+	/**
+	 * Checks if the target date is equal to or before the end date.
+	 *
+	 * @param targetDate
+	 *            the date to check, not null
+	 * @param endDate
+	 *            the date to compare against, not null
+	 * @return {@code true} if the target date is equal to or before the end date;
+	 *         {@code false} otherwise
+	 * @throws NullPointerException
+	 *             if either targetDate or endDate is null
+	 */
+	public static boolean equalAndBeforeTime(LocalDate targetDate, LocalDate endDate) {
 		return targetDate.isEqual(endDate) || targetDate.isBefore(endDate) ;
 	}
 
