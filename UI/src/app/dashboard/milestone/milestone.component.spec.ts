@@ -499,15 +499,19 @@ describe('MilestoneComponent', () => {
             kpiId: 'kpi17',
             kpiName: 'Unit Test Coverage'
         }];
-        component.masterData = {
-            kpiList: [{
-                kpiId: 'kpi17',
+        component.updatedConfigGlobalData = [{
+            kpiId: 'kpi17',
+            kpiName: 'Unit Test Coverage',
+            isEnabled: true,
+            order: 23,
+            kpiDetail: {
                 kanban: false,
                 kpiSource: 'Jira',
                 kpiCategory: 'Release',
                 groupId: 1
-            }]
-        };
+            },
+            shown: true
+        }]
         const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
         const postJiraSpy = spyOn(component, 'postJiraKpi');
         component.groupJiraKpi(['kpi17']);

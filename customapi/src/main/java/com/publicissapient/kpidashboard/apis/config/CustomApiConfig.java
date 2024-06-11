@@ -250,6 +250,25 @@ public class CustomApiConfig {// NOPMD
 	private List<String> cycleTimeRange;
 	private List<Character> aesKeyValue;
 	private int sprintCountForKpiCalculation;
+	private String rnrRecommendationApiKey;
+	private String rnrRecommendationUrl;
+
+
+	public String getRnrRecommendationUrl() {
+		return rnrRecommendationUrl;
+	}
+
+	public void setRnrRecommendationUrl(String rnrRecommendationUrl) {
+		this.rnrRecommendationUrl = rnrRecommendationUrl;
+	}
+
+	public String getRnrRecommendationApiKey() {
+		return rnrRecommendationApiKey;
+	}
+
+	public void setRnrRecommendationApiKey(String rnrRecommendationApiKey) {
+		this.rnrRecommendationApiKey = rnrRecommendationApiKey;
+	}
 
 	public List<Character> getAesKeyValue() {
 		return aesKeyValue;
@@ -261,6 +280,14 @@ public class CustomApiConfig {// NOPMD
 	@Value("${exposed_api_key}")
 	private String xApiKey;
 	private String repoToolReworkRateUrl;
+	
+	@Value("${max-age-seconds}")
+	private long maxAgeInSeconds;
+	@Value("${include-subdomains}")
+	private boolean includeSubDomains;
+
+	@Value("${zephyrCloudBaseUrl}")
+	private String zephyrCloudBaseUrl;
 
 	public String getRepoToolMembersUrl() {
 		return repoToolMembersUrl;
@@ -1230,5 +1257,29 @@ public class CustomApiConfig {// NOPMD
 
 	public void setSprintCountForKpiCalculation(int sprintCountForKpiCalculation) {
 		this.sprintCountForKpiCalculation = sprintCountForKpiCalculation;
+	}
+
+	public long getMaxAgeInSeconds() {
+		return maxAgeInSeconds;
+	}
+
+	public void setMaxAgeInSeconds(long maxAgeInSeconds) {
+		this.maxAgeInSeconds = maxAgeInSeconds;
+	}
+
+	public boolean isIncludeSubDomains() {
+		return includeSubDomains;
+	}
+
+	public void setIncludeSubDomains(boolean includeSubDomains) {
+		this.includeSubDomains = includeSubDomains;
+	}
+
+	public String getZephyrCloudBaseUrl() {
+		return zephyrCloudBaseUrl;
+	}
+
+	public void setZephyrCloudBaseUrl(String zephyrCloudBaseUrl) {
+		this.zephyrCloudBaseUrl = zephyrCloudBaseUrl;
 	}
 }

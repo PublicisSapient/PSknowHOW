@@ -3991,19 +3991,76 @@
                 "boardSlug": "developer",
                 "kpis": [
                     {
-                        "kpiId": "kpi157",
+                        "kpiId": "kpi84",
+                        "kpiName": "Mean Time To Merge",
+                        "isEnabled": true,
+                        "order": 22,
+                        "kpiDetail": {
+                            "id": "65793ddb127be336160bc0d3",
+                            "kpiId": "kpi84",
+                            "kpiName": "Mean Time To Merge",
+                            "isDeleted": "False",
+                            "defaultOrder": 22,
+                            "kpiCategory": "Developer",
+                            "kpiUnit": "Hours",
+                            "chartType": "line",
+                            "upperThresholdBG": "red",
+                            "lowerThresholdBG": "white",
+                            "showTrend": true,
+                            "isPositiveTrend": false,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": true,
+                            "kpiSource": "BitBucket",
+                            "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
+                            "maxValue": "10",
+                            "thresholdValue": 55,
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Measures the efficiency of the code review process in a team",
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713477/Developer+Mean+time+to+Merge"
+                                        }
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "dropDown",
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-48",
+                                "48-16",
+                                "16-8",
+                                "8-4",
+                                "4-"
+                            ],
+                            "isRepoToolKpi": false,
+                            "trendCalculative": false,
+                            "xaxisLabel": "Weeks",
+                            "yaxisLabel": "Count(Hours)",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi11",
                         "kpiName": "Check-Ins & Merge Requests",
                         "isEnabled": true,
-                        "order": 1,
+                        "order": 23,
                         "kpiDetail": {
-                            "id": "651e8b42b3cd2c83443d7347",
-                            "kpiId": "kpi157",
+                            "id": "65793ddb127be336160bc0d4",
+                            "kpiId": "kpi11",
                             "kpiName": "Check-Ins & Merge Requests",
                             "isDeleted": "False",
-                            "defaultOrder": 1,
+                            "defaultOrder": 23,
                             "kpiCategory": "Developer",
                             "kpiUnit": "MRs",
                             "chartType": "grouped_column_plus_line",
+                            "upperThresholdBG": "white",
+                            "lowerThresholdBG": "red",
                             "showTrend": true,
                             "isPositiveTrend": true,
                             "lineLegend": "Merge Requests",
@@ -4011,54 +4068,20 @@
                             "calculateMaturity": true,
                             "hideOverallFilter": true,
                             "kpiSource": "BitBucket",
+                            "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
                             "maxValue": "10",
                             "thresholdValue": 55,
                             "kanban": false,
                             "groupId": 1,
                             "kpiInfo": {
-                                "definition": "NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down. NUMBER OF MERGE REQUESTS when looked at along with commits highlights the efficiency of the review process",
+                                "definition": "Comparative view of number of check-ins and number of merge request raised for a period.",
                                 "details": [
-                                    {
-                                        "type": "paragraph",
-                                        "value": "It is calculated as a Count. Higher the count better is the ‘Speed’"
-                                    },
-                                    {
-                                        "type": "paragraph",
-                                        "value": "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive"
-                                    },
                                     {
                                         "type": "link",
                                         "kpiLinkDetail": {
                                             "text": "Detailed Information at",
                                             "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70451310/Developer+No.+of+Check-ins+and+Merge+Requests"
                                         }
-                                    }
-                                ],
-                                "maturityLevels": [
-                                    {
-                                        "level": "M5",
-                                        "bgColor": "#6cab61",
-                                        "range": "> 16"
-                                    },
-                                    {
-                                        "level": "M4",
-                                        "bgColor": "#AEDB76",
-                                        "range": "8-16"
-                                    },
-                                    {
-                                        "level": "M3",
-                                        "bgColor": "#eff173",
-                                        "range": "4-8"
-                                    },
-                                    {
-                                        "level": "M2",
-                                        "bgColor": "#ffc35b",
-                                        "range": "2-4"
-                                    },
-                                    {
-                                        "level": "M1",
-                                        "bgColor": "#F06667",
-                                        "range": "0-2"
                                     }
                                 ]
                             },
@@ -4071,304 +4094,10 @@
                                 "8-16",
                                 "16-"
                             ],
-                            "isRepoToolKpi": true,
+                            "isRepoToolKpi": false,
                             "trendCalculative": false,
                             "xaxisLabel": "Days",
                             "yaxisLabel": "Count",
-                            "isAdditionalFilterSupport": false
-                        },
-                        "shown": true
-                    },
-                    {
-                        "kpiId": "kpi158",
-                        "kpiName": "Mean Time To Merge",
-                        "isEnabled": true,
-                        "order": 2,
-                        "kpiDetail": {
-                            "id": "651e8b42b3cd2c83443d7348",
-                            "kpiId": "kpi158",
-                            "kpiName": "Mean Time To Merge",
-                            "isDeleted": "False",
-                            "defaultOrder": 2,
-                            "kpiCategory": "Developer",
-                            "kpiUnit": "Hours",
-                            "chartType": "line",
-                            "upperThresholdBG": "red",
-                            "lowerThresholdBG": "white",
-                            "showTrend": true,
-                            "isPositiveTrend": false,
-                            "calculateMaturity": true,
-                            "hideOverallFilter": true,
-                            "kpiSource": "BitBucket",
-                            "maxValue": "10",
-                            "thresholdValue": 55,
-                            "kanban": false,
-                            "groupId": 1,
-                            "kpiInfo": {
-                                "definition": "MEAN TIME TO MERGE measures the efficiency of the code review process in a team",
-                                "details": [
-                                    {
-                                        "type": "paragraph",
-                                        "value": "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’"
-                                    },
-                                    {
-                                        "type": "paragraph",
-                                        "value": "A progress indicator shows trend of Mean time to merge in last 2 weeks. A downward trend is considered positive"
-                                    },
-                                    {
-                                        "type": "paragraph",
-                                        "value": "Maturity of the KPI is calculated based on the average of the last 5 weeks"
-                                    },
-                                    {
-                                        "type": "link",
-                                        "kpiLinkDetail": {
-                                            "text": "Detailed Information at",
-                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713477/Developer+Mean+time+to+Merge"
-                                        }
-                                    }
-                                ],
-                                "maturityLevels": [
-                                    {
-                                        "level": "M5",
-                                        "bgColor": "#6cab61",
-                                        "range": "<4 Hours"
-                                    },
-                                    {
-                                        "level": "M4",
-                                        "bgColor": "#AEDB76",
-                                        "range": "4-8 Hours"
-                                    },
-                                    {
-                                        "level": "M3",
-                                        "bgColor": "#eff173",
-                                        "range": "8-16 Hours"
-                                    },
-                                    {
-                                        "level": "M2",
-                                        "bgColor": "#ffc35b",
-                                        "range": "16-48 Hours"
-                                    },
-                                    {
-                                        "level": "M1",
-                                        "bgColor": "#F06667",
-                                        "range": ">48 Hours"
-                                    }
-                                ]
-                            },
-                            "kpiFilter": "dropDown",
-                            "aggregationCriteria": "average",
-                            "maturityRange": [
-                                "-16",
-                                "16-8",
-                                "8-4",
-                                "4-2",
-                                "2-"
-                            ],
-                            "isRepoToolKpi": true,
-                            "trendCalculative": false,
-                            "xaxisLabel": "Weeks",
-                            "yaxisLabel": "Count(Hours)",
-                            "isAdditionalFilterSupport": false
-                        },
-                        "shown": true
-                    },
-                    {
-                        "kpiId": "kpi160",
-                        "kpiName": "Pickup Time",
-                        "isEnabled": true,
-                        "order": 3,
-                        "kpiDetail": {
-                            "id": "651e8b42b3cd2c83443d734a",
-                            "kpiId": "kpi160",
-                            "kpiName": "Pickup Time",
-                            "isDeleted": "False",
-                            "defaultOrder": 3,
-                            "kpiCategory": "Developer",
-                            "kpiUnit": "Hours",
-                            "chartType": "line",
-                            "upperThresholdBG": "red",
-                            "lowerThresholdBG": "white",
-                            "showTrend": true,
-                            "isPositiveTrend": false,
-                            "calculateMaturity": true,
-                            "hideOverallFilter": true,
-                            "kpiSource": "BitBucket",
-                            "maxValue": 10,
-                            "thresholdValue": 20,
-                            "kanban": false,
-                            "groupId": 1,
-                            "kpiInfo": {
-                                "definition": "Pickup time measures the time a pull request waits for someone to start reviewing it. Low pickup time represents strong teamwork and a healthy review",
-                                "details": [
-                                    {
-                                        "type": "paragraph",
-                                        "value": "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’"
-                                    },
-                                    {
-                                        "type": "paragraph",
-                                        "value": "A progress indicator shows trend of Pickup Time in last 2 weeks. A downward trend is considered positive"
-                                    },
-                                    {
-                                        "type": "paragraph",
-                                        "value": "Maturity of the KPI is calculated based on the average of the last 5 weeks"
-                                    },
-                                    {
-                                        "type": "link",
-                                        "kpiLinkDetail": {
-                                            "text": "Detailed Information at",
-                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680716/Developer+Pickup+time"
-                                        }
-                                    }
-                                ],
-                                "maturityLevels": [
-                                    {
-                                        "level": "M5",
-                                        "bgColor": "#6cab61",
-                                        "range": "<4 Hours"
-                                    },
-                                    {
-                                        "level": "M4",
-                                        "bgColor": "#AEDB76",
-                                        "range": "4-8 Hours"
-                                    },
-                                    {
-                                        "level": "M3",
-                                        "bgColor": "#eff173",
-                                        "range": "8-16 Hours"
-                                    },
-                                    {
-                                        "level": "M2",
-                                        "bgColor": "#ffc35b",
-                                        "range": "16-48 Hours"
-                                    },
-                                    {
-                                        "level": "M1",
-                                        "bgColor": "#F06667",
-                                        "range": ">48 Hours"
-                                    }
-                                ]
-                            },
-                            "kpiFilter": "dropDown",
-                            "aggregationCriteria": "average",
-                            "maturityRange": [
-                                "-16",
-                                "16-8",
-                                "8-4",
-                                "4-2",
-                                "2-"
-                            ],
-                            "isRepoToolKpi": true,
-                            "trendCalculative": false,
-                            "xaxisLabel": "Weeks",
-                            "yaxisLabel": "Count(Hours)",
-                            "isAdditionalFilterSupport": false
-                        },
-                        "shown": true
-                    },
-                    {
-                        "kpiId": "kpi162",
-                        "kpiName": "PR Size",
-                        "isEnabled": true,
-                        "order": 4,
-                        "kpiDetail": {
-                            "id": "651e8b42b3cd2c83443d734b",
-                            "kpiId": "kpi162",
-                            "kpiName": "PR Size",
-                            "isDeleted": "False",
-                            "defaultOrder": 4,
-                            "kpiCategory": "Developer",
-                            "kpiUnit": "Lines",
-                            "chartType": "line",
-                            "upperThresholdBG": "red",
-                            "lowerThresholdBG": "white",
-                            "showTrend": false,
-                            "isPositiveTrend": false,
-                            "calculateMaturity": false,
-                            "hideOverallFilter": true,
-                            "kpiSource": "BitBucket",
-                            "maxValue": 10,
-                            "thresholdValue": 4,
-                            "kanban": false,
-                            "groupId": 1,
-                            "kpiInfo": {
-                                "definition": "Pull request size measures the number of code lines modified in a pull request. Smaller pull requests are easier to review, safer to merge, and correlate to a lower cycle time.",
-                                "details": [
-                                    {
-                                        "type": "link",
-                                        "kpiLinkDetail": {
-                                            "text": "Detailed Information at",
-                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713493/Developer+PR+Size"
-                                        }
-                                    }
-                                ]
-                            },
-                            "kpiFilter": "dropDown",
-                            "aggregationCriteria": "average",
-                            "maturityRange": [
-                                "-16",
-                                "16-8",
-                                "8-4",
-                                "4-2",
-                                "2-"
-                            ],
-                            "isRepoToolKpi": true,
-                            "trendCalculative": false,
-                            "xaxisLabel": "Weeks",
-                            "yaxisLabel": "Count(No. of Lines)",
-                            "isAdditionalFilterSupport": false
-                        },
-                        "shown": true
-                    },
-                    {
-                        "kpiId": "kpi173",
-                        "kpiName": "Rework Rate",
-                        "isEnabled": true,
-                        "order": 5,
-                        "kpiDetail": {
-                            "id": "65f2af414f19390b692a54b0",
-                            "kpiId": "kpi173",
-                            "kpiName": "Rework Rate",
-                            "isDeleted": "false",
-                            "defaultOrder": 5,
-                            "kpiCategory": "Developer",
-                            "kpiUnit": "%",
-                            "chartType": "line",
-                            "upperThresholdBG": "red",
-                            "lowerThresholdBG": "white",
-                            "showTrend": true,
-                            "isPositiveTrend": false,
-                            "calculateMaturity": false,
-                            "hideOverallFilter": true,
-                            "kpiSource": "BitBucket",
-                            "maxValue": "",
-                            "thresholdValue": 50,
-                            "kanban": false,
-                            "groupId": 2,
-                            "kpiInfo": {
-                                "definition": "Percentage of code changes in which an engineer rewrites code that they recently updated (within the past three weeks).",
-                                "details": [
-                                    {
-                                        "type": "link",
-                                        "kpiLinkDetail": {
-                                            "text": "Detailed Information at",
-                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/106528769/Developer+Rework+Rate"
-                                        }
-                                    }
-                                ]
-                            },
-                            "kpiFilter": "dropDown",
-                            "aggregationCriteria": "average",
-                            "maturityRange": [
-                                "-80",
-                                "80-50",
-                                "50-20",
-                                "20-5",
-                                "5-"
-                            ],
-                            "isRepoToolKpi": true,
-                            "trendCalculative": false,
-                            "xaxisLabel": "Weeks",
-                            "yaxisLabel": "Percentage",
                             "isAdditionalFilterSupport": false
                         },
                         "shown": true

@@ -20,6 +20,10 @@ package com.publicissapient.kpidashboard.apis.jenkins.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +77,8 @@ public class JenkinsServiceR {
 
 		log.info("[JENKINS][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
 				kpiRequest.getKpiList());
-		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new).toList();
+		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
+				.collect(Collectors.toList());
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] projectKeyCache = null;
 		try {
@@ -108,12 +113,28 @@ public class JenkinsServiceR {
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
 
-				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
+				ExecutorService executorService = Executors
+						.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-					responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, treeAggregatorDetail));
+				List<CompletableFuture<Void>> futures = new ArrayList<>();
+				for (KpiElement kpiElement : kpiRequest.getKpiList()) {
+					CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+						try {
+							calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiElement, treeAggregatorDetail);
+						} catch (Exception e) {
+							log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
+						}
+					}, executorService);
+					futures.add(future);
 				}
-				List<KpiElement> missingKpis = origRequestedKpis.stream().filter(reqKpi -> responseList.stream()
-						.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId()))).toList();
+				CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+				allFutures.join(); // Wait for all tasks to complete
+				executorService.shutdown();
+
+				List<KpiElement> missingKpis = origRequestedKpis.stream()
+						.filter(reqKpi -> responseList.stream()
+								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
+						.collect(Collectors.toList());
 				responseList.addAll(missingKpis);
 				setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
 			} else {
@@ -131,10 +152,8 @@ public class JenkinsServiceR {
 
 	/**
 	 * @param kpiRequest
-	 *            kpiRequest
 	 * @param filteredAccountDataList
-	 *            filteredAccountDataList
-	 * @return List<AccountHierarchyData> list of hierarchy
+	 * @return
 	 */
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
 			List<AccountHierarchyData> filteredAccountDataList) {
@@ -149,10 +168,7 @@ public class JenkinsServiceR {
 
 	/**
 	 * @param kpiRequest
-	 *            kpiRequest
 	 * @param filteredAccountDataList
-	 *            filteredAccountDataList
-	 * @return array of string
 	 */
 	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
 		String[] projectKeyCache;
@@ -167,62 +183,36 @@ public class JenkinsServiceR {
 	/**
 	 * 
 	 * @param kpiRequest
-	 *            kpiRequest
+	 * @param responseList
 	 * @param kpiElement
-	 *            kpiElement
 	 * @param treeAggregatorDetail
-	 *            treeAggregatorDetail
-	 * @return KpiElement kpiElement
+	 * @throws ApplicationException
+	 * @throws EntityNotFoundException
 	 */
-	private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) {
+	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
+			KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
 		JenkinsKPIService<?, ?, ?> jenkinsKPIService = null;
 		KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
-		try {
-			jenkinsKPIService = JenkinsKPIServiceFactory.getJenkinsKPIService(kpi.name());
+		jenkinsKPIService = JenkinsKPIServiceFactory.getJenkinsKPIService(kpi.name());
 
-			long startTime = System.currentTimeMillis();
+		long startTime = System.currentTimeMillis();
 
-			TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-					.clone(treeAggregatorDetail);
-			List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
-					.get(CommonConstant.PROJECT.toLowerCase());
+		TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
+				.clone(treeAggregatorDetail);
+		responseList.add(jenkinsKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
 
-			if (!projectNodes.isEmpty() && (projectNodes.size() > 1
-					|| kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, projectNodes.get(0)))) {
-				kpiElement = jenkinsKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
-				kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
-			} else if (!kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, projectNodes.get(0))) {
-				// mandatory fields not found
-				kpiElement.setResponseCode(CommonConstant.MANDATORY_FIELD_MAPPING);
-			}
-			long processTime = System.currentTimeMillis() - startTime;
-			log.info("[JENKINS-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-					processTime);
-
-		} catch (ApplicationException exception) {
-			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
-			log.error("Kpi not found", exception);
-		} catch (Exception exception) {
-			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
-			log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), exception);
-			return kpiElement;
-		}
-		return kpiElement;
+		long processTime = System.currentTimeMillis() - startTime;
+		log.info("[JENKINS-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
 
 	}
 
 	/**
 	 * 
 	 * @param kpiRequest
-	 *            kpiRequest
 	 * @param responseList
-	 *            responseList
 	 * @param groupId
-	 *            groupId
 	 * @param projectKeyCache
-	 *            projectKeyCache
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] projectKeyCache) {

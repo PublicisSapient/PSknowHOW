@@ -14,23 +14,16 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service.releasedashboard;
 
-import static com.publicissapient.kpidashboard.apis.util.KPIExcelUtility.roundingOff;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -50,7 +43,6 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraNonTrendKPIServiceFactory;
-import com.publicissapient.kpidashboard.apis.jira.model.ReleaseSpecification;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraNonTrendKPIServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -111,8 +103,6 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 	private List<String> releaseList;
 	private boolean referFromProjectCache = true;
-	private static final String AVG_ISSUE_COUNT = "avgIssueCount";
-	private static final String AVG_STORY_POINT = "avgStoryPoint";
 
 	/**
 	 * This method process scrum jira based release kpis request, cache data and
@@ -184,8 +174,12 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 						threadLocalHistory.set(jiraIssueCustomHistoryList);
 						threadReleaseIssues.set(jiraIssueReleaseList);
 						threadSubtaskDefects.set(subtaskDefectReleaseList);
-						responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, filteredNode));
 
+						try {
+							calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
+						} catch (Exception e) {
+							log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
+						}
 					}, executorService);
 					futures.add(future);
 				}
@@ -265,9 +259,9 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 		return processedList;
 	}
 
-	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList) {
+	public void fetchJiraIssues(String basicProjectConfigId, List<String> releaseList) {
 		jiraIssueReleaseList = jiraIssueRepository
-				.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, sprintIssuesList);
+				.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, releaseList);
 		Set<String> storyIDs = jiraIssueReleaseList.stream()
 				.filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase(NormalizedJira.DEFECT_TYPE.getValue()))
 				.map(JiraIssue::getNumber).collect(Collectors.toSet());
@@ -317,76 +311,16 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param fieldMapping
 	 *            fieldMapping
-	 * @param releaseSpecification
-	 *            releaseSpecification
-	 * @return averageDataMap
+	 * @param releaseNames
+	 *            releaseNames
+	 * @return JiraIssueList
 	 */
-	public Map<String, Object> getAvgVelocity(FieldMapping fieldMapping, ReleaseSpecification releaseSpecification) {
-
-		Map<String, Object> averageDataMap = new HashMap<>();
-		String regex = "^(.*?)\\s*\\(duration\\s*(\\d+\\.\\d+)\\s*days\\)$";
-		Pattern pattern = Pattern.compile(regex);
-		List<String> releaseNames = new ArrayList<>();
-		double totalDurations = 0.0;
-
-		for (String release : fieldMapping.getReleaseListKPI150()) {
-			Matcher matcher = pattern.matcher(release);
-			if (matcher.find()) {
-				String releaseName = matcher.group(1).trim();
-				double duration = Double.parseDouble(matcher.group(2));
-				totalDurations = duration + totalDurations;
-				releaseNames.add(releaseName);
-			}
-		}
-
-		List<JiraIssue> jiraIssues = jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(
+	public List<JiraIssue> getJiraIssuesList(FieldMapping fieldMapping, List<String> releaseNames) {
+		return jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(
 				fieldMapping.getBasicProjectConfigId().toString(), releaseNames);
-		if (totalDurations != 0 && CollectionUtils.isNotEmpty(jiraIssues)) {
-			double releaseIssuesSize = jiraIssues.size();
-			double releaseTicketsEstimate = getTicketEstimate(jiraIssues, fieldMapping, 0.0d);
-			double issueCountVelocity = releaseIssuesSize / totalDurations;
-			double issuesEstimateVelocity = releaseTicketsEstimate / totalDurations;
-
-			releaseSpecification.setReleaseIssueCount(releaseIssuesSize);
-			releaseSpecification.setReleaseStoryPoint(releaseTicketsEstimate);
-			releaseSpecification.setReleaseIssueCountVelocity(roundingOff(issueCountVelocity));
-			releaseSpecification.setReleaseStoryPointVelocity(roundingOff(issuesEstimateVelocity));
-			releaseSpecification.setReleaseDuration(totalDurations);
-			averageDataMap.put(AVG_ISSUE_COUNT, roundingOff(issueCountVelocity));
-			averageDataMap.put(AVG_STORY_POINT, roundingOff(issuesEstimateVelocity));
-
-		}
-
-		return averageDataMap;
-	}
-
-	/**
-	 * Get Sum of StoryPoint for List of JiraIssue
-	 *
-	 * @param jiraIssueList
-	 *            List<JiraIssue>
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @return Sum of Story Point
-	 */
-	public double getTicketEstimate(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping, double ticketEstimate) {
-		if (CollectionUtils.isNotEmpty(jiraIssueList)) {
-			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				ticketEstimate = jiraIssueList.stream()
-						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
-			} else {
-				double totalOriginalEstimate = jiraIssueList.stream().mapToDouble(
-						jiraIssue -> Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0))
-						.sum();
-				double inHours = totalOriginalEstimate / 60;
-				ticketEstimate = inHours / fieldMapping.getStoryPointToHourMapping();
-			}
-		}
-		return ticketEstimate;
 	}
 
 	public Set<JiraIssue> getSubTaskDefects() {
@@ -403,44 +337,30 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	 *
 	 * @param kpiRequest
 	 *            JIRA KPI request
+	 * @param responseList
+	 *            List of KpiElements having data of each KPI
 	 * @param kpiElement
 	 *            kpiElement object
 	 * @param filteredAccountNode
 	 *            filtered node object
-	 * @return kpielement
+	 * @throws ApplicationException
+	 *             ApplicationException
 	 */
-	private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
-			Node filteredAccountNode) {
-		try {
+	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
+			KpiElement kpiElement, Node filteredAccountNode) throws ApplicationException {
 
-			KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+		JiraReleaseKPIService jiraKPIService = null;
+		KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+		jiraKPIService = (JiraReleaseKPIService) JiraNonTrendKPIServiceFactory.getJiraKPIService(kpi.name());
+		long startTime = System.currentTimeMillis();
+		if (KPICode.THROUGHPUT.equals(kpi)) {
+			log.info("No need to fetch Throughput KPI data");
+		} else {
+			Node nodeDataClone = (Node) SerializationUtils.clone(filteredAccountNode);
+			responseList.add(jiraKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone));
 
-			JiraReleaseKPIService jiraKPIService = (JiraReleaseKPIService) JiraNonTrendKPIServiceFactory
-					.getJiraKPIService(kpi.name());
-			long startTime = System.currentTimeMillis();
-			if (KPICode.THROUGHPUT.equals(kpi)) {
-				log.info("No need to fetch Throughput KPI data");
-			} else {
-				Node nodeDataClone = (Node) SerializationUtils.clone(filteredAccountNode);
-				if (Objects.nonNull(nodeDataClone)
-						&& kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, nodeDataClone)) {
-					kpiElement = jiraKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone);
-					kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
-				} else {
-					// mandatory fields not found
-					kpiElement.setResponseCode(CommonConstant.MANDATORY_FIELD_MAPPING);
-				}
-				long processTime = System.currentTimeMillis() - startTime;
-				log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-						processTime);
-			}
-		} catch (ApplicationException exception) {
-			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
-			log.error("Kpi not found", exception);
-		} catch (Exception exception) {
-			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
-			log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), exception);
-			return kpiElement;
+			long processTime = System.currentTimeMillis() - startTime;
+			log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
 		}
 	}
 

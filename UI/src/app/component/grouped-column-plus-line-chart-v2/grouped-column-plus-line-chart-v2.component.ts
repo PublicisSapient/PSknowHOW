@@ -287,20 +287,8 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
 
       y.domain([0, maxYValue]);
 
-      // let tickPadding = 10;
-      // if (width < 600) {
-      //   tickPadding = 6;
-      // }
-
-      // const xAxis = d3
-      //   .axisBottom(x0)
-      //   .tickSize(0)
-      // .tickPadding(tickPadding);
-      // .orient('bottom');
-
       const yAxis = d3
         .axisLeft(y)
-        // .orient('left')
         .ticks(5)
         .tickSize(-height, 0, 0).tickFormat(function (tickval) {
           return tickval >= 1000 ? tickval / 1000 + "k" : tickval;
@@ -346,24 +334,6 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         .attr('width', width + margin.right - 50)
         .attr('height', 50)
         .append('g');
-
-
-      // const xAxisText = svgX
-      //   .append('g')
-      //   .attr('class', 'xAxis')
-      //   .attr('transform', 'translate(0,' + (height - margin.top) + ')')
-      //   .attr('stroke-width', '1')
-      //   .attr('opacity', '1')
-      //   .call(xAxis)
-      //   .selectAll(".tick text")
-
-      // if (viewType === 'large' && selectedProjectCount === 1) {
-      //   xAxisText.each((d, i, nodes) => {
-      //     const textElement = d3.select(nodes[i]);
-      //     const width = tempAxis.bandwidth();
-      //     this.wrap(textElement, width);
-      //   });
-      // }
 
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const XCaption = d3
@@ -447,77 +417,31 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
 
       const rx = x1.bandwidth() / 2;
       const ry = x1.bandwidth() / 2;
-
-      // slice
-      //   .selectAll('rect')
-      //   .data((d) => d.value)
-      //   .enter()
-      //   .append('rect')
-      //   .attr('width', barWidth)
-      //   .attr('x', (d, i) => {
-      //     return x1(d.rate);
-      //   })
-      //   .style('fill', (d) => color(d.rate))
-      //   .attr('y', (d) => y(0))
-      //   .attr('rx', rx)
-      //   .attr('height', (d) => height - margin.top - y(0) > 0 ? height - margin.top - y(0) : 0)
-      //   .attr('class', 'bar');
-
-      slice
-        .selectAll("bar")
+      slice.selectAll("arc")
         .data((d) => d.value)
         .enter().append("path")
         .style("fill", (d) => color(d.rate))
-        .attr("d", item => {
-          if (item.value) {
+        .attr("d", d => {
+          if (height - margin.top - y(d.value) >= rx) {
             return `
-        M${x1(item.rate)},${y(item.value) + ry}
-        a${rx},${ry} 0 0 1 ${rx},${-ry}
-        h${x1.bandwidth() - 2 * rx}
-        a${rx},${ry} 0 0 1 ${rx},${ry}
-        v${height - margin.top - y(item.value) - ry}
-        h${-(x1.bandwidth())}Z`;
+              M${x1(d.rate)},${y(d.value) + ry}
+              a${rx},${ry} 0 0 1 ${rx},${-ry}
+              h${x1.bandwidth() - 2 * rx}
+              a${rx},${ry} 0 0 1 ${rx},${ry}
+              v${height - margin.top - y(d.value) - ry}
+              h${-(x1.bandwidth())}Z`;
           } else {
-            return null;
+            return `
+              M${x1(d.rate)},${Math.min(height - margin.top - y(d.value) - ry), y(0)} 
+              a${rx},${ry - (height - margin.top - y(d.value) + rx)} 0 0 1 ${rx},${ry - (height - margin.top - y(d.value) + rx)}
+              
+              v${height - margin.top - y(d.value) - rx}
+              h${x1.bandwidth() - 2 * rx}
+              v${-(height - margin.top - y(d.value)) + rx}
+              a${rx},${ry - (height - margin.top - y(d.value) + rx)} 0 0 1 ${rx},${-ry + (height - margin.top - y(d.value) + rx)}
+              h${-(x1.bandwidth())}Z`;
           }
-        }
-        );
-
-      // const arc = d3.arc()
-      //   .innerRadius(0)
-      //   .outerRadius(barWidth / 2 - 0.5)
-      //   .startAngle(0) // Start angle in radians (0 for the beginning of the semi-circle)
-      //   .endAngle(Math.PI); // End angle in radians (Math.PI for a semi-circle, Math.PI * 2 for a full circle)
-
-      // // Append semicircles on top of bars
-      // slice.selectAll("arc")
-      //   .data((d) => d.value)
-      //   .enter()
-      //   .append("path")
-      //   .attr("d", arc)
-      //   .attr("fill", (d) => color(d.rate))
-      //   .attr("transform", (d, i) => `translate(${x1(d.rate) + barWidth / 2}, ${400}) rotate(-90)`)
-      //   .attr("stroke", (d) => color(d.rate))
-      //   .attr("stroke-width", 1);
-
-      slice
-        .selectAll('path')
-        .transition()
-        .delay((d) => 200)
-        .duration(1000)
-        .attr('y', (d) => y(d.value) + barWidth / 2)
-        .attr('height', (d) => height - margin.top - y(d.value) - barWidth / 2 > 0 ? height - margin.top - y(d.value) - barWidth / 2 : 0)
-
-      // slice
-      //   .selectAll('path')
-      //   .transition()
-      //   .delay((d) => 1200)
-      //   .duration(200)
-      //   .attr("transform", (d, i) => `translate(${x1(d.rate) + barWidth / 2}, ${height - margin.top - y(d.value) - barWidth / 4 < barWidth / 2 ? -500 : y(d.value) + barWidth / 2}) rotate(-90)`)
-      //   .attr("stroke", (d) => color(d.rate))
-      //   .attr("stroke-width", 1);
-
-
+        });
 
       // threshold line
       if (self.thresholdValue) {
@@ -692,11 +616,11 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
                 left: xPosition
               } = circle.getBoundingClientRect();
 
-              div.html(`${d.date || d.sSprintName}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${d.lineValue + ' ' + showUnit}` + '</span>')
+              div.html(`${ d.date || d.sSprintName } ` + ' : ' + '<span class=\'toolTipValue\'> ' + `${ d.lineValue + ' ' + showUnit } ` + '</span>')
                 .style('left', xPosition + 20 + 'px')
                 .style('top', yPosition + 20 + 'px');
               for (const hoverData in d.hoverValue) {
-                div.append('p').html(`${hoverData}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${d.hoverValue[hoverData]}` + ' </span>');
+                div.append('p').html(`${ hoverData } ` + ' : ' + '<span class=\'toolTipValue\'> ' + `${ d.hoverValue[hoverData] } ` + ' </span>');
               }
             }
           })
@@ -756,7 +680,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
             .style('top', d => {
               return yScale(d.lineValue) - 25 + 'px'
             })
-            .text(d => d.lineValue + ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`)
+            .text(d => d.lineValue + ` ${ showUnit ? unitAbbs[showUnit?.toLowerCase()] : '' } `)
             .transition()
             .duration(500)
             .style('display', 'block')
@@ -907,7 +831,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
           line.pop()
           tspan.text(line.join(" "))
           line = [word]
-          tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+          tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${ ++lineNumber * lineHeight + dy } em`).text(word)
         }
       }
     })
@@ -917,5 +841,4 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
     this.resizeObserver.observe(d3.select(this.elem).select('#chart').node());
   }
 }
-
 

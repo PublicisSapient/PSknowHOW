@@ -76,12 +76,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     if (!Array.isArray(this.selectedFilters)) {
       this.selectedFilters = [this.selectedFilters];
     }
-    // if (!this.selectedFilters.includes(this.selectedTab)) {
-    //   this.selectedFilters.push(this.selectedTab);
-    // }
-    // if (!this.selectedFilters.includes(this.selectedType)) {
-    //   this.selectedFilters.push(this.selectedType);
-    // }
+    
     this.onPrimaryFilterChange.emit(this.selectedFilters);
     if (this.multiSelect?.overlayVisible) {
       this.multiSelect.close(event);

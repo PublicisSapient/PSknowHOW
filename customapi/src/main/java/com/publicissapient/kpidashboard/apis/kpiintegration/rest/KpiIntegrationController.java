@@ -28,6 +28,8 @@ import javax.validation.constraints.NotNull;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
+import com.publicissapient.kpidashboard.apis.model.ProjectWiseKpiRecommendation;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -77,5 +79,17 @@ public class KpiIntegrationController {
 		}
 	}
 
+	/**
+	 *
+	 * @param kpiRequest
+	 * 			kpi request
+	 * @return kpi recommendation
+	 */
+	@PostMapping(value = "/kpiRecommendation", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ProjectWiseKpiRecommendation>> getKpiRecommendation(
+			@NotNull @RequestBody KpiRequest kpiRequest) {
+		List<ProjectWiseKpiRecommendation> response = kpiIntegrationService.getProjectWiseKpiRecommendation(kpiRequest);
+		return ResponseEntity.ok().body(response);
+	}
 
 }

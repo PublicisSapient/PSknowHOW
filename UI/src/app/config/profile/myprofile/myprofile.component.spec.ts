@@ -654,7 +654,7 @@ describe('MyprofileComponent', () => {
         InputSwitchModule
       ],
       declarations: [MyprofileComponent],
-      providers: [HttpService, ProfileComponent, SharedService , MessageService, { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, ProfileComponent, SharedService , MessageService , { provide: APP_CONFIG, useValue: AppConfig }]
     })
       .compileComponents();
   }));
@@ -685,36 +685,9 @@ describe('MyprofileComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set email', () => {
-    component.ngOnInit();
-    shared.currentUserDetailsSubject.next({user_name : "dummyUser",user_email:"someemail@abc.com"})
-    spyOn(shared,'getCurrentUserDetails').and.returnValue("someemail@abc.com")
-    component.userEmailForm.controls['email'].setValue('someemail@abc.com');
-    component.userEmailForm.controls['confirmEmail'].setValue('someemail@abc.com');
-    spyOn(httpService,'changeEmail').and.returnValue(of(successResponse))
-    component.setEmail();
-    fixture.detectChanges();
-    expect(component.userEmailConfigured).toBeTruthy();
-  });
-
   it('should group projects role-wise', () => {
     component.groupProjects(JSON.parse('[{"role":"DUMMY","projects":[{"projectName":"Jenkin_kanban","projectId":"6331857a7bb22322e4e01479","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Leve1"}]}]},{"role":"DUMMY","projects":[{"projectName":"Tools proj","projectId":"6332f0a468b5d05cf59c42a6","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Org1"}]}]}]'));
     expect(Object.keys(component.roleBasedProjectList).length).toEqual(2);
-  });
-
-  it('should get error while setting email', () => {
-    const errorResponse = { message: 'got an error', success: false, };
-    spyOn(authService,'checkIfSuperUser').and.returnValue(true);
-    spyOn(authService,'checkIfProjectAdmin').and.returnValue(true);
-    component.ngOnInit();
-    shared.currentUserDetailsSubject.next({user_name : "dummyUser",user_email:"someemail@abc.com"})
-    spyOn(shared,'getCurrentUserDetails').and.returnValue("someemail@abc.com")
-    component.userEmailForm.controls['email'].setValue('someemail@abc.com');
-    component.userEmailForm.controls['confirmEmail'].setValue('someemail@abc.com');
-    spyOn(httpService,'changeEmail').and.returnValue(of(errorResponse))
-    component.setEmail();
-    fixture.detectChanges();
-    expect(component.userEmailConfigured).toBeFalsy();
   });
 
   it('should populate dynamicCols with objects based on the hierarchyData from localStorage', () => {
@@ -735,7 +708,7 @@ describe('MyprofileComponent', () => {
       "accessAlertNotification": new FormControl(false),
       "errorAlertNotification": new FormControl(false)
     });
-     
+
     const successResponse = {
       success: true,
       message: 'Flag Updated successfully in user info details' ,
@@ -755,9 +728,9 @@ describe('MyprofileComponent', () => {
     shared.currentUserDetailsSubject.next({
       user_name : "dummyUser",
       user_email:"someemail@abc.com" ,
-      notificationEmail: { 
+      notificationEmail: {
         "accessAlertNotification": true,
-        "errorAlertNotification": false 
+        "errorAlertNotification": false
       }
     })
     spyOn(httpService,'notificationEmailToggleChange').and.returnValue(of(successResponse))

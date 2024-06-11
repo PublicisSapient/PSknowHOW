@@ -253,17 +253,15 @@ export class FilterNewComponent implements OnInit {
       }
 
       this.previousFilterEvent = [].concat(event);
-      // remove the last 2 elements from event
-      // event.splice(-2);
       this.setColors(event);
       this.filterApplyData['level'] = event[0].level;
       this.filterApplyData['label'] = event[0].labelName;
       this.filterApplyData['selectedMap'] = {};
       console.log(this.selectedLevel);
 
-      if(typeof this.selectedLevel === 'object' && this.selectedLevel !== null) {
+      if (typeof this.selectedLevel === 'object' && this.selectedLevel !== null) {
         this.filterType = `${this.selectedLevel.emittedLevel}:`;
-      } else if(typeof this.selectedLevel === 'string') {
+      } else if (typeof this.selectedLevel === 'string') {
         this.filterType = `${this.selectedLevel}:`;
       } else {
         this.filterType = '';
@@ -322,7 +320,7 @@ export class FilterNewComponent implements OnInit {
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
 
       // set selected projects(trends)
-      this.service.setSelectedTrends([...new Set(event.map((item) => item.basicProjectConfigId))]);
+      this.service.setSelectedTrends(event);
 
       if (this.selectedLevel) {
         if (typeof this.selectedLevel === 'string') {
@@ -334,6 +332,36 @@ export class FilterNewComponent implements OnInit {
         this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
       }
     }
+  }
+
+  handleAdditionalChange(event) {
+    // if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
+      if (event?.length) {
+        this.filterApplyData['level'] = event[0].level;
+        this.filterApplyData['label'] = event[0].labelName;
+        if (this.selectedTab?.toLowerCase() === 'backlog') {
+          this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
+        }
+
+        // if Additional Filters are selected
+        if(this.filterApplyData['level'] > 4) {
+          this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
+          this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
+        }
+
+        // set selected projects(trends)
+        this.service.setSelectedTrends(event);
+  
+        if (this.selectedLevel) {
+          if (typeof this.selectedLevel === 'string') {
+            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+          } else {
+            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+          }
+        } else {
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+        }
+      }
   }
 
   applyDateFilter() {
@@ -371,15 +399,7 @@ export class FilterNewComponent implements OnInit {
             parentId = filterItem.parentId;
           }
           return parentId === nodeId
-        })
-
-          .map(elem => {
-            return {
-              nodeName: elem.nodeName,
-              nodeId: elem.nodeId
-            };
-          }
-          ));
+        }))
       });
       // make arrays unique
       let uniqueIds = new Set();
@@ -391,8 +411,7 @@ export class FilterNewComponent implements OnInit {
       for (let i = 0; i < uniqueIdsArr.length; i++) {
         let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)][0].filter(f => f.nodeId === uniqueIdsArr[i])[0];
         uniqueObjArr.push({
-          nodeId: uniqueObj.nodeId,
-          nodeName: uniqueObj.nodeName
+          ...uniqueObj
         });
         // continue;
       }

@@ -29,7 +29,7 @@ public class ReleaseSpecification {
 
 	private double releaseDuration;
 	private double releaseIssueCountVelocity;
-	private double releaseIssueCount;
+	private int releaseIssueCount;
 	private double releaseStoryPoint;
 	private double releaseStoryPointVelocity;
 

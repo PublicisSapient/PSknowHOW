@@ -77,7 +77,7 @@ public class SignupRequestsController {
 	UserInfoServiceImpl userInfoService;
 
 	/**
-	 * Gets all unapproved requests data.
+	 * Gets all unapproved requests data.l
 	 *
 	 * @return responseEntity with data,message and information
 	 */
@@ -116,18 +116,16 @@ public class SignupRequestsController {
 
 	/**
 	 * Modify an access request data by username
-	 *
-	 * @param username
 	 *            access request id
 	 * @param accessRequestDecision
 	 *            decision data
 	 * @return updated access request
 	 */
-	@PutMapping("/{username}")
+	@PutMapping
 	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
-	public ResponseEntity<ServiceResponse> modifyAccessRequestById(@PathVariable("username") String username,
-			@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
+	public ResponseEntity<ServiceResponse> modifyAccessRequestById(@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
 		ServiceResponse[] serviceResponse = new ServiceResponse[1];
+		String username = accessRequestDecision.getUserName();
 
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access {}", username);
@@ -164,16 +162,15 @@ public class SignupRequestsController {
 	/**
 	 * Modify an access request data by username for central auth service
 	 *
-	 * @param username
-	 *            access request id
 	 * @param accessRequestDecision
 	 *            decision data
 	 * @return updated access request
 	 */
-	@PutMapping("/central/{username}")
+	@PutMapping("/central")
 	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
-	public ResponseEntity<ServiceResponse> modifyAccessRequestByIdForCentral(@PathVariable("username") String username,
+	public ResponseEntity<ServiceResponse> modifyAccessRequestByIdForCentral(
 			@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
+		String username = accessRequestDecision.getUserName();
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access For Central Auth {}", username);
 			boolean approvedCentral = userInfoService.updateUserApprovalStatus(username);
