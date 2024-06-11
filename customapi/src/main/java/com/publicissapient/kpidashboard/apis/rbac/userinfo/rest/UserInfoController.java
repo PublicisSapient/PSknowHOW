@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -112,7 +113,7 @@ public class UserInfoController {
 			ServiceResponse response = userInfoService.deleteUser(userName, false);
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		} else {
-			log.info("Unauthorized to perform deletion of user " + userName);
+			log.info("Unauthorized to perform deletion of user " + CommonUtils.sanitizeUserInput(userName));
 			return ResponseEntity.status(HttpStatus.FORBIDDEN)
 					.body(new ServiceResponse(false, "Unauthorized to perform deletion of user", "Unauthorized"));
 		}
@@ -129,7 +130,7 @@ public class UserInfoController {
 			ServiceResponse response = userInfoService.deleteUser(userName, true);
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		} else {
-			log.info("Unauthorized to perform deletion of user " + userName);
+			log.info("Unauthorized to perform deletion of user " + CommonUtils.sanitizeUserInput(userName));
 			return ResponseEntity.status(HttpStatus.FORBIDDEN)
 					.body(new ServiceResponse(false, "Unauthorized to perform deletion of user", "Unauthorized"));
 		}

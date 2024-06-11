@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,7 +64,7 @@ public class OngoingExecutionsService {
 			processorExecutionTraceLog.setErrorMessage(null); // Clear the error message
 			processorExecutionTraceLog.setFailureLog(null); // Clear the failure log message
 		}
-		log.info("ProjectId {} for processor {} executionOngoing to {} ", basicProjectConfigId, processorName ,
+		log.info("ProjectId {} for processor {} executionOngoing to {} ", JiraProcessorUtil.sanitizeUserInput(basicProjectConfigId), processorName ,
 				executionOngoing);
 		processorExecutionTraceLogRepository.save(processorExecutionTraceLog);
 	}

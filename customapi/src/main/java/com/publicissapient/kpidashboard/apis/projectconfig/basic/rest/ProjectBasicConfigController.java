@@ -96,7 +96,7 @@ public class ProjectBasicConfigController {
 	 */
 	@GetMapping(value = { "/{id}" })
 	public ResponseEntity<ServiceResponse> getProjectBasicConfig(@PathVariable("id") String basicProjectConfigId) {
-		basicProjectConfigId = CommonUtils.handleCrossScriptingTaintedValue(basicProjectConfigId);
+		basicProjectConfigId = CommonUtils.sanitizeUserInput(basicProjectConfigId);
 		log.info("List project configuration request recieved for : {}", basicProjectConfigId);
 		boolean isSuccess = true;
 		String message = "Fetched successfully";

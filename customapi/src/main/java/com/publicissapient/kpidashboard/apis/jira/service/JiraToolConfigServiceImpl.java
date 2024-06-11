@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,7 +158,7 @@ public class JiraToolConfigServiceImpl {
 					setBoardListResponse(responseList, jiraBoardListResponse);
 				} else {
 					String statusCode = response.getStatusCode().toString();
-					log.error("Error while fetching BoardList from {}. with status {}", url, statusCode);
+					log.error("Error while fetching BoardList from {}. with status {}", CommonUtils.sanitizeUserInput(url), statusCode);
 				}
 
 			} catch (Exception exception) {
@@ -168,7 +169,7 @@ public class JiraToolConfigServiceImpl {
 							.getReasonPhrase();
 					connectionService.updateBreakingConnection(connection, errMsg);
 				}
-				log.error("Error while fetching boardList for projectKey Id {}:  {}", boardRequestDTO.getProjectKey(),
+				log.error("Error while fetching boardList for projectKey Id {}:  {}", CommonUtils.sanitizeUserInput(boardRequestDTO.getProjectKey()),
 						exception.getMessage());
 			}
 		} while (isLast);

@@ -182,8 +182,7 @@ public class SonarServiceR {
 	private Object getDataFromCache(Object cachedData, KpiRequest kpiRequest) {
 		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& null != cachedData)
-			log.info("[JIRA][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
-					kpiRequest.getIds());
+			log.info("[JIRA][{}]. Fetching value from cache for", kpiRequest.getRequestTrackerId());
 		return cachedData;
 	}
 

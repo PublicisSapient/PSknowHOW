@@ -75,8 +75,6 @@ public class ZephyrController {
 	public ResponseEntity<List<KpiElement>> getZephyrMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception {// NOSONAR
 
-		log.info("[ZEPHYR][{}]. Received Zephyr KPI request {}", kpiRequest.getRequestTrackerId(), kpiRequest);
-
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name(),
 				kpiRequest.getRequestTrackerId());
 
@@ -106,8 +104,6 @@ public class ZephyrController {
 	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getZephyrKanbanMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception { // NOSONAR
-
-		log.info("[ZEPHYR KANBAN][{}]. Received Zephyr KPI request {}", kpiRequest.getRequestTrackerId(), kpiRequest);
 
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYRKANBAN.name(),
 				kpiRequest.getRequestTrackerId());
