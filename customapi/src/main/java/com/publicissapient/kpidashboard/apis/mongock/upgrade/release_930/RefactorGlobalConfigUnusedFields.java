@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_920;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_930;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -13,7 +13,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author pawkandp
  */
-@ChangeUnit(id = "refactor_global_config_unused_fields", order = "9203", author = "pawkandp", systemVersion = "9.2.0")
+@ChangeUnit(id = "refactor_global_config_unused_fields", order = "9303", author = "pawkandp", systemVersion = "9.3.0")
 public class RefactorGlobalConfigUnusedFields {
 	private final MongoTemplate mongoTemplate;
 
@@ -48,18 +48,6 @@ public class RefactorGlobalConfigUnusedFields {
 		mongoTemplate.getCollection(GLOBAL_CONFIG).updateMany(new Document(), set);
 	}
 
-	private void rollbackAdServerDetail() {
-		Document adServerDetail = new Document()
-				.append("username", "svc-apac-enggkpidash")
-				.append("host", "lladldap-ext.fr.publicisgroupe.net")
-				.append("port", 639)
-				.append("rootDn", "DC=global,DC=publicisgroupe,DC=net")
-				.append("domain", "publicisgroupe.net");
-
-		Bson set = Updates.set("adServerDetail", adServerDetail);
-		mongoTemplate.getCollection(GLOBAL_CONFIG).updateMany(new Document(), set);
-	}
-
 	@Execution
 	public void execution() {
 		removeZephyrCloudBaseUrl();
@@ -71,6 +59,5 @@ public class RefactorGlobalConfigUnusedFields {
 	public void rollBack() {
 		rollbackZephyrCloudBaseUrl();
 		rollbackAuthTypeStatus();
-		rollbackAdServerDetail();
 	}
 }
