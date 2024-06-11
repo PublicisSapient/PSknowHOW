@@ -113,7 +113,7 @@ public class ProjectToolConfigController {
 			@PathVariable String projectToolId, @Valid @RequestBody ProjectToolConfigDTO projectToolDTO) {
 		basicProjectConfigId = CommonUtils.sanitizeUserInput(basicProjectConfigId);
 		projectToolId = CommonUtils.sanitizeUserInput(projectToolId);
-		log.info("projectTool updated", projectToolDTO.getProjectId());
+		log.info("projectTool updated for {} ", projectToolId);
 		final ModelMapper modelMapper = new ModelMapper();
 		final ProjectToolConfig projectToolConfig = modelMapper.map(projectToolDTO, ProjectToolConfig.class);
 		projectToolConfig.setBasicProjectConfigId(new ObjectId(basicProjectConfigId));

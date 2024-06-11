@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.sprinttracelog.service;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,7 @@ public class SprintTraceLogServiceImpl implements SprintTraceLogService {
 
 		// checking if fetchRecord is not null
 		if (fetchRecord != null) {
-			log.info("Successfully fetched sprintTraceLog from db for sprint {}", sprintId);
+			log.info("Successfully fetched sprintTraceLog from db for sprint {}", CommonUtils.sanitizeUserInput(sprintId));
 			return new ServiceResponse(true, "Sprint trace log", fetchRecord);
 		} else {
 			log.info("fetchRecord is null");
