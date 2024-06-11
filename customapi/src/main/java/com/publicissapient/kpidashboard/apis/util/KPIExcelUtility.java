@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.Node;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -637,20 +636,25 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateSprintCapacity(String sprintName, List<JiraIssue> totalStoriesList,
-											  List<KPIExcelData> kpiExcelData, Map<String, Double> loggedTimeIssueMap) {
+	public static void populateSprintCapacity(String sprint, List<JiraIssue> totalStoriesList,
+			List<KPIExcelData> kpiExcelData) {
+
 		if (CollectionUtils.isNotEmpty(totalStoriesList)) {
-			totalStoriesList.forEach(issue -> {
+			totalStoriesList.stream().forEach(issue -> {
 
 				KPIExcelData excelData = new KPIExcelData();
-				excelData.setSprintName(sprintName);
+				excelData.setSprintName(sprint);
 				Map<String, String> storyDetails = new HashMap<>();
 				storyDetails.put(issue.getNumber(), checkEmptyURL(issue));
 				excelData.setStoryId(storyDetails);
 				excelData.setIssueDesc(checkEmptyName(issue));
 				setSquads(excelData, issue);
+				String daysLogged = "0.0";
 				String daysEstimated = "0.0";
-				excelData.setTotalTimeSpent(String.valueOf(roundingOff(loggedTimeIssueMap.getOrDefault(issue.getNumber(),0d))));
+				if (issue.getTimeSpentInMinutes() != null && issue.getTimeSpentInMinutes() > 0) {
+					daysLogged = String.valueOf(roundingOff(Double.valueOf(issue.getTimeSpentInMinutes()) / 60));
+				}
+				excelData.setTotalTimeSpent(daysLogged);
 
 				if (issue.getAggregateTimeOriginalEstimateMinutes() != null
 						&& issue.getAggregateTimeOriginalEstimateMinutes() > 0) {
