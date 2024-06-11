@@ -174,6 +174,7 @@ export class HttpService {
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
   private validateResourceUrl = this.baseUrl + '/api/validateResource';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
+  private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -1155,5 +1156,9 @@ export class HttpService {
 
   getProgressStatusOfProcessors(data){
     return this.http.get<any>(`${this.processorTraceLogsUrl}?processorName=${data.processor}&basicProjectConfigId=${data.projects[0]}`);
+  }
+
+  getRecommendations(data){
+    return this.http.post<object>(this.recommendationsUrl, data);
   }
 }

@@ -250,6 +250,25 @@ public class CustomApiConfig {// NOPMD
 	private List<String> cycleTimeRange;
 	private List<Character> aesKeyValue;
 	private int sprintCountForKpiCalculation;
+	private String rnrRecommendationApiKey;
+	private String rnrRecommendationUrl;
+
+
+	public String getRnrRecommendationUrl() {
+		return rnrRecommendationUrl;
+	}
+
+	public void setRnrRecommendationUrl(String rnrRecommendationUrl) {
+		this.rnrRecommendationUrl = rnrRecommendationUrl;
+	}
+
+	public String getRnrRecommendationApiKey() {
+		return rnrRecommendationApiKey;
+	}
+
+	public void setRnrRecommendationApiKey(String rnrRecommendationApiKey) {
+		this.rnrRecommendationApiKey = rnrRecommendationApiKey;
+	}
 
 	public List<Character> getAesKeyValue() {
 		return aesKeyValue;
