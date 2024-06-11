@@ -48,18 +48,6 @@ public class RefactorGlobalConfigUnusedFields {
 		mongoTemplate.getCollection(GLOBAL_CONFIG).updateMany(new Document(), set);
 	}
 
-	private void rollbackAdServerDetail() {
-		Document adServerDetail = new Document()
-				.append("username", "svc-apac-enggkpidash")
-				.append("host", "lladldap-ext.fr.publicisgroupe.net")
-				.append("port", 639)
-				.append("rootDn", "DC=global,DC=publicisgroupe,DC=net")
-				.append("domain", "publicisgroupe.net");
-
-		Bson set = Updates.set("adServerDetail", adServerDetail);
-		mongoTemplate.getCollection(GLOBAL_CONFIG).updateMany(new Document(), set);
-	}
-
 	@Execution
 	public void execution() {
 		removeZephyrCloudBaseUrl();
@@ -71,6 +59,5 @@ public class RefactorGlobalConfigUnusedFields {
 	public void rollBack() {
 		rollbackZephyrCloudBaseUrl();
 		rollbackAuthTypeStatus();
-		rollbackAdServerDetail();
 	}
 }
