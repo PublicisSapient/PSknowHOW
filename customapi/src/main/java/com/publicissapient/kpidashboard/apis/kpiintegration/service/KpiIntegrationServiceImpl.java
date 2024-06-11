@@ -207,7 +207,7 @@ public class KpiIntegrationServiceImpl {
 	 */
 	private List<KpiElement> getJiraKpiMaturity(KpiRequest kpiRequest) throws EntityNotFoundException {
 		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
-		log.info("Received Jira KPI request {}", kpiRequest);
+
 		long jiraRequestStartTime = System.currentTimeMillis();
 		MDC.put("JiraRequestStartTime", String.valueOf(jiraRequestStartTime));
 		HashSet<String> category = new HashSet<>();
@@ -256,7 +256,6 @@ public class KpiIntegrationServiceImpl {
 	 */
 	private List<KpiElement> getZephyrKpiMaturity(KpiRequest kpiRequest) throws EntityNotFoundException {
 		MDC.put("ZephyrKpiRequest", kpiRequest.getRequestTrackerId());
-		log.info("Received Zephyr KPI request {}", kpiRequest);
 		long zypherRequestStartTime = System.currentTimeMillis();
 		MDC.put("ZephyrRequestStartTime", String.valueOf(zypherRequestStartTime));
 		List<KpiElement> responseList = zephyrService.processWithExposedApiToken(kpiRequest);
@@ -276,7 +275,6 @@ public class KpiIntegrationServiceImpl {
 	 */
 	private List<KpiElement> getJenkinsKpiMaturity(KpiRequest kpiRequest) throws EntityNotFoundException {
 		MDC.put("JenkinsKpiRequest", kpiRequest.getRequestTrackerId());
-		log.info("Received Zephyr KPI request {}", kpiRequest);
 		long jenkinsRequestStartTime = System.currentTimeMillis();
 		MDC.put("JenkinsRequestStartTime", String.valueOf(jenkinsRequestStartTime));
 		List<KpiElement> responseList = jenkinsServiceR.processWithExposedApiToken(kpiRequest);

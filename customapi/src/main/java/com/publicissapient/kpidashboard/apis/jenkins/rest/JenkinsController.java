@@ -125,7 +125,6 @@ public class JenkinsController {
 			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception { // NOSONAR
 		CommonUtils.sanitizeUserInput(kpiRequest.toString());
 		MDC.put("JenkinsKanbanKpiRequest", kpiRequest.getRequestTrackerId());
-		log.info("Received Jenkins Kanban KPI request {}", kpiRequest);
 		long jenkinsKanbanRequestStartTime = System.currentTimeMillis();
 		MDC.put("JenkinsKanbanRequestStartTime", String.valueOf(jenkinsKanbanRequestStartTime));
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name(),

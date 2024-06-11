@@ -98,7 +98,7 @@ public class JiraController {
 			throws Exception {// NOSONAR
 
 		MDC.put(JIRASCRUMKPIREQ, kpiRequest.getRequestTrackerId());
-		log.info("Received Jira KPI request {}", kpiRequest);
+
 
 		long jiraRequestStartTime = System.currentTimeMillis();
 		MDC.put("JiraRequestStartTime", String.valueOf(jiraRequestStartTime));
@@ -133,7 +133,6 @@ public class JiraController {
 	public ResponseEntity<List<KpiElement>> getJiraKanbanAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception { // NOSONAR
 		MDC.put(JIRASCRUMKPIREQ, kpiRequest.getRequestTrackerId());
-		log.info("Received Jira Kanban KPI request {}", kpiRequest);
 		long jiraKanbanRequestStartTime = System.currentTimeMillis();
 		MDC.put("JiraKanbanRequestStartTime", String.valueOf(jiraKanbanRequestStartTime));
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name(),
@@ -178,7 +177,6 @@ public class JiraController {
 			throws Exception {// NOSONAR
 
 		MDC.put(JIRASCRUMKPIREQ, kpiRequest.getRequestTrackerId());
-		log.info("Received Jira KPI request for iteration{}", kpiRequest);
 
 		long jiraRequestStartTime = System.currentTimeMillis();
 		MDC.put("JiraRequestStartTime", String.valueOf(jiraRequestStartTime));
