@@ -28,6 +28,7 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnectionDetail;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,7 +194,7 @@ public class RepoToolsConfigServiceImpl {
 
 			}
 		} catch (Exception ex) {
-			log.error("Exception occcured while scanning project {}", basicProjectconfigIdList, ex);
+			log.error("Exception occcured while scanning project {}", CommonUtils.sanitizeUserInputList(basicProjectconfigIdList), ex);
 		}
 		return httpStatus;
 	}

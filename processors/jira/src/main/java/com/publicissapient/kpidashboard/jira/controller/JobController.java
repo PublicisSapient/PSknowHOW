@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.Job;
@@ -342,7 +343,7 @@ public class JobController {
 				jobLauncher.run(fetchIssueScrumBoardJob, params);
 			}
 		} else {
-			log.info("removing project with basicProjectConfigId {}", basicProjectConfigId);
+			log.info("removing project with basicProjectConfigId {}", JiraProcessorUtil.sanitizeUserInput(basicProjectConfigId));
 			// Mark the execution as completed
 			ongoingExecutionsService.markExecutionAsCompleted(basicProjectConfigId);
 		}
@@ -362,7 +363,7 @@ public class JobController {
 				jobLauncher.run(fetchIssueKanbanBoardJob, params);
 			}
 		} else {
-			log.info("removing project with basicProjectConfigId {}", basicProjectConfigId);
+			log.info("removing project with basicProjectConfigId {}", JiraProcessorUtil.sanitizeUserInput(basicProjectConfigId));
 			// Mark the execution as completed
 			ongoingExecutionsService.markExecutionAsCompleted(basicProjectConfigId);
 		}
