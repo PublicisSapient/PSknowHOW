@@ -210,6 +210,7 @@ public class ProjectBasicConfigController {
 	@PreAuthorize("hasPermission(#basicProjectConfigId, 'DELETE_PROJECT')")
 	@DeleteMapping(value = "/{basicProjectConfigId}")
 	public ResponseEntity<ServiceResponse> deleteProject(@PathVariable String basicProjectConfigId) {
+		basicProjectConfigId = CommonUtils.sanitizeUserInput(basicProjectConfigId);
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigService.deleteProject(basicProjectConfigId);
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true,
 				projectBasicConfig.getProjectName() + " deleted successfully", projectBasicConfig));
