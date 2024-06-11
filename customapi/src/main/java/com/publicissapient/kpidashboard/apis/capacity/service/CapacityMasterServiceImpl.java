@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.capacity.service;
 
 import java.time.LocalDate;
@@ -131,9 +149,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				map.put(assignee1.getAssigneeId(), assignee1);
 			});
 			Set<Assignee> finalAssignee = new HashSet<>();
-			map.forEach((key, value) -> {
-				finalAssignee.add(value);
-			});
+			map.forEach((key, value) -> finalAssignee.add(value));
 			assigneeDetails.setAssignee(finalAssignee);
 			assigneeDetailsRepository.save(assigneeDetails);
 
@@ -645,39 +661,78 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 		}
 	}
 
-	private List<AdditionalFilterCapacity> saveAdditionalFilterCapacity(CapacityMaster capacityMaster) {
-		if (CollectionUtils.isNotEmpty(capacityMaster.getAdditionalFilterCapacityList())) {
-			List<AdditionalFilterCapacity> additionalFilterCapacityList = capacityMaster
-					.getAdditionalFilterCapacityList();
-			List<AdditionalFilterCapacity> dbSaveAdditionalList = new ArrayList<>();
-
-			for (AdditionalFilterCapacity additionalFilterCapacity : additionalFilterCapacityList) {
-				if (StringUtils.isNotEmpty(additionalFilterCapacity.getFilterId())) {
-					List<LeafNodeCapacity> nodeCapacityList = additionalFilterCapacity.getNodeCapacityList();
-					List<LeafNodeCapacity> dbNodeCapacityList = new ArrayList<>();
-
-					if (CollectionUtils.isNotEmpty(nodeCapacityList)) {
-						for (LeafNodeCapacity nodeCapacity : nodeCapacityList) {
-							if (StringUtils.isNotEmpty(nodeCapacity.getAdditionalFilterId())
-									&& ObjectUtils.isNotEmpty(nodeCapacity.getAdditionalFilterCapacity())) {
-								LeafNodeCapacity dbCapacity = new LeafNodeCapacity(nodeCapacity.getAdditionalFilterId(),
-										nodeCapacity.getAdditionalFilterCapacity());
-								dbNodeCapacityList.add(dbCapacity);
-							}
-						}
-					}
-
-					if (CollectionUtils.isNotEmpty(dbNodeCapacityList)) {
-						AdditionalFilterCapacity dbFilterCapacity = new AdditionalFilterCapacity();
-						dbFilterCapacity.setFilterId(additionalFilterCapacity.getFilterId());
-						dbFilterCapacity.setNodeCapacityList(dbNodeCapacityList);
-						dbSaveAdditionalList.add(dbFilterCapacity);
-					}
-				}
-			}
-			return dbSaveAdditionalList;
+	/**
+	 * Saves the additional filter capacities from the given capacity master.
+	 *
+	 * @param capacityMaster
+	 *            the capacity master containing additional filter capacities
+	 * @return a list of saved additional filter capacities
+	 */
+	public List<AdditionalFilterCapacity> saveAdditionalFilterCapacity(CapacityMaster capacityMaster) {
+		if (CollectionUtils.isEmpty(capacityMaster.getAdditionalFilterCapacityList())) {
+			return new ArrayList<>();
 		}
-		return null;
+
+		return capacityMaster.getAdditionalFilterCapacityList().stream().filter(this::isValidAdditionalFilterCapacity)
+				.map(this::createDbAdditionalFilterCapacity).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
+	/**
+	 * Validates if the given additional filter capacity has a non-empty filter ID.
+	 *
+	 * @param additionalFilterCapacity
+	 *            the additional filter capacity to validate
+	 * @return true if the filter ID is not empty, false otherwise
+	 */
+	private boolean isValidAdditionalFilterCapacity(AdditionalFilterCapacity additionalFilterCapacity) {
+		return StringUtils.isNotEmpty(additionalFilterCapacity.getFilterId());
+	}
+
+	/**
+	 * Creates a database entity for the given additional filter capacity.
+	 *
+	 * @param additionalFilterCapacity
+	 *            the additional filter capacity to convert
+	 * @return the corresponding database entity, or null if no valid node
+	 *         capacities exist
+	 */
+	private AdditionalFilterCapacity createDbAdditionalFilterCapacity(
+			AdditionalFilterCapacity additionalFilterCapacity) {
+		List<LeafNodeCapacity> dbNodeCapacityList = additionalFilterCapacity.getNodeCapacityList().stream()
+				.filter(this::isValidNodeCapacity).map(this::createDbLeafNodeCapacity).collect(Collectors.toList());
+
+		if (CollectionUtils.isEmpty(dbNodeCapacityList)) {
+			return null;
+		}
+
+		AdditionalFilterCapacity dbFilterCapacity = new AdditionalFilterCapacity();
+		dbFilterCapacity.setFilterId(additionalFilterCapacity.getFilterId());
+		dbFilterCapacity.setNodeCapacityList(dbNodeCapacityList);
+		return dbFilterCapacity;
+	}
+
+	/**
+	 * Validates if the given node capacity has a non-empty additional filter ID and
+	 * a non-null additional filter capacity.
+	 *
+	 * @param nodeCapacity
+	 *            the node capacity to validate
+	 * @return true if the additional filter ID is not empty and the additional
+	 *         filter capacity is not null, false otherwise
+	 */
+	private boolean isValidNodeCapacity(LeafNodeCapacity nodeCapacity) {
+		return StringUtils.isNotEmpty(nodeCapacity.getAdditionalFilterId())
+				&& ObjectUtils.isNotEmpty(nodeCapacity.getAdditionalFilterCapacity());
+	}
+
+	/**
+	 * Creates a database entity for the given node capacity.
+	 *
+	 * @param nodeCapacity
+	 *            the node capacity to convert
+	 * @return the corresponding database entity
+	 */
+	private LeafNodeCapacity createDbLeafNodeCapacity(LeafNodeCapacity nodeCapacity) {
+		return new LeafNodeCapacity(nodeCapacity.getAdditionalFilterId(), nodeCapacity.getAdditionalFilterCapacity());
+	}
 }

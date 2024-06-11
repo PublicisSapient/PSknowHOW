@@ -14,22 +14,16 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service.releasedashboard;
 
-import static com.publicissapient.kpidashboard.apis.util.KPIExcelUtility.roundingOff;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -49,7 +43,6 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraNonTrendKPIServiceFactory;
-import com.publicissapient.kpidashboard.apis.jira.model.ReleaseSpecification;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraNonTrendKPIServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -110,8 +103,6 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 	private List<String> releaseList;
 	private boolean referFromProjectCache = true;
-	private static final String AVG_ISSUE_COUNT = "avgIssueCount";
-	private static final String AVG_STORY_POINT = "avgStoryPoint";
 
 	/**
 	 * This method process scrum jira based release kpis request, cache data and
@@ -250,7 +241,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	private void updateJiraIssueList(List<AccountHierarchyData> filteredAccountDataList, Node filteredNode) {
 		releaseList = getReleaseList(filteredNode);
 		fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), releaseList);
-		fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+		fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),releaseList);
 		fetchJiraIssueReleaseForProject(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
 	}
 
@@ -268,9 +259,9 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 		return processedList;
 	}
 
-	public void fetchJiraIssues(String basicProjectConfigId, List<String> releaseList) {
+	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList) {
 		jiraIssueReleaseList = jiraIssueRepository
-				.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, releaseList);
+				.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, sprintIssuesList);
 		Set<String> storyIDs = jiraIssueReleaseList.stream()
 				.filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase(NormalizedJira.DEFECT_TYPE.getValue()))
 				.map(JiraIssue::getNumber).collect(Collectors.toSet());
@@ -281,7 +272,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 		return threadReleaseIssues.get();
 	}
 
-	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId) {
+	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId, List<String> releaseList) {
 		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromReleaseMap(
 				Collections.singletonList(basicProjectConfigId),
 				CommonUtils.convertToPatternListForSubString(releaseList));
@@ -323,80 +314,20 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	 * 
 	 * @param fieldMapping
 	 *            fieldMapping
-	 * @param releaseSpecification
-	 *            releaseSpecification
-	 * @return averageDataMap
+	 * @param releaseNames
+	 *            releaseNames
+	 * @return JiraIssueList
 	 */
-	public Map<String, Object> getAvgVelocity(FieldMapping fieldMapping, ReleaseSpecification releaseSpecification) {
-
-		Map<String, Object> averageDataMap = new HashMap<>();
-		String regex = "^(.*?)\\s*\\(duration\\s*(\\d+\\.\\d+)\\s*days\\)$";
-		Pattern pattern = Pattern.compile(regex);
-		List<String> releaseNames = new ArrayList<>();
-		double totalDurations = 0.0;
-
-		for (String release : fieldMapping.getReleaseListKPI150()) {
-			Matcher matcher = pattern.matcher(release);
-			if (matcher.find()) {
-				String releaseName = matcher.group(1).trim();
-				double duration = Double.parseDouble(matcher.group(2));
-				totalDurations = duration + totalDurations;
-				releaseNames.add(releaseName);
-			}
-		}
-
-		List<JiraIssue> jiraIssues = jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(
+	public List<JiraIssue> getJiraIssuesList(FieldMapping fieldMapping, List<String> releaseNames) {
+		return jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(
 				fieldMapping.getBasicProjectConfigId().toString(), releaseNames);
-		if (totalDurations != 0 && CollectionUtils.isNotEmpty(jiraIssues)) {
-			double releaseIssuesSize = jiraIssues.size();
-			double releaseTicketsEstimate = getTicketEstimate(jiraIssues, fieldMapping, 0.0d);
-			double issueCountVelocity = releaseIssuesSize / totalDurations;
-			double issuesEstimateVelocity = releaseTicketsEstimate / totalDurations;
-
-			releaseSpecification.setReleaseIssueCount(releaseIssuesSize);
-			releaseSpecification.setReleaseStoryPoint(releaseTicketsEstimate);
-			releaseSpecification.setReleaseIssueCountVelocity(roundingOff(issueCountVelocity));
-			releaseSpecification.setReleaseStoryPointVelocity(roundingOff(issuesEstimateVelocity));
-			releaseSpecification.setReleaseDuration(totalDurations);
-			averageDataMap.put(AVG_ISSUE_COUNT, roundingOff(issueCountVelocity));
-			averageDataMap.put(AVG_STORY_POINT, roundingOff(issuesEstimateVelocity));
-
-		}
-
-		return averageDataMap;
-	}
-
-	/**
-	 * Get Sum of StoryPoint for List of JiraIssue
-	 *
-	 * @param jiraIssueList
-	 *            List<JiraIssue>
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @return Sum of Story Point
-	 */
-	public double getTicketEstimate(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping, double ticketEstimate) {
-		if (CollectionUtils.isNotEmpty(jiraIssueList)) {
-			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				ticketEstimate = jiraIssueList.stream()
-						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
-			} else {
-				double totalOriginalEstimate = jiraIssueList.stream().mapToDouble(
-						jiraIssue -> Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0))
-						.sum();
-				double inHours = totalOriginalEstimate / 60;
-				ticketEstimate = inHours / fieldMapping.getStoryPointToHourMapping();
-			}
-		}
-		return ticketEstimate;
 	}
 
 	public Set<JiraIssue> getSubTaskDefects() {
 		return threadSubtaskDefects.get();
 	}
 
-	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
+	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentRelease() {
 		return threadLocalHistory.get();
 	}
 

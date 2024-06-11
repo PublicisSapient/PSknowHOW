@@ -26,7 +26,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * The type Project release.
+ * @author shi6
+ * for each node under "additional filter", saving the capacity of
+ *         each leaf
  */
 @Data
 @Builder
@@ -34,7 +36,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LeafNodeCapacity{
+public class LeafNodeCapacity {
 	private String additionalFilterId;
 	private Double additionalFilterCapacity;
 

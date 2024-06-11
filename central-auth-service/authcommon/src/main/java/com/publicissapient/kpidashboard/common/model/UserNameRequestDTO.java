@@ -1,10 +1,13 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
- * Further development Copyright 2022 Sapient Corporation.
+ * Further development Copyright 2024 Sapient Corporation.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -12,24 +15,15 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.apis.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+package com.publicissapient.kpidashboard.common.model;
 
-/**
- * This class is used to store logged work of each issue based on projectConfigId, sprintId , storyId.
- *
- * @author purgupta2
- */
-@Getter
-@Setter
-@AllArgsConstructor
-public class LoggedTimePerIssue {
-    private String projectConfigId;
-    private String sprintId;
-    private String storyId;
-    private Double loggedTimeInHours;
+import lombok.Data;
+
+import javax.validation.constraints.NotNull;
+
+@Data
+public class UserNameRequestDTO {
+    @NotNull
+    private String userName;
 }
-

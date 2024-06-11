@@ -22,16 +22,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,9 +45,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
-import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -65,14 +60,10 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -102,19 +93,12 @@ public class SprintCapacityServiceImplTest {
 	CustomApiConfig customApiConfig;
 	@Mock
 	CapacityKpiDataRepository capacityKpiDataRepository;
-	@Mock
-	FieldMapping fieldMapping;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
-	private Map<String, Object> resultMap = new HashMap<>();
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	@Mock
 	private CommonService commonService;
-	@Mock
-	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-	private List<SprintDetails> sprintDetailsList;
-	private List<JiraIssueCustomHistory> jiraIssueCustomHistories;
 
 	@Before
 	public void setup() {
@@ -129,33 +113,17 @@ public class SprintCapacityServiceImplTest {
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		totalJiraIssueList = JiraIssueDataFactory.newInstance().getJiraIssues();
-		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
-		sprintDetailsList = sprintDetailsDataFactory.getSprintDetails();
-		JiraIssueHistoryDataFactory jiraIssueCustomHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
-		jiraIssueCustomHistories = jiraIssueCustomHistoryDataFactory.getJiraIssueCustomHistory();
-		JiraHistoryChangeLog worklog = new JiraHistoryChangeLog("", "28800",
-				LocalDateTime.of(2022, 8, 10, 12, 0, 0, 0));
-		jiraIssueCustomHistories.stream().filter(j -> j.getStoryID().equalsIgnoreCase("TEST-17918")).toList().get(0)
-				.setWorkLog(Collections.singletonList(worklog));
-		CapacityKpiData capacityKpiData = new CapacityKpiData();
-		capacityKpiData.setCapacityPerSprint(22d);
-		capacityKpiData.setBasicProjectConfigId(new ObjectId("6658551f9851452c969edaaa"));
-		capacityKpiData.setSprintID("abc");
-		CapacityKpiData capacityKpiData1 = new CapacityKpiData();
-		capacityKpiData1.setCapacityPerSprint(23d);
-		capacityKpiData1.setBasicProjectConfigId(new ObjectId("6658551f9851452c969edaaa"));
-		capacityKpiData1.setSprintID("abc");
-		dataList.add(capacityKpiData1);
-		dataList.add(capacityKpiData);
-		resultMap.put("stories", totalJiraIssueList);
-		resultMap.put("sprints", sprintDetailsList);
-		resultMap.put("JiraIssueHistoryData", jiraIssueCustomHistories);
 	}
 
 	@Test
 	public void testCalculateKPIMetrics() {
-		Double capacityValue = sprintCapacityServiceImpl.calculateKPIMetrics(new HashMap<>());
-		assertThat(capacityValue, equalTo(null));
+		Map<String, Object> filterComponentIdWiseDefectMap = new HashMap<>();
+		String kpiRequestTrackerId = "automationpercenttrack001";
+
+		filterComponentIdWiseDefectMap.put(SPRINTCAPACITYKEY, totalJiraIssueList);
+		Double capacityValue = sprintCapacityServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
+
+		assertThat("Capacity value :", capacityValue, equalTo(180.0));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -169,13 +137,16 @@ public class SprintCapacityServiceImplTest {
 				leafNodeList.addAll(v);
 			}
 		});
-		when(kpiHelperService.fetchSprintCapacityDataFromDb(Mockito.any(), Mockito.any())).thenReturn(resultMap);
+		when(customApiConfig.getApplicationDetailedLogger()).thenReturn("Off");
+		when(kpiHelperService.fetchSprintCapacityDataFromDb(Mockito.any(), Mockito.any()))
+				.thenReturn(totalJiraIssueList);
 		kpiWiseAggregation.put("sprintCapacity", "average");
 
 		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any(), Mockito.any())).thenReturn(dataList);
 		Map<String, Object> capacityListMap = sprintCapacityServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
-		Assert.assertNull(capacityListMap.get(SPRINTCAPACITYKEY));
+		assertThat("Capacity value :", ((List<JiraIssue>) (capacityListMap.get(SPRINTCAPACITYKEY))).size(),
+				equalTo(45));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -191,9 +162,12 @@ public class SprintCapacityServiceImplTest {
 		});
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put("sprintCapacity", Arrays.asList("-5", "5-25", "25-50", "50-75", "75-"));
-		when(kpiHelperService.fetchSprintCapacityDataFromDb(Mockito.any(), Mockito.any())).thenReturn(resultMap);
+		when(customApiConfig.getApplicationDetailedLogger()).thenReturn("On");
+		when(kpiHelperService.fetchSprintCapacityDataFromDb(Mockito.any(), Mockito.any()))
+				.thenReturn(totalJiraIssueList);
 		kpiWiseAggregation.put("sprintCapacity", "average");
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
+		// when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
@@ -220,12 +194,6 @@ public class SprintCapacityServiceImplTest {
 	public void calculateKpiValueTest() {
 		Double kpiValue = sprintCapacityServiceImpl.calculateKpiValue(Arrays.asList(1.0, 2.0), "kpi14");
 		assertThat("Kpi value  :", kpiValue, equalTo(0.0));
-	}
-
-	@Test
-	public void calculateThresholdValue() {
-		fieldMapping.setThresholdValueKPI46("abc");
-		sprintCapacityServiceImpl.calculateThresholdValue(fieldMapping);
 	}
 
 }

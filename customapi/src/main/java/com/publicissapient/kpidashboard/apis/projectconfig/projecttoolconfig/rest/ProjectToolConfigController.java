@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.re
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.util.ProjectAccessUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -55,6 +56,9 @@ public class ProjectToolConfigController {
 	@Autowired
 	private ProjectToolConfigService toolService;
 
+	@Autowired
+	private ProjectAccessUtil projectAccessUtil;
+
 	/**
 	 * Fetch all projectToolConfig
 	 */
@@ -62,6 +66,11 @@ public class ProjectToolConfigController {
 	public ResponseEntity<ServiceResponse> getProjectTools(@PathVariable String basicConfigId,
 			@RequestParam(name = "toolType", required = false) String toolType) {
 		ServiceResponse response;
+		boolean hasAccess = projectAccessUtil.configIdHasUserAccess(basicConfigId);
+		if (!hasAccess) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body(new ServiceResponse(false, "Unauthorized to get the project tools", "Unauthorized"));
+		}
 		if (StringUtils.isEmpty(StringUtils.trim(toolType))) {
 			log.info("Fetching all tools");
 			response = new ServiceResponse(true, "list of tools", toolService.getProjectToolConfigs(basicConfigId));

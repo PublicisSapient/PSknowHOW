@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,6 +64,7 @@ import com.publicissapient.kpidashboard.common.repository.application.KpiCategor
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
+import org.springframework.http.ResponseEntity;
 
 /**
  * @author yasbano
@@ -138,9 +140,12 @@ public class UserBoardConfigServiceImplTest {
 		when(authenticationService.getLoggedInUser()).thenReturn(username);
 		when(userBoardConfigRepository.save(getData(username, true))).thenReturn(getData(username, true));
 		when(userInfoCustomRepository.findAdminUserOfProject(any())).thenReturn(new ArrayList<>());
-		UserBoardConfigDTO response = userBoardConfigServiceImpl.saveUserBoardConfigAdmin(userBoardConfigDTO,projId);
+		ResponseEntity<ServiceResponse> response = userBoardConfigServiceImpl.saveUserBoardConfigAdmin(userBoardConfigDTO,projId);
 		assertNotNull(response);
-		assertEquals(response.getUsername(), username);
+		assertNotNull(response.getBody());
+		assertNotNull(response.getBody().getData());
+		UserBoardConfigDTO boardConfigDTOResponse = (UserBoardConfigDTO) response.getBody().getData();
+		assertEquals(boardConfigDTOResponse.getUsername(), username);
 	}
 	@Test
 	public void testSaveSuperAdminUserBoardConfig() {
@@ -149,9 +154,9 @@ public class UserBoardConfigServiceImplTest {
 		UserBoardConfigDTO userBoardConfigDTO = convertToUserBoardConfigDTO(getData(username, true));
 		when(authenticationService.getLoggedInUser()).thenReturn(username);
 		when(userBoardConfigRepository.save(getData(username, true))).thenReturn(getData(username, true));
-		UserBoardConfigDTO response = userBoardConfigServiceImpl.saveUserBoardConfigAdmin(userBoardConfigDTO,projId);
-		assertNotNull(response);
-		assertEquals(response.getUsername(), username);
+		ResponseEntity<ServiceResponse> response = userBoardConfigServiceImpl.saveUserBoardConfigAdmin(userBoardConfigDTO,projId);
+		assertNotNull(response.getBody());
+		assertNotNull(response.getBody().getData());
 	}
 
 	@Test

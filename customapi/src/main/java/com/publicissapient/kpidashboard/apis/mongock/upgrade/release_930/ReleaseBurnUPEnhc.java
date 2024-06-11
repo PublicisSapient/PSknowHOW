@@ -55,7 +55,7 @@ public class ReleaseBurnUPEnhc {
 				.append("fieldLabel", "Select releases to define team velocity").append("fieldType", "chips")
 				.append("fieldCategory", "releases")
 				.append("section", "Custom Fields Mapping").append("tooltip", new Document(DEFINITION,
-						"Select release to predict the release prediction end date of active release on the basis of average velocity"));
+						"Select releases to define team velocity as per ticket"));
 
 		mongoTemplate.getCollection("field_mapping_structure").insertOne(thresholdValueMapping);
 

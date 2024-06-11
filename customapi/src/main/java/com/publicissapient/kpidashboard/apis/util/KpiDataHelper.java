@@ -41,7 +41,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.IssueKpiModalValue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -57,6 +56,7 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.IssueKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -89,8 +89,6 @@ public final class KpiDataHelper {
 	private static final String CLOSED = "closed";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	private static final DecimalFormat df = new DecimalFormat(".##");
-	private static final DateTimeFormatter DATE_FORMATTER
-			= DateTimeFormatter. ofPattern("yyyy-MM-dd");
 
 	private KpiDataHelper() {
 	}
@@ -129,19 +127,36 @@ public final class KpiDataHelper {
 		return subGroupCategory;
 	}
 
+	/**
+	 * Populates a map of filters for capacity based on the given KPI request and
+	 * filter helper service.
+	 *
+	 * @param kpiRequest
+	 *            the KPI request containing selected filters
+	 * @param mapOfFilters
+	 *            the map to populate with additional filter criteria
+	 * @param filterHelperService
+	 *            the service providing additional filter hierarchy levels
+	 */
 	public static void createAdditionalFilterMapForCapacity(KpiRequest kpiRequest, Map<String, Object> mapOfFilters,
-												    FilterHelperService flterHelperService) {
+			FilterHelperService filterHelperService) {
 
-		Map<String, AdditionalFilterCategory> addFilterCat = flterHelperService.getAdditionalFilterHierarchyLevel();
+		// Retrieve the additional filter hierarchy levels and convert keys to uppercase
+		// for case-insensitive matching
+		Map<String, AdditionalFilterCategory> addFilterCat = filterHelperService.getAdditionalFilterHierarchyLevel();
 		Map<String, AdditionalFilterCategory> addFilterCategory = addFilterCat.entrySet().stream()
 				.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
 
+		// Check if the selected map in KPI request is not empty
 		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())) {
+			// Iterate through the selected filters in the KPI request
 			for (Map.Entry<String, List<String>> entry : kpiRequest.getSelectedMap().entrySet()) {
+				// Check if the filter has a non-empty value list and exists in the additional
+				// filter categories
 				if (CollectionUtils.isNotEmpty(entry.getValue())
-						&& null != addFilterCategory.get(entry.getKey().toUpperCase())) {
-					mapOfFilters.put("additionalFilterCapacityList.filterId",
-							Arrays.asList(entry.getKey()));
+						&& addFilterCategory.get(entry.getKey().toUpperCase()) != null) {
+					// Add filter criteria to the map of filters
+					mapOfFilters.put("additionalFilterCapacityList.filterId", Arrays.asList(entry.getKey()));
 					mapOfFilters.put("additionalFilterCapacityList.nodeCapacityList.additionalFilterId",
 							entry.getValue());
 				}
@@ -772,12 +787,12 @@ public final class KpiDataHelper {
 			statusWiseIssues.addAll(dbSprintDetail.getNotCompletedIssues().stream()
 					.filter(issue -> fieldMappingCompletionStatus.contains(issue.getStatus()))
 					.collect(Collectors.toSet()));
-			newCompletedSet= statusWiseIssues;
+			newCompletedSet = statusWiseIssues;
 		} else if (CollectionUtils.isNotEmpty(fieldMapingCompletionType)) {
 			typeWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
 					.filter(issue -> fieldMapingCompletionType.contains(issue.getTypeName()))
 					.collect(Collectors.toSet()));
-			newCompletedSet=typeWiseIssues;
+			newCompletedSet = typeWiseIssues;
 		}
 		return newCompletedSet;
 	}
@@ -1049,7 +1064,6 @@ public final class KpiDataHelper {
 		}).sum();
 	}
 
-
 	/**
 	 * To calculate the added/removed date of sprint change for JiraIssues
 	 *
@@ -1081,41 +1095,6 @@ public final class KpiDataHelper {
 		});
 
 		return issueDateMap;
-	}
-	
-	/**
-	 * Calculates the total work logs within a specified sprint date range.
-	 *
-	 * @param worklogHistory
-	 *            A list of {@link JiraHistoryChangeLog} objects representing the
-	 *            work log history.
-	 * @param sprintStartDate
-	 *            The start date of the sprint in ISO-8601 format (e.g.,
-	 *            "yyyy-MM-dd'T'HH:mm:ss").
-	 * @param sprintEndDate
-	 *            The end date of the sprint in ISO-8601 format (e.g.,
-	 *            "yyyy-MM-dd'T'HH:mm:ss").
-	 * @return The total work logs within the specified date range as a
-	 *         {@link Double}. Returns 0.0 if no logs are found.
-	 */
-	public static Double getWorkLogs(List<JiraHistoryChangeLog> worklogHistory, String sprintStartDate,
-			String sprintEndDate) {
-		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(worklogHistory)) {
-			filterStatusUpdationLogs = worklogHistory.stream()
-					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(jiraIssueSprint.getUpdatedOn().toLocalDate(),
-							LocalDate.parse(sprintStartDate.split("T")[0], DATE_FORMATTER),
-							LocalDate.parse(sprintEndDate.split("T")[0], DATE_FORMATTER)))
-					.collect(Collectors.toList());
-		}
-
-		if (CollectionUtils.isNotEmpty(filterStatusUpdationLogs)) {
-			String firstChangedFrom = StringUtils.isEmpty(filterStatusUpdationLogs.get(0).getChangedFrom()) ? "0"
-					: filterStatusUpdationLogs.get(0).getChangedFrom();
-			String lastChangedTo = filterStatusUpdationLogs.get(filterStatusUpdationLogs.size() - 1).getChangedTo();
-			return Double.parseDouble(lastChangedTo) - Double.parseDouble(firstChangedFrom);
-		}
-		return 0D;
 	}
 
 }
