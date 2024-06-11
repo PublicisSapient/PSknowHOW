@@ -112,7 +112,6 @@ public class JiraController {
 		List<KpiElement> responseList = jiraService.process(kpiRequest);
 		MDC.put("TotalJiraRequestTime", String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
 
-		log.info("");
 		MDC.clear();
 		if (responseList.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);

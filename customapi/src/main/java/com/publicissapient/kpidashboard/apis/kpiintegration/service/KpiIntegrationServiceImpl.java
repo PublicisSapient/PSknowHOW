@@ -217,7 +217,6 @@ public class KpiIntegrationServiceImpl {
 	 */
 	private List<KpiElement> getSonarKpiMaturity(KpiRequest kpiRequest) {
 		MDC.put("SonarKpiRequest", kpiRequest.getRequestTrackerId());
-		log.info("Received Sonar KPI request {}", kpiRequest);
 		long sonarRequestStartTime = System.currentTimeMillis();
 		MDC.put("SonarRequestStartTime", String.valueOf(sonarRequestStartTime));
 		List<KpiElement> responseList = sonarService.processWithExposedApiToken(kpiRequest);

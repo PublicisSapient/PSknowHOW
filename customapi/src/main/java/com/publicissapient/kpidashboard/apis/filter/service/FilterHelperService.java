@@ -29,8 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -45,6 +45,7 @@ import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
@@ -168,7 +169,7 @@ public class FilterHelperService {
 
 		if (filteredDataSetNew.isEmpty()) {
 			log.error("[FILTERED-DATA][{}]. No filtered data found  in the cache for the filter level{} and id{}",
-					kpiRequest.getRequestTrackerId(), kpiRequest.getLevel(), kpiRequest.getIds());
+					kpiRequest.getRequestTrackerId(), CommonUtils.sanitizeUserInput(String.valueOf(kpiRequest.getLevel())), CommonUtils.sanitizeUserInput(Arrays.deepToString(kpiRequest.getIds())));
 			throw new EntityNotFoundException(KpiRequest.class, "kpiId", Arrays.deepToString(kpiRequest.getIds()));
 		}
 

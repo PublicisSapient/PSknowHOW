@@ -95,7 +95,7 @@ public class AzureToolConfigServiceImpl {
 
 			} catch (Exception exception) {
 				isClientException(connection, exception);
-				log.error("Error while fetching ProjectsAndPlanKeyList from {}:  {}", finalUrl, exception.getMessage());
+				log.error("Error while fetching ProjectsAndPlanKeyList from {}:  {}", CommonUtils.sanitizeUserInput(finalUrl), exception.getMessage());
 			}
 		}
 		return responseList;

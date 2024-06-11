@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -86,6 +87,7 @@ public class PushDataController {
 	public ResponseEntity<ServiceResponse> getTraceLog(@PathVariable String basicConfigId) {
 		List<PushDataTraceLogDTO> allLogs = pushDataTraceLogService.getByProjectConfigId(new ObjectId(basicConfigId));
 		ServiceResponse response;
+		basicConfigId = CommonUtils.sanitizeUserInput(basicConfigId);
 		if (CollectionUtils.isNotEmpty(allLogs)) {
 			log.info("Fetching all logs of configId " + basicConfigId);
 			response = new ServiceResponse(true, "Found Logs", allLogs);
