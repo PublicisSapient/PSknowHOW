@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
- * Further development Copyright 2022 Sapient Corporation.
+ * Further development Copyright 2024 Sapient Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,14 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.connection.service;
+package com.publicissapient.kpidashboard.common.model;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import lombok.Data;
 
-public interface TestConnectionService {
+import javax.validation.constraints.NotNull;
 
-	ServiceResponse validateConnection(Connection connection, String toolName);
-
-	ServiceResponse getZephyrCloudUrlDetails();
-
+@Data
+public class UserNameRequestDTO {
+    @NotNull
+    private String userName;
 }

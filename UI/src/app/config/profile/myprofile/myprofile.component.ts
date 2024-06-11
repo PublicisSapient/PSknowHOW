@@ -145,31 +145,6 @@ export class MyprofileComponent implements OnInit {
     return this.userEmailForm.controls;
   }
 
-  setEmail() {
-    this.emailSubmitted = true;
-    if (this.userEmailForm.invalid) {
-      return;
-    }
-    this.dataLoading = true;
-    // call http service
-    this.http.changeEmail(this.getEmailForm.email.value, this.sharedService.getCurrentUserDetails('user_name'))
-      .subscribe(
-        response => {
-          this.dataLoading = false;
-          if (response && response['success']) {
-            this.userEmail = response['data'].emailAddress;
-            this.sharedService.setCurrentUserDetails({ user_email: this.userEmail });
-            this.userEmailConfigured = true;
-            this.profile.changePswdDisabled = false;
-            this.message = '';
-          } else if (response && !response['success']) {
-            if (response['message']) {
-              this.message = response['message'];
-            }
-          }
-        }
-      );
-  }
 
   toggleNotificationEmail(event: any, toggleField: string) {
     const updatedFlag = event.checked;

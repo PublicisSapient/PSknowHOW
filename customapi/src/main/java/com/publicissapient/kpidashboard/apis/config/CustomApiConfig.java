@@ -280,6 +280,14 @@ public class CustomApiConfig {// NOPMD
 	@Value("${exposed_api_key}")
 	private String xApiKey;
 	private String repoToolReworkRateUrl;
+	
+	@Value("${max-age-seconds}")
+	private long maxAgeInSeconds;
+	@Value("${include-subdomains}")
+	private boolean includeSubDomains;
+
+	@Value("${zephyrCloudBaseUrl}")
+	private String zephyrCloudBaseUrl;
 
 	public String getRepoToolReworkRateUrl() {
 		return repoToolReworkRateUrl;
@@ -1239,5 +1247,29 @@ public class CustomApiConfig {// NOPMD
 
 	public void setSprintCountForKpiCalculation(int sprintCountForKpiCalculation) {
 		this.sprintCountForKpiCalculation = sprintCountForKpiCalculation;
+	}
+
+	public long getMaxAgeInSeconds() {
+		return maxAgeInSeconds;
+	}
+
+	public void setMaxAgeInSeconds(long maxAgeInSeconds) {
+		this.maxAgeInSeconds = maxAgeInSeconds;
+	}
+
+	public boolean isIncludeSubDomains() {
+		return includeSubDomains;
+	}
+
+	public void setIncludeSubDomains(boolean includeSubDomains) {
+		this.includeSubDomains = includeSubDomains;
+	}
+
+	public String getZephyrCloudBaseUrl() {
+		return zephyrCloudBaseUrl;
+	}
+
+	public void setZephyrCloudBaseUrl(String zephyrCloudBaseUrl) {
+		this.zephyrCloudBaseUrl = zephyrCloudBaseUrl;
 	}
 }

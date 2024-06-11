@@ -92,8 +92,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-
 		http.headers().cacheControl();
+		http.headers().httpStrictTransportSecurity().maxAgeInSeconds(authProperties.getMaxAgeInSeconds()).includeSubDomains(authProperties.isIncludeSubDomains());
 		http.csrf().disable().authorizeRequests()
 				// authentication API calls - Public
 				.antMatchers("/registerUser").permitAll().antMatchers("/login**").permitAll().antMatchers("/error")

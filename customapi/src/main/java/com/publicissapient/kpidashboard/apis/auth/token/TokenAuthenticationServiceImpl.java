@@ -48,7 +48,6 @@ import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.errors.NoSSOImplementationFoundException;
@@ -134,43 +133,34 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Authentication getAuthentication(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
-			HttpServletRequest httpServletRequest, HttpServletResponse response) {
+	public Authentication getAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException(EXCEPTION_MSG);
 		} else {
-			String token = userTokenAuthenticationDTO.getAuthToken();
-			if (StringUtils.isBlank(token)) {
-				Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
-				if (Objects.nonNull(authCookieToken)) {
-					token = authCookieToken.getValue();
-				} else {
-					return null;
-				}
+			Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
+			if (Objects.nonNull(authCookieToken)) {
+				return createAuthentication(authCookieToken.getValue(), response);
+			} else {
+				return null;
 			}
-			return createAuthentication(token, response);
 		}
 
 	}
 
+
 	@Override
-	public String getAuthToken(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
-			HttpServletRequest httpServletRequest) {
+	public String getAuthToken(HttpServletRequest httpServletRequest) {
 
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException(EXCEPTION_MSG);
 		} else {
-			String token = userTokenAuthenticationDTO.getAuthToken();
-			if (StringUtils.isBlank(token)) {
-				Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
-				if (Objects.nonNull(authCookieToken)) {
-					token = authCookieToken.getValue();
-				} else {
-					return null;
-				}
+			Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
+			if (Objects.nonNull(authCookieToken)) {
+				return authCookieToken.getValue();
+			} else {
+				return null;
 			}
-			return token;
 		}
 	}
 

@@ -17,11 +17,11 @@ export class ConditionalInputComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.valueObj && this.valueObj.length) {
-      this.templateLabels = this.valueObj.map((val) => val.labelValue);
-      this.templateData = this.fieldConfig.options.filter((opt) => this.templateLabels.map(val => val.toLowerCase()).includes(opt.labelValue));
+      this.templateLabels = this.templateLabelToLowercase(this.valueObj.map((val) => val.labelValue));
+      this.templateData = this.fieldConfig.options.filter((opt) => this.templateLabels.includes(opt.labelValue));
       this.finalValue = [...this.templateData];
       this.valueObj.forEach(element => {
-        let opt = this.fieldConfig.options.filter((opt) => opt.labelValue.toLowerCase() === element.labelValue.toLowerCase())[0];
+        let opt = this.fieldConfig.options.filter((opt) => opt.labelValue === element.labelValue.toLowerCase())[0];
         if (opt) {
           opt['countValue'] = element.countValue;
         }
@@ -29,8 +29,10 @@ export class ConditionalInputComponent implements OnChanges {
     }
   }
 
+  templateLabelToLowercase = (arr: []) => arr.map((val: any) => val.toLowerCase());
+
   setValue(event) {
-    this.templateLabels = event.value.map((val) => val.labelValue);
+    this.templateLabels = this.templateLabelToLowercase(event.value.map((val) => val.labelValue));
     this.templateData = this.fieldConfig.options.filter((opt) => this.templateLabels.includes(opt.labelValue));
     let selectedOption = this.templateData.filter((opt) => opt.labelValue === event.itemValue.labelValue)[0];
     if (selectedOption) {

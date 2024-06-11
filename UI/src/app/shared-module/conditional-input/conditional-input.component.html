@@ -36,7 +36,7 @@
                 <span class="p-ml-2">{{ option.operator }}</span>
                 <p-inputNumber class="count-box" [(ngModel)]="option.countValue" [inputStyle]="{'width':'80px'}" [showButtons]="true"
                     buttonLayout="horizontal" spinnerMode="horizontal"
-                    decrementButtonClass="p-button-danger"
+                    [disabled]="!templateLabels.includes(option.labelValue)" decrementButtonClass="p-button-danger"
                     incrementButtonClass="p-button-success" incrementButtonIcon="pi pi-plus"
                     decrementButtonIcon="pi pi-minus" (click)="$event.stopPropagation(); $event.preventDefault();"
                     [min]="option.minValue" [max]="option.maxValue"

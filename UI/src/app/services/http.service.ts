@@ -37,6 +37,7 @@ import {
   UserAccessReqPayload,
 } from '../model/userAccessApprovalDTO.model';
 import { SharedService } from './shared.service';
+import { UserNameRequestDTO } from '../model/UserNameRequestDTO';
 @Injectable({
   providedIn: 'root',
 })
@@ -94,11 +95,11 @@ export class HttpService {
     this.baseUrl + '/api/globalconfigurations/dojo/centralConfig';
   private runProcessorUrl = this.baseUrl + '/api/processor/trigger';
   private changePasswordUrl = this.baseUrl + '/api/changePassword';
-  private changeEmailUrl = this.baseUrl + '/api/users/';
   private getAllProjectsUrl = this.baseUrl + '/api/basicconfigs/all';
   private deleteProjectUrl = this.baseUrl + '/api/basicconfigs';
   private getAllUsersUrl = this.baseUrl + '/api/userinfo';
-  private updateAccessUrl = this.baseUrl + '/api/userinfo/';
+  private updateAccessUrl = this.baseUrl + '/api/userinfo/updateUserRole';
+  private deleteAccessUrl = this.baseUrl + '/api/userinfo/deleteUser';
   private notificationPreferencesUrl = this.baseUrl + '/api/userinfo/notificationPreferences';
   private getKPIConfigMetadataUrl =
     this.baseUrl + '/api/editConfig/jira/editKpi/';
@@ -137,7 +138,7 @@ export class HttpService {
   private branchListRequestUrl = this.baseUrl + '/api/sonar/branch';
   private processorTraceLogsUrl = this.baseUrl + '/api/processor/tracelog';
   private zephyrCloudUrl =
-    this.baseUrl + '/api/globalconfigurations/zephyrcloudurl';
+    this.baseUrl + '/api/testconnection/zephyrcloudurl';
   private bambooPlanUrl = this.baseUrl + '/api/bamboo/plans';
   private bambooBranchUrl = this.baseUrl + '/api/bamboo/branches';
   private bambooDeploymentProjectsUrl = this.baseUrl + '/api/bamboo/deploy';
@@ -379,15 +380,6 @@ export class HttpService {
       .pipe(tap((res) => {}));
   }
 
-  /**PUT set email */
-  changeEmail(email, username) {
-    const postData = { email };
-    return this.http.put(
-      this.changeEmailUrl + username + '/updateEmail',
-      postData,
-    );
-  }
-
    /** POST: This make kpi call of scrum */
    postKpi(data, source): Observable<any> {
     return this.http
@@ -552,8 +544,8 @@ export class HttpService {
   }
 
   /** Update access (RBAC) */
-  updateAccess(requestData, username): Observable<any> {
-    return this.http.post(this.updateAccessUrl + username, requestData);
+  updateAccess(requestData): Observable<any> {
+    return this.http.post(this.updateAccessUrl, requestData);
   }
 
   /** Change Notification Preferences toggle  */
@@ -589,8 +581,11 @@ export class HttpService {
   }
 
   /** Delete User */
-  deleteAccess(username) {
-    return this.http.delete(this.updateAccessUrl + username);
+  deleteAccess(userNameRequestPayload:UserNameRequestDTO) {
+    if(environment?.['AUTHENTICATION_SERVICE']){
+      this.deleteAccessUrl = this.baseUrl + '/api/userinfo/central/deleteUser';
+    }
+    return this.http.post(this.deleteAccessUrl, userNameRequestPayload);
   }
 
   /** Accept/Reject access request (RBAC) */
@@ -982,12 +977,12 @@ export class HttpService {
     );
   }
 
-  updateNewUserAccessRequest(reqBody: UserAccessReqPayload, username: string) {
+  updateNewUserAccessRequest(reqBody: UserAccessReqPayload) {
     if(environment?.['AUTHENTICATION_SERVICE']){
       this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
     }
     return this.http.put<any>(
-      `${this.newUserAccessRequestUrl}/${username}`,
+      `${this.newUserAccessRequestUrl}`,
       reqBody,
     );
   }
