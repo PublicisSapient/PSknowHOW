@@ -192,7 +192,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         BarWithYAxisGroupComponent,
         DeveloperComponent,
         PageNotFoundComponent,
-        RecommendationsComponent
+        RecommendationsComponent,
         ChartWithFiltersComponent,
         KpiAdditionalFilterComponent
     ],
