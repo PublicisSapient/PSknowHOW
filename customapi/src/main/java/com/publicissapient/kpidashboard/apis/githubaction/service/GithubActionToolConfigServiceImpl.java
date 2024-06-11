@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -85,12 +86,12 @@ public class GithubActionToolConfigServiceImpl {
 
 				} else {
 					String statusCode = response.getStatusCode().toString();
-					log.error("Error while fetching getJenkinsJobNameList from {}. with status {}", url, statusCode);
+					log.error("Error while fetching getJenkinsJobNameList. with status {}", statusCode);
 				}
 
 			} catch (Exception exception) {
 				isClientException(connection, exception);
-				log.error("Error while fetching getJenkinsJobNameList from {}:  {}", url, exception.getMessage());
+				log.error("Error while fetching getJenkinsJobNameList from {}:  {}", CommonUtils.sanitizeUserInput(url), exception.getMessage());
 			}
 		}
 		return responseDTOList;

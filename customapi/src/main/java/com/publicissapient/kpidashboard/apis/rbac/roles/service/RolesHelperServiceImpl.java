@@ -123,7 +123,6 @@ public class RolesHelperServiceImpl implements RolesHelperService {
 
 		role.setLastModifiedDate(new Date());
 		repository.save(role);
-		log.info("Successfully modified role@{}", id);
 		return new ServiceResponse(true, "modified role@" + id, Arrays.asList(role));
 	}
 

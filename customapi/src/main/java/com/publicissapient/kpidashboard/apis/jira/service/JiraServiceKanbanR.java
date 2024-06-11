@@ -86,8 +86,6 @@ public class JiraServiceKanbanR {
 	@SuppressWarnings({ "unchecked", "PMD.AvoidCatchingGenericException" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
-		log.info("[JIRA KANBAN][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
-				kpiRequest.getKpiList());
 		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
 				.collect(Collectors.toList());
 		List<KpiElement> responseList = new ArrayList<>();
@@ -115,8 +113,6 @@ public class JiraServiceKanbanR {
 					groupId, null);
 			if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 					&& null != cachedData) {
-				log.info("[JIRA KANBAN][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
-						kpiRequest.getIds());
 				return (List<KpiElement>) cachedData;
 			}
 
@@ -140,13 +136,12 @@ public class JiraServiceKanbanR {
 
 		} catch (EntityNotFoundException enfe) {
 
-			log.error("[JIRA KANBAN][{}]. Error while KPI calculation for data. No data found {} {}",
-					kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), enfe);
+			log.error("[JIRA KANBAN][{}]. Error while KPI calculation for data. No data found {}",
+					kpiRequest.getRequestTrackerId(), enfe);
 			throw enfe;
 
 		} catch (Exception e) {
-			log.error("[JIRA KANBAN][{}]. Error while KPI calculation for data {} {}", kpiRequest.getRequestTrackerId(),
-					kpiRequest.getKpiList(), e);
+			log.error("[JIRA KANBAN][{}]. Error while KPI calculation for data {}", kpiRequest.getRequestTrackerId(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
 		}
 

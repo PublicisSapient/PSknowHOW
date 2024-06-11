@@ -147,7 +147,6 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 						groupId, kpiRequest.getSprintIncluded());
 				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 						&& null != cachedData) {
-					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
 					return (List<KpiElement>) cachedData;
 				}
 
@@ -178,7 +177,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 						try {
 							calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
 						} catch (Exception e) {
-							log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
+							log.error("Error while KPI calculation for data {}", e);
 						}
 					}, executorService);
 					futures.add(future);
@@ -200,7 +199,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 			}
 
 		} catch (Exception e) {
-			log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
+			log.error("Error while KPI calculation for data {}", e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
 		} finally {
 			threadLocalJiraIssues.remove();

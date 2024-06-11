@@ -596,4 +596,10 @@ public final class CommonUtils {
 				: sanitizedString;
 	}
 
+	public static List<String> sanitizeUserInputList(List<String> inputValueList){
+		List<String> result = new ArrayList<>();
+		inputValueList.forEach(input -> result.add(sanitizeUserInput(input)));
+		return result;
+	}
+
 }

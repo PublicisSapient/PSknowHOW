@@ -84,8 +84,6 @@ public class ZephyrServiceKanban {
 	@SuppressWarnings({ "unchecked" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
-		log.info("[ZEPHYR KANBAN][{}]. Processing KPI calculation for data {}", kpiRequest.getIds(),
-				kpiRequest.getKpiList());
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] kanbanProjectKeyCache = null;
 		try {
@@ -112,8 +110,6 @@ public class ZephyrServiceKanban {
 						KPISource.ZEPHYRKANBAN.name(), groupId, null);
 				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 						&& null != cachedData) {
-					log.info("[ZEPHYR KANBAN][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
-							kpiRequest.getIds());
 					return (List<KpiElement>) cachedData;
 				}
 
@@ -132,13 +128,12 @@ public class ZephyrServiceKanban {
 
 		} catch (EntityNotFoundException enfe) {
 
-			log.error("[ZEPHYR KANBAN][{}]. Error while KPI calculation for data. No data found {} {}",
-					kpiRequest.getIds(), kpiRequest.getKpiList(), enfe);
+			log.error("[ZEPHYR KANBAN][{}]. Error while KPI calculation for data. No data found {}",
+					kpiRequest.getRequestTrackerId(), enfe);
 			throw enfe;
 
 		} catch (Exception e) {
-			log.error("[ZEPHYR KANBAN][{}]. Error while KPI calculation for data {} {}", kpiRequest.getIds(),
-					kpiRequest.getKpiList(), e);
+			log.error("[ZEPHYR KANBAN][{}]. Error while KPI calculation for data {}", kpiRequest.getRequestTrackerId(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
 		}
 

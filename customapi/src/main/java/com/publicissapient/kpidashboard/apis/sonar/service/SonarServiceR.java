@@ -86,8 +86,6 @@ public class SonarServiceR {
 	@SuppressWarnings({ "unchecked", "PMD.AvoidCatchingGenericException" })
 	public List<KpiElement> process(KpiRequest kpiRequest) {
 
-		log.info("[SONAR][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
-				kpiRequest.getKpiList());
 		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
 				.collect(Collectors.toList());
 		List<KpiElement> responseList = new ArrayList<>();
@@ -145,8 +143,8 @@ public class SonarServiceR {
 			}
 		} catch (ApplicationException enfe) {
 
-			log.error("[SONAR][{}]. Error while KPI calculation for data. No data found {} {}",
-					kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), enfe);
+			log.error("[SONAR][{}]. Error while KPI calculation for data. No data found {}",
+					kpiRequest.getRequestTrackerId(), enfe);
 		}
 		return responseList;
 	}

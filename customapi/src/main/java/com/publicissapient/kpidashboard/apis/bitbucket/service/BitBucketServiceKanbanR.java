@@ -83,8 +83,6 @@ public class BitBucketServiceKanbanR {
 	@SuppressWarnings("unchecked")
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
-		log.info("[BITBUCKET KANBAN][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
-				kpiRequest.getKpiList());
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] kanbanProjectKeyCache = null;
 		try {
@@ -111,8 +109,6 @@ public class BitBucketServiceKanbanR {
 					KPISource.BITBUCKETKANBAN.name(), groupId, null);
 			if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 					&& null != cachedData) {
-				log.info("[BITBUCKET KANBAN][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
-						kpiRequest.getIds());
 				return (List<KpiElement>) cachedData;
 			}
 
@@ -126,12 +122,12 @@ public class BitBucketServiceKanbanR {
 
 		} catch (EntityNotFoundException enfe) {
 
-			log.error("[BITBUCKET KANBAN][{}]. Error while KPI calculation for data. No data found {} {}",
-					kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), enfe);
+			log.error("[BITBUCKET KANBAN][{}]. Error while KPI calculation for data. No data found {}",
+					kpiRequest.getRequestTrackerId(), enfe);
 			throw enfe;
 		} catch (ApplicationException e) {
-			log.error("[BITBUCKET KANBAN][{}]. Error while KPI calculation for data {} {}",
-					kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), e);
+			log.error("[BITBUCKET KANBAN][{}]. Error while KPI calculation for data {}",
+					kpiRequest.getRequestTrackerId(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
 		}
 
