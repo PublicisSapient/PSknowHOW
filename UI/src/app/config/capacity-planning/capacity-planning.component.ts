@@ -241,7 +241,7 @@ export class CapacityPlanningComponent implements OnInit {
         if (filterData[0] !== 'error' && filterData?.['data']?.length > 0) {
           this.filterData = filterData['data'];
             this.projectListArr = this.sortAlphabetically(this.filterData.filter(x => x.labelName.toLowerCase() == 'project'));
-            this.squadListArr = this.sortAlphabetically(this.filterData.filter(x => x.labelName.toLowerCase() == 'sqd'));
+            this.squadListArr = this.getSortedAdditonalFilter(this.projectListArr);
             this.projectListArr = this.helperService.makeUniqueArrayList(this.projectListArr);
             this.squadListArr = this.helperService.makeUniqueArrayList(this.squadListArr);
             const defaultSelection = this.selectedProjectBaseConfigId ? false : true;
@@ -873,6 +873,14 @@ getNodeName(assignee) {
     return squad ? squad.nodeName : '- -';
   }
   return '- -';
+}
+
+getSortedAdditonalFilter(projectListArr) {
+//Get the levels of the projects in projectListArr
+ let projectMap= projectListArr.map(project => project.level);
+// Step 3: Filter out the objects from filterData which have a level that is exactly 2 levels above any project level
+ return this.sortAlphabetically(this.filterData.filter(data => projectMap.includes(data.level - 2)));
+
 }
 
 }
