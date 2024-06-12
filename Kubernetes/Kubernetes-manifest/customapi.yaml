@@ -105,14 +105,14 @@ spec:
             - name: knowhow-secrets-store 
               mountPath: "/mnt/stage-secrets-store"
               readOnly: true
-            - name: log-volume
+            - name: customapi-log-volume
               mountPath: /app/logs
         - name: promtail
           image: grafana/promtail:2.9.2
           args: 
             - -config.file=/etc/promtail/config/promtail.yaml
           volumeMounts:
-            - name: log-volume
+            - name: customapi-log-volume
               mountPath: /app/logs
             - name: promtail-config
               mountPath: /etc/promtail/config
@@ -123,7 +123,7 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: "stage-secretproviderclass"
-        - name: log-volume
+        - name: customapi-log-volume
           emptyDir: {}
         - name: promtail-config
           configMap:
