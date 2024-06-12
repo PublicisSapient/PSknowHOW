@@ -48,7 +48,7 @@ else
 fi
 # Check if the passphrase file exists
 if [ ! -e /etc/ssl/certs/knowhow_ssl_passphrase.txt ]; then
-    echo "welcome@123" > /etc/ssl/certs/knowhow_ssl_passphrase.txt
+    echo $(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10) > /etc/ssl/certs/knowhow_ssl_passphrase.txt
     echo "Passphrase file created"
 fi
 
