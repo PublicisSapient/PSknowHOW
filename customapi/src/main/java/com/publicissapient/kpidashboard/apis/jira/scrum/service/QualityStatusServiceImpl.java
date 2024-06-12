@@ -84,6 +84,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String COMPLETED_ISSUES = "completedIssue";
 	public static final DecimalFormat decformat = new DecimalFormat("#0.00");
+	private static final String NOT_APPLICABLE = "N/A";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -402,7 +403,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 							jiraIssue1 -> jiraIssue1.getNumber() + " ( " + jiraIssue1.getPriority() + " ) ",
 							JiraIssue::getUrl));
 			jiraIssueModalObject.setLinkedDefefect(linkedDefects);
-			jiraIssueModalObject.setDIR((double) defects.size());
+			jiraIssueModalObject.setDIR(String.valueOf(defects.size()));
 			jiraIssueModalObject
 					.setDefectDensity(String.valueOf(calculateDefectDensity(jiraIssueList, defects, fieldMapping)));
 			if (jiraIssueModalObject.getIssueSize() == null)
@@ -575,6 +576,13 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			});
 			jiraIssueModalObject.setLinkedStories(linkedStoriesMap);
 			jiraIssueModalObject.setLinkedStoriesSize(storyPoint.get().toString());
+		}
+		else{
+			Map<String, String> dummyMap = new HashMap<>();
+			dummyMap.put(NOT_APPLICABLE , NOT_APPLICABLE);
+			jiraIssueModalObject.setLinkedDefefect(dummyMap);
+			jiraIssueModalObject.setDIR(NOT_APPLICABLE);
+			jiraIssueModalObject.setDefectDensity(NOT_APPLICABLE);
 		}
 	}
 }
