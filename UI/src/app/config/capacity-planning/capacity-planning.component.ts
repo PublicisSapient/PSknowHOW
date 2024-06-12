@@ -878,7 +878,7 @@ getNodeName(assignee) {
 getSortedAdditonalFilter(projectListArr) {
 //Get the levels of the projects in projectListArr
  let projectMap= projectListArr.map(project => project.level);
-// Step 3: Filter out the objects from filterData which have a level that is exactly 2 levels above any project level
+// Filter out the objects from filterData which have a level that is exactly 2 levels above any project level
  return this.sortAlphabetically(this.filterData.filter(data => projectMap.includes(data.level - 2)));
 
 }
