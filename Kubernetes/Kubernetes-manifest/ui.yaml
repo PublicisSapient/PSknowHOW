@@ -56,6 +56,25 @@ spec:
         envFrom:
           - configMapRef:
               name: knowhow-config
+        volumeMounts:
+            - name: log-volume
+              mountPath: /app/logs
+      - name: promtail
+        image: grafana/promtail:2.9.2
+        args: 
+          - -config.file=/etc/promtail/config/promtail.yaml
+        volumeMounts:
+          - name: log-volume
+            mountPath: /app/logs
+          - name: promtail-config
+            mountPath: /etc/promtail/config
+
+    volumes:
+        - name: log-volume
+          emptyDir: {}
+        - name: promtail-config
+          configMap:
+            name: promtail-config
 ---
 apiVersion: v1
 kind: Service
