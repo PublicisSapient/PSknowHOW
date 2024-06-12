@@ -2777,8 +2777,9 @@
   },
   {
     "fieldName": "releaseListKPI150",
-    "fieldLabel": "Select releases to define team velocity",
+    "fieldLabel": "Select desired releases to define team's velocity",
     "fieldType": "chips",
+    "readOnly" : true,
     "fieldCategory": "releases",
     "section": "Custom Fields Mapping",
     "tooltip": {
