@@ -33,7 +33,7 @@ else
    sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOC}/nginx_dev.conf
 fi
 
-if [ -e /etc/ssl/certs/knowhow_ssl.key ] || [ "$ENVIRONMENT" = "prod" ]; then
+if [ -e $CERT_LOC/knowhow_ssl.key ] || [ "$ENVIRONMENT" = "prod" ]; then
     echo "SSL certificate already exist in host or managed externally. "
 else
     openssl req -newkey rsa:4096 \
@@ -41,14 +41,14 @@ else
             -sha256 \
             -days 3650 \
             -nodes \
-            -out /etc/ssl/certs/knowhow_ssl.cer \
-            -keyout /etc/ssl/certs/knowhow_ssl.key \
+            -out $CERT_LOC/knowhow_ssl.cer \
+            -keyout $CERT_LOC/knowhow_ssl.key \
             -subj "/C=IN/ST=HR/L=ggn/O=Security/OU=IT Department/CN=${DNS_SSL}"
     echo "Self-signed certificate created"
 fi
 # Check if the passphrase file exists
-if [ ! -e /etc/ssl/certs/knowhow_ssl_passphrase.txt ]; then
-    echo $(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10) > /etc/ssl/certs/knowhow_ssl_passphrase.txt
+if [ ! -e $CERT_LOC/knowhow_ssl_passphrase.txt ]; then
+    echo $(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10) > $CERT_LOC/knowhow_ssl_passphrase.txt
     echo "Passphrase file created"
 fi
 
