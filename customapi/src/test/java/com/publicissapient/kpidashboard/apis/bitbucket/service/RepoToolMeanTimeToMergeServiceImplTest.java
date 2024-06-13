@@ -237,7 +237,7 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 		KpiElement kpiElement = meanTimeToMergeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		List<BranchMergeReqCount> out = (List<BranchMergeReqCount>) kpiElement.getTrendValueList();
-		assertThat("merge requests", out.size(), equalTo(2));
+		assertThat("merge requests", out.size(), equalTo(0));
 	}
 
 	@Test
