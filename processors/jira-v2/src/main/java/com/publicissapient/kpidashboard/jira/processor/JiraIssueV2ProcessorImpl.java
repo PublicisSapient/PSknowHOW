@@ -251,7 +251,7 @@ public class JiraIssueV2ProcessorImpl implements JiraIssueV2Processor {
 		if (subtasksIterable != null && subtasksIterable.iterator().hasNext()) {
 			List<SubTaskDetails> subTaskDetailsList = StreamSupport.stream(subtasksIterable.spliterator(), false)
 					.map(subtask -> new SubTaskDetails(subtask.getIssueKey(), subtask.getSummary(),
-							subtask.getIssueType().getName(), subtask.getStatus().getName()))
+							subtask.getIssueType().getName(),subtask.getIssueType().getId(), subtask.getStatus().getName()))
 					.toList();
 			jiraIssue.setSubTasks(subTaskDetailsList);
 		} else {
@@ -601,6 +601,7 @@ public class JiraIssueV2ProcessorImpl implements JiraIssueV2Processor {
 		// Priority
 		if (issue.getPriority() != null) {
 			jiraIssue.setPriority(JiraProcessorUtil.deodeUTF8String(issue.getPriority().getName()));
+			jiraIssue.setPriorityId(JiraProcessorUtil.deodeUTF8String(issue.getPriority().getId()));
 		}
 		// Set EPIC issue data for issue type epic
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueEpicType())

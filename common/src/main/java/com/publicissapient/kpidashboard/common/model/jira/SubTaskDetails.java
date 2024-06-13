@@ -34,5 +34,6 @@ public class SubTaskDetails {
 	private String key;
 	private String summary;
 	private String issueTypeName;
+	private long issueTypeId;
 	private String status;
 }
