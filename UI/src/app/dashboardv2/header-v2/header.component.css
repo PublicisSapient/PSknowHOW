@@ -47,3 +47,21 @@ header{
 .profile-budge {
     font-size: .725rem;
 }
+.back-btn-wraper{
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+
+.back-btn-container{
+  color: var(--color-black);
+  display: flex;
+  font-size: 12px;
+}
+
+.back-btn{
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 12px;
+  font-family: inherit;
+}

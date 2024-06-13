@@ -31,6 +31,8 @@ export class HelperService {
     isKanban = false;
     grossMaturityObj = {};
     public passMaturityToFilter;
+    selectedFilterArray: any = [];
+    selectedFilters: any = {}
 
     constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService) {
         this.passMaturityToFilter = new EventEmitter();
@@ -660,6 +662,14 @@ export class HelperService {
             savedDetails = { ...savedDetails, kpiFilters: { ...savedDetails['kpiFilters'], ...{ [tab]: { [subFilter]: combineSubFilterValues } } } };
         }
         this.sharedService.setAddtionalFilterBackup(savedDetails);
+    }
+
+    setBackupOfFilterSelectionState = (selectedFilterObj) => {
+      this.selectedFilters = {...this.selectedFilters, ...selectedFilterObj}
+    }
+
+    getBackupOfFilterSelectionState = (prop) => {
+      return this.selectedFilters[prop];
     }
 
     setFilterValueIfAlreadyHaveBackup(kpiId, kpiSelectedFilterObj, tab, refreshValue, initialValue, subFilter, filters?) {

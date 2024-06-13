@@ -6,6 +6,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { Router } from '@angular/router';
 import { HelperService } from 'src/app/services/helper.service';
+import { Location } from '@angular/common';4
 
 @Component({
   selector: 'app-header',
@@ -22,13 +23,17 @@ export class HeaderComponent implements OnInit {
   activeItem: MenuItem | undefined;
   userDetails: object = {};
   userMenuItems: MenuItem[] | undefined;
+  backToDashboardLoader : boolean = false;
+  kpiListDataProjectLevel : any = {};
+  kpiListData: any = {};
 
   constructor(
     private httpService: HttpService,
-    private sharedService: SharedService,
+    public sharedService: SharedService,
     private getAuthorizationService: GetAuthorizationService,
-    private router: Router,
-    private helperService: HelperService) { }
+    public router: Router,
+    private helperService: HelperService,
+    private location: Location) { }
 
   ngOnInit(): void {
     this.getLogoImage();
@@ -42,15 +47,15 @@ export class HeaderComponent implements OnInit {
 
     this.userMenuItems = [
       {
-        label: 'Settings', 
-        icon: 'fas fa-cog', 
+        label: 'Settings',
+        icon: 'fas fa-cog',
         command: () => {
           this.router.navigate(['/dashboard/Config/ProjectList']);
         },
       },
       {
-        label: 'Logout', 
-        icon: 'fas fa-sign-out-alt', 
+        label: 'Logout',
+        icon: 'fas fa-sign-out-alt',
         command: () => {
           this.logout();
         }
@@ -99,6 +104,31 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  /** when user clicks on Back to dashboard or logo*/
+  navigateToDashboard() {
+    this.backToDashboardLoader = true;
+    this.location.back();
+    this.backToDashboardLoader = false;
+    // let projectList = [];
+    // if (this.sharedService.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
+    //   projectList = this.sharedService.getSelectedTrends().map(data => data.nodeId);
+    // }
+    // this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
+    //   this.sharedService.setSideNav(false);
+    //   this.sharedService.setVisibleSideBar(false);
+    //   this.kpiListDataProjectLevel = response.data;
+    //   let userLevelData = this.sharedService.getDashConfigData();
+    //   if(!userLevelData){
+    //     this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(boardResponse => {
+    //       userLevelData = boardResponse.data;
+    //       this.handleRedirection(userLevelData)
+    //     })
+    //   }else{
+    //     this.handleRedirection(userLevelData);
+    //   }
+    // });
+  }
+
   getNotification() {
     const response = {
       data: [
@@ -122,7 +152,6 @@ export class HeaderComponent implements OnInit {
         },
       };
     });
-    console.log(this.notificationList);
 
     // this.notificationCount = 0;
     // this.httpService.getAccessRequestsNotifications().subscribe((response: NotificationResponseDTO) => {
