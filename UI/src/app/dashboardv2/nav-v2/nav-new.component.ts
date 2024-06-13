@@ -46,6 +46,10 @@ export class NavNewComponent implements OnInit {
                 this.selectedTab = obj['boardSlug'];
                 if (this.selectedTab !== 'unauthorized access') {
                   console.log('this.selectedTab:', this.selectedTab);
+                  setTimeout(() => {
+                    this.sharedService.setDashConfigData(getDashConfData.data);
+                  }, 0)
+                  
                   this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
                 }
                 this.router.navigate(['/dashboard/' + obj['boardSlug']]);
