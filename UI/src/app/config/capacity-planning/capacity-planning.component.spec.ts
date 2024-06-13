@@ -2651,7 +2651,7 @@ describe('CapacityPlanningComponent', () => {
       { nodeId: 'squad1_node1', labelName: 'Squad 1' },
       { nodeId: 'squad2_node1', labelName: 'Squad 2' }
     ];
-    const spy = spyOn(component, 'createAdditionalFilterCapacityList');
+    const spy = spyOn(component, 'createAdditionalFilterCapacityList').and.callThrough();
     // Act
     component.toggleOffGenerateAdditionalFilterCapacityList(capacityObject);
 
