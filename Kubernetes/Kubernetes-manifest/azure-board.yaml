@@ -75,7 +75,7 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 50017
-          initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
+          initialDelaySeconds: 30   # Wait for 10 seconds before starting probes
           periodSeconds: 5          # Check every 5 seconds
         livenessProbe:
           tcpSocket:
