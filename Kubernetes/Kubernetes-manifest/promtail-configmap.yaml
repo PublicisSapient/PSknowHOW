@@ -22,46 +22,43 @@ data:
               - localhost
             labels:
               app: customapi
-              __path__: /app/logs/ps-customapi*.log
+              __path__: /app/logs/ps-customapi-*.log
       - job_name: azure-board-processor
         static_configs:
           - targets:
               - localhost
             labels:
               app: azure-board-processor
-              __path__: /app/logs/*.log
+              __path__: /app/logs/ps-azure-processor-*.log
       - job_name: azure-pipeline-repo
         static_configs:
           - targets:
               - localhost
             labels:
               app: azure-pipeline-repo
-              __path__: /app/logs/*.log
+              __path__: 
+                - /app/logs/ps-azurepipeline-processor-*.log
+                - /app/logs/ps-azurerepository-processor-*.log
       - job_name: devops-processor
         static_configs:
           - targets:
               - localhost
             labels:
               app: devops-processor
-              __path__: /app/logs/*.log
+              __path__:
+                - /app/logs/ps-bamboo-processor-*.log
+                - /app/logs/ps-github-processor-*.log
+                - /app/logs/ps-gitlab-processor-*.log
+                - /app/logs/ps-bitbucket-processor-*.log
+                - /app/logs/ps-teamcity-processor-*.log
+                - /app/logs/ps-githubaction-processor-*.log
+                - /app/logs/ps-zephyr-processor-*.log
+                - /app/logs/ps-sonar-processor-*.log
+                - /app/logs/ps-jenkins-processor-*.log
       - job_name: jira-processor
         static_configs:
           - targets:
               - localhost
             labels:
               app: jira-processor
-              __path__: /app/logs/ps-jira-processor*.log
-      - job_name: kafka-consumers
-        static_configs:
-          - targets:
-              - localhost
-            labels:
-              app: kafka-consumers
-              __path__: /app/logs/*.log
-      - job_name: knowhow-ui
-        static_configs:
-          - targets:
-              - localhost
-            labels:
-              app: knowhow-ui
-              __path__: /app/logs/*.log
+              __path__: /app/logs/ps-jira-processor-*.log
