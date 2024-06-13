@@ -60,7 +60,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class CommonUtils {
-	private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("[^a-zA-Z0-9]");
 
 	public static final int FIFTH_DAY_OF_WEEK = 5;
 

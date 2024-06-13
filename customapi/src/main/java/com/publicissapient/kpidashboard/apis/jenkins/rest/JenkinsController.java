@@ -123,7 +123,6 @@ public class JenkinsController {
 	@RequestMapping(value = "/jenkinskanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<List<KpiElement>> getJenkinsKanbanAggregatedMetrics(
 			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception { // NOSONAR
-		CommonUtils.sanitizeUserInput(kpiRequest.toString());
 		MDC.put("JenkinsKanbanKpiRequest", kpiRequest.getRequestTrackerId());
 		long jenkinsKanbanRequestStartTime = System.currentTimeMillis();
 		MDC.put("JenkinsKanbanRequestStartTime", String.valueOf(jenkinsKanbanRequestStartTime));
