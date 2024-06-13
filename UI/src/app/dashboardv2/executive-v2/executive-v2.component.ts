@@ -1650,6 +1650,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else if (!trendValueList || trendValueList?.length == 0) {
       this.kpiDropdowns[kpiId] = [];
     }
+
+    console.log(this.kpiDropdowns);
+    if(this.kpiDropdowns[kpiId].length > 1) {
+      this.kpiSelectedFilterObj[kpiId] = {};
+      for(let i = 0; i< this.kpiDropdowns[kpiId].length; i++) {
+        this.kpiSelectedFilterObj[kpiId]['filter' + (i+1)] = [this.kpiDropdowns[kpiId][i].options[0]];
+      }
+    }
   }
 
   handleSelectedOption(event, kpi) {
