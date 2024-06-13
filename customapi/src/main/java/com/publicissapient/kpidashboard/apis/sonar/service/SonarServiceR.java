@@ -126,7 +126,7 @@ public class SonarServiceR {
 						try {
 							calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiElement, treeAggregatorDetail);
 						} catch (Exception e) {
-							log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
+							log.error("Error while KPI calculation for data {}", e);
 						}
 					}, executorService);
 					futures.add(future);
