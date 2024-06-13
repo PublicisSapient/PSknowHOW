@@ -26,10 +26,20 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.filterData && Object.keys(this.filterData).length) {
-      if (this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue)) {
+      this.populateFilters();
+      if (!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue) && !changes['primaryFilterConfig']?.firstChange) {
+
+        setTimeout(() => {
+
+          this.selectedFilters = [this.filters[0]];
+
+          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
+          this.onPrimaryFilterChange.emit([...this.selectedFilters]);
+        }, 100);
+      } else {
         this.selectedFilters = [];
         setTimeout(() => {
-          this.populateFilters();
+
           if (this.filters.length) {
             this.selectedFilters = new Set();
 
@@ -52,17 +62,6 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
             this.onPrimaryFilterChange.emit(this.selectedFilters);
 
           }
-        }, 100);
-      } else if (!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue)) {
-
-        setTimeout(() => {
-          this.primaryFilterConfig = changes['primaryFilterConfig']?.currentValue;
-          this.populateFilters();
-
-          this.selectedFilters = [this.filters[0]];
-
-          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
-          this.onPrimaryFilterChange.emit([...this.selectedFilters]);
         }, 100);
       }
     }
