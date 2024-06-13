@@ -17,6 +17,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   filters: any[];
   selectedFilters: any;
   subscriptions: any[] = [];
+  stateFilters: any[] = [];
   @Output() onPrimaryFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
 
@@ -33,7 +34,21 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
           if (this.filters.length) {
             this.selectedFilters = new Set();
             this.selectedFilters.add(this.filters[0]);
-            this.selectedFilters = Array.from(this.selectedFilters);
+            this.stateFilters = this.helperService.getBackupOfFilterSelectionState('primary_level');
+
+            if (this.stateFilters?.length > 0) {
+              this.stateFilters.map(stateFilter => {
+                this.selectedFilters.add(stateFilter);
+              })
+            }
+            // this.selectedFilters.add(this.stateFilters?.length ? this.stateFilters : this.filters[0]);
+            this.selectedFilters = [...this.selectedFilters];
+
+            this.selectedFilters = Array.from(
+              this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
+            );
+
+            this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters })
             // this.selectedFilters.push(this.selectedTab);
             // this.selectedFilters.push(this.selectedType);
             this.onPrimaryFilterChange.emit(this.selectedFilters);
@@ -73,10 +88,10 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   }
 
   applyPrimaryFilters(event) {
-    if (!Array.isArray(this.selectedFilters)) {
-      this.selectedFilters = [this.selectedFilters];
-    }
-    
+    // if (!Array.isArray(this.selectedFilters)) {
+    //   this.selectedFilters = [this.selectedFilters];
+    // }
+    this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters })
     this.onPrimaryFilterChange.emit(this.selectedFilters);
     if (this.multiSelect?.overlayVisible) {
       this.multiSelect.close(event);

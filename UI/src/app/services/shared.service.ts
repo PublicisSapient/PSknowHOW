@@ -138,6 +138,9 @@ export class SharedService {
     this.selectedtype = selectedType;
     this.selectedTab = selectedTab;
     this.onTypeOrTabRefresh.next({ selectedTab, selectedType });
+    console.log('setSelectedTypeOrTabRefresh: updated selectedTab:', this.selectedTab);
+    console.log('setSelectedTypeOrTabRefresh: updated selectedType:', this.selectedtype);
+    this.setSelectedType(this.selectedtype);
   }
 
   setSelectedTab(selectedTab) {
@@ -169,7 +172,7 @@ export class SharedService {
     return this.dashConfigData;
   }
 
-  // Additional Filters in New UI 
+  // Additional Filters in New UI
   setAdditionalFilters(data) {
     this.populateAdditionalFilters.emit(data);
   }

@@ -22,6 +22,7 @@ export class NavNewComponent implements OnInit {
   ngOnInit(): void {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+    console.log('getSelectedType --->', this.sharedService.getSelectedType())
     this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
     this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
     this.getBoardConfig();
@@ -36,25 +37,28 @@ export class NavNewComponent implements OnInit {
           this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
           this.items = response.data;
           this.items = [...getDashConfData.data['scrum'], ...getDashConfData.data['others']].map((obj, index) => {
-
             return {
               label: obj['boardName'],
               icon: index == 0 ? 'fas fa-pencil-alt' : '',
               slug: obj['boardSlug'],
               command: () => {
+                console.log('command called');
                 this.selectedTab = obj['boardSlug'];
                 if (this.selectedTab !== 'unauthorized access') {
-                  console.log(this.selectedTab);
+                  console.log('this.selectedTab:', this.selectedTab);
                   this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
                 }
                 this.router.navigate(['/dashboard/' + obj['boardSlug']]);
               },
             };
           });
+          console.log('this.items after map:', this.items);
           this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
+          console.log('this.activeItem:', this.activeItem);
         }
       },
       (error) => {
+        console.log('getShowHideOnDashboard error:', error);
         this.messageService.add({
           severity: 'error',
           summary: error.message,

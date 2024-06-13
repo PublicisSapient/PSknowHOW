@@ -313,7 +313,8 @@
 
 :host ::ng-deep .p-menu.p-menu-overlay {
     top: 40px !important;
-    left: 400px !important;
+    left: initial !important;
+    right: 0;
 }
 
 

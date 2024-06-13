@@ -6,6 +6,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { Router } from '@angular/router';
 import { HelperService } from 'src/app/services/helper.service';
+import { Location } from '@angular/common';4
 
 @Component({
   selector: 'app-header',
@@ -31,7 +32,8 @@ export class HeaderComponent implements OnInit {
     public sharedService: SharedService,
     private getAuthorizationService: GetAuthorizationService,
     public router: Router,
-    private helperService: HelperService) { }
+    private helperService: HelperService,
+    private location: Location) { }
 
   ngOnInit(): void {
     this.getLogoImage();
@@ -93,39 +95,6 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  handleRedirection(userLevelData){
-    this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, userLevelData)
-      this.sharedService.setDashConfigData(this.kpiListData);
-      this.getNotification();
-      this.selectedFilterData.kanban = this.kanban;
-      this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
-      this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
-        this.previousType = this.kanban;
-        this.filterData = filterApiData['data'];
-        const selectedLevel = this.sharedService.getSelectedLevel();
-        if (Object.keys(selectedLevel).length > 0) {
-          this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() === selectedLevel['hierarchyLevelId'].toLowerCase());
-          this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-          this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
-        }
-        this.sharedService.setFilterData(JSON.parse(JSON.stringify(filterApiData)));
-        const selectedTrends = this.sharedService.getSelectedTrends();
-        const selectedTrendNodeIds = selectedTrends.map(trend => trend.nodeId);
-        const filteredTrendValue = this.trendLineValueList.filter(trend => selectedTrendNodeIds.includes(trend.nodeId));
-        this.sharedService.setSelectedTrends(filteredTrendValue);
-        if (filteredTrendValue.length === 0) {
-          this.checkIfFilterAlreadySelected();
-        }
-        this.navigateToSelectedTab();
-      });
-
-      // reset date filter
-      this.selectedDayType = 'Days';
-      this.sharedService.setSelectedDateFilter(this.selectedDayType);
-      this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
-      this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
-  }
-
   navigateToHomePage() {
     const previousSelectedTab = this.router.url.split('/')[2];
     if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
@@ -138,24 +107,26 @@ export class HeaderComponent implements OnInit {
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
     this.backToDashboardLoader = true;
-    let projectList = [];
-    if (this.sharedService.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
-      projectList = this.sharedService.getSelectedTrends().map(data => data.nodeId);
-    }
-    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
-      this.sharedService.setSideNav(false);
-      this.sharedService.setVisibleSideBar(false);
-      this.kpiListDataProjectLevel = response.data;
-      let userLevelData = this.sharedService.getDashConfigData();
-      if(!userLevelData){
-        this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(boardResponse => {
-          userLevelData = boardResponse.data;
-          this.handleRedirection(userLevelData)
-        })
-      }else{
-        this.handleRedirection(userLevelData);
-      }
-    });
+    this.location.back();
+    this.backToDashboardLoader = false;
+    // let projectList = [];
+    // if (this.sharedService.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
+    //   projectList = this.sharedService.getSelectedTrends().map(data => data.nodeId);
+    // }
+    // this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
+    //   this.sharedService.setSideNav(false);
+    //   this.sharedService.setVisibleSideBar(false);
+    //   this.kpiListDataProjectLevel = response.data;
+    //   let userLevelData = this.sharedService.getDashConfigData();
+    //   if(!userLevelData){
+    //     this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(boardResponse => {
+    //       userLevelData = boardResponse.data;
+    //       this.handleRedirection(userLevelData)
+    //     })
+    //   }else{
+    //     this.handleRedirection(userLevelData);
+    //   }
+    // });
   }
 
   getNotification() {
@@ -181,7 +152,6 @@ export class HeaderComponent implements OnInit {
         },
       };
     });
-    console.log(this.notificationList);
 
     // this.notificationCount = 0;
     // this.httpService.getAccessRequestsNotifications().subscribe((response: NotificationResponseDTO) => {

@@ -14,22 +14,32 @@ export class ParentFilterComponent implements OnChanges {
   @Input() selectedTab: string = '';
   filterLevels: string[];
   selectedLevel: any;
+  stateFilters: string = '';
   additionalFilterLevels = ['release', 'sprint', 'sqd'];
   @Output() onSelectedLevelChange = new EventEmitter();
   constructor(private helperService: HelperService) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    if ((changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab']?.previousValue) ||
-    changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue) {
+
+    if (changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab']?.previousValue || changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue) {
       if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
         this.filterLevels = Object.keys(this.filterData);
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level));
         this.filterLevels = this.filterLevels.map(level => level.toUpperCase());
-
+        this.stateFilters = this.helperService.getBackupOfFilterSelectionState('parent_level');
         setTimeout(() => {
           if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel || (changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
-            this.selectedLevel = this.filterLevels[this.filterLevels.length - 1];
+            if (this.stateFilters) {
+              this.selectedLevel = this.filterLevels.filter((level) => {
+                return level.toLowerCase() === this.stateFilters.toLowerCase()
+              })[0];
+            } else {
+              this.selectedLevel = this.filterLevels[this.filterLevels.length - 1];
+            }
+            // this.selectedLevel = this.stateFilters ? this.filterLevels.map(level => level.toLowerCase()).filter((level) => level === this.stateFilters.toLowerCase())[0] : this.filterLevels[this.filterLevels.length - 1];
+            this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel })
           }
+
           this.onSelectedLevelChange.emit(this.selectedLevel.toLowerCase());
         }, 0);
 
@@ -37,7 +47,7 @@ export class ParentFilterComponent implements OnChanges {
         if (this.filterData && Object.keys(this.filterData).length) {
           this.filterLevels = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()].map((item) => item.nodeName);
           this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
-          
+
 
           setTimeout(() => {
             if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel || (changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
@@ -60,5 +70,7 @@ export class ParentFilterComponent implements OnChanges {
         this.onSelectedLevelChange.emit({ nodeId: selectedNodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'] });
       }, 0);
     }
+    this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel.toLowerCase(), 'primary_level': null });
   }
+
 }

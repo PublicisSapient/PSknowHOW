@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { MultiSelect } from 'primeng/multiselect';
 import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -19,6 +20,7 @@ export class AdditionalFilterComponent implements OnChanges {
   appliedFilters = {};
   selectedFilters = [];
   @Output() onPrimaryFilterChange = new EventEmitter();
+  @ViewChild('multiSelect') multiSelect: MultiSelect;
 
   constructor(private service: SharedService, private helperService: HelperService) {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
@@ -89,6 +91,9 @@ export class AdditionalFilterComponent implements OnChanges {
       }
     } else {
       this.onPrimaryFilterChange.emit(e[index - 1]);
+    }
+    if (this.multiSelect?.overlayVisible) {
+      this.multiSelect.close(event);
     }
   }
 }

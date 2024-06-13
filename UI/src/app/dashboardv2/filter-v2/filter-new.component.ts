@@ -38,7 +38,7 @@ export class FilterNewComponent implements OnInit {
   constructor(
     private httpService: HttpService,
     private service: SharedService,
-    private cdr: ChangeDetectorRef) { }
+    private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
@@ -103,6 +103,7 @@ export class FilterNewComponent implements OnInit {
     }
     this.filterApplyData = {};
     this.service.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+    this.service.setSelectedType(this.selectedType);
   }
 
   processBoardData(boardData) {
@@ -257,7 +258,6 @@ export class FilterNewComponent implements OnInit {
       this.filterApplyData['level'] = event[0].level;
       this.filterApplyData['label'] = event[0].labelName;
       this.filterApplyData['selectedMap'] = {};
-      console.log(this.selectedLevel);
 
       if (typeof this.selectedLevel === 'object' && this.selectedLevel !== null) {
         this.filterType = `${this.selectedLevel.emittedLevel}:`;
@@ -351,7 +351,7 @@ export class FilterNewComponent implements OnInit {
 
         // set selected projects(trends)
         this.service.setSelectedTrends(event);
-  
+
         if (this.selectedLevel) {
           if (typeof this.selectedLevel === 'string') {
             this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
