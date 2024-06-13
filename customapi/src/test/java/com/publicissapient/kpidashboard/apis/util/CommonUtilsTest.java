@@ -18,6 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -223,4 +226,47 @@ public class CommonUtilsTest {
 		boolean result = CommonUtils.isNumber("2");
 		assertTrue(result);
 	}
+
+	@Test
+	public void sanitizeUserInputTest1(){
+		// input will be basicProjectConfigId , projectToolId , any mongodb ID;
+		// input will be any alphanumeric characters with _ ,
+		String input = "649c00cd1734471c30843d2d";
+		String output = CommonUtils.sanitizeUserInput(input);
+		assertEquals(output , input);
+	}
+
+	@Test
+	public void sanitizeUserInputTest2(){
+		// input will be status , username , tooltype , request tracker Id etc
+		String input = "Jira-603e800a+d5c8_40be-b801-f39f05256266";
+		String output = CommonUtils.sanitizeUserInput(input);
+		assertEquals(output , input);
+	}
+
+	@Test
+	public void sanitizeUserInputTest3(){
+		// input will be try to log injection via user input then needed to sanitize user input
+		String input = "<Input>Script</Input>/n<WrongData/t>{}";
+		String output = CommonUtils.sanitizeUserInput(input);
+		assertNotEquals(output , input);
+	}
+
+	@Test
+	public void sanitizeUserInputTest4(){
+		// as input spacial symbol is not allowed
+		String input = "abc@gmail.com";
+		String output = CommonUtils.sanitizeUserInput(input);
+		assertNotEquals(output , input);
+	}
+
+	@Test
+
+	public void sanitizeUserInputTest5(){
+		// space and , : ? that symbol is not allowed
+		String input = " , adc";
+		String output = CommonUtils.sanitizeUserInput(input);
+		assertNotEquals(output , input);
+	}
+
 }
