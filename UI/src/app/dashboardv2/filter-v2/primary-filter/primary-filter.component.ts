@@ -26,33 +26,43 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.filterData && Object.keys(this.filterData).length) {
-      if (changes['selectedLevel'] || changes['selectedTab'] || changes['selectedType']) {
+      if (this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue)) {
         this.selectedFilters = [];
-        this.filters = [];
         setTimeout(() => {
           this.populateFilters();
           if (this.filters.length) {
             this.selectedFilters = new Set();
-            this.selectedFilters.add(this.filters[0]);
+
             this.stateFilters = this.helperService.getBackupOfFilterSelectionState('primary_level');
 
             if (this.stateFilters?.length > 0) {
               this.stateFilters.map(stateFilter => {
                 this.selectedFilters.add(stateFilter);
               })
+            } else {
+              this.selectedFilters.add(this.filters[0]);
             }
-            // this.selectedFilters.add(this.stateFilters?.length ? this.stateFilters : this.filters[0]);
             this.selectedFilters = [...this.selectedFilters];
 
             this.selectedFilters = Array.from(
               this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
             );
 
-            this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters })
-            // this.selectedFilters.push(this.selectedTab);
-            // this.selectedFilters.push(this.selectedType);
+            this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
             this.onPrimaryFilterChange.emit(this.selectedFilters);
+
           }
+        }, 100);
+      } else if (!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue)) {
+
+        setTimeout(() => {
+          this.primaryFilterConfig = changes['primaryFilterConfig']?.currentValue;
+          this.populateFilters();
+
+          this.selectedFilters = [this.filters[0]];
+
+          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
+          this.onPrimaryFilterChange.emit([...this.selectedFilters]);
         }, 100);
       }
     }
@@ -88,9 +98,9 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   }
 
   applyPrimaryFilters(event) {
-    // if (!Array.isArray(this.selectedFilters)) {
-    //   this.selectedFilters = [this.selectedFilters];
-    // }
+    if (!Array.isArray(this.selectedFilters)) {
+      this.selectedFilters = [this.selectedFilters];
+    }
     this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters })
     this.onPrimaryFilterChange.emit(this.selectedFilters);
     if (this.multiSelect?.overlayVisible) {
@@ -108,6 +118,10 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     } else {
       return objArray;
     }
+  }
+
+  compareObjects(obj1, obj2) {
+    return JSON.stringify(obj1) === JSON.stringify(obj2);
   }
 
 }
