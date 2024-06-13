@@ -43,12 +43,22 @@
 .tab.active {
     border-bottom: 2px solid #0B4BC8;
     color: #0B4BC8;
+    font-weight: bold;
 }
 
 .disabled {
     pointer-events: none;
-    background-color: #dedede;
     opacity: 1;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+    background-color: #F3F3F3;
+    color: #BEBEBE;
+}
+
+.active.disabled {
+    background-color: #F3F3F3;
+    color: #979797;
+    border-bottom: 2px solid #979797;
 }
 
 /* Scrum/Kanban tabs end*/

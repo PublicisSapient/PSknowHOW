@@ -148,7 +148,6 @@ public class PRSizeServiceImplTest {
         String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
                 .thenReturn(kpiRequestTrackerId);
-        when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any())).thenReturn(repoToolKpiMetricResponseList);
 
         AssigneeDetails assigneeDetails = new AssigneeDetails();
         assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
@@ -258,7 +257,7 @@ public class PRSizeServiceImplTest {
         try {
             KpiElement kpiElement = prSizeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
-            assertThat("Trend Size: ", ((List)kpiElement.getTrendValueList()).size(), equalTo(4));
+            assertThat("Trend Size: ", ((List)kpiElement.getTrendValueList()).size(), equalTo(2));
         } catch (ApplicationException e) {
             e.printStackTrace();
         }

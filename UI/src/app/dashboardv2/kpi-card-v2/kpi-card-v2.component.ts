@@ -152,6 +152,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     if (value && type?.toLowerCase() == 'radio') {
       this.optionSelected.emit(value);
     } else if (type?.toLowerCase() == 'single') {
+      console.log(this.filterOptions);
       this.optionSelected.emit(this.filterOptions);
     } else {
       if (this.filterOptions && Object.keys(this.filterOptions)?.length == 0) {
@@ -311,5 +312,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   triggerGaEvent(gaObj) {
     this.ga.setKpiData(gaObj);
+  }
+
+  checkIfDataPresent(data) {
+    if(Array.isArray(data) && data?.length) {
+      return true;
+    } else if(typeof data === 'object' && Object.keys(data)?.length) {
+      return true;
+    }
+    return false;
   }
 }
