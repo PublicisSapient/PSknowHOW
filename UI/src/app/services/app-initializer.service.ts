@@ -109,7 +109,7 @@ export class AppInitializerService {
   routesAuth: Routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     {
-        path: 'dashboard', component: DashboardComponent,
+        path: 'dashboard', component: !localStorage.getItem('newUI') ? DashboardComponent : DashboardV2Component,,
         canActivateChild: [FeatureGuard],
         children: [
             { path: '', redirectTo: 'iteration', pathMatch: 'full' },
