@@ -230,6 +230,10 @@ export class AppInitializerService {
                     this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
                 }
                 if(location){
+                    let redirect_uri = JSON.parse(localStorage.getItem('redirect_uri'));
+                    if(redirect_uri){
+                        localStorage.removeItem('redirect_uri');
+                    }
                     this.router.navigateByUrl(location);
                 }else{
                     this.router.navigate(['/dashboard/iteration']);

@@ -80,7 +80,6 @@ export class GroupBarChartComponent implements OnChanges {
     d3.select(elem).select('#date-container').select('text').remove();
     d3.select(elem).select('#horizontalSVG').select('.current-week-tooltip').selectAll('.tooltip').remove();
     let data = this.data[0]?.dataGroup;
-    console.log(data);
     this.isXaxisGapRequired = this.data[0]?.additionalInfo?.isXaxisGapRequired;
     this.customisedGroup = this.data[0]?.additionalInfo?.customisedGroup;
     this.plannedDueDate = this.data[0]?.additionalInfo?.plannedDueDate;
@@ -213,7 +212,7 @@ export class GroupBarChartComponent implements OnChanges {
       let htmlReleaseEndDate = `Release End Date (${releaseEndDate})`;
       let htmlDiv = `${new Date(this.plannedDueDate).getTime() > new Date(this.releaseEndDate).getTime()
         ? (htmlReleaseDueDate + ' > ' + htmlReleaseEndDate)
-        : (htmlReleaseDueDate + ' < ' + htmlReleaseEndDate)}`;
+        : (htmlReleaseDueDate + ' <= ' + htmlReleaseEndDate)}`;
       d3.select(elem).select('#date-container').append('text')
         .attr('x', ((d3.select(elem).select('#groupstackchart').node().offsetWidth - 70) / 2) - 24)
         .attr('y', 44)
