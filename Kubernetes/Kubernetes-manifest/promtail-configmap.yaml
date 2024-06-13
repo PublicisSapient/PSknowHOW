@@ -22,7 +22,7 @@ data:
               - localhost
             labels:
               app: customapi
-              __path__: /app/logs/*.log
+              __path__: /app/logs/ps-customapi*.log
       - job_name: azure-board-processor
         static_configs:
           - targets:
@@ -50,7 +50,7 @@ data:
               - localhost
             labels:
               app: jira-processor
-              __path__: /app/logs/*.log
+              __path__: /app/logs/ps-jira-processor*.log
       - job_name: kafka-consumers
         static_configs:
           - targets:
