@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -10,11 +10,12 @@ import { Router } from '@angular/router';
   templateUrl: './nav-new.component.html',
   styleUrls: ['./nav-new.component.css']
 })
-export class NavNewComponent implements OnInit {
+export class NavNewComponent implements OnInit, OnDestroy {
   items: MenuItem[] | undefined;
   activeItem: MenuItem | undefined;
   selectedTab: string = '';
   selectedType: string = '';
+  subscriptions: any[] = [];
 
   constructor(private httpService: HttpService, private sharedService: SharedService, private messageService: MessageService, private router: Router) {
   }
@@ -22,10 +23,17 @@ export class NavNewComponent implements OnInit {
   ngOnInit(): void {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-    console.log('getSelectedType --->', this.sharedService.getSelectedType())
-    this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
+    // this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
+    this.subscriptions.push(this.sharedService.onTypeOrTabRefresh.subscribe((data) => {
+      this.selectedType = data.selectedType ? data.selectedType : 'scrum';
+    }));
     this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
     this.getBoardConfig();
+  }
+
+  // unsubscribing all Kpi Request
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   getBoardConfig() {
@@ -42,7 +50,6 @@ export class NavNewComponent implements OnInit {
               icon: index == 0 ? 'fas fa-pencil-alt' : '',
               slug: obj['boardSlug'],
               command: () => {
-                console.log('command called');
                 this.selectedTab = obj['boardSlug'];
                 if (this.selectedTab !== 'unauthorized access') {
                   console.log('this.selectedTab:', this.selectedTab);
@@ -58,13 +65,10 @@ export class NavNewComponent implements OnInit {
               },
             };
           });
-          console.log('this.items after map:', this.items);
           this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
-          console.log('this.activeItem:', this.activeItem);
         }
       },
       (error) => {
-        console.log('getShowHideOnDashboard error:', error);
         this.messageService.add({
           severity: 'error',
           summary: error.message,

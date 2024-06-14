@@ -138,9 +138,6 @@ export class SharedService {
     this.selectedtype = selectedType;
     this.selectedTab = selectedTab;
     this.onTypeOrTabRefresh.next({ selectedTab, selectedType });
-    console.log('setSelectedTypeOrTabRefresh: updated selectedTab:', this.selectedTab);
-    console.log('setSelectedTypeOrTabRefresh: updated selectedType:', this.selectedtype);
-    this.setSelectedType(this.selectedtype);
   }
 
   setSelectedTab(selectedTab) {
