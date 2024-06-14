@@ -130,9 +130,12 @@
 
       "users": [
         {
-          "email": "string",
-          "grade": 0,
-          "hours": 0
+          "email": "99163630+hirbabar@users.noreply.github.com",
+          "average": 454814
+        },
+        {
+          "email": "akshat.shrivastav@publicissapient.com",
+          "average": 3086.8333333333335
         }
       ],
       "date_label": "2023-07-01"

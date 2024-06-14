@@ -131,7 +131,7 @@ public class ReleasePlanServiceImplTest {
         String kpiRequestTrackerId = "Jira-Excel-ADD-track001";
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
                 .thenReturn(kpiRequestTrackerId);
-        when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
+        when(jiraService.getJiraIssuesCustomHistoryForCurrentRelease()).thenReturn(jiraIssuesCustomHistory);
         when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
         when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
         when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
@@ -148,7 +148,7 @@ public class ReleasePlanServiceImplTest {
         String kpiRequestTrackerId = "Jira-Excel-ADD-track001";
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
                 .thenReturn(kpiRequestTrackerId);
-        when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
+        when(jiraService.getJiraIssuesCustomHistoryForCurrentRelease()).thenReturn(jiraIssuesCustomHistory);
 
         jiraIssues2.forEach(a->a.setAggregateTimeOriginalEstimateMinutes(0));
         when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues2);
@@ -173,7 +173,7 @@ public class ReleasePlanServiceImplTest {
         String kpiRequestTrackerId = "Jira-Excel-ADD-track001";
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
                 .thenReturn(kpiRequestTrackerId);
-        when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
+        when(jiraService.getJiraIssuesCustomHistoryForCurrentRelease()).thenReturn(jiraIssuesCustomHistory);
         when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
         when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
         when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
@@ -197,7 +197,7 @@ public class ReleasePlanServiceImplTest {
         String kpiRequestTrackerId = "Jira-Excel-ADD-track001";
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
                 .thenReturn(kpiRequestTrackerId);
-        when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
+        when(jiraService.getJiraIssuesCustomHistoryForCurrentRelease()).thenReturn(jiraIssuesCustomHistory);
         when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
         when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
         when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
@@ -221,7 +221,7 @@ public class ReleasePlanServiceImplTest {
         String kpiRequestTrackerId = "Jira-Excel-ADD-track001";
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
                 .thenReturn(kpiRequestTrackerId);
-        when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
+        when(jiraService.getJiraIssuesCustomHistoryForCurrentRelease()).thenReturn(jiraIssuesCustomHistory);
         when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
         when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
         when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);

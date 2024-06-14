@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { MessageService } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -38,7 +39,10 @@ export class FilterNewComponent implements OnInit {
   constructor(
     private httpService: HttpService,
     private service: SharedService,
-    private cdr: ChangeDetectorRef) {}
+
+    private cdr: ChangeDetectorRef,
+    private messageService: MessageService,) { }
+
 
   ngOnInit(): void {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
@@ -252,7 +256,9 @@ export class FilterNewComponent implements OnInit {
         this.additionalFiltersArr = [];
         this.populateAdditionalFilters(event);
       }
-
+      if(event.length === 1){
+        this.getProcessorsTraceLogsForProject();
+      }
       this.previousFilterEvent = [].concat(event);
       this.setColors(event);
       this.filterApplyData['level'] = event[0].level;
@@ -419,5 +425,19 @@ export class FilterNewComponent implements OnInit {
     });
 
     this.service.setAdditionalFilters(this.additionalFiltersArr);
+  }
+
+  getProcessorsTraceLogsForProject() {
+    this.httpService.getProcessorsTraceLogsForProject(this.previousFilterEvent[0]?.basicProjectConfigId).subscribe((response) => {
+      if (response.success) {
+        this.service.setProcessorLogDetails(response.data);
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary:
+            "Error in fetching processor's execution date. Please try after some time.",
+        });
+      }
+    });
   }
 }

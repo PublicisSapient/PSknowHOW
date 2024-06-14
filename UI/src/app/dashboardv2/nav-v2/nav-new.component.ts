@@ -52,6 +52,13 @@ export class NavNewComponent implements OnInit, OnDestroy {
               command: () => {
                 this.selectedTab = obj['boardSlug'];
                 if (this.selectedTab !== 'unauthorized access') {
+                  console.log('this.selectedTab:', this.selectedTab);
+                  if (obj['boardName'].toLowerCase() === 'kpi maturity') {
+                    setTimeout(() => {
+                      this.sharedService.setDashConfigData(getDashConfData.data);
+                    }, 0);
+                  }
+
                   this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
                 }
                 this.router.navigate(['/dashboard/' + obj['boardSlug']]);

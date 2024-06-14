@@ -100,8 +100,10 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                             }else{
                                 if(environment.AUTHENTICATION_SERVICE == true){
                                     /** redirect to central login url*/
+                                    let redirect_uri = window.location.href;
+                                    localStorage.setItem('redirect_uri', JSON.stringify(redirect_uri))
                                     if(environment.CENTRAL_LOGIN_URL){
-                                        window.location.href = environment.CENTRAL_LOGIN_URL;
+                                        window.location.href = environment.CENTRAL_LOGIN_URL + "?redirect_uri=" + redirect_uri;
                                     }
                                 }else{
                                     this.service.setCurrentUserDetails({});

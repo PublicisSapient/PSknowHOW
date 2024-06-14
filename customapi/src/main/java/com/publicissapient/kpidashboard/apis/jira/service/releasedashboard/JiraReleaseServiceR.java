@@ -241,7 +241,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 	private void updateJiraIssueList(List<AccountHierarchyData> filteredAccountDataList, Node filteredNode) {
 		releaseList = getReleaseList(filteredNode);
 		fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), releaseList);
-		fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+		fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),releaseList);
 		fetchJiraIssueReleaseForProject(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
 	}
 
@@ -259,9 +259,9 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 		return processedList;
 	}
 
-	public void fetchJiraIssues(String basicProjectConfigId, List<String> releaseList) {
+	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList) {
 		jiraIssueReleaseList = jiraIssueRepository
-				.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, releaseList);
+				.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, sprintIssuesList);
 		Set<String> storyIDs = jiraIssueReleaseList.stream()
 				.filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase(NormalizedJira.DEFECT_TYPE.getValue()))
 				.map(JiraIssue::getNumber).collect(Collectors.toSet());
@@ -272,7 +272,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 		return threadReleaseIssues.get();
 	}
 
-	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId) {
+	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId, List<String> releaseList) {
 		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromReleaseMap(
 				Collections.singletonList(basicProjectConfigId),
 				CommonUtils.convertToPatternListForSubString(releaseList));
@@ -327,7 +327,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 		return threadSubtaskDefects.get();
 	}
 
-	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
+	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentRelease() {
 		return threadLocalHistory.get();
 	}
 

@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -123,14 +124,14 @@ public class PickupTimeServiceImplTest {
         kpiRequest.setLabel("Project");
         kpiElement = kpiRequest.getKpiList().get(0);
         kpiRequest.setXAxisDataPoints(5);
-        kpiRequest.setDuration("WEEKS");
+        kpiRequest.setDuration("DAYS");
 
         AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
                 .newInstance();
         accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
         RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
         repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
-
+        repoToolKpiMetricResponseList.get(0).setDateLabel(LocalDate.now().minusDays(2).toString());
         projectConfigList.forEach(projectConfig -> {
             projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
         });
@@ -149,8 +150,6 @@ public class PickupTimeServiceImplTest {
 		String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any()))
-				.thenReturn(repoToolKpiMetricResponseList);
 
         AssigneeDetails assigneeDetails = new AssigneeDetails();
         assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
@@ -259,7 +258,7 @@ public class PickupTimeServiceImplTest {
         try {
             KpiElement kpiElement = pickupTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
-            assertThat("Trend Size: ", ((List)kpiElement.getTrendValueList()).size(), equalTo(4));
+            assertThat("Trend Size: ", ((List)kpiElement.getTrendValueList()).size(), equalTo(2));
         } catch (ApplicationException e) {
             e.printStackTrace();
         }

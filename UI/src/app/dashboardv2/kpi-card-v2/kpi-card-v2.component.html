@@ -79,7 +79,7 @@
     <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': kpiSize === 12 ? '250px' : '220px',
     'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
         <!--place for chart to be rendered-->
-        <ng-content *ngIf="trendValueList && trendValueList.length > 0 && !loader; else noData"></ng-content>
+        <ng-content *ngIf="checkIfDataPresent(trendValueList); else noData"></ng-content>
         <ng-template #noData>
             <div class="min-ht" *ngIf="!loader">
                 <div class="p-w-100  p-d-flex p-justify-center">
@@ -189,7 +189,7 @@
     <ng-container *ngIf=" noDataKPIConfig && !loadingKPIConfig">
         <h2 class="p-text-center">No Configuration Available</h2>
     </ng-container>
-    <ng-container *ngIf="loading">
+    <ng-container *ngIf="loadingKPIConfig">
         <div class="overlay">
             <div class="loading-img"></div>
         </div>
