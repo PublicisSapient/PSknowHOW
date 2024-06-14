@@ -131,32 +131,32 @@
 }
 
 ::ng-deep .sprint-hover-project1 [aria-selected="true"] {
-    background-color: #079FFF !important;
+    background-color: #6079C5 !important;
     color: black !important;
 }
 
 ::ng-deep .sprint-hover-project2 [aria-selected="true"] {
-    background-color: #cdba38 !important;
+    background-color: #FFB587 !important;
     color: black !important;
 }
 
 ::ng-deep .sprint-hover-project3 [aria-selected="true"] {
-    background-color: #00E6C3 !important;
+    background-color: #D48DEF !important;
     color: black !important;
 }
 
 ::ng-deep .sprint-hover-project4 [aria-selected="true"] {
-    background-color: #fc6471 !important;
+    background-color: #A4F6A5 !important;
     color: black !important;
 }
 
 ::ng-deep .sprint-hover-project5 [aria-selected="true"] {
-    background-color: #bd608c !important;
+    background-color: #FBCF5F !important;
     color: black !important;
 }
 
 ::ng-deep .sprint-hover-project6 [aria-selected="true"] {
-    background-color: #7d5ba6 !important;
+    background-color: #9FECFF !important;
     color: black !important;
 }
 
@@ -175,11 +175,8 @@
 
 ::ng-deep .sprint-details-overlay {
     width: auto !important;
-    left: 20% !important;
-    right: 20% !important;
     min-width: 450px;
     z-index: 0 !important;
-
 }
 
 ::ng-deep div.inner-content {

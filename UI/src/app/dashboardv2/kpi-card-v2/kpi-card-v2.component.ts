@@ -6,6 +6,8 @@ import { GoogleAnalyticsService } from 'src/app/services/google-analytics.servic
 import { MenuItem } from 'primeng/api';
 import { DatePipe } from '@angular/common';
 import { Menu } from 'primeng/menu';
+import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
+import { Dialog } from 'primeng/dialog';
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -53,16 +55,33 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   isSyncPassedOrFailed;
   @ViewChild('kpimenu') kpimenu: Menu;
   @Output() downloadExcel = new EventEmitter<boolean>();
-  metaDataTemplateCode : any;
+  metaDataTemplateCode: any;
   @Input() nodeId: string = '';
-  loadingKPIConfig : boolean = false
-  noDataKPIConfig : boolean = false
+  loadingKPIConfig: boolean = false
+  noDataKPIConfig: boolean = false
+  displaySprintDetailsModal: boolean = false;
+  columnList = [
+    { field: 'duration', header: 'Duration' },
+    { field: 'value', header: 'KPI Value', unit: 'unit' },
+    { field: 'params', header: 'Calculation Details' },
+  ];
+  sprintDetailsList: Array<any>;
+  @Input() colors: Array<any>;
+  colorCssClassArray = ['sprint-hover-project1', 'sprint-hover-project2', 'sprint-hover-project3', 'sprint-hover-project4', 'sprint-hover-project5', 'sprint-hover-project6'];
+
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
     private ga: GoogleAnalyticsService, private renderer: Renderer2) { }
 
   ngOnInit(): void {
     this.menuItems = [
+      {
+        label: 'Sprint Details',
+        icon: 'pi pi-align-justify',
+        command: ($event) => {
+          this.prepareData();
+        },
+      },
       {
         label: 'Settings',
         icon: 'fas fa-cog',
@@ -262,7 +281,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     let obj = {
       "releaseNodeId": this.nodeId || null
     }
-    this.http.getFieldMappingsWithHistory(this.selectedToolConfig[0].id,this.kpiData.kpiId, obj).subscribe(mappings => {
+    this.http.getFieldMappingsWithHistory(this.selectedToolConfig[0].id, this.kpiData.kpiId, obj).subscribe(mappings => {
       if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 1) {
         this.selectedFieldMapping = mappings['data'].fieldMappingResponses;
         this.metaDataTemplateCode = mappings['data']?.metaTemplateCode
@@ -315,11 +334,79 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkIfDataPresent(data) {
-    if(Array.isArray(data) && data?.length) {
+    if (Array.isArray(data) && data?.length) {
       return true;
-    } else if(typeof data === 'object' && Object.keys(data)?.length) {
+    } else if (typeof data === 'object' && Object.keys(data)?.length) {
       return true;
     }
     return false;
+  }
+
+  getColorCssClasses(index) {
+    return this.colorCssClassArray[index];
+  }
+
+  hasData(field: string): boolean {
+    return this.sprintDetailsList[this.selectedTabIndex]['hoverList'].some(rowData => rowData[field] !== null && rowData[field] !== undefined);
+  }
+
+  prepareData() {
+    this.projectList = [];
+    this.sprintDetailsList = [];
+    this.selectedTabIndex = 0;
+    this.projectList = Object.values(this.colors).map(obj => obj['nodeName']);
+    this.projectList.forEach((project, index) => {
+      const selectedProjectTrend = this.trendValueList.find(obj => obj.data === project);
+      const tempColorObjArray = Object.values(this.colors).find(obj => obj['nodeName'] === project)['color'];
+      if (selectedProjectTrend?.value) {
+        let hoverObjectListTemp = [];
+
+        if (selectedProjectTrend.value[0]?.dataValue?.length > 0) {
+          this.columnList = [{ field: 'duration', header: 'Duration' }];
+          selectedProjectTrend.value[0].dataValue.forEach(d => {
+            this.columnList.push({ field: d.name + ' value', header: d.name + ' KPI Value', unit: 'unit' });
+            this.columnList.push({ field: d.name + ' params', header: d.name + ' Calculation Details', unit: 'unit' });
+          });
+
+          selectedProjectTrend.value.forEach(element => {
+            let tempObj = {};
+            tempObj['duration'] = element['sSprintName'] || element['date'];
+
+            element.dataValue.forEach((d, i) => {
+              tempObj[d.name + ' value'] = (Math.round(d['value'] * 100) / 100);
+              tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
+              if (d['hoverValue'] && Object.keys(d['hoverValue'])?.length > 0) {
+                tempObj[d.name + ' params'] = Object.entries(d['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(', ');
+              }
+            });
+
+            hoverObjectListTemp.push(tempObj);
+          });
+        } else {
+          selectedProjectTrend.value.forEach(element => {
+            let tempObj = {};
+            tempObj['duration'] = element['sSprintName'] || element['date'];
+            tempObj['value'] = element['lineValue'] !== undefined ? element['lineValue'] : (Math.round(element['value'] * 100) / 100);
+            tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
+            if (element['hoverValue'] && Object.keys(element['hoverValue'])?.length > 0) {
+              tempObj['params'] = Object.entries(element['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(', ');
+            }
+            hoverObjectListTemp.push(tempObj);
+          });
+        }
+        this.sprintDetailsList.push({
+          ['project']: selectedProjectTrend['data'],
+          ['hoverList']: hoverObjectListTemp,
+          ['color']: tempColorObjArray
+        });
+      } else {
+        this.sprintDetailsList.push({
+          ['project']: project,
+          ['hoverList']: [],
+          ['color']: tempColorObjArray
+        });
+      }
+    });
+    this.displaySprintDetailsModal = true;
   }
 }

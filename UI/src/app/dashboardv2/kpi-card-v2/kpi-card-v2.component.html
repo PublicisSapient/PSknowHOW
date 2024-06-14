@@ -3,7 +3,6 @@
         <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader>
             <div class="kpi-card-title-container">
                 <h3 *ngIf="kpiData">{{kpiData?.kpiName}}</h3>
-
                 <span *ngIf="kpiData?.kpiDetail?.kpiInfo" aria-hidden="true" class="info-icon"
                     (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(false)"
                     [style]="{'position': 'relative'}">
@@ -12,12 +11,6 @@
                         (mouseleave)="showTooltip(false)" [showChartView]="showChartView"
                         [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
                 </span>
-                <span *ngIf="sprintsOverlayVisible"
-                    (click)="prepareData(); (trendValueList?.length) > 0 ? op.toggle($event,kpiHeader) : '' ;"
-                    class="cursor-pointer p-ml-1 sprint-hover-icon" pTooltip='<div class="inner-content">
-                        Please click on icon for all sprint details.
-                    </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper"><i
-                        class="custom-pi pi-bars"></i></span>
             </div>
         </div>
         <div class="kpi-menu-container" (click)="toggleMenu($event)">
@@ -107,7 +100,7 @@
     </div>
 </div>
 
-<p-overlayPanel #op [showCloseIcon]="true" styleClass="sprint-details-overlay">
+<p-dialog [(visible)]="displaySprintDetailsModal" [dismissableMask]="true" [modal]="true" [autoZIndex]="true" styleClass="sprint-details-overlay">
     <div class="p-mb-3 overlay-heading">
         {{kpiData?.kpiName}}
     </div>
@@ -155,7 +148,7 @@
 
 
     </div>
-</p-overlayPanel>
+</p-dialog>
 
 <p-dialog [(visible)]="displayConfigModel" [modal]="true" styleClass="field-mapping">
     <ng-template pTemplate="header">
