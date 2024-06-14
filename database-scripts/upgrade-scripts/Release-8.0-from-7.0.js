@@ -5128,3 +5128,9 @@ db.kpi_master.updateMany(
 
 db.kpi_master.updateOne({ "kpiId": "kpi14" }, { $set: { "groupId": 3 } })
 db.kpi_master.updateOne({ "kpiId": "kpi149" }, { $set: { "groupId": 16 } })
+
+
+//DTS-36462--Squad Enable
+db.kpi_master.updateOne({ "kpiId": "kpi58" },{ $set: { "isAdditionalFilterSupport": true } });
+db.kpi_master.updateOne({ "kpiId": "kpi46" },{ $set: { "isAdditionalFilterSupport": true } });
+db.kpi_master.updateOne({ "kpiId": "kpi121" },{ $set: { "isAdditionalFilterSupport": true } });

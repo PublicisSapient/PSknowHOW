@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.capacity.service;
 
 import java.time.LocalDate;
@@ -15,6 +33,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +42,15 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Maps;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
+import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Week;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
@@ -37,6 +60,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.UserRatingData;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -73,6 +97,12 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 
 	@Autowired
 	private HappinessKpiDataRepository happinessKpiDataRepository;
+
+	@Autowired
+	private AssigneeDetailsRepository assigneeDetailsRepository;
+
+	@Autowired
+	private FilterHelperService filterHelperService;
 
 	/**
 	 * This method process the capacity data.
@@ -139,11 +169,13 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			if (capacityKpiData != null) {
 				capacityMaster.setId(capacityKpiData.getId());
 				capacityMaster.setCapacity(Math.round(capacityKpiData.getCapacityPerSprint() * 100) / 100.0);
+				capacityMaster.setAdditionalFilterCapacityList(capacityKpiData.getAdditionalFilterCapacityList());
 				if (CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity())
 						&& project.isSaveAssigneeDetails()) {
 					capacityKpiData.getAssigneeCapacity().stream().forEach(assigneeCapacity -> assigneeCapacity
 							.setLeaves(Optional.ofNullable(assigneeCapacity.getLeaves()).orElse(0D)));
-					capacityKpiData.getAssigneeCapacity().stream().forEach(assigneeCapacity -> assigneeCapacity.setHappinessRating(0));
+					capacityKpiData.getAssigneeCapacity().stream()
+							.forEach(assigneeCapacity -> assigneeCapacity.setHappinessRating(0));
 					// Setting most recently submitted happiness index value for a sprint
 					setHappinessIndex(happinessKpiData, capacityKpiData.getAssigneeCapacity());
 					capacityMaster.setAssigneeCapacity(capacityKpiData.getAssigneeCapacity());
@@ -238,6 +270,21 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					capacityMasterKanban.setId(kanbanCapacity.getId());
 					// mutiplying by working days of week
 					capacityMasterKanban.setCapacity(kanbanCapacity.getCapacity() * 5);
+					List<AdditionalFilterCapacity> additionalFilterCapacityList = kanbanCapacity
+							.getAdditionalFilterCapacityList();
+					if (CollectionUtils.isNotEmpty(additionalFilterCapacityList)) {
+						additionalFilterCapacityList.forEach(leafNode -> {
+							List<LeafNodeCapacity> leafNodeCapacity = leafNode.getNodeCapacityList();
+							if (CollectionUtils.isNotEmpty(leafNodeCapacity)) {
+								leafNodeCapacity.stream()
+										.filter(capacity -> capacity.getAdditionalFilterCapacity() != null)
+										.forEach(capacity -> capacity.setAdditionalFilterCapacity(
+												capacity.getAdditionalFilterCapacity() * 5));
+							}
+						});
+					}
+					capacityMasterKanban.setAdditionalFilterCapacityList(additionalFilterCapacityList);
+
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 					capacityMasterKanban.setStartDate(kanbanCapacity.getStartDate().format(formatter));
 					capacityMasterKanban.setEndDate(kanbanCapacity.getEndDate().format(formatter));
@@ -438,8 +485,12 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d)).sum();
 			data.setAssigneeCapacity(assigneeList);
 			data.setCapacityPerSprint(Math.round(sum * 100) / 100.0);
+			// Set the LeafNodeCapacity list in data
+			data.setAdditionalFilterCapacityList(saveAdditionalFilterCapacity(capacityMaster));
+
 		} else {
 			data.setCapacityPerSprint(capacityMaster.getCapacity());
+			data.setAdditionalFilterCapacityList(saveAdditionalFilterCapacity(capacityMaster));
 		}
 
 	}
@@ -453,10 +504,17 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			double sum = assigneeList.stream()
 					.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d)).sum();
 			data.setAssigneeCapacity(assigneeList);
+			helper(capacityMaster);
+			data.setAdditionalFilterCapacityList(saveAdditionalFilterCapacity(capacityMaster));
+
 			// we have to divide capacity by working days of week
 			data.setCapacity(sum / 5);
 		} else {
 			data.setCapacity(capacityMaster.getCapacity() / 5);
+			// dividing each leaf node capacity of full week to single day.
+			helper(capacityMaster);
+			data.setAdditionalFilterCapacityList(saveAdditionalFilterCapacity(capacityMaster));
+
 		}
 
 	}
@@ -541,4 +599,100 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 		}
 	}
 
+	public void helper(CapacityMaster capacityMaster) {
+		Map<String, AdditionalFilterCategory> addFilterCat = filterHelperService.getAdditionalFilterHierarchyLevel();
+		Map<String, AdditionalFilterCategory> addFilterCategory = addFilterCat.entrySet().stream()
+				.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
+
+		if (CollectionUtils.isNotEmpty(capacityMaster.getAdditionalFilterCapacityList())) {
+			for (AdditionalFilterCapacity category : capacityMaster.getAdditionalFilterCapacityList()) {
+				if (StringUtils.isNotEmpty(category.getFilterId())
+						&& CollectionUtils.isNotEmpty(category.getNodeCapacityList())
+						&& null != addFilterCategory.get(category.getFilterId().toUpperCase())) {
+
+					category.getNodeCapacityList().forEach(leafNode -> {
+						Double leafNodeCapacity = leafNode.getAdditionalFilterCapacity();
+						if (leafNodeCapacity != null) {
+							leafNode.setAdditionalFilterCapacity(leafNodeCapacity / 5);
+						}
+					});
+				}
+			}
+		}
+	}
+
+	/**
+	 * Saves the additional filter capacities from the given capacity master.
+	 *
+	 * @param capacityMaster
+	 *            the capacity master containing additional filter capacities
+	 * @return a list of saved additional filter capacities
+	 */
+	public List<AdditionalFilterCapacity> saveAdditionalFilterCapacity(CapacityMaster capacityMaster) {
+		if (CollectionUtils.isEmpty(capacityMaster.getAdditionalFilterCapacityList())) {
+			return new ArrayList<>();
+		}
+
+		return capacityMaster.getAdditionalFilterCapacityList().stream().filter(this::isValidAdditionalFilterCapacity)
+				.map(this::createDbAdditionalFilterCapacity).filter(Objects::nonNull).collect(Collectors.toList());
+	}
+
+	/**
+	 * Validates if the given additional filter capacity has a non-empty filter ID.
+	 *
+	 * @param additionalFilterCapacity
+	 *            the additional filter capacity to validate
+	 * @return true if the filter ID is not empty, false otherwise
+	 */
+	private boolean isValidAdditionalFilterCapacity(AdditionalFilterCapacity additionalFilterCapacity) {
+		return StringUtils.isNotEmpty(additionalFilterCapacity.getFilterId());
+	}
+
+	/**
+	 * Creates a database entity for the given additional filter capacity.
+	 *
+	 * @param additionalFilterCapacity
+	 *            the additional filter capacity to convert
+	 * @return the corresponding database entity, or null if no valid node
+	 *         capacities exist
+	 */
+	private AdditionalFilterCapacity createDbAdditionalFilterCapacity(
+			AdditionalFilterCapacity additionalFilterCapacity) {
+		List<LeafNodeCapacity> dbNodeCapacityList = additionalFilterCapacity.getNodeCapacityList().stream()
+				.filter(this::isValidNodeCapacity).map(this::createDbLeafNodeCapacity).collect(Collectors.toList());
+
+		if (CollectionUtils.isEmpty(dbNodeCapacityList)) {
+			return null;
+		}
+
+		AdditionalFilterCapacity dbFilterCapacity = new AdditionalFilterCapacity();
+		dbFilterCapacity.setFilterId(additionalFilterCapacity.getFilterId());
+		dbFilterCapacity.setNodeCapacityList(dbNodeCapacityList);
+		return dbFilterCapacity;
+	}
+
+	/**
+	 * Validates if the given node capacity has a non-empty additional filter ID and
+	 * a non-null additional filter capacity.
+	 *
+	 * @param nodeCapacity
+	 *            the node capacity to validate
+	 * @return true if the additional filter ID is not empty and the additional
+	 *         filter capacity is not null, false otherwise
+	 */
+	private boolean isValidNodeCapacity(LeafNodeCapacity nodeCapacity) {
+		return StringUtils.isNotEmpty(nodeCapacity.getAdditionalFilterId())
+				&& ObjectUtils.isNotEmpty(nodeCapacity.getAdditionalFilterCapacity());
+	}
+
+	/**
+	 * Creates a database entity for the given node capacity.
+	 *
+	 * @param nodeCapacity
+	 *            the node capacity to convert
+	 * @return the corresponding database entity
+	 */
+	private LeafNodeCapacity createDbLeafNodeCapacity(LeafNodeCapacity nodeCapacity) {
+		return new LeafNodeCapacity(nodeCapacity.getAdditionalFilterId(), nodeCapacity.getAdditionalFilterCapacity());
+	}
 }

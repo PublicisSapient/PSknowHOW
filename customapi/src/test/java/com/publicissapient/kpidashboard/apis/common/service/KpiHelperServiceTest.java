@@ -31,9 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -61,7 +58,6 @@ import com.publicissapient.kpidashboard.apis.data.SprintWiseStoryDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -70,7 +66,9 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -78,7 +76,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
-import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -86,7 +83,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KpiHelperServiceTest {
@@ -106,7 +102,6 @@ public class KpiHelperServiceTest {
 	private KanbanCapacityRepository kanbanCapacityRepository;
 	@Mock
 	private ConfigHelperService configHelperService;
-
 
 	@Mock
 	private CapacityKpiDataRepository capacityKpiDataRepository;
@@ -130,7 +125,7 @@ public class KpiHelperServiceTest {
 	private KpiRequestFactory kanbanKpiRequestFactory;
 
 	@Mock
-	private FieldMappingStructure fieldMappingStructure= new FieldMappingStructure();
+	private FieldMappingStructure fieldMappingStructure = new FieldMappingStructure();
 
 	private List<FieldMappingStructure> fieldMappingStructureList = new ArrayList<>();
 
@@ -164,8 +159,8 @@ public class KpiHelperServiceTest {
 		ProjectToolConfig projectConfig = new ProjectToolConfig();
 		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
 		projectConfig.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479c"));
-		Map<String, List<ProjectToolConfig>> stringListMap=new HashMap<>();
-		stringListMap.put("Jira",Arrays.asList());
+		Map<String, List<ProjectToolConfig>> stringListMap = new HashMap<>();
+		stringListMap.put("Jira", Arrays.asList());
 		projectConfigMap.put(projectConfig.getBasicProjectConfigId(), stringListMap);
 		when(configHelperService.getProjectToolConfigMap()).thenReturn(projectConfigMap);
 
@@ -198,8 +193,7 @@ public class KpiHelperServiceTest {
 		capacityKpiDataList = capacityKpiDataDataFactory.getCapacityKpiDataList();
 		fieldMappingStructureList.add(fieldMappingStructure);
 
-
-		priority.put("P1",Arrays.asList("p1"));
+		priority.put("P1", Arrays.asList("p1"));
 	}
 
 	@After
@@ -212,7 +206,7 @@ public class KpiHelperServiceTest {
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_INJECTION_RATE.getKpiId());
 		when(jiraIssueRepository.findIssuesGroupBySprint(any(), any(), any(), any())).thenReturn(sprintWiseStoryList);
 
-		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any() , any()))
+		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
 		when(jiraIssueRepository.findIssuesByType(any())).thenReturn(bugList);
 
@@ -232,7 +226,7 @@ public class KpiHelperServiceTest {
 
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_DENSITY.getKpiId());
 		when(jiraIssueRepository.findIssuesGroupBySprint(any(), any(), any(), any())).thenReturn(sprintWiseStoryList);
-		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any() ,any()))
+		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
 		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(bugList);
 
@@ -280,7 +274,7 @@ public class KpiHelperServiceTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
-		List<JiraIssue> resultList = kpiHelperService.fetchSprintCapacityDataFromDb(leafNodeList);
+		List<JiraIssue> resultList = kpiHelperService.fetchSprintCapacityDataFromDb(kpiRequest, leafNodeList);
 		assertEquals(issueList.size(), resultList.size());
 	}
 
@@ -296,7 +290,7 @@ public class KpiHelperServiceTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
-		List<CapacityKpiData> resultList = kpiHelperService.fetchCapacityDataFromDB(leafNodeList);
+		List<CapacityKpiData> resultList = kpiHelperService.fetchCapacityDataFromDB(kpiRequest, leafNodeList);
 		assertEquals(4, resultList.size());
 	}
 
@@ -390,23 +384,23 @@ public class KpiHelperServiceTest {
 	public void testKpiResolution() {
 
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.AVERAGE_RESOLUTION_TIME.getKpiId());
-		KpiMaster kpiMaster=new KpiMaster();
+		KpiMaster kpiMaster = new KpiMaster();
 		kpiMaster.setKpiId("kpi83");
 		kpiMaster.setKpiName("abc");
 		kpiMaster.setKpiSource("abc");
 		kpiMaster.setKpiUnit("123");
 		kpiMaster.setKpiCategory("abc");
 		kpiMaster.setMaxValue("abbc");
-		List<KpiMaster> kpiMasters=new ArrayList<>();
+		List<KpiMaster> kpiMasters = new ArrayList<>();
 		kpiMasters.add(kpiMaster);
 		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasters);
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
 	}
 
 	@Test
-	public void fetchFieldMappingStructureByKpiFieldMappingData(){
+	public void fetchFieldMappingStructureByKpiFieldMappingData() {
 		when(configHelperService.loadFieldMappingStructure()).thenReturn(fieldMappingStructureList);
-		assertNotNull(kpiHelperService.fetchFieldMappingStructureByKpiId("6335363749794a18e8a4479c","kpi0"));
+		assertNotNull(kpiHelperService.fetchFieldMappingStructureByKpiId("6335363749794a18e8a4479c", "kpi0"));
 	}
 
 	@Test
@@ -417,7 +411,7 @@ public class KpiHelperServiceTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
-		Map<String, Object> resultMap = kpiHelperService.fetchBackLogReadinessFromdb(leafNodeList,kpiRequest);
+		Map<String, Object> resultMap = kpiHelperService.fetchBackLogReadinessFromdb(leafNodeList, kpiRequest);
 		assertEquals(2, resultMap.size());
 	}
 

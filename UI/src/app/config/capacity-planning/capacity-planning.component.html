@@ -122,7 +122,14 @@
                                         <th pSortableColumn="role" class="expanded-table-header-cell"
                                             [style]="{'width':'25%'}">Domain <p-sortIcon field="role"></p-sortIcon>
                                         </th>
-                                        <th pSortableColumn="plannedCapacity" class="expanded-table-header-cell">Planned
+
+                                        <th pSortableColumn="squad" class="expanded-table-header-cell"
+                                            [style]="{'width':'25%'}" *ngIf="selectedSquad.length > 0">
+                                          Squad <p-sortIcon field="squad"></p-sortIcon>
+                                        </th>
+
+                                        <th pSortableColumn="plannedCapacity"
+                                            class="expanded-table-header-cell">Planned
                                             Capacity (in Hrs) <p-sortIcon field="plannedCapacity"></p-sortIcon>
                                         </th>
                                         <th pSortableColumn="leaves" class="expanded-table-header-cell">Leaves (in Hrs)
@@ -150,6 +157,18 @@
                                             <ng-template #showRole>{{assignee?.role ?
                                                 projectAssigneeRolesObj[assignee?.role] : '- -'}}</ng-template>
                                         </td>
+
+                                      <td class="expanded-table-body-cell" *ngIf="(selectedSquad.length > 0 )">
+                                        <p-dropdown placeholder="Select Squad" [options]="selectedSquad"
+                                                    optionLabel="nodeName" optionValue="nodeId"
+                                                    *ngIf="(projectCapacityEditMode) ;else showSquad"
+                                                    [style]="{'width':'150px'}"
+                                                    [formControl]="selectedSprintAssigneFormArray[rowIndex]?.squad"
+                                                    (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'squad')"></p-dropdown>
+                                        <ng-template #showSquad>
+                                          {{ getNodeName(assignee) }}
+                                        </ng-template>
+                                      </td>
                                         <td class="expanded-table-body-cell">
                                             <input type="number" min="0" pInputText
                                                 *ngIf="projectCapacityEditMode;else showPlannedCapacity"
@@ -299,7 +318,14 @@
                                             <p-sortIcon field="role"></p-sortIcon>
                                         </div>
                                     </th>
-                                    <th pSortableColumn="plannedCapacity" class="expanded-table-header-cell">
+
+                                    <th pSortableColumn="squad" class="expanded-table-header-cell"
+                                        [style]="{'width':'25%'}" *ngIf="(selectedSquad.length > 0)">
+                                      Squad <p-sortIcon field="squad"></p-sortIcon>
+                                    </th>
+
+                                    <th pSortableColumn="plannedCapacity"
+                                        class="expanded-table-header-cell">
                                         <div>
                                             <span [ngClass]="{'editable': projectCapacityEditMode}">Planned Capacity (in
                                                 Hrs)</span>
@@ -339,6 +365,18 @@
                                         <ng-template #showRole>{{assignee?.role ?
                                             projectAssigneeRolesObj[assignee?.role] : '- -'}}</ng-template>
                                     </td>
+                                  <!--For Scrum Squad-->
+                                  <td class="expanded-table-body-cell" *ngIf="(selectedSquad.length > 0 )">
+                                    <p-dropdown placeholder="Select Squad" [options]="selectedSquad"
+                                                optionLabel="nodeName" optionValue="nodeId"
+                                                *ngIf="(projectCapacityEditMode) ;else showSquad"
+                                                [style]="{'width':'150px'}"
+                                                [formControl]="selectedSprintAssigneFormArray[rowIndex]?.squad"
+                                                (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'squad')"></p-dropdown>
+                                     <ng-template #showSquad>
+                                                    {{ getNodeName(assignee) }}
+                                                  </ng-template>
+                                  </td>
                                     <td class="expanded-table-body-cell">
                                         <input type="number" min="0" pInputText
                                             *ngIf="projectCapacityEditMode;else showPlannedCapacity"
@@ -379,7 +417,6 @@
                             <button pButton pRipple label="Cancel" icon="pi pi-times"
                                 class="p-button-cancel p-button-outlined p-button-secondary p-button-text p-mr-2 p-button-sm"
                                 (click)="onSprintCapacityCancel(item)"></button>
-
                             <button pButton pRipple label="Save" icon="pi pi-save"
                                 class="p-button-secondary p-button-sm" (click)="onSprintCapacitySave(item)"
                                 [disabled]="!isAdminForSelectedProject || selectedSprintAssigneValidator?.length > 0"></button>
@@ -419,7 +456,7 @@
 </ng-template>
 </div>
 </div>
-
+<!--add or remove assignees through manage users!-->
 <p-dialog header="Add/Remove Users" [(visible)]="displayAssignee" [modal]="true" (onShow)="onAssigneeModalOpen()"
 [breakpoints]="{'960px': '75vw', '640px': '100vw'}" [style]="{width: '50vw'}">
     <app-manage-assignee [assigneeList]="manageAssigneeList" #manageAssignee></app-manage-assignee>
@@ -433,35 +470,36 @@
 
     </ng-template>
 </p-dialog>
-<p-dialog [(visible)]="showPopuup" [modal]="true" [style]="{width: '50vw'}" [baseZIndex]="10000"
-    [draggable]="false" [resizable]="false" *ngIf="selectedView === 'upload_tep' || selectedView === 'upload_Sprint_Capacity'">
-    <form [formGroup]="popupForm" class="p-fluid p-xl-12 p-p-0" *ngIf="selectedView === 'upload_tep' else sprintCapacityPopupFormTemp">
-      <div class=" form-group p-xl-12 pad-l-0">
-        <label class="mr-sm-2" *ngIf="kanban else scrumTemp">
-          <span>For Execution Date {{executionDate | date: 'dd/MMM/yyyy'}}</span>
-        </label>
-        <ng-template #scrumTemp>
-          <label class="mr-sm-2">
-            <span>For {{selectedSprintName}}:</span>
-          </label>
-        </ng-template>
-      </div>
-       <div class=" form-group p-field p-mb-0 required p-xl-12 pad-l-0">
-        <label for="totalTestCases" class="mr-sm-2 float-left">
-          <span>Enter "Total test cases"</span>
-        </label>
-        <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter total test cases'"
-          formControlName="totalTestCases" (input)="numericInputUpDown($event)"
-          (keydown)="enterNumericValue($event)">
-      </div>
-     <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
-        <label for="executedTestCase" class="mr-sm-2 float-left">
-          <span>Enter "Executed test cases"</span>
-        </label>
-        <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter executed test cases'"
-          formControlName="executedTestCase" (input)="numericInputUpDown($event)"
-          (keydown)="enterNumericValue($event)">
-      </div>
+<p-dialog [(visible)]="showPopuup" [modal]="true" [style]="{width: '50vw'}" [baseZIndex]="10000" [draggable]="false"
+    [resizable]="false" *ngIf="selectedView === 'upload_tep' || selectedView === 'upload_Sprint_Capacity'">
+    <form [formGroup]="popupForm" class="p-fluid p-xl-12 p-p-0"
+        *ngIf="selectedView === 'upload_tep' else noToggleCapacityPopups">
+        <div class=" form-group p-xl-12 pad-l-0">
+            <label class="mr-sm-2" *ngIf="kanban else scrumTemp">
+                <span>For Execution Date {{executionDate | date: 'dd/MMM/yyyy'}}</span>
+            </label>
+            <ng-template #scrumTemp>
+                <label class="mr-sm-2">
+                    <span>For {{selectedSprintName}}:</span>
+                </label>
+            </ng-template>
+        </div>
+        <div class=" form-group p-field p-mb-0 required p-xl-12 pad-l-0">
+            <label for="totalTestCases" class="mr-sm-2 float-left">
+                <span>Enter "Total test cases"</span>
+            </label>
+            <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2"
+                [placeholder]="'Enter total test cases'" formControlName="totalTestCases"
+                (input)="numericInputUpDown($event)" (keydown)="enterNumericValue($event)">
+        </div>
+        <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
+            <label for="executedTestCase" class="mr-sm-2 float-left">
+                <span>Enter "Executed test cases"</span>
+            </label>
+            <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2"
+                [placeholder]="'Enter executed test cases'" formControlName="executedTestCase"
+                (input)="numericInputUpDown($event)" (keydown)="enterNumericValue($event)">
+        </div>
 
       <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
         <label for="passedTestCase" class="mr-sm-2 float-left">
@@ -472,37 +510,63 @@
           (keydown)="enterNumericValue($event)">
       </div>
     </form>
-    <ng-template #sprintCapacityPopupFormTemp>
-      <form [formGroup]="popupForm" class="p-xl-12 p-p-0" *ngIf="selectedView === 'upload_Sprint_Capacity'">
-        <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
-          <label for="capacity" class="mr-sm-2 float-left">
-            <span *ngIf="kanban">Enter 'Team capacity' for the days between {{this.startDate | date: 'dd/MMM/yyyy'}}
-              to {{this.endDate | date: 'dd/MMM/yyyy'}} </span>
-            <span *ngIf="!kanban">Enter "Team capacity for {{selectedSprintName}}"</span>
-          </label>
-          <input type="number" pInputText class="form-control w-100 p-p-2 mb-2 mr-sm-2" (input)="numericInputUpDown($event)"
-            (keydown)="enterNumericValue($event)"
-            [placeholder]="'Enter value'"
-            formControlName="capacity">
-        </div>
-      </form>
+
+  <ng-template #noToggleCapacityPopups>
+    <div *ngIf="selectedView === 'upload_Sprint_Capacity' && selectedSquad.length === 0; else sprintCapacityPopupFormTemp2">
+      <ng-container *ngTemplateOutlet="sprintCapacityPopupFormTemp1"></ng-container>
+    </div>
+  </ng-template>
+
+
+    <ng-template #sprintCapacityPopupFormTemp1>
+        <form [formGroup]="popupForm" class="p-xl-12 p-p-0">
+            <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
+                <label for="capacity" class="mr-sm-2 float-left">
+                    <span *ngIf="kanban">Enter 'Team capacity' for the days between {{this.startDate | date:
+                        'dd/MMM/yyyy'}}
+                        to {{this.endDate | date: 'dd/MMM/yyyy'}} </span>
+                    <span *ngIf="!kanban">Enter "Team capacity for {{selectedSprintName}}"</span>
+                </label>
+                <input type="number" pInputText class="form-control w-100 p-p-2 mb-2 mr-sm-2"
+                    (input)="numericInputUpDown($event)" (keydown)="enterNumericValue($event)"
+                    [placeholder]="'Enter value'" formControlName="capacity">
+            </div>
+        </form>
     </ng-template>
+
+  <ng-template #sprintCapacityPopupFormTemp2>
+    <!-- Another form or content here -->
+    <form [formGroup]="squadForm" class="p-xl-12 p-p-0" *ngIf="showPopuup">
+      <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
+        <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0" *ngFor="let squad of selectedSquad">
+          <label [for]='squad.nodeId' class="mr-sm- float-left">Enter capacity for {{ squad.nodeName }}</label>
+          <input type="number" pInputText class="form-control w-100 p-p-2 mb-2 mr-sm-2"
+                 id="{{squad.nodeId}}" [formControlName]="squad.nodeId"  (input)="numericInputUpDown($event)"
+                 (keydown)="enterNumericValue($event)" [placeholder]="'Enter value'" min="0">
+        </div>
+      </div>
+    </form>
+
+  </ng-template>
+
     <ng-template pTemplate="footer">
-      <p class="text-danger p-text-left p-mt-0" [hidden]="!isTestExecutionSaveDisabled" *ngIf="selectedView === 'upload_tep' else sprintCapacityErrorTemp">{{testExecutionErrorMessage}}</p>
-      <ng-template #sprintCapacityErrorTemp>
-        <p class="text-danger p-text-left p-mt-0" [hidden]="!isCapacitySaveDisabled">{{capacityErrorMessage}}</p>
-      </ng-template>
-      <div class="p-d-flex p-justify-end p-align-center p-mt-1 btn-container">
-        <button pButton pRipple label="Cancel" icon="pi pi-times"
-        class="p-button-cancel p-button-secondary p-button-text p-mr-2 p-button-sm" (click)="showPopuup=false"></button>
-        <button pButton pRipple label="Save" icon="pi pi-save"
-           class="p-button-secondary p-button-sm" (click)="submitTestExecution()" [disabled]="isTestExecutionSaveDisabled"
-           *ngIf="selectedView === 'upload_tep' else capacitySubmitTemp"></button>
-           <ng-template #capacitySubmitTemp>
-            <button pButton pRipple label="Save" icon="pi pi-save" [disabled]="isCapacitySaveDisabled"
-           class="p-button-secondary p-button-sm" (click)="submitCapacity()"></button>
-           </ng-template>
-     </div>
+        <p class="text-danger p-text-left p-mt-0" [hidden]="!isTestExecutionSaveDisabled"
+            *ngIf="selectedView === 'upload_tep' else sprintCapacityErrorTemp">{{testExecutionErrorMessage}}</p>
+        <ng-template #sprintCapacityErrorTemp>
+            <p class="text-danger p-text-left p-mt-0" [hidden]="!isCapacitySaveDisabled">{{capacityErrorMessage}}</p>
+        </ng-template>
+        <div class="p-d-flex p-justify-end p-align-center p-mt-1 btn-container">
+            <button pButton pRipple label="Cancel" icon="pi pi-times"
+                class="p-button-cancel p-button-secondary p-button-text p-mr-2 p-button-sm"
+                (click)="showPopuup=false; clearSquadForm()" ></button>
+            <button pButton pRipple label="Save" icon="pi pi-save" class="p-button-secondary p-button-sm"
+                (click)="submitTestExecution()" [disabled]="isTestExecutionSaveDisabled"
+                *ngIf="selectedView === 'upload_tep' else capacitySubmitTemp"></button>
+            <ng-template #capacitySubmitTemp>
+                <button pButton pRipple label="Save" icon="pi pi-save" [disabled]="isCapacitySaveDisabled"
+                    class="p-button-secondary p-button-sm" (click)="submitCapacity()"></button>
+            </ng-template>
+        </div>
     </ng-template>
 </p-dialog>
 <app-page-loader *ngIf="loader"></app-page-loader>
