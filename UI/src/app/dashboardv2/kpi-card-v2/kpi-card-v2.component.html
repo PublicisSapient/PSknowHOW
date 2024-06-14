@@ -193,7 +193,3 @@
         </div>
     </ng-container>
 </p-dialog>
-
-<app-comments *ngIf="showComments" [kpiId]="kpiData?.kpiId" [kpiName]="kpiData?.kpiName" [selectedTab]="selectedTab"
-    (closeSpringOverlay)="op.hide($event);" [commentCount]="commentCount"
-    (getCommentsCountByKpiId)="handleGetCount($event)"></app-comments>

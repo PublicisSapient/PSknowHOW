@@ -27,12 +27,12 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.filterData && Object.keys(this.filterData).length) {
       this.populateFilters();
-      if (!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue) && !changes['primaryFilterConfig']?.firstChange || changes['selectedType']) {
+      if ((!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue) && !changes['primaryFilterConfig']?.firstChange) || 
+      ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue) ||
+      (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange))) {
 
         setTimeout(() => {
-
           this.selectedFilters = [this.filters[0]];
-
           this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
           this.onPrimaryFilterChange.emit([...this.selectedFilters]);
         }, 100);
