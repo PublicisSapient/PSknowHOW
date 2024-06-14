@@ -27,7 +27,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.filterData && Object.keys(this.filterData).length) {
       this.populateFilters();
-      if (!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue) && !changes['primaryFilterConfig']?.firstChange) {
+      if (!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue) && !changes['primaryFilterConfig']?.firstChange || changes['selectedType']) {
 
         setTimeout(() => {
 
