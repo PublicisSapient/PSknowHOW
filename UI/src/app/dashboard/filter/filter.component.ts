@@ -786,6 +786,7 @@ this.resetAddtionalFIlters();
         for (let j = 0; j < temp?.length; j++) {
           if (this.filterApplyData['level'] < temp[j].level) {
             this.filterApplyData['level'] = temp[j].level;
+            this.filterApplyData['selectedMap']['project']?.push(temp[j].parentId[0]);
             this.filterApplyData['selectedMap'][temp[j].labelName]?.push(temp[j].nodeId);
             this.filterApplyData['ids'] = [];
             this.filterApplyData['ids'].push(temp[j].nodeId);
@@ -1384,6 +1385,7 @@ this.resetAddtionalFIlters();
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
       if (this.selectedSprint && Object.keys(this.selectedSprint)?.length > 0) {
         this.service.setCurrentSelectedSprint(this.selectedSprint);
+        this.service.setSprintForRnR(this.selectedSprint);
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
          if(this.filterForm.get('sqd')){
