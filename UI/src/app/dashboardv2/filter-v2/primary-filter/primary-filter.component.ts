@@ -26,12 +26,12 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.filterData && Object.keys(this.filterData).length) {
-      this.populateFilters();
       if ((!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue) && !changes['primaryFilterConfig']?.firstChange) || 
       ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) ||
       (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange))) {
 
         setTimeout(() => {
+          this.populateFilters();
           this.selectedFilters = [this.filters[0]];
           this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
           this.onPrimaryFilterChange.emit([...this.selectedFilters]);
@@ -39,7 +39,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       } else {
         this.selectedFilters = [];
         setTimeout(() => {
-
+          this.populateFilters();
           if (this.filters.length) {
             this.selectedFilters = new Set();
 
