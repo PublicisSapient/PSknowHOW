@@ -87,9 +87,9 @@ spec:
         - configMapRef:
             name: knowhow-config
         resources:
-          requests:
-            memory: "1Gi"
-            cpu: "0.5"
+          # requests:
+          #   memory: "1Gi"
+          #   cpu: "0.5"
           limits:
             memory: "3Gi"
             cpu: "1"
