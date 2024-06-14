@@ -6,7 +6,6 @@ import { SharedService } from 'src/app/services/shared.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { Router } from '@angular/router';
 import { HelperService } from 'src/app/services/helper.service';
-import { Location } from '@angular/common';4
 
 @Component({
   selector: 'app-header',
@@ -23,17 +22,17 @@ export class HeaderComponent implements OnInit {
   activeItem: MenuItem | undefined;
   userDetails: object = {};
   userMenuItems: MenuItem[] | undefined;
-  backToDashboardLoader : boolean = false;
-  kpiListDataProjectLevel : any = {};
+  backToDashboardLoader: boolean = false;
+  kpiListDataProjectLevel: any = {};
   kpiListData: any = {};
+  lastVisitedFromUrl: string = '';
 
   constructor(
     private httpService: HttpService,
     public sharedService: SharedService,
     private getAuthorizationService: GetAuthorizationService,
     public router: Router,
-    private helperService: HelperService,
-    private location: Location) { }
+    private helperService: HelperService) { }
 
   ngOnInit(): void {
     this.getLogoImage();
@@ -50,6 +49,7 @@ export class HeaderComponent implements OnInit {
         label: 'Settings',
         icon: 'fas fa-cog',
         command: () => {
+          this.lastVisitedFromUrl = window.location.hash.substring(1);
           this.router.navigate(['/dashboard/Config/ProjectList']);
         },
       },
@@ -107,7 +107,7 @@ export class HeaderComponent implements OnInit {
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
     this.backToDashboardLoader = true;
-    this.location.back();
+    this.router.navigateByUrl(this.lastVisitedFromUrl);
     this.backToDashboardLoader = false;
     // let projectList = [];
     // if (this.sharedService.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
