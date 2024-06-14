@@ -6167,7 +6167,33 @@
                 "boardId": 11,
                 "boardName": "Iteration",
                 "boardSlug": "iteration",
-                "kpis": []
+                "kpis": [],
+                "filters": {
+                    "projectTypeSwitch": {
+                        "enabled": false,
+                        "visible": true
+                    },
+                    "primaryFilter": {
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "sprint",
+                            "sortBy": "sprintState"
+                        }
+                    },
+                    "parentFilter": {
+                        "labelName": "Project",
+                        "emittedLevel": "sprint"
+                    },
+                    "additionalFilters": [
+                        {
+                            "type": "multiSelect",
+                            "defaultLevel": {
+                                "labelName": "sqd",
+                                "sortBy": null
+                            }
+                        }
+                    ]
+                }
             },
             {
                 "boardId": 12,
