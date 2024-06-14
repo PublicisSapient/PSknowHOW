@@ -47,6 +47,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
+    this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.subscriptions.push(
       this.service.globalDashConfigData.subscribe((boardData) => {
         this.processBoardData(boardData);
