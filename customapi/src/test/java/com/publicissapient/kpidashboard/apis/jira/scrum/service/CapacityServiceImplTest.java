@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,6 +72,8 @@ public class CapacityServiceImplTest {
 	private ProjectBasicConfigRepository projectConfigRepository;
 	@Mock
 	private FieldMappingRepository fieldMappingRepository;
+	@Mock
+	private FilterHelperService filterHelperService;
 	@InjectMocks
 	private CapacityServiceImpl capacityServiceImpl;
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
