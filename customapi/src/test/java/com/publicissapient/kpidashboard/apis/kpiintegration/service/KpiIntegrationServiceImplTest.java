@@ -155,6 +155,7 @@ public class KpiIntegrationServiceImplTest {
 		KpiRequest kpiRequest = new KpiRequest();
 		kpiRequest.setIds(new String[] { "id1" });
 		Map<String, List<String>> selectedMap = new HashMap<>();
+		selectedMap.put(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, Arrays.asList("project1"));
 		selectedMap.put(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, Arrays.asList("sprint1"));
 		kpiRequest.setSelectedMap(selectedMap);
 		kpiRequest.setKpiIdList(Arrays.asList("kpi1", "kpi2"));
