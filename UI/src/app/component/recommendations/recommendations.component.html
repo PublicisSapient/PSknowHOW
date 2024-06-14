@@ -1,7 +1,6 @@
 <div class="container-recommendations">
     <div class="img-container" (click)="handleClick()">
         <img src="../../../assets/img/ico-recommendations.svg" alt="Recommendations" />
-        <!-- <p class="text-recommendations">Recommendations</p> -->
     </div>
 </div>
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
@@ -62,7 +61,6 @@
                             <td
                                 [ngClass]="{'m1': item.maturity == 1, 'm2': item.maturity == 2, 'm3': item.maturity == 3, 'm4': item.maturity == 4, 'm5': item.maturity == 5}">
                                 <span class="maturity-level">
-                                    <!-- <span class="maturity-indicator"></span> -->
                                     {{ item.maturity ? "M"+item.maturity : 'NA' }}
                                 </span>
                             </td>
