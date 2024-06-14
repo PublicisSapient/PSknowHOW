@@ -28,7 +28,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     if (this.filterData && Object.keys(this.filterData).length) {
       this.populateFilters();
       if ((!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue) && !changes['primaryFilterConfig']?.firstChange) || 
-      ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue) ||
+      ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) ||
       (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange))) {
 
         setTimeout(() => {
