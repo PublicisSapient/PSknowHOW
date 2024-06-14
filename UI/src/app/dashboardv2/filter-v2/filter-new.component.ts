@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
@@ -8,7 +8,7 @@ import { SharedService } from 'src/app/services/shared.service';
   templateUrl: './filter-new.component.html',
   styleUrls: ['./filter-new.component.css']
 })
-export class FilterNewComponent implements OnInit {
+export class FilterNewComponent implements OnInit, OnDestroy {
   filterDataArr = {};
   masterData = {};
   filterApplyData = {};
@@ -46,7 +46,6 @@ export class FilterNewComponent implements OnInit {
 
   ngOnInit(): void {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
-
     this.subscriptions.push(
       this.service.globalDashConfigData.subscribe((boardData) => {
         this.processBoardData(boardData);
@@ -94,6 +93,11 @@ export class FilterNewComponent implements OnInit {
     );
   }
 
+  // unsubscribing all Kpi Request
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
   setSelectedDateType(label: string) {
     this.selectedDayType = label;
   }
@@ -107,7 +111,6 @@ export class FilterNewComponent implements OnInit {
     }
     this.filterApplyData = {};
     this.service.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
-    this.service.setSelectedType(this.selectedType);
   }
 
   processBoardData(boardData) {
