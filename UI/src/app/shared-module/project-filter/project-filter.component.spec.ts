@@ -8,6 +8,7 @@ import { MessageService } from 'primeng/api';
 import { ProjectFilterComponent } from './project-filter.component';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { environment } from 'src/environments/environment';
+import { of } from 'rxjs';
 
 const allProjectsData = require('../../../test/resource/projectFilterAllProjects.json');
 const filteredData = [
@@ -78,6 +79,7 @@ describe('ProjectFilterComponent', () => {
   let fixture: ComponentFixture<ProjectFilterComponent>;
   let httpService: HttpService;
   let sharedService: SharedService;
+  let messageService: MessageService;
   let httpMock;
   const baseUrl = environment.baseUrl;
 
@@ -97,7 +99,7 @@ describe('ProjectFilterComponent', () => {
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
     httpMock = TestBed.inject(HttpTestingController);
-    // fixture.detectChanges();
+    messageService = TestBed.inject(MessageService);
   });
 
   it('should create', () => {
@@ -153,4 +155,86 @@ describe('ProjectFilterComponent', () => {
     });
     expect(component.filteredData).toEqual(filteredData);
   });
+
+  it('should give error on getting projects',() => {
+    component.resetDropdowns = true;
+    const err = {
+      error: {
+        message: 'Error'
+      }
+    }
+    spyOn(httpService, 'getAllProjects').and.returnValue(of(err));
+    const spy = spyOn(messageService, 'add');
+    component.getProjects()
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should filter data when filterType is available', () => {
+    component.valueRemoved = {};
+    const event = {
+      stopPropagation: jasmine.createSpy('stopPropagation')
+    };
+    component.data = allProjectsData.data;
+    const filterType = 'hierarchyLevelOne';
+    const filterValue = 'Sample One';
+    component.filteredData = [];
+    component.selectedVal = {};
+    component.filterData(event, filterType, filterValue);
+    expect(component.filteredData).toEqual(component.data);
+  })
+
+  // fit('should filter data', () => {
+  //   // Arrange
+  //   const event = {
+  //     stopPropagation: jasmine.createSpy('stopPropagation')
+  //   };
+  //   const filterType = 'hierarchyLevelOne';
+  //   const filterValue = 'Sample One';
+  //   const expectedFilteredData = [
+  //     {
+  //       id: '6335363749794a18e8a4479b',
+  //       projectName: 'Scrum Project',
+  //       hierarchy: [
+  //         {
+  //           hierarchyLevel: {
+  //             level: 1,
+  //             hierarchyLevelId: 'hierarchyLevelOne',
+  //             hierarchyLevelName: 'Level One'
+  //           },
+  //           value: 'Sample One'
+  //         },
+  //         {
+  //           hierarchyLevel: {
+  //             level: 2,
+  //             hierarchyLevelId: 'hierarchyLevelTwo',
+  //             hierarchyLevelName: 'Level Two'
+  //           },
+  //           value: 'Sample Two'
+  //         },
+  //         {
+  //           hierarchyLevel: {
+  //             level: 3,
+  //             hierarchyLevelId: 'hierarchyLevelThree',
+  //             hierarchyLevelName: 'Level Three'
+  //           },
+  //           value: 'Sample Three'
+  //         }
+  //       ]
+  //     }
+  //   ];
+  
+  //   // Act
+  //   component.filterData(event, filterType, filterValue);
+  
+  //   // Assert
+  //   expect(event.stopPropagation).toHaveBeenCalled();
+  //   expect(component.filteredData).toEqual(expectedFilteredData);
+  //   expect(component.filtersApplied).toBe(true);
+  //   expect(component.selectedVal[filterType]).toEqual([
+  //     {
+  //       name: 'Sample One',
+  //       code: 'Sample One'
+  //     }
+  //   ]);
+  // });
 });
