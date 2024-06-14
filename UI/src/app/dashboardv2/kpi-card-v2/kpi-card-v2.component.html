@@ -49,7 +49,8 @@
         <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-jc-end">
             <ng-container *ngFor="let filter of dropdownArr;let k = index">
                 <ng-select *ngIf="filter?.options?.length && filter.filterType === 'Duration'"
-                    [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'"
+                    [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'" [filter]="false"
+                    [showHeader]="false"
                     (change)="handleChange('multi')" [placeholder]="filter?.filterType" [clearable]="false"
                     class="p-pb-0 kpi-dropdown" [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}">
                     <ng-container *ngFor="let item of filter?.options; index as i">
@@ -61,7 +62,7 @@
 
                 <p-multiSelect *ngIf="filter?.options?.length && filter.filterType !== 'Duration'" #multiSelect
                     inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
-                    (onChange)="handleChange('multi')" 
+                    (onChange)="handleChange('multi')" [filter]="false" [showHeader]="false"
                     (onClear)="handleClearAll('filter'+(k+1))" [style]="{'max-width': '100%', 'height': '32px'}"
                     [showClear]="true" defaultLabel="{{filter?.filterType}}"
                     [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
