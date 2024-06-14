@@ -1385,6 +1385,7 @@ this.resetAddtionalFIlters();
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
       if (this.selectedSprint && Object.keys(this.selectedSprint)?.length > 0) {
         this.service.setCurrentSelectedSprint(this.selectedSprint);
+        this.service.setSprintForRnR(this.selectedSprint);
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
          if(this.filterForm.get('sqd')){

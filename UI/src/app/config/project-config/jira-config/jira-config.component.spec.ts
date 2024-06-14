@@ -2093,4 +2093,23 @@ describe('JiraConfigComponent', () => {
     tick();
     expect(spy).toHaveBeenCalled();
   }))
+
+  it('should give error on getting jenkins job name', fakeAsync(() => {
+    const connectionId = '331231231';
+    const errResponse = {
+      success: false,
+      message: 'No Jenkins Job found'
+    }
+    component.formTemplate = {
+      elements: [
+        { id: 'jobType', show: true },
+      ],
+    };
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    spyOn(httpService, 'getJenkinsJobNameList').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add');
+    component.getJenkinsJobNames(connectionId);
+    tick()
+    expect(spy).toHaveBeenCalled();
+  }))
 });
