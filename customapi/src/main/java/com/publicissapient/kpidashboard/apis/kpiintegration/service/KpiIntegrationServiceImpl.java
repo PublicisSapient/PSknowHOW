@@ -315,9 +315,11 @@ public class KpiIntegrationServiceImpl {
 		try {
 			Optional<String> sprintId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
 					.stream().findFirst();
+			Optional<String> projectId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
+					.stream().findFirst();
 			String recommendationUrl = String.format(customApiConfig.getRnrRecommendationUrl(),
-					URLEncoder.encode(kpiRequest.getIds()[0], StandardCharsets.UTF_8),
-					URLEncoder.encode(sprintId.isPresent() ? sprintId.get() : "", StandardCharsets.UTF_8),
+					URLEncoder.encode(projectId.orElse(""), StandardCharsets.UTF_8),
+					URLEncoder.encode(sprintId.orElse(""), StandardCharsets.UTF_8),
 					URLEncoder.encode(String.join(",", kpiRequest.getKpiIdList()), StandardCharsets.UTF_8));
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.set(RNR_API_HEADER, customApiConfig.getRnrRecommendationApiKey());

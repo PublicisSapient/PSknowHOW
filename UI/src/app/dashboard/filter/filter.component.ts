@@ -786,6 +786,7 @@ this.resetAddtionalFIlters();
         for (let j = 0; j < temp?.length; j++) {
           if (this.filterApplyData['level'] < temp[j].level) {
             this.filterApplyData['level'] = temp[j].level;
+            this.filterApplyData['selectedMap']['project']?.push(temp[j].parentId[0]);
             this.filterApplyData['selectedMap'][temp[j].labelName]?.push(temp[j].nodeId);
             this.filterApplyData['ids'] = [];
             this.filterApplyData['ids'].push(temp[j].nodeId);

@@ -210,7 +210,7 @@ export class GroupBarChartComponent implements OnChanges {
       let htmlReleaseEndDate = `Release End Date (${releaseEndDate})`;
       let htmlDiv = `${new Date(this.plannedDueDate).getTime() > new Date(this.releaseEndDate).getTime() 
         ? (htmlReleaseDueDate + ' > ' + htmlReleaseEndDate) 
-        : (htmlReleaseDueDate + ' < ' + htmlReleaseEndDate)}`;
+        : (htmlReleaseDueDate + ' <= ' + htmlReleaseEndDate)}`;
       d3.select(elem).select('#date-container').append('text')
         .attr('x', ((d3.select(elem).select('#groupstackchart').node().offsetWidth - 70) / 2) - 24)
         .attr('y', 44)

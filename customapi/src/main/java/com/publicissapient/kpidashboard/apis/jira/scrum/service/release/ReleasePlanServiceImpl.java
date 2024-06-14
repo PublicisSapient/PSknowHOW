@@ -90,7 +90,6 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	@Autowired
 	private ConfigHelperService configHelperService;
 	private LocalDate tempStartDate = null;
-	private LocalDate maxPlannedDueDate = null;
 
 	@Override
 	public String getQualifierType() {
@@ -100,7 +99,6 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
 			throws ApplicationException {
-		maxPlannedDueDate=null;
 		releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
 		log.info("ReleasePlanServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
@@ -173,6 +171,12 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 				startLocalDate = getNextRangeDate(duration, startLocalDate, endLocalDate);
 				issueCountDataGroup.add(issueCount);
 			}
+			releaseIssues.retainAll(allReleaseTaggedIssue);
+			LocalDate maxPlannedDueDate = releaseIssues.stream().map(JiraIssue::getDueDate).filter(Objects::nonNull)
+					.filter(dueDate -> !dueDate.isBlank())
+					.map(dueDate -> LocalDate.parse(dueDate.split("T")[0], DATE_TIME_FORMATTER))
+					.max(Comparator.naturalOrder()).orElse(null);
+
 			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
 			if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
 				Map<String, Object> additionalInfoMap = new HashMap<>();
@@ -443,16 +447,6 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 					return DateUtil.equalAndBeforeTime(dueDate,endDate);
 				}).count();
 
-		LocalDate plannedDueDate = overallIssues.stream().map(JiraIssue::getDueDate).filter(Objects::nonNull)
-				.filter(dueDate -> !dueDate.isBlank())
-				.map(dueDate -> LocalDate.parse(dueDate.split("T")[0], DATE_TIME_FORMATTER))
-				.max(Comparator.naturalOrder()).orElse(null);
-
-		//gives max planned dueDate of a Issue in a release
-		if (plannedDueDate != null && (maxPlannedDueDate == null || plannedDueDate.isAfter(maxPlannedDueDate))) {
-			maxPlannedDueDate = plannedDueDate;
-		}
-
 		createDataCount((long) overallIssues.size(), RELEASE_SCOPE, issueCountDataList);
 		createDataCount(matchingIssueCount, RELEASE_PLANNED, issueCountDataList);
 
@@ -550,7 +544,6 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
-			jiraIssueList.retainAll(allReleaseTaggedIssue);
 
 			KPIExcelUtility.populateReleasePlanExcelData(jiraIssueList, excelData, fieldMapping);
 		}

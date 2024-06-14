@@ -7,6 +7,7 @@ ARG UID=1000
 ARG GID=1000
 
 RUN apk add openssl --no-cache \
+    && apk add curl --no-cache \
     && addgroup -g $GID $USER \
     && adduser -u $UID -G $USER -s /bin/sh -D $USER
 
