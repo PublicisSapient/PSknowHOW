@@ -29,6 +29,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() trendValueList: any;
   @Input() sprintsOverlayVisible: boolean;
   @Input() showCommentIcon: boolean;
+  showComments: boolean = false;
   @Input() kpiSize;
   loading: boolean = false;
   noData: boolean = false;
@@ -83,10 +84,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         },
       },
       {
-        label: 'Settings',
-        icon: 'fas fa-cog',
-        command: () => {
-          this.onOpenFieldMappingDialog();
+        label: 'Comments',
+        icon: 'pi pi-comments',
+        command: ($event) => {
+          this.showComments = true;
         },
       },
       {
@@ -96,6 +97,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.exportToExcel();
         }
       },
+      {
+        label: 'Settings',
+        icon: 'fas fa-cog',
+        command: () => {
+          this.onOpenFieldMappingDialog();
+        },
+      }
     ];
 
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {

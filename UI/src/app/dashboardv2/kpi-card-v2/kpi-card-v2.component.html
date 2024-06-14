@@ -16,7 +16,7 @@
         <div class="kpi-menu-container" (click)="toggleMenu($event)">
             <i class="pi pi-ellipsis-v" style="font-size: 20px"></i>
         </div>
-        <p-menu #kpimenu id= "menu-{{kpiData?.kpiId}}" [popup]="true" [model]="menuItems">
+        <p-menu #kpimenu id="menu-{{kpiData?.kpiId}}" [popup]="true" [model]="menuItems">
             <ng-template pTemplate="item" let-item>
                 <div>
                     <i [class]="item.icon"></i>
@@ -43,9 +43,9 @@
             <ng-container *ngFor="let filter of dropdownArr;let k = index">
                 <ng-select *ngIf="filter?.options?.length && filter.filterType === 'Duration'"
                     [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'" [filter]="false"
-                    [showHeader]="false"
-                    (change)="handleChange('multi')" [placeholder]="filter?.filterType" [clearable]="false"
-                    class="p-pb-0 kpi-dropdown" [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}">
+                    [showHeader]="false" (change)="handleChange('multi')" [placeholder]="filter?.filterType"
+                    [clearable]="false" class="p-pb-0 kpi-dropdown"
+                    [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}">
                     <ng-container *ngFor="let item of filter?.options; index as i">
                         <ng-option [value]="item">
                             {{item}}
@@ -100,7 +100,8 @@
     </div>
 </div>
 
-<p-dialog [(visible)]="displaySprintDetailsModal" [dismissableMask]="true" [modal]="true" [autoZIndex]="true" styleClass="sprint-details-overlay">
+<p-dialog [(visible)]="displaySprintDetailsModal" [dismissableMask]="true" [modal]="true" [autoZIndex]="true"
+    styleClass="sprint-details-overlay">
     <div class="p-mb-3 overlay-heading">
         {{kpiData?.kpiName}}
     </div>
@@ -154,15 +155,17 @@
     <ng-template pTemplate="header">
         <div class="inline-flex align-items-center justify-content-center gap-2">
             <p class="font-bold white-space-nowrap">{{kpiData?.kpiName}}</p>
-            <span class="font-bold white-space-nowrap" [ngClass]="{'green': isSyncPassedOrFailed === true, 'red' : ((isSyncPassedOrFailed === false)&& (lastSyncTime !== 'NA'))}">Last Sync: {{lastSyncTime}}
+            <span class="font-bold white-space-nowrap"
+                [ngClass]="{'green': isSyncPassedOrFailed === true, 'red' : ((isSyncPassedOrFailed === false)&& (lastSyncTime !== 'NA'))}">Last
+                Sync: {{lastSyncTime}}
                 <span *ngIf="lastSyncTime !== 'NA'">
-                    <img *ngIf="isSyncPassedOrFailed === true" src="../../../assets/img/icon-success.svg"
-                        alt="Success" class="p-mr-1" />
-                    <img *ngIf="isSyncPassedOrFailed === false" src="../../../assets/img/icon-failure.svg"
-                        alt="Failure" class="p-mr-1" />
+                    <img *ngIf="isSyncPassedOrFailed === true" src="../../../assets/img/icon-success.svg" alt="Success"
+                        class="p-mr-1" />
+                    <img *ngIf="isSyncPassedOrFailed === false" src="../../../assets/img/icon-failure.svg" alt="Failure"
+                        class="p-mr-1" />
                 </span>
             </span>
-            
+
         </div>
     </ng-template>
     <hr>
@@ -176,8 +179,9 @@
             [disableSave]="disableSave" [fieldMappingMetaData]="fieldMappingMetaData"
             [fieldMappingConfig]="fieldMappingConfig" [formData]="selectedFieldMapping"
             [selectedConfig]="selectedConfig" [selectedToolConfig]="selectedToolConfig" (reloadKPI)="reloadKPI()"
-            [thresholdUnit]="kpiData['kpiDetail']['kpiUnit']"
-            [kpiId]="kpiData?.kpiId" [metaDataTemplateCode]="metaDataTemplateCode" [nodeId]="nodeId" [parentComp]="'kpicard'"></app-field-mapping-form>
+            [thresholdUnit]="kpiData['kpiDetail']['kpiUnit']" [kpiId]="kpiData?.kpiId"
+            [metaDataTemplateCode]="metaDataTemplateCode" [nodeId]="nodeId"
+            [parentComp]="'kpicard'"></app-field-mapping-form>
     </ng-template>
     <ng-template pTemplate="footer"></ng-template>
     <ng-container *ngIf=" noDataKPIConfig && !loadingKPIConfig">
@@ -189,3 +193,7 @@
         </div>
     </ng-container>
 </p-dialog>
+
+<app-comments *ngIf="showComments" [kpiId]="kpiData?.kpiId" [kpiName]="kpiData?.kpiName" [selectedTab]="selectedTab"
+    (closeSpringOverlay)="op.hide($event);" [commentCount]="commentCount"
+    (getCommentsCountByKpiId)="handleGetCount($event)"></app-comments>
