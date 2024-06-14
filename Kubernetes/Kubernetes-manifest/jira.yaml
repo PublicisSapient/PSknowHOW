@@ -81,11 +81,11 @@ spec:
         ports:
         - containerPort: 50008
         resources:
-         # requests:
-         #   memory: "1Gi"
-         #   cpu: "0.5"
+          requests:
+            memory: "200Mi"
+            cpu: "0.1"
           limits:
-            memory: "4Gi"
+            memory: "6Gi"
             cpu: "1"
         readinessProbe:
           tcpSocket:

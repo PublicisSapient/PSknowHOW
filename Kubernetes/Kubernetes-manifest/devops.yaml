@@ -90,9 +90,9 @@ spec:
           # requests:
           #   memory: "1Gi"
           #   cpu: "0.5"
-          limits:
-            memory: "3Gi"
-            cpu: "1"
+          # limits:
+          #  memory: "6Gi"
+          #  cpu: "1"
         ports:
         - containerPort: 50001
         - containerPort: 50002
