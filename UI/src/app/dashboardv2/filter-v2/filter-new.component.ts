@@ -48,6 +48,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
     this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
+    this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
+    // this.selectedType = this.service.getSelectedType() || 'scrum';
     this.subscriptions.push(
       this.service.globalDashConfigData.subscribe((boardData) => {
         this.processBoardData(boardData);
@@ -57,13 +59,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh
         .subscribe(data => {
-          if (!this.helperService.getBackupOfFilterSelectionState('selected_type')) {
-            this.selectedTab = data.selectedTab;
-            this.selectedType = data.selectedType;
-          } else {
-            this.selectedTab = data.selectedTab;
-            this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type');
-          }
+          // if (!this.helperService.getBackupOfFilterSelectionState('selected_type')) {
+          this.selectedTab = data.selectedTab;
+          this.selectedType = data.selectedType;
+          // } else {
+          //   this.selectedTab = data.selectedTab;
+          //   this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type');
+          // }
 
           if (this.selectedType.toLowerCase() === 'kanban') {
             this.kanban = true;
@@ -118,6 +120,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.kanban = false;
     }
     this.filterApplyData = {};
+    this.service.setSelectedType(this.selectedType);
     this.helperService.setBackupOfFilterSelectionState({ 'selected_type': this.selectedType })
     this.service.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
   }
@@ -132,9 +135,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (selectedBoard) {
       this.kanbanRequired = selectedBoard.filters?.projectTypeSwitch;
 
-      if(!this.kanbanRequired?.enabled) {
+      if (!this.kanbanRequired?.enabled && this.selectedType === 'kanban') {
         this.kanban = false;
         this.selectedType = 'scrum';
+        this.setSelectedType(this.selectedType);
       }
 
       this.getFiltersData();
@@ -172,7 +176,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           }
         })
       );
-    }
+    } 
+    // else {
+    //   this.processFilterData(this.filterDataArr[this.selectedType]);
+    // }
   }
 
   processFilterData(data) {
@@ -323,17 +330,17 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
         } else {
           this.filterApplyData['ids'] = [5];
-          this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
+          this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
         }
       } else {
         if (this.selectedTab === 'Iteration') {
           this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
         } else {
-          this.filterApplyData['ids'] = [this.selectedDateValue];
+          this.filterApplyData['ids'] = [5];
         }
         this.filterApplyData['startDate'] = '';
         this.filterApplyData['endDate'] = '';
-        this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
+        this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
         this.filterApplyData['selectedMap']['release'] = [];
         this.filterApplyData['selectedMap']['sqd'] = [];
       }
@@ -364,27 +371,29 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (event?.length) {
       this.filterApplyData['level'] = event[0].level;
       this.filterApplyData['label'] = event[0].labelName;
-      if (this.selectedTab?.toLowerCase() === 'backlog') {
-        this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
-      }
-
       // if Additional Filters are selected
       if (this.filterApplyData['level'] > 4) {
+        if (this.selectedTab?.toLowerCase() === 'backlog') {
+          this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
+        }
+
+
         this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
         this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
-      }
 
-      // set selected projects(trends)
-      this.service.setSelectedTrends(event);
 
-      if (this.selectedLevel) {
-        if (typeof this.selectedLevel === 'string') {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+        // set selected projects(trends)
+        this.service.setSelectedTrends(event);
+
+        if (this.selectedLevel) {
+          if (typeof this.selectedLevel === 'string') {
+            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+          } else {
+            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+          }
         } else {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
         }
-      } else {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
       }
     }
   }
