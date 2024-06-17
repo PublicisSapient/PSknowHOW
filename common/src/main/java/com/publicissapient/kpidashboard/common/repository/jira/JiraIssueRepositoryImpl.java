@@ -230,9 +230,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	}
 
     @Override
-	public List<JiraIssue> findIssueByNumberAndType(Set<String> storyNumber,
-			Map<String, Map<String, Object>> uniqueProjectMap) {
-		Criteria criteria = new Criteria();
+	public List<JiraIssue> findIssueByNumberOrParentStoryIdAndType(Set<String> storyNumber,
+																   Map<String, Map<String, Object>> uniqueProjectMap) {
 
 		// Project level storyType filters
 		List<Criteria> projectCriteriaList = new ArrayList<>();
@@ -242,16 +241,22 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
 			projectCriteriaList.add(projectCriteria);
 		});
-		criteria = criteria.and(NUMBER).in(storyNumber);
 
-		Query query = new Query(criteria);
+		// Add criteria for both story number and parent story ID
+		Criteria storyNumberCriteria = new Criteria().orOperator(
+				Criteria.where(NUMBER).in(storyNumber),
+				Criteria.where("parentStoryId").in(storyNumber)
+		);
+
+		Query query = new Query(storyNumberCriteria);
 		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
 			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
 					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
-			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(storyNumberCriteria, criteriaAggregatedAtProjectLevel);
 
 			query = new Query(criteriaProjectLevelAdded);
 		}
+
 		query.fields().include(CONFIG_ID);
 		query.fields().include(NUMBER);
 		query.fields().include(STATUS);
@@ -274,9 +279,10 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(SPRINT_ASSET_STATE);
 		query.fields().include(SPRINT_END_DATE);
 		query.fields().include(ADDITIONAL_FILTER);
+		query.fields().include("parentStoryId");
 		return operations.find(query, JiraIssue.class);
-
 	}
+
 
 	/**
 	 * Find issues by sprint and type list.

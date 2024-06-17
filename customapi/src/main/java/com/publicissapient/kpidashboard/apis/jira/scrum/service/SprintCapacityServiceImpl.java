@@ -238,14 +238,17 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	}
 
 	/**
-	 * Prepares Map for loggedWork with each Issue, loggedWork of a sprint,
-	 * issueUsedForLoggedTime of a sprint And EstimateTime of a sprint
+	 * Prepares a map for logged work and estimate time.
 	 *
 	 * @param sprintWiseEstimateTimeMap
-	 *            sprintWiseEstimateTimeMap
+	 *            The map containing sprint-wise estimate time.
 	 * @param resultMap
-	 *            resultMap
-	 * @return Map<Pair < String, String>, Double>
+	 *            The result map containing various data required for processing.
+	 * @param loggedTimePerIssueList
+	 *            The list to store logged time per issue.
+	 * @param issueUsedForLoggedTimeMap
+	 *            The map to store issues used for logged time.
+	 * @return A map containing logged time data.
 	 */
 	@SuppressWarnings(UNCHECKED)
 	private Map<Pair<String, String>, Double> prepareMapForLoggedWorkAndEstimateTime(
@@ -253,54 +256,135 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 			List<LoggedTimePerIssue> loggedTimePerIssueList,
 			Map<Pair<String, String>, List<JiraIssue>> issueUsedForLoggedTimeMap) {
 
+		// Extract data from resultMap
 		List<JiraIssue> allJiraIssue = (List<JiraIssue>) resultMap.get(STORY_LIST);
-
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINTSDETAILS);
+		Map<Pair<String, String>, Set<String>> parentChildMap = KpiDataHelper.getBasicConfigIdAndParentIdWiseChildrenMap(
+				allJiraIssue);
+		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = (List<JiraIssueCustomHistory>) resultMap
+				.get(JIRA_ISSUE_HISTORY_DATA);
+		List<CapacityKpiData> capacityKpiDataList = (List<CapacityKpiData>) resultMap.get(ESTIMATE_TIME);
+
+		Map<Pair<String, String>, JiraIssueCustomHistory> jiraIssueCustomHistoryMap = jiraIssueCustomHistoryList
+				.stream()
+				.collect(Collectors.toMap(history -> Pair.of(history.getBasicProjectConfigId(), history.getStoryID()),
+						history -> history, (existing, replacement) -> existing));
 
 		Map<Pair<String, String>, Double> loggedTimeMap = new HashMap<>();
 
 		if (CollectionUtils.isNotEmpty(allJiraIssue)) {
-			sprintDetails.forEach(sd -> {
-				Set<JiraIssue> totalJiraIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
-						sd.getTotalIssues(), allJiraIssue);
-				double timeLoggedInSeconds = 0.0d;
-				Set<String> issueList = totalJiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
-				List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = (List<JiraIssueCustomHistory>) resultMap
-						.get(JIRA_ISSUE_HISTORY_DATA);
-				if (CollectionUtils.isNotEmpty(jiraIssueCustomHistoryList)) {
-					for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistoryList) {
-						if (issueList.contains(jiraIssueCustomHistory.getStoryID())
-								&& jiraIssueCustomHistory.getWorkLog() != null) {
-							// timeLoggedForAnIssueInSeconds will give work log of an issue between the time
-							// period of sprint startDate to endDate
-							double timeLoggedForAnIssueInSeconds = KpiDataHelper.getWorkLogs(
-									jiraIssueCustomHistory.getWorkLog(), sd.getStartDate(), sd.getEndDate());
-							// this will be used to create map for excel population
-							loggedTimePerIssueList.add(new LoggedTimePerIssue(sd.getBasicProjectConfigId().toString(),
-									sd.getSprintID(), jiraIssueCustomHistory.getStoryID(),
-									timeLoggedForAnIssueInSeconds / (60 * 60)));
-							// timeLoggedInSeconds will give work log of all issue between the time period
-							// of sprint startDate to endDate
-							timeLoggedInSeconds = timeLoggedInSeconds + timeLoggedForAnIssueInSeconds;
-
-						}
-					}
-				}
-				loggedTimeMap.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						timeLoggedInSeconds / (60 * 60));
-				issueUsedForLoggedTimeMap.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						new ArrayList<>(totalJiraIssues));
-			});
+			for (SprintDetails sprintDetail : sprintDetails) {
+				processSprintDetail(sprintDetail, allJiraIssue, parentChildMap, jiraIssueCustomHistoryMap,
+						loggedTimePerIssueList, issueUsedForLoggedTimeMap, loggedTimeMap);
+			}
 		}
 
-		Map<Pair<String, String>, Double> estimateTimeMap;
-		estimateTimeMap = ((List<CapacityKpiData>) resultMap.get(ESTIMATE_TIME)).stream()
+		Map<Pair<String, String>, Double> estimateTimeMap = buildEstimateTimeMap(capacityKpiDataList);
+		sprintWiseEstimateTimeMap.putAll(estimateTimeMap);
+
+		return loggedTimeMap;
+	}
+
+	/**
+	 * Processes a single sprint detail and updates the relevant data structures.
+	 *
+	 * @param sprintDetail
+	 *            The sprint detail to process.
+	 * @param allJiraIssue
+	 *            The list of all Jira issues.
+	 * @param parentChildMap
+	 *            The map of parent and child issues.
+	 * @param jiraIssueCustomHistoryMap
+	 *            The map of Jira issue custom history.
+	 * @param loggedTimePerIssueList
+	 *            The list to store logged time per issue.
+	 * @param issueUsedForLoggedTimeMap
+	 *            The map to store issues used for logged time.
+	 * @param loggedTimeMap
+	 *            The map to store logged time data.
+	 */
+	private void processSprintDetail(SprintDetails sprintDetail, List<JiraIssue> allJiraIssue,
+			Map<Pair<String, String>, Set<String>> parentChildMap,
+			Map<Pair<String, String>, JiraIssueCustomHistory> jiraIssueCustomHistoryMap,
+			List<LoggedTimePerIssue> loggedTimePerIssueList,
+			Map<Pair<String, String>, List<JiraIssue>> issueUsedForLoggedTimeMap,
+			Map<Pair<String, String>, Double> loggedTimeMap) {
+
+		Set<JiraIssue> totalJiraIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
+				sprintDetail, sprintDetail.getTotalIssues(), allJiraIssue);
+		double timeLoggedInSeconds = 0.0d;
+		Set<String> issueList = totalJiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
+
+		for (String issueNumber : issueList) {
+			// timeLoggedForAnIssueInSeconds will give work log of an issue between the time
+			// period of sprint startDate to endDate
+			double timeLoggedForAnIssueInSeconds = calculateLoggedTimeForIssue(issueNumber, sprintDetail,
+					parentChildMap, jiraIssueCustomHistoryMap);
+			// timeLoggedInSeconds will give work log of all issue between the time period
+			// of sprint startDate to endDate
+			timeLoggedInSeconds += timeLoggedForAnIssueInSeconds;
+			// this will be used to create map for excel population
+			loggedTimePerIssueList.add(new LoggedTimePerIssue(sprintDetail.getBasicProjectConfigId().toString(),
+					sprintDetail.getSprintID(), issueNumber, timeLoggedForAnIssueInSeconds / (60 * 60)));
+		}
+
+		loggedTimeMap.put(Pair.of(sprintDetail.getBasicProjectConfigId().toString(), sprintDetail.getSprintID()),
+				timeLoggedInSeconds / (60 * 60));
+		issueUsedForLoggedTimeMap.put(
+				Pair.of(sprintDetail.getBasicProjectConfigId().toString(), sprintDetail.getSprintID()),
+				new ArrayList<>(totalJiraIssues));
+	}
+
+	/**
+	 * Calculates the logged time for a specific issue within a sprint.
+	 *
+	 * @param issueNumber
+	 *            The issue number.
+	 * @param sprintDetail
+	 *            The sprint detail.
+	 * @param parentChildMap
+	 *            The map of parent and child issues.
+	 * @param jiraIssueCustomHistoryMap
+	 *            The map of Jira issue custom history.
+	 * @return The total logged time for the issue in seconds.
+	 */
+	private double calculateLoggedTimeForIssue(String issueNumber, SprintDetails sprintDetail,
+			Map<Pair<String, String>, Set<String>> parentChildMap,
+			Map<Pair<String, String>, JiraIssueCustomHistory> jiraIssueCustomHistoryMap) {
+		List<String> parentAndChildList = new ArrayList<>();
+		parentAndChildList.add(issueNumber);
+
+		Set<String> childIssues = parentChildMap
+				.get(Pair.of(sprintDetail.getBasicProjectConfigId().toString(), issueNumber));
+		if (childIssues != null) {
+			parentAndChildList.addAll(childIssues);
+		}
+
+		double timeLoggedForAnIssueInSeconds = 0;
+		for (String parentAndChildNo : parentAndChildList) {
+			JiraIssueCustomHistory jiraIssueCustomHistory = jiraIssueCustomHistoryMap
+					.get(Pair.of(sprintDetail.getBasicProjectConfigId().toString(), parentAndChildNo));
+			if (jiraIssueCustomHistory != null && jiraIssueCustomHistory.getWorkLog() != null) {
+				timeLoggedForAnIssueInSeconds += KpiDataHelper.getWorkLogs(jiraIssueCustomHistory.getWorkLog(),
+						sprintDetail.getStartDate(), sprintDetail.getEndDate());
+			}
+		}
+
+		return timeLoggedForAnIssueInSeconds;
+	}
+
+	/**
+	 * Builds a map containing the estimate time per sprint.
+	 *
+	 * @param capacityKpiDataList
+	 *            The list of capacity KPI data.
+	 * @return A map containing the estimate time per sprint.
+	 */
+	private Map<Pair<String, String>, Double> buildEstimateTimeMap(List<CapacityKpiData> capacityKpiDataList) {
+		return capacityKpiDataList.stream()
 				.collect(Collectors.toMap(
 						key -> Pair.of(key.getBasicProjectConfigId().toString(), key.getSprintID().toLowerCase()),
 						CapacityKpiData::getCapacityPerSprint, Double::sum));
-
-		sprintWiseEstimateTimeMap.putAll(estimateTimeMap);
-		return loggedTimeMap;
 	}
 
 	/**

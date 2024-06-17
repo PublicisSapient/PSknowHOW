@@ -725,6 +725,11 @@ public class KpiHelperService { // NOPMD
 				capacityIssueType = new ArrayList<>();
 				capacityIssueType.add("Story");
 			}
+
+			List<String> taskType=fieldMapping.getJiraSubTaskIdentification();
+			if (CollectionUtils.isNotEmpty(taskType)) {
+				capacityIssueType.addAll(taskType);
+			}
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
@@ -744,12 +749,11 @@ public class KpiHelperService { // NOPMD
 		});
 
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
-			List<JiraIssue> jiraIssueList = jiraIssueRepository.findIssueByNumberAndType(totalIssue,
-					uniqueProjectMap);
+			List<JiraIssue> jiraIssues=jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(totalIssue,uniqueProjectMap);
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
-					.findByStoryIDInAndBasicProjectConfigIdIn(jiraIssueList.stream().map(JiraIssue::getNumber).toList(),
+					.findByStoryIDInAndBasicProjectConfigIdIn(jiraIssues.stream().map(JiraIssue::getNumber).toList(),
 							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-			resultListMap.put(STORY_LIST, jiraIssueList);
+			resultListMap.put(STORY_LIST, jiraIssues);
 			resultListMap.put(SPRINTSDETAILS, sprintDetails);
 			resultListMap.put(JIRA_ISSUE_HISTORY_DATA, jiraIssueCustomHistoryList);
 		}
