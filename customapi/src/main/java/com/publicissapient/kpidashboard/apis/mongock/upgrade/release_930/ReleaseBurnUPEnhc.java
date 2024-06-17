@@ -52,7 +52,7 @@ public class ReleaseBurnUPEnhc {
 	public void addFieldToFieldMappingStructure() {
 
 		Document thresholdValueMapping = new Document(FIELD_NAME, "releaseListKPI150")
-				.append("fieldLabel", "Select releases to define team velocity").append("fieldType", "chips")
+				.append("fieldLabel", "Select desired releases to define team's velocity").append("fieldType", "chips")
 				.append("fieldCategory", "releases")
 				.append("section", "Custom Fields Mapping").append("tooltip", new Document(DEFINITION,
 						"Select releases to define team velocity as per ticket"));

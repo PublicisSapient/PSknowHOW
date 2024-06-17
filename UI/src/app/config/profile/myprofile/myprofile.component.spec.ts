@@ -700,7 +700,7 @@ describe('MyprofileComponent', () => {
     ]);
   });
 
- it('should update notification email flag', (fakeAsync(() => {
+ it('should update notification email flag successfully', (fakeAsync(() => {
     // component.ngOnInit();
     const event = { checked: true };
     const toggleField = 'accessAlertNotification';
@@ -740,4 +740,24 @@ describe('MyprofileComponent', () => {
     expect(spyObj).toHaveBeenCalled();
   })));
 
+  it('should give error while updating notification email flag', (fakeAsync(() => {
+    // component.ngOnInit();
+    const event = { checked: true };
+    const toggleField = 'accessAlertNotification';
+    component.notificationEmailForm = new UntypedFormGroup({
+      "accessAlertNotification": new FormControl(false),
+      "errorAlertNotification": new FormControl(false)
+    });
+
+    const errResponse = {
+      success: false,
+      message: 'Something went wrong'
+    };
+    
+    spyOn(httpService,'notificationEmailToggleChange').and.returnValue(of(errResponse))
+    const spyObj = spyOn(messageService, 'add');
+    component.toggleNotificationEmail(event, toggleField);
+    tick();
+    expect(spyObj).toHaveBeenCalled();
+  })));
 });

@@ -206,11 +206,11 @@ export class GroupBarChartComponent implements OnChanges {
       const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       const plannedDueDate = new Date(this.plannedDueDate).getDate() + '/' + month[new Date(this.plannedDueDate).getMonth()] +'/' + new Date(this.plannedDueDate).getFullYear();
       const releaseEndDate = new Date(this.releaseEndDate).getDate() + '/' + month[new Date(this.releaseEndDate).getMonth()] +'/' + new Date(this.releaseEndDate).getFullYear();
-      let htmlReleaseDueDate = `Release Due Date (${plannedDueDate})`;
+      let htmlReleaseDueDate = `Release Due Date (${plannedDueDate !== undefined ? plannedDueDate : 'undefined' })`;
       let htmlReleaseEndDate = `Release End Date (${releaseEndDate})`;
       let htmlDiv = `${new Date(this.plannedDueDate).getTime() > new Date(this.releaseEndDate).getTime() 
         ? (htmlReleaseDueDate + ' > ' + htmlReleaseEndDate) 
-        : (htmlReleaseDueDate + ' < ' + htmlReleaseEndDate)}`;
+        : (htmlReleaseDueDate + ' <= ' + htmlReleaseEndDate)}`;
       d3.select(elem).select('#date-container').append('text')
         .attr('x', ((d3.select(elem).select('#groupstackchart').node().offsetWidth - 70) / 2) - 24)
         .attr('y', 44)
