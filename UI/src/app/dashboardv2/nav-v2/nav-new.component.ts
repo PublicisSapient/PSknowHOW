@@ -23,11 +23,12 @@ export class NavNewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-    // this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
+    
     this.subscriptions.push(this.sharedService.onTypeOrTabRefresh.subscribe((data) => {
       this.selectedType = data.selectedType ? data.selectedType : 'scrum';
       this.sharedService.setSelectedType(this.selectedType)
     }));
+
     this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
     this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
     this.getBoardConfig();
@@ -44,7 +45,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
         if (response.success === true) {
           this.sharedService.setDashConfigData(getDashConfData.data);
           // this.service.setDashConfigData(response.data);
-          this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+          // this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
           this.items = response.data;
           this.items = [...getDashConfData.data['scrum'], ...getDashConfData.data['others']].map((obj, index) => {
             return {
@@ -54,14 +55,14 @@ export class NavNewComponent implements OnInit, OnDestroy {
               command: () => {
                 this.selectedTab = obj['boardSlug'];
                 if (this.selectedTab !== 'unauthorized access') {
-                  console.log('this.selectedTab:', this.selectedTab);
                   if (obj['boardName'].toLowerCase() === 'kpi maturity') {
                     setTimeout(() => {
                       this.sharedService.setDashConfigData(getDashConfData.data);
-                    }, 0);
+                    }, 100);
                   }
-
-                  this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+                  setTimeout(() => {
+                    this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+                  }, 100);
                 }
                 this.router.navigate(['/dashboard/' + obj['boardSlug']]);
               },

@@ -28,7 +28,7 @@ export class ParentFilterComponent implements OnChanges {
         this.filterLevels = this.filterLevels.map(level => level.toUpperCase());
         this.stateFilters = this.helperService.getBackupOfFilterSelectionState('parent_level');
         setTimeout(() => {
-          if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel || (changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
+          if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel) {
             if (this.stateFilters) {
               this.selectedLevel = this.filterLevels.filter((level) => {
                 return level.toLowerCase() === this.stateFilters.toLowerCase()

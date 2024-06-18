@@ -45,14 +45,17 @@ export class AdditionalFilterComponent implements OnChanges {
           fakeEvent['value'] = 'Overall';
           this.selectedFilters = ['Overall'];
         } else {
-          fakeEvent['value'] = this.filterData[0][0].nodeId;
-          this.selectedFilters = [this.filterData[0][0]];
+          if (this.filterData[0]?.length && this.filterData[0][0]?.nodeId) {
+            fakeEvent['value'] = this.filterData[0][0].nodeId;
+            this.selectedFilters = [this.filterData[0][0]];
+          } else {
+            fakeEvent['value'] = 'Overall';
+            this.selectedFilters = ['Overall'];
+          }
         }
-
         setTimeout(() => {
           this.applyAdditionalFilter(fakeEvent, 0 + 1);
-        }, 0);
-
+        }, 100); 
       }
 
     }));
@@ -77,7 +80,7 @@ export class AdditionalFilterComponent implements OnChanges {
         } else {
           this.appliedFilters['filter'] = [...e];
         }
-        this.service.applyAdditionalFilters(this.appliedFilters['filter'][0].nodeId);
+        this.appliedFilters['filter'][0]?.nodeId ? this.service.applyAdditionalFilters(this.appliedFilters['filter'][0].nodeId) : this.service.applyAdditionalFilters(this.appliedFilters['filter'][0]);
       } else {
         if (!this.appliedFilters['filter' + index]) {
           this.appliedFilters['filter' + index] = [];
@@ -87,7 +90,7 @@ export class AdditionalFilterComponent implements OnChanges {
         } else {
           this.appliedFilters['filter' + index] = [...e];
         }
-        this.service.applyAdditionalFilters(this.appliedFilters['filter' + index]);
+        this.service.applyAdditionalFilters(this.appliedFilters['filter' + index][0]);
       }
     } else {
       this.onPrimaryFilterChange.emit(e[index - 1]);

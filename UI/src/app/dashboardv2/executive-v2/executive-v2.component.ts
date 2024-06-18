@@ -1499,7 +1499,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else if (!trendValueList || trendValueList?.length == 0) {
       this.kpiDropdowns[kpiId] = [];
     }
-    
+
     if(this.kpiDropdowns[kpiId].length > 1) {
       this.kpiSelectedFilterObj[kpiId] = {};
       for(let i = 0; i< this.kpiDropdowns[kpiId].length; i++) {

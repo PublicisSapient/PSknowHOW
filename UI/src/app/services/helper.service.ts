@@ -665,11 +665,15 @@ export class HelperService {
     }
 
     setBackupOfFilterSelectionState = (selectedFilterObj) => {
-      this.selectedFilters = {...this.selectedFilters, ...selectedFilterObj}
+        if (Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
+            this.selectedFilters = {...selectedFilterObj};
+        } else {
+            this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
+        }
     }
 
     getBackupOfFilterSelectionState = (prop) => {
-      return this.selectedFilters[prop];
+        return this.selectedFilters[prop];
     }
 
     setFilterValueIfAlreadyHaveBackup(kpiId, kpiSelectedFilterObj, tab, refreshValue, initialValue, subFilter, filters?) {

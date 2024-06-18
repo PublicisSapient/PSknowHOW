@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, Output, EventEmitter, OnDestroy }
 import { MessageService } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { HelperService } from 'src/app/services/helper.service';
 
 @Component({
   selector: 'app-filter-new',
@@ -35,17 +36,21 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   toggleDateDropdown = false;
   additionalFiltersArr = [];
   filterType: string = '';
+  selectedSprint: any;
 
   constructor(
     private httpService: HttpService,
     private service: SharedService,
-
+    private helperService: HelperService,
     private cdr: ChangeDetectorRef,
     private messageService: MessageService,) { }
 
 
   ngOnInit(): void {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
+    this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
+    this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
+    // this.selectedType = this.service.getSelectedType() || 'scrum';
     this.subscriptions.push(
       this.service.globalDashConfigData.subscribe((boardData) => {
         this.processBoardData(boardData);
@@ -55,8 +60,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh
         .subscribe(data => {
+          // if (!this.helperService.getBackupOfFilterSelectionState('selected_type')) {
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
+          // } else {
+          //   this.selectedTab = data.selectedTab;
+          //   this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type');
+          // }
+
           if (this.selectedType.toLowerCase() === 'kanban') {
             this.kanban = true;
           } else {
@@ -110,6 +121,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.kanban = false;
     }
     this.filterApplyData = {};
+    this.service.setSelectedType(this.selectedType);
+    this.helperService.setBackupOfFilterSelectionState({ 'selected_type': this.selectedType })
     this.service.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
   }
 
@@ -121,6 +134,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
 
     if (selectedBoard) {
+      this.kanbanRequired = selectedBoard.filters?.projectTypeSwitch;
+
+      if (!this.kanbanRequired?.enabled && this.selectedType === 'kanban') {
+        this.kanban = false;
+        this.selectedType = 'scrum';
+        this.setSelectedType(this.selectedType);
+      }
+
       this.getFiltersData();
       this.masterData['kpiList'] = selectedBoard.kpis;
       let newMasterData = {
@@ -131,7 +152,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         newMasterData['kpiList'].push(element);
       });
       this.masterData['kpiList'] = newMasterData.kpiList;
-      this.kanbanRequired = selectedBoard.filters.projectTypeSwitch;
+
       this.parentFilterConfig = selectedBoard.filters.parentFilter;
       if (!this.parentFilterConfig) {
         this.selectedLevel = null;
@@ -209,6 +230,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (Object.keys(this.colorObj).length > 1) {
       delete this.colorObj[id];
       this.service.setColorObj(this.colorObj);
+      this.helperService.setBackupOfFilterSelectionState({ 'primary_level': Object.values(this.colorObj) });
     }
   }
 
@@ -252,14 +274,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handlePrimaryFilterChange(event) {
-    // if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
-    if (event?.length) {
+    if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
       // Populate additional filters on MyKnowHOW, Speed and Quality
       if (this.selectedTab.toLowerCase() !== 'developer') {
         this.additionalFiltersArr = [];
         this.populateAdditionalFilters(event);
       }
-      if(event.length === 1){
+      if (event.length === 1) {
         this.getProcessorsTraceLogsForProject();
       }
       this.previousFilterEvent = [].concat(event);
@@ -307,23 +328,25 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
         } else {
           this.filterApplyData['ids'] = [5];
-          this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
+          this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
         }
       } else {
-        if (this.selectedTab === 'Iteration') {
-          this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
-        } else {
-          this.filterApplyData['ids'] = [this.selectedDateValue];
-        }
+        this.filterApplyData['ids'] = [5];
         this.filterApplyData['startDate'] = '';
         this.filterApplyData['endDate'] = '';
-        this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
+        this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
         this.filterApplyData['selectedMap']['release'] = [];
         this.filterApplyData['selectedMap']['sqd'] = [];
       }
 
       if (this.selectedTab?.toLowerCase() === 'backlog') {
         this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
+      }
+
+      if (this.selectedTab?.toLowerCase() === 'iteration') {
+        this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
+        this.selectedSprint = event[0];
+        this.service.setCurrentSelectedSprint(this.selectedSprint);
       }
 
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
@@ -340,23 +363,34 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       } else {
         this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
       }
+    } else {
+      if (this.selectedLevel) {
+        if (typeof this.selectedLevel === 'string') {
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+        } else {
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+        }
+      } else {
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+      }
     }
   }
 
   handleAdditionalChange(event) {
     // if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
-      if (event?.length) {
-        this.filterApplyData['level'] = event[0].level;
-        this.filterApplyData['label'] = event[0].labelName;
+    if (event?.length) {
+      this.filterApplyData['level'] = event[0].level;
+      this.filterApplyData['label'] = event[0].labelName;
+      // if Additional Filters are selected
+      if (this.filterApplyData['level'] > 4) {
         if (this.selectedTab?.toLowerCase() === 'backlog') {
           this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
         }
 
-        // if Additional Filters are selected
-        if(this.filterApplyData['level'] > 4) {
-          this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
-          this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
-        }
+
+        this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
+        this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
+
 
         // set selected projects(trends)
         this.service.setSelectedTrends(event);
@@ -371,6 +405,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
         }
       }
+    }
   }
 
   applyDateFilter() {
