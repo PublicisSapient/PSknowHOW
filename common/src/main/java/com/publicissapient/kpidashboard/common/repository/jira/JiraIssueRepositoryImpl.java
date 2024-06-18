@@ -229,9 +229,9 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 
-    @Override
+	@Override
 	public List<JiraIssue> findIssueByNumberOrParentStoryIdAndType(Set<String> storyNumber,
-																   Map<String, Map<String, Object>> uniqueProjectMap) {
+			Map<String, Map<String, Object>> uniqueProjectMap) {
 
 		// Project level storyType filters
 		List<Criteria> projectCriteriaList = new ArrayList<>();
@@ -243,16 +243,15 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		});
 
 		// Add criteria for both story number and parent story ID
-		Criteria storyNumberCriteria = new Criteria().orOperator(
-				Criteria.where(NUMBER).in(storyNumber),
-				Criteria.where("parentStoryId").in(storyNumber)
-		);
+		Criteria storyNumberCriteria = new Criteria().orOperator(Criteria.where(NUMBER).in(storyNumber),
+				Criteria.where("parentStoryId").in(storyNumber));
 
 		Query query = new Query(storyNumberCriteria);
 		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
 			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
 					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
-			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(storyNumberCriteria, criteriaAggregatedAtProjectLevel);
+			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(storyNumberCriteria,
+					criteriaAggregatedAtProjectLevel);
 
 			query = new Query(criteriaProjectLevelAdded);
 		}
@@ -282,7 +281,6 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include("parentStoryId");
 		return operations.find(query, JiraIssue.class);
 	}
-
 
 	/**
 	 * Find issues by sprint and type list.
