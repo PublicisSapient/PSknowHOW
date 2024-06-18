@@ -18,8 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.userboardconfig.service;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.ProjectListRequested;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfigDTO;
+import org.springframework.http.ResponseEntity;
 
 /**
  * Service class for user board config
@@ -66,11 +68,9 @@ public interface UserBoardConfigService {
 	 * This method save project board config of proj/Super admin with
 	 * basicProjectConfigId, also modify other admin configs of that project
 	 *
-	 * @param userBoardConfigDTO
-	 *            userBoardConfigDTO
-	 * @param basicProjectConfigId
-	 *            basicProjConfigId
+	 * @param userBoardConfigDTO   userBoardConfigDTO
+	 * @param basicProjectConfigId basicProjConfigId
 	 * @return UserBoardConfigDTO
 	 */
-	UserBoardConfigDTO saveUserBoardConfigAdmin(UserBoardConfigDTO userBoardConfigDTO, String basicProjectConfigId);
+	ResponseEntity<ServiceResponse> saveUserBoardConfigAdmin(UserBoardConfigDTO userBoardConfigDTO, String basicProjectConfigId);
 }

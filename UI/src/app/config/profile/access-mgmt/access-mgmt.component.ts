@@ -297,7 +297,7 @@ export class AccessMgmtComponent implements OnInit {
 		}
 
 		if (!this.displayDuplicateProject) {
-			this.httpService.updateAccess(userData, userData.username).subscribe((response) => {
+			this.httpService.updateAccess(userData).subscribe((response) => {
 				if (response['success']) {
 					if(this.showAddUserForm){
 						this.showAddUserForm = false;
@@ -378,7 +378,9 @@ export class AccessMgmtComponent implements OnInit {
 
 
 	deleteAccessReq(userName, isSuperAdmin) {
-		this.httpService.deleteAccess(userName).subscribe(response => {
+		this.httpService.deleteAccess({
+			userName : userName,
+		  }).subscribe(response => {
 			this.accessDeletionStatus(response, isSuperAdmin);
 		}, error => {
 			this.accessDeletionStatus(error, isSuperAdmin);

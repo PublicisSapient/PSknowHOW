@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,7 +153,7 @@ public class CommentsServiceImpl implements CommentsService {
 	 */
 	@Override
 	public boolean submitComment(CommentSubmitDTO comment) {
-
+		setCommentByUser(comment);
 		log.debug("CommentSubmitDTO info {}", comment);
 		List<CommentsInfo> commentsInfo = comment.getCommentsInfo();
 		if (CollectionUtils.isNotEmpty(commentsInfo)) {
@@ -171,6 +173,20 @@ public class CommentsServiceImpl implements CommentsService {
 
 		}
 
+	}
+
+	/**
+	 * Sets the comment by the current user in the provided CommentSubmitDTO object.
+	 *
+	 * @param comment The CommentSubmitDTO object containing the comments information.
+	 */
+	private void setCommentByUser(CommentSubmitDTO comment) {
+		String userName = AuthenticationUtil.getUsernameFromContext();
+		Optional<CommentsInfo> firstComment = comment.getCommentsInfo().stream().findFirst();
+		firstComment.ifPresent(commentsInfo -> {
+			commentsInfo.setCommentBy(userName);
+			comment.setCommentsInfo(List.of(commentsInfo));
+		});
 	}
 
 	/**

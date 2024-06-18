@@ -15,37 +15,32 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.common.activedirectory.modal;
 
-import jakarta.validation.constraints.NotBlank;
+package com.publicissapient.kpidashboard.apis.model;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-/**
- * @author sansharm13
- *
- */
+@Data
 @Builder
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class ADServerDetail {
-	@NotBlank(message = "username may not be blank")
-	private String username;
-	@NotBlank(message = "password may not be blank")
-	private String password;
-	@NotBlank(message = "host may not be blank")
-	private String host;
-	@NotBlank(message = "port may not be blank")
-	private int port;
-	private String userDn;
-	@NotBlank(message = "UserDn may not be blank")
-	private String rootDn;
-	@NotBlank(message = "Domain may not be blank")
-	private String domain;
+@AllArgsConstructor
+@ToString
+public class GenericKpiRecommendation {
+
+	private String kpiId;
+	private String kpiName;
+	private Integer maturity;
+	private String recommendationSummary;
+	private String recommendationDetails;
+	private String recommendationType;
+	private String filter;
 
 }

@@ -18,6 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.kpiintegration.service;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,14 +30,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.NonTrendServiceFactory;
+import com.publicissapient.kpidashboard.apis.model.ProjectWiseKpiRecommendation;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -50,6 +61,7 @@ import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author kunkambl
@@ -65,6 +77,7 @@ public class KpiIntegrationServiceImpl {
 	private static final String KPI_SOURCE_ZEPHYR = "Zypher";
 	private static final String KPI_SOURCE_JENKINS = "Jenkins";
 	private static final String SPRINT_CLOSED = "CLOSED";
+	private static final String RNR_API_HEADER = "X-Custom-Authentication";
 
 	@Autowired
 	KpiMasterRepository kpiMasterRepository;
@@ -86,6 +99,12 @@ public class KpiIntegrationServiceImpl {
 
 	@Autowired
 	NonTrendServiceFactory serviceFactory;
+
+	@Autowired
+	private CustomApiConfig customApiConfig;
+
+	@Autowired
+	private RestTemplate restTemplate;
 
 	/**
 	 * get kpi element list with maturity assuming req for hierarchy level 4
@@ -292,4 +311,29 @@ public class KpiIntegrationServiceImpl {
 		kpiElement.setGroupId(kpiMaster.getGroupId());
 		return kpiElement;
 	}
+	public List<ProjectWiseKpiRecommendation> getProjectWiseKpiRecommendation(KpiRequest kpiRequest) {
+		try {
+			Optional<String> sprintId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+					.stream().findFirst();
+			Optional<String> projectId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
+					.stream().findFirst();
+			String recommendationUrl = String.format(customApiConfig.getRnrRecommendationUrl(),
+					URLEncoder.encode(projectId.orElse(""), StandardCharsets.UTF_8),
+					URLEncoder.encode(sprintId.orElse(""), StandardCharsets.UTF_8),
+					URLEncoder.encode(String.join(",", kpiRequest.getKpiIdList()), StandardCharsets.UTF_8));
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.set(RNR_API_HEADER, customApiConfig.getRnrRecommendationApiKey());
+			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+			ResponseEntity<List<ProjectWiseKpiRecommendation>> response = restTemplate.exchange(
+					URI.create(recommendationUrl), HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
+					});
+			return response.getBody();
+		} catch (Exception ex) {
+			log.error("Exception hitting recommendation api ", ex);
+			return new ArrayList<>();
+		}
+	}
+
+
 }

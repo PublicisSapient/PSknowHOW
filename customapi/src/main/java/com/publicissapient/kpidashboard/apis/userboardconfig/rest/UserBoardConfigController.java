@@ -111,13 +111,7 @@ public class UserBoardConfigController {
 	@PostMapping(value = "/saveAdmin/{basicProjectConfigId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> saveUserBoardConfigAdmin(
 			@Valid @RequestBody UserBoardConfigDTO userBoardConfigDTO, @PathVariable String basicProjectConfigId) {
-		UserBoardConfigDTO boardConfigDTO = userBoardConfigService.saveUserBoardConfigAdmin(userBoardConfigDTO,
-				basicProjectConfigId);
-		ServiceResponse response = new ServiceResponse(false, "User not logged-in", null);
-		if (null != boardConfigDTO) {
-			response = new ServiceResponse(true, "Saved user board Configuration", boardConfigDTO);
-		}
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		return userBoardConfigService.saveUserBoardConfigAdmin(userBoardConfigDTO, basicProjectConfigId);
 	}
 
 }

@@ -134,7 +134,7 @@ public class IssueKpiModalValue implements Serializable {
 	@JsonProperty("Lead Time (In Days)")
 	private String leadTime;
 	@JsonProperty("DIR")
-	private Double defectInjectRate;
+	private String defectInjectRate;
 	@JsonProperty("Defect Density")
 	private String defectDensity;
 	@JsonProperty("Test-Completed")

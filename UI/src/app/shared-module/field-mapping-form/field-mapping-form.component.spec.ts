@@ -429,6 +429,14 @@ describe('FieldMappingFormComponent', () => {
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
 
     component.fieldMappingMetaData = dropDownMetaData;
+    component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'releases'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData.data;
+    component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'releases'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData;
     component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'default'});
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
 
@@ -714,6 +722,24 @@ describe('FieldMappingFormComponent', () => {
     }
     component.onMouseOut("f1");
     expect(component.isHistoryPopup['f1']).toBeFalse();
+  })
+
+  it('should scroll based on position ',()=>{
+    component.bodyScrollPosition = 400;
+    component.scrollToPosition();
+    expect(component.populateDropdowns).toBeFalsy();
+  })
+
+  it('should compare field mapping whn value is object',()=>{
+    const re1 =component.compareValues({key1 : "value2"},{key1 : "value1"})
+    expect(re1).toBeFalsy();
+
+    const re2 =component.compareValues({key1 : "value2"},{key1 : "value1",key2 : "value2"})
+    expect(re2).toBeFalsy();
+
+    const re3 =component.compareValues({key1 : "value1"},{key1 : "value1"})
+    expect(re3).toBeTruthy();
+
   })
 
 });

@@ -117,4 +117,9 @@ public class AuthProperties {
 	@Value("${ui.validateUser}")
 	private String validateUser;
 
+	@Value("${max-age-seconds}")
+	private long maxAgeInSeconds;
+	@Value("${include-subdomains}")
+	private boolean includeSubDomains;
+
 }

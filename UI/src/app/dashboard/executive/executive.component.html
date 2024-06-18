@@ -24,7 +24,7 @@
         <div class="p-grid justify-content-start p-pt-3 p-pl-2 p-pr-2">
           <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
             <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
-              <div [ngClass]="{'p-sm-6':!(showChart==='large'),'p-sm-12':showChart==='large'}">
+              <div *ngIf="kpi['isEnabled']" [ngClass]="{'p-sm-6':!(showChart==='large'),'p-sm-12':showChart==='large'}">
                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                 [trendData]="kpiTrendsObj[kpi?.kpiId]" [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders"
                 [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
@@ -131,3 +131,6 @@
 </ng-template>
 
 <app-export-excel #exportExcel></app-export-excel>
+<!-- <ng-container *ngIf="(filterApplyData?.label == 'project' || filterApplyData?.label == 'sprint') && filterApplyData?.ids?.length == 1">
+  <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
+</ng-container> -->
