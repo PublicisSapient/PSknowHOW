@@ -28,8 +28,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     if ((!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue) && !changes['primaryFilterConfig']?.firstChange) ||
       ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) ||
         (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange))) {
-          this.selectedFilters = [];
-          this.applyDefaultFilters();
+      this.applyDefaultFilters();
 
     } else {
       this.selectedFilters = [];
@@ -54,7 +53,6 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
             this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
             this.onPrimaryFilterChange.emit(this.selectedFilters);
           } else {
-            this.selectedFilters = [];
             this.applyDefaultFilters();
           }
         }
@@ -65,10 +63,15 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   applyDefaultFilters() {
     setTimeout(() => {
       this.populateFilters();
-      this.selectedFilters = [{...this.filters[0]}];
+      this.selectedFilters = [];
+      this.selectedFilters.push({ ...this.filters[0] });
       this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
-      this.onPrimaryFilterChange.emit([...this.selectedFilters]);
-    }, 100);
+      if (this.primaryFilterConfig['type'] === 'singleSelect') {
+        this.onPrimaryFilterChange.emit([...this.selectedFilters]);
+      } else {
+        this.onPrimaryFilterChange.emit(this.selectedFilters);
+      }
+    }, 200);
   }
 
   ngOnInit() {

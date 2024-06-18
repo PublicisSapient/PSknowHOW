@@ -36,6 +36,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   toggleDateDropdown = false;
   additionalFiltersArr = [];
   filterType: string = '';
+  selectedSprint: any;
 
   constructor(
     private httpService: HttpService,
@@ -176,10 +177,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           }
         })
       );
-    } 
-    // else {
-    //   this.processFilterData(this.filterDataArr[this.selectedType]);
-    // }
+    }
   }
 
   processFilterData(data) {
@@ -333,11 +331,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
         }
       } else {
-        if (this.selectedTab === 'Iteration') {
-          this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
-        } else {
-          this.filterApplyData['ids'] = [5];
-        }
+        this.filterApplyData['ids'] = [5];
         this.filterApplyData['startDate'] = '';
         this.filterApplyData['endDate'] = '';
         this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
@@ -347,6 +341,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
       if (this.selectedTab?.toLowerCase() === 'backlog') {
         this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
+      }
+
+      if (this.selectedTab?.toLowerCase() === 'iteration') {
+        this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
+        this.selectedSprint = event[0];
+        this.service.setCurrentSelectedSprint(this.selectedSprint);
       }
 
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];

@@ -268,7 +268,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       let selectedProject = responseList[0].data.filter((project) => project.id === this.selectedProjectId)[0];
       let showDSVorNot = selectedProject['saveAssigneeDetails'];
       let showDailyStandup = await this.featureFlagService.isFeatureEnabled('DAILY_STANDUP');
-      if (this.service.currentSelectedSprint?.sprintState.toLowerCase() === 'active' && showDSVorNot && showDailyStandup) {
+      if (this.service.currentSelectedSprint?.sprintState.toLowerCase() === 'active' && showDSVorNot) { // && showDailyStandup) {
         this.navigationTabs = [
           { 'label': 'Iteration Review', 'count': 0, width: 'half', kpis: [], fullWidthKpis: [] },
           { 'label': 'Iteration Progress', 'count': 0, width: 'full', kpis: [] },

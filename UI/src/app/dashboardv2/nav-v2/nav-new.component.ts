@@ -30,7 +30,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
     }));
 
     this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
-    // this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+    this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
     this.getBoardConfig();
   }
 
