@@ -21,7 +21,7 @@ export class CommentsV2Component implements OnInit {
   selectedTabIndex = 0;
   commentsList = [];
   nodeSet = new Set();
-  nodeArray = [];
+  nodeArray = {};
   commentError = false;
   dataLoaded = false;
   @Output() closeSpringOverlay = new EventEmitter();
@@ -94,12 +94,12 @@ export class CommentsV2Component implements OnInit {
   getComments(){
     if(this.selectedTab !== 'iteration' || this.selectedTab !== 'release'){
       this.nodeSet.add(this.selectedFilters[this.selectedTabIndex]?.nodeId)
-      this.nodeArray = [...this.nodeSet];
+      this.nodeArray = [...this.nodeSet][0];
     } else {
       this.nodeArray = this.selectedFilters[this.selectedTabIndex]?.parentId[0]
     }
     const postData = {
-      nodes: this.nodeArray,
+      node: this.nodeArray,
       nodeChildId: (this.selectedTab === 'iteration' || this.selectedTab === 'release') ? this.selectedFilters[this.selectedTabIndex].nodeId : '',
       kpiId: this.kpiId,
       level: this.selectedFilters[this.selectedTabIndex]?.level
