@@ -27,7 +27,7 @@ spec:
       #   command: ['sh', '-c', "until nslookup ui-knowhow.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for ui-knowhow; sleep 2; done"]
       containers:
       - name: jira-processor
-        image: speedtools.azurecr.io/knowhow-jira-processor:9.2.0
+        image: speedtools.azurecr.io/knowhow-jira-processor:9.3.0
         imagePullPolicy: Always
         env:
             - name: spring.data.mongodb.uri
