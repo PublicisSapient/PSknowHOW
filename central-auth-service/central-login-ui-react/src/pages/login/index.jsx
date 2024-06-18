@@ -1,73 +1,83 @@
-import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {NavLink} from 'react-router-dom';
 import apiProvider from '../../services/API/IndividualApis';
-import { useForm, FormProvider } from "react-hook-form";
-import { Text } from "../../components/Text";
-import { Button } from "../../components/Button";
-import { Img } from "../../components/Img";
-import { FloatingInput } from "../../components/FloatingInput";
+import {useForm, FormProvider} from "react-hook-form";
+import {Text} from "../../components/Text";
+import {Button} from "../../components/Button";
+import {Img} from "../../components/Img";
+import {FloatingInput} from "../../components/FloatingInput";
 import '../../App.css';
 import SuiteLogos from '../../components/SuiteLogos';
 import PSLogo from '../../components/PSLogo';
+import Cookies from 'js-cookie';
 
-
+const SAML_USERNAME_COOKIE_NAME = "samlUsernameCookie";
 
 const LoginPage = ({search}) => {
 
     const [error, setError] = useState('');
     const [showLoader, setShowLoader] = useState(false);
     const [showSAMLLoader, setShowSAMLLoader] = useState(false);
-    const methods = useForm({ mode: 'all' });
+    const methods = useForm({mode: 'all'});
     const userNamePattern = /^[A-Za-z0-9]+$/;
+
+    const getSamlUsernameCookie = () => {
+        return Cookies.get(SAML_USERNAME_COOKIE_NAME);
+    };
+
+    const currentUsername = getSamlUsernameCookie();
 
     const PerformSAMLLogin = () => {
         setShowSAMLLoader(true);
-        window.location.href = apiProvider.handleSamlLogin;
+
+        const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
+
+        if (redirectUri) {
+            window.location.href = `${apiProvider.handleSamlLogin}?redirectUri=${redirectUri}`;
+        } else {
+            window.location.href = apiProvider.handleSamlLogin;
+        }
+    }
+
+    const PerformSAMLLogout = async () => {
+        setShowSAMLLoader(true);
+
+        Cookies.remove(SAML_USERNAME_COOKIE_NAME);
+
+        window.location.href = apiProvider.handleSamlLogout
     }
 
     const PerformCredentialLogin = (data) => {
         setShowLoader(true);
+
         apiProvider.handleUserStandardLogin({
             username: data.userName,
             password: data.password
         })
-        .then((response) => {
-            if(response){
-                apiProvider.getStandardLoginStatus()
-                .then((res) => {
-                    if(res && res.data['success']){
-                        // const authToken = res.data.data.authToken;
-                        const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
-                        localStorage.setItem('user_details', JSON.stringify({ email: res.data.data.email, isAuthenticated: true }));
-                        setShowLoader(false);
-                        let defaultAppUrl = process.env.NODE_ENV === 'production' ? window.env.REACT_APP_PSKnowHOW : process.env.REACT_APP_PSKnowHOW;
-                        if(!redirectUri){
-                            window.location.href = (defaultAppUrl);
-                        }else{
-                            if(redirectUri.indexOf('?') === -1){
-                                window.location.href = (`${redirectUri}`);
-                            }else{
-                                window.location.href = (`${redirectUri}`);
-                            }
-                        }
-                    } else {
-                     setShowLoader(false);
-                     setError(res.data.message);
-                     }
-                }).catch((err) => {
-                    console.log(err);
+            .then((response) => {
+                if (response.status === 200) {
+                    const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
+
                     setShowLoader(false);
-                    let errMessage = err?.response?.data?.message ?  err?.response?.data?.message : 'Please try again after sometime'
-                    setError(errMessage);
-                });
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-            setShowLoader(false);
-            let errMessage = err?.response?.data?.message ?  err?.response?.data?.message : 'Please try again after sometime'
-            setError(errMessage);
-        });
+
+                    let url = new URL(redirectUri);
+
+                    window.location.href = url.origin + url.pathname;
+                } else {
+                    setShowLoader(false);
+
+                    setError(response.data.message);
+                }
+            })
+            .catch((err) => {
+                setShowLoader(false);
+
+                let errMessage = err?.response?.data?.message
+                    ? err?.response?.data?.message
+                    : 'Please try again after sometime'
+
+                setError(errMessage);
+            });
     }
 
     useEffect(() => {
@@ -110,9 +120,30 @@ const LoginPage = ({search}) => {
                     } clickFn={PerformSAMLLogin}
                 >
                     <Text className="text-white text-left">
-                        Login with SSO
+                        {currentUsername ? `Continue as ${currentUsername}` : 'Login with SSO'}
                     </Text>
                 </Button>
+                {currentUsername && <Button
+                    className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[18px] w-full"
+                    rightIcon={
+                        <>
+                            <Img
+                                className="h-5 mb-px ml-2"
+                                src="images/img_arrowright.svg"
+                                alt="arrow_right"
+                            />
+                            {showSAMLLoader && <Img
+                                src={`${process.env.PUBLIC_URL}/images/spinner.png`} height='20'
+                                className="spinner mb-px ml-2"
+                                alt={`Spinner`}
+                            />}
+                        </>
+                    } clickFn={PerformSAMLLogout}
+                >
+                    <Text className="text-white text-left">
+                        Logout of Microsoft and use another account
+                    </Text>
+                </Button>}
                 <Text className='text-left mt-4' size='txtPoppinsRegular16'>Or login with credentials</Text>
                 <FormProvider {...methods}>
                     <form noValidate autoComplete='off'>
@@ -129,20 +160,22 @@ const LoginPage = ({search}) => {
                                 }
                             }}>
                         </FloatingInput>
-                        {(methods.formState.errors['userName']) && <p className='errMsg'>{methods.formState.errors['userName'].message}</p>}
-                        <FloatingInput type="password" placeHolder="Password" id="password" className={`mt-4 ${(methods.formState.errors['password']) ? 'Invalid' : ''}`}
-                            validationRules={{
-                                "required": "Field is required",
-                                "minLength": {
-                                    "value": 6,
-                                    "message": "Field should contain at least 6 characters"
-                                }
-                            }}>
+                        {(methods.formState.errors['userName']) &&
+                            <p className='errMsg'>{methods.formState.errors['userName'].message}</p>}
+                        <FloatingInput type="password" placeHolder="Password" id="password"
+                                       className={`mt-4 ${(methods.formState.errors['password']) ? 'Invalid' : ''}`}
+                                       validationRules={{
+                                           "required": "Field is required",
+                                           "minLength": {
+                                               "value": 6,
+                                               "message": "Field should contain at least 6 characters"
+                                           }
+                                       }}>
                         </FloatingInput>
-                        {(methods.formState.errors['password']) && <p className='errMsg'>{methods.formState.errors['password'].message}</p>}
-                        
+                        {(methods.formState.errors['password']) &&
+                            <p className='errMsg'>{methods.formState.errors['password'].message}</p>}
+                        {error && error.length > 0 && <p className='errMsg'>{error}</p>}
                         <Button
-                            color='blue_80'
                             variant='fill'
                             className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[18px] w-full"
                             clickFn={methods.handleSubmit(PerformCredentialLogin)}
@@ -165,11 +198,10 @@ const LoginPage = ({search}) => {
                                 Login
                             </Text>
                         </Button>
-                        {error && error.length > 0 && <p className='errMsg'>{error}</p>}
                     </form>
                 </FormProvider>
                 <div className="routeContainer mt-4">
-                    <NavLink to="/forgot-password">Forgot Password?</NavLink><br />
+                    <NavLink to="/forgot-password">Forgot Password?</NavLink><br/>
                     <p className='inline'>Dont have an account? </p>
                     <NavLink to="/register">Sign up here.</NavLink>
                 </div>
