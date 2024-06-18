@@ -90,6 +90,7 @@ import { CircularProgressWithLegendsComponent } from './component/circular-progr
 import { ExternalUrlDirective } from './external-url.directive';
 import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
+import { DialogService } from 'primeng/dynamicdialog';
 import { KpiCardComponent } from './dashboard/kpi-card/kpi-card.component';
 import { TrendIndicatorComponent } from './dashboard/trend-indicator/trend-indicator.component';
 import { NoAccessComponent } from './component/no-access/no-access.component';
@@ -103,6 +104,7 @@ import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-f
 import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
 import { CommentsComponent } from './component/comments/comments.component';
+import { CommentsV2Component } from './component/comments-v2/comments-v2.component';
 import { MilestoneComponent } from './dashboard/milestone/milestone.component';
 import { HorizontalPercentBarChartComponent } from './component/horizontal-percent-bar-chart/horizontal-percent-bar-chart.component';
 import { CumulativeLineChartComponent } from './component/cumulative-line-chart/cumulative-line-chart.component';
@@ -186,6 +188,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         TableComponent,
         ExportExcelComponent,
         CommentsComponent,
+        CommentsV2Component,
         SsoAuthFailureComponent,
         UnauthorisedAccessComponent,
         GroupBarChartComponent,
@@ -275,6 +278,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         DatePipe,
         FeatureFlagsService,
         AuthGuard,
+        DialogService,
         { provide: APP_CONFIG, useValue: AppConfig },
         {
             provide: APP_INITIALIZER,
