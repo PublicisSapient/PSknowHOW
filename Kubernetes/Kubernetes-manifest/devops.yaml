@@ -93,6 +93,16 @@ spec:
           limits:
            memory: "6Gi"
            cpu: "0.5"
+        readinessProbe:
+          tcpSocket:
+            port: 50022
+          initialDelaySeconds: 40   # Wait for 40 seconds before starting probes
+          periodSeconds: 30          # Check every 30 seconds
+        livenessProbe:
+          tcpSocket:
+            port: 50022
+          initialDelaySeconds: 40
+          periodSeconds: 30
         ports:
         - containerPort: 50001
         - containerPort: 50002
@@ -105,6 +115,7 @@ spec:
         - containerPort: 50019
         - containerPort: 50020
         - containerPort: 50022
+        - containerPort: 50023
 
         volumeMounts:
             - name: knowhow-secrets-store
@@ -190,3 +201,7 @@ spec:
       port: 50022
       targetPort: 50022
       name: githubaction
+    - protocol: TCP
+      port: 50023
+      targetPort: 50023
+      name: argocd
