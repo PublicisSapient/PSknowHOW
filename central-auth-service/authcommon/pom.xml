@@ -2,11 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.publicissapient.kpidashboard</groupId>
   <artifactId>authcommon</artifactId>
-<<<<<<< HEAD
   <version>1.0.1</version>
-=======
-  <version>1.0.1-SNAPSHOT</version>
->>>>>>> 617452c96443bedcbd23eaa72c932ac9cf09d2a6
   <packaging>jar</packaging>
 
   <parent>
