@@ -95,12 +95,12 @@ spec:
            cpu: "1"
         readinessProbe:
           tcpSocket:
-            port: 50020
+            port: 50012
           initialDelaySeconds: 120   # Wait for 120 seconds before starting probes
           periodSeconds: 40          # Check every 40 seconds
         livenessProbe:
           tcpSocket:
-            port: 50020
+            port: 50012
           initialDelaySeconds: 120
           periodSeconds: 40
         ports:
