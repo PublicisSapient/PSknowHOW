@@ -6,8 +6,8 @@ import { GoogleAnalyticsService } from 'src/app/services/google-analytics.servic
 import { MenuItem } from 'primeng/api';
 import { DatePipe } from '@angular/common';
 import { Menu } from 'primeng/menu';
-import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
-import { Dialog } from 'primeng/dialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.component';
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -31,6 +31,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() showCommentIcon: boolean;
   showComments: boolean = false;
   @Input() kpiSize;
+  // showComments: boolean = false;
   loading: boolean = false;
   noData: boolean = false;
   displayConfigModel: boolean = false;
@@ -69,10 +70,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   sprintDetailsList: Array<any>;
   @Input() colors: Array<any>;
   colorCssClassArray = ['sprint-hover-project1', 'sprint-hover-project2', 'sprint-hover-project3', 'sprint-hover-project4', 'sprint-hover-project5', 'sprint-hover-project6'];
-
+  commentDialogRef: DynamicDialogRef | undefined;
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService, private renderer: Renderer2) { }
+    private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService) { }
 
   ngOnInit(): void {
     this.menuItems = [
@@ -87,7 +88,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         label: 'Comments',
         icon: 'pi pi-comments',
         command: ($event) => {
+          console.log('clicked comments')
           this.showComments = true;
+          this.openCommentModal();
         },
       },
       {
@@ -165,6 +168,20 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.userRole = this.authService.getRole();
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
+  }
+
+  openCommentModal = () => {
+    this.commentDialogRef = this.dialogService.open(CommentsV2Component, {
+      data: {
+        kpiId: this.kpiData?.kpiId,
+        kpiName: this.kpiData?.kpiName,
+        selectedTab: this.selectedTab
+      },
+    });
+
+    this.commentDialogRef.onClose.subscribe(() => {
+      console.log('on close called')
+    });
   }
 
   showTooltip(val) {
