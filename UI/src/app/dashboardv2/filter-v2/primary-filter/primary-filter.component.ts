@@ -54,6 +54,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
             this.selectedFilters = this.filterData[this.selectedLevel].filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
             this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
             this.onPrimaryFilterChange.emit(this.selectedFilters);
+            this.service.setSelectedTrends(this.selectedFilters);
           } else {
             this.applyDefaultFilters();
           }
@@ -70,6 +71,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       this.selectedFilters.push({ ...this.filters[0] });
       this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
       this.applyPrimaryFilters({});
+      this.service.setSelectedTrends(this.selectedFilters);
     }, 100);
   }
 
@@ -108,6 +110,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     }
     this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
     this.onPrimaryFilterChange.emit([...this.selectedFilters]);
+    this.service.setSelectedTrends(this.selectedFilters);
     if (this.multiSelect?.overlayVisible) {
       this.multiSelect.close(event);
     }

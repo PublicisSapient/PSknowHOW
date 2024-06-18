@@ -19,13 +19,14 @@ export class AdditionalFilterComponent implements OnChanges {
   filterData = [];
   appliedFilters = {};
   selectedFilters = [];
+  selectedTrends = [];
   @Output() onPrimaryFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
 
   constructor(private service: SharedService, private helperService: HelperService) {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       this.filterData = [];
-
+      this.selectedTrends = this.service.getSelectedTrends();
       Object.keys(data).forEach((f, index) => {
         this.filterData.push(...data[f]);
       });
