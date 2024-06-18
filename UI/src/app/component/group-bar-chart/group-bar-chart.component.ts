@@ -202,7 +202,7 @@ export class GroupBarChartComponent implements OnChanges {
       .attr('y', 44)
       .attr('transform', 'rotate(0)')
       .text(this.xCaption);
-    if(this.plannedDueDate){
+    if(this.plannedDueDate && this.plannedDueDate != 'null'){
       const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       const plannedDueDate = new Date(this.plannedDueDate).getDate() + '/' + month[new Date(this.plannedDueDate).getMonth()] +'/' + new Date(this.plannedDueDate).getFullYear();
       const releaseEndDate = new Date(this.releaseEndDate).getDate() + '/' + month[new Date(this.releaseEndDate).getMonth()] +'/' + new Date(this.releaseEndDate).getFullYear();
