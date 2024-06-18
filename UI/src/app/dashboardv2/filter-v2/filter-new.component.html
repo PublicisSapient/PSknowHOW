@@ -56,7 +56,7 @@
             <div class="filter-options-container date-filter-dropdown" *ngIf="toggleDateDropdown" #dateDrpmenu>
                 <div class="filter-options filter-date p-d-flex p-jc-evenly">
                     <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.counts" [(ngModel)]="selectedDateValue"></p-dropdown>
-                    <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.types" (onChange)="setSelectedDateType($event.value)"></p-dropdown>
+                    <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.types" [(ngModel)]="selectedDayType" (onChange)="setSelectedDateType($event.value)"></p-dropdown>
                 </div>
                 <div class="p-d-flex p-justify-end p-align-center btn-container">
                     <button pButton pRipple label="Apply" class="p-button-secondary p-button-sm btn-apply"

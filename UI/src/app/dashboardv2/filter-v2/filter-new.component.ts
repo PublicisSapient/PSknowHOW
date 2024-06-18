@@ -230,7 +230,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (Object.keys(this.colorObj).length > 1) {
       delete this.colorObj[id];
       this.service.setColorObj(this.colorObj);
-      this.helperService.setBackupOfFilterSelectionState({ 'primary_level': Object.values(this.colorObj)});
+      this.helperService.setBackupOfFilterSelectionState({ 'primary_level': Object.values(this.colorObj) });
     }
   }
 
@@ -274,8 +274,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handlePrimaryFilterChange(event) {
-    // if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
-    if (event?.length) {
+    if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
       // Populate additional filters on MyKnowHOW, Speed and Quality
       if (this.selectedTab.toLowerCase() !== 'developer') {
         this.additionalFiltersArr = [];
@@ -355,6 +354,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       // set selected projects(trends)
       this.service.setSelectedTrends(event);
 
+      if (this.selectedLevel) {
+        if (typeof this.selectedLevel === 'string') {
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+        } else {
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+        }
+      } else {
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+      }
+    } else {
       if (this.selectedLevel) {
         if (typeof this.selectedLevel === 'string') {
           this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
