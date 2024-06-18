@@ -32,8 +32,9 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
     } else {
       this.selectedFilters = [];
+      this.populateFilters();
       setTimeout(() => {
-        this.populateFilters();
+        
         if (this.filters.length) {
           this.selectedFilters = new Set();
 
@@ -61,17 +62,14 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   }
 
   applyDefaultFilters() {
+    this.populateFilters();
+    
     setTimeout(() => {
-      this.populateFilters();
       this.selectedFilters = [];
       this.selectedFilters.push({ ...this.filters[0] });
       this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
-      if (this.primaryFilterConfig['type'] === 'singleSelect') {
-        this.onPrimaryFilterChange.emit([...this.selectedFilters]);
-      } else {
-        this.onPrimaryFilterChange.emit(this.selectedFilters);
-      }
-    }, 200);
+      this.applyPrimaryFilters({});
+    }, 100);
   }
 
   ngOnInit() {
