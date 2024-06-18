@@ -39,12 +39,12 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 8080
-            initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-            periodSeconds: 5          # Check every 5 seconds
+            initialDelaySeconds: 45   # Wait for 10 seconds before starting probes
+            periodSeconds: 20          # Check every 5 seconds
           livenessProbe:
             tcpSocket:
               port: 8080
-            initialDelaySeconds: 15
+            initialDelaySeconds: 45
             periodSeconds: 20
           env:
             - name: spring.data.mongodb.uri
