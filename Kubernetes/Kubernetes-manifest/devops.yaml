@@ -96,13 +96,13 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 50022
-          initialDelaySeconds: 40   # Wait for 40 seconds before starting probes
-          periodSeconds: 30          # Check every 30 seconds
+          initialDelaySeconds: 120   # Wait for 120 seconds before starting probes
+          periodSeconds: 40          # Check every 40 seconds
         livenessProbe:
           tcpSocket:
             port: 50022
-          initialDelaySeconds: 40
-          periodSeconds: 30
+          initialDelaySeconds: 120
+          periodSeconds: 40
         ports:
         - containerPort: 50001
         - containerPort: 50002
