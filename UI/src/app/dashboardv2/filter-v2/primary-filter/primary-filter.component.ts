@@ -40,6 +40,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
           this.stateFilters = this.helperService.getBackupOfFilterSelectionState('primary_level');
 
+
           if (this.stateFilters?.length > 0) {
             this.stateFilters.map(stateFilter => {
               this.selectedFilters.add(stateFilter);
@@ -50,7 +51,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
             this.selectedFilters = Array.from(
               this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
             );
-
+            this.selectedFilters = this.filterData[this.selectedLevel].filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
             this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
             this.onPrimaryFilterChange.emit(this.selectedFilters);
           } else {

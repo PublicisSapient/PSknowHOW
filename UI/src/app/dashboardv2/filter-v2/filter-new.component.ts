@@ -230,6 +230,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (Object.keys(this.colorObj).length > 1) {
       delete this.colorObj[id];
       this.service.setColorObj(this.colorObj);
+      this.helperService.setBackupOfFilterSelectionState({ 'primary_level': Object.values(this.colorObj)});
     }
   }
 
