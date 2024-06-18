@@ -28,7 +28,7 @@ export class AdditionalFilterComponent implements OnChanges {
       this.filterData = [];
       this.selectedTrends = this.service.getSelectedTrends();
       Object.keys(data).forEach((f, index) => {
-        this.filterData.push(...data[f]);
+        this.filterData.push(data[f]);
       });
 
       if (this.selectedTab !== 'developer') {

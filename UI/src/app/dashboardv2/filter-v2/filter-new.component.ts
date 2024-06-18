@@ -429,13 +429,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   populateAdditionalFilters(event) {
     let selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
     this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
-      if (!this.additionalFiltersArr['filter' + (index + 1)]) {
-        this.additionalFiltersArr['filter' + (index + 1)] = [];
-      }
+      this.additionalFiltersArr['filter' + (index + 1)] = [];
+
       let allFilters = this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName];
       selectedProjectIds.forEach(nodeId => {
 
-        this.additionalFiltersArr['filter' + (index + 1)].push(allFilters.filter((filterItem) => {
+        this.additionalFiltersArr['filter' + (index + 1)].push(...allFilters.filter((filterItem) => {
           let parentId = '';
           if (addtnlFilter.defaultLevel.labelName === 'sqd') {
             parentId = filterItem.parentId.substring(filterItem.parentId.indexOf('_') + 1, filterItem.parentId.length)
@@ -443,23 +442,25 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             parentId = filterItem.parentId;
           }
           return parentId === nodeId
-        }))
+        })
+        );
       });
+
       // make arrays unique
       let uniqueIds = new Set();
-      this.additionalFiltersArr['filter' + (index + 1)][0].forEach(element => {
+      this.additionalFiltersArr['filter' + (index + 1)].forEach(element => {
         uniqueIds.add(element.nodeId);
       });
       let uniqueIdsArr = Array.from(uniqueIds);
       let uniqueObjArr = [];
       for (let i = 0; i < uniqueIdsArr.length; i++) {
-        let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)][0].filter(f => f.nodeId === uniqueIdsArr[i])[0];
+        let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)].filter(f => f.nodeId === uniqueIdsArr[i])[0];
         uniqueObjArr.push({
           ...uniqueObj
         });
         // continue;
       }
-      this.additionalFiltersArr['filter' + (index + 1)][0] = uniqueObjArr;
+      this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
     });
 
     this.service.setAdditionalFilters(this.additionalFiltersArr);
