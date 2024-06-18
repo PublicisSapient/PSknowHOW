@@ -66,12 +66,12 @@ spec:
             - name: azurerepo.cron
               value: "0 0 */12 * * *"
         resources:
-          #requests:
-          #  memory: "200Mi"
-          #  cpu: "0.2"
+          requests:
+           memory: "500Mi"
+           cpu: "0.2"
           limits:
-            memory: "2Gi"
-            cpu: "1"
+            memory: "1Gi"
+            cpu: "0.5"
         ports:
         - containerPort: 50015
         - containerPort: 50016
@@ -83,17 +83,17 @@ spec:
             - name: knowhow-secrets-store
               mountPath: "/mnt/stage-secrets-store"
               readOnly: true
-      #       - name: azure-pipeline-repo-log-volume
-      #         mountPath: /app/logs
-      # - name: promtail
-      #   image: grafana/promtail:2.9.2
-      #   args: 
-      #     - -config.file=/etc/promtail/config/promtail.yaml
-      #   volumeMounts:
-      #     - name: azure-pipeline-repo-log-volume
-      #       mountPath: /app/logs
-      #     - name: promtail-config
-      #       mountPath: /etc/promtail/config
+            - name: azure-pipeline-repo-log-volume
+              mountPath: /app/logs
+      - name: promtail
+        image: grafana/promtail:2.9.2
+        args: 
+          - -config.file=/etc/promtail/config/promtail.yaml
+        volumeMounts:
+          - name: azure-pipeline-repo-log-volume
+            mountPath: /app/logs
+          - name: promtail-config
+            mountPath: /etc/promtail/config
 
       volumes:
         - name: knowhow-secrets-store
@@ -102,11 +102,11 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: "stage-secretproviderclass"
-        # - name: azure-pipeline-repo-log-volume
-        #   emptyDir: {}
-        # - name: promtail-config
-        #   configMap:
-        #     name: promtail-config
+        - name: azure-pipeline-repo-log-volume
+          emptyDir: {}
+        - name: promtail-config
+          configMap:
+            name: promtail-config
 
         
 

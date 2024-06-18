@@ -30,12 +30,12 @@ spec:
           ports:
             - containerPort: 8080
           resources:
-            #requests:
-            #  memory: "1Gi"
-            #  cpu: "0.5"
+            requests:
+             memory: "750Mi"
+             cpu: "0.3"
             limits:
-              memory: "3Gi"
-              cpu: "1"
+              memory: "2Gi"
+              cpu: "0.5"
           readinessProbe:
             tcpSocket:
               port: 8080
@@ -105,17 +105,17 @@ spec:
             - name: knowhow-secrets-store 
               mountPath: "/mnt/stage-secrets-store"
               readOnly: true
-        #     - name: customapi-log-volume
-        #       mountPath: /app/logs
-        # - name: promtail
-        #   image: grafana/promtail:2.9.2
-        #   args: 
-        #     - -config.file=/etc/promtail/config/promtail.yaml
-        #   volumeMounts:
-        #     - name: customapi-log-volume
-        #       mountPath: /app/logs
-        #     - name: promtail-config
-        #       mountPath: /etc/promtail/config
+            - name: customapi-log-volume
+              mountPath: /app/logs
+        - name: promtail
+          image: grafana/promtail:2.9.2
+          args: 
+            - -config.file=/etc/promtail/config/promtail.yaml
+          volumeMounts:
+            - name: customapi-log-volume
+              mountPath: /app/logs
+            - name: promtail-config
+              mountPath: /etc/promtail/config
       volumes:
         - name: knowhow-secrets-store
           csi:
@@ -123,11 +123,11 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: "stage-secretproviderclass"
-        # - name: customapi-log-volume
-        #   emptyDir: {}
-        # - name: promtail-config
-        #   configMap:
-        #     name: promtail-config
+        - name: customapi-log-volume
+          emptyDir: {}
+        - name: promtail-config
+          configMap:
+            name: promtail-config
 ---
 apiVersion: v1
 kind: Service

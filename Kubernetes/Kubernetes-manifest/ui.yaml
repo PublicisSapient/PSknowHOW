@@ -33,11 +33,11 @@ spec:
         - containerPort: 80
         # - containerPort: 443
         resources:
-          #requests:
-          #  memory: "128Mi"
-          #  cpu: "0.1"
+          requests:
+           memory: "32Mi"
+           cpu: "0.1"
           limits:
-            memory: "1Gi"
+            memory: "124Mi"
             cpu: "0.5"
         readinessProbe:
           httpGet:

@@ -23,10 +23,13 @@ spec:
 #        image: bitnami/kafka:latest
         securityContext:
           runAsUser: 0
-        # resources:
-        #   requests:
-        #     memory: "1G"
-        #     cpu: "1"
+        resources:
+          requests:
+            memory: "300Mi"
+            cpu: "0.1"
+          limits:
+            memory: "500Mi"
+            cpu: "0.3"
         ports:
          - containerPort: 9092
         env:

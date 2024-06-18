@@ -69,10 +69,13 @@ spec:
 
         ports:
         - containerPort: 50020
-        # resources:
-        #   requests:
-        #     memory: "1Gi"
-        #     cpu: "0.5"
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "0.1"
+          limits:
+            memory: "500Mi"
+            cpu: "0.3"
         # readinessProbe:
         #   tcpSocket:
         #     port: 50020
@@ -83,10 +86,6 @@ spec:
         #     port: 50020
         #   initialDelaySeconds: 15
         #   periodSeconds: 20
-
-        envFrom:
-          - configMapRef:
-              name: knowhow-config
 
 ---
 apiVersion: v1
