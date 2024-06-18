@@ -1,0 +1,87 @@
+<div class="container-recommendations">
+    <div class="img-container" (click)="handleClick()">
+        <img src="../../../assets/img/ico-recommendations.svg" alt="Recommendations" />
+    </div>
+</div>
+<p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
+    <p-header>
+        <div>
+            Recommendations for Optimising KPIs
+        </div>
+        <h5 class="p-m-0" *ngIf="selectedSprint">
+            Sprint: {{selectedSprint?.nodeName}}
+        </h5>
+    </p-header>
+    <div class="dialog-body p-mb-4">
+        <p-tabView>
+            <p-tabPanel *ngFor="let tab of tabs" [header]="tab"
+                [headerStyleClass]="'tab-'+tab.split(' ').join('-')?.toLowerCase()">
+
+                <p-table #dt1 [value]="tabsContent[tab]" dataKey="tab" [loading]="loading"
+                    [tableStyle]="{ 'min-width': '70rem'}"
+                    [globalFilterFields]="['kpiName', 'maturity']" class="p-mt-3">
+                    <ng-template pTemplate="header">
+                        <tr class="table-heading">
+                            <th id="kpiName">KPI Name</th>
+                            <th id="maturity">Maturity Level</th>
+                            <th id="recommendation">Recommendation</th>
+                            <th id="details">Details</th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <input pInputText [id]="kpiName" type="text" class="p-column-filter"
+                                    (input)="dt1.filter($event.target.value, 'kpiName', 'contains')"
+                                    [style]="{'width':'100%'}" placeholder="Search" />
+                            </th>
+                            <th>
+                                <p-columnFilter field="maturity" matchMode="in" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-multiSelect [ngModel]="value" [options]="maturities"
+                                            placeholder="Select maturity" (onChange)="filter($event.value)" optionLabel="name" optionValue="value">
+                                            <ng-template let-option pTemplate="item">
+                                                <div class="inline-block vertical-align-middle">
+                                                    <span class="ml-1 mt-1">{{option.name }}</span>
+                                                </div>
+                                            </ng-template>
+                                        </p-multiSelect>
+                                    </ng-template>
+                                </p-columnFilter>
+                            </th>
+                            <th>
+
+                            </th>
+                            <th>
+
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-item>
+                        <tr>
+                            <td>{{ item.kpiName }}</td>
+                            <td
+                                [ngClass]="{'m1': item.maturity == 1, 'm2': item.maturity == 2, 'm3': item.maturity == 3, 'm4': item.maturity == 4, 'm5': item.maturity == 5}">
+                                <span class="maturity-level">
+                                    {{ item.maturity ? "M"+item.maturity : 'NA' }}
+                                </span>
+                            </td>
+                            <td><span [innerHTML]="item.recommendationSummary"></span></td>
+                            <td><span [innerHTML]="item.recommendationDetails"></span></td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td [attr.colspan]="4">
+                                No records found
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+            </p-tabPanel>
+        </p-tabView>
+        <div *ngIf="noRecommendations" class="p-pt-4">
+            There are no recommendations available for the selected sprint.
+        </div>
+    </div>
+    
+</p-dialog>

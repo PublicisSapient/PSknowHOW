@@ -2093,4 +2093,66 @@ describe('JiraConfigComponent', () => {
     tick();
     expect(spy).toHaveBeenCalled();
   }))
+
+  it('should give error on getting jenkins job name', fakeAsync(() => {
+    const connectionId = '331231231';
+    const errResponse = {
+      success: false,
+      error: {
+        message: 'No Jenkins Job found'
+      }
+    }
+    component.formTemplate = {
+      elements: [
+        { id: 'jobType', show: true },
+      ],
+    };
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    spyOn(httpService, 'getJenkinsJobNameList').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add');
+    component.getJenkinsJobNames(connectionId);
+    tick()
+    expect(spy).toHaveBeenCalled();
+  }))
+
+  it('should get azure data when selecting connection', () => {
+    const fakeConnection = {
+      id: '5fc643cd11193836e6545560',
+      type: 'Sonar',
+      connectionName: 'Test Internal -Sonar Connection',
+      cloudEnv: false,
+    };
+    component.toolForm = new UntypedFormGroup({
+      team : new UntypedFormControl()
+    })
+    // component.toolForm.controls['jobType'].setValue({ name: 'Deploy' })
+    component.urlParam = 'Azure';
+    const spyobj = spyOn(component,'fetchTeams')
+    component.isLoading = false;
+    component.onConnectionSelect(fakeConnection);
+    fixture.detectChanges();
+    expect(spyobj).toHaveBeenCalled();
+  });
+
+  it('should give error while fetching boards', fakeAsync(() => {
+    component.urlParam = 'Jira'
+    component.initializeFields(component.urlParam);
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698",
+    }
+    const err = {
+      success: false,
+      message: 'Error in fetching boards'
+    }
+    component.toolForm = new UntypedFormGroup({
+      'boards': new UntypedFormControl(),
+    })
+    component.boardsData = [];
+    fixture.detectChanges();
+    spyOn(httpService, 'getAllBoards').and.returnValue(of(err));
+    const spy = spyOn(messageService, 'add');
+    component.fetchBoards(component);
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }));
 });

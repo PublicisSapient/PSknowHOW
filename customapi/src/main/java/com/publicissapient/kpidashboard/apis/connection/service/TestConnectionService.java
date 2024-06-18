@@ -25,4 +25,6 @@ public interface TestConnectionService {
 
 	ServiceResponse validateConnection(Connection connection, String toolName);
 
+	ServiceResponse getZephyrCloudUrlDetails();
+
 }

@@ -23,4 +23,12 @@ describe('TrendIndicatorComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should return the correct tooltip content', () => {
+    component.dataTrend = { isCumulative: true };
+    expect(component.getTooltipContent()).toBe('<div class="inner-content">Maturity based on latest trend on Cumulative data series</div>');
+  
+    component.dataTrend = { isCumulative: false, maturityDenominator: 10 };
+    expect(component.getTooltipContent()).toBe('<div class="inner-content">Average maturity for 10 data points.</div>');
+  });
+
 });

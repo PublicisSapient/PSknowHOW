@@ -388,6 +388,7 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historystartDateCountKPI150;
 	private List<ConfigurationHistoryChangeLog> historyjiraDevDoneStatusKPI150;
 	private List<ConfigurationHistoryChangeLog> historypopulateByDevDoneKPI150;
+	private List<ConfigurationHistoryChangeLog> historyreleaseListKPI150;
 
 	// threshold field
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI14;

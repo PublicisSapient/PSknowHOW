@@ -139,6 +139,9 @@ public class CorsFilter extends OncePerRequestFilter {
 		response.addHeader(CORSConstants.HEADER_NAME_ACCESS_CONTROL_EXPOSE_HEADERS,
 				CORSConstants.HEADER_VALUE_EXPOSE_HEADERS);
 		response.setHeader("Access-Control-Allow-Credentials", "true");
+		// Set HSTS header - MAX age is for 10 years
+		response.setHeader(CORSConstants.STRICT_TRANSPORT_SECURITY,
+				"max-age=" + apiSettings.getMaxAgeInSeconds() + "; includeSubDomains");
 		ExecutionLogContext executionLogContext = new ExecutionLogContext();
 		executionLogContext.setRequestId(request.getHeader(CORSConstants.REQUEST_ID));
 		executionLogContext.setEnvironment(orign);

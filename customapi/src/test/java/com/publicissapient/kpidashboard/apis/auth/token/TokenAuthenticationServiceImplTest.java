@@ -142,7 +142,7 @@ public class TokenAuthenticationServiceImplTest {
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
 				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
-		Authentication authentication = service.getAuthentication(userTokenAuthenticationDTO,request,response);
+		Authentication authentication = service.getAuthentication(request,response);
 		Assert.assertNotNull(authentication);
 		assertTrue(authentication.isAuthenticated());
 		assertNotNull(authentication.getAuthorities());
@@ -153,7 +153,7 @@ public class TokenAuthenticationServiceImplTest {
 	@Test
 	public void testGetAuthenticationWhenValidTokenProvided() {
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
-		Authentication authentication = service.getAuthentication(userTokenAuthenticationDTO,request,response);
+		Authentication authentication = service.getAuthentication(request,response);
 		Assert.assertNotNull(authentication);
 		assertTrue(authentication.isAuthenticated());
 		assertNotNull(authentication.getAuthorities());
