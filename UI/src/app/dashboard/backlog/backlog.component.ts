@@ -91,9 +91,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
   }
   ngOnInit() {
-    // this.selectedtype = this.service.getSelectedType();
-    this.selectedtype = 'scrum';
-    this.service.setSelectedType(this.selectedtype);
     this.httpService.getConfigDetails()
       .subscribe(filterData => {
         if (filterData[0] !== 'error') {
@@ -201,6 +198,9 @@ export class BacklogComponent implements OnInit, OnDestroy {
       click apply and call kpi
    **/
   receiveSharedData($event) {
+    this.selectedtype = this.service.getSelectedType();
+    // this.selectedtype = 'scrum';
+    // this.service.setSelectedType(this.selectedtype);
     this.fullPageLoader = true;
     this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
     this.processKpiConfigData();
