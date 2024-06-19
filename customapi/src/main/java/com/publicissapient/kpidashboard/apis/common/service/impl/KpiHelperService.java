@@ -728,7 +728,7 @@ public class KpiHelperService { // NOPMD
 				capacityIssueType.add("Story");
 			}
 
-			List<String> taskType=fieldMapping.getJiraSubTaskIdentification();
+			List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
@@ -753,9 +753,10 @@ public class KpiHelperService { // NOPMD
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
 			List<JiraIssue> jiraIssueList = jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(totalIssue,
 					uniqueProjectMap, CommonConstant.NUMBER);
-			List<JiraIssue> subTaskList = jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(jiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toSet()),
+			List<JiraIssue> subTaskList = jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(
+					jiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toSet()),
 					uniqueProjectMapForSubTask, CommonConstant.PARENT_STORY_ID);
-			List<JiraIssue> jiraIssues=new ArrayList<>();
+			List<JiraIssue> jiraIssues = new ArrayList<>();
 			jiraIssues.addAll(subTaskList);
 			jiraIssues.addAll(jiraIssueList);
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
