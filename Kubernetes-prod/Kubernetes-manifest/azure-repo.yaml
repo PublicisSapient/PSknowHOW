@@ -66,12 +66,12 @@ spec:
             - name: azurerepo.cron
               value: "0 0 */12 * * *"
         resources:
+          requests:
+            memory: "500Mi"
+            cpu: "0.2"
           limits:
-            memory: "2Gi"
-            cpu: "1"
-        #   requests:
-        #     memory: "1Gi"
-        #     cpu: "0.5"
+            memory: "1Gi"
+            cpu: "0.5"
         ports:
         - containerPort: 50015
         - containerPort: 50016

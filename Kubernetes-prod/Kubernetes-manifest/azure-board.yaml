@@ -64,12 +64,12 @@ spec:
             - name: azure.cron
               value: "0 0 */12 * * *"
         resources:
-          #requests:
-          #  memory: "200Mi"
-          #  cpu: "0.2"
+          requests:
+            memory: "250Mi"
+            cpu: "0.2"
           limits:
-            memory: "2Gi"
-            cpu: "1"
+            memory: "750Mi"
+            cpu: "0.5"
         ports:
           - containerPort: 50017
         readinessProbe:

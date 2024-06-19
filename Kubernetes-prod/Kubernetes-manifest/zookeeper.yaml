@@ -25,6 +25,13 @@ spec:
         - containerPort: 2181
         - containerPort: 2888
         - containerPort: 3888
+        resources:
+          requests:
+            memory: "124Mi"
+            cpu: "0.1"
+          limits:
+            memory: "248Mi"
+            cpu: "0.3"
         lifecycle:
           postStart:
             exec:
