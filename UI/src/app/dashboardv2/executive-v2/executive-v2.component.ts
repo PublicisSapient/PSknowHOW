@@ -873,6 +873,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       }
     }
+
     if (trendValueList?.length > 0) {
       let filterPropArr = Object.keys(trendValueList[0]).filter((prop) => prop.includes('filter'));
       if (filterPropArr?.length) {
@@ -965,9 +966,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (kpiId === 'kpi3' || kpiId === 'kpi53') {
       //generating column headers
       const columnHeaders = [];
-      if (Object.keys(this.kpiSelectedFilterObj)?.length && this.kpiSelectedFilterObj[kpiId]?.length && this.kpiSelectedFilterObj[kpiId][0]) {
+      let kpiSelectedFilter = this.kpiSelectedFilterObj[kpiId]['filter1'] ? this.kpiSelectedFilterObj[kpiId]['filter1'] : this.kpiSelectedFilterObj[kpiId];
+      if (Object.keys(this.kpiSelectedFilterObj)?.length && kpiSelectedFilter?.length && kpiSelectedFilter[0]) {
         columnHeaders.push({ field: 'name', header: this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelName + ' Name' });
-        columnHeaders.push({ field: 'value', header: this.kpiSelectedFilterObj[kpiId][0] });
+        columnHeaders.push({ field: 'value', header: kpiSelectedFilter[0] });
         columnHeaders.push({ field: 'maturity', header: 'Maturity' });
       }
       if (this.kpiChartData[kpiId]) {
@@ -985,9 +987,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           };
           data.push(rowData);
         }
-
-        this.kpiChartData[kpiId].data = data;
       }
+      this.kpiChartData[kpiId].data = data;
       this.showKpiTrendIndicator[kpiId] = false;
 
     }
