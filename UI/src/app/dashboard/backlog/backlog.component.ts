@@ -91,8 +91,9 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
   }
   ngOnInit() {
-    this.selectedtype = this.service.getSelectedType();
-
+    // this.selectedtype = this.service.getSelectedType();
+    this.selectedtype = 'scrum';
+    this.service.setSelectedType(this.selectedtype);
     this.httpService.getConfigDetails()
       .subscribe(filterData => {
         if (filterData[0] !== 'error') {

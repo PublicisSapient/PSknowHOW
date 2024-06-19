@@ -366,3 +366,8 @@
     margin: 5px 0 0 0;
     word-wrap: break-word;
 }
+
+:host ::ng-deep .p-menu.p-component.p-menu-overlay {
+    left: unset !important;
+    right: 10px !important;
+}

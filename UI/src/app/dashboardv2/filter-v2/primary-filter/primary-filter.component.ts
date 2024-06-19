@@ -82,12 +82,12 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       }
     }));
 
-    this.subscriptions.push(
-      this.service.onTypeOrTabRefresh
-      .subscribe(data => {
-        this.onPrimaryFilterChange.emit(this.selectedFilters);
-      })
-    );
+    // this.subscriptions.push(
+    //   this.service.onTypeOrTabRefresh
+    //   .subscribe(data => {
+    //     this.onPrimaryFilterChange.emit(this.selectedFilters);
+    //   })
+    // );
   }
 
   populateFilters() {
