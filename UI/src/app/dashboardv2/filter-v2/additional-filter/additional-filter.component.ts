@@ -29,7 +29,11 @@ export class AdditionalFilterComponent implements OnChanges {
       this.selectedFilters = [];
       this.selectedTrends = this.service.getSelectedTrends();
       Object.keys(data).forEach((f, index) => {
-        this.filterData.push(data[f]);
+        // if (this.selectedTab.toLowerCase() === 'developer') {
+        //   this.filterData.push(...data[f]);
+        // } else {
+          this.filterData[index] = data[f];
+        // }
       });
 
       if (this.selectedTab !== 'developer') {
@@ -57,7 +61,7 @@ export class AdditionalFilterComponent implements OnChanges {
         }
         setTimeout(() => {
           this.applyAdditionalFilter(fakeEvent, 0 + 1);
-        }, 100); 
+        }, 100);
       }
 
     }));

@@ -854,23 +854,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (!this.additionalFiltersArr[filterProp]?.size) {
             this.additionalFiltersArr[filterProp] = new Set();
           }
-
-          this.additionalFiltersArr[filterProp].add(JSON.stringify(trendValueList.map((x) => x[filterProp])));
-          this.additionalFiltersArr[filterProp] = Array.from(this.additionalFiltersArr[filterProp]).map((item: string) => JSON.parse(item));
+          trendValueList.map((x) => x[filterProp]).forEach((f) => this.additionalFiltersArr[filterProp].add(f));
+          this.additionalFiltersArr[filterProp] = Array.from(this.additionalFiltersArr[filterProp]).map((item: string) => (item));
         });
 
         if (!kpiFilterChange) {
 
           Object.keys(this.additionalFiltersArr).forEach((filterProp) => {
             // this.additionalFiltersArr[filterProp] = new Set(this.additionalFiltersArr[filterProp]);
-            for (let i = 0; i < this.additionalFiltersArr[filterProp].length; i++) {
-              this.additionalFiltersArr[filterProp][i] = this.additionalFiltersArr[filterProp][i].map((f) => {
-                return {
-                  nodeId: f,
-                  nodeName: f
-                }
-              })
-            }
+            this.additionalFiltersArr[filterProp] = this.additionalFiltersArr[filterProp].map((f) => {
+              return {
+                nodeId: f,
+                nodeName: f
+              }
+            })
           });
           this.service.setAdditionalFilters(this.additionalFiltersArr);
         }
@@ -1500,10 +1497,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiDropdowns[kpiId] = [];
     }
 
-    if(this.kpiDropdowns[kpiId].length > 1) {
+    if (this.kpiDropdowns[kpiId].length > 1) {
       this.kpiSelectedFilterObj[kpiId] = {};
-      for(let i = 0; i< this.kpiDropdowns[kpiId].length; i++) {
-        this.kpiSelectedFilterObj[kpiId]['filter' + (i+1)] = [this.kpiDropdowns[kpiId][i].options[0]];
+      for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
+        this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
       }
     }
   }

@@ -276,111 +276,96 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handlePrimaryFilterChange(event) {
-    if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
-      // set selected projects(trends)
-      this.service.setSelectedTrends(event);
+    // if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
+    // set selected projects(trends)
+    this.service.setSelectedTrends(event);
 
-      // Populate additional filters on MyKnowHOW, Speed and Quality
-      if (this.selectedTab.toLowerCase() !== 'developer') {
-        this.additionalFiltersArr = [];
-        this.populateAdditionalFilters(event);
-      }
-      if (event.length === 1) {
-        this.getProcessorsTraceLogsForProject();
-      }
-      this.previousFilterEvent = [].concat(event);
-      this.setColors(event);
-      this.filterApplyData['level'] = event[0].level;
-      this.filterApplyData['label'] = event[0].labelName;
-      this.filterApplyData['selectedMap'] = {};
+    // Populate additional filters on MyKnowHOW, Speed and Quality
+    if (this.selectedTab.toLowerCase() !== 'developer') {
+      this.additionalFiltersArr = [];
+      this.populateAdditionalFilters(event);
+    }
+    if (event.length === 1) {
+      this.getProcessorsTraceLogsForProject();
+    }
+    this.previousFilterEvent = [].concat(event);
+    this.setColors(event);
+    this.filterApplyData['level'] = event[0].level;
+    this.filterApplyData['label'] = event[0].labelName;
+    this.filterApplyData['selectedMap'] = {};
 
-      if (typeof this.selectedLevel === 'object' && this.selectedLevel !== null) {
-        this.filterType = `${this.selectedLevel.emittedLevel}:`;
-      } else if (typeof this.selectedLevel === 'string') {
-        this.filterType = `${this.selectedLevel}:`;
-      } else {
-        this.filterType = '';
-      }
+    if (typeof this.selectedLevel === 'object' && this.selectedLevel !== null) {
+      this.filterType = `${this.selectedLevel.emittedLevel}:`;
+    } else if (typeof this.selectedLevel === 'string') {
+      this.filterType = `${this.selectedLevel}:`;
+    } else {
+      this.filterType = '';
+    }
 
-      if (typeof this.selectedLevel === 'string') {
-        Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
-          if (filterLevel !== this.selectedLevel.toLowerCase()) {
-            this.filterApplyData['selectedMap'][filterLevel] = [];
-          } else {
-            this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
-          }
-        });
-      } else if (this.selectedLevel) {
-        Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
-          if (filterLevel !== this.selectedLevel.emittedLevel.toLowerCase()) {
-            this.filterApplyData['selectedMap'][filterLevel] = [];
-          } else {
-            this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
-          }
-        });
-      } else {
-        Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
-          if (filterLevel !== 'project') {
-            this.filterApplyData['selectedMap'][filterLevel] = [];
-          } else {
-            this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
-          }
-        });
-      }
-
-      if (!this.kanban) {
-        if (this.selectedTab.toLocaleLowerCase() !== 'developer') {
-          this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
+    if (typeof this.selectedLevel === 'string') {
+      Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
+        if (filterLevel !== this.selectedLevel.toLowerCase()) {
+          this.filterApplyData['selectedMap'][filterLevel] = [];
         } else {
-          this.filterApplyData['ids'] = [5];
-          this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
+          this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
         }
+      });
+    } else if (this.selectedLevel) {
+      Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
+        if (filterLevel !== this.selectedLevel.emittedLevel.toLowerCase()) {
+          this.filterApplyData['selectedMap'][filterLevel] = [];
+        } else {
+          this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
+        }
+      });
+    } else {
+      Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
+        if (filterLevel !== 'project') {
+          this.filterApplyData['selectedMap'][filterLevel] = [];
+        } else {
+          this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
+        }
+      });
+    }
+
+    if (!this.kanban) {
+      if (this.selectedTab.toLocaleLowerCase() !== 'developer') {
+        this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
       } else {
         this.filterApplyData['ids'] = [5];
-        this.filterApplyData['startDate'] = '';
-        this.filterApplyData['endDate'] = '';
         this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
-        this.filterApplyData['selectedMap']['release'] = [];
-        this.filterApplyData['selectedMap']['sqd'] = [];
-      }
-
-      if (this.selectedTab?.toLowerCase() === 'backlog') {
-        this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
-      }
-
-      if (this.selectedTab?.toLowerCase() === 'iteration') {
-        this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
-        this.selectedSprint = event[0];
-        this.service.setCurrentSelectedSprint(this.selectedSprint);
-      }
-
-      this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
-
-      if (this.selectedLevel) {
-        if (typeof this.selectedLevel === 'string') {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
-        } else {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
-        }
-      } else {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
       }
     } else {
-      if (this.selectedTab.toLowerCase() !== 'developer') {
-        this.additionalFiltersArr = [];
-        this.populateAdditionalFilters(event);
-      }
-
-      if (this.selectedLevel) {
-        if (typeof this.selectedLevel === 'string') {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
-        } else {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
-        }
-      } else {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
-      }
+      this.filterApplyData['ids'] = [5];
+      this.filterApplyData['startDate'] = '';
+      this.filterApplyData['endDate'] = '';
+      this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
+      this.filterApplyData['selectedMap']['release'] = [];
+      this.filterApplyData['selectedMap']['sqd'] = [];
     }
+
+    if (this.selectedTab?.toLowerCase() === 'backlog') {
+      this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
+    }
+
+    if (this.selectedTab?.toLowerCase() === 'iteration') {
+      this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
+      this.selectedSprint = event[0];
+      this.service.setCurrentSelectedSprint(this.selectedSprint);
+    }
+
+    this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
+
+    if (this.selectedLevel) {
+      if (typeof this.selectedLevel === 'string') {
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+      } else {
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+      }
+    } else {
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+    }
+    // }
   }
 
   handleAdditionalChange(event) {
