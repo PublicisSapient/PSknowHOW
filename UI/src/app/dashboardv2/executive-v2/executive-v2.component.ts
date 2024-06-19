@@ -243,7 +243,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
       this.tooltip = $event.configDetails;
       this.additionalFiltersArr = [];
-      this.noOfDataPoints = $event.configDetails['noOfDataPoints'] || 5;
+      this.noOfDataPoints = $event?.configDetails?.noOfDataPoints || 5;
       // if (this.serviceObject['makeAPICall']) {
       this.allKpiArray = [];
       this.kpiChartData = {};
@@ -307,7 +307,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   setUpTabs() {
     this.tabsArr = new Set();
     this.configGlobalData.forEach(element => {
-      this.tabsArr.add(element.kpiDetail.kpiSubCategory);
+      this.tabsArr.add(element?.kpiDetail?.kpiSubCategory);
     });
     let it = this.tabsArr.values();
     //get first entry:
@@ -352,7 +352,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   groupZypherKpi(kpiIdsForCurrentBoard) {
     // creating a set of unique group Ids
     const groupIdSet = new Set();
-    this.masterData.kpiList.forEach((obj) => {
+    this.masterData?.kpiList?.forEach((obj) => {
       if (!obj.kanban && obj.kpiSource === 'Zypher') {
         groupIdSet.add(obj.groupId);
       }
