@@ -78,19 +78,17 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ngOnInit(): void {
     this.menuItems = [
       {
-        label: 'Sprint Details',
-        icon: 'pi pi-align-justify',
-        command: ($event) => {
-          this.prepareData();
+        label: 'Settings',
+        icon: 'fas fa-cog',
+        command: () => {
+          this.onOpenFieldMappingDialog();
         },
       },
       {
-        label: 'Comments',
-        icon: 'pi pi-comments',
+        label: 'List View',
+        icon: 'pi pi-align-justify',
         command: ($event) => {
-          console.log('clicked comments')
-          this.showComments = true;
-          this.openCommentModal();
+          this.prepareData();
         },
       },
       {
@@ -101,10 +99,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       },
       {
-        label: 'Settings',
-        icon: 'fas fa-cog',
-        command: () => {
-          this.onOpenFieldMappingDialog();
+        label: 'Comments',
+        icon: 'pi pi-comments',
+        command: ($event) => {
+          this.showComments = true;
+          this.openCommentModal();
         },
       }
     ];
