@@ -712,11 +712,13 @@ public class KpiHelperService { // NOPMD
 		List<String> basicProjectConfigIds = new ArrayList<>();
 
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		Map<String, Map<String, Object>> uniqueProjectMapForSubTask = new HashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
 
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+			Map<String, Object> mapOfProjectFiltersForSubTask = new LinkedHashMap<>();
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
@@ -726,16 +728,16 @@ public class KpiHelperService { // NOPMD
 				capacityIssueType.add("Story");
 			}
 
-			List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
-			if (CollectionUtils.isNotEmpty(taskType)) {
-				capacityIssueType.addAll(taskType);
-			}
+			List<String> taskType=fieldMapping.getJiraSubTaskIdentification();
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(capacityIssueType));
+			mapOfProjectFiltersForSubTask.put(JiraFeature.ORIGINAL_ISSUE_TYPE.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(taskType));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+			uniqueProjectMapForSubTask.put(basicProjectConfigId.toString(), mapOfProjectFiltersForSubTask);
 
 		});
 
@@ -749,8 +751,13 @@ public class KpiHelperService { // NOPMD
 		});
 
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
-			List<JiraIssue> jiraIssues = jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(totalIssue,
-					uniqueProjectMap);
+			List<JiraIssue> jiraIssueList = jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(totalIssue,
+					uniqueProjectMap, CommonConstant.NUMBER);
+			List<JiraIssue> subTaskList = jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(jiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toSet()),
+					uniqueProjectMapForSubTask, CommonConstant.PARENT_STORY_ID);
+			List<JiraIssue> jiraIssues=new ArrayList<>();
+			jiraIssues.addAll(subTaskList);
+			jiraIssues.addAll(jiraIssueList);
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
 					.findByStoryIDInAndBasicProjectConfigIdIn(jiraIssues.stream().map(JiraIssue::getNumber).toList(),
 							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));

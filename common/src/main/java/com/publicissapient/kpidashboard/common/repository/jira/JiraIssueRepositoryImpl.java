@@ -46,6 +46,8 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
+import static com.publicissapient.kpidashboard.common.constant.CommonConstant.PARENT_STORY_ID;
+
 /**
  * Repository for {@link JiraIssue} with custom methods implementation.
  */
@@ -229,9 +231,10 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 
-	@Override
+    @Override
 	public List<JiraIssue> findIssueByNumberOrParentStoryIdAndType(Set<String> storyNumber,
-			Map<String, Map<String, Object>> uniqueProjectMap) {
+																   Map<String, Map<String, Object>> uniqueProjectMap, String findBy) {
+		Criteria criteria = new Criteria();
 
 		// Project level storyType filters
 		List<Criteria> projectCriteriaList = new ArrayList<>();
@@ -241,21 +244,16 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
 			projectCriteriaList.add(projectCriteria);
 		});
+		criteria = criteria.and(findBy).in(storyNumber);
 
-		// Add criteria for both story number and parent story ID
-		Criteria storyNumberCriteria = new Criteria().orOperator(Criteria.where(NUMBER).in(storyNumber),
-				Criteria.where("parentStoryId").in(storyNumber));
-
-		Query query = new Query(storyNumberCriteria);
+		Query query = new Query(criteria);
 		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
 			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
 					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
-			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(storyNumberCriteria,
-					criteriaAggregatedAtProjectLevel);
+			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 
 			query = new Query(criteriaProjectLevelAdded);
 		}
-
 		query.fields().include(CONFIG_ID);
 		query.fields().include(NUMBER);
 		query.fields().include(STATUS);
@@ -278,8 +276,9 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(SPRINT_ASSET_STATE);
 		query.fields().include(SPRINT_END_DATE);
 		query.fields().include(ADDITIONAL_FILTER);
-		query.fields().include("parentStoryId");
+		query.fields().include(PARENT_STORY_ID);
 		return operations.find(query, JiraIssue.class);
+
 	}
 
 	/**
