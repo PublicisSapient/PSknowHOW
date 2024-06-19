@@ -26,6 +26,7 @@ export class AdditionalFilterComponent implements OnChanges {
   constructor(private service: SharedService, private helperService: HelperService) {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       this.filterData = [];
+      this.selectedFilters = [];
       this.selectedTrends = this.service.getSelectedTrends();
       Object.keys(data).forEach((f, index) => {
         this.filterData.push(data[f]);

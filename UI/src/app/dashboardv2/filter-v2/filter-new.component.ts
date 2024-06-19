@@ -229,8 +229,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   removeFilter(id) {
     if (Object.keys(this.colorObj).length > 1) {
       delete this.colorObj[id];
-      this.service.setColorObj(this.colorObj);
-      this.helperService.setBackupOfFilterSelectionState({ 'primary_level': Object.values(this.colorObj) });
+      // this.service.setColorObj(this.colorObj);
+      let selectedFilters = this.filterDataArr[this.selectedType][this.selectedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
+      this.handlePrimaryFilterChange(selectedFilters);
+      this.helperService.setBackupOfFilterSelectionState({ 'primary_level': selectedFilters });
     }
   }
 
@@ -275,10 +277,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   handlePrimaryFilterChange(event) {
     if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
+      // set selected projects(trends)
+      this.service.setSelectedTrends(event);
+
       // Populate additional filters on MyKnowHOW, Speed and Quality
       if (this.selectedTab.toLowerCase() !== 'developer') {
         this.additionalFiltersArr = [];
-        this.service.setSelectedTrends(event);
         this.populateAdditionalFilters(event);
       }
       if (event.length === 1) {
@@ -351,9 +355,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
 
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
-
-      // set selected projects(trends)
-      this.service.setSelectedTrends(event);
 
       if (this.selectedLevel) {
         if (typeof this.selectedLevel === 'string') {
