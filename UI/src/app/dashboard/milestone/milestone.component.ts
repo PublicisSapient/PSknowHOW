@@ -69,6 +69,8 @@ export class MilestoneComponent implements OnInit {
   activeIndex = 0;
   kpiThresholdObj = {};
   chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
+  releaseEndDate: string = '';
+
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
 
     /** When filter dropdown change */
@@ -117,7 +119,7 @@ export class MilestoneComponent implements OnInit {
     /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
     this.enableByUser = disabledKpis?.length ? true : false;
     /** noKpis - if true, all kpis are not shown to the user (not showing kpis to the user) **/
-    this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
+    this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown);
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
 
     for (let i = 0; i < this.upDatedConfigData?.length; i++) {
@@ -191,6 +193,7 @@ export class MilestoneComponent implements OnInit {
             const selectedRelease = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['release'][0] && x.labelName.toLowerCase() === 'release')[0];
             const today = new Date().toISOString().split('T')[0];
             const endDate = new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0];
+            this.releaseEndDate = endDate;
             this.timeRemaining = this.calcBusinessDays(today, endDate);
             this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
             this.groupJiraKpi(kpiIdsForCurrentBoard);
@@ -207,16 +210,16 @@ export class MilestoneComponent implements OnInit {
     this.jiraKpiData = {};
     /** creating a set of unique group Ids */
     const groupIdSet = new Set();
-    this.masterData.kpiList.forEach((obj) => {
-      if (!obj.kanban && obj.kpiSource === 'Jira' && obj.kpiCategory == 'Release') {
-        groupIdSet.add(obj.groupId);
+    this.updatedConfigGlobalData.forEach((obj) => {
+      if (!obj.kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Release') {
+        groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
 
     /** sending requests after grouping the the KPIs according to group Id */
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Release');
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Release');
         this.postJiraKpi(this.kpiJira, 'jira');
       }
     });
@@ -641,7 +644,7 @@ export class MilestoneComponent implements OnInit {
   /** Reload KPI once field mappoing updated */
   reloadKPI(event) {
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
-    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Release');
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId,'Release');
     if (currentKPIGroup?.kpiList?.length > 0) {
       this.postJiraKpi(this.kpiJira, 'jira');
     }

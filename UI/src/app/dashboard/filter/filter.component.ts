@@ -757,6 +757,23 @@ this.resetAddtionalFIlters();
       this.createFilterApplyData();
       this.setMarker();
       this.getKpiOrderListProjectLevel();
+      if(this.copyFilteredAddFilters['sprint']?.length > 0){
+        let addFilters = this.service.getAddtionalFilterBackup()
+        let lastSelectedSprint = {};
+        if(addFilters['sprint']){
+          for(let key in addFilters['sprint']){
+            if(Object.values(addFilters['sprint'][key] > 0)){
+              lastSelectedSprint = addFilters['sprint'][key][addFilters['sprint'][key].length - 1];
+            }
+          }
+          if(lastSelectedSprint){
+            this.service.setSprintForRnR(lastSelectedSprint);
+          }
+        }else{
+          let len = this.copyFilteredAddFilters['sprint']?.length;
+          this.service.setSprintForRnR(this.copyFilteredAddFilters['sprint'][len-1]);
+        }
+      }
     }
   }
 
@@ -769,6 +786,7 @@ this.resetAddtionalFIlters();
         for (let j = 0; j < temp?.length; j++) {
           if (this.filterApplyData['level'] < temp[j].level) {
             this.filterApplyData['level'] = temp[j].level;
+            this.filterApplyData['selectedMap']['project']?.push(temp[j].parentId[0]);
             this.filterApplyData['selectedMap'][temp[j].labelName]?.push(temp[j].nodeId);
             this.filterApplyData['ids'] = [];
             this.filterApplyData['ids'].push(temp[j].nodeId);
@@ -1367,6 +1385,7 @@ this.resetAddtionalFIlters();
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
       if (this.selectedSprint && Object.keys(this.selectedSprint)?.length > 0) {
         this.service.setCurrentSelectedSprint(this.selectedSprint);
+        this.service.setSprintForRnR(this.selectedSprint);
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
          if(this.filterForm.get('sqd')){

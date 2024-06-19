@@ -90,12 +90,18 @@ public class DateUtilTest {
     }
 
     @Test
+    public void calculateWorkingDaysTest() {
+        LocalDateTime startDateTime = LocalDateTime.of(2024, 1, 1, 12, 0);
+        LocalDateTime endDateTime = LocalDateTime.of(2024, 1, 15, 12, 0);
+        assertEquals(11, DateUtil.calculateWorkingDays(startDateTime, endDateTime));
+    }
+
+    @Test
     public void testEqualAndAfterTime() {
         LocalDateTime targetDateTime = LocalDateTime.of(2023, 1, 10, 12, 0);
         LocalDateTime startDateTime = LocalDateTime.of(2023, 1, 1, 12, 0);
         assertEquals(true, DateUtil.equalAndAfterTime(targetDateTime, startDateTime));
     }
-
     @Test
     public void testEqualAndBeforeTime() {
         LocalDateTime targetDateTime = LocalDateTime.of(2023, 1, 1, 12, 0);

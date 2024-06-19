@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -37,6 +38,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -216,7 +218,8 @@ public class JiraControllerRTest {
 		boardDetailsDTO2.setBoardName("Scrum Test Board2");
 		boardDetailsList.add(boardDetailsDTO1);
 		boardDetailsList.add(boardDetailsDTO2);
-		when(jiraToolConfigService.getJiraBoardDetailsList(Mockito.any())).thenReturn(boardDetailsList);
+		when(jiraToolConfigService.getJiraBoardDetailsList(Mockito.any())).thenReturn(ResponseEntity.ok()
+				.body(new ServiceResponse(true, "Successfully fetched board details list", boardDetailsList)));
 		mockMvc.perform(post("/jira/board").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
 

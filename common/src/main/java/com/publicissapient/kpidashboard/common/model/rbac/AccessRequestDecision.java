@@ -27,4 +27,5 @@ public class AccessRequestDecision {
 	private String status;
 	private String message;
 	private String role;
+	private String userName;
 }

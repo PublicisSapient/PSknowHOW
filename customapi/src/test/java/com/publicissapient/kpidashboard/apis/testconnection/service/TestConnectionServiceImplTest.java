@@ -20,14 +20,12 @@
 package com.publicissapient.kpidashboard.apis.testconnection.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static com.mongodb.client.model.Filters.eq;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -453,6 +451,27 @@ public class TestConnectionServiceImplTest {
 		RepoToolsProvider provider= new RepoToolsProvider();
 		provider.setTestApiUrl("https://www.test.com");
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+	}
+
+	@Test
+	public void testGetZephyrCloudUrlDetailsWhenGlobalConfigsEmpty() {
+		ServiceResponse result = testConnectionServiceImpl.getZephyrCloudUrlDetails();
+		assertFalse(result.getSuccess());
+		assertEquals("Fetched Zephyr Cloud Base Url successfully", result.getMessage());
+		assertNull(result.getData());
+	}
+
+	@Test
+	public void testGetZephyrCloudUrlDetailsWhenZephyrCloudBaseUrlIsNull() {
+		// Arrange
+		doReturn(null).when(customApiConfig).getZephyrCloudBaseUrl();
+		// Act
+		ServiceResponse result = testConnectionServiceImpl.getZephyrCloudUrlDetails();
+
+		// Assert
+		assertFalse(result.getSuccess());
+		assertEquals("Fetched Zephyr Cloud Base Url successfully", result.getMessage());
+		assertNull(result.getData());
 	}
 
 }

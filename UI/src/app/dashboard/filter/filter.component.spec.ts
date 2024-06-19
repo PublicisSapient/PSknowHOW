@@ -2842,4 +2842,14 @@ const completeHierarchyData = {
           expect(component.filterApplyData['selectedMap']['sprint'].length).toBeGreaterThan(0)
         })
 
+      it("should navigate to home",()=>{
+        spyOnProperty(router, 'url', 'get').and.returnValue('/Help/Config');
+        spyOn(router,'navigate')
+        spyOn(sharedService,'setEmptyFilter')
+        spyOn(sharedService,'setSelectedType')
+        const spyob = spyOn(component,'changeSelectedTab')
+        component.navigateToHomePage()
+        expect(spyob).toHaveBeenCalled();
+      })
+
 });
