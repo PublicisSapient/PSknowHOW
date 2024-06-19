@@ -1542,11 +1542,6 @@ this.resetAddtionalFIlters();
     this.service.setShowTableView(this.showChart);
   }
 
-  exportToExcel($event = null) {
-    this.disableDownloadBtn = true;
-    this.service.setGlobalDownload(true);
-  }
-
   getNotification() {
     this.totalRequestCount = 0;
     this.httpService.getAccessRequestsNotifications().subscribe((response: NotificationResponseDTO) => {

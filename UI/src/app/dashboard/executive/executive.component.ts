@@ -105,7 +105,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         tableValues: []
     };
     kpiExcelData;
-    isGlobalDownload = false;
     kpiTrendsObj = {};
     selectedTab= 'iteration';
     showCommentIcon = false;
@@ -182,12 +181,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         /**observable to get the type of view */
         this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
             this.showChart = view;
-        }));
-        this.subscriptions.push(this.service.isDownloadExcel.subscribe(isDownload => {
-            this.isGlobalDownload = isDownload;
-            if(this.isGlobalDownload){
-                this.downloadGlobalExcel();
-            }
         }));
     }
 
@@ -1182,108 +1175,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
        this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
               this.kpiSelectedFilterObj['action']='update';
               this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-    }
-
-    downloadGlobalExcel(){
-        let worksheet;
-        const workbook = new Excel.Workbook();
-        worksheet = workbook.addWorksheet('Kpi Data');
-        let trends = this.service.getSelectedTrends();
-        let headers = [{header: 'KPI Name', key: 'kpiName', width: 30}];
-        for(let i = 0; i<trends.length; i++){
-            let colorCode = this.trendBoxColorObj[trends[i]['nodeName']]?.color;
-            colorCode = colorCode.slice(1);
-            headers.push({header:"Latest ("+trends[i]['nodeName'] +")", key: trends[i]['nodeName'] + '_latest', width: 15});
-            headers.push({header:"Trend ("+trends[i]['nodeName'] +")", key: trends[i]['nodeName'] + '_trend', width: 15});
-            headers.push({header:"Maturity ("+trends[i]['nodeName'] +")", key: trends[i]['nodeName'] + '_maturity', width: 15});
-            worksheet.getRow(1).getCell((i*3)+2).fill = { type: 'pattern', pattern: 'solid', fgColor:{argb:colorCode} };
-            worksheet.getRow(1).getCell((i*3)+3).fill = { type: 'pattern', pattern: 'solid', fgColor:{argb:colorCode} };
-            worksheet.getRow(1).getCell((i*3)+4).fill = { type: 'pattern', pattern: 'solid', fgColor:{argb:colorCode} };
-        }
-
-        worksheet.columns = [...headers];
-
-        for(let kpi of this.updatedConfigGlobalData){
-            let kpiId = kpi.kpiId;
-            if(this.kpiTrendsObj[kpiId]?.length > 0){
-                let obj = {};
-                obj['kpiName'] = kpi?.kpiName;
-                for(let i = 0; i< this.kpiTrendsObj[kpiId]?.length;i++){
-                    obj[this.kpiTrendsObj[kpiId][i]?.hierarchyName +'_latest'] = this.kpiTrendsObj[kpiId][i]?.value;
-                    obj[this.kpiTrendsObj[kpiId][i]?.hierarchyName +'_maturity'] = this.kpiTrendsObj[kpiId][i]?.maturity;
-                    obj[this.kpiTrendsObj[kpiId][i]?.hierarchyName +'_trend'] = this.kpiTrendsObj[kpiId][i]?.trend;
-                }
-                worksheet.addRow(obj);
-            }
-        }
-
-
-        worksheet.eachRow(function(row, rowNumber) {
-            if (rowNumber === 1) {
-                row.eachCell({
-                    includeEmpty: true
-                }, function(cell) {
-
-                    cell.font = {
-                        name: 'Arial Rounded MT Bold'
-                    };
-                });
-            }
-            row.eachCell({
-                includeEmpty: true
-            }, function(cell) {
-
-                cell.border = {
-                    top: {
-                        style: 'thin'
-                    },
-                    left: {
-                        style: 'thin'
-                    },
-                    bottom: {
-                        style: 'thin'
-                    },
-                    right: {
-                        style: 'thin'
-                    }
-                };
-            });
-        });
-        // Footer Row
-        worksheet.addRow([]);
-        let footerRow = worksheet.addRow(['* KPIs which do not have any data are not included in the export']);
-        footerRow.getCell(1).fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: {
-                argb: 'FFCCFFE5'
-            }
-        };
-        footerRow.getCell(1).border = {
-            top: {
-                style: 'thin'
-            },
-            left: {
-                style: 'thin'
-            },
-            bottom: {
-                style: 'thin'
-            },
-            right: {
-                style: 'thin'
-            }
-        };
-
-
-        // Merge Cells
-        worksheet.mergeCells(`A${footerRow.number}:F${footerRow.number}`);
-       // Generate Excel File with given name
-        workbook.xlsx.writeBuffer().then((data) => {
-        const blob = new Blob([data as BlobPart], {
-            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        });
-        fs.saveAs(blob, 'Kpi Data' + '.xlsx');
-    });
     }
 
     checkMaturity(item) {

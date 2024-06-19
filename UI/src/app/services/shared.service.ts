@@ -333,9 +333,7 @@ export class SharedService {
       document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
     }
   }
-   setGlobalDownload(val){
-    this.isDownloadExcel.emit(val);
-  }
+  
   setSelectedLevel(val){
     this.selectedLevel = {...val};
   }
