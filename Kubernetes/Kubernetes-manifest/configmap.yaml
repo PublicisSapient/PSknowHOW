@@ -7,7 +7,7 @@ data:
   #Common-Config for all application
   keystorefile: "/usr/lib/jvm/java-17-amazon-corretto/lib/security/cacerts"
   spring.data.mongodb.database: "kpidashboard"
-  flag.mailWithoutKafka: "false"
+  flag.mailWithoutKafka: "true"
   notification.switch: "true"
   sendGridEnabled: "false"
 

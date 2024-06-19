@@ -34,8 +34,8 @@ spec:
              memory: "750Mi"
              cpu: "0.3"
             limits:
-              memory: "2Gi"
-              cpu: "0.5"
+              memory: "4Gi"
+              cpu: "1"
           readinessProbe:
             tcpSocket:
               port: 8080
