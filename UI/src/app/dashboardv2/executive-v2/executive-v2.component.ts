@@ -974,7 +974,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (kpiId === 'kpi3' || kpiId === 'kpi53') {
       //generating column headers
       const columnHeaders = [];
-      let kpiSelectedFilter = this.kpiSelectedFilterObj[kpiId]['filter1'] ? this.kpiSelectedFilterObj[kpiId]['filter1'] : this.kpiSelectedFilterObj[kpiId];
+      let kpiSelectedFilter = this.kpiSelectedFilterObj[kpiId] && this.kpiSelectedFilterObj[kpiId]['filter1'] ? this.kpiSelectedFilterObj[kpiId]['filter1'] : this.kpiSelectedFilterObj[kpiId];
       if (Object.keys(this.kpiSelectedFilterObj)?.length && kpiSelectedFilter?.length && kpiSelectedFilter[0]) {
         columnHeaders.push({ field: 'name', header: this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelName + ' Name' });
         columnHeaders.push({ field: 'value', header: kpiSelectedFilter[0] });
