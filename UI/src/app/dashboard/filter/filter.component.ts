@@ -794,7 +794,7 @@ this.resetAddtionalFIlters();
             this.filterApplyData['ids'].push(temp[j].nodeId);
           }
           this.filterApplyData['label'] = temp[j]?.labelName;
-          if(this.selectedTab.toLowerCase() === 'iteration'){
+          if(this.selectedTab?.toLowerCase() === 'iteration'){
             this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.parentId[0],this.filterApplyData['selectedMap']['project'])
             this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['sprint'])
           }else{
