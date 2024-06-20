@@ -33,7 +33,9 @@ export class ParentFilterComponent implements OnChanges {
               this.selectedLevel = this.filterLevels.filter((level) => {
                 return level.toLowerCase() === this.stateFilters.toLowerCase()
               })[0];
-            } else {
+            } 
+            
+            if(!this.stateFilters || !this.selectedLevel){
               this.selectedLevel = this.filterLevels[this.filterLevels.length - 1];
             }
             // this.selectedLevel = this.stateFilters ? this.filterLevels.map(level => level.toLowerCase()).filter((level) => level === this.stateFilters.toLowerCase())[0] : this.filterLevels[this.filterLevels.length - 1];
