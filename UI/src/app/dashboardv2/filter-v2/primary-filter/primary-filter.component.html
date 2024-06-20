@@ -38,7 +38,7 @@
                 <div class="filter-item">
                     <span>{{ option.nodeName }}</span>
                     <span class="parent_span">
-                        ({{ service.getSelectedTab().toLowerCase() === 'developer' ?  option.path.split('_')[0] : option.sprintState ? option.sprintState : option.releaseState }})
+                        ({{ service.getSelectedTab().toLowerCase() === 'iteration' ? option.sprintState : service.getSelectedTab().toLowerCase() === 'release' ? option.releaseState : option.path.split('_')[0]  }})
                     </span>
                 </div>
             </ng-template>

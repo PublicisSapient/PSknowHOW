@@ -21,15 +21,12 @@ import {
   OnInit,
   ChangeDetectorRef,
   AfterContentInit,
-  HostListener,
-  Output,
-  Renderer2,
-  ViewChild,
+  Renderer2
 } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { GetAuthService } from '../../services/getauth.service';
 import { HttpService } from '../../services/http.service';
-import { NavigationEnd, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-v2',
