@@ -5073,7 +5073,16 @@
                     },
                     "parentFilter": {
                         "labelName": "Organization Level"
-                    }
+                    },
+                    "additionalFilters": [
+                        {
+                            "type": "multiSelect",
+                            "defaultLevel": {
+                                "labelName": "sqd",
+                                "sortBy": null
+                            }
+                        }
+                    ]
                 }
             },
             {
@@ -5374,7 +5383,16 @@
                     },
                     "parentFilter": {
                         "labelName": "Organization Level"
-                    }
+                    },
+                    "additionalFilters": [
+                        {
+                            "type": "multiSelect",
+                            "defaultLevel": {
+                                "labelName": "sqd",
+                                "sortBy": null
+                            }
+                        }
+                    ]
                 }
             },
             {
@@ -6030,7 +6048,16 @@
                     },
                     "parentFilter": {
                         "labelName": "Organization Level"
-                    }
+                    },
+                    "additionalFilters": [
+                        {
+                            "type": "multiSelect",
+                            "defaultLevel": {
+                                "labelName": "sqd",
+                                "sortBy": null
+                            }
+                        }
+                    ]
                 }
             },
             {
@@ -6160,7 +6187,16 @@
                     },
                     "parentFilter": {
                         "labelName": "Organization Level"
-                    }
+                    },
+                    "additionalFilters": [
+                        {
+                            "type": "multiSelect",
+                            "defaultLevel": {
+                                "labelName": "sqd",
+                                "sortBy": null
+                            }
+                        }
+                    ]
                 }
             },
             {
