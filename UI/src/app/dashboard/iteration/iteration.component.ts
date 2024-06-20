@@ -228,38 +228,43 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.activeIndex = 0;
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
       this.processKpiConfigData();
-      this.masterData = $event.masterData;
-      this.filterData = $event.filterData;
-      this.filterApplyData = $event.filterApplyData;
-      this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
-      if (this.filterData?.length) {
-        this.noTabAccess = false;
-        // call kpi request according to tab selected
-        if (this.masterData && Object.keys(this.masterData).length) {
-          if (this.selectedtype !== 'Kanban') {
-            // we should only call kpi154 on the click of Daily Standup tab
-            let kpiIdsForCurrentBoard;
-            if (this.activeIndex !== 2) {
-              kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId !== 'kpi154');
-            } else {
-              kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi154');
-            }
-            const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
-            if (selectedSprint) {
-              this.selectedProjectId = selectedSprint.nodeId?.substring(selectedSprint.nodeId.lastIndexOf('_') + 1, selectedSprint.nodeId.length);
-              this.checkForAssigneeDataAndSetupTabs();
+      if (!$event.filterApplyData['ids'] || !$event.filterApplyData['ids']?.length || !$event.filterApplyData['ids'][0]) {
+        this.noSprints = true;
+      } else {
+        this.noSprints = false;
+        this.masterData = $event.masterData;
+        this.filterData = $event.filterData;
+        this.filterApplyData = $event.filterApplyData;
+        this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
+        if (this.filterData?.length) {
+          this.noTabAccess = false;
+          // call kpi request according to tab selected
+          if (this.masterData && Object.keys(this.masterData).length) {
+            if (this.selectedtype !== 'Kanban') {
+              // we should only call kpi154 on the click of Daily Standup tab
+              let kpiIdsForCurrentBoard;
+              if (this.activeIndex !== 2) {
+                kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId !== 'kpi154');
+              } else {
+                kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi154');
+              }
+              const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
+              if (selectedSprint) {
+                this.selectedProjectId = selectedSprint.nodeId?.substring(selectedSprint.nodeId.lastIndexOf('_') + 1, selectedSprint.nodeId.length);
+                this.checkForAssigneeDataAndSetupTabs();
 
-              const today = new Date().toISOString().split('T')[0];
-              const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
-              this.timeRemaining = this.calcBusinessDays(today, endDate);
+                const today = new Date().toISOString().split('T')[0];
+                const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
+                this.timeRemaining = this.calcBusinessDays(today, endDate);
 
-              this.groupJiraKpi(kpiIdsForCurrentBoard);
-              this.getKpiCommentsCount();
+                this.groupJiraKpi(kpiIdsForCurrentBoard);
+                this.getKpiCommentsCount();
+              }
             }
           }
+        } else {
+          this.noTabAccess = true;
         }
-      } else {
-        this.noTabAccess = true;
       }
     }
   }

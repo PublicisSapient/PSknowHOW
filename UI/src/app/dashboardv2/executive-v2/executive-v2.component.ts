@@ -82,6 +82,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiChartData = {};
   kpiThresholdObj = {};
   noKpis = false;
+  noFilterApplyData = false;
   enableByUser = false;
   updatedConfigGlobalData;
   kpiConfigData = {};
@@ -121,6 +122,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
 
     this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
+      this.noFilterApplyData = false;
       this.kpiLoader = new Set();
       this.processedKPI11Value = {};
       this.selectedBranchFilter = 'Select';
@@ -259,47 +261,53 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.kpiTableDataObj[nodeName] = [];
       }
       // }
-      this.masterData = $event.masterData;
-      this.filterData = $event.filterData;
-      this.filterApplyData = $event.filterApplyData;
-      this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
-      this.selectedJobFilter = 'Select';
-      this.loading = $event.loading;
-      if (this.filterData?.length && $event.makeAPICall) {
-        this.noTabAccess = false;
-        // call kpi request according to tab selected
-        if (this.masterData && Object.keys(this.masterData).length) {
-          this.processKpiConfigData(this.masterData);
-          const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
-          // set up dynamic tabs
-          this.setUpTabs();
-          if (this.service.getSelectedType().toLowerCase() === 'kanban') {
-            this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
-            this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
-            this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
-            this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
-            this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
-          } else {
-            this.groupJiraKpi(kpiIdsForCurrentBoard);
-            this.groupSonarKpi(kpiIdsForCurrentBoard);
-            this.groupJenkinsKpi(kpiIdsForCurrentBoard);
-            this.groupZypherKpi(kpiIdsForCurrentBoard);
-            this.groupBitBucketKpi(kpiIdsForCurrentBoard)
-          }
-          this.createKpiTableHeads(this.selectedtype.toLowerCase());
 
-          let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
-          if (projectLevel) {
-            if (this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
+      if (!$event.filterApplyData['ids'] || !$event.filterApplyData['ids']?.length || !$event.filterApplyData['ids'][0]) {
+        this.noFilterApplyData = true;
+      } else {
+        this.noFilterApplyData = false;
+        this.masterData = $event.masterData;
+        this.filterData = $event.filterData;
+        this.filterApplyData = $event.filterApplyData;
+        this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
+        this.selectedJobFilter = 'Select';
+        this.loading = $event.loading;
+        if (this.filterData?.length && $event.makeAPICall) {
+          this.noTabAccess = false;
+          // call kpi request according to tab selected
+          if (this.masterData && Object.keys(this.masterData).length) {
+            this.processKpiConfigData(this.masterData);
+            const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
+            // set up dynamic tabs
+            this.setUpTabs();
+            if (this.service.getSelectedType().toLowerCase() === 'kanban') {
+              this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
+              this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
+              this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
+              this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
+              this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
+            } else {
+              this.groupJiraKpi(kpiIdsForCurrentBoard);
+              this.groupSonarKpi(kpiIdsForCurrentBoard);
+              this.groupJenkinsKpi(kpiIdsForCurrentBoard);
+              this.groupZypherKpi(kpiIdsForCurrentBoard);
+              this.groupBitBucketKpi(kpiIdsForCurrentBoard)
+            }
+            this.createKpiTableHeads(this.selectedtype.toLowerCase());
+
+            let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
+            if (projectLevel) {
+              if (this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
+            }
           }
+        } else {
+          this.noTabAccess = true;
         }
-      } else {
-        this.noTabAccess = true;
-      }
-      if (this.hierarchyLevel && this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelId === 'project') {
-        this.showCommentIcon = true;
-      } else {
-        this.showCommentIcon = false;
+        if (this.hierarchyLevel && this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelId === 'project') {
+          this.showCommentIcon = true;
+        } else {
+          this.showCommentIcon = false;
+        }
       }
     }
   }
