@@ -744,20 +744,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
-
+          
           if (localVariable['kpi997']) {
             if (localVariable['kpi997'].trendValueList && localVariable['kpi997'].xAxisValues) {
-              localVariable['kpi997'].trendValueList.forEach(trendElem => {
-                trendElem.value.forEach(valElem => {
-                  if (valElem.value.length === 5 && localVariable['kpi997'].xAxisValues.length === 5) {
-                    valElem.value.forEach((element, index) => {
-                      element['xAxisTick'] = localVariable['kpi997'].xAxisValues[index];
+                localVariable['kpi997'].trendValueList.forEach(trendElem => {
+                    trendElem.value.forEach(valElem => {
+                        if (valElem.value.length === 5 && localVariable['kpi997'].xAxisValues.length === 5) {
+                            valElem.value.forEach((element, index) => {
+                                element['xAxisTick'] = localVariable['kpi997'].xAxisValues[index];
+                            });
+                        }
                     });
-                  }
                 });
-              });
             }
-          }
+        }
 
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(localVariable);

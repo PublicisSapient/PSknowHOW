@@ -204,10 +204,10 @@ export class MultilineV2Component implements OnChanges {
 
       let xScale;
 
-      if (viewType === 'large' && selectedProjectCount === 1) {
+      if (kpiId === 'kpi997') {
         xScale = d3
           .scaleBand()
-          .domain(sprintList)
+          .domain([...sprintList])
           .range([0, width])
           .padding(0)
 
@@ -475,7 +475,7 @@ export class MultilineV2Component implements OnChanges {
         .x((d, i) => {
           if (board == 'dora') {
             return xScale(d.date)
-          } else if (viewType === 'large' && selectedProjectCount === 1) {
+          } else if (kpiId === 'kpi997') {
             return xScale(d.date || d.sortSprint)
           } else {
             return xScale(i + 1)
@@ -625,7 +625,7 @@ export class MultilineV2Component implements OnChanges {
 
           if (board == 'dora') {
             return xScale(d.date);
-          } else if (viewType === 'large' && selectedProjectCount === 1) {
+          } else if (kpiId === 'kpi997') {
             return xScale(d.date || d.sortSprint)
           } else {
             return xScale(i + 1)
