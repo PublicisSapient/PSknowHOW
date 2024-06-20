@@ -786,7 +786,6 @@ this.resetAddtionalFIlters();
         for (let j = 0; j < temp?.length; j++) {
           if (this.filterApplyData['level'] < temp[j].level) {
             this.filterApplyData['level'] = temp[j].level;
-            this.filterApplyData['selectedMap']['project']?.push(temp[j].parentId[0]);
             this.filterApplyData['selectedMap'][temp[j].labelName]?.push(temp[j].nodeId);
             this.filterApplyData['ids'] = [];
             this.filterApplyData['ids'].push(temp[j].nodeId);
@@ -795,13 +794,11 @@ this.resetAddtionalFIlters();
             this.filterApplyData['ids'].push(temp[j].nodeId);
           }
           this.filterApplyData['label'] = temp[j]?.labelName;
-          if (temp[j].labelName != 'sprint' || this.filterApplyData['selectedMap']['sprint']?.length == 0) {
-            if(this.selectedTab.toLowerCase() === 'iteration'){
-              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.parentId[0],this.filterApplyData['selectedMap']['project'])
-              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['sprint'])
-            }else{
-              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['project'])
-            }
+          if(this.selectedTab.toLowerCase() === 'iteration'){
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.parentId[0],this.filterApplyData['selectedMap']['project'])
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['sprint'])
+          }else{
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['project'])
           }
         }
       } else {
@@ -1540,11 +1537,6 @@ this.resetAddtionalFIlters();
   showChartToggle(val) {
     this.showChart = val;
     this.service.setShowTableView(this.showChart);
-  }
-
-  exportToExcel($event = null) {
-    this.disableDownloadBtn = true;
-    this.service.setGlobalDownload(true);
   }
 
   getNotification() {
