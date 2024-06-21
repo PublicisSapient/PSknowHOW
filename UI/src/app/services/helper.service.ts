@@ -407,6 +407,19 @@ export class HelperService {
         return objArray;
     }
 
+    sortByField(objArray, propArr): any {
+        propArr.forEach(prop => {
+            if (objArray?.[0]?.[prop]) {
+                objArray.sort((a, b) => {
+                    const propA = a[prop].toLowerCase();
+                    const propB = b[prop].toLowerCase();
+                    return propA.localeCompare(propB);
+                });
+            }
+        });
+        return objArray;
+    }
+
     /** logic to apply multiselect filter */
     applyAggregationLogic(obj, aggregationType, percentile) {
         const arr = JSON.parse(JSON.stringify(obj[Object.keys(obj)[0]]));
@@ -666,7 +679,7 @@ export class HelperService {
 
     setBackupOfFilterSelectionState = (selectedFilterObj) => {
         if (Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
-            this.selectedFilters = {...selectedFilterObj};
+            this.selectedFilters = { ...selectedFilterObj };
         } else {
             this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
         }

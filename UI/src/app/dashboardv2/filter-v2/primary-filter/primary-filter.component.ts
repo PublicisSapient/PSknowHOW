@@ -14,7 +14,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   @Input() primaryFilterConfig: {};
   @Input() selectedType: string = '';
   @Input() selectedTab: string = '';
-  filters: any[];
+  filters = [];
   selectedFilters: any;
   subscriptions: any[] = [];
   stateFilters: any[] = [];
@@ -34,7 +34,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       this.selectedFilters = [];
       this.populateFilters();
       setTimeout(() => {
-        
+
         if (this.filters.length) {
           this.selectedFilters = new Set();
 
@@ -54,7 +54,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
             this.selectedFilters = this.filterData[this.selectedLevel].filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
             this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
             this.onPrimaryFilterChange.emit(this.selectedFilters);
-           this.setProjectAndLevelBackupBasedOnSelectedLevel();
+            this.setProjectAndLevelBackupBasedOnSelectedLevel();
           } else {
             this.applyDefaultFilters();
           }
@@ -65,13 +65,13 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
   applyDefaultFilters() {
     this.populateFilters();
-    
+
     setTimeout(() => {
       this.selectedFilters = [];
       this.selectedFilters.push({ ...this.filters[0] });
       this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
       this.applyPrimaryFilters({});
-     this.setProjectAndLevelBackupBasedOnSelectedLevel();
+      this.setProjectAndLevelBackupBasedOnSelectedLevel();
     }, 100);
   }
 
@@ -94,14 +94,14 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     if (this.selectedLevel && typeof this.selectedLevel === 'string' && this.selectedLevel.length) {
       this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
       if (this.primaryFilterConfig['defaultLevel'].sortBy) {
-        this.filters = this.sortByField(this.filterData[this.selectedLevel], this.primaryFilterConfig['defaultLevel'].sortBy);
+        this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel], [this.primaryFilterConfig['defaultLevel'].sortBy]);
       } else {
         this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
       }
     } else if (this.selectedLevel && Object.keys(this.selectedLevel).length) {
       // check for iterations and releases
       if (this.primaryFilterConfig['defaultLevel'].sortBy) {
-        this.filters = this.sortByField(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId), this.primaryFilterConfig['defaultLevel'].sortBy);
+        this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy]);
       } else {
         this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId));
       }
@@ -123,29 +123,17 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     }
   }
 
-  sortByField(objArray, prop) {
-    if (objArray?.[0]?.[prop]) {
-      return objArray.sort((a, b) => {
-        const propA = a[prop].toLowerCase();
-        const propB = b[prop].toLowerCase();
-        return propA.localeCompare(propB);
-      });
-    } else {
-      return objArray;
-    }
-  }
-
   compareObjects(obj1, obj2) {
     return JSON.stringify(obj1) === JSON.stringify(obj2);
   }
 
-  setProjectAndLevelBackupBasedOnSelectedLevel(){
+  setProjectAndLevelBackupBasedOnSelectedLevel() {
     if (typeof this.selectedLevel === 'string') {
-     this.service.setSelectedTrends(this.selectedFilters);
-      this.service.setSelectedLevel({hierarchyLevelName : this.selectedLevel?.toLowerCase()})
+      this.service.setSelectedTrends(this.selectedFilters);
+      this.service.setSelectedLevel({ hierarchyLevelName: this.selectedLevel?.toLowerCase() })
     } else {
       this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
-      this.service.setSelectedLevel({hierarchyLevelName : this.selectedLevel['nodeType']?.toLowerCase()})
+      this.service.setSelectedLevel({ hierarchyLevelName: this.selectedLevel['nodeType']?.toLowerCase() })
     }
   }
 
