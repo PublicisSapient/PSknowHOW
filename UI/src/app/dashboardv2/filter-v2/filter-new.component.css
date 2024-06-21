@@ -1,260 +1,290 @@
 .filter-container {
-    background-color: #F5F9FF;
-    font-size: 0.75rem;
-    display: flex;
-    max-width: 100vw;
+  background-color: #F5F9FF;
+  font-size: 0.75rem;
+  display: flex;
+  max-width: 100vw;
+  padding: 0 10px;
+  position: relative;
 }
 
 :host ::ng-deep .p-float-label {
-    max-width: 300px;
+  max-width: 300px;
 }
 
 :host ::ng-deep .p-float-label .p-inputwrapper-filled~label {
-    font-size: 0.75rem;
+  font-size: 0.75rem;
 
 }
 
 :host ::ng-deep .p-multiselect-panel,
 :host ::ng-deep .p-dropdown-panel {
-    top: unset !important;
-    z-index: 1002;
+  top: unset !important;
+  z-index: 1002;
 }
 
 :host ::ng-deep .p-multiselect-panel .p-multiselect-items .p-multiselect-item,
 :host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
-    font-size: 10px;
-    padding: 0.5rem 0.5rem;
+  font-size: 10px;
+  padding: 0.5rem 0.5rem;
 }
 
 /* Scrum/Kanban tabs start*/
 .tabs {
-    display: flex;
-    margin-left: 30px;
-    margin-right: 100px;
+  display: flex;
+  /* margin-left: 30px;
+    margin-right: 100px; */
 }
 
 .tab {
-    cursor: pointer;
-    padding: 10px 15px;
-    margin: 0 5px;
-    height: 40px;
+  cursor: pointer;
+  padding: 10px 15px;
+  margin: 0 5px;
+  height: 40px;
 }
 
 .tab.active {
-    border-bottom: 2px solid #0B4BC8;
-    color: #0B4BC8;
-    font-weight: bold;
+  border-bottom: 2px solid #0B4BC8;
+  color: #0B4BC8;
+  font-weight: bold;
 }
 
 .disabled {
-    pointer-events: none;
-    opacity: 1;
-    border-top-right-radius: 8px;
-    border-top-left-radius: 8px;
-    background-color: #F3F3F3;
-    color: #BEBEBE;
+  pointer-events: none;
+  opacity: 1;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
+  background-color: #F3F3F3;
+  color: #BEBEBE;
 }
 
 .active.disabled {
-    background-color: #F3F3F3;
-    color: #979797;
-    border-bottom: 2px solid #979797;
+  background-color: #F3F3F3;
+  color: #979797;
+  border-bottom: 2px solid #979797;
 }
 
 /* Scrum/Kanban tabs end*/
 
 /* Selected Filters start */
 .selected-filter-container {
-    background-color: #F5F9FF;
+  background-color: #F5F9FF;
 }
 
 .selected-filter-container ul {
-    list-style: none;
-    background-color: #F5F9FF;
+  list-style: none;
+  background-color: #F5F9FF;
 }
 
 ul li.selectedfilter {
-    font-size: 0.8rem;
-    display: flex;
-    line-height: 2;
-    margin: 10px;
+  font-size: 0.8rem;
+  display: flex;
+  line-height: 2;
+  margin: 10px;
 }
 
 .selectedfilter {
-    padding: 0 8px;
-    background-color: #fff;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
+  padding: 0 8px;
+  background-color: #fff;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
 }
 
 .align-marker {
-    margin: 0 1rem 0 0;
+  margin: 0 1rem 0 0;
 }
 
 ul li.selectedfilter .selected-node-label .align-list-marker {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    margin-right: 5px;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
 }
 
 .remove-node {
-    font-size: 14px;
-    cursor: pointer;
-    margin-left: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 5px;
 }
 
 /* Selected Filters end */
 
 .date-filter-container {
-    display: flex;
+  display: flex;
 }
 
 .selected-date {
-    list-style-type: none;
-    color: var(--color-cyan-blue);
-    display: flex;
-    align-items: center;
+  list-style-type: none;
+  color: var(--color-cyan-blue);
+  display: flex;
+  align-items: center;
 }
 
 .btn-container {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    background: #fff;
-    padding: 5px;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: #fff;
+  padding: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 .filter-date {
-    height: auto;
-    padding: 10px 0;
-    border-bottom: 1px solid #cacaca;
+  height: auto;
+  padding: 10px 0;
+  border-bottom: 1px solid #cacaca;
 }
 
 :host ::ng-deep .filter-options-container::before {
-    content:"\A";
-    width: 10px; 
-    height: 10px;
-    position: absolute;
-    top: -6px;
-    left: 80%;
-    border: 1px solid lightgrey;
-    background-color: #fff;
-    transform: rotateY(0deg) rotate(45deg);
-    border-bottom: none;
-    border-right: none;
+  content: "\A";
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  top: -6px;
+  left: 80%;
+  border: 1px solid lightgrey;
+  background-color: #fff;
+  transform: rotateY(0deg) rotate(45deg);
+  border-bottom: none;
+  border-right: none;
 }
 
 :host ::ng-deep .filter-options-container {
-    position: absolute;
-    top: 80%;
-    right: 0;
-    background: #fff;
-    border: 1px solid lightgrey;
-    width: 200px;
-    min-width: 190px;
-    border-radius: 5px;
-    max-width: 500px;
-    z-index: 1002;
+  position: absolute;
+  top: 80%;
+  right: 0;
+  background: #fff;
+  border: 1px solid lightgrey;
+  width: 200px;
+  min-width: 190px;
+  border-radius: 5px;
+  max-width: 500px;
+  z-index: 1002;
 }
 
 .filter-options label {
-    border: none;
-    text-align: initial;
+  border: none;
+  text-align: initial;
 }
 
 .filter-options input {
-    display: inline-block;
+  display: inline-block;
 }
 
 .filter-date .p-button-secondary {
-    background: transparent;
-    border: 1px solid var(--color-black);
-    color: var(--color-black);
+  background: transparent;
+  border: 1px solid var(--color-black);
+  color: var(--color-black);
 }
 
 .filter-date .p-buttonset button {
-    border-radius: 5px;
-    margin-left: 10px;
-    font-size: 12px !important;
+  border-radius: 5px;
+  margin-left: 10px;
+  font-size: 12px !important;
 }
 
 .filter-date .p-buttonset button:first-child {
-    margin-left: 0;
+  margin-left: 0;
 }
 
 .filter-date .p-buttonset {
-    margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 
 .filter-date .p-buttonset .btn-active {
-    background: var(--color-secondary-blue);
-    color: var(--color-white);
-    border-color: var(--color-secondary-blue);
+  background: var(--color-secondary-blue);
+  color: var(--color-white);
+  border-color: var(--color-secondary-blue);
 }
 
 .date-filter-dropdown .ui-g-12 {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 
 .date-filter-dropdown .filter-date .p-buttonset .p-button.p-button-sm {
-    padding: 0.5rem 0.7rem;
+  padding: 0.5rem 0.7rem;
 }
 
 .date-filter-dropdown .btn-container .p-button.p-button-secondary:last-child {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .filter-options {
-    margin: 0 0 40px 0;
-    overflow-y: visible;
-    width: 100%;
+  margin: 0 0 40px 0;
+  overflow-y: visible;
+  width: 100%;
 }
 
 .filter-options label {
-    border: none;
-    text-align: initial;
+  border: none;
+  text-align: initial;
 }
 
 .filter-options input {
-    display: inline-block;
+  display: inline-block;
 }
 
 .scrum-kanban-switch {
-    width: 250px;
+  width: 160px;
 }
 
-.additional-filter-container {
+/* .additional-filter-container {
     width: 450px;
-}
+} */
 
 .primary-filter-container {
-    width: calc(100% - 250px - 450px);
+  /* width: calc(100% - 160px);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%); */
+  margin-left: 17%;
+}
+
+.duration-container {
+
+}
+
+.icon-container {
+  background-color: var(--color-white);
+  padding: 5px;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+  width: 25px;
+  height: 25px;
+}
+
+.text-container {
+  font-size: 12px;
+  color: var(--color-black);
+  vertical-align: middle;
+}
+
+.data-container {
+  vertical-align: middle;
 }
 
 .date-filter-btn {
-    background-color: #fff;
-    border: 1px solid #D7DADE;
-    border-radius: 5px;
-    color: #52595C;
-    font-size: 12px;
+  background-color: #fff;
+  border: 1px solid #D7DADE;
+  border-radius: 5px;
+  color: #52595C;
+  font-size: 12px;
 }
 
 :host ::ng-deep .date-filter-ddn {
-    height: 30px;
-    width: 80px;
+  height: 30px;
+  width: 80px;
 }
 
 :host ::ng-deep .date-filter-ddn .p-dropdown-label {
-    padding: 7px 5px;
-    font-size: 11px;
+  padding: 7px 5px;
+  font-size: 11px;
 }
 
 .btn-apply {
-    background-color: #0B4BC8;
+  background-color: #0B4BC8;
 }
