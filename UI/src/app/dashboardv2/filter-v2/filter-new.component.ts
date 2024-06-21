@@ -280,9 +280,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       // set selected projects(trends)
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
         this.service.setSelectedTrends(event);
-      }else{
+      } else {
         this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
-       }
+      }
 
       // Populate additional filters on MyKnowHOW, Speed and Quality
       if (this.selectedTab.toLowerCase() !== 'developer') {
@@ -432,7 +432,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
         this.additionalFiltersArr['filter' + (index + 1)].push(...allFilters.filter((filterItem) => {
           let parentId = '';
-          if (addtnlFilter.defaultLevel.labelName === 'sqd') {
+          if (addtnlFilter.defaultLevel.labelName === 'sqd' && !this.kanban) {
             parentId = filterItem.parentId.substring(filterItem.parentId.indexOf('_') + 1, filterItem.parentId.length)
           } else {
             parentId = filterItem.parentId;
