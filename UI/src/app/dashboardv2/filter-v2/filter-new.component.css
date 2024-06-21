@@ -231,20 +231,13 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   width: 160px;
 }
 
-/* .additional-filter-container {
-    width: 450px;
-} */
 
 .primary-filter-container {
-  /* width: calc(100% - 160px);
-  position: absolute;
+  width: calc(100% - 160px);
+  /* position: absolute;
   left: 50%;
-  transform: translateX(-50%); */
-  margin-left: 17%;
-}
-
-.duration-container {
-
+  transform: translateX(-50%); 
+  margin-left: 17%;*/
 }
 
 .icon-container {

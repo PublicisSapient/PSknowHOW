@@ -430,6 +430,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
         }
       }
+    } else {
+      this.handlePrimaryFilterChange(this.previousFilterEvent);
     }
   }
 

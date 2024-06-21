@@ -1,4 +1,4 @@
-<div class="filter-container p-grid p-m-0">
+<div class="filter-container p-m-0 p-fluid">
   <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch">
     <div class="tabs">
       <div class="tab" (click)="setSelectedType('Scrum')"
@@ -9,7 +9,7 @@
         Kanban</div>
     </div>
   </div>
-  <div class="p-d-flex p-col-fixed p-jc-end p-pl-0 p-pr-0 primary-filter-container" *ngIf="filterDataArr[selectedType]">
+  <div class="p-d-flex p-jc-center p-pl-0 p-pr-0 primary-filter-container" *ngIf="filterDataArr[selectedType]">
     <app-parent-filter *ngIf="getObjectKeys(parentFilterConfig).length" class="p-mr-2"
       [filterData]="filterDataArr[selectedType]" [selectedTab]="selectedTab"
       (onSelectedLevelChange)="handleParentFilterChange($event)" [selectedType]="selectedType"
@@ -23,13 +23,6 @@
         (onPrimaryFilterChange)="handleAdditionalChange($event)"></app-additional-filter>
     </ng-container>
   </div>
-  <!-- <div class="p-col-fixed p-pl-0 p-pr-0 additional-filter-container">
-    <ng-container *ngIf="additionalFilterConfig?.length">
-      <app-additional-filter [selectedTab]="selectedTab" [selectedLevel]="selectedLevel" [selectedType]="selectedType"
-        [additionalFilterConfig]="additionalFilterConfig"
-        (onPrimaryFilterChange)="handleAdditionalChange($event)"></app-additional-filter>
-    </ng-container>
-  </div> -->
 </div>
 <div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3">
   <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
