@@ -179,7 +179,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     }
 
     this.formatNavigationTabs(); 
-    console.log(this.upDatedConfigData?.length);
       
     if (this.upDatedConfigData?.length === 0 && !this.commitmentReliabilityKpi?.isEnabled) {
       this.noKpis = true;
