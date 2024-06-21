@@ -37,6 +37,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   additionalFiltersArr = [];
   filterType: string = '';
   selectedSprint: any;
+  additionalData: boolean = false;
+  daysRemaining: any;
+  combinedDate: string;
 
   constructor(
     private httpService: HttpService,
@@ -353,9 +356,21 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
 
       if (this.selectedTab?.toLowerCase() === 'iteration') {
+        const currentDate = new Date().getTime();
+        const stopDate = new Date(event[0].sprintEndDate).getTime();
+        const timeRemaining = stopDate - currentDate;
+        const millisecondsPerDay = 24 * 60 * 60 * 1000;
+        this.daysRemaining = Math.ceil(timeRemaining / millisecondsPerDay) < 0 ? 0 : Math.ceil(timeRemaining / millisecondsPerDay);
+        const startDateFormatted = this.formatDate(event[0].sprintStartDate);
+        const endDateFormatted = this.formatDate(event[0].sprintEndDate);
+        this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
+        console.log(event[0])
+        this.additionalData = true;
         this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
         this.selectedSprint = event[0];
         this.service.setCurrentSelectedSprint(this.selectedSprint);
+      } else {
+        this.additionalData = false;
       }
 
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
@@ -370,6 +385,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
       }
     }
+  }
+
+  formatDate(dateString) {
+    const date = new Date(dateString);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = String(date.getFullYear()).slice(-2);
+
+    return `${day} ${month}'${year}`;
   }
 
   handleAdditionalChange(event) {
