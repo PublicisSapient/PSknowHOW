@@ -105,6 +105,7 @@ public class RepoToolsConfigServiceImpl {
 	public static final String BITBUCKET_CLOUD_IDENTIFIER = "bitbucket.org";
 	public static final String PROJECT = "/projects/";
 	public static final String REPOS = "/repos/";
+	public static final String WARNING = "WARNING";
 
 
 
@@ -342,6 +343,10 @@ public class RepoToolsConfigServiceImpl {
 				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+		if(WARNING.equalsIgnoreCase(repoToolsStatusResponse.getStatus())) {
+			processorExecutionTraceLog.setExecutionWarning(true);
+			processorExecutionTraceLog.setExecutionResumesAt(repoToolsStatusResponse.getTimestamp());
+		}
 		processorExecutionTraceLog.setExecutionSuccess(
 				Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()));
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
