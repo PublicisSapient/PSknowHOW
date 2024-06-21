@@ -351,8 +351,8 @@ export class SharedService {
     }
   }
 
-  setSelectedLevel(val){
-    this.selectedLevel = {...val};
+  setSelectedLevel(val) {
+    this.selectedLevel = { ...val };
   }
   getSelectedLevel() {
     return this.selectedLevel;
@@ -381,10 +381,14 @@ export class SharedService {
     this.currentUserDetailsSubject.next(this.currentUserDetails);
   }
 
-  getCurrentUserDetails(key){
-    if(this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)){
-      return this.currentUserDetails[key] ;
-     }
+  getCurrentUserDetails(key = null) {
+    if (key) {
+      if (this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)) {
+        return this.currentUserDetails[key];
+      }
+    } else if (this.currentUserDetails) {
+      return this.currentUserDetails;
+    }
     return false;
   }
 
@@ -455,7 +459,7 @@ export class SharedService {
         let kpiList;
         if (board?.boardName?.toLowerCase() === 'iteration') {
           kpiList = board?.['kpis']?.filter((item) => item.kpiId != 'kpi121');
-        }else{
+        } else {
           kpiList = board?.['kpis'];
         }
         kpiList?.forEach((item) => {
@@ -491,11 +495,11 @@ export class SharedService {
     this.boardNamesListSubject.next(boardNameArr);
   }
 
-  getSprintForRnR(){
+  getSprintForRnR() {
     return this.sprintForRnR;
   }
 
-  setSprintForRnR(sprint){
+  setSprintForRnR(sprint) {
     this.sprintForRnR = sprint;
   }
 }
