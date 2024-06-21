@@ -597,7 +597,7 @@ export class MultilineV2Component implements OnChanges {
                 `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
                 '</span>',
               )
-              .style('left', xPosition + 20 + 'px')
+              .style('left', (xPosition - 80) + 'px')
               // .style('top', yScale(d.value) - topValue + 'px');
               .style('top', yPosition + 20 + 'px');
             for (const hoverData in d.hoverValue) {

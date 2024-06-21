@@ -617,7 +617,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
               } = circle.getBoundingClientRect();
 
               div.html(`${ d.date || d.sSprintName } ` + ' : ' + '<span class=\'toolTipValue\'> ' + `${ d.lineValue + ' ' + showUnit } ` + '</span>')
-                .style('left', xPosition + 20 + 'px')
+                .style('left', (xPosition - 50) + 'px')
                 .style('top', yPosition + 20 + 'px');
               for (const hoverData in d.hoverValue) {
                 div.append('p').html(`${ hoverData } ` + ' : ' + '<span class=\'toolTipValue\'> ' + `${ d.hoverValue[hoverData] } ` + ' </span>');
