@@ -131,33 +131,33 @@
 }
 
 ::ng-deep .sprint-hover-project1 [aria-selected="true"] {
-    background-color: #6079C5 !important;
-    color: black !important;
+  background-color: #6079C5 !important;
+  color: black !important;
 }
 
 ::ng-deep .sprint-hover-project2 [aria-selected="true"] {
-    background-color: #FFB587 !important;
-    color: black !important;
+  background-color: #FFB587 !important;
+  color: black !important;
 }
 
 ::ng-deep .sprint-hover-project3 [aria-selected="true"] {
-    background-color: #D48DEF !important;
-    color: black !important;
+  background-color: #D48DEF !important;
+  color: black !important;
 }
 
 ::ng-deep .sprint-hover-project4 [aria-selected="true"] {
-    background-color: #A4F6A5 !important;
-    color: black !important;
+  background-color: #A4F6A5 !important;
+  color: black !important;
 }
 
 ::ng-deep .sprint-hover-project5 [aria-selected="true"] {
-    background-color: #FBCF5F !important;
-    color: black !important;
+  background-color: #FBCF5F !important;
+  color: black !important;
 }
 
 ::ng-deep .sprint-hover-project6 [aria-selected="true"] {
-    background-color: #9FECFF !important;
-    color: black !important;
+  background-color: #9FECFF !important;
+  color: black !important;
 }
 
 .sprint-hover-icon {
@@ -173,10 +173,16 @@
   font-size: 1.25rem;
 }
 
-::ng-deep .sprint-details-overlay {
-    width: auto !important;
-    min-width: 450px;
-    z-index: 0 !important;
+:host ::ng-deep .sprint-details-overlay {
+  width: auto !important;
+  min-width: 450px;
+  z-index: 0 !important;
+  left: unset !important;
+  right: unset !important;
+}
+
+:host ::ng-deep .p-tabview .p-tabview-panels {
+  padding: 0;
 }
 
 ::ng-deep div.inner-content {
@@ -340,7 +346,8 @@
   border: 1px solid #D5DBE1;
 }
 
-:host ::ng-deep .p-inputtext, :host ::ng-deep .p-multiselect .p-multiselect-label {
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-multiselect .p-multiselect-label {
   font-size: 0.75rem;
 }
 
@@ -350,24 +357,25 @@
 }
 
 :host ::ng-deep .p-inputtext {
-    font-family: Poppins_Regular, sans-serif;
-    font-size: 12px;
+  font-family: Poppins_Regular, sans-serif;
+  font-size: 12px;
 }
 
 :host ::ng-deep .p-multiselect {
-    border: 1px solid #D5DBE1;
+  border: 1px solid #D5DBE1;
 }
 
-:host ::ng-deep .p-inputtext, :host ::ng-deep .p-multiselect .p-multiselect-label {
-    font-size: 0.75rem;
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-multiselect .p-multiselect-label {
+  font-size: 0.75rem;
 }
 
 :host ::ng-deep .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
-    margin: 5px 0 0 0;
-    word-wrap: break-word;
+  margin: 5px 0 0 0;
+  word-wrap: break-word;
 }
 
 :host ::ng-deep .p-menu.p-component.p-menu-overlay {
-    left: unset !important;
-    right: 10px !important;
+  left: unset !important;
+  right: 10px !important;
 }

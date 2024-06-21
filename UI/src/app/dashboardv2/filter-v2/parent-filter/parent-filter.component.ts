@@ -38,7 +38,6 @@ export class ParentFilterComponent implements OnChanges {
             if(!this.stateFilters || !this.selectedLevel){
               this.selectedLevel = this.filterLevels[this.filterLevels.length - 1];
             }
-            // this.selectedLevel = this.stateFilters ? this.filterLevels.map(level => level.toLowerCase()).filter((level) => level === this.stateFilters.toLowerCase())[0] : this.filterLevels[this.filterLevels.length - 1];
             this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel })
           }
 
@@ -49,11 +48,20 @@ export class ParentFilterComponent implements OnChanges {
         if (this.filterData && Object.keys(this.filterData).length) {
           this.filterLevels = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()].map((item) => item.nodeName);
           this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
-
+          this.stateFilters = this.helperService.getBackupOfFilterSelectionState('parent_level');
 
           setTimeout(() => {
-            if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel || (changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
-              this.selectedLevel = this.filterLevels[0];
+            if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel) {
+              if (this.stateFilters) {
+                this.selectedLevel = this.filterLevels.filter((level) => {
+                  return level.toLowerCase() === this.stateFilters.toLowerCase()
+                })[0];
+              } 
+              
+              if(!this.stateFilters || !this.selectedLevel){
+                this.selectedLevel = this.filterLevels[0];
+              }
+              this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel })
             }
             let selectedNode = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()].filter((filter) => filter.nodeName === this.selectedLevel);
             this.onSelectedLevelChange.emit({ nodeId: selectedNode[0].nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'],fullNodeDetails : selectedNode });
