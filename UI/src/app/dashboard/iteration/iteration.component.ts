@@ -157,7 +157,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId);
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item?.shown);
     this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
-    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
+    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.isEnabled);
 
     /**reset the kpi count */
     this.navigationTabs = this.navigationTabs.map((x) => {
@@ -179,6 +179,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     }
 
     this.formatNavigationTabs();
+
     if (this.upDatedConfigData?.length === 0 && !this.commitmentReliabilityKpi?.isEnabled) {
       this.noKpis = true;
     } else {
@@ -323,7 +324,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
-    // sending requests after grouping the the KPIs according to group Id 
+    // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
         this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Iteration');

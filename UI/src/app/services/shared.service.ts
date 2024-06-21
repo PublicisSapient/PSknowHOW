@@ -54,7 +54,6 @@ export class SharedService {
   public suggestionsData: any = [];
   private passServerRole = new BehaviorSubject<boolean>(false);
   public boardId = 1;
-  public isDownloadExcel;
   private authToken = '';
   public sprintForRnR;
 
@@ -117,7 +116,6 @@ export class SharedService {
     this.passErrorToErrorPage = new EventEmitter();
     this.passAllProjectsData = new EventEmitter();
     this.passEventToNav = new EventEmitter();
-    this.isDownloadExcel = new EventEmitter();
     this.isSideNav = new EventEmitter();
     // For additional filters
     this.populateAdditionalFilters = new EventEmitter();
@@ -352,11 +350,9 @@ export class SharedService {
       document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
     }
   }
-  setGlobalDownload(val) {
-    this.isDownloadExcel.emit(val);
-  }
-  setSelectedLevel(val) {
-    this.selectedLevel = { ...val };
+
+  setSelectedLevel(val){
+    this.selectedLevel = {...val};
   }
   getSelectedLevel() {
     return this.selectedLevel;
@@ -385,14 +381,11 @@ export class SharedService {
     this.currentUserDetailsSubject.next(this.currentUserDetails);
   }
 
-  getCurrentUserDetails(key = null) {
-    this.currentUserDetails = JSON.parse(localStorage.getItem('currentUserDetails'));
-    if (key && this.currentUserDetails?.hasOwnProperty(key)) {
-      return this.currentUserDetails[key];
-    } else if (!key && Object.keys(this.currentUserDetails).length) {
-      return this.currentUserDetails;
-    }
-    return null;
+  getCurrentUserDetails(key){
+    if(this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)){
+      return this.currentUserDetails[key] ;
+     }
+    return false;
   }
 
   setNoRelease(value) {

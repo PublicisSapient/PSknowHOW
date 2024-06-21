@@ -7254,12 +7254,6 @@ describe('ExecutiveComponent', () => {
     expect(component.colorObj).toBe(x);
 });
 
-it('should enable download excel',()=>{
-  const spyObj = spyOn(component,'downloadGlobalExcel');
-  service.setGlobalDownload('true');
-  expect(spyObj).toHaveBeenCalled();
-})
-
 it('should noTabAccess false when emp details not available', () => {
   service.setEmptyData('');
   fixture.detectChanges();
