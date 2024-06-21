@@ -365,7 +365,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         const endDateFormatted = this.formatDate(event[0].sprintEndDate);
         this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
         console.log(event[0])
-        this.additionalData = true;
+        if(JSON.stringify(event[0]) !== '{}') {
+          this.additionalData = true;
+        } else {
+          this.additionalData = false;
+        }
         this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
         this.selectedSprint = event[0];
         this.service.setCurrentSelectedSprint(this.selectedSprint);
