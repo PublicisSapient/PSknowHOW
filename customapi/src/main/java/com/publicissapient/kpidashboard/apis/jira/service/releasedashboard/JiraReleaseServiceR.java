@@ -259,9 +259,9 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 		return processedList;
 	}
 
-	public void fetchJiraIssues(String basicProjectConfigId, List<String> releaseList) {
+	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList) {
 		jiraIssueReleaseList = jiraIssueRepository
-				.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, releaseList);
+				.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, sprintIssuesList);
 		Set<String> storyIDs = jiraIssueReleaseList.stream()
 				.filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase(NormalizedJira.DEFECT_TYPE.getValue()))
 				.map(JiraIssue::getNumber).collect(Collectors.toSet());
