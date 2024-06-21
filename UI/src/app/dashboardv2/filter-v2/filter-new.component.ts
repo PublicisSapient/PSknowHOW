@@ -278,7 +278,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   handlePrimaryFilterChange(event) {
     if (event?.length) { // && Object.keys(event[0]).length) {
       // set selected projects(trends)
-      this.service.setSelectedTrends(event);
+      if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
+        this.service.setSelectedTrends(event);
+      }else{
+        this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
+       }
 
       // Populate additional filters on MyKnowHOW, Speed and Quality
       if (this.selectedTab.toLowerCase() !== 'developer') {
@@ -385,7 +389,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
 
         // set selected projects(trends)
-        this.service.setSelectedTrends(event);
+        // this.service.setSelectedTrends(event);  // The purpose of setSelectedTrends backup is to store project only not other subfilter(sprint/release) node details
 
         if (this.selectedLevel) {
           if (typeof this.selectedLevel === 'string') {
