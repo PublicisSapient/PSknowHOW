@@ -54,7 +54,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
             this.selectedFilters = this.filterData[this.selectedLevel].filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
             this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
             this.onPrimaryFilterChange.emit(this.selectedFilters);
-            this.service.setSelectedTrends(this.selectedFilters);
+           this.setProjectAndLevelBackupBasedOnSelectedLevel();
           } else {
             this.applyDefaultFilters();
           }
@@ -71,7 +71,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       this.selectedFilters.push({ ...this.filters[0] });
       this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
       this.applyPrimaryFilters({});
-      this.service.setSelectedTrends(this.selectedFilters);
+     this.setProjectAndLevelBackupBasedOnSelectedLevel();
     }, 100);
   }
 
@@ -117,7 +117,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     }
     this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
     this.onPrimaryFilterChange.emit([...this.selectedFilters]);
-    this.service.setSelectedTrends(this.selectedFilters);
+    this.setProjectAndLevelBackupBasedOnSelectedLevel();
     if (this.multiSelect?.overlayVisible) {
       this.multiSelect.close(event);
     }
@@ -137,6 +137,16 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
   compareObjects(obj1, obj2) {
     return JSON.stringify(obj1) === JSON.stringify(obj2);
+  }
+
+  setProjectAndLevelBackupBasedOnSelectedLevel(){
+    if (typeof this.selectedLevel === 'string') {
+     this.service.setSelectedTrends(this.selectedFilters);
+      this.service.setSelectedLevel({hierarchyLevelName : this.selectedLevel?.toLowerCase()})
+    } else {
+      this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
+      this.service.setSelectedLevel({hierarchyLevelName : this.selectedLevel['nodeType']?.toLowerCase()})
+    }
   }
 
 }

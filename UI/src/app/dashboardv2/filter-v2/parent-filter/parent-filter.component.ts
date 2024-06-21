@@ -55,8 +55,8 @@ export class ParentFilterComponent implements OnChanges {
             if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel || (changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
               this.selectedLevel = this.filterLevels[0];
             }
-            let selectedNodeId = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()].filter((filter) => filter.nodeName === this.selectedLevel)[0].nodeId;
-            this.onSelectedLevelChange.emit({ nodeId: selectedNodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'] });
+            let selectedNode = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()].filter((filter) => filter.nodeName === this.selectedLevel);
+            this.onSelectedLevelChange.emit({ nodeId: selectedNode[0].nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'],fullNodeDetails : selectedNode });
           }, 0);
         }
       }
@@ -68,8 +68,8 @@ export class ParentFilterComponent implements OnChanges {
       this.onSelectedLevelChange.emit(this.selectedLevel.toLowerCase());
     } else {
       setTimeout(() => {
-        let selectedNodeId = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()].filter((filter) => filter.nodeName === this.selectedLevel)[0].nodeId;
-        this.onSelectedLevelChange.emit({ nodeId: selectedNodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'] });
+        let selectedNode = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()].filter((filter) => filter.nodeName === this.selectedLevel);
+        this.onSelectedLevelChange.emit({ nodeId: selectedNode[0].nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'],fullNodeDetails : selectedNode });
       }, 0);
     }
     this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel.toLowerCase(), 'primary_level': null });
