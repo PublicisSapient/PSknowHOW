@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
@@ -88,6 +87,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KpiHelperServiceTest {
@@ -283,15 +283,15 @@ public class KpiHelperServiceTest {
 	public void testFetchSprintCapacityDataFromDb() throws ApplicationException {
 
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId());
-		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(issueList);
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
 				new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
-		kpiHelperService.fetchSprintCapacityDataFromDb(leafNodeList);
-		assertEquals(5,leafNodeList.size());
+		List<JiraIssue> resultList = kpiHelperService.fetchSprintCapacityDataFromDb(leafNodeList);
+		assertEquals(issueList.size(), resultList.size());
 	}
 
 	@Test

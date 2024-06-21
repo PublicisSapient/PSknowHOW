@@ -35,10 +35,6 @@ public enum JiraFeature {
 	 */
 	ISSUE_TYPE("typeName"),
 	/**
-	 * Original Issue type jira feature.
-	 */
-	ORIGINAL_ISSUE_TYPE("originalType"),
-	/**
 	 * DEFECT type jira feature.
 	 */
 	DEFECT_PRIORITY("priority"),
