@@ -231,13 +231,8 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   width: 160px;
 }
 
-
 .primary-filter-container {
   width: calc(100% - 160px);
-  /* position: absolute;
-  left: 50%;
-  transform: translateX(-50%); 
-  margin-left: 17%;*/
 }
 
 .icon-container {
