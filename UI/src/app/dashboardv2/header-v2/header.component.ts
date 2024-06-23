@@ -13,7 +13,7 @@ import { HelperService } from 'src/app/services/helper.service';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  clientLogo: string = '';
+  // clientLogo: string = '';
   notificationCount: number = 0;
   notificationList: Array<object> = [];
   commentCount: number = 0;
@@ -35,7 +35,7 @@ export class HeaderComponent implements OnInit {
     private helperService: HelperService) { }
 
   ngOnInit(): void {
-    this.getLogoImage();
+    // this.getLogoImage();
     this.getNotification();
     this.items = [
       { label: 'Dashboard', icon: '' },
@@ -64,15 +64,15 @@ export class HeaderComponent implements OnInit {
   }
 
   /*Rendered the logo image */
-  getLogoImage() {
-    this.httpService.getUploadedImage().pipe(first()).subscribe((data) => {
-      if (data['image']) {
-        this.clientLogo = 'data:image/png;base64,' + data['image'];
-      } else {
-        this.clientLogo = undefined;
-      }
-    });
-  }
+  // getLogoImage() {
+  //   this.httpService.getUploadedImage().pipe(first()).subscribe((data) => {
+  //     if (data['image']) {
+  //       this.clientLogo = 'data:image/png;base64,' + data['image'];
+  //     } else {
+  //       this.clientLogo = undefined;
+  //     }
+  //   });
+  // }
 
   // when user would want to give access on project from notification list
   routeForAccess(type: string) {
@@ -95,38 +95,11 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  navigateToHomePage() {
-    const previousSelectedTab = this.router.url.split('/')[2];
-    if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
-      this.sharedService.setEmptyFilter();
-      // this.sharedService.setSelectedType('scrum');
-      this.router.navigateByUrl(`/dashboard/iteration`);
-    }
-  }
-
-  /** when user clicks on Back to dashboard or logo*/
+  /** when user clicks on Back to dashboard */
   navigateToDashboard() {
     this.backToDashboardLoader = true;
     this.router.navigateByUrl(this.lastVisitedFromUrl);
     this.backToDashboardLoader = false;
-    // let projectList = [];
-    // if (this.sharedService.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
-    //   projectList = this.sharedService.getSelectedTrends().map(data => data.nodeId);
-    // }
-    // this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
-    //   this.sharedService.setSideNav(false);
-    //   this.sharedService.setVisibleSideBar(false);
-    //   this.kpiListDataProjectLevel = response.data;
-    //   let userLevelData = this.sharedService.getDashConfigData();
-    //   if(!userLevelData){
-    //     this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(boardResponse => {
-    //       userLevelData = boardResponse.data;
-    //       this.handleRedirection(userLevelData)
-    //     })
-    //   }else{
-    //     this.handleRedirection(userLevelData);
-    //   }
-    // });
   }
 
   getNotification() {
