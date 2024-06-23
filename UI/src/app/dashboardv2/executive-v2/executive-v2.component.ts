@@ -117,7 +117,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   selectedKPITab: string;
   additionalFiltersArr = {};
 
-  constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
+  constructor(public service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
 
@@ -244,7 +244,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
       this.tooltip = $event.configDetails;
-      this.additionalFiltersArr = [];
+      this.additionalFiltersArr = {};
       this.noOfDataPoints = $event?.configDetails?.noOfDataPoints || 5;
       // if (this.serviceObject['makeAPICall']) {
       this.allKpiArray = [];
@@ -804,7 +804,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   getKPIName(kpiId) {
     if (this.masterData && this.masterData.kpiList && this.masterData.kpiList.length) {
-      return this.masterData.kpiList.filter(kpi => kpi.kpiId === 'kpi11')[0].kpiName;
+      return this.masterData.kpiList.filter(kpi => kpi.kpiId === 'kpi11')[0]?.kpiName;
     } else {
       return ' ';
     }
@@ -815,21 +815,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const kpiData = this.masterData.kpiList.find(kpiObj => kpiObj.kpiId === kpiId);
     if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
       return kpiData?.videoLink?.videoUrl;
-    }
-  }
-
-  // Return boolean flag based on link is available and video is enabled
-  isVideoLinkAvailable(kpiId) {
-    let kpiData;
-    try {
-      kpiData = this.masterData?.kpiList?.find(kpiObj => kpiObj.kpiId === kpiId);
-      if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch {
-      return false;
     }
   }
 
@@ -849,7 +834,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   getChartData(kpiId, idx, aggregationType, kpiFilterChange = false) {
-    const trendValueList = this.allKpiArray[idx]?.trendValueList;
+    const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
     this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
 
 
@@ -883,7 +868,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     if (trendValueList?.length > 0) {
-      let filterPropArr = Object.keys(trendValueList[0]).filter((prop) => prop.includes('filter'));
+      let filterPropArr = Object.keys(trendValueList[0])?.filter((prop) => prop.includes('filter'));
       if (filterPropArr?.length) {
         if (filterPropArr.includes('filter')) {
           if (Object.keys(this.kpiSelectedFilterObj[kpiId])?.length > 1) {
@@ -1585,110 +1570,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   }
 
-  downloadGlobalExcel() {
-    let worksheet;
-    const workbook = new Excel.Workbook();
-    worksheet = workbook.addWorksheet('Kpi Data');
-    // let level = this.service.getSelectedLevel();
-    let trends = this.service.getSelectedTrends();
-    // let firstRow = [level['hierarchyLevelName']];
-    // let headerNames = ["KPI Name"];
-    let headers = [{ header: 'KPI Name', key: 'kpiName', width: 30 }];
-    for (let i = 0; i < trends.length; i++) {
-      let colorCode = this.trendBoxColorObj[trends[i]['nodeName']]?.color;
-      colorCode = colorCode.slice(1);
-      headers.push({ header: "Latest (" + trends[i]['nodeName'] + ")", key: trends[i]['nodeName'] + '_latest', width: 15 });
-      headers.push({ header: "Trend (" + trends[i]['nodeName'] + ")", key: trends[i]['nodeName'] + '_trend', width: 15 });
-      headers.push({ header: "Maturity (" + trends[i]['nodeName'] + ")", key: trends[i]['nodeName'] + '_maturity', width: 15 });
-      worksheet.getRow(1).getCell((i * 3) + 2).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colorCode } };
-      worksheet.getRow(1).getCell((i * 3) + 3).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colorCode } };
-      worksheet.getRow(1).getCell((i * 3) + 4).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colorCode } };
-    }
-
-    worksheet.columns = [...headers];
-
-    for (let kpi of this.updatedConfigGlobalData) {
-      let kpiId = kpi.kpiId;
-      if (this.kpiTrendsObj[kpiId]?.length > 0) {
-        let obj = {};
-        obj['kpiName'] = kpi?.kpiName;
-        for (let i = 0; i < this.kpiTrendsObj[kpiId]?.length; i++) {
-          obj[this.kpiTrendsObj[kpiId][i]?.hierarchyName + '_latest'] = this.kpiTrendsObj[kpiId][i]?.value;
-          obj[this.kpiTrendsObj[kpiId][i]?.hierarchyName + '_maturity'] = this.kpiTrendsObj[kpiId][i]?.maturity;
-          obj[this.kpiTrendsObj[kpiId][i]?.hierarchyName + '_trend'] = this.kpiTrendsObj[kpiId][i]?.trend;
-        }
-        worksheet.addRow(obj);
-      }
-    }
-
-
-    worksheet.eachRow(function (row, rowNumber) {
-      if (rowNumber === 1) {
-        row.eachCell({
-          includeEmpty: true
-        }, function (cell) {
-
-          cell.font = {
-            name: 'Arial Rounded MT Bold'
-          };
-        });
-      }
-      row.eachCell({
-        includeEmpty: true
-      }, function (cell) {
-
-        cell.border = {
-          top: {
-            style: 'thin'
-          },
-          left: {
-            style: 'thin'
-          },
-          bottom: {
-            style: 'thin'
-          },
-          right: {
-            style: 'thin'
-          }
-        };
-      });
-    });
-    // Footer Row
-    worksheet.addRow([]);
-    let footerRow = worksheet.addRow(['* KPIs which do not have any data are not included in the export']);
-    footerRow.getCell(1).fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: {
-        argb: 'FFCCFFE5'
-      }
-    };
-    footerRow.getCell(1).border = {
-      top: {
-        style: 'thin'
-      },
-      left: {
-        style: 'thin'
-      },
-      bottom: {
-        style: 'thin'
-      },
-      right: {
-        style: 'thin'
-      }
-    };
-
-
-    // Merge Cells
-    worksheet.mergeCells(`A${footerRow.number}:F${footerRow.number}`);
-    // Generate Excel File with given name
-    workbook.xlsx.writeBuffer().then((data) => {
-      const blob = new Blob([data as BlobPart], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
-      fs.saveAs(blob, 'Kpi Data' + '.xlsx');
-    });
-  }
 
   checkMaturity(item) {
     let maturity = item.maturity;
@@ -1948,9 +1829,5 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         })
       }
     }
-  }
-
-  get myArray() {
-    return Array.from(this.kpiLoader);
   }
 }
