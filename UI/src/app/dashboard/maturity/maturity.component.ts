@@ -132,6 +132,16 @@ export class MaturityComponent implements OnInit, OnDestroy {
             this.loaderMaturity = true;
             this.isKanban = this.selectedtype?.toLowerCase() === 'kanban';
             const kpiIdsForCurrentBoard = $event.masterData['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => kpi.kpiId);
+            this.updatedGlobalConfigData = $event.masterData['kpiList'].filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => {
+                return {
+                    "kpiId": kpi.kpiId,
+                    "kpiName": kpi.kpiName,
+                    "isEnabled": this.updatedGlobalConfigData.filter(globalCOnfigKpi => globalCOnfigKpi['kpiId'] === kpi.kpiId )[0] ? this.updatedGlobalConfigData.filter(globalCOnfigKpi => globalCOnfigKpi['kpiId'] === kpi.kpiId )[0]['isEnabled'] : true,
+                    "order": 1,
+                    "kpiDetail": kpi,
+                    "shown": this.updatedGlobalConfigData.filter(globalCOnfigKpi => globalCOnfigKpi['kpiId'] === kpi.kpiId )[0] ? this.updatedGlobalConfigData.filter(globalCOnfigKpi => globalCOnfigKpi['kpiId'] === kpi.kpiId )[0]['shown'] : true
+                }
+            });
             if (this.filterData?.length > 0 && kpiIdsForCurrentBoard?.length > 0 && this.selectedtype) {
                 if (this.selectedtype?.toLowerCase() === 'scrum') {
                     this.groupJenkinsKpi(kpiIdsForCurrentBoard);

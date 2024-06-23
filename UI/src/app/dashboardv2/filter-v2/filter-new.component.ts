@@ -3,6 +3,8 @@ import { MessageService } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
+import { switchMap, takeUntil } from 'rxjs/operators';
+import { Subject, interval } from 'rxjs';
 
 @Component({
   selector: 'app-filter-new',
@@ -37,10 +39,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   additionalFiltersArr = [];
   filterType: string = '';
   selectedSprint: any;
+  lastSyncData = {};
   additionalData: boolean = false;
   daysRemaining: any;
   combinedDate: string;
-
+  displayModal: boolean = false;
+  selectedProjectLastSyncDate: any;
+  selectedProjectLastSyncDetails: any;
+  selectedProjectLastSyncStatus: any;
+  subject = new Subject();
   constructor(
     private httpService: HttpService,
     private service: SharedService,
@@ -343,7 +350,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
         }
       } else {
-        this.filterApplyData['ids'] = [5];
+        this.filterApplyData['ids'] =  [...new Set(event.map((proj) => proj.nodeId))];
         this.filterApplyData['startDate'] = '';
         this.filterApplyData['endDate'] = '';
         this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
@@ -505,5 +512,50 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  fetchData() {
+    const sprintId = this.selectedSprint['nodeId'];
+    const sprintState = this.selectedSprint['nodeId'] == sprintId ? this.selectedSprint['sprintState'] : '';
+    if (sprintState?.toLowerCase() === 'active') {
+      this.lastSyncData = {
+        fetchSuccessful: false,
+        errorInFetch: false
+      };
+      this.selectedProjectLastSyncStatus = '';
+      this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
+        this.displayModal = false;
+        if (activeSprintStatus['success']) {
+          interval(3000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
+            if (response?.['success']) {
+              this.selectedProjectLastSyncStatus = '';
+              this.lastSyncData = response['data'];
+              if (response['data']?.fetchSuccessful === true) {
+                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+                this.selectedProjectLastSyncStatus = 'SUCCESS';
+                this.subject.next(true);
+              } else if (response['data']?.errorInFetch) {
+                this.lastSyncData = {};
+                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+                this.selectedProjectLastSyncStatus = 'FAILURE';
+                this.subject.next(true);
+              }
+            } else {
+              this.subject.next(true);
+              this.lastSyncData = {};
+            }
+          }, error => {
+            this.subject.next(true);
+            this.lastSyncData = {};
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error in syncing data. Please try after some time.',
+            });
+          });
+        } else {
+          this.lastSyncData = {};
+        }
+      });
+    }
   }
 }

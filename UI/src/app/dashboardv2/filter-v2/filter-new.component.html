@@ -59,6 +59,23 @@
       <span class="text-container p-d-inline-block p-mr-2">Capacity:</span>
       <span class="p-text-bold p-d-inline-block data-container p-mr-3">NA</span>
     </div> -->
+
+    <div class="p-mr-2"
+      *ngIf="this.selectedSprint?.['sprintState']?.toLowerCase() === 'active' && selectedTab?.toLowerCase() === 'iteration'">
+      <span class="refresh-state p-p-2" (click)="displayModal = true"
+        *ngIf=" (lastSyncData | json) == '{}' || lastSyncData.errorInFetch">
+        <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh" />REFRESH
+      </span>
+      <span class="refresh-state p-p-2"
+        *ngIf=" !((lastSyncData | json) == '{}') && !lastSyncData.fetchSuccessful && !lastSyncData.errorInFetch">
+        <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync" />SYNCING
+      </span>
+      <span class="success-state p-p-2" *ngIf="!((lastSyncData | json) == '{}') && lastSyncData?.fetchSuccessful"
+        (click)="onUpdateKPI()">
+        <img src="../../../assets/img/icon-update.svg" class="p-mr-1" alt="Update" />UPDATE
+      </span>
+    </div>
+
   </div>
   <div class="date-filter-container">
     <!-- Date filter start -->
@@ -84,3 +101,15 @@
     <!-- Date filter end -->
   </div>
 </div>
+
+<p-dialog [(visible)]="displayModal" [modal]="true">
+  <p-header>Are you sure you want to refresh?</p-header>
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-helper-clearfix">
+      <button type="button" pButton pRipple icon="pi pi-times" (click)="displayModal = false" label="Cancel"
+        class="p-button p-button-danger p-button-raised"></button>
+      <button type="button" pButton pRipple icon="fa fa-check" (click)="fetchData()" label="Ok"
+        class="p-button p-button-success p-button-raised"></button>
+    </div>
+  </p-footer>
+</p-dialog>

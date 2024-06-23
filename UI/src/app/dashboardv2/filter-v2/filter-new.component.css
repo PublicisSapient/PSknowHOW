@@ -237,7 +237,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 
 .icon-container {
   background-color: var(--color-white);
-  padding: 5px;
+  padding: 3px 5px;
   border-radius: 50%;
   display: inline-block;
   vertical-align: middle;
@@ -275,4 +275,28 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 
 .btn-apply {
   background-color: #0B4BC8;
+}
+
+.active-state{
+  color: var(--color-green);
+}
+
+.success-state{
+  color: var(--color-green);
+  background: #d9efd9;
+  border-radius: 3px;
+  font-size: .85rem;
+  cursor: pointer;
+}
+.refresh-state{
+  color: var(--color-white);
+  background: #0B4BC8;
+  border-radius: 3px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.fail-state{
+  color:  var(--color-red);
+  border-radius: 3px;
+  cursor: pointer;
 }
