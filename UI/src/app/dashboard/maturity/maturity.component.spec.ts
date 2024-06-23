@@ -63,7 +63,7 @@ describe('MaturityComponent', () => {
   const fakeJiraPayload =require('../../../test/resource/fakeJiraPayload.json');
   const fakeBitbucketPayload =require('../../../test/resource/fakeBitbucketPayload.json');
   const fakeBitbucketResponse =require('../../../test/resource/fakeBitBucketResponse.json');
-
+  const fakeMasterData = require('../../../test/resource/fakeMasterData.json');
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [MaturityComponent],
@@ -108,7 +108,7 @@ describe('MaturityComponent', () => {
 
   it('should call kpi grouping methods on receiveing data for Scrum',()=>{
     const event ={
-      masterData :[],
+      masterData : fakeMasterData,
       filterData:[
         {
         "nodeId": "3.0_sqd_63d107f21589e175b8fa6187",
@@ -146,7 +146,7 @@ describe('MaturityComponent', () => {
     }
 
     component.receiveSharedData(event);
-    // expect(spyDrawAreaChart).toHaveBeenCalled();
+    fixture.detectChanges();
     for(let i=0;i<groupingMethods.length;i++){
      expect(spyGroupingMthods[i]).toHaveBeenCalled();
      }
@@ -154,7 +154,7 @@ describe('MaturityComponent', () => {
 
   it('should call kpi grouping methods on receiveing data for Kanban',()=>{
     const event ={
-      masterData :[],
+      masterData : fakeMasterData,
       filterData:[        {
         "nodeId": "3.0_sqd_63d107f21589e175b8fa6187",
         "nodeName": "3.0",

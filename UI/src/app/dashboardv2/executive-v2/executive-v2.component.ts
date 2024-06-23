@@ -630,7 +630,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postZypherKanbanKpi(postData, source): void {
     if (this.zypherKpiRequest && this.zypherKpiRequest !== '') {
       this.zypherKpiRequest.unsubscribe();
-      postData.kpiList.forEach(element => {
+      postData?.kpiList?.forEach(element => {
         this.kpiLoader.delete(element.kpiId);
       });
     }
@@ -1007,7 +1007,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters?) {
-    this.kpiSelectedFilterObj = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId, this.kpiSelectedFilterObj, this.selectedTab, refreshValue, initialValue, this.filterApplyData['ids'][0], filters)
+    this.kpiSelectedFilterObj = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId, this.kpiSelectedFilterObj, this.selectedTab, refreshValue, initialValue, this.filterApplyData['ids']?.length ? this.filterApplyData['ids'][0] : {}, filters)
     this.getDropdownArray(kpiId);
   }
 

@@ -132,7 +132,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
             this.loaderMaturity = true;
             this.isKanban = this.selectedtype?.toLowerCase() === 'kanban';
             const kpiIdsForCurrentBoard = $event.masterData['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => kpi.kpiId);
-            this.updatedGlobalConfigData = $event.masterData['kpiList'].filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => {
+            this.updatedGlobalConfigData = $event.masterData['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => {
                 return {
                     "kpiId": kpi.kpiId,
                     "kpiName": kpi.kpiName,
