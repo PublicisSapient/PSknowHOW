@@ -24,6 +24,9 @@ export class AdditionalFilterComponent implements OnChanges {
   @ViewChild('multiSelect') multiSelect: MultiSelect;
 
   constructor(private service: SharedService, private helperService: HelperService) {
+  }
+
+  ngOnInit() {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       this.filterData = [];
       this.selectedFilters = [];
