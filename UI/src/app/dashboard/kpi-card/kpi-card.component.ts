@@ -122,7 +122,6 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
         }
         if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton') {
           if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
-            // this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
             this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]?.hasOwnProperty('filter1')?this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0]:this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
           }
         }

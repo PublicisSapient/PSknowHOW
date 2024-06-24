@@ -1,3 +1,4 @@
+
 import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
@@ -23,7 +24,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-    
+
     this.subscriptions.push(this.sharedService.onTypeOrTabRefresh.subscribe((data) => {
       this.selectedType = data.selectedType ? data.selectedType : 'scrum';
       this.sharedService.setSelectedType(this.selectedType)
@@ -44,8 +45,6 @@ export class NavNewComponent implements OnInit, OnDestroy {
       (response) => {
         if (response.success === true) {
           this.sharedService.setDashConfigData(getDashConfData.data);
-          // this.service.setDashConfigData(response.data);
-          // this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
           this.items = response.data;
           this.items = [...getDashConfData.data['scrum'], ...getDashConfData.data['others']].map((obj, index) => {
             return {

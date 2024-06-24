@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http.service';
-import { first } from 'rxjs/operators';
 import { MenuItem } from 'primeng/api';
 import { SharedService } from 'src/app/services/shared.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
@@ -13,7 +12,6 @@ import { HelperService } from 'src/app/services/helper.service';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  // clientLogo: string = '';
   notificationCount: number = 0;
   notificationList: Array<object> = [];
   commentCount: number = 0;
@@ -35,7 +33,6 @@ export class HeaderComponent implements OnInit {
     private helperService: HelperService) { }
 
   ngOnInit(): void {
-    // this.getLogoImage();
     this.getNotification();
     this.items = [
       { label: 'Dashboard', icon: '' },
@@ -63,17 +60,6 @@ export class HeaderComponent implements OnInit {
     ]
   }
 
-  /*Rendered the logo image */
-  // getLogoImage() {
-  //   this.httpService.getUploadedImage().pipe(first()).subscribe((data) => {
-  //     if (data['image']) {
-  //       this.clientLogo = 'data:image/png;base64,' + data['image'];
-  //     } else {
-  //       this.clientLogo = undefined;
-  //     }
-  //   });
-  // }
-
   // when user would want to give access on project from notification list
   routeForAccess(type: string) {
     if (this.getAuthorizationService.checkIfSuperUser() || this.getAuthorizationService.checkIfProjectAdmin()) {
@@ -91,7 +77,6 @@ export class HeaderComponent implements OnInit {
       }
     } else {
       this.router.navigate(['/dashboard/Config/Profile/RequestStatus']);
-      // this.isAdmin = false;
     }
   }
 
@@ -125,29 +110,6 @@ export class HeaderComponent implements OnInit {
         },
       };
     });
-
-    // this.notificationCount = 0;
-    // this.httpService.getAccessRequestsNotifications().subscribe((response: NotificationResponseDTO) => {
-    //   if (response && response.success) {
-    //     if (response.data?.length) {
-    //       this.notificationList = [...response.data].map((obj) => {
-    //         this.notificationCount = this.notificationCount + obj.count;
-    //         return {
-    //           label: obj.type + ' : ' + obj.count,
-    //           icon: '',
-    //           command: () => {
-    //             this.routeForAccess(obj.type);
-    //           },
-    //         };
-    //       });
-    //     }
-    //   } else {
-    //     this.messageService.add({
-    //       severity: 'error',
-    //       summary: 'Error in fetching requests. Please try after some time.',
-    //     });
-    //   }
-    // });
   }
 
   // logout is clicked  and removing auth token , username

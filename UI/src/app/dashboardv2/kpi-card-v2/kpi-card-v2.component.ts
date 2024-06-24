@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
@@ -150,7 +150,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
         if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton') {
           if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
-            // this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
             this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]?.hasOwnProperty('filter1') ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
           }
         }
@@ -203,7 +202,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       } else {
         this.optionSelected.emit(this.filterOptions);
       }
-      // this.showFilterTooltip(true);
     }
     const gaObj = {
       "kpiName": this.kpiData?.kpiName,
@@ -328,12 +326,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkIfDataPresent(data) {
-    if (Array.isArray(data) && data?.length) {
-      return true;
-    } else if (typeof data === 'object' && Object.keys(data)?.length) {
-      return true;
-    }
-    return false;
+    return (Array.isArray(data) || typeof data === 'object') && Object.keys(data)?.length > 0;
   }
 
   getColorCssClasses(index) {

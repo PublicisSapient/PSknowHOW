@@ -199,8 +199,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
    **/
   receiveSharedData($event) {
     this.selectedtype = this.service.getSelectedType();
-    // this.selectedtype = 'scrum';
-    // this.service.setSelectedType(this.selectedtype);
     this.fullPageLoader = true;
     this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
     this.processKpiConfigData();
@@ -284,7 +282,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
               });
             }
           }
-          
+
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(this.jiraKpiData);
         } else {
@@ -298,7 +296,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
         this.fullPageLoader = false;
       });
   }
-  
+
   getSelectedType(sharedobject) {
     this.selectedtype = sharedobject;
   }
@@ -539,8 +537,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
   }
 
-  getkpi171Data(kpiId, trendValueList) {   
-    let durationChanged = false;   
+  getkpi171Data(kpiId, trendValueList) {
+    let durationChanged = false;
     if (this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1'] !== this.durationFilter) {
       durationChanged = true;
       this.kpiChartData[kpiId] = [];
@@ -831,7 +829,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     const level = this.filterApplyData?.level;
     const nodeChildId = '';
     this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
-  
+
   }
 
   /** Reload KPI once field mappoing updated */
@@ -908,7 +906,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       }
     } else {
       trend = 'NA';
-    }   
+    }
     return [latest, trend, unit];
   }
 

@@ -643,7 +643,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.bitBucketKpiRequest = this.httpService.postKpi(postData, source)
             .subscribe(getData => {
                 this.loaderBitBucket = false;
-                // getData = require('../../../test/resource/fakeKPI11.json');
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
                     // creating array into object where key is kpi id
                     this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
@@ -665,7 +664,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.bitBucketKpiRequest = this.httpService.postKpiKanban(postData, source)
             .subscribe(getData => {
                 this.loaderBitBucket = false;
-                // getData = require('../../../test/resource/fakeKPI65.json');
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
                     // creating array into object where key is kpi id
                     this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
@@ -828,10 +826,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
           }
 
-        // if (this.kpiChartData && Object.keys(this.kpiChartData) && Object.keys(this.kpiChartData).length === this.updatedConfigGlobalData.length) {
-        // if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
-        //     this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-        // }
         // For kpi3 and kpi53 generating table column headers and table data
         if (kpiId === 'kpi3' || kpiId === 'kpi53') {
             //generating column headers
@@ -1092,7 +1086,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             }
                             if (trendValueList[i]?.hasOwnProperty('filter2')) {
                                 let ifF1Exist = optionsArr2.findIndex(x => x == trendValueList[i]?.filter2);
-                                // if (ifF1Exist == -1 && trendValueList[i]?.filter2?.toLowerCase() !=="overall") {
                                     if (ifF1Exist == -1 ) {
                                     optionsArr2?.push(trendValueList[i]?.filter2);
 

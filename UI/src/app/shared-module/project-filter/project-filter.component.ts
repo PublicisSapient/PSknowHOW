@@ -93,21 +93,6 @@ export class ProjectFilterComponent implements OnInit {
                 code: hierarchyElem.value
               });
             } else {
-              // if (this.hierarchyArray.indexOf(hierarchyElem.hierarchyLevel.hierarchyLevelId) === this.hierarchyArray.indexOf(filterType)) {
-              //   this.fillLevel(hierarchyElem.hierarchyLevel.hierarchyLevelId);
-              // } else {
-              //   let selectedHierarchy = dataElem.hierarchy;
-              //   selectedHierarchy.forEach((hier) => {
-              //     if (!this.hierarchyData[hier.hierarchyLevel.hierarchyLevelId] || !this.hierarchyData[hier.hierarchyLevel.hierarchyLevelId].length) {
-              //       this.hierarchyData[hier.hierarchyLevel.hierarchyLevelId] = [];
-              //     }
-              //     this.hierarchyData[hier.hierarchyLevel.hierarchyLevelId].push({
-              //       name: hier.value,
-              //       code: hier.value
-              //     });
-              //   });
-              // }
-              // }
 
               if (hierarchyElem.hierarchyLevel.hierarchyLevelId === filterType) {
                 // do nothing

@@ -83,7 +83,7 @@ export class DeveloperComponent implements OnInit {
   iSAdditionalFilterSelected = false;
   kpiThresholdObj = {};
   kpiList:Array<string> = [];
-  
+
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService) {
 
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -284,7 +284,6 @@ export class DeveloperComponent implements OnInit {
               }
               if (trendValueList[i]?.hasOwnProperty('filter2')) {
                 let ifF1Exist = optionsArr2.findIndex(x => x == trendValueList[i]?.filter2);
-                // if (ifF1Exist == -1 && trendValueList[i]?.filter2?.toLowerCase() !=="overall") {
                 if (ifF1Exist == -1) {
                   optionsArr2?.push(trendValueList[i]?.filter2);
 
@@ -293,13 +292,7 @@ export class DeveloperComponent implements OnInit {
             }
           }
         }
-        const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
-        // if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
-        //   const index = optionsArr?.findIndex(x => x?.toLowerCase() == 'overall');
-        //   if (index > -1) {
-        //     optionsArr?.splice(index, 1);
-        //   }
-        // }
+
         obj['filterType'] = 'Filter by Branch';
         obj['options'] = optionsArr;
         this.kpiDropdowns[kpiId] = [];
@@ -420,7 +413,6 @@ export class DeveloperComponent implements OnInit {
         if (formType?.toLowerCase() == 'radiobutton') {
           this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
         } else if (formType?.toLowerCase() == 'dropdown') {
-          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
           this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
           let initialC = trendValueList[0].filter1;
           if (data[key]?.kpiId === "kpi72") {
@@ -541,11 +533,11 @@ export class DeveloperComponent implements OnInit {
       const kpiUnit = this.updatedConfigGlobalData?.find(kpi => kpi.kpiId === kpiId)?.kpiDetail?.kpiUnit;
       const data = [];
       if (this.kpiChartData[kpiId] && this.kpiChartData[kpiId].length) {
-        for (let i = 0; i < this.kpiChartData[kpiId].length; i++) {
+        for (let element of this.kpiChartData[kpiId]) {
           const rowData = {
-            name: this.kpiChartData[kpiId][i].data,
-            maturity: 'M' + this.kpiChartData[kpiId][i].maturity,
-            value: this.kpiChartData[kpiId][i].value[0].data + ' ' + kpiUnit
+            name: element.data,
+            maturity: 'M' + element.maturity,
+            value: element.value[0].data + ' ' + kpiUnit
           };
           data.push(rowData);
         }

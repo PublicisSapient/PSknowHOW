@@ -72,7 +72,6 @@ export class DashboardComponent implements OnInit, AfterContentInit {
 
   ngOnInit() {
     this.setPageContentWrapperHeight();
-    // this.authorized = this.getAuth.checkAuth();
 
     this.httpService.loadApp.subscribe(data=>{
       if(this.httpService.createdProjectName){
