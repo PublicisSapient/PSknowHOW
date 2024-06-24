@@ -54,7 +54,6 @@ export class SharedService {
   public suggestionsData: any = [];
   private passServerRole= new BehaviorSubject<boolean>(false);
   public boardId = 1;
-  public isDownloadExcel;
   private authToken = '';
   public sprintForRnR;
 
@@ -113,7 +112,6 @@ export class SharedService {
     this.passErrorToErrorPage = new EventEmitter();
     this.passAllProjectsData = new EventEmitter();
     this.passEventToNav = new EventEmitter();
-    this.isDownloadExcel = new EventEmitter();
     this.isSideNav = new EventEmitter();
   }
 
@@ -333,7 +331,7 @@ export class SharedService {
       document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
     }
   }
-  
+
   setSelectedLevel(val){
     this.selectedLevel = {...val};
   }
