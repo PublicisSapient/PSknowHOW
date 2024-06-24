@@ -68,8 +68,6 @@ export class DashboardV2Component implements OnInit, AfterContentInit {
   }
 
   ngOnInit() {
-    // this.authorized = this.getAuth.checkAuth();
-
     this.httpService.loadApp.subscribe(data => {
       if (this.httpService.createdProjectName) {
         this.modalDetails.header = `Project Created`;

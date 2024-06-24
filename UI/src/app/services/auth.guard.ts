@@ -43,7 +43,6 @@ export class AuthGuard implements CanActivate {
                         window.location.href = environment.CENTRAL_LOGIN_URL;
                     }
                 } else {
-                    //this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                     this.router.navigate(['./authentication/register']);
                 }
                 return false;
@@ -61,7 +60,6 @@ export class AuthGuard implements CanActivate {
                             window.location.href = environment.CENTRAL_LOGIN_URL;
                         }
                     } else {
-                        //this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                         this.router.navigate(['./authentication/register']);
                     }
                     return false;

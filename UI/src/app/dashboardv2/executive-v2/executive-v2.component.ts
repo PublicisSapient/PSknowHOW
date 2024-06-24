@@ -246,7 +246,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.tooltip = $event.configDetails;
       this.additionalFiltersArr = {};
       this.noOfDataPoints = $event?.configDetails?.noOfDataPoints || 5;
-      // if (this.serviceObject['makeAPICall']) {
+
       this.allKpiArray = [];
       this.kpiChartData = {};
       this.chartColorList = {};
@@ -260,7 +260,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         const nodeName = key.slice(0, idx);
         this.kpiTableDataObj[nodeName] = [];
       }
-      // }
 
       if (!$event.filterApplyData['ids'] || !$event.filterApplyData['ids']?.length || !$event.filterApplyData['ids'][0]) {
         this.noFilterApplyData = true;
@@ -544,9 +543,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postSonarKpi(postData, source): void {
     if (this.sonarKpiRequest && this.sonarKpiRequest !== '') {
       this.sonarKpiRequest.unsubscribe();
-      // postData.kpiList.forEach(element => {
-      //   this.kpiLoader.delete(element.kpiId);
-      // });
     }
     this.sonarKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
@@ -557,9 +553,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postSonarKanbanKpi(postData, source): void {
     if (this.sonarKpiRequest && this.sonarKpiRequest !== '') {
       this.sonarKpiRequest.unsubscribe();
-      // postData.kpiList.forEach(element => {
-      //   this.kpiLoader.delete(element.kpiId);
-      // });
     }
     this.sonarKpiRequest = this.httpService.postKpiKanban(postData, source)
       .subscribe(getData => {
@@ -572,9 +565,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.loaderJenkins = true;
     if (this.jenkinsKpiRequest && this.jenkinsKpiRequest !== '') {
       this.jenkinsKpiRequest.unsubscribe();
-      // postData.kpiList.forEach(element => {
-      //   this.kpiLoader.delete(element.kpiId);
-      // });
     }
     this.jenkinsKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
@@ -599,9 +589,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.loaderJenkins = true;
     if (this.jenkinsKpiRequest && this.jenkinsKpiRequest !== '') {
       this.jenkinsKpiRequest.unsubscribe();
-      // postData.kpiList.forEach(element => {
-      //   this.kpiLoader.delete(element.kpiId);
-      // });
     }
     this.jenkinsKpiRequest = this.httpService.postKpiKanban(postData, source)
       .subscribe(getData => {
@@ -690,9 +677,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postBitBucketKpi(postData, source): void {
     if (this.bitBucketKpiRequest && this.bitBucketKpiRequest !== '') {
       this.bitBucketKpiRequest.unsubscribe();
-      // postData.kpiList.forEach(element => {
-      //   this.kpiLoader.delete(element.kpiId);
-      // });
     }
     this.bitBucketKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
@@ -715,9 +699,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postBitBucketKanbanKpi(postData, source): void {
     if (this.bitBucketKpiRequest && this.bitBucketKpiRequest !== '') {
       this.bitBucketKpiRequest.unsubscribe();
-      // postData.kpiList.forEach(element => {
-      //   this.kpiLoader.delete(element.kpiId);
-      // });
     }
     this.bitBucketKpiRequest = this.httpService.postKpiKanban(postData, source)
       .subscribe(getData => {
@@ -781,13 +762,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     }
   }
-
-
-  // // get color of cycle time kanban according to priority
-  // getPriorityColor(index) {
-  //   const color = ['#1F77B4', '#FE7F0C', '#2BA02C', '##D62728', '#9467BD', '#8C554B', '#E376C2', '#7F7F7F', '#BDBD22', '#1ABECF'];
-  //   return color[index];
-  // }
 
   // returns colors according to maturity for all
   returnColorAccToMaturity(maturity) {
@@ -854,7 +828,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (!kpiFilterChange) {
 
           Object.keys(this.additionalFiltersArr).forEach((filterProp) => {
-            // this.additionalFiltersArr[filterProp] = new Set(this.additionalFiltersArr[filterProp]);
             this.additionalFiltersArr[filterProp] = this.additionalFiltersArr[filterProp].map((f) => {
               return {
                 nodeId: f,
@@ -935,7 +908,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             } else if (trendValueList?.length > 0) {
               this.kpiChartData[kpiId] = [...trendValueList];
             } else {
-              //const obj = JSON.parse(JSON.stringify(trendValueList));
               this.kpiChartData[kpiId]?.push(trendValueList);
             }
           }
@@ -1179,13 +1151,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         obj['maturity'] = trendData?.maturity || '-';
         for (let i = 0; i < this.noOfDataPoints; i++) {
           let item = chosenItem?.value[i];
+          const trendDataKpiUnit = (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '');
           if (item) {
             obj['hoverText']?.push((i + 1) + ' - ' + (item?.['sprintNames']?.length > 0
               ? item['sprintNames'].join(',') : item?.['sSprintName'] ? item['sSprintName'] : item?.['date']));
             let val = item?.lineValue >= 0 ? item?.lineValue : item?.value;
-            obj[i + 1] = val > 0 ?
-              (Math.round(val * 10) / 10) + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '')
-              : val + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') || '-';
+            obj[i + 1] = val > 0 ? ((Math.round(val * 10) / 10) + trendDataKpiUnit) : (val + trendDataKpiUnit || '-');
             if (kpiId === 'kpi153') {
               obj[i + 1] = item?.dataValue.find(pdata => pdata['name'] === 'Achieved Value').value || '-';
             }
@@ -1437,7 +1408,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           } else if (this.colorObj[key]?.nodeName == arr[i]?.data) {
             this.chartColorList[kpiId].push(this.colorObj[key]?.color);
             finalArr.push(arr.filter((a) => a.data === this.colorObj[key].nodeName)[0]);
-            // break;
           }
         }
       }
@@ -1592,10 +1562,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   checkLatestAndTrendValueForKpi(kpiData, item) {
     let latest: string = '';
     let trend: string = '';
+    const unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit.trim() : '';
+    const modUnit = (unit ? ' ' + unit : '');
     if (item?.value?.length > 0) {
       let tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
-      var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit.trim() : '';
-      latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
+      latest = tempVal > 0 ? ((Math.round(tempVal * 10) / 10) + modUnit) : (tempVal + modUnit);
     }
     if (item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
       if (kpiData?.kpiDetail?.trendCalculative) {

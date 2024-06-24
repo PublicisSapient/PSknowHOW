@@ -60,7 +60,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
     this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
-    // this.selectedType = this.service.getSelectedType() || 'scrum';
     this.subscriptions.push(
       this.service.globalDashConfigData.subscribe((boardData) => {
         this.processBoardData(boardData);
@@ -70,13 +69,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh
         .subscribe(data => {
-          // if (!this.helperService.getBackupOfFilterSelectionState('selected_type')) {
+
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
-          // } else {
-          //   this.selectedTab = data.selectedTab;
-          //   this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type');
-          // }
 
           if (this.selectedType.toLowerCase() === 'kanban') {
             this.kanban = true;
@@ -239,7 +234,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   removeFilter(id) {
     if (Object.keys(this.colorObj).length > 1) {
       delete this.colorObj[id];
-      // this.service.setColorObj(this.colorObj);
       let selectedFilters = this.filterDataArr[this.selectedType][this.selectedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
       this.handlePrimaryFilterChange(selectedFilters);
       this.helperService.setBackupOfFilterSelectionState({ 'primary_level': selectedFilters });
@@ -409,7 +403,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handleAdditionalChange(event) {
-    // if (event?.length && !this.arraysEqual(event, this.previousFilterEvent)) {
     if (event?.length) {
       this.filterApplyData['level'] = event[0].level;
       this.filterApplyData['label'] = event[0].labelName;

@@ -42,9 +42,9 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
 
           if (this.stateFilters?.length > 0) {
-            this.stateFilters.map(stateFilter => {
+            this.stateFilters.forEach(stateFilter => {
               this.selectedFilters.add(stateFilter);
-            })
+            });
 
             this.selectedFilters = [...this.selectedFilters];
 
@@ -81,13 +81,6 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         this.selectedFilters = this.selectedFilters.filter((filter) => Object.keys(val).includes(filter.nodeId));
       }
     }));
-
-    // this.subscriptions.push(
-    //   this.service.onTypeOrTabRefresh
-    //   .subscribe(data => {
-    //     this.onPrimaryFilterChange.emit(this.selectedFilters);
-    //   })
-    // );
   }
 
   populateFilters() {
