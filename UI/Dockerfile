@@ -45,6 +45,7 @@ RUN chown -R $USER:$USER ${CONF_LOC} \
     && chown -R $USER:$USER ${CERT_LOC} \
     && chown -R $USER:$USER /var/log/ \
     && chown -R $USER:$USER /var/cache/ \
+    && chown -R $USER:$USER /var/lib/ \
     && chown -R $USER:$USER /var/run/nginx.pid \
     && apk add --no-cache libcap \
     && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
