@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -110,22 +109,20 @@ public class JiraBacklogServiceRTest {
 	private UserAuthorizedProjectsService authorizedProjectsService;
 	@Mock
 	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
-
+	@Mock
+	private FlowLoadServiceImpl service;
 	@Mock
 	private CustomApiConfig customApiConfig;
-
-	private KpiRequest kpiRequest;
 
 	@Before
 	public void setup() throws ApplicationException {
 		MockitoAnnotations.openMocks(this);
-		List<NonTrendKPIService> mockServices = Arrays.asList(flowLoadService);
+		List<NonTrendKPIService> mockServices = Arrays.asList(service);
 		JiraNonTrendKPIServiceFactory serviceFactory = JiraNonTrendKPIServiceFactory.builder().services(mockServices)
 				.build();
-		doReturn(KPICode.FLOW_LOAD.name()).when(flowLoadService).getQualifierType();
+		doReturn(KPICode.FLOW_LOAD.name()).when(service).getQualifierType();
+		doReturn(new KpiElement()).when(service).getKpiData(any(), any(), any());
 		serviceFactory.initMyServiceCache();
-
-		kpiRequest = createKpiRequest(5);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance("/json/default/account_hierarchy_filter_data.json");
@@ -143,23 +140,7 @@ public class JiraBacklogServiceRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
-		Map<String, Integer> map = new HashMap<>();
-		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
-		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
-		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
-		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
-
-		try (MockedStatic<JiraNonTrendKPIServiceFactory> utilities = Mockito
-				.mockStatic(JiraNonTrendKPIServiceFactory.class)) {
-			utilities.when((MockedStatic.Verification) JiraNonTrendKPIServiceFactory
-					.getJiraKPIService(KPICode.FLOW_LOAD.name())).thenReturn(flowLoadService);
-			when(flowLoadService.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
-
-		}
-
-
+		when(filterHelperService.getHierarachyLevelId(4, "project", false)).thenReturn("project");
 
 	}
 
@@ -175,6 +156,8 @@ public class JiraBacklogServiceRTest {
 
 	@Test
 	public void TestProcess_pickFromCache() throws Exception {
+
+		KpiRequest kpiRequest = createKpiRequest(5);
 		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
@@ -185,41 +168,92 @@ public class JiraBacklogServiceRTest {
 		assertEquals(0, resultList.size());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
-	public void TestProcess() throws Exception {
+	public void TestProcessWithApplicationException() throws Exception {
+
+		KpiRequest kpiRequest = createKpiRequest(4);
+
+		@SuppressWarnings("rawtypes")
+		JiraBacklogKPIService jiraKPIService = flowLoadService;
+		jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
+
+		try (MockedStatic<JiraNonTrendKPIServiceFactory> utilities = Mockito
+				.mockStatic(JiraNonTrendKPIServiceFactory.class)) {
+			utilities.when((MockedStatic.Verification) JiraNonTrendKPIServiceFactory
+					.getJiraKPIService(KPICode.FLOW_LOAD.name())).thenReturn(jiraKPIService);
+		}
+		doThrow(ApplicationException.class).when(service).getKpiData(any(), any(), any());
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
-		jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
+
+		resultList.forEach(k -> {
+
+			KPICode kpi = KPICode.getKPI(k.getKpiId());
+
+			switch (kpi) {
+
+			case FLOW_LOAD:
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("FLOW_LOAD"));
+				break;
+
+			default:
+				break;
+			}
+
+		});
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
-	public void TestProcess_ApplicationException() throws Exception {
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
-		jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
-		when(flowLoadService.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
-		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
-	}
+	public void TestProcess2() throws Exception {
 
+		KpiRequest kpiRequest = createKpiRequest(4);
 
-	@Test
-	public void TestProcess_NPException() throws Exception {
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
+		@SuppressWarnings("rawtypes")
+		JiraBacklogKPIService jiraKPIService = flowLoadService;
 		jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
-		when(flowLoadService.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
-		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
-	}
 
-	@Test
-	public void TestProcess_Mandatory() throws Exception {
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(false);
-		jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
+		try (MockedStatic<JiraNonTrendKPIServiceFactory> utilities = Mockito
+				.mockStatic(JiraNonTrendKPIServiceFactory.class)) {
+			utilities.when((MockedStatic.Verification) JiraNonTrendKPIServiceFactory
+					.getJiraKPIService(KPICode.FLOW_LOAD.name())).thenReturn(jiraKPIService);
+		}
+
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(cacheService.getFromApplicationCache(any(), any(), any(), any())).thenReturn(null);
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.MANDATORY_FIELD_MAPPING));
+
+		resultList.forEach(k -> {
+
+			KPICode kpi = KPICode.getKPI(k.getKpiId());
+
+			switch (kpi) {
+
+			case FLOW_LOAD:
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("FLOW_LOAD"));
+				break;
+
+			default:
+				break;
+			}
+
+		});
+
 	}
 
 	@Test
@@ -227,7 +261,7 @@ public class JiraBacklogServiceRTest {
 		KpiRequest kpiRequest = createKpiRequest(5);
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 		List<KpiElement> resultList = jiraServiceR.processWithExposedApiToken(kpiRequest);
-		assertEquals(1, resultList.size());
+		assertEquals(0, resultList.size());
 	}
 
 	@Test

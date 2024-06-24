@@ -40,7 +40,6 @@ import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.apis.zephyr.factory.ZephyrKPIServiceFactory;
@@ -79,10 +78,8 @@ public class ZephyrServiceKanban {
 	 * Processes the zephyr based KPI requests for kanban.
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
-	 * @return list of kpielement
+	 * @return
 	 * @throws EntityNotFoundException
-	 *             EntityNotFoundException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
@@ -127,7 +124,7 @@ public class ZephyrServiceKanban {
 
 				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 
-					responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, treeAggregatorDetail));
+					calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
 				}
 
 				setIntoApplicationCache(kpiRequest, responseList, groupId, kanbanProjectKeyCache);
@@ -167,10 +164,8 @@ public class ZephyrServiceKanban {
 
 	/**
 	 * @param kpiRequest
-	 *            kpiRequest
 	 * @param filteredAccountDataList
-	 *            filteredAccountDataList
-	 * @return list of hierarchy
+	 * @return
 	 */
 	private List<AccountHierarchyDataKanban> getAuthorizedFilteredList(KpiRequest kpiRequest,
 			List<AccountHierarchyDataKanban> filteredAccountDataList) {
@@ -187,67 +182,40 @@ public class ZephyrServiceKanban {
 	}
 
 	/**
-	 * This method call by multiple thread, take object of specific KPI and call
-	 * method of these KPIs
+	 * Calculates all kpi aggregated metrics.
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
+	 * @param responseList
 	 * @param kpiElement
-	 *            kpiElement
 	 * @param treeAggregatorDetail
-	 *            treeAggregatorDetail
-	 * @return KpiElement kpielement
+	 * @throws ApplicationException
 	 */
-	private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) {
+	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
+			KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
 		KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
 		long startTime = System.currentTimeMillis();
 
 		TreeAggregatorDetail treeAggregatorDetailRegPercent = (TreeAggregatorDetail) SerializationUtils
 				.clone(treeAggregatorDetail);
-		try {
-			ZephyrKPIService<?, ?, ?> zephyrKPIService = ZephyrKPIServiceFactory.getZephyrKPIService(kpi.name());
 
-			List<Node> projectNodes = treeAggregatorDetailRegPercent.getMapOfListOfProjectNodes()
-					.get(CommonConstant.PROJECT.toLowerCase());
-
-			if (!projectNodes.isEmpty() && (projectNodes.size() > 1
-					|| kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, projectNodes.get(0)))) {
-				kpiElement = zephyrKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailRegPercent);
-				kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
-			} else if (!kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, projectNodes.get(0))) {
-				// mandatory fields not found
-				kpiElement.setResponseCode(CommonConstant.MANDATORY_FIELD_MAPPING);
-			}
-
-			long processTime = System.currentTimeMillis() - startTime;
-			log.info("[ZEPHYR-KANBAN-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-					processTime);
-
-		} catch (ApplicationException exception) {
-			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
-			log.error("Kpi not found", exception);
-		} catch (Exception exception) {
-			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
-			log.error("[ZEPHYR KANBAN][{}]. Error while KPI calculation for data {} {}", kpiRequest.getIds(),
-					kpiRequest.getKpiList(), exception);
-			return kpiElement;
+		ZephyrKPIService<?, ?, ?> zephyrKPIService = ZephyrKPIServiceFactory.getZephyrKPIService(kpi.name());
+		if (zephyrKPIService != null) {
+			responseList.add(zephyrKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailRegPercent));
 		}
-		return kpiElement;
+
+		long processTime = System.currentTimeMillis() - startTime;
+		log.info("[ZEPHYR-KANBAN-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+				processTime);
 	}
 
 	/**
 	 * Sets cache.
 	 *
 	 * @param kpiRequest
-	 *            kpiRequest
 	 * @param responseList
-	 *            responseList
 	 * @param groupId
-	 *            groupId
 	 * @param kanbanProjectKeyCache
-	 *            kanbanProjectKeyCache
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] kanbanProjectKeyCache) {
