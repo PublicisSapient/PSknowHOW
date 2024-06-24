@@ -104,6 +104,9 @@ public class ProjectToolConfigDTO {
 	// Sonar SDM ID use for GS
 	private String gitLabSdmID;
 
+	// GitLab Multi Input field for GS
+	private List<String> gitLabID;
+
 	// jiraIterationCompletionStatusCustomField field mapping update identifier
 	private boolean azureIterationStatusFieldUpdate;
 	private String projectComponent;

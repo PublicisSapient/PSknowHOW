@@ -104,6 +104,7 @@ export class JiraConfigComponent implements OnInit {
   jiraTemplate : any[];
   gitActionWorkflowNameList : any[];
   cloudEnv : any ;
+  isGitlabToolFieldEnabled : boolean;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -118,6 +119,7 @@ export class JiraConfigComponent implements OnInit {
 
   ngOnInit(): void {
     this.selectedProject = this.sharedService.getSelectedProject();
+    this.isGitlabToolFieldEnabled = this.sharedService.getGlobalConfigData()?.gitlabToolFieldFlag;
     if (!this.selectedProject) {
       this.router.navigate(['./dashboard/Config/ProjectList']);
     }
@@ -137,6 +139,13 @@ export class JiraConfigComponent implements OnInit {
         }
         this.getConnectionList(this.urlParam);
         this.initializeFields(this.urlParam);
+
+         if(this.isGitlabToolFieldEnabled){
+                 this.showFormElements(['gitLabID'])
+         } else {
+                  this.hideFormElements(['gitLabID'])
+         }
+
         this.getJiraTemplate();
       } else {
         this.router.navigate(['./dashboard/Config/ProjectList']);
@@ -1672,6 +1681,17 @@ export class JiraConfigComponent implements OnInit {
               <i>
                 Impacted : All GitLab based KPIs</i>`,
               },
+              {
+                type: 'array',
+                label: 'GitLab Ids',
+                id: 'gitLabID',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `list of inputs to access GitLab data.<br />
+              <i>
+                 Impacted : All GitLab based KPIs</i>`,
+             }
             ],
           };
         }
