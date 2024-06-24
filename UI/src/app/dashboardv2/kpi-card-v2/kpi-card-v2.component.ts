@@ -68,7 +68,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     { field: 'params', header: 'Calculation Details' },
   ];
   sprintDetailsList: Array<any>;
-  @Input() colors: Array<any>;
+  @Input() colors;
   colorCssClassArray = ['sprint-hover-project1', 'sprint-hover-project2', 'sprint-hover-project3', 'sprint-hover-project4', 'sprint-hover-project5', 'sprint-hover-project6'];
   commentDialogRef: DynamicDialogRef | undefined;
 
@@ -213,15 +213,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
     this.triggerGaEvent(gaObj);
   }
-  getColor(nodeName) {
-    let color = '';
-    for (const key in this.trendBoxColorObj) {
-      if (this.trendBoxColorObj[key]?.nodeName == nodeName) {
-        color = this.trendBoxColorObj[key]?.color;
-      }
-    }
-    return color;
-  }
+
   handleClearAll(event) {
     for (const key in this.filterOptions) {
       if (key?.toLowerCase() == event?.toLowerCase()) {
@@ -231,30 +223,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.optionSelected.emit(['Overall']);
   }
 
-  showFilterTooltip(showHide, filterNo?) {
-    if (showHide) {
-      this.filterMultiSelectOptionsData['details'] = {};
-      this.filterMultiSelectOptionsData['details'][filterNo] = [];
-      for (let i = 0; i < this.filterOptions[filterNo]?.length; i++) {
-
-        this.filterMultiSelectOptionsData['details'][filterNo]?.push(
-          {
-            type: 'paragraph',
-            value: this.filterOptions[filterNo][i]
-          }
-        );
-      }
-
-    } else {
-      this.filterMultiSelectOptionsData = {};
-    }
-  }
-
   toggleMenu(event) {
     this.kpimenu.toggle(event);
-    // const menuElementRef = this.kpimenu as unknown as ElementRef;
-    // const nativeElement = menuElementRef.nativeElement;
-    // this.renderer.setStyle(nativeElement, 'left', '400px');
   }
 
   /** When field mapping dialog is opening */
@@ -385,28 +355,29 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       if (selectedProjectTrend?.value) {
         let hoverObjectListTemp = [];
 
-        if (selectedProjectTrend.value[0]?.dataValue?.length > 0) {
-          this.columnList = [{ field: 'duration', header: 'Duration' }];
-          selectedProjectTrend.value[0].dataValue.forEach(d => {
-            this.columnList.push({ field: d.name + ' value', header: d.name + ' KPI Value', unit: 'unit' });
-            this.columnList.push({ field: d.name + ' params', header: d.name + ' Calculation Details', unit: 'unit' });
-          });
+        // if (selectedProjectTrend.value[0]?.dataValue?.length > 0) {
+        //   this.columnList = [{ field: 'duration', header: 'Duration' }];
+        //   selectedProjectTrend.value[0].dataValue.forEach(d => {
+        //     this.columnList.push({ field: d.name + ' value', header: d.name + ' KPI Value', unit: 'unit' });
+        //     this.columnList.push({ field: d.name + ' params', header: d.name + ' Calculation Details', unit: 'unit' });
+        //   });
 
-          selectedProjectTrend.value.forEach(element => {
-            let tempObj = {};
-            tempObj['duration'] = element['sSprintName'] || element['date'];
+        //   selectedProjectTrend.value.forEach(element => {
+        //     let tempObj = {};
+        //     tempObj['duration'] = element['sSprintName'] || element['date'];
 
-            element.dataValue.forEach((d, i) => {
-              tempObj[d.name + ' value'] = (Math.round(d['value'] * 100) / 100);
-              tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
-              if (d['hoverValue'] && Object.keys(d['hoverValue'])?.length > 0) {
-                tempObj[d.name + ' params'] = Object.entries(d['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(', ');
-              }
-            });
+        //     element.dataValue.forEach((d, i) => {
+        //       tempObj[d.name + ' value'] = (Math.round(d['value'] * 100) / 100);
+        //       tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
+        //       if (d['hoverValue'] && Object.keys(d['hoverValue'])?.length > 0) {
+        //         tempObj[d.name + ' params'] = Object.entries(d['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(', ');
+        //       }
+        //     });
 
-            hoverObjectListTemp.push(tempObj);
-          });
-        } else {
+        //     hoverObjectListTemp.push(tempObj);
+        //   });
+        // } else 
+        {
           selectedProjectTrend.value.forEach(element => {
             let tempObj = {};
             tempObj['duration'] = element['sSprintName'] || element['date'];

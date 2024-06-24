@@ -1,5 +1,5 @@
 import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
-import { MenuItem, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 const getDashConfData = require('../../../test/resource/boardConfigNew.json');
@@ -11,13 +11,13 @@ import { Router } from '@angular/router';
   styleUrls: ['./nav-new.component.css']
 })
 export class NavNewComponent implements OnInit, OnDestroy {
-  items: MenuItem[] | undefined;
-  activeItem: MenuItem | undefined;
+  items: any;
+  activeItem: any;
   selectedTab: string = '';
   selectedType: string = '';
   subscriptions: any[] = [];
 
-  constructor(private httpService: HttpService, private sharedService: SharedService, private messageService: MessageService, private router: Router) {
+  constructor(private httpService: HttpService, private sharedService: SharedService, public messageService: MessageService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -50,7 +50,6 @@ export class NavNewComponent implements OnInit, OnDestroy {
           this.items = [...getDashConfData.data['scrum'], ...getDashConfData.data['others']].map((obj, index) => {
             return {
               label: obj['boardName'],
-              icon: index == 0 ? 'fas fa-pencil-alt' : '',
               slug: obj['boardSlug'],
               command: () => {
                 this.selectedTab = obj['boardSlug'];
