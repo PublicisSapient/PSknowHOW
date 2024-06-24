@@ -24,6 +24,9 @@ package com.publicissapient.kpidashboard.apis.userboardconfig.rest;
 
 import javax.validation.Valid;
 
+import com.mysema.commons.lang.Pair;
+import com.publicissapient.kpidashboard.apis.common.service.ConfigDetailService;
+import com.publicissapient.kpidashboard.apis.model.ConfigDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -52,6 +55,8 @@ public class UserBoardConfigController {
 
 	@Autowired
 	UserBoardConfigService userBoardConfigService;
+	@Autowired
+	private ConfigDetailService configDetailService;
 
 	/**
 	 * Api to get user based configurations
@@ -64,6 +69,22 @@ public class UserBoardConfigController {
 		ServiceResponse response = new ServiceResponse(false, "No data found", null);
 		if (null != userBoardConfigDTO) {
 			response = new ServiceResponse(true, "Fetched successfully", userBoardConfigDTO);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+	/**
+	 * Api to get user based configurations
+	 *
+	 * @return response
+	 */
+	@PostMapping(value = "/getBoardConfig" ,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> getUserBoardConfigurations(@Valid @RequestBody ProjectListRequested listOfRequestedProj) {
+		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigService.getUserBoardConfig(listOfRequestedProj);
+		ConfigDetails configDetails=configDetailService.getConfigDetails();
+		ServiceResponse response = new ServiceResponse(false, "No data found", null);
+		if (null != userBoardConfigDTO) {
+			response = new ServiceResponse(true, "Fetched successfully", Pair.of(userBoardConfigDTO,configDetails));
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
