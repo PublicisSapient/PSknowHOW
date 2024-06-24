@@ -1472,11 +1472,6 @@ const completeHierarchyData = {
     expect(component.showChart).toBe('chart')
    })
 
-   it("should disable export btn once clicked",()=>{
-     component.exportToExcel();
-     expect(component.disableDownloadBtn).toBeTruthy();
-   })
-
    it("should enable if type is spring",()=>{
     component.ngOnInit();
     component.filterForm?.get('sprint')?.setValue("hierarchyLevelOne");
@@ -2841,5 +2836,15 @@ const completeHierarchyData = {
           component.createFilterApplyData();
           expect(component.filterApplyData['selectedMap']['sprint'].length).toBeGreaterThan(0)
         })
+
+      it("should navigate to home",()=>{
+        spyOnProperty(router, 'url', 'get').and.returnValue('/Help/Config');
+        spyOn(router,'navigate')
+        spyOn(sharedService,'setEmptyFilter')
+        spyOn(sharedService,'setSelectedType')
+        const spyob = spyOn(component,'changeSelectedTab')
+        component.navigateToHomePage()
+        expect(spyob).toHaveBeenCalled();
+      })
 
 });

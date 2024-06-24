@@ -2776,6 +2776,16 @@
     }
   },
   {
+    "fieldName": "releaseListKPI150",
+    "fieldLabel": "Select desired releases to define team's velocity",
+    "fieldType": "chips",
+    "fieldCategory": "releases",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Select releases to define team velocity as per ticket"
+    }
+  },
+  {
     "fieldName": "jiraLabelsKPI135",
     "fieldLabel": "Labels to identify issues to be included",
     "fieldType": "chips",

@@ -31,10 +31,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
@@ -145,7 +148,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 	/**
 	 * Method to fetch the config made by project Admin / superAdmin
-	 * 
+	 *
 	 * @param listOfRequestedProj
 	 *            listOfRequestedProj
 	 * @param kpiCategoryList
@@ -686,7 +689,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	/**
 	 * Method to mask the isShown=false config of project level to users level
 	 * config
-	 * 
+	 *
 	 * @param userBoardConfig
 	 *            userBoardConfig
 	 * @param listOfProjectBoardConfig
@@ -797,17 +800,20 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * This method save user board config of proj,Super admin with
 	 * basicProjectConfigId ,also modify boards of other admin of that project
 	 *
-	 * @param userBoardConfigDTO
-	 *            userBoardConfigDTO
-	 * @param basicProjectConfigId
-	 *            basicProjConfigId
+	 * @param userBoardConfigDTO   userBoardConfigDTO
+	 * @param basicProjectConfigId basicProjConfigId
 	 * @return UserBoardConfigDTO
 	 */
 	@Override
-	public UserBoardConfigDTO saveUserBoardConfigAdmin(UserBoardConfigDTO userBoardConfigDTO,
-			String basicProjectConfigId) {
+	public ResponseEntity<ServiceResponse> saveUserBoardConfigAdmin(UserBoardConfigDTO userBoardConfigDTO,
+													String basicProjectConfigId) {
 		UserBoardConfig userBoardConfig = convertDTOToUserBoardConfig(userBoardConfigDTO);
-		if (userBoardConfig != null && authenticationService.getLoggedInUser().equals(userBoardConfig.getUsername())) {
+		if (userBoardConfig != null) {
+			if (!authenticationService.getLoggedInUser().equals(userBoardConfig.getUsername())) {
+				cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
+				return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
+						"Logged In user is not authorized to change the board", null));
+			}
 			// finding all the existing admins proj level configs
 			List<UserBoardConfig> existingListOfProjBoardConfig = userBoardConfigRepository
 					.findByBasicProjectConfigId(basicProjectConfigId);
@@ -862,7 +868,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			}
 		}
 		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
-		return convertToUserBoardConfigDTO(userBoardConfig);
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Saved user board Configuration",
+				convertToUserBoardConfigDTO(userBoardConfig)));
 	}
 
 }

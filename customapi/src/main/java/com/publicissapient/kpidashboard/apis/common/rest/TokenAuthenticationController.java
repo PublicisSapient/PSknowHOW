@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.common.rest;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +26,6 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,7 +37,6 @@ import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -65,7 +62,7 @@ public class TokenAuthenticationController {
 	public ResponseEntity<ServiceResponse> validateToken(@Valid @RequestBody UserTokenAuthenticationDTO userData,
 			HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 
-		String authToken = tokenAuthenticationService.getAuthToken(userData, httpServletRequest);
+		String authToken = tokenAuthenticationService.getAuthToken(httpServletRequest);
 		ServiceResponse serviceResponse;
 		if (null != authToken) {
 			boolean expiredToken = tokenAuthenticationService.isJWTTokenExpired(authToken);
@@ -89,38 +86,4 @@ public class TokenAuthenticationController {
 		}
 	}
 
-	// TODO delete code
-	@PostMapping(value = "/validateResource")
-	public ResponseEntity<ServiceResponse> validateResource(@Valid @RequestBody UserTokenAuthenticationDTO userData,
-			HttpServletRequest request, HttpServletResponse response) {
-		Authentication authentication = tokenAuthenticationService.validateAuthentication(request, response);
-		ServiceResponse serviceResponse;
-		if (null != authentication) {
-			Collection<String> authDetails = response.getHeaders(AUTH_DETAILS_UPDATED_FLAG);
-			boolean value = authDetails != null && authDetails.stream().anyMatch("true"::equals);
-			if (value) {
-				Cookie authCookie = cookieUtil.getAuthCookie(request);
-				String token = authCookie.getValue();
-				UserTokenAuthenticationDTO data = new UserTokenAuthenticationDTO();
-				data.setResource(userData.getResource());
-				data.setAuthToken(token);
-				if (!userData.getResource().equalsIgnoreCase(authProperties.getResourceName())) {
-					data.setResourceTokenValid(false);
-					serviceResponse = new ServiceResponse(true, "Invalid resource", data);
-				} else {
-					data.setResourceTokenValid(true);
-					serviceResponse = new ServiceResponse(true, "Valid resource", data);
-				}
-				return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
-
-			} else {
-				serviceResponse = new ServiceResponse(false, "token is expired", null);
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
-			}
-
-		} else {
-			serviceResponse = new ServiceResponse(false, "Unauthorized", null);
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
-		}
-	}
 }

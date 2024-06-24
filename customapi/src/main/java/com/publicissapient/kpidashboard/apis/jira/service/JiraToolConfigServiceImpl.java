@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.util.ProjectAccessUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,9 +97,11 @@ public class JiraToolConfigServiceImpl {
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
+	private ProjectAccessUtil projectAccessUtil;
+	@Autowired
 	private ConnectionService connectionService;
 
-	public List<BoardDetailsDTO> getJiraBoardDetailsList(BoardRequestDTO boardRequestDTO) {
+	public ResponseEntity<ServiceResponse> getJiraBoardDetailsList(BoardRequestDTO boardRequestDTO) {
 
 		List<BoardDetailsDTO> responseList = new ArrayList<>();
 		Optional<Connection> optConnection = connectionRepository
@@ -106,21 +110,27 @@ public class JiraToolConfigServiceImpl {
 			if (optConnection.isPresent()) {
 				Connection connection = optConnection.get();
 				connectionService.validateConnectionFlag(connection);
+				if (projectAccessUtil.ifConnectionNotAccessible(connection)) {
+					return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
+							"Not found any configure board details with provided connection details", null));
+				}
 				String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 				HttpEntity<?> httpEntity = getHttpEntity(connection);
 				fetchBoardDetailsRestAPICall(boardRequestDTO, responseList, baseUrl, httpEntity, connection);
-				return responseList;
+				return ResponseEntity.ok()
+						.body(new ServiceResponse(true, "Successfully fetched board details list", responseList));
 			}
 		} catch (RestClientException exception) {
 			isClientException(optConnection, exception);
 			log.error("exception occured while trying to hit api.");
 		}
-		return responseList;
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
+				"Not found any configure board details with provided connection details", null));
 	}
 
 	/**
 	 * update if connection is broken or unable to connect to client server.
-	 * 
+	 *
 	 * @param optConnection
 	 * @param exception
 	 */

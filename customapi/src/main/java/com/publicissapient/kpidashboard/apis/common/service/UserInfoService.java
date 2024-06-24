@@ -162,17 +162,9 @@ public interface UserInfoService {
 	// ----auth Service Methods started---------
 	List<CentralUserInfoDTO> findAllUnapprovedUsersForCentralAuth();
 
-	boolean updateUserApprovalStatus(String user);
+	boolean updateUserApprovalStatus(String userNameRequest);
 
 	boolean deleteFromCentralAuthUser(String user);
-
-	/**
-	 * getUser info from cental auth
-	 * 
-	 * @param username
-	 * @return
-	 */
-	UserInfo getCentralAuthUserInfo(String username);
 
 	CentralUserInfoDTO getCentralAuthUserInfoDetails(String username);
 

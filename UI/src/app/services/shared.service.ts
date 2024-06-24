@@ -54,8 +54,8 @@ export class SharedService {
   public suggestionsData: any = [];
   private passServerRole= new BehaviorSubject<boolean>(false);
   public boardId = 1;
-  public isDownloadExcel;
   private authToken = '';
+  public sprintForRnR;
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
@@ -112,7 +112,6 @@ export class SharedService {
     this.passErrorToErrorPage = new EventEmitter();
     this.passAllProjectsData = new EventEmitter();
     this.passEventToNav = new EventEmitter();
-    this.isDownloadExcel = new EventEmitter();
     this.isSideNav = new EventEmitter();
   }
 
@@ -332,9 +331,7 @@ export class SharedService {
       document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
     }
   }
-   setGlobalDownload(val){
-    this.isDownloadExcel.emit(val);
-  }
+
   setSelectedLevel(val){
     this.selectedLevel = {...val};
   }
@@ -472,6 +469,14 @@ export class SharedService {
       }
     }
     this.boardNamesListSubject.next(boardNameArr);
+  }
+
+  getSprintForRnR(){
+    return this.sprintForRnR;
+  }
+
+  setSprintForRnR(sprint){
+    this.sprintForRnR = sprint;
   }
 }
 
