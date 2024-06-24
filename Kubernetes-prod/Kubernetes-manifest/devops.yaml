@@ -109,13 +109,13 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 50022
-          initialDelaySeconds: 40   # Wait for 140 seconds before starting probes
-          periodSeconds: 30          # Check every 30 seconds
+          initialDelaySeconds: 300   # Wait for 300 seconds before starting probes
+          periodSeconds: 40          # Check every 40 seconds
         livenessProbe:
           tcpSocket:
             port: 50022
-          initialDelaySeconds: 40
-          periodSeconds: 30
+          initialDelaySeconds: 300
+          periodSeconds: 40
         volumeMounts:
             - name: knowhow-secrets-store
               mountPath: "/mnt/prod-secrets-store"
