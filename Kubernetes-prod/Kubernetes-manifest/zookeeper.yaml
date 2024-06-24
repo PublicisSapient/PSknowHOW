@@ -30,7 +30,7 @@ spec:
             memory: "124Mi"
             cpu: "0.1"
           limits:
-            memory: "248Mi"
+            memory: "512Mi"
             cpu: "0.3"
         lifecycle:
           postStart:

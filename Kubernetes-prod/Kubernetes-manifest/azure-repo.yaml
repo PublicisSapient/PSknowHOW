@@ -24,7 +24,7 @@ spec:
       #   command: ['sh', '-c', "until nslookup customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for customapi; sleep 2; done"]
       containers:
       - name: azure-pipeline-repo
-        image: speedtools.azurecr.io/knowhow-azure-pipeline-repo:9.2.0
+        image: speedtools.azurecr.io/knowhow-azure-pipeline-repo:9.3.0
         imagePullPolicy: Always
         env:
             - name: spring.data.mongodb.uri
@@ -70,7 +70,7 @@ spec:
             memory: "500Mi"
             cpu: "0.2"
           limits:
-            memory: "1Gi"
+            memory: "1.5Gi"
             cpu: "0.5"
         ports:
         - containerPort: 50015
@@ -93,6 +93,18 @@ spec:
             - name: knowhow-secrets-store
               mountPath: "/mnt/prod-secrets-store"
               readOnly: true
+            - name: azure-pipeline-repo-log-volume
+              mountPath: /app/logs
+      - name: promtail
+        image: grafana/promtail:2.9.2
+        args: 
+          - -config.file=/etc/promtail/config/promtail.yaml
+        volumeMounts:
+          - name: azure-pipeline-repo-log-volume
+            mountPath: /app/logs
+          - name: promtail-config
+            mountPath: /etc/promtail/config
+
       volumes:
         - name: knowhow-secrets-store
           csi:
@@ -100,6 +112,11 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: "prod-secretproviderclass"
+        - name: azure-pipeline-repo-log-volume
+          emptyDir: {}
+        - name: promtail-config
+          configMap:
+            name: promtail-config
 
         
 

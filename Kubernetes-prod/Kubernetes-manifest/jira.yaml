@@ -27,7 +27,7 @@ spec:
       #   command: ['sh', '-c', "until nslookup ui-knowhow.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for ui-knowhow; sleep 2; done"]
       containers:
       - name: jira-processor
-        image: speedtools.azurecr.io/knowhow-jira-processor:9.2.0
+        image: speedtools.azurecr.io/knowhow-jira-processor:9.3.0
         imagePullPolicy: Always
         env:
             - name: spring.data.mongodb.uri
@@ -85,7 +85,7 @@ spec:
             memory: "250Mi"
             cpu: "0.2"
           limits:
-            memory: "2Gi"
+            memory: "8Gi"
             cpu: "0.5"
         readinessProbe:
           tcpSocket:
@@ -102,6 +102,17 @@ spec:
             - name: knowhow-secrets-store
               mountPath: "/mnt/prod-secrets-store"
               readOnly: true
+            - name: jira-processor-log-volume
+              mountPath: /app/logs
+      - name: promtail
+        image: grafana/promtail:2.9.2
+        args: 
+          - -config.file=/etc/promtail/config/promtail.yaml
+        volumeMounts:
+          - name: jira-processor-log-volume
+            mountPath: /app/logs
+          - name: promtail-config
+            mountPath: /etc/promtail/config
       volumes:
         - name: knowhow-secrets-store
           csi:
@@ -109,6 +120,11 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: "prod-secretproviderclass"
+        - name: jira-processor-log-volume
+          emptyDir: {}
+        - name: promtail-config
+          configMap:
+            name: promtail-config
 
 ---
 apiVersion: v1
