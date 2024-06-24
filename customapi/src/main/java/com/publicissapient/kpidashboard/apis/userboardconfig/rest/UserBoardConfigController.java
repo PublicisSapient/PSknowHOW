@@ -63,6 +63,7 @@ public class UserBoardConfigController {
 	 * 
 	 * @return response
 	 */
+	//Todo: to be removed after V2 become primary view
 	@PostMapping(value = "/getConfig" ,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getUserBoardConfiguration(@Valid @RequestBody ProjectListRequested listOfRequestedProj) {
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigService.getUserBoardConfig(listOfRequestedProj);
@@ -81,10 +82,9 @@ public class UserBoardConfigController {
 	@PostMapping(value = "/getBoardConfig" ,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getUserBoardConfigurations(@Valid @RequestBody ProjectListRequested listOfRequestedProj) {
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigService.getUserBoardConfig(listOfRequestedProj);
-		ConfigDetails configDetails=configDetailService.getConfigDetails();
 		ServiceResponse response = new ServiceResponse(false, "No data found", null);
 		if (null != userBoardConfigDTO) {
-			response = new ServiceResponse(true, "Fetched successfully", Pair.of(userBoardConfigDTO,configDetails));
+			response = new ServiceResponse(true, "Fetched successfully", userBoardConfigDTO);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
