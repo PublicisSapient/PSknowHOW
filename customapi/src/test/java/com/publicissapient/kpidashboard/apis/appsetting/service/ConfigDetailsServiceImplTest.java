@@ -86,6 +86,7 @@ public class ConfigDetailsServiceImplTest {
 		Mockito.when(customApiConfig.getDateRangeFilterCounts()).thenReturn(Arrays.asList(5, 10, 15));
 		Mockito.when(customApiConfig.getDateRangeFilterTypes()).thenReturn(Arrays.asList("Days", "Weeks", "Months"));
 		Mockito.when(customApiConfig.getIsRepoToolEnable()).thenReturn(false);
+		Mockito.when(customApiConfig.getIsGitlabFieldEnable()).thenReturn(false);
 		Mockito.when(customApiConfig.getSprintCountForKpiCalculation()).thenReturn(5);
 
 		ConfigDetails configDetail = getConfigDetailsObject();
@@ -100,6 +101,7 @@ public class ConfigDetailsServiceImplTest {
 		configDetails.setPercentile(90d);
 		configDetails.setDateRangeFilter(dateRangeFilter);
 		configDetails.setRepoToolFlag(false);
+		configDetails.setGitlabToolFieldFlag(false);
 		return configDetails;
 	}
 
