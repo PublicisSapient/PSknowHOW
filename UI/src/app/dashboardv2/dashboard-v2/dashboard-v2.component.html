@@ -38,10 +38,3 @@
     </div>
 </div>
 <app-footer></app-footer>
-<p-dialog [header]="modalDetails['header']" [(visible)]="displayModal" [style]="{width: '50vw'}" [responsive]="true"
-    showEffect="fade" [modal]="true">
-    <div class="p-d-flex p-flex-column p-mb-2">
-        <p>{{modalDetails['content']}}</p>
-        <button type="button" pButton autofocus (click)="reloadApp()" class="p-align-self-end">Continue</button>
-    </div>
-</p-dialog>
