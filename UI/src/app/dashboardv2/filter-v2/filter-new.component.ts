@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
@@ -487,10 +487,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       });
       let uniqueIdsArr = Array.from(uniqueIds);
       let uniqueObjArr = [];
-      for (let i = 0; i < uniqueIdsArr.length; i++) {
-        let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)].filter(f => f.nodeId === uniqueIdsArr[i])[0];
+      for (let uniqueId of uniqueIdsArr) {
+        let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)].filter(f => f.nodeId === uniqueId)[0];
         uniqueObjArr.push({
-          ...uniqueObj
+            ...uniqueObj
         });
         // continue;
       }

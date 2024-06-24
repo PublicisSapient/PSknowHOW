@@ -23,7 +23,6 @@ File contains code for daily scrum component.
 
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SortEvent } from 'primeng/api';
-import { stringify } from 'querystring';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({

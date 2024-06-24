@@ -83,7 +83,7 @@ export class DeveloperComponent implements OnInit {
   iSAdditionalFilterSelected = false;
   kpiThresholdObj = {};
   kpiList:Array<string> = [];
-  
+
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService) {
 
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -541,11 +541,11 @@ export class DeveloperComponent implements OnInit {
       const kpiUnit = this.updatedConfigGlobalData?.find(kpi => kpi.kpiId === kpiId)?.kpiDetail?.kpiUnit;
       const data = [];
       if (this.kpiChartData[kpiId] && this.kpiChartData[kpiId].length) {
-        for (let i = 0; i < this.kpiChartData[kpiId].length; i++) {
+        for (let element of this.kpiChartData[kpiId]) {
           const rowData = {
-            name: this.kpiChartData[kpiId][i].data,
-            maturity: 'M' + this.kpiChartData[kpiId][i].maturity,
-            value: this.kpiChartData[kpiId][i].value[0].data + ' ' + kpiUnit
+            name: element.data,
+            maturity: 'M' + element.maturity,
+            value: element.value[0].data + ' ' + kpiUnit
           };
           data.push(rowData);
         }

@@ -744,7 +744,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
-          
+
           if (localVariable['kpi997']) {
             if (localVariable['kpi997'].trendValueList && localVariable['kpi997'].xAxisValues) {
                 localVariable['kpi997'].trendValueList.forEach(trendElem => {
@@ -838,7 +838,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
 
 
-    // this block populates additional filters on developer dashboard because on developer dashboard, the 
+    // this block populates additional filters on developer dashboard because on developer dashboard, the
     // additional filters depend on KPI response
     if (this.selectedTab.toLowerCase() === 'developer') {
       if (trendValueList?.length) {
@@ -941,7 +941,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
         }
       }
-      // when there are no KPI Level Filters 
+      // when there are no KPI Level Filters
       else if (trendValueList?.length > 0 && !filterPropArr?.length) {
         this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
       } else {
@@ -972,11 +972,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       const kpiUnit = this.updatedConfigGlobalData?.find(kpi => kpi.kpiId === kpiId)?.kpiDetail?.kpiUnit;
       const data = [];
       if (this.kpiChartData[kpiId] && this.kpiChartData[kpiId].length) {
-        for (let i = 0; i < this.kpiChartData[kpiId].length; i++) {
+        for (let element of this.kpiChartData[kpiId]) {
           const rowData = {
-            name: this.kpiChartData[kpiId][i].data,
-            maturity: 'M' + this.kpiChartData[kpiId][i].maturity,
-            value: this.kpiChartData[kpiId][i].value[0].data + ' ' + kpiUnit
+            name: element.data,
+            maturity: 'M' + element.maturity,
+            value: element.value[0].data + ' ' + kpiUnit
           };
           data.push(rowData);
         }

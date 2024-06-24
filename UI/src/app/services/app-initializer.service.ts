@@ -211,11 +211,11 @@ export class AppInitializerService {
 
   validateToken(location) {
     return new Promise<void>((resolve, reject) => {
-        if (!environment['AUTHENTICATION_SERVICE'] == true) {
+        if (!environment['AUTHENTICATION_SERVICE']) {
             this.router.resetConfig([...this.routes]);
             this.router.navigate([location]);
         } else {
-           
+
             let obj = {
                 'resource': environment.RESOURCE,
             };
