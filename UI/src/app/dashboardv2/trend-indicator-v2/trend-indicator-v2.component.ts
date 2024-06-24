@@ -8,7 +8,7 @@ import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 export class TrendIndicatorV2Component implements OnInit {
   @Input() cols?: Array<object> = [];
 
-  @Input() trendData: [];
+  @Input() trendData: any;
   @Input() colorObj: any;
   dataObj = [];
   headerObj = [];
