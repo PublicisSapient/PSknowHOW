@@ -65,7 +65,6 @@ describe('HeaderComponent', () => {
     expect(helperService.isKanban).toBe(false);
     expect(setSelectedProjectSpy).toHaveBeenCalledWith(null);
     expect(setCurrentUserDetailsSpy).toHaveBeenCalledWith({});
-    // expect(routerMock.navigate).toHaveBeenCalledWith(['./authentication/login']);
   });
 
   it('should not clear localStorage, reset helperService and sharedService, and navigate to login page when logout returns an error', () => {
@@ -79,7 +78,6 @@ describe('HeaderComponent', () => {
     expect(helperService.isKanban).toBe(false);
     expect(setSelectedProjectSpy).not.toHaveBeenCalled();
     expect(setCurrentUserDetailsSpy).not.toHaveBeenCalled();
-    // expect(routerMock.navigate).not.toHaveBeenCalled();
   });
 
 
@@ -89,8 +87,6 @@ describe('HeaderComponent', () => {
 
     component.navigateToDashboard();
 
-    // expect(component.backToDashboardLoader).toBe(true);
-    // expect(routerMock.navigateByUrl).toHaveBeenCalledWith('/dashboard');
     expect(component.backToDashboardLoader).toBe(false);
   });
 });
