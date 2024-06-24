@@ -85,7 +85,7 @@ public class ConfigDetailsServiceImplTest {
 		Mockito.when(customApiConfig.getHierarchySelectionCount()).thenReturn(3);
 		Mockito.when(customApiConfig.getDateRangeFilterCounts()).thenReturn(Arrays.asList(5, 10, 15));
 		Mockito.when(customApiConfig.getDateRangeFilterTypes()).thenReturn(Arrays.asList("Days", "Weeks", "Months"));
-
+		Mockito.when(customApiConfig.getIsGitlabFieldEnable()).thenReturn(false);
 		ConfigDetails configDetail = getConfigDetailsObject();
 		ConfigDetails configDetails = configDetailsServiceImpl.getConfigDetails();
 		Assert.assertEquals(configDetail.getKpiWiseAggregationType(), configDetails.getKpiWiseAggregationType());
@@ -97,6 +97,7 @@ public class ConfigDetailsServiceImplTest {
 		configDetails.setKpiWiseAggregationType(kpiWiseAggregation);
 		configDetails.setPercentile(90d);
 		configDetails.setDateRangeFilter(dateRangeFilter);
+		configDetails.setGitlabToolFieldFlag(false);
 		return configDetails;
 	}
 
