@@ -103,7 +103,6 @@ public class JiraServiceR {
 	@SuppressWarnings({ "PMD.AvoidCatchingGenericException", "unchecked" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
-		log.info("Processing KPI calculation for data {}", kpiRequest.getKpiList());
 		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new).toList();
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] projectKeyCache = null;
@@ -129,7 +128,6 @@ public class JiraServiceR {
 						groupId, kpiRequest.getSprintIncluded());
 				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 						&& null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
-					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
 					return (List<KpiElement>) cachedData;
 				}
 
@@ -163,7 +161,7 @@ public class JiraServiceR {
 			}
 
 		} catch (Exception e) {
-			log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
+			log.error("Error while KPI calculation for data {}", e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
 		}
 

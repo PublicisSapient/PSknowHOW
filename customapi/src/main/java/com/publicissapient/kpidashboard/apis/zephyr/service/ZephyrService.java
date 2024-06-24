@@ -94,7 +94,6 @@ public class ZephyrService {
 	@SuppressWarnings({ "unchecked" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
-		log.info("[ZEPHYR][{}]. Processing KPI calculation for data {}", kpiRequest.getIds(), kpiRequest.getKpiList());
 		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
 				.collect(Collectors.toList());
 		List<KpiElement> responseList = new ArrayList<>();
@@ -121,8 +120,6 @@ public class ZephyrService {
 						groupId, kpiRequest.getSprintIncluded());
 				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 						&& null != cachedData) {
-					log.info("[ZEPHYR][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
-							kpiRequest.getIds());
 					return (List<KpiElement>) cachedData;
 				}
 
@@ -152,8 +149,7 @@ public class ZephyrService {
 				responseList.addAll(origRequestedKpis);
 			}
 		} catch (Exception e) {
-			log.error("[ZEPHYR][{}]. Error while KPI calculation for data {} {}", kpiRequest.getIds(),
-					kpiRequest.getKpiList(), e);
+			log.error("[ZEPHYR][{}]. Error while KPI calculation for data {}", kpiRequest.getRequestTrackerId(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
 		}
 

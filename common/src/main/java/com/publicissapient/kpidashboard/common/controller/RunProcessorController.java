@@ -60,9 +60,6 @@ public class RunProcessorController {
 		ExecutionLogContext.set(processorExecutionBasicConfig.getLogContext());
 		MDC.put("Processor Name", jobExecuter.getProcessor().getProcessorName());
 		MDC.put("RequestStartTime", String.valueOf(System.currentTimeMillis()));
-		log.info("Received request to run the processor: {} for projects {}",
-				jobExecuter.getProcessor().getProcessorName(),
-				processorExecutionBasicConfig.getProjectBasicConfigIds());
 
 		jobExecuter.setProjectsBasicConfigIds(processorExecutionBasicConfig.getProjectBasicConfigIds());
 		jobExecuter.setExecutionLogContext(ExecutionLogContext.getContext());

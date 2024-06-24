@@ -43,7 +43,8 @@ public class FieldMappingStructureController {
 	@GetMapping(value = "{projectBasicConfigId}/{kpiId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> fetchFieldMappingStructureByKpiFieldMappingData(
 			@PathVariable String projectBasicConfigId, @PathVariable String kpiId) {
-		projectBasicConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectBasicConfigId);
+		projectBasicConfigId = CommonUtils.sanitizeUserInput(projectBasicConfigId);
+		kpiId = CommonUtils.sanitizeUserInput(kpiId);
 		ServiceResponse response = null;
 		boolean hasProjectAccess = projectAccessUtil.configIdHasUserAccess(projectBasicConfigId);
 		if (!hasProjectAccess) {

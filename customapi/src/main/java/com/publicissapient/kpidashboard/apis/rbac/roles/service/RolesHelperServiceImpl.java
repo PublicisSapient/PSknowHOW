@@ -86,7 +86,6 @@ public class RolesHelperServiceImpl implements RolesHelperService {
 		}
 		Optional<RoleData> role = repository.findById(new ObjectId(id));
 		if (role.isPresent()) {
-			log.info("Successfully found role@{}", id);
 			return new ServiceResponse(true, "Found role@" + id, Arrays.asList(role));
 		} else {
 			log.info("Roles Db returned null");
@@ -123,7 +122,6 @@ public class RolesHelperServiceImpl implements RolesHelperService {
 
 		role.setLastModifiedDate(new Date());
 		repository.save(role);
-		log.info("Successfully modified role@{}", id);
 		return new ServiceResponse(true, "modified role@" + id, Arrays.asList(role));
 	}
 

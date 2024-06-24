@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +88,7 @@ public class JenkinsController {
 	public ResponseEntity<List<KpiElement>> getJenkinsAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception { // NOSONAR
 		MDC.put("JenkinsKpiRequest", kpiRequest.getRequestTrackerId());
-		log.info("Received Jenkins KPI request {}", kpiRequest);
+
 		long jenkinsRequestStartTime = System.currentTimeMillis();
 		MDC.put("JenkinsRequestStartTime", String.valueOf(jenkinsRequestStartTime));
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINS.name(),
@@ -123,7 +124,6 @@ public class JenkinsController {
 	public ResponseEntity<List<KpiElement>> getJenkinsKanbanAggregatedMetrics(
 			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception { // NOSONAR
 		MDC.put("JenkinsKanbanKpiRequest", kpiRequest.getRequestTrackerId());
-		log.info("Received Jenkins Kanban KPI request {}", kpiRequest);
 		long jenkinsKanbanRequestStartTime = System.currentTimeMillis();
 		MDC.put("JenkinsKanbanRequestStartTime", String.valueOf(jenkinsKanbanRequestStartTime));
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name(),

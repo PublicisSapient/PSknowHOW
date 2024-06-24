@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
@@ -44,7 +45,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.SymbolValueUnit;
@@ -581,4 +581,24 @@ public final class CommonUtils {
 	}
 
 	// -- auth-N-auth changes ends here ------
+
+	/**
+	 * this method uses for removed non-sanitize text. for remove security issue
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static String sanitizeUserInput(String input) {
+		String sanitizedString = StringEscapeUtils.escapeHtml(input);
+		return StringUtils.isNotBlank(sanitizedString)
+				? sanitizedString.replace("\\r", "").replace("\\n", "").replace("\\t", "").replaceAll("[^a-zA-Z0-9_\\-+/]", "")
+				: sanitizedString;
+	}
+
+	public static List<String> sanitizeUserInputList(List<String> inputValueList){
+		List<String> result = new ArrayList<>();
+		inputValueList.forEach(input -> result.add(sanitizeUserInput(input)));
+		return result;
+	}
+
 }

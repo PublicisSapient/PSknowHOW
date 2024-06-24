@@ -96,7 +96,7 @@ public class ProjectBasicConfigController {
 	 */
 	@GetMapping(value = { "/{id}" })
 	public ResponseEntity<ServiceResponse> getProjectBasicConfig(@PathVariable("id") String basicProjectConfigId) {
-		basicProjectConfigId = CommonUtils.handleCrossScriptingTaintedValue(basicProjectConfigId);
+		basicProjectConfigId = CommonUtils.sanitizeUserInput(basicProjectConfigId);
 		log.info("List project configuration request recieved for : {}", basicProjectConfigId);
 		boolean isSuccess = true;
 		String message = "Fetched successfully";
@@ -150,8 +150,6 @@ public class ProjectBasicConfigController {
 			});
 		}
 
-		log.info(ADDING_PROJECT_CONFIGURATIONS, projectBasicConfigDTO.toString());
-
 		ServiceResponse serviceResp = projectBasicConfigService.addBasicConfig(projectBasicConfigDTO);
 
 		List<RoleWiseProjects> projectAccess = projectAccessManager
@@ -173,8 +171,6 @@ public class ProjectBasicConfigController {
 
 		basicConfigId = CommonUtils.handleCrossScriptingTaintedValue(basicConfigId);
 		policy.checkPermission(projectBasicConfigDTO, "UPDATE_PROJECT");
-
-		log.info(UPDATING_PROJECT_CONFIGURATIONS, projectBasicConfigDTO.toString());
 
 		ServiceResponse serviceResp = projectBasicConfigService.updateBasicConfig(basicConfigId, projectBasicConfigDTO);
 
@@ -212,6 +208,7 @@ public class ProjectBasicConfigController {
 	@PreAuthorize("hasPermission(#basicProjectConfigId, 'DELETE_PROJECT')")
 	@DeleteMapping(value = "/{basicProjectConfigId}")
 	public ResponseEntity<ServiceResponse> deleteProject(@PathVariable String basicProjectConfigId) {
+		basicProjectConfigId = CommonUtils.sanitizeUserInput(basicProjectConfigId);
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigService.deleteProject(basicProjectConfigId);
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true,
 				projectBasicConfig.getProjectName() + " deleted successfully", projectBasicConfig));

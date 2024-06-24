@@ -108,7 +108,6 @@ public class CorsFilter extends OncePerRequestFilter {
 			throws MalformedURLException {
 		Boolean result = theResult;
 		String originHost = new URL(origin).getHost();
-		log.debug("value of orignHost : {}", originHost);
 		for (String allowedOrigin : originWhiteList) {
 			if (StringUtils.equalsIgnoreCase(originHost, allowedOrigin)) {
 				result = Boolean.TRUE;

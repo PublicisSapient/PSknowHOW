@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -31,7 +32,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +49,6 @@ import com.publicissapient.kpidashboard.apis.rbac.signupapproval.policy.RejectAp
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDecision;
 import com.publicissapient.kpidashboard.common.model.rbac.AuthenticationDTO;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,7 +76,7 @@ public class SignupRequestsController {
 	UserInfoServiceImpl userInfoService;
 
 	/**
-	 * Gets all unapproved requests data.l
+	 * Gets all unapproved requests data.
 	 *
 	 * @return responseEntity with data,message and information
 	 */
@@ -116,7 +115,7 @@ public class SignupRequestsController {
 
 	/**
 	 * Modify an access request data by username
-	 *            access request id
+	 *
 	 * @param accessRequestDecision
 	 *            decision data
 	 * @return updated access request
@@ -125,8 +124,7 @@ public class SignupRequestsController {
 	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
 	public ResponseEntity<ServiceResponse> modifyAccessRequestById(@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
 		ServiceResponse[] serviceResponse = new ServiceResponse[1];
-		String username = accessRequestDecision.getUserName();
-
+		String username = CommonUtils.sanitizeUserInput(accessRequestDecision.getUserName());
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access {}", username);
 
@@ -170,7 +168,7 @@ public class SignupRequestsController {
 	@PreAuthorize("hasPermission(null , 'APPROVE_USER')")
 	public ResponseEntity<ServiceResponse> modifyAccessRequestByIdForCentral(
 			@Valid @RequestBody AccessRequestDecision accessRequestDecision) {
-		String username = accessRequestDecision.getUserName();
+		String username = CommonUtils.sanitizeUserInput(accessRequestDecision.getUserName());
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access For Central Auth {}", username);
 			boolean approvedCentral = userInfoService.updateUserApprovalStatus(username);

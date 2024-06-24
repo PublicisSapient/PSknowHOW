@@ -23,6 +23,7 @@ import java.util.List;
 
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnectionDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -68,7 +69,6 @@ public class RepoToolsClient {
 		URI url = URI.create(repoToolsUrl);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-		log.debug(response.getBody());
 		return response.getStatusCode().value();
 	}
 
@@ -80,8 +80,7 @@ public class RepoToolsClient {
 		log.info("updating connection request for {} ", repoToolConnectionDetails);
 		URI url = URI.create(connectionUpdateURL);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-		log.debug(response.getBody());
+		restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 	}
 
 	/**
@@ -95,7 +94,7 @@ public class RepoToolsClient {
 	public int triggerScanCall(String projectKey, String repoToolsUrl, String apiKey) {
 		setHttpHeaders(apiKey);
 		String triggerScanUrl = String.format(repoToolsUrl, projectKey);
-		log.info("trigger project scan request {} {}", triggerScanUrl);
+		log.info("trigger project scan request {} {}", CommonUtils.sanitizeUserInput(triggerScanUrl));
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(triggerScanUrl, HttpMethod.GET, entity, String.class);
 		return response.getStatusCode().value();

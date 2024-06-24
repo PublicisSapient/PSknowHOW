@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
@@ -252,13 +253,13 @@ public class SonarToolConfigServiceImpl {
 				searchProjectsResponse = mapper.readValue(response.getBody(), SearchProjectsResponse.class);
 			} else {
 				String statusCode = response.getStatusCode().toString();
-				log.error("Error while fetching projects from {}. with status {}", sonarUrl, statusCode);
+				log.error("Error while fetching projects from {}. with status {}", CommonUtils.sanitizeUserInput(sonarUrl), statusCode);
 			}
 		} catch (RestClientException exception) {
 			isClientException(connection, exception);
-			log.error("Error while fetching projects from {}:  {}", sonarUrl, exception.getMessage());
+			log.error("Error while fetching projects from {}:  {}", CommonUtils.sanitizeUserInput(sonarUrl), exception.getMessage());
 		} catch (JsonProcessingException e) {
-			log.error("Error while fetching projects from {}:  {}", sonarUrl, e.getMessage());
+			log.error("Error while fetching projects from {}:  {}", CommonUtils.sanitizeUserInput(sonarUrl), e.getMessage());
 		}
 		return searchProjectsResponse;
 	}
@@ -298,10 +299,10 @@ public class SonarToolConfigServiceImpl {
 				}
 			} else {
 				String statusCode = response.getStatusCode().toString();
-				log.error("Error while fetching branches from {}. with status {}", url, statusCode);
+				log.error("Error while fetching branches with status {}", statusCode);
 			}
 		} catch (Exception exception) {
-			log.error("Error while fetching branches from {}:  {}", url, exception.getMessage());
+			log.error("Error while fetching branches {}", exception.getMessage());
 		}
 
 		return branchNameList;

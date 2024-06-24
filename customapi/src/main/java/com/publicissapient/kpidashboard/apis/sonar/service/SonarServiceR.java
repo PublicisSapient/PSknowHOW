@@ -86,8 +86,6 @@ public class SonarServiceR {
 	@SuppressWarnings({ "unchecked", "PMD.AvoidCatchingGenericException" })
 	public List<KpiElement> process(KpiRequest kpiRequest) {
 
-		log.info("[SONAR][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
-				kpiRequest.getKpiList());
 		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
 				.collect(Collectors.toList());
 		List<KpiElement> responseList = new ArrayList<>();
@@ -128,7 +126,7 @@ public class SonarServiceR {
 						try {
 							calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiElement, treeAggregatorDetail);
 						} catch (Exception e) {
-							log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
+							log.error("Error while KPI calculation for data {}", e);
 						}
 					}, executorService);
 					futures.add(future);
@@ -145,8 +143,8 @@ public class SonarServiceR {
 			}
 		} catch (ApplicationException enfe) {
 
-			log.error("[SONAR][{}]. Error while KPI calculation for data. No data found {} {}",
-					kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), enfe);
+			log.error("[SONAR][{}]. Error while KPI calculation for data. No data found {}",
+					kpiRequest.getRequestTrackerId(), enfe);
 		}
 		return responseList;
 	}
@@ -203,8 +201,7 @@ public class SonarServiceR {
 	private Object getDataFromCache(Object cachedData, KpiRequest kpiRequest) {
 		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& null != cachedData)
-			log.info("[JIRA][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
-					kpiRequest.getIds());
+			log.info("[JIRA][{}]. Fetching value from cache for", kpiRequest.getRequestTrackerId());
 		return cachedData;
 	}
 
