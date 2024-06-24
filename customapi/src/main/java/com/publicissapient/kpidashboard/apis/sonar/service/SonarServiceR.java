@@ -37,12 +37,12 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.sonar.factory.SonarKPIServiceFactory;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
@@ -51,7 +51,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 
+ *
  * @author prigupta8
  * @implNote {@link KpiIntegrationServiceImpl }
  */
@@ -78,7 +78,7 @@ public class SonarServiceR {
 
 	/**
 	 * Process Sonar KPI request for Kanban projects
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @return {@code List<KpiElement>}
 	 */
@@ -125,7 +125,8 @@ public class SonarServiceR {
 				for (KpiElement kpiElement : kpiRequest.getKpiList()) {
 					CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 						try {
-							calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiElement, treeAggregatorDetail);
+							calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiElement,
+									treeAggregatorDetail);
 						} catch (Exception e) {
 							log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
 						}
@@ -152,7 +153,7 @@ public class SonarServiceR {
 
 	/**
 	 * Calculates all KPI aggregated metrics
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param kpiElement
@@ -182,7 +183,7 @@ public class SonarServiceR {
 
 	/**
 	 * Sets KPI reponse List into KnowHow Cache
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param groupId
