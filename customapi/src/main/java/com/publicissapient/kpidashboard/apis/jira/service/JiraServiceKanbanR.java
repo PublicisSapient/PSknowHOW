@@ -18,11 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -43,7 +43,6 @@ import com.publicissapient.kpidashboard.apis.jira.factory.JiraKPIServiceFactory;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -54,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
  * This class handle all Kanban JIRA based KPI request and call each KPIs
  * service in thread. It is responsible for cache of KPI data at different
  * level.
- * 
+ *
  * @author priyanka jain
  *
  */
@@ -77,12 +76,11 @@ public class JiraServiceKanbanR {
 	/**
 	 * This method process Kanban JIRA based kpi request, cache data and call
 	 * service in multiple thread.
-	 * 
+	 *
 	 * @param kpiRequest
 	 *            JIRA KPI request
 	 * @return List of KPI data
 	 * @throws EntityNotFoundException
-	 *             exception
 	 */
 
 	@SuppressWarnings({ "unchecked", "PMD.AvoidCatchingGenericException" })
@@ -90,7 +88,8 @@ public class JiraServiceKanbanR {
 
 		log.info("[JIRA KANBAN][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
 				kpiRequest.getKpiList());
-		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new).toList();
+		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
+				.collect(Collectors.toList());
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] kanbanProjectKeyCache = null;
 		try {
@@ -127,12 +126,15 @@ public class JiraServiceKanbanR {
 
 			List<ParallelJiraServices> listOfTask = new ArrayList<>();
 			for (KpiElement kpiEle : kpiRequest.getKpiList()) {
+
 				listOfTask.add(new ParallelJiraServices(kpiRequest, responseList, kpiEle, treeAggregatorDetail));
 			}
 
 			ForkJoinTask.invokeAll(listOfTask);
-			List<KpiElement> missingKpis = origRequestedKpis.stream().filter(reqKpi -> responseList.stream()
-					.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId()))).toList();
+			List<KpiElement> missingKpis = origRequestedKpis.stream()
+					.filter(reqKpi -> responseList.stream()
+							.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
+					.collect(Collectors.toList());
 			responseList.addAll(missingKpis);
 			setIntoApplicationCache(kpiRequest, responseList, groupId, kanbanProjectKeyCache);
 
@@ -153,10 +155,8 @@ public class JiraServiceKanbanR {
 
 	/**
 	 * @param kpiRequest
-	 *            kpiRequest
 	 * @param filteredAccountDataList
-	 *            filteredAccountDataList
-	 * @return array if string
+	 * @return
 	 */
 	private String[] getProjectKeyCache(KpiRequest kpiRequest,
 			List<AccountHierarchyDataKanban> filteredAccountDataList) {
@@ -165,10 +165,8 @@ public class JiraServiceKanbanR {
 
 	/**
 	 * @param kpiRequest
-	 *            kpiRequest
 	 * @param filteredAccountDataList
-	 *            filteredAccountDataList
-	 * @return list of hierarchy
+	 * @return
 	 */
 	private List<AccountHierarchyDataKanban> getAuthorizedFilteredList(KpiRequest kpiRequest,
 			List<AccountHierarchyDataKanban> filteredAccountDataList) {
@@ -181,15 +179,10 @@ public class JiraServiceKanbanR {
 
 	/**
 	 * Sets cache.
-	 * 
+	 *
 	 * @param kpiRequest
-	 *            kpiRequest
 	 * @param responseList
-	 *            responseList
 	 * @param groupId
-	 *            groupId
-	 * @param projects
-	 *            projects
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] projects) {
@@ -226,7 +219,6 @@ public class JiraServiceKanbanR {
 	 */
 	public class ParallelJiraServices extends RecursiveAction {
 
-		@Serial
 		private static final long serialVersionUID = 1L;
 		private final KpiRequest kpiRequest;
 		private final transient List<KpiElement> responseList;
@@ -237,14 +229,9 @@ public class JiraServiceKanbanR {
 		 * Constructor
 		 *
 		 * @param kpiRequest
-		 *            kpiRequest
 		 * @param responseList
-		 *            responseList
 		 * @param kpiEle
-		 *            kpiEle
 		 * @param treeAggregatorDetail
-		 *            treeAggregatorDetail
-		 * 
 		 */
 		public ParallelJiraServices(KpiRequest kpiRequest, List<KpiElement> responseList, KpiElement kpiEle,
 				TreeAggregatorDetail treeAggregatorDetail) {
@@ -261,7 +248,12 @@ public class JiraServiceKanbanR {
 		@SuppressWarnings("PMD.AvoidCatchingGenericException")
 		@Override
 		public void compute() {
-			responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, treeAggregatorDetail));
+			try {
+				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
+			} catch (Exception e) {
+				log.error("[PARALLEL_JIRA_SERVICE].Exception occured {}", e);
+				log.error("" + kpiEle);
+			}
 		}
 
 		/**
@@ -270,46 +262,32 @@ public class JiraServiceKanbanR {
 		 *
 		 * @param kpiRequest
 		 *            JIRA KPI request
+		 * @param responseList
+		 *            List of KpiElement having data of each KPIs
 		 * @param kpiElement
-		 *            kpiElement
 		 * @param treeAggregatorDetail
 		 *            filter tree object
-		 * @return KpiElement kpiElement
+		 * @throws ApplicationException
+		 * @throws EntityNotFoundException
 		 */
-		private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
-				TreeAggregatorDetail treeAggregatorDetail) {
+		private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
+				KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
 			long startTime;
 			JiraKPIService<?, ?, ?> jiraKPIService = null;
 			KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
-			try {
-				jiraKPIService = JiraKPIServiceFactory.getJiraKPIService(kpi.name());
-				startTime = System.currentTimeMillis();
-				TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-						.clone(treeAggregatorDetail);
-				List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
-						.get(CommonConstant.PROJECT.toLowerCase());
-				if (!projectNodes.isEmpty() && (projectNodes.size() > 1
-						|| kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, projectNodes.get(0)))) {
-					kpiElement = jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
-					kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
-				} else if (!kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, projectNodes.get(0))) {
-					// mandatory fields not found
-					kpiElement.setResponseCode(CommonConstant.MANDATORY_FIELD_MAPPING);
-				}
-				long processTime = System.currentTimeMillis() - startTime;
-				log.info("[JIRA-KANBAN-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-						processTime);
-			} catch (ApplicationException exception) {
-				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
-				log.error("Kpi not found", exception);
-			} catch (Exception exception) {
-				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
-				log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", exception);
-				log.error("" + kpiEle);
-				return kpiElement;
-			}
-			return kpiElement;
+			jiraKPIService = JiraKPIServiceFactory.getJiraKPIService(kpi.name());
+
+			startTime = System.currentTimeMillis();
+
+			TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
+					.clone(treeAggregatorDetail);
+			responseList.add(jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
+
+			long processTime = System.currentTimeMillis() - startTime;
+			log.info("[JIRA-KANBAN-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+					processTime);
+
 		}
 	}
 

@@ -135,16 +135,6 @@ public class KpiElement implements Serializable { // NOPMD
 	//for consolidated one kpi for all Pie charts where grouping happens on some key
 	private transient FilterGroup filterGroup;
 
-	public void setResponseCode(String responseCode) {
-		this.responseCode = responseCode;
-	}
-
-	public String getResponseCode() {
-		return responseCode;
-	}
-
-	private String responseCode;
-
 	/**
 	 * Instantiates a new Kpi element.
 	 */
