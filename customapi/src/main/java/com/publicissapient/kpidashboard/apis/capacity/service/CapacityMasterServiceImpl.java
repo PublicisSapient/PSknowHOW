@@ -140,7 +140,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			return;
 		Set<Assignee> assignee = assigneeDetails.getAssignee();
 		Map<String, Assignee> map = new HashMap<>();
-		if (assignee != null && capacityMaster != null && capacityMaster.getAssigneeCapacity() != null) {
+		if (assignee != null && capacityMaster.getAssigneeCapacity() != null) {
 			assignee.forEach(assignee1 -> map.put(assignee1.getAssigneeId(), assignee1));
 			capacityMaster.getAssigneeCapacity().forEach(capacity -> {
 				Assignee assignee1 = map.get(capacity.getUserId());
@@ -310,19 +310,8 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					// mutiplying by working days of week
 					capacityMasterKanban.setCapacity(kanbanCapacity.getCapacity() * 5);
 					var additionalFilterCapacityList = kanbanCapacity.getAdditionalFilterCapacityList();
-					if (CollectionUtils.isNotEmpty(additionalFilterCapacityList)) {
-						additionalFilterCapacityList.forEach(leafNode -> {
-							var leafNodeCapacity = leafNode.getNodeCapacityList();
-							if (CollectionUtils.isNotEmpty(leafNodeCapacity)) {
-								leafNodeCapacity.stream()
-										.filter(capacity -> capacity.getAdditionalFilterCapacity() != null)
-										.forEach(capacity -> capacity.setAdditionalFilterCapacity(
-												capacity.getAdditionalFilterCapacity() * 5));
-							}
-						});
-					}
+					calculateAdditinalFilterCapacityForKanban(additionalFilterCapacityList);
 					capacityMasterKanban.setAdditionalFilterCapacityList(additionalFilterCapacityList);
-
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 					capacityMasterKanban.setStartDate(kanbanCapacity.getStartDate().format(formatter));
 					capacityMasterKanban.setEndDate(kanbanCapacity.getEndDate().format(formatter));
@@ -355,6 +344,20 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 
 		}
 		return capacityMasterList;
+	}
+
+	private void calculateAdditinalFilterCapacityForKanban(List<AdditionalFilterCapacity> additionalFilterCapacityList) {
+		if (CollectionUtils.isNotEmpty(additionalFilterCapacityList)) {
+			additionalFilterCapacityList.forEach(leafNode -> {
+				var leafNodeCapacity = leafNode.getNodeCapacityList();
+				if (CollectionUtils.isNotEmpty(leafNodeCapacity)) {
+					leafNodeCapacity.stream()
+							.filter(capacity -> capacity.getAdditionalFilterCapacity() != null)
+							.forEach(capacity -> capacity.setAdditionalFilterCapacity(
+									capacity.getAdditionalFilterCapacity() * 5));
+				}
+			});
+		}
 	}
 
 	private void settingFutureAssigneeDetails(List<AssigneeCapacity> assigneeCapacity, CapacityMaster capacityMaster) {
