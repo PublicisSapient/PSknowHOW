@@ -43,4 +43,24 @@ describe('AdditionalFilterComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should reset filterData, filterSet, and selectedFilters when selectedTab changes', () => {
+    component.filterData = ['Filter 1', 'Filter 2'];
+    component.filterSet = new Set(['Filter 1', 'Filter 2']);
+    component.selectedFilters = ['Filter 1', 'Filter 2'];
+
+    component.ngOnChanges({ selectedTab: {
+      currentValue: 'New Tab', previousValue: 'Old Tab', firstChange: false,
+      isFirstChange: function (): boolean {
+        return false;
+      }
+    } });
+
+    expect(component.filterData).toEqual([]);
+    expect(component.filterSet.size).toBe(0);
+    expect(component.selectedFilters.length).toBe(0);
+  });
+
+  // Add more test cases as needed
+
 });
