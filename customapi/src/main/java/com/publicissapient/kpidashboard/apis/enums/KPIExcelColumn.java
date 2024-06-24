@@ -319,6 +319,8 @@ public enum KPIExcelColumn {
 
 	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee")),
 
+	RELEASE_PLAN("kpi179", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
+			"Priority", "Assignee", "Issue Status", "Planned Completion Date (Due Date)")),
 	DEFECT_COUNT_BY("kpi178", Arrays.asList("Issue Id", "Issue Description", "Sprint Name", "Issue Type",
 			"Issue Status", "Root Cause List", "Priority", "Testing Phase", "Assignee")),
 

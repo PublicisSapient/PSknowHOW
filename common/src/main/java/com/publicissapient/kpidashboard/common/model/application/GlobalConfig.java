@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.AllArgsConstructor;
@@ -42,12 +41,6 @@ public class GlobalConfig extends BasicModel {
 
 	private String env;
 
-	private AuthTypeStatus authTypeStatus;
-
-	private ADServerDetail adServerDetail;
-
 	private EmailServerDetail emailServerDetail;
-
-	private String zephyrCloudBaseUrl;
 
 }

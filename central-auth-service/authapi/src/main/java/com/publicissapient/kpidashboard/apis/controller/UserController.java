@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.common.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.modelmapper.ModelMapper;
@@ -75,13 +76,6 @@ import com.publicissapient.kpidashboard.apis.service.UserRoleService;
 import com.publicissapient.kpidashboard.apis.service.UserService;
 import com.publicissapient.kpidashboard.apis.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.util.CookieUtil;
-import com.publicissapient.kpidashboard.common.model.ChangePasswordRequestDTO;
-import com.publicissapient.kpidashboard.common.model.ForgotPasswordRequestDTO;
-import com.publicissapient.kpidashboard.common.model.LoginResponse;
-import com.publicissapient.kpidashboard.common.model.ResetPasswordRequestDTO;
-import com.publicissapient.kpidashboard.common.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.UserDTO;
-import com.publicissapient.kpidashboard.common.model.UserTokenAuthenticationDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -293,6 +287,7 @@ public class UserController {
 	 *            username
 	 * @return ServiceResponse
 	 */
+	@Deprecated
 	@GetMapping(value = "/user/{username}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> fetchUserInfo(@PathVariable String username) {
 		ServiceResponse response = new ServiceResponse(false, messageService.getMessage(ERROR_UNAUTHORIZED_USER), null);
@@ -306,6 +301,23 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * @param userNameRequestDTO
+	 *            username
+	 * @return ServiceResponse
+	 */
+	@PostMapping(value = "/user", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> fetchUserInfo(@Valid @RequestBody UserNameRequestDTO userNameRequestDTO) {
+		ServiceResponse response = new ServiceResponse(false, messageService.getMessage(ERROR_UNAUTHORIZED_USER), null);
+		User user = userService.getAuthentication(userNameRequestDTO.getUserName());
+		if (null != user) {
+			UserDTO userDTO = userService.getUserDTO(user);
+			response = new ServiceResponse(true, messageService.getMessage(SUCCESS_VALID_TOKEN), userDTO);
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} else {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+		}
+	}
 	/**
 	 * Retrieve user info of the current user from the cookie
 	 *
@@ -369,17 +381,17 @@ public class UserController {
 				messageService.getMessage("success_pending_approval"), userApprovalService.findAllUnapprovedUsers()));
 	}
 
+
 	/**
 	 * Put Method to Approve request
 	 *
-	 * @param username
+	 * @param userNameRequestDTO
 	 *            username
 	 * @return ServiceResponse
 	 */
-	@PutMapping(value = "/update-userApproval/{username}", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponse> updateApprovalRequest(@PathVariable("username") String username) {
-
-		boolean isSuccess = userApprovalService.updateApprovalRequest(username);
+	@PutMapping(value = "/update-userApproval", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> updateApprovalRequest(@Valid @RequestBody UserNameRequestDTO userNameRequestDTO) {
+		boolean isSuccess = userApprovalService.updateApprovalRequest(userNameRequestDTO.getUserName());
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new ServiceResponse(isSuccess, isSuccess ? messageService.getMessage("success_request_approve")
 						: messageService.getMessage("error_request_approve"), isSuccess));
@@ -392,6 +404,7 @@ public class UserController {
 	 * @param username
 	 * @return
 	 */
+	@Deprecated
 	@GetMapping(value = "/deleteUser/{username}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> deleteUser(@PathVariable("username") String username) {
 
@@ -403,22 +416,32 @@ public class UserController {
 	}
 
 	/**
-	 * Put method to update user profile
+	 * delete user api
 	 *
-	 * @param username
-	 *            username whose profile will be updated
-	 * @param request
-	 *            updated data
+	 * @param userNameRequestDTO
 	 * @return
 	 */
-	@PutMapping(value = "/users/{username}/updateProfile", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponse> updateUserProfile(@PathVariable("username") String username,
-			@Valid @RequestBody UserDTO request) {
-		boolean isSuccess = userService.updateUserProfile(username, request);
+	@PostMapping(value = "/deleteUser", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> deleteUser(@Valid @RequestBody UserNameRequestDTO userNameRequestDTO) {
 
+		boolean isSuccess = userApprovalService.deleteRejectUser(userNameRequestDTO.getUserName());
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ServiceResponse(isSuccess, isSuccess ? messageService.getMessage("success_profile_user")
-						: messageService.getMessage("error_update_profile"), null));
+				.body(new ServiceResponse(isSuccess, isSuccess ? messageService.getMessage("rejected_user_deleted")
+						: messageService.getMessage("error_delete_user"), isSuccess));
+
+	}
+
+	/**
+	 * Put method to update user profile
+	 *
+	 * @param request  updated data
+	 * @return
+	 */
+	@PutMapping(value = "/users/updateProfile", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> updateUserProfile(@Valid @RequestBody UserDTO request) {
+		boolean isSuccess = userService.updateUserProfile(request);
+
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(isSuccess, isSuccess ? messageService.getMessage("success_profile_user") : messageService.getMessage("error_update_profile"), null));
 	}
 
 	@PostMapping(value = "/forgotPassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)

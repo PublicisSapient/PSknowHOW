@@ -757,6 +757,23 @@ this.resetAddtionalFIlters();
       this.createFilterApplyData();
       this.setMarker();
       this.getKpiOrderListProjectLevel();
+      if(this.copyFilteredAddFilters['sprint']?.length > 0){
+        let addFilters = this.service.getAddtionalFilterBackup()
+        let lastSelectedSprint = {};
+        if(addFilters['sprint']){
+          for(let key in addFilters['sprint']){
+            if(Object.values(addFilters['sprint'][key] > 0)){
+              lastSelectedSprint = addFilters['sprint'][key][addFilters['sprint'][key].length - 1];
+            }
+          }
+          if(lastSelectedSprint){
+            this.service.setSprintForRnR(lastSelectedSprint);
+          }
+        }else{
+          let len = this.copyFilteredAddFilters['sprint']?.length;
+          this.service.setSprintForRnR(this.copyFilteredAddFilters['sprint'][len-1]);
+        }
+      }
     }
   }
 
@@ -777,13 +794,11 @@ this.resetAddtionalFIlters();
             this.filterApplyData['ids'].push(temp[j].nodeId);
           }
           this.filterApplyData['label'] = temp[j]?.labelName;
-          if (temp[j].labelName != 'sprint' || this.filterApplyData['selectedMap']['sprint']?.length == 0) {
-            if(this.selectedTab.toLowerCase() === 'iteration'){
-              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.parentId[0],this.filterApplyData['selectedMap']['project'])
-              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['sprint'])
-            }else{
-              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['project'])
-            }
+          if(this.selectedTab?.toLowerCase() === 'iteration'){
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.parentId[0],this.filterApplyData['selectedMap']['project'])
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['sprint'])
+          }else{
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['project'])
           }
         }
       } else {
@@ -1367,6 +1382,7 @@ this.resetAddtionalFIlters();
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
       if (this.selectedSprint && Object.keys(this.selectedSprint)?.length > 0) {
         this.service.setCurrentSelectedSprint(this.selectedSprint);
+        this.service.setSprintForRnR(this.selectedSprint);
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
          if(this.filterForm.get('sqd')){
@@ -1521,11 +1537,6 @@ this.resetAddtionalFIlters();
   showChartToggle(val) {
     this.showChart = val;
     this.service.setShowTableView(this.showChart);
-  }
-
-  exportToExcel($event = null) {
-    this.disableDownloadBtn = true;
-    this.service.setGlobalDownload(true);
   }
 
   getNotification() {

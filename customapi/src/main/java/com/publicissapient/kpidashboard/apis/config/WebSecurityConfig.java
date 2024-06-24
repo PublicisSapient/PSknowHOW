@@ -49,7 +49,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
 import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
 import com.publicissapient.kpidashboard.apis.auth.standard.StandardAuthenticationManager;
 import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.token.JwtAuthenticationFilter;
@@ -86,8 +85,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 
     private CustomApiConfig customApiConfig;
 
-    private AuthTypesConfigService authTypesConfigService;
-
     private StandardAuthenticationManager authenticationManager;
 
     public static Properties getProps() throws IOException {
@@ -109,7 +106,9 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         // Configure AuthenticationManagerBuilder
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         setAuthenticationProvider(authenticationManagerBuilder);
-        http.headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable));
+        http.headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable)
+				.httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(customApiConfig.isIncludeSubDomains())
+						.maxAgeInSeconds(customApiConfig.getMaxAgeInSeconds())));
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(authz -> authz
                         .requestMatchers("/appinfo").permitAll().requestMatchers("/registerUser")
@@ -158,7 +157,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Bean
     protected StandardLoginRequestFilter standardLoginRequestFilter(AuthenticationManager authenticationManager){
         return new StandardLoginRequestFilter("/login", authenticationManager, authenticationResultHandler,
-                customAuthenticationFailureHandler, customApiConfig, authTypesConfigService);
+                customAuthenticationFailureHandler, customApiConfig);
     }
 
     @Bean
