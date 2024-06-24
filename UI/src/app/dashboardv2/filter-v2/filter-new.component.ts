@@ -52,7 +52,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     private httpService: HttpService,
     private service: SharedService,
     private helperService: HelperService,
-    private cdr: ChangeDetectorRef,
+    public cdr: ChangeDetectorRef,
     private messageService: MessageService,) { }
 
 
@@ -116,7 +116,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   // unsubscribing all Kpi Request
   ngOnDestroy() {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions?.forEach(subscription => subscription?.unsubscribe());
   }
 
   setSelectedDateType(label: string) {
