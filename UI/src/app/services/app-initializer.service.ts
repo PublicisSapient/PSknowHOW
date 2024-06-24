@@ -109,8 +109,7 @@ export class AppInitializerService {
   routesAuth: Routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     {
-        path: 'dashboard', component: DashboardComponent,
-        canActivateChild: [FeatureGuard],
+        path: 'dashboard', component: !localStorage.getItem('newUI') ? DashboardComponent : DashboardV2Component,
         children: [
             { path: '', redirectTo: 'iteration', pathMatch: 'full' },
             {
@@ -212,11 +211,11 @@ export class AppInitializerService {
 
   validateToken(location) {
     return new Promise<void>((resolve, reject) => {
-        if (!environment['AUTHENTICATION_SERVICE'] == true) {
+        if (!environment['AUTHENTICATION_SERVICE']) {
             this.router.resetConfig([...this.routes]);
             this.router.navigate([location]);
         } else {
-           
+
             let obj = {
                 'resource': environment.RESOURCE,
             };
@@ -230,6 +229,10 @@ export class AppInitializerService {
                     this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
                 }
                 if(location){
+                    let redirect_uri = JSON.parse(localStorage.getItem('redirect_uri'));
+                    if(redirect_uri){
+                        localStorage.removeItem('redirect_uri');
+                    }
                     this.router.navigateByUrl(location);
                 }else{
                     this.router.navigate(['/dashboard/iteration']);

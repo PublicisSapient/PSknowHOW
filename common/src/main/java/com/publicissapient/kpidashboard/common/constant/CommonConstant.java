@@ -145,6 +145,7 @@ public final class CommonConstant {
 	public static final String ADDED_ISSUES = "addedIssues";
 	public static final String ADDED = "Added";
 	public static final String REMOVED = "Removed";
+
 	public static final String INITIAL = "Initial";
 	public static final String PUNTED_ISSUES = "puntedIssues";
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
@@ -327,23 +328,17 @@ public final class CommonConstant {
 	public static final String JIRAISSUERISKTYPE = "jiraIssueRiskTypeKPI176";
 	public static final String JIRAISSUEDEPENDENCYTYPE = "jiraIssueDependencyTypeKPI176";
 
-	//-- auth-N-auth changes starts here --
-	public static final String ACTION_POLICY_RULES_CACHE = "actionPolicyRules";
 	public static final String ACCESS_ALERT_NOTIFICATION = "accessAlertNotification";
+
 	public static final String ERROR_ALERT_NOTIFICATION = "errorAlertNotification";
-	//-- auth-N-auth changes ends here --
-
-	public static final String KPI_PASSED= "200";
-	public static final String KPI_FAILED= "400";
-	public static final String MANDATORY_FIELD_MAPPING= "201";
-
-
 
 	public static final String USERNAME_PATTERN = "^[a-zA-Z0-9]{4,30}$";//Username can only contain letters and numbers Maximum length is 30 and min is 4 characters
 
 	public static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
 	public static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; // NOSONAR
+    public static final String PARENT_STORY_ID = "parentStoryId";
+	public static final String NUMBER = "number";
 
 	//-- auth-N-auth changes ends here --
 

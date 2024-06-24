@@ -315,8 +315,8 @@ public class JiraReleaseServiceRTest {
 	}
 
 	@Test
-	public void getJiraIssuesCustomHistoryForCurrentSprint() {
-		jiraServiceR.getJiraIssuesCustomHistoryForCurrentSprint();
+	public void getJiraIssuesCustomHistoryForCurrentRelease() {
+		jiraServiceR.getJiraIssuesCustomHistoryForCurrentRelease();
 	}
 
 	@Test

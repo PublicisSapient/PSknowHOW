@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
 import java.time.DayOfWeek;
-import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,13 +37,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
-import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
-import com.publicissapient.kpidashboard.common.model.application.Tool;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -67,11 +59,15 @@ import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.FieldMappingStructureResponse;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.MasterResponse;
 import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
@@ -82,6 +78,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMappingStr
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.LabelCount;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -99,6 +96,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -128,10 +126,10 @@ public class KpiHelperService { // NOPMD
 	private static final String SPRINT_WISE_SPRINTDETAILS = "sprintWiseSprintDetailMap";
 	private static final String ISSUE_DATA = "issueData";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-	private static final String STORY_LIST = "stories";
-	private static final String SPRINTSDETAILS = "sprints";
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
+	private static final String STORY_LIST = "stories";
+	private static final String SPRINTSDETAILS = "sprints";
 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
@@ -723,11 +721,13 @@ public class KpiHelperService { // NOPMD
 		List<String> basicProjectConfigIds = new ArrayList<>();
 
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		Map<String, Map<String, Object>> uniqueProjectMapForSubTask = new HashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
 
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+			Map<String, Object> mapOfProjectFiltersForSubTask = new LinkedHashMap<>();
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
@@ -736,12 +736,17 @@ public class KpiHelperService { // NOPMD
 				capacityIssueType = new ArrayList<>();
 				capacityIssueType.add("Story");
 			}
+
+			List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(capacityIssueType));
+			mapOfProjectFiltersForSubTask.put(JiraFeature.ORIGINAL_ISSUE_TYPE.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(taskType));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+			uniqueProjectMapForSubTask.put(basicProjectConfigId.toString(), mapOfProjectFiltersForSubTask);
 
 		});
 
@@ -755,12 +760,18 @@ public class KpiHelperService { // NOPMD
 		});
 
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
-			List<JiraIssue> jiraIssueList = jiraIssueRepository.findIssueByNumberAndType(totalIssue,
-					uniqueProjectMap);
+			List<JiraIssue> jiraIssueList = jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(totalIssue,
+					uniqueProjectMap, CommonConstant.NUMBER);
+			List<JiraIssue> subTaskList = jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(
+					jiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toSet()),
+					uniqueProjectMapForSubTask, CommonConstant.PARENT_STORY_ID);
+			List<JiraIssue> jiraIssues = new ArrayList<>();
+			jiraIssues.addAll(subTaskList);
+			jiraIssues.addAll(jiraIssueList);
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
-					.findByStoryIDInAndBasicProjectConfigIdIn(jiraIssueList.stream().map(JiraIssue::getNumber).toList(),
+					.findByStoryIDInAndBasicProjectConfigIdIn(jiraIssues.stream().map(JiraIssue::getNumber).toList(),
 							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-			resultListMap.put(STORY_LIST, jiraIssueList);
+			resultListMap.put(STORY_LIST, jiraIssues);
 			resultListMap.put(SPRINTSDETAILS, sprintDetails);
 			resultListMap.put(JIRA_ISSUE_HISTORY_DATA, jiraIssueCustomHistoryList);
 		}
@@ -1426,7 +1437,8 @@ public class KpiHelperService { // NOPMD
 					.filter(t -> t.getBasicProjectConfigId().toString().equals(projectBasicConfigId))
 					.map(ProjectToolConfig::getId).findFirst().orElse(null);
 
-			List<FieldMappingStructure> fieldMappingStructureList1 = getFieldMappingStructure(fieldMappingStructureList, fieldList);
+			List<FieldMappingStructure> fieldMappingStructureList1 = getFieldMappingStructure(fieldMappingStructureList,
+					fieldList);
 
 			fieldMappingStructureResponse.setFieldConfiguration(
 					CollectionUtils.isNotEmpty(fieldMappingStructureList1) ? fieldMappingStructureList1
@@ -1441,10 +1453,10 @@ public class KpiHelperService { // NOPMD
 		return fieldMappingStructureResponse;
 	}
 
-
-	public List<FieldMappingStructure> getFieldMappingStructure(List<FieldMappingStructure> fieldMappingStructureList, List<String> fieldList){
-		return fieldMappingStructureList.stream()
-				.filter(f -> fieldList.contains(f.getFieldName())).collect(Collectors.toList());
+	public List<FieldMappingStructure> getFieldMappingStructure(List<FieldMappingStructure> fieldMappingStructureList,
+			List<String> fieldList) {
+		return fieldMappingStructureList.stream().filter(f -> fieldList.contains(f.getFieldName()))
+				.collect(Collectors.toList());
 
 	}
 
@@ -1691,17 +1703,18 @@ public class KpiHelperService { // NOPMD
 	 * get date range
 	 *
 	 * @param dateRange
-	 * 		date range
+	 *            date range
 	 * @param duration
-	 * 		time duration
+	 *            time duration
 	 * @return date range string
 	 */
 	public static String getDateRange(CustomDateRange dateRange, String duration) {
 		String range = null;
 		if (CommonConstant.WEEK.equalsIgnoreCase(duration)) {
 			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
-					DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(
-					dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+					DateUtil.DISPLAY_DATE_FORMAT) + " to "
+					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT);
 		} else {
 			range = dateRange.getStartDate().toString();
 		}
@@ -1832,25 +1845,26 @@ public class KpiHelperService { // NOPMD
 	 * get kpi data from repo tools api
 	 *
 	 * @param endDate
-	 * 		end date
+	 *            end date
 	 * @param toolMap
-	 * 		tool map from cache
+	 *            tool map from cache
 	 * @param node
-	 * 		project node
+	 *            project node
 	 * @param dataPoint
-	 * 		no of days/weeks
+	 *            no of days/weeks
 	 * @param duration
-	 * 		time duration
+	 *            time duration
 	 * @return lis of RepoToolKpiMetricResponse object
 	 */
 	public List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
-			Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node, String duration, Integer dataPoint, String repoToolKpi) {
+			Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node, String duration, Integer dataPoint,
+			String repoToolKpi) {
 
 		List<String> projectCodeList = new ArrayList<>();
 		ProjectFilter accountHierarchyData = node.getProjectFilter();
 		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap())
-				.getOrDefault(Constant.REPO_TOOLS, Collections.emptyList());
+		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(Constant.REPO_TOOLS,
+				Collections.emptyList());
 		if (!CollectionUtils.isEmpty(tools)) {
 			projectCodeList.add(node.getId());
 		}
@@ -1865,9 +1879,8 @@ public class KpiHelperService { // NOPMD
 				}
 			}
 			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
-			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
-					repoToolKpi, startDate.toString(), endDate.toString(),
-					debbieDuration);
+			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList, repoToolKpi,
+					startDate.toString(), endDate.toString(), debbieDuration);
 		}
 
 		return repoToolKpiMetricResponseList;
@@ -1917,45 +1930,5 @@ public class KpiHelperService { // NOPMD
 			}
 		}
 		return remainingDefects;
-	}
-
-	public boolean isMandatoryFieldValuePresentOrNot(KPICode kpi, Node nodeDataClone) {
-		List<String> fieldMappingName = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase()).getFields();
-		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
-		List<String> mandatoryFieldMappingName = fieldMappingStructureList.stream()
-				.filter(fieldMappingStructure -> fieldMappingStructure.isMandatory() && fieldMappingName.contains(fieldMappingStructure.getFieldName()) )
-				.map(FieldMappingStructure::getFieldName).toList();
-
-		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-				.get(nodeDataClone.getProjectFilter().getBasicProjectConfigId());
-		for (String fieldName : mandatoryFieldMappingName) {
-			try {
-				Field field = FieldMapping.class.getDeclaredField(fieldName);
-				field.setAccessible(true); // NOSONAR
-				if(checkNullValue(field.get(fieldMapping)))
-					return false;
-			} catch (NoSuchFieldException e) {
-				log.warn(fieldName + " does not exist in fieldMapping.");
-			} catch (IllegalAccessException e) {
-				log.warn("Error accessing " + fieldName + " field.");
-			}
-		}
-		return true;
-	}
-
-	private boolean checkNullValue(Object value){
-		if(value == null){
-			return true;
-		}
-		else{
-			if(value instanceof List){
-				return CollectionUtils.isEmpty((List<?>) value);
-			}
-			if (value instanceof String[]){
-				return  ((String[]) value).length<1;
-			}
-
-		}
-		return false;
 	}
 }

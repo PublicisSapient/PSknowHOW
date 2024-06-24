@@ -189,7 +189,7 @@ export class UploadComponent implements OnInit {
                     header: 'Passed Test Cases',
                     field: 'passedTestCase'
                 },
-              
+
             ],
             testExecutionKanbanKeys: [
                 {
@@ -254,7 +254,6 @@ export class UploadComponent implements OnInit {
             document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
             document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
         }
-        // this.selectedView = 'cert_upload';
         if (!this.isSuperAdmin) {
             this.handleTepSelect('upload_tep');
             document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
@@ -340,7 +339,6 @@ export class UploadComponent implements OnInit {
                         this.logoImage = 'data:image/png;base64,' + data['image'];
                         const blob: Blob = new Blob([this.logoImage], { type: 'image/png' });
                         blob['objectURL'] = this.sanitizer.sanitize(SecurityContext.URL, window.URL.createObjectURL(blob))
-                        //blob['objectURL'] = this.sanitizer.bypassSecurityTrustUrl((window.URL.createObjectURL(blob)));
                         this.uploadedFile = new File([blob], 'logo.png', { type: 'image/png' });
                     }
                 });
@@ -599,7 +597,6 @@ export class UploadComponent implements OnInit {
         this.enableDisableSubmitButton();
         this.checkdisabled();
         if (hitApply && this.selectedFilterCount !== 0) {
-            // this.applyChanges(false);
         } else if (hitApply && this.selectedFilterCount === 0) {
             this.filterApplyData = {};
         }
@@ -874,23 +871,6 @@ export class UploadComponent implements OnInit {
         objArray?.sort((a, b) => a.nodeName.localeCompare(b.nodeName));
         return objArray;
     }
-    /** moved to service layer */ 
-    // makeUniqueArrayList(arr) {
-    //     let uniqueArray = [];
-    //     for (let i = 0; i < arr?.length; i++) {
-    //         const idx = uniqueArray?.findIndex(x => x.nodeId == arr[i]?.nodeId);
-    //         if (idx == -1) {
-    //             uniqueArray = [...uniqueArray, arr[i]];
-    //             uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
-    //             uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
-    //         } else {
-    //             uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-    //             uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
-    //         }
-
-    //     }
-    //     return uniqueArray;
-    // }
 
     validateInput($event) {
         if ($event.key === 'e' || $event.key === '-') {
@@ -910,7 +890,7 @@ export class UploadComponent implements OnInit {
                     }else{
                         for (const additionalColumn of this.addtionalTestFieldColumn) {
                             const fieldAlreadyExists = this.cols.testExecutionKanbanKeys.some(column => column.field === additionalColumn.field);
-                            
+
                             if (!fieldAlreadyExists) {
                                 this.cols.testExecutionKanbanKeys.push(additionalColumn);
                             }
@@ -929,7 +909,7 @@ export class UploadComponent implements OnInit {
                     }else{
                         for (const additionalColumn of this.addtionalTestFieldColumn) {
                             const fieldAlreadyExists = this.cols.testExecutionScrumKeys.some(column => column.field === additionalColumn.field);
-                            
+
                             if (!fieldAlreadyExists) {
                                 this.cols.testExecutionScrumKeys.push(additionalColumn);
                             }

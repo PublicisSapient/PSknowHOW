@@ -23,6 +23,7 @@
 #graphContainer {
     display: flex;
     justify-content: left;
+    overflow-y: visible;
 }
 
 ::ng-deep .yAxis line {
@@ -66,10 +67,6 @@
 #legendIndicator {
     position: absolute;
     bottom: -20px;
-}
-
-#graphContainer {
-    overflow-y: visible;
 }
 
 :host ::ng-deep.tooltip2 {

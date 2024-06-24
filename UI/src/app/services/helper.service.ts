@@ -31,6 +31,8 @@ export class HelperService {
     isKanban = false;
     grossMaturityObj = {};
     public passMaturityToFilter;
+    selectedFilterArray: any = [];
+    selectedFilters: any = {}
 
     constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService) {
         this.passMaturityToFilter = new EventEmitter();
@@ -76,9 +78,6 @@ export class HelperService {
             if (type && type !== '' && !isNaN(type)) {
                 condition = (obj.groupId && obj.groupId === type) && condition;
             }
-            // if (obj?.kpiCategory) {
-            //     condition = obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
-            // }
 
             if (kpiIdsForCurrentBoard && kpiIdsForCurrentBoard.length && obj?.kpiId) {
                 condition = kpiIdsForCurrentBoard.includes(obj.kpiId) && condition;
@@ -399,9 +398,26 @@ export class HelperService {
 
 
     sortAlphabetically(objArray) {
-        if (objArray && objArray?.length > 1) {
-            objArray?.sort((a, b) => a.nodeName ? a.nodeName.localeCompare(b.nodeName) : a.data ? a?.data?.localeCompare(b?.data) : a.date ? new Date(a.date) > new Date(b.date) : a.localeCompare(b));
+        if (objArray && objArray.length > 1) {
+            objArray.sort((a, b) => {
+                const aName = a.nodeName || a.data || a.date || a;
+                const bName = b.nodeName || b.data || b.date || b;
+                return aName.localeCompare(bName);
+            });
         }
+        return objArray;
+    }
+
+    sortByField(objArray, propArr): any {
+        propArr.forEach(prop => {
+            if (objArray?.[0]?.[prop]) {
+                objArray.sort((a, b) => {
+                    const propA = a[prop].toLowerCase();
+                    const propB = b[prop].toLowerCase();
+                    return propA.localeCompare(propB);
+                });
+            }
+        });
         return objArray;
     }
 
@@ -660,6 +676,18 @@ export class HelperService {
             savedDetails = { ...savedDetails, kpiFilters: { ...savedDetails['kpiFilters'], ...{ [tab]: { [subFilter]: combineSubFilterValues } } } };
         }
         this.sharedService.setAddtionalFilterBackup(savedDetails);
+    }
+
+    setBackupOfFilterSelectionState = (selectedFilterObj) => {
+        if (Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
+            this.selectedFilters = { ...selectedFilterObj };
+        } else {
+            this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
+        }
+    }
+
+    getBackupOfFilterSelectionState = (prop) => {
+        return this.selectedFilters[prop];
     }
 
     setFilterValueIfAlreadyHaveBackup(kpiId, kpiSelectedFilterObj, tab, refreshValue, initialValue, subFilter, filters?) {

@@ -204,10 +204,10 @@ export class MultilineV2Component implements OnChanges {
 
       let xScale;
 
-      if (viewType === 'large' && selectedProjectCount === 1) {
+      if (kpiId === 'kpi997') {
         xScale = d3
           .scaleBand()
-          .domain(sprintList)
+          .domain([...sprintList])
           .range([0, width])
           .padding(0)
 
@@ -264,7 +264,7 @@ export class MultilineV2Component implements OnChanges {
         .domain([0, maxYValue])
         .range([height - margin, 0]);
 
-      if (selectedProjectCount === 1 && (board === 'executive' || board === 'developer' || board === 'backlog' || board === 'dora')) {
+      if (selectedProjectCount === 1 && (board === 'mydashboard' || board === 'quality' || board ==='speed' || board === 'value' || board === 'developer' || board === 'backlog' || board === 'dora')) {
         d3.select(this.elem).select('#horizontalSVG').select('div').remove();
         d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
         /** Adding tooltip container */
@@ -475,7 +475,7 @@ export class MultilineV2Component implements OnChanges {
         .x((d, i) => {
           if (board == 'dora') {
             return xScale(d.date)
-          } else if (viewType === 'large' && selectedProjectCount === 1) {
+          } else if (kpiId === 'kpi997') {
             return xScale(d.date || d.sortSprint)
           } else {
             return xScale(i + 1)
@@ -597,7 +597,7 @@ export class MultilineV2Component implements OnChanges {
                 `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
                 '</span>',
               )
-              .style('left', xPosition + 20 + 'px')
+              .style('left', (xPosition - 80) + 'px')
               // .style('top', yScale(d.value) - topValue + 'px');
               .style('top', yPosition + 20 + 'px');
             for (const hoverData in d.hoverValue) {
@@ -625,7 +625,7 @@ export class MultilineV2Component implements OnChanges {
 
           if (board == 'dora') {
             return xScale(d.date);
-          } else if (viewType === 'large' && selectedProjectCount === 1) {
+          } else if (kpiId === 'kpi997') {
             return xScale(d.date || d.sortSprint)
           } else {
             return xScale(i + 1)

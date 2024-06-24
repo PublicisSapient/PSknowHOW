@@ -79,18 +79,28 @@ export class MaturityComponent implements OnInit, OnDestroy {
     selectedTabKpis = [];
     noKpi = false;
     noOfJiraGroups = 0;
-    loader= false;
+    loader = false;
     showNoDataMsg = false;
     noDataForFilter = false;
-    noProjects =false;
+    noProjects = false;
     isKanban = false;
     updatedGlobalConfigData: Array<object> = [];
     constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService, private router: Router) {
+        this.subscription.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
+            this.configGlobalData = globalConfig;
+            this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration' && board?.boardName.toLowerCase() !== 'developer');
+            this.checkShownTabs();
+            this.selectedTabKpis = this.tabs[0].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled);
+            this.tabs.forEach((item) => {
+                this.updatedGlobalConfigData = [...this.updatedGlobalConfigData, ...item.kpis];
+            })
+        }));
+        
         this.subscription.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
             this.receiveSharedData(sharedobject);
         }));
 
-        this.subscription.push(this.service.setNoData.subscribe(data =>{
+        this.subscription.push(this.service.setNoData.subscribe(data => {
             this.noDataForFilter = data;
         }));
         this.selectedtype = this.service.getSelectedType();
@@ -112,7 +122,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.subscription.forEach(subscription => subscription.unsubscribe());
     }
     receiveSharedData($event) {
-        this.loader =true;
+        this.loader = true;
         this.jiraGroups = 0;
         this.showNoDataMsg = false;
         if (this.service.getSelectedTab() === 'Maturity') {
@@ -121,8 +131,18 @@ export class MaturityComponent implements OnInit, OnDestroy {
             this.filterApplyData = $event?.filterApplyData;
             this.loaderMaturity = true;
             this.isKanban = this.selectedtype?.toLowerCase() === 'kanban';
-            const kpiIdsForCurrentBoard = this.service.getMasterData()['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => kpi.kpiId);
-            if(this.filterData?.length > 0 && kpiIdsForCurrentBoard?.length > 0 && this.selectedtype){
+            const kpiIdsForCurrentBoard = $event.masterData['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => kpi.kpiId);
+            this.updatedGlobalConfigData = $event.masterData['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => {
+                return {
+                    "kpiId": kpi.kpiId,
+                    "kpiName": kpi.kpiName,
+                    "isEnabled": this.updatedGlobalConfigData.filter(globalCOnfigKpi => globalCOnfigKpi['kpiId'] === kpi.kpiId )[0] ? this.updatedGlobalConfigData.filter(globalCOnfigKpi => globalCOnfigKpi['kpiId'] === kpi.kpiId )[0]['isEnabled'] : true,
+                    "order": 1,
+                    "kpiDetail": kpi,
+                    "shown": this.updatedGlobalConfigData.filter(globalCOnfigKpi => globalCOnfigKpi['kpiId'] === kpi.kpiId )[0] ? this.updatedGlobalConfigData.filter(globalCOnfigKpi => globalCOnfigKpi['kpiId'] === kpi.kpiId )[0]['shown'] : true
+                }
+            });
+            if (this.filterData?.length > 0 && kpiIdsForCurrentBoard?.length > 0 && this.selectedtype) {
                 if (this.selectedtype?.toLowerCase() === 'scrum') {
                     this.groupJenkinsKpi(kpiIdsForCurrentBoard);
                     this.groupZypherKpi(kpiIdsForCurrentBoard);
@@ -136,7 +156,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
                     this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
                 }
-            }else{
+            } else {
                 this.loader = false;
                 this.showNoDataMsg = true;
             }
@@ -145,19 +165,11 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.selectedtype = this.service.getSelectedType();
-            this.subscription.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-                this.configGlobalData = globalConfig;
-                this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration' && board?.boardName.toLowerCase() !== 'developer');
-                this.checkShownTabs();
-                this.selectedTabKpis = this.tabs[0].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled);
-                this.tabs.forEach((item) => {
-                    this.updatedGlobalConfigData = [...this.updatedGlobalConfigData, ...item.kpis];
-                })
-            }));
-            this.subscription.push(this.service.noProjectsObs.subscribe((res) => {
-                this.noProjects = res;
-                 this.isKanban= this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
-              }));
+
+        this.subscription.push(this.service.noProjectsObs.subscribe((res) => {
+            this.noProjects = res;
+            this.isKanban = this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
+        }));
 
         if (!this.service.getFilterObject()) {
             this.showNoDataMsg = true;
@@ -168,7 +180,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Sonar kpi from master data and calling Sonar kpi.
     groupSonarKpi(kpiIdsForCurrentBoard) {
-        this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
         if (this.kpiListSonar?.kpiList?.length > 0) {
             this.postSonarKpi(this.kpiListSonar, 'sonar');
         }
@@ -176,7 +188,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Jenkins kpi from master data and calling jenkins kpi.
     groupJenkinsKpi(kpiIdsForCurrentBoard) {
-        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
         if (this.kpiJenkins?.kpiList?.length > 0) {
             this.postJenkinsKpi(this.kpiJenkins, 'jenkins');
         }
@@ -184,7 +196,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Sonar kpi from master data and calling Sonar kpi.
     groupZypherKpi(kpiIdsForCurrentBoard) {
-        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
         if (this.kpiZypher?.kpiList?.length > 0) {
             this.postZypherKpi(this.kpiZypher, 'zypher');
         }
@@ -201,12 +213,12 @@ export class MaturityComponent implements OnInit, OnDestroy {
                 groupIdSet.add(obj['kpiDetail'].groupId);
             }
         });
-        this.noOfJiraGroups =groupIdSet.size;
+        this.noOfJiraGroups = groupIdSet.size;
 
         // sending requests after grouping the the KPIs according to group Id
         groupIdSet.forEach((groupId) => {
             if (groupId) {
-                this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,this.selectedTab);
+                this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, this.selectedTab);
                 if (this.kpiJira?.kpiList?.length > 0) {
                     this.postJiraKpi(this.kpiJira, 'jira');
                 } else {
@@ -218,7 +230,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all BitBucket kpi of scrum from master data and calling BitBucket kpi.
     groupBitBucketKpi(kpiIdsForCurrentBoard) {
-        this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', false, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
         if (this.kpiBitBucket?.kpiList?.length > 0) {
             this.postBitBucketKpi(this.kpiBitBucket, 'bitbucket');
         }
@@ -229,19 +241,19 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.jiraKpiData = {};
         // creating a set of unique group Ids
         const groupIdSet = new Set();
-        
+
         this.updatedGlobalConfigData?.forEach((obj) => {
-            if (obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira') {   
+            if (obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira') {
                 groupIdSet.add(obj['kpiDetail'].groupId);
             }
         });
 
-        this.noOfJiraGroups =groupIdSet.size;
+        this.noOfJiraGroups = groupIdSet.size;
         // sending requests after grouping the the KPIs according to group Id
-        
+
         groupIdSet.forEach((groupId) => {
             if (groupId) {
-                this.kpiJira = this.helperService.groupKpiFromMaster('Jira', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,this.selectedTab);  
+                this.kpiJira = this.helperService.groupKpiFromMaster('Jira', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, this.selectedTab);
                 if (this.kpiJira?.kpiList?.length > 0) {
                     this.postJiraKpi(this.kpiJira, 'jira');
                 } else {
@@ -252,7 +264,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
     }
     // Used for grouping all Sonar kpi of kanban from master data and calling Sonar kpi.
     groupSonarKanbanKpi(kpiIdsForCurrentBoard) {
-        this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiListSonar = this.helperService.groupKpiFromMaster('Sonar', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
         if (this.kpiListSonar?.kpiList?.length > 0) {
             this.postSonarKpi(this.kpiListSonar, 'sonar');
         }
@@ -260,7 +272,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Jenkins kpi of kanban from master data and calling jenkins kpi.
     groupJenkinsKanbanKpi(kpiIdsForCurrentBoard) {
-        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
         if (this.kpiJenkins?.kpiList?.length > 0) {
             this.postJenkinsKpi(this.kpiJenkins, 'jenkins');
         }
@@ -268,7 +280,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all Zypher kpi of kanban from master data and calling Zypher kpi.
     groupZypherKanbanKpi(kpiIdsForCurrentBoard) {
-        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
         if (this.kpiZypher?.kpiList?.length > 0) {
             this.postZypherKpi(this.kpiZypher, 'zypher');
         }
@@ -276,7 +288,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     // Used for grouping all BitBucket kpi of kanban from master data and calling BitBucket kpi.
     groupBitBucketKanbanKpi(kpiIdsForCurrentBoard) {
-        this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '',this.selectedTab);
+        this.kpiBitBucket = this.helperService.groupKpiFromMaster('BitBucket', true, this.updatedGlobalConfigData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', this.selectedTab);
         if (this.kpiBitBucket?.kpiList?.length > 0) {
             this.postBitBucketKpi(this.kpiBitBucket, 'bitbucket');
         }
@@ -294,7 +306,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     this.sonarKpiData = getData;
                     const newObject = {};
                     for (const obj in this.sonarKpiData) {
-                        if(this.sonarKpiData[obj].kpiId != 'kpi17'){
+                        if (this.sonarKpiData[obj].kpiId != 'kpi17') {
                             newObject[this.sonarKpiData[obj].kpiId] = this.sonarKpiData[obj];
                             this.maturityValue[this.sonarKpiData[obj].kpiId] = this.sonarKpiData[obj];
                         }
@@ -341,7 +353,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
         });
     }
     postJiraKpi(postData, source): void {
-        this.loaderJira =true;
+        this.loaderJira = true;
         this.jiraKpiRequest = this.selectedtype.toLowerCase() === 'scrum' ? this.httpService.postKpi(postData, source) : this.httpService.postKpiKanban(postData, source);
         this.jiraKpiRequest.subscribe(getData => {
             this.jiraGroups++;
@@ -355,8 +367,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
                 }
                 this.jiraKpiData = newObject;
             }
-               //call handle tab change only after all jira kpis are fetched
-               if (this.jiraGroups === this.noOfJiraGroups) {
+            //call handle tab change only after all jira kpis are fetched
+            if (this.jiraGroups === this.noOfJiraGroups) {
                 this.jiraGroups = 0;
                 this.noOfJiraGroups = 0;
                 this.loaderJira = false;
@@ -393,9 +405,9 @@ export class MaturityComponent implements OnInit, OnDestroy {
     handleTabChange(index) {
         this.selectedTabIndex = index;
         this.maturityValue = {};
-        if(!(this.tabs.length > 0 && this.selectedTabKpis.length >0)){
+        if (!(this.tabs.length > 0 && this.selectedTabKpis.length > 0)) {
             this.configGlobalData = this.service.getDashConfigData();
-            this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration' &&  board?.boardName.toLowerCase() !== 'developer');
+            this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration' && board?.boardName.toLowerCase() !== 'developer');
         }
         this.selectedTabKpis = this.tabs[index].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled).map(kpi => kpi.kpiId);
         const allCategoriesKpis = [this.jiraKpiData, this.jenkinsKpiData, this.sonarKpiData, this.zypherKpiData, this.bitBucketKpiData];
@@ -416,7 +428,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
 
     drawAreaChart(categoryGroupId?) {
-        this.loader=false;
+        this.loader = false;
         const getMaturityValueForChart = (kpiId) => {
             let result = 0;
             const getMaturityValueFromOverAllFilter = ['kpi8', 'kpi11', 'kpi84', 'kpi83', 'kpi118', 'kpi116', 'kpi17', 'kpi27', 'kpi65', 'kpi66'];
@@ -478,7 +490,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
         const getFinalChildrenCount = (arr) => {
             let count = 0;
             arr.forEach((item) => {
-                if(item.maturity>0) count++;
+                if (item.maturity > 0) count++;
             })
             return count;
         }
@@ -496,13 +508,13 @@ export class MaturityComponent implements OnInit, OnDestroy {
                 textLines: ['..'],
                 children: []
             };
-            for(let i = 0; i<11; i++){
+            for (let i = 0; i < 11; i++) {
                 root.children.push({
                     textLines: ['..'],
                     maturity: 0
                 });
             }
-            
+
         } else {
             // on loading show data;
             root = {
@@ -571,7 +583,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
                     const categoryKpis = allKpis.filter(kpi => tabCategory[category].includes(kpi.kpiId) && kpisInOverAllTab.includes(kpi.kpiId));
                     const sumOfMaturityForCategory = categoryKpis.reduce((sum, kpi) => sum + +kpi.maturity, 0);
                     tab['maturity'] = getAverageMaturityValue(sumOfMaturityForCategory !== 0 ? (sumOfMaturityForCategory / getFinalChildrenCount(categoryKpis)).toFixed(2) : 'NA');
-                    if(tab['maturity'] > 0){
+                    if (tab['maturity'] > 0) {
                         sumOfMatirity += tab['maturity'];
                         children.push(tab);
                     }
@@ -940,8 +952,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
             renderDescription += '<div class="p-grid justify-content-start maturity-level-header" ><span class="p-col" style="padding-left:0"><strong>Maturity Level :</strong></span>';
 
-            let kpiIdWithMaturityRangePrefixZero = ['kpi82','kpi34','kpi42','kpi16','kpi17','kpi70','kpi72','kpi11','kpi118','kpi63','kpi62','kpi71','kpi65'];
-            
+            let kpiIdWithMaturityRangePrefixZero = ['kpi82', 'kpi34', 'kpi42', 'kpi16', 'kpi17', 'kpi70', 'kpi72', 'kpi11', 'kpi118', 'kpi63', 'kpi62', 'kpi71', 'kpi65'];
+
             if (maturityLevelData.maturityRange[0].charAt(0) === '-'
                 && !kpiIdWithMaturityRangePrefixZero.includes(maturityLevelData['kpiId'])) {
                 maturityLevelData.maturityRange[0] = '>= ' + maturityLevelData.maturityRange[0].substring(1);
@@ -960,23 +972,23 @@ export class MaturityComponent implements OnInit, OnDestroy {
             renderDescription += '<span class="p-col"><strong>M4</strong></br><sub>' + maturityLevelData.maturityRange[3] + '</sub></span>';
 
 
-            if (maturityLevelData.maturityRange[4].slice(-1) === '-' 
-            && !kpiIdWithMaturityRangePrefixZero.includes(maturityLevelData['kpiId'])) {
+            if (maturityLevelData.maturityRange[4].slice(-1) === '-'
+                && !kpiIdWithMaturityRangePrefixZero.includes(maturityLevelData['kpiId'])) {
                 maturityLevelData.maturityRange[4] = maturityLevelData.maturityRange[4] + '0';
             }
-            if (maturityLevelData.maturityRange[4].slice(-1) === '-' 
-            && kpiIdWithMaturityRangePrefixZero.includes(maturityLevelData['kpiId'])) {
+            if (maturityLevelData.maturityRange[4].slice(-1) === '-'
+                && kpiIdWithMaturityRangePrefixZero.includes(maturityLevelData['kpiId'])) {
                 maturityLevelData.maturityRange[4] = maturityLevelData.maturityRange[4].slice(0, -1) + ' >=';
             }
 
             renderDescription += '<span class="p-col"><strong>M5</strong></br><sub>' + maturityLevelData.maturityRange[4] + '</sub></span>';
             renderDescription += '';
-            renderDescription += '</div> <p><strong>Maturity Value:  <span class="tooltip-group-' + maturityLevelData.group + '">' + (maturityLevelData.maturity == 0 ? 'NA' : 'M'+maturityLevelData.maturity) + '</span></strong> </p></div>';
+            renderDescription += '</div> <p><strong>Maturity Value:  <span class="tooltip-group-' + maturityLevelData.group + '">' + (maturityLevelData.maturity == 0 ? 'NA' : 'M' + maturityLevelData.maturity) + '</span></strong> </p></div>';
             return renderDescription;
         }
     }
 
-    checkShownTabs(){
+    checkShownTabs() {
         this.tabs = this.tabs.filter(tab => tab.kpis.some(kpi => kpi.shown));
     }
 }

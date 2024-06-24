@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,7 +42,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.IssueKpiModalValue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -57,6 +57,7 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.IssueKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -1096,6 +1097,30 @@ public final class KpiDataHelper {
 			return Double.parseDouble(lastChangedTo) - Double.parseDouble(firstChangedFrom);
 		}
 		return 0D;
+	}
+
+	/**
+	 * Generates a map that maps a pair of (basicConfigId, parentID) to a set of
+	 * children (Jira issue numbers). This allows quick lookup of child issues based
+	 * on their parent and configuration ID.
+	 *
+	 * @param allJiraIssue
+	 *            A list of all Jira issues.
+	 * @return A map where each key is a pair of (basicConfigId, parentID) and the
+	 *         value is a set of child Jira issue numbers.
+	 */
+	public static Map<Pair<String, String>, Set<String>> getBasicConfigIdAndParentIdWiseChildrenMap(
+			List<JiraIssue> allJiraIssue) {
+
+		// Create a map of (basicConfigId, parentID) to children (JiraIssues) for quick
+		// lookup
+		return allJiraIssue.stream()
+				.filter(issue -> issue.getParentStoryId() != null && !issue.getParentStoryId().isEmpty())
+				.flatMap(issue -> issue.getParentStoryId().stream()
+						.map(parentId -> new AbstractMap.SimpleEntry<>(
+								Pair.of(issue.getBasicProjectConfigId(), parentId), issue.getNumber())))
+				.collect(Collectors.groupingBy(Map.Entry::getKey,
+						Collectors.mapping(Map.Entry::getValue, Collectors.toSet())));
 	}
 
 }

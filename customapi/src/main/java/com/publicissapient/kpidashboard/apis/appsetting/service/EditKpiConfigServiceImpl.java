@@ -138,11 +138,26 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 	private static String getReleaseName(AccountHierarchy accountHierarchy, double duration) {
 		String releaseName;
 		if (duration == 0) {
-			releaseName = accountHierarchy.getNodeName().split("_")[0] + " (duration - days)";
+			releaseName = splitNodeName(accountHierarchy.getNodeName()) + " (duration - days)";
 		} else {
-			releaseName = accountHierarchy.getNodeName().split("_")[0] + " (duration " + duration + " days)";
+			releaseName = splitNodeName(accountHierarchy.getNodeName()) + " (duration " + duration + " days)";
 		}
 		return releaseName;
+	}
+
+	/**
+	 * 
+	 * @param releaseName
+	 *            releaseName
+	 * @return releaseName
+	 */
+	private static String splitNodeName(String releaseName) {
+		int lastUnderscoreIndex = releaseName.lastIndexOf('_');
+		if (lastUnderscoreIndex != -1) {
+			return releaseName.substring(0, lastUnderscoreIndex);
+		} else {
+			return releaseName;
+		}
 	}
 
 	/**

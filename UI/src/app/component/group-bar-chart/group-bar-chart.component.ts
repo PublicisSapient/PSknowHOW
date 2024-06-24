@@ -51,7 +51,7 @@ export class GroupBarChartComponent implements OnChanges {
     }
     // only run when property "data" changed
     if (changes['data']) {
-      
+
       this.dataPoints = this.data.length;
       this.dataLength = this.data.length;
       this.elem = this.viewContainerRef.element.nativeElement;
@@ -78,13 +78,12 @@ export class GroupBarChartComponent implements OnChanges {
     d3.select(elem).select('#date-container').select('text').remove();
     d3.select(elem).select('#horizontalSVG').select('.current-week-tooltip').selectAll('.tooltip').remove();
     let data = this.data[0]?.dataGroup;
-    console.log(data);
     this.isXaxisGapRequired = this.data[0]?.additionalInfo?.isXaxisGapRequired;
     this.customisedGroup = this.data[0]?.additionalInfo?.customisedGroup;
     this.plannedDueDate = this.data[0]?.additionalInfo?.plannedDueDate;
     this.totalAvgVelocity = this.data[0]?.additionalInfo?.totalAvgVelocity;
 
-    
+
     data = this.formatData(data);
 
     const subgroups = this.subGroups;
@@ -102,7 +101,7 @@ export class GroupBarChartComponent implements OnChanges {
     const xTick = barWidth;
     const tempWidth = window.innerWidth - 320 - marginLeft ;
     let width = elem.offsetWidth ? (elem.offsetWidth - 20 - marginLeft) : tempWidth;
-  
+
 
     const svgX = d3.select(elem).select('#horizontalSVG').append('svg')
       .attr('width', width)
@@ -177,7 +176,7 @@ export class GroupBarChartComponent implements OnChanges {
     } else {
       this.VisibleXAxisLbl = groups;
     }
-    
+
 
       const xAxisGenerator = d3.axisBottom(x);
       xAxisGenerator.tickFormat((d, i) => this.VisibleXAxisLbl.includes(d) ? d : "");
@@ -187,7 +186,7 @@ export class GroupBarChartComponent implements OnChanges {
       .attr('class', 'xAxis')
       .attr('transform', `translate(0, ${y(0)})`)
       .call(xAxisGenerator)
-      
+
 
       toBeCustomizeXaxis.selectAll("g")
       .filter((d, i) => !this.VisibleXAxisLbl.includes(d))
@@ -205,13 +204,13 @@ export class GroupBarChartComponent implements OnChanges {
       .text(this.xCaption);
     if(this.plannedDueDate){
       const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-      const plannedDueDate = new Date(this.plannedDueDate).getDate() + '/' + month[new Date(this.plannedDueDate).getMonth()] +'/' + new Date(this.plannedDueDate).getFullYear();
+      const plannedDueDate = this.plannedDueDate != 'null' ? new Date(this.plannedDueDate).getDate() + '/' + month[new Date(this.plannedDueDate).getMonth()] +'/' + new Date(this.plannedDueDate).getFullYear() : undefined;
       const releaseEndDate = new Date(this.releaseEndDate).getDate() + '/' + month[new Date(this.releaseEndDate).getMonth()] +'/' + new Date(this.releaseEndDate).getFullYear();
-      let htmlReleaseDueDate = `Release Due Date (${plannedDueDate})`;
+      let htmlReleaseDueDate = `Release Due Date (${plannedDueDate !== undefined ? plannedDueDate : 'undefined' })`;
       let htmlReleaseEndDate = `Release End Date (${releaseEndDate})`;
-      let htmlDiv = `${new Date(this.plannedDueDate).getTime() > new Date(this.releaseEndDate).getTime() 
-        ? (htmlReleaseDueDate + ' > ' + htmlReleaseEndDate) 
-        : (htmlReleaseDueDate + ' < ' + htmlReleaseEndDate)}`;
+      let htmlDiv = `${new Date(this.plannedDueDate).getTime() > new Date(this.releaseEndDate).getTime()
+        ? (htmlReleaseDueDate + ' > ' + htmlReleaseEndDate)
+        : (htmlReleaseDueDate + ' <= ' + htmlReleaseEndDate)}`;
       d3.select(elem).select('#date-container').append('text')
         .attr('x', ((d3.select(elem).select('#groupstackchart').node().offsetWidth - 70) / 2) - 24)
         .attr('y', 44)
@@ -237,7 +236,7 @@ export class GroupBarChartComponent implements OnChanges {
     if (currentDayIndex) {
         this.generateVerticleLine(currentDayIndex,0,'solid',svgX,x,y,'#944075')
     }
-    
+
     if(releaseEndDateIndex && this.plannedDueDate){
       this.lineColor = '#15BA40';
       if(new Date(this.plannedDueDate).getTime() > new Date(this.releaseEndDate).getTime()){
@@ -472,7 +471,7 @@ export class GroupBarChartComponent implements OnChanges {
     if(this.customiseGroupIndex && this.customiseGroupIndex > -1){
       htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="border-top: 3px dashed #944075"></div> : Predicated Completion Till (${this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1]})</div>`;
     }
-    
+
     legendDiv.html(htmlString)
       .style('left', 43 + 'px')
       .style('bottom', 20 + 'px')

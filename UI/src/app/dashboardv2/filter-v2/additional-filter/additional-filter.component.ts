@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { MultiSelect } from 'primeng/multiselect';
 import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -18,19 +19,25 @@ export class AdditionalFilterComponent implements OnChanges {
   filterData = [];
   appliedFilters = {};
   selectedFilters = [];
+  selectedTrends = [];
   @Output() onPrimaryFilterChange = new EventEmitter();
+  @ViewChild('multiSelect') multiSelect: MultiSelect;
 
   constructor(private service: SharedService, private helperService: HelperService) {
+  }
+
+  ngOnInit() {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       this.filterData = [];
-
+      this.selectedFilters = [];
+      this.selectedTrends = this.service.getSelectedTrends();
       Object.keys(data).forEach((f, index) => {
-        this.filterData.push(...data[f]);
+        this.filterData[index] = data[f];
       });
 
       if (this.selectedTab !== 'developer') {
         this.filterData.forEach(filterGroup => {
-          filterGroup = this.helperService.sortAlphabetically(filterGroup);
+          filterGroup = this.helperService.sortByField(filterGroup, ['nodeName', 'parentId']);
         });
       }
 
@@ -43,14 +50,17 @@ export class AdditionalFilterComponent implements OnChanges {
           fakeEvent['value'] = 'Overall';
           this.selectedFilters = ['Overall'];
         } else {
-          fakeEvent['value'] = this.filterData[0][0].nodeId;
-          this.selectedFilters = [this.filterData[0][0]];
+          if (this.filterData[0]?.length && this.filterData[0][0]?.nodeId) {
+            fakeEvent['value'] = this.filterData[0][0].nodeId;
+            this.selectedFilters = [this.filterData[0][0]];
+          } else {
+            fakeEvent['value'] = 'Overall';
+            this.selectedFilters = ['Overall'];
+          }
         }
-
         setTimeout(() => {
           this.applyAdditionalFilter(fakeEvent, 0 + 1);
-        }, 0);
-
+        }, 100);
       }
 
     }));
@@ -75,7 +85,7 @@ export class AdditionalFilterComponent implements OnChanges {
         } else {
           this.appliedFilters['filter'] = [...e];
         }
-        this.service.applyAdditionalFilters(this.appliedFilters['filter'][0].nodeId);
+        this.appliedFilters['filter'][0]?.nodeId ? this.service.applyAdditionalFilters(this.appliedFilters['filter'][0].nodeId) : this.service.applyAdditionalFilters(this.appliedFilters['filter'][0]);
       } else {
         if (!this.appliedFilters['filter' + index]) {
           this.appliedFilters['filter' + index] = [];
@@ -85,10 +95,13 @@ export class AdditionalFilterComponent implements OnChanges {
         } else {
           this.appliedFilters['filter' + index] = [...e];
         }
-        this.service.applyAdditionalFilters(this.appliedFilters['filter' + index]);
+        this.service.applyAdditionalFilters(this.appliedFilters['filter' + index][0]);
       }
     } else {
       this.onPrimaryFilterChange.emit(e[index - 1]);
+    }
+    if (this.multiSelect?.overlayVisible) {
+      this.multiSelect.close(event);
     }
   }
 }

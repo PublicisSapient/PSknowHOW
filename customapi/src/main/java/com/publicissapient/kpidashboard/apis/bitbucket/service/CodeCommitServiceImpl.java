@@ -323,7 +323,8 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
 				repoToolValidationData.setProjectName(projectName);
 				repoToolValidationData.setDate(date);
-				repoToolValidationData.setRepoUrl(repo.getUrl());
+				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
+				repoToolValidationData.setBranchName(repo.getBranch());
 				repoToolValidationData.setCommitCount(commitCountValue);
 				repoToolValidationData.setMrCount(mergeCountValue);
 				repoToolValidationDataList.add(repoToolValidationData);

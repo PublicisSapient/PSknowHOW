@@ -823,7 +823,6 @@ export class JiraConfigComponent implements OnInit {
           .subscribe((data) => {
             if (data.success) {
               this.projectKeyList = [];
-              // this.projectKeyList = data.data;
               data.data.forEach(element => {
                 this.projectKeyList.push({
                   name: element,
@@ -993,16 +992,6 @@ export class JiraConfigComponent implements OnInit {
                 Impacted : Jira/Azure Collector and all Kpi</i>`,
                 onFocusOut: this.projectKeyChanged
               },
-              // {
-              //   type: 'button',
-              //   label: 'Fetch Boards',
-              //   id: 'fetchBoardsBtn',
-              //   containerClass: 'p-sm-2 p-d-flex p-ai-center',
-              //   class: 'p-button-raised',
-              //   show: true,
-              //   clickEventHandler: this.fetchBoards,
-              //   disabled: this.checkProjectKey
-              // },
               {
                 type: 'boolean',
                 label: 'Use Boards',
@@ -1445,7 +1434,6 @@ export class JiraConfigComponent implements OnInit {
           ];
 
           this.configuredToolTableCols = [
-            // { field: 'connectionId', header: 'Connection Id', class: 'long-text' },
             {
               field: 'connectionName',
               header: 'Connection Name',
@@ -1512,7 +1500,6 @@ export class JiraConfigComponent implements OnInit {
           ];
 
           this.configuredToolTableCols = [
-            // { field: 'connectionId', header: 'Connection Id', class: 'long-text' },
             {
               field: 'connectionName',
               header: 'Connection Name',
@@ -1654,7 +1641,6 @@ export class JiraConfigComponent implements OnInit {
           ];
 
           this.configuredToolTableCols = [
-            // { field: 'connectionId', header: 'Connection Id', class: 'normal' },
             {
               field: 'connectionName',
               header: 'Connection Name',
@@ -1725,7 +1711,6 @@ export class JiraConfigComponent implements OnInit {
           ];
 
           this.configuredToolTableCols = [
-            // { field: 'connectionId', header: 'Connection Id', class: 'long-text' },
             {
               field: 'connectionName',
               header: 'Connection Name',
@@ -2077,7 +2062,6 @@ export class JiraConfigComponent implements OnInit {
                 containerClass: 'p-sm-6',
                 tooltip: `Issue type of Test Case. Example: "Test", Impacted : Sprint Automation and Regression Automation`,
                 show: true,
-                // disabled: this.checkBoards
               },
               {
                 type: 'dropdown',
@@ -2173,7 +2157,6 @@ export class JiraConfigComponent implements OnInit {
                 tooltip: `Enter the field labels used in Jira/Azure to identify the test cases part of regression suite`,
                 show: false,
                 isLoading: false,
-                // disabled: this.checkBoards
               },
               {
                 type: 'array',
@@ -2220,7 +2203,6 @@ export class JiraConfigComponent implements OnInit {
                 containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
-                // onFocusOut : this.getGitActionWorkflowName
               },
               {
                 type: 'text',
@@ -2355,7 +2337,6 @@ export class JiraConfigComponent implements OnInit {
             this.changeHandler(this.toolForm.controls['testRegressionIdentification']?.value, 'testRegressionIdentification');
           }
         }
-        // this.tool['projectId'].disable();
         this.isEdit = true;
       }
 
@@ -2611,15 +2592,6 @@ export class JiraConfigComponent implements OnInit {
     const theFormElement = formElements.find(formElement => formElement.id === inputFieldName);
 
     return theFormElement.type === 'array';
-
-
-    // return [
-    //     'inSprintAutomationFolderPath',
-    //     'regressionAutomationFolderPath',
-    //     'automatedTestValue',
-    //     'canNotAutomatedTestValue',
-    //     'testRegressionValue'
-    //   ].includes(inputFieldName);
   }
 
   editTool(tool) {

@@ -177,14 +177,14 @@ public class JiraServiceR {
 	}
 
 	/**
-	 * updates the TreeAggregatorDetail object based on the KpiRequest.
-	 * If the selectedMap in the KpiRequest does not contain the HIERARCHY_LEVEL_ID_SPRINT,
+	 * updates the TreeAggregatorDetail object based on the KpiRequest. If the
+	 * selectedMap in the KpiRequest does not contain the HIERARCHY_LEVEL_ID_SPRINT,
 	 * filter out the sprint by sprintCountForKpiCalculation property
 	 *
 	 * @param kpiRequest
-	 * 				KpiRequest object containing the selectedMap.
+	 *            KpiRequest object containing the selectedMap.
 	 * @param treeAggregatorDetail
-	 * 				The TreeAggregatorDetail object to be updated.
+	 *            The TreeAggregatorDetail object to be updated.
 	 */
 	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
 		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())
@@ -245,7 +245,11 @@ public class JiraServiceR {
 		@SuppressWarnings("PMD.AvoidCatchingGenericException")
 		@Override
 		public void compute() {
-			responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, treeAggregatorDetail));
+			try {
+				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
+			} catch (Exception e) {
+				log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", e);
+			}
 		}
 
 		/**
@@ -254,53 +258,39 @@ public class JiraServiceR {
 		 *
 		 * @param kpiRequest
 		 *            JIRA KPI request
+		 * @param responseList
+		 *            List of KpiElements having data of each KPI
 		 * @param kpiElement
 		 *            kpiElement object
 		 * @param treeAggregatorDetail
 		 *            filter tree object
-		 * @return KpiElement kpiElement
+		 * @throws ApplicationException
+		 *             ApplicationException
 		 */
-		@SuppressWarnings("PMD.AvoidCatchingGenericException")
-		private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
-				TreeAggregatorDetail treeAggregatorDetail) {
+		private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
+				KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
 			JiraKPIService<?, ?, ?> jiraKPIService = null;
 
 			KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
-			try {
-				jiraKPIService = JiraKPIServiceFactory.getJiraKPIService(kpi.name());
-				long startTime = System.currentTimeMillis();
 
-				if (KPICode.THROUGHPUT.equals(kpi)) {
-					log.info("No need to fetch Throughput KPI data");
-				} else {
-					TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-							.clone(treeAggregatorDetail);
-					List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
-							.get(CommonConstant.PROJECT.toLowerCase());
+			jiraKPIService = JiraKPIServiceFactory.getJiraKPIService(kpi.name());
 
-					if (!projectNodes.isEmpty() && (projectNodes.size() > 1
-							|| kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, projectNodes.get(0)))) {
-						kpiElement = jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
-						kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
-					} else if (!kpiHelperService.isMandatoryFieldValuePresentOrNot(kpi, projectNodes.get(0))) {
-						// mandatory fields not found
-						kpiElement.setResponseCode(CommonConstant.MANDATORY_FIELD_MAPPING);
-					}
-					long processTime = System.currentTimeMillis() - startTime;
-					log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-							processTime);
-				}
-			} catch (ApplicationException exception) {
-				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
-				log.error("Kpi not found", exception);
-			} catch (Exception exception) {
-				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
-				log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", exception);
-				return kpiElement;
+			long startTime = System.currentTimeMillis();
+
+			if (KPICode.THROUGHPUT.equals(kpi)) {
+				log.info("No need to fetch Throughput KPI data");
+			} else {
+				TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
+						.clone(treeAggregatorDetail);
+				responseList.add(jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
+
+				long processTime = System.currentTimeMillis() - startTime;
+				log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+						processTime);
 			}
-			return kpiElement;
 		}
+
 	}
 
 	/**

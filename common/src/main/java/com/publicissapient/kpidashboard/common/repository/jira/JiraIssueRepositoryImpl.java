@@ -46,6 +46,8 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
+import static com.publicissapient.kpidashboard.common.constant.CommonConstant.PARENT_STORY_ID;
+
 /**
  * Repository for {@link JiraIssue} with custom methods implementation.
  */
@@ -230,8 +232,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	}
 
     @Override
-	public List<JiraIssue> findIssueByNumberAndType(Set<String> storyNumber,
-			Map<String, Map<String, Object>> uniqueProjectMap) {
+	public List<JiraIssue> findIssueByNumberOrParentStoryIdAndType(Set<String> storyNumber,
+																   Map<String, Map<String, Object>> uniqueProjectMap, String findBy) {
 		Criteria criteria = new Criteria();
 
 		// Project level storyType filters
@@ -242,7 +244,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
 			projectCriteriaList.add(projectCriteria);
 		});
-		criteria = criteria.and(NUMBER).in(storyNumber);
+		criteria = criteria.and(findBy).in(storyNumber);
 
 		Query query = new Query(criteria);
 		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
@@ -274,6 +276,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(SPRINT_ASSET_STATE);
 		query.fields().include(SPRINT_END_DATE);
 		query.fields().include(ADDITIONAL_FILTER);
+		query.fields().include(PARENT_STORY_ID);
 		return operations.find(query, JiraIssue.class);
 
 	}

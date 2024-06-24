@@ -77,7 +77,7 @@ public class ReworkRateServiceImplTest {
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	Map<String, List<Tool>> toolGroup = new HashMap<>();
-	Map<String, Object> commitMap = new HashMap<String, Object>();
+	Map<String, Object> commitMap = new HashMap<>();
 
 	List<Tool> toolList1;
 	List<Tool> toolList2;
@@ -147,8 +147,6 @@ public class ReworkRateServiceImplTest {
 		String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any()))
-				.thenReturn(repoToolKpiMetricResponseList);
 
 		AssigneeDetails assigneeDetails = new AssigneeDetails();
 		assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");

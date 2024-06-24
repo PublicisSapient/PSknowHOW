@@ -159,8 +159,6 @@ public class RepoToolCodeCommitServiceImplTest {
 			// Mock the behavior of LocalDate.now()
 			localDateMockedStatic.when(LocalDate::now).thenReturn(specificDate);
 		}
-		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any()))
-				.thenReturn(repoToolKpiMetricResponseList);
 
 		setTreadValuesDataCount();
 		AssigneeDetails assigneeDetails = new AssigneeDetails();
@@ -173,6 +171,8 @@ public class RepoToolCodeCommitServiceImplTest {
 				new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
 		assigneeDetails.setAssignee(assigneeSet);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
+		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
+				repoToolKpiMetricResponseList);
 
 	}
 
@@ -244,10 +244,10 @@ public class RepoToolCodeCommitServiceImplTest {
 			KpiElement kpiElement = repoToolCodeCommitService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
-				String projectName = data.getFilter();
+				String projectName = data.getFilter1();
 				switch (projectName) {
 				case "Overall":
-					assertThat("Overall Commit Details:", data.getValue().size(), equalTo(2));
+					assertThat("Overall Commit Details:", data.getValue().size(), equalTo(1));
 					break;
 
 				case "master":

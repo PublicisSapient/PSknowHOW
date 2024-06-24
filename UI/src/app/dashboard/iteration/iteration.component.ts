@@ -107,7 +107,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   kpiThresholdObj = {};
   dailyStandupData: object = {};
   selectedProjectId: string;
-  kpiList:Array<string> = [];
+  kpiList: Array<string> = [];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService,
     private featureFlagService: FeatureFlagsService) {
@@ -154,10 +154,11 @@ export class IterationComponent implements OnInit, OnDestroy {
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
+    this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId);
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item?.shown);
     this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
-    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
-        
+    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.isEnabled);
+
     /**reset the kpi count */
     this.navigationTabs = this.navigationTabs.map((x) => {
       if (x['label'] === 'Daily Standup') {
@@ -177,7 +178,8 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.navigationTabs[0]['count']++;
     }
 
-    this.formatNavigationTabs();   
+    this.formatNavigationTabs();
+
     if (this.upDatedConfigData?.length === 0 && !this.commitmentReliabilityKpi?.isEnabled) {
       this.noKpis = true;
     } else {
@@ -192,7 +194,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     });
   }
 
-  formatNavigationTabs(){
+  formatNavigationTabs() {
     this.navigationTabs.forEach(tabDetails => {
       if (tabDetails['width'] === 'half') {
         let fullWidthKPis = [];
@@ -227,36 +229,43 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.activeIndex = 0;
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
       this.processKpiConfigData();
-      this.masterData = $event.masterData;
-      this.filterData = $event.filterData;
-      this.filterApplyData = $event.filterApplyData;
-      this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
-      if (this.filterData?.length) {
-        this.noTabAccess = false;
-        // call kpi request according to tab selected
-        if (this.masterData && Object.keys(this.masterData).length) {
-          if (this.selectedtype !== 'Kanban') {
-            // we should only call kpi154 on the click of Daily Standup tab
-            let kpiIdsForCurrentBoard;
-            if (this.activeIndex !== 2) {
-              kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId !== 'kpi154');
-            } else {
-              kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi154');
-            }
-            const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
-            this.selectedProjectId = selectedSprint.nodeId?.substring(selectedSprint.nodeId.lastIndexOf('_') + 1, selectedSprint.nodeId.length);
-            this.checkForAssigneeDataAndSetupTabs();
-
-            const today = new Date().toISOString().split('T')[0];
-            const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
-            this.timeRemaining = this.calcBusinessDays(today, endDate);
-
-            this.groupJiraKpi(kpiIdsForCurrentBoard);
-            this.getKpiCommentsCount();
-          }
-        }
+      if (!$event.filterApplyData['ids'] || !$event.filterApplyData['ids']?.length || !$event.filterApplyData['ids'][0]) {
+        this.noSprints = true;
       } else {
-        this.noTabAccess = true;
+        this.noSprints = false;
+        this.masterData = $event.masterData;
+        this.filterData = $event.filterData;
+        this.filterApplyData = $event.filterApplyData;
+        this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
+        if (this.filterData?.length) {
+          this.noTabAccess = false;
+          // call kpi request according to tab selected
+          if (this.masterData && Object.keys(this.masterData).length) {
+            if (this.selectedtype !== 'Kanban') {
+              // we should only call kpi154 on the click of Daily Standup tab
+              let kpiIdsForCurrentBoard;
+              if (this.activeIndex !== 2) {
+                kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId !== 'kpi154');
+              } else {
+                kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi154');
+              }
+              const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
+              if (selectedSprint) {
+                this.selectedProjectId = selectedSprint.nodeId?.substring(selectedSprint.nodeId.lastIndexOf('_') + 1, selectedSprint.nodeId.length);
+                this.checkForAssigneeDataAndSetupTabs();
+
+                const today = new Date().toISOString().split('T')[0];
+                const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
+                this.timeRemaining = this.calcBusinessDays(today, endDate);
+
+                this.groupJiraKpi(kpiIdsForCurrentBoard);
+                this.getKpiCommentsCount();
+              }
+            }
+          }
+        } else {
+          this.noTabAccess = true;
+        }
       }
     }
   }
@@ -266,7 +275,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       let selectedProject = responseList[0].data.filter((project) => project.id === this.selectedProjectId)[0];
       let showDSVorNot = selectedProject['saveAssigneeDetails'];
       let showDailyStandup = await this.featureFlagService.isFeatureEnabled('DAILY_STANDUP');
-      if (this.service.currentSelectedSprint?.sprintState.toLowerCase() === 'active' && showDSVorNot && showDailyStandup) {
+      if (this.service.currentSelectedSprint?.sprintState.toLowerCase() === 'active' && showDSVorNot) { // && showDailyStandup) {
         this.navigationTabs = [
           { 'label': 'Iteration Review', 'count': 0, width: 'half', kpis: [], fullWidthKpis: [] },
           { 'label': 'Iteration Progress', 'count': 0, width: 'full', kpis: [] },
@@ -315,7 +324,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
-    // sending requests after grouping the the KPIs according to group Id 
+    // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
         this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Iteration');
@@ -600,21 +609,21 @@ export class IterationComponent implements OnInit, OnDestroy {
       const trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
       if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList) && filters && Object.keys(filters)?.length > 0) {
-        this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'],filters)
+        this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
       }
       else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},[this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] )
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]])
         }
         else if (formType?.toLowerCase() == 'dropdown') {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'] )
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
         }
         else if (filters && Object.keys(filters)?.length > 0) {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'],filters)
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
         } else {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'] )
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
         }
 
       }
@@ -623,7 +632,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters?) {
-    this.kpiSelectedFilterObj  = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId,this.kpiSelectedFilterObj,'iteration', refreshValue, initialValue,this.filterApplyData['ids'][0], filters)
+    this.kpiSelectedFilterObj = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId, this.kpiSelectedFilterObj, 'iteration', refreshValue, initialValue, this.filterApplyData['ids'][0], filters)
     this.getDropdownArray(kpiId);
   }
 
@@ -679,7 +688,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
-    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj,'iteration',this.filterApplyData['ids'][0]);
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj, 'iteration', this.filterApplyData['ids'][0]);
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
 
   }
@@ -913,7 +922,7 @@ export class IterationComponent implements OnInit, OnDestroy {
 
   drop(event: CdkDragDrop<string[]>, updatedContainer) {
     const capacityKpi = this.updatedConfigGlobalData.find(kpi => kpi.kpiId === 'kpi121');
-    this.helperService.drop(event,updatedContainer,this.navigationTabs,this.upDatedConfigData,this.configGlobalData,capacityKpi);
+    this.helperService.drop(event, updatedContainer, this.navigationTabs, this.upDatedConfigData, this.configGlobalData, capacityKpi);
   }
 
   typeOf(value) {
@@ -933,7 +942,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     const nodes = this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId;
     const level = this.filterApplyData?.level;
     const nodeChildId = this.filterApplyData['selectedMap']?.sprint[0];
-    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
+    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj, nodes, level, nodeChildId, this.updatedConfigGlobalData, kpiId)
   }
 
   handleTabChange(e) {

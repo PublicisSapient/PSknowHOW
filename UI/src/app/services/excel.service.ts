@@ -289,7 +289,6 @@ export class ExcelService {
                 } else {
                     const headerNames = [];
                     const newFormatArray = [];
-                    // let mergeCell = 0;
                     let maxCell = 0;
 
 
@@ -334,11 +333,6 @@ export class ExcelService {
                             }
                         }
 
-                        // mergeCell += (max + 1);
-                        // for (let index = 0; index < max; index++) {
-                        //     newFormatArray[0].push(data);
-                        // }
-                        // let j = 1;
                         let j = 0;
                         for (const dataChildName in dataName) {
                             if (kpiName === 'Engineering Maturity') {

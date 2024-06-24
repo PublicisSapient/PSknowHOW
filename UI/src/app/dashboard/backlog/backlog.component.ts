@@ -91,8 +91,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
   }
   ngOnInit() {
-    this.selectedtype = this.service.getSelectedType();
-
     this.httpService.getConfigDetails()
       .subscribe(filterData => {
         if (filterData[0] !== 'error') {
@@ -145,8 +143,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown);
-    this.kpiList = this.configGlobalData.map((kpi) => kpi.kpiId)
-    console.log(this.kpiList);
+    this.kpiList = this.configGlobalData.map((kpi) => kpi.kpiId);
     const kpi3Index = this.updatedConfigGlobalData.findIndex(kpi => kpi.kpiId === 'kpi3');
     const kpi3 = this.updatedConfigGlobalData.splice(kpi3Index, 1);
     this.updatedConfigGlobalData.splice(0, 0, kpi3[0]);
@@ -201,6 +198,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       click apply and call kpi
    **/
   receiveSharedData($event) {
+    this.selectedtype = this.service.getSelectedType();
     this.fullPageLoader = true;
     this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
     this.processKpiConfigData();
@@ -284,7 +282,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
               });
             }
           }
-          
+
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(this.jiraKpiData);
         } else {
@@ -298,7 +296,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
         this.fullPageLoader = false;
       });
   }
-  
+
   getSelectedType(sharedobject) {
     this.selectedtype = sharedobject;
   }
@@ -539,8 +537,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
   }
 
-  getkpi171Data(kpiId, trendValueList) {   
-    let durationChanged = false;   
+  getkpi171Data(kpiId, trendValueList) {
+    let durationChanged = false;
     if (this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1'] !== this.durationFilter) {
       durationChanged = true;
       this.kpiChartData[kpiId] = [];
@@ -831,7 +829,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     const level = this.filterApplyData?.level;
     const nodeChildId = '';
     this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
-  
+
   }
 
   /** Reload KPI once field mappoing updated */
@@ -908,7 +906,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       }
     } else {
       trend = 'NA';
-    }   
+    }
     return [latest, trend, unit];
   }
 

@@ -18,18 +18,11 @@
 
 import {
   Component,
-  OnInit,
   ChangeDetectorRef,
   AfterContentInit,
-  HostListener,
-  Output,
-  Renderer2,
-  ViewChild,
 } from '@angular/core';
-import { SharedService } from '../../services/shared.service';
 import { GetAuthService } from '../../services/getauth.service';
-import { HttpService } from '../../services/http.service';
-import { NavigationEnd, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-v2',
@@ -40,7 +33,7 @@ import { NavigationEnd, Router } from '@angular/router';
 /**
  Route the path from app-route and redirect to dashboard
  */
-export class DashboardV2Component implements OnInit, AfterContentInit {
+export class DashboardV2Component implements AfterContentInit {
   displayModal = false;
   modalDetails = {
     header: 'User Request Approved',
@@ -56,41 +49,10 @@ export class DashboardV2Component implements OnInit, AfterContentInit {
   constructor(
     public cdRef: ChangeDetectorRef,
     public router: Router,
-    private service: SharedService,
     private getAuth: GetAuthService,
-    private httpService: HttpService,
-    private renderer: Renderer2,
   ) {
     this.sideNavStyle = { 'toggled': this.isApply };
-    this.renderer.listen('document', 'click', (e: Event) => {
-
-      // setting document click event data to identify outside click for show/hide kpi filter
-      this.service.setClickedItem(e?.target);
-    });
     this.authorized = this.getAuth.checkAuth();
-  }
-
-  ngOnInit() {
-    // this.authorized = this.getAuth.checkAuth();
-
-    this.httpService.loadApp.subscribe(data => {
-      if (this.httpService.createdProjectName) {
-        this.modalDetails.header = `Project Created`;
-        this.modalDetails.content = `The project "${this.httpService.createdProjectName}" has been created successfully and you have gained admin rights for it.`;
-      }
-      this.displayModal = data;
-    });
-    this.service.isSideNav.subscribe((flag) => {
-      this.isApply = flag;
-      this.sideNavStyle = { 'toggled': this.isApply };
-    });
-  }
-
-  reloadApp(){
-    this.displayModal=false;
-    this.router.navigate(['./dashboard/mydashboard']).then(success =>{
-    window.location.reload();
-    });
   }
 
   ngAfterContentInit() {

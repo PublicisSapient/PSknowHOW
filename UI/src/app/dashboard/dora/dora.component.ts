@@ -132,9 +132,9 @@ export class DoraComponent implements OnInit {
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
-    this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId)
-    console.log(this.kpiList);
-    if (this.updatedConfigGlobalData?.length === 0) {
+    this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId);
+    const shownKpis = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
+    if (shownKpis?.length === 0) {
       this.noKpis = true;
     } else {
       this.noKpis = false;
