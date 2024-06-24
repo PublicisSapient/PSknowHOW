@@ -85,18 +85,18 @@ spec:
             memory: "250Mi"
             cpu: "0.2"
           limits:
-            memory: "8Gi"
+            memory: "5Gi"
             cpu: "0.5"
         readinessProbe:
           tcpSocket:
             port: 50008
-          initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-          periodSeconds: 5          # Check every 5 seconds
+          initialDelaySeconds: 30   # Wait for 30 seconds before starting probes
+          periodSeconds: 15          # Check every 15 seconds
         livenessProbe:
           tcpSocket:
             port: 50008
-          initialDelaySeconds: 15
-          periodSeconds: 20
+          initialDelaySeconds: 30
+          periodSeconds: 15
 
         volumeMounts:
             - name: knowhow-secrets-store
