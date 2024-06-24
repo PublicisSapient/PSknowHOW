@@ -120,7 +120,7 @@ export class MilestoneComponent implements OnInit {
     this.enableByUser = disabledKpis?.length ? true : false;
     /** noKpis - if true, all kpis are not shown to the user (not showing kpis to the user) **/
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown);
-    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
+    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.isEnabled);
 
     for (let i = 0; i < this.upDatedConfigData?.length; i++) {
       let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
