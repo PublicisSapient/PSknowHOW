@@ -3181,6 +3181,16 @@
     }
   },
   {
+    "fieldName" : "jiraDodKPI143" ,
+    "fieldLabel" : "DOD Status" ,
+    "fieldType" : "chips" ,
+    "fieldCategory" : "workflow" ,
+    "section" : "WorkFlow Status Mapping" ,
+    "tooltip" : {
+      "definition" : "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+    }
+  },
+  {
     "fieldName": "thresholdValueKPI173",
     "fieldLabel": "Target KPI Value",
     "fieldType": "number",

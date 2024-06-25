@@ -54,7 +54,7 @@ export const ConfigRoutes: Routes = [
             {
                 path: 'Dashboardconfig',
                 component: DashboardconfigComponent,
-                canActivate: [AccessGuard && GuestGuard]
+                canActivate: [AccessGuard, GuestGuard]
             }
             ,
             {
@@ -68,7 +68,7 @@ export const ConfigRoutes: Routes = [
             {
                 path: 'AdvancedSettings',
                 component: AdvancedSettingsComponent,
-                canActivate: [AccessGuard && GuestGuard]
+                canActivate: [AccessGuard, GuestGuard]
             }
         ]
     }

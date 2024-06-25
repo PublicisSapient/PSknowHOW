@@ -105,6 +105,7 @@ public class RepoToolsConfigServiceImpl {
 	public static final String BITBUCKET_CLOUD_IDENTIFIER = "bitbucket.org";
 	public static final String PROJECT = "/projects/";
 	public static final String REPOS = "/repos/";
+	public static final String WARNING = "WARNING";
 
 
 
@@ -124,7 +125,7 @@ public class RepoToolsConfigServiceImpl {
 			ToolCredential toolCredential = new ToolCredential(connection.getUsername(),
 					aesEncryptionService.decrypt(connection.getAccessToken(), customApiConfig.getAesEncryptionKey()),
 					connection.getEmail());
-			LocalDateTime fistScan = LocalDateTime.now().minusMonths(6);
+			LocalDateTime fistScan = LocalDateTime.now().minusMonths(3);
 			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
 					.findByToolName(connection.getRepoToolProvider().toLowerCase());
 			String[] split = projectToolConfig.getGitFullUrl().split("/");
@@ -342,6 +343,9 @@ public class RepoToolsConfigServiceImpl {
 				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+		boolean isWarning = WARNING.equalsIgnoreCase(repoToolsStatusResponse.getStatus());
+		processorExecutionTraceLog.setExecutionWarning(isWarning);
+		processorExecutionTraceLog.setExecutionResumesAt(isWarning?repoToolsStatusResponse.getTimestamp():0L);
 		processorExecutionTraceLog.setExecutionSuccess(
 				Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()));
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);

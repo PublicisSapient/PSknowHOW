@@ -217,7 +217,10 @@ export class AdvancedSettingsComponent implements OnInit {
     const traceLog = this.findTraceLogForTool(processorName);
     if (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) {
       return 'NA';
-    } else {
+    } else if(traceLog.executionWarning){
+      return 'Warning';
+    }
+    else {
       return traceLog.executionSuccess ? 'Success' : 'Failure';
     }
   }
@@ -364,6 +367,12 @@ export class AdvancedSettingsComponent implements OnInit {
       this.processorsTracelogs.push({processorName : 'Jira',errorMessage : '',progressStatusList : [],executionOngoing : false,executionEndedAt : 0,isDeleteDisable : true});
       return  this.processorsTracelogs.length;
     }
+  }
+
+  getRepoToolTimeDetails() {
+    const processorName = 'RepoTool';
+    const traceLog = this.findTraceLogForTool(processorName);
+    return (traceLog == undefined || traceLog == null || traceLog.executionResumesAt == 0) ? 'NA' : new DatePipe('en-US').transform(traceLog.executionResumesAt, 'dd-MMM-yyyy (EEE) - hh:mmaaa');
   }
 
   decideWhetherLoaderOrNot(jiraLogDetails){
