@@ -28,8 +28,17 @@ public class ConfigDetails {
 	private Double percentile;
 	private int hierarchySelectionCount;
 	private DateRangeFilter dateRangeFilter;
+	private boolean gitlabToolFieldFlag;
 
 	private int noOfDataPoints;
+
+	public boolean isGitlabToolFieldFlag() {
+		return gitlabToolFieldFlag;
+	}
+
+	public void setGitlabToolFieldFlag(boolean gitlabToolFieldFlag) {
+		this.gitlabToolFieldFlag = gitlabToolFieldFlag;
+	}
 	public DateRangeFilter getDateRangeFilter() {
 		return dateRangeFilter;
 	}
