@@ -125,7 +125,7 @@ public class RepoToolsConfigServiceImpl {
 			ToolCredential toolCredential = new ToolCredential(connection.getUsername(),
 					aesEncryptionService.decrypt(connection.getAccessToken(), customApiConfig.getAesEncryptionKey()),
 					connection.getEmail());
-			LocalDateTime fistScan = LocalDateTime.now().minusMonths(6);
+			LocalDateTime fistScan = LocalDateTime.now().minusMonths(3);
 			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
 					.findByToolName(connection.getRepoToolProvider().toLowerCase());
 			String[] split = projectToolConfig.getGitFullUrl().split("/");
@@ -343,10 +343,9 @@ public class RepoToolsConfigServiceImpl {
 				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-		if(WARNING.equalsIgnoreCase(repoToolsStatusResponse.getStatus())) {
-			processorExecutionTraceLog.setExecutionWarning(true);
-			processorExecutionTraceLog.setExecutionResumesAt(repoToolsStatusResponse.getTimestamp());
-		}
+		boolean isWarning = WARNING.equalsIgnoreCase(repoToolsStatusResponse.getStatus());
+		processorExecutionTraceLog.setExecutionWarning(isWarning);
+		processorExecutionTraceLog.setExecutionResumesAt(isWarning?repoToolsStatusResponse.getTimestamp():0L);
 		processorExecutionTraceLog.setExecutionSuccess(
 				Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()));
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
