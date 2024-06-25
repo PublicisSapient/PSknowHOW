@@ -43,7 +43,7 @@ public class FeatureEnumTest {
 
     @Test
     public void testRecommendationFeatureIsActive() {
-        assertFalse(featureManager.isActive(FeatureEnum.KPI_RECOMMENDATIONS));
+        assertFalse(featureManager.isActive(FeatureEnum.RECOMMENDATIONS));
     }
 
 }
