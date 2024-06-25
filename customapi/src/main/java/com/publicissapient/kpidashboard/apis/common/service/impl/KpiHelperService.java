@@ -706,7 +706,9 @@ public class KpiHelperService { // NOPMD
 	 *            the leaf node list
 	 * @return the list
 	 */
-	public Map<String, Object> fetchSprintCapacityDataFromDb(List<Node> leafNodeList) {
+	public Map<String, Object> fetchSprintCapacityDataFromDb(KpiRequest kpiRequest, List<Node> leafNodeList) {
+
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 
 		List<String> sprintList = new ArrayList<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
@@ -715,6 +717,8 @@ public class KpiHelperService { // NOPMD
 		Map<String, Map<String, Object>> uniqueProjectMapForSubTask = new HashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
 
+		/** additional filter **/
+		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, CommonConstant.QA, flterHelperService);
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
@@ -734,6 +738,7 @@ public class KpiHelperService { // NOPMD
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(capacityIssueType));
+			mapOfProjectFilters.putAll(mapOfFilters);
 			mapOfProjectFiltersForSubTask.put(JiraFeature.ORIGINAL_ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(taskType));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
@@ -777,7 +782,7 @@ public class KpiHelperService { // NOPMD
 	 *            the leaf node list
 	 * @return list
 	 */
-	public List<CapacityKpiData> fetchCapacityDataFromDB(List<Node> leafNodeList) {
+	public List<CapacityKpiData> fetchCapacityDataFromDB(KpiRequest kpiRequest, List<Node> leafNodeList) {
 		Map<String, Object> mapOfFilters = new LinkedHashMap<>();
 		List<String> sprintList = new ArrayList<>();
 		List<ObjectId> basicProjectConfigIds = new ArrayList<>();
@@ -788,12 +793,17 @@ public class KpiHelperService { // NOPMD
 			basicProjectConfigIds.add(basicProjectConfigId);
 		});
 
+		/** additional filter **/
+		KpiDataHelper.createAdditionalFilterMapForCapacity(kpiRequest, mapOfFilters, flterHelperService);
+
 		mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
 				sprintList.stream().distinct().collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-		return capacityKpiDataRepository.findByFilters(mapOfFilters, uniqueProjectMap);
+		List<CapacityKpiData> byFilters = capacityKpiDataRepository.findByFilters(mapOfFilters, uniqueProjectMap);
+
+		return byFilters;
 	}
 
 	/**
@@ -864,10 +874,11 @@ public class KpiHelperService { // NOPMD
 	public Map<String, Object> fetchTeamCapacityDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest, String capacityKey) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Map<String, List<ObjectId>> mapOfFilters = new LinkedHashMap<>();
+		Map<String, Object> mapOfFilters = new LinkedHashMap<>();
 		List<ObjectId> projectList = new ArrayList<>();
 		leafNodeList.forEach(leaf -> projectList.add(leaf.getProjectFilter().getBasicProjectConfigId()));
-
+		/** additional filter **/
+		KpiDataHelper.createAdditionalFilterMapForCapacity(kpiRequest, mapOfFilters, flterHelperService);
 		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
 
@@ -1428,7 +1439,8 @@ public class KpiHelperService { // NOPMD
 					.filter(t -> t.getBasicProjectConfigId().toString().equals(projectBasicConfigId))
 					.map(ProjectToolConfig::getId).findFirst().orElse(null);
 
-			List<FieldMappingStructure> fieldMappingStructureList1 = getFieldMappingStructure(fieldMappingStructureList, fieldList);
+			List<FieldMappingStructure> fieldMappingStructureList1 = getFieldMappingStructure(fieldMappingStructureList,
+					fieldList);
 
 			fieldMappingStructureResponse.setFieldConfiguration(
 					CollectionUtils.isNotEmpty(fieldMappingStructureList1) ? fieldMappingStructureList1
@@ -1443,10 +1455,10 @@ public class KpiHelperService { // NOPMD
 		return fieldMappingStructureResponse;
 	}
 
-
-	public List<FieldMappingStructure> getFieldMappingStructure(List<FieldMappingStructure> fieldMappingStructureList, List<String> fieldList){
-		return fieldMappingStructureList.stream()
-				.filter(f -> fieldList.contains(f.getFieldName())).collect(Collectors.toList());
+	public List<FieldMappingStructure> getFieldMappingStructure(List<FieldMappingStructure> fieldMappingStructureList,
+			List<String> fieldList) {
+		return fieldMappingStructureList.stream().filter(f -> fieldList.contains(f.getFieldName()))
+				.collect(Collectors.toList());
 
 	}
 

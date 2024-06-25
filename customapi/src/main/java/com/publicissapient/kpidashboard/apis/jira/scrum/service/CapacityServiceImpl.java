@@ -18,21 +18,30 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 
@@ -46,6 +55,9 @@ public class CapacityServiceImpl extends JiraIterationKPIService {
 
 	@Autowired
 	private CapacityKpiDataRepository capacityKpiDataRepository;
+
+	@Autowired
+	private FilterHelperService filterHelperService;
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node filteredNode)
@@ -67,19 +79,92 @@ public class CapacityServiceImpl extends JiraIterationKPIService {
 		if (null != leafNode) {
 			log.info("Capacity -> Requested sprint : {}", leafNode.getName());
 			ObjectId basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
+
 			String sprintId = leafNode.getSprintFilter().getId();
+
 			CapacityKpiData capacityKpiData = capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(sprintId,
 					basicProjectConfigId);
-			resultListMap.put(CAPACITY_DATA, capacityKpiData);
+
+			resultListMap.put(CAPACITY_DATA, getCapacityDataForAdditionalFilter(kpiRequest, capacityKpiData));
 
 		}
 		return resultListMap;
 	}
 
 	/**
+	 * Retrieves the capacity data for an additional filter based on the given KPI
+	 * request.
+	 *
+	 * @param kpiRequest
+	 *            the KPI request containing selected filters
+	 * @param capacityKpiData
+	 *            the current capacity KPI data
+	 * @return a new CapacityKpiData object with updated capacity per sprint if
+	 *         additional capacity was found, otherwise returns the original
+	 *         capacityKpiData
+	 */
+	private CapacityKpiData getCapacityDataForAdditionalFilter(KpiRequest kpiRequest, CapacityKpiData capacityKpiData) {
+		// Create a map of additional filter categories with keys in uppercase for
+		// case-insensitive matching
+		Map<String, AdditionalFilterCategory> addFilterCategory = filterHelperService
+				.getAdditionalFilterHierarchyLevel().entrySet().stream()
+				.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
+
+		boolean additionalCapacity = false;
+		Double capacity = 0.0D;
+
+		// Iterate through the selected filters in the KPI request
+		for (Map.Entry<String, List<String>> entry : kpiRequest.getSelectedMap().entrySet()) {
+			String key = entry.getKey();
+			List<String> value = entry.getValue();
+
+			// Check if the filter has a non-empty value list, exists in the additional
+			// filter categories, and capacity data is not empty
+			if (CollectionUtils.isNotEmpty(value) && addFilterCategory.containsKey(key.toUpperCase())
+					&& ObjectUtils.isNotEmpty(capacityKpiData)) {
+
+				List<AdditionalFilterCapacity> additionalFilterCapacityList = capacityKpiData
+						.getAdditionalFilterCapacityList();
+
+				// If there are additional filter capacities, calculate the total capacity
+				if (CollectionUtils.isNotEmpty(additionalFilterCapacityList)) {
+					additionalCapacity = true;
+					String upperCaseKey = key.toUpperCase();
+					List<String> additionalFilter = new ArrayList<>(value);
+
+					// Sum the capacities matching the filter criteria
+					capacity += additionalFilterCapacityList.stream()
+							.filter(additionalFilterCapacity -> upperCaseKey
+									.equals(additionalFilterCapacity.getFilterId().toUpperCase()))
+							.flatMap(
+									additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
+							.filter(leaf -> additionalFilter.contains(leaf.getAdditionalFilterId())
+									&& leaf.getAdditionalFilterCapacity() != null)
+							.mapToDouble(LeafNodeCapacity::getAdditionalFilterCapacity).sum();
+				}
+			}
+		}
+
+		// If additional capacity was found, create a new CapacityKpiData object with
+		// the updated capacity to not hamper the further calculations
+		if (additionalCapacity) {
+			CapacityKpiData newCapacity = new CapacityKpiData();
+			newCapacity.setBasicProjectConfigId(capacityKpiData.getBasicProjectConfigId());
+			newCapacity.setSprintID(capacityKpiData.getSprintID());
+			newCapacity.setProjectName(capacityKpiData.getProjectName());
+			newCapacity.setProjectId(capacityKpiData.getProjectId());
+			newCapacity.setCapacityPerSprint(capacity);
+			return newCapacity;
+		}
+
+		// If no additional capacity was found, return the original capacity data
+		return capacityKpiData;
+	}
+
+	/**
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint level.
-	 * 
+	 *
 	 * @param sprintLeafNode
 	 * @param trendValue
 	 * @param kpiElement

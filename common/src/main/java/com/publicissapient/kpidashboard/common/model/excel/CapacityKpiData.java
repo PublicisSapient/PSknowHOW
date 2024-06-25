@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -24,6 +23,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
@@ -50,7 +50,9 @@ public class CapacityKpiData extends BasicModel {
 	private String projectId;
 	private Double capacityPerSprint;
 	private ObjectId basicProjectConfigId;
+	private List<AdditionalFilterCapacity> additionalFilterCapacityList;
 	private List<AssigneeCapacity> assigneeCapacity;
+
 
 	@Override
 	public String toString() {
