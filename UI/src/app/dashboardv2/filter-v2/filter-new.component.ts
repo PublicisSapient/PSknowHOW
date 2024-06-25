@@ -84,8 +84,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.dateRangeFilter = {
             "types": [
               "Days",
-              "Weeks",
-              "Months"
+              "Weeks"
             ],
             "counts": [
               5,

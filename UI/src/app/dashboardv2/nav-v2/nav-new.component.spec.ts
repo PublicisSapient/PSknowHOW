@@ -17,7 +17,7 @@ import { Routes } from '@angular/router';
 import { ExecutiveV2Component } from '../executive-v2/executive-v2.component';
 import { MaturityComponent } from 'src/app/dashboard/maturity/maturity.component';
 
-const getDashConfData = require('../../../test/resource/boardConfigNew.json');
+const getDashConfData = require('../../../test/resource/boardConfigNewServer.json');
 
 describe('NavNewComponent', () => {
   let component: NavNewComponent;
@@ -67,11 +67,13 @@ describe('NavNewComponent', () => {
 
 
   it('should set items and activeItem correctly when response is successful', () => {
-    const response = { success: true, data: getDashConfData.data };
-    spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(of(response));
+    const response = getDashConfData;
+    spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(of(response));
+    let data = response.data.userBoardConfigDTO;
+    data['configDetails'] = response.data.configDetails;
     const setDashConfigSpy = spyOn(sharedService, 'setDashConfigData');
     component.getBoardConfig();
-    expect(setDashConfigSpy).toHaveBeenCalledWith(getDashConfData.data);
+    expect(setDashConfigSpy).toHaveBeenCalledWith(data);
     expect(component.items).toEqual([
       {
         "label": "My KnowHOW",
