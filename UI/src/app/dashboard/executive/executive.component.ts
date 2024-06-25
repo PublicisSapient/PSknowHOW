@@ -105,7 +105,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         tableValues: []
     };
     kpiExcelData;
-    isGlobalDownload = false;
     kpiTrendsObj = {};
     selectedTab= 'iteration';
     showCommentIcon = false;

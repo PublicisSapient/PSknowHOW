@@ -43,7 +43,7 @@ public interface KanbanCapacityRepoCustom {
 	 *            the date to
 	 * @return list of feature
 	 */
-	List<KanbanCapacity> findIssuesByType(Map<String, List<ObjectId>> mapOfFilters, String dateFrom, String dateTo);
+	List<KanbanCapacity> findIssuesByType(Map<String, Object> mapOfFilters, String dateFrom, String dateTo);
 
 	/**
 	 * find already existing kanban capacity

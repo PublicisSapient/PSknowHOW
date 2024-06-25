@@ -2604,4 +2604,383 @@ describe('CapacityPlanningComponent', () => {
     ]);
   });
 
+  it('should return the node name of the assignee squad if it exists', () => {
+    // Arrange
+    const assignee = { squad: 'squad1' };
+    component.selectedSquad = [{ nodeId: 'squad1', nodeName: 'Squad 1' }];
+
+    // Act
+    const result = component.getNodeName(assignee);
+
+    // Assert
+    expect(result).toBe('Squad 1');
+  });
+
+  it('should return "- -" if the assignee squad does not exist', () => {
+    // Arrange
+    const assignee = { squad: 'squad2' };
+    component.selectedSquad = [{ nodeId: 'squad1', nodeName: 'Squad 1' }];
+
+    // Act
+    const result = component.getNodeName(assignee);
+
+    // Assert
+    expect(result).toBe('- -');
+  });
+
+  it('should return "- -" if the assignee squad is not provided', () => {
+    // Arrange
+    const assignee = {};
+
+    // Act
+    const result = component.getNodeName(assignee);
+
+    // Assert
+    expect(result).toBe('- -');
+  });
+
+  it('should toggle off generate additional filter capacity list', () => {
+    // Arrange
+    const capacityObject = {
+      'squad1_node1': 10,
+      'squad1_node2': 5,
+      'squad2_node1': 8,
+      'squad2_node2': 3
+    };
+    component.selectedSquad = [
+      { nodeId: 'squad1_node1', labelName: 'Squad 1' },
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+    ];
+    const spy = spyOn(component, 'createAdditionalFilterCapacityList').and.callThrough();
+    // Act
+    component.toggleOffGenerateAdditionalFilterCapacityList(capacityObject);
+
+    // Assert
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should enable submit button for squads', () => {
+    // Arrange
+    component.selectedSquad = [
+      { nodeId: 'squad1_node1', labelName: 'Squad 1' },
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+    ];
+    component.squadForm = new UntypedFormGroup({
+      squad1_node1: new FormControl(10),
+      squad2_node1: new FormControl(8)
+    });
+    component.isCapacitySaveDisabled = false;
+    component.capacityErrorMessage = '';
+    // Act
+    component.enableDisableSubmitButton();
+
+    // Assert
+    expect(component.isCapacitySaveDisabled).toBeFalse();
+  })
+
+  it('should edisable submit button for squads', () => {
+    // Arrange
+    component.selectedSquad = [
+      { nodeId: 'squad1_node1', labelName: 'Squad 1' },
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+    ];
+    component.squadForm = new UntypedFormGroup({
+      squad1_node1: new FormControl(10),
+      squad2_node1: new FormControl(),
+    });
+    component.isCapacitySaveDisabled = false;
+    component.capacityErrorMessage = '';
+    // Act
+    component.enableDisableSubmitButton();
+
+    // Assert
+    expect(component.isCapacitySaveDisabled).toBeTrue();
+  })
+
+  it('should generate additional filter capacity list correctly', () => {
+    component.selectedSquad = [
+      { nodeId: 'squad1_node1', labelName: 'Squad 1' },
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+    ];
+    const selectedSprint = {
+      assigneeCapacity: [{
+        userId: 'userId1',
+        userName: 'User 1',
+        role: 'FRONTEND_DEVELOPER',
+        plannedCapacity: 40,
+        leaves: 12,
+        availableCapacity: 28,
+        squad:'UI'
+      }, {
+        userId: 'userId2',
+        userName: 'User 3',
+        role: 'BACKEND_DEVELOPER',
+        plannedCapacity: 20,
+        leaves: 2,
+        availableCapacity: 18,
+        squad:'JAVA'
+      }]
+    }
+    
+    const spy = spyOn(component, 'createAdditionalFilterCapacityList');
+    component.generateAdditionalFilterCapacityList(selectedSprint);
+
+    expect(spy).toHaveBeenCalled()
+  });
+
+  it('should generate additional filter capacity list correctly', () => {
+    component.selectedSquad = [
+      { nodeId: 'squad1_node1', labelName: 'Squad 1' },
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+    ];
+    const selectedSprint = {
+      assigneeCapacity: [{
+        userId: 'userId1',
+        userName: 'User 1',
+        role: 'FRONTEND_DEVELOPER',
+        plannedCapacity: 40,
+        leaves: 12,
+        availableCapacity: 28,
+        squad:'squad1_node1'
+      }, {
+        userId: 'userId2',
+        userName: 'User 3',
+        role: 'BACKEND_DEVELOPER',
+        plannedCapacity: 20,
+        leaves: 2,
+        availableCapacity: 18,
+        squad:'squad2_node1'
+      }]
+    }
+    const spy = spyOn(component, 'createAdditionalFilterCapacityList');
+    component.generateAdditionalFilterCapacityList(selectedSprint);
+
+    expect(spy).toHaveBeenCalled()
+  });
+
+  it('should add controls for squad when additional Filter id matches with squad node id', () => {
+    component.showPopuup = true;
+    component.executionDate = '';
+    component.selectedSprintName = '';
+    component.selectedSprintId = '';
+    component.startDate = '';
+    component.endDate = '';
+    component.kanban = false;
+    component.reqObj = {
+      projectNodeId: '',
+      projectName: '',
+      kanban: component.kanban,
+      basicProjectConfigId: '',
+      sprintNodeId: ''
+    };
+    component.selectedView = 'upload_Sprint_Capacity';
+    component.selectedSquad = [
+      { nodeId: 'squad1_node1', labelName: 'Squad 1' },
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+    ];
+    const data = {
+      executionDate: '2021-08-01',
+      sprintName: 'Sprint 1',
+      sprintNodeId: 'node1',
+      startDate: '2021-07-01',
+      endDate: '2021-07-14',
+      projectNodeId: 'proj1',
+      projectName: 'Project 1',
+      basicProjectConfigId: 'config1',
+      capacity: '10',
+      additionalFilterCapacityList: [{
+        "nodeCapacityList": [{
+          additionalFilterId:"squad1_node1",
+          additionalFilterCapacity: '100'
+        }]
+      },
+      {
+        "nodeCapacityList": [{
+          additionalFilterId:"squad2_node1",
+          additionalFilterCapacity: '200'
+        }]
+      }]
+    };
+    component.squadForm = new UntypedFormGroup({});
+    component.popupForm = new UntypedFormGroup({});
+    component.selectedView = 'upload_Sprint_Capacity';
+    const spy = spyOn(component, 'enableDisableSubmitButton');
+    component.AddOrUpdateData(data);
+    expect(component.popupForm).toBeTruthy();
+    expect(component.popupForm.controls.capacity.value).toEqual('10');
+    expect(component.reqObj.capacity).toEqual('10');
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should add controls for squad when additional Filter id doesnt match with squad node id', () => {
+    component.showPopuup = true;
+    component.executionDate = '';
+    component.selectedSprintName = '';
+    component.selectedSprintId = '';
+    component.startDate = '';
+    component.endDate = '';
+    component.kanban = false;
+    component.reqObj = {
+      projectNodeId: '',
+      projectName: '',
+      kanban: component.kanban,
+      basicProjectConfigId: '',
+      sprintNodeId: ''
+    };
+    component.selectedView = 'upload_Sprint_Capacity';
+    component.selectedSquad = [
+      { nodeId: 'squad1_node1', labelName: 'Squad 1' },
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+    ];
+    const data = {
+      executionDate: '2021-08-01',
+      sprintName: 'Sprint 1',
+      sprintNodeId: 'node1',
+      startDate: '2021-07-01',
+      endDate: '2021-07-14',
+      projectNodeId: 'proj1',
+      projectName: 'Project 1',
+      basicProjectConfigId: 'config1',
+      capacity: '10',
+      additionalFilterCapacityList: [{
+        "nodeCapacityList": [{
+          additionalFilterId:"1",
+          additionalFilterCapacity: '100'
+        }]
+      },
+      {
+        "nodeCapacityList": [{
+          additionalFilterId:"2",
+          additionalFilterCapacity: '200'
+        }]
+      }]
+    };
+    component.squadForm = new UntypedFormGroup({});
+    component.popupForm = new UntypedFormGroup({});
+    component.selectedView = 'upload_Sprint_Capacity';
+    const spy = spyOn(component, 'enableDisableSubmitButton');
+    component.AddOrUpdateData(data);
+    expect(component.popupForm).toBeTruthy();
+    expect(component.popupForm.controls.capacity.value).toEqual('10');
+    expect(component.reqObj.capacity).toEqual('10');
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should add controls for squad when additional Filter id doesnt match with squad node id', () => {
+    component.showPopuup = true;
+    component.executionDate = '';
+    component.selectedSprintName = '';
+    component.selectedSprintId = '';
+    component.startDate = '';
+    component.endDate = '';
+    component.kanban = false;
+    component.reqObj = {
+      projectNodeId: '',
+      projectName: '',
+      kanban: component.kanban,
+      basicProjectConfigId: '',
+      sprintNodeId: ''
+    };
+    component.selectedView = 'upload_Sprint_Capacity';
+    component.selectedSquad = [
+      { nodeId: 'squad1_node1', labelName: 'Squad 1' },
+      { nodeId: 'squad2_node1', labelName: 'Squad 2' }
+    ];
+    const data = {
+      executionDate: '2021-08-01',
+      sprintName: 'Sprint 1',
+      sprintNodeId: 'node1',
+      startDate: '2021-07-01',
+      endDate: '2021-07-14',
+      projectNodeId: 'proj1',
+      projectName: 'Project 1',
+      basicProjectConfigId: 'config1',
+      capacity: '10'
+    };
+    component.squadForm = new UntypedFormGroup({});
+    component.popupForm = new UntypedFormGroup({});
+    component.selectedView = 'upload_Sprint_Capacity';
+    const spy = spyOn(component, 'enableDisableSubmitButton');
+    component.AddOrUpdateData(data);
+    expect(component.popupForm).toBeTruthy();
+    expect(component.popupForm.controls.capacity.value).toEqual('10');
+    expect(component.reqObj.capacity).toEqual('10');
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should give unauthorised error on submit capacity', fakeAsync(() => {
+    component.squadForm = new UntypedFormGroup({
+      'squad1_node1': new UntypedFormControl('10'),
+      'squad2_node1': new UntypedFormControl('8'),
+    });
+    const res = {
+      success: false,
+      message: 'Unauthorized'
+    }
+    component.reqObj = {
+      projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+      projectName: 'DEMO_SONAR',
+      kanban: false,
+      sprintNodeId: '40248_DEMO_SONAR_63284960fdd20276d60e4df5',
+      capacity: '500'
+    };
+    spyOn(component, 'toggleOffGenerateAdditionalFilterCapacityList');
+    const spy = spyOn(messageService, 'add');
+    spyOn(httpService, 'saveCapacity').and.returnValue(of(res));
+    component.submitCapacity();
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }))
+
+  it('should give error in saving scenario on submit capacity', fakeAsync(() => {
+    component.squadForm = new UntypedFormGroup({
+      'squad1_node1': new UntypedFormControl('10'),
+      'squad2_node1': new UntypedFormControl('8'),
+    });
+    const res = {
+    }
+    component.reqObj = {
+      projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
+      projectName: 'DEMO_SONAR',
+      kanban: false,
+      sprintNodeId: '40248_DEMO_SONAR_63284960fdd20276d60e4df5',
+      capacity: '500'
+    };
+    spyOn(component, 'toggleOffGenerateAdditionalFilterCapacityList');
+    const spy = spyOn(messageService, 'add');
+    spyOn(httpService, 'saveCapacity').and.returnValue(of(res));
+    component.submitCapacity();
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }))
+
+  xit('should create additional filter capacity list', () => {
+    const squadCapacityMap = {
+      'Squad1': {
+        'squad1_node1': 10,
+      },
+      'Squad2': {
+        'squad2_node1': 8,
+      }
+    }
+    const additionalFilterCapacityList = [
+      {
+        "filterId": 'Squad1',
+        "nodeCapacityList": [{
+          additionalFilterId: 'squad1_node1',
+          additionalFilterCapacity: '10'
+        }]
+      },
+      {
+        "filterId": 'Squad2',
+        "nodeCapacityList": [{
+          additionalFilterId: 'squad2_node1',
+          additionalFilterCapacity: '8'
+        }]
+      }
+    ]
+    const spy = spyOn(component, 'createAdditionalFilterCapacityList')
+    component.createAdditionalFilterCapacityList(squadCapacityMap)
+    expect(spy).toEqual(additionalFilterCapacityList);
+  })
 });
