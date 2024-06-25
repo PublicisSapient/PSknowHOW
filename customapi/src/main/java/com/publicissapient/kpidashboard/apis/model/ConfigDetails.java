@@ -30,14 +30,22 @@ public class ConfigDetails {
 	private DateRangeFilter dateRangeFilter;
 	private int noOfDataPoints;
 	private boolean repoToolFlag;
+	private boolean gitlabToolFieldFlag;
 	private int sprintCountForKpiCalculation;
 
 	public boolean isRepoToolFlag() {
 		return repoToolFlag;
 	}
-
 	public void setRepoToolFlag(boolean repoToolFlag) {
 		this.repoToolFlag = repoToolFlag;
+	}
+
+	public boolean isGitlabToolFieldFlag() {
+		return gitlabToolFieldFlag;
+	}
+
+	public void setGitlabToolFieldFlag(boolean gitlabToolFieldFlag) {
+		this.gitlabToolFieldFlag = gitlabToolFieldFlag;
 	}
 
 	public DateRangeFilter getDateRangeFilter() {
