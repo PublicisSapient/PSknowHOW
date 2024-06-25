@@ -131,6 +131,43 @@ public final class KpiDataHelper {
 	}
 
 	/**
+	 * Populates a map of filters for capacity based on the given KPI request and
+	 * filter helper service.
+	 *
+	 * @param kpiRequest
+	 *            the KPI request containing selected filters
+	 * @param mapOfFilters
+	 *            the map to populate with additional filter criteria
+	 * @param filterHelperService
+	 *            the service providing additional filter hierarchy levels
+	 */
+	public static void createAdditionalFilterMapForCapacity(KpiRequest kpiRequest, Map<String, Object> mapOfFilters,
+			FilterHelperService filterHelperService) {
+
+		// Retrieve the additional filter hierarchy levels and convert keys to uppercase
+		// for case-insensitive matching
+		Map<String, AdditionalFilterCategory> addFilterCat = filterHelperService.getAdditionalFilterHierarchyLevel();
+		Map<String, AdditionalFilterCategory> addFilterCategory = addFilterCat.entrySet().stream()
+				.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
+
+		// Check if the selected map in KPI request is not empty
+		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())) {
+			// Iterate through the selected filters in the KPI request
+			for (Map.Entry<String, List<String>> entry : kpiRequest.getSelectedMap().entrySet()) {
+				// Check if the filter has a non-empty value list and exists in the additional
+				// filter categories
+				if (CollectionUtils.isNotEmpty(entry.getValue())
+						&& addFilterCategory.get(entry.getKey().toUpperCase()) != null) {
+					// Add filter criteria to the map of filters
+					mapOfFilters.put("additionalFilterCapacityList.filterId", Arrays.asList(entry.getKey()));
+					mapOfFilters.put("additionalFilterCapacityList.nodeCapacityList.additionalFilterId",
+							entry.getValue());
+				}
+			}
+		}
+	}
+
+	/**
 	 * Creates subcategory wise map.
 	 *
 	 * @param subGroupCategory
@@ -753,12 +790,12 @@ public final class KpiDataHelper {
 			statusWiseIssues.addAll(dbSprintDetail.getNotCompletedIssues().stream()
 					.filter(issue -> fieldMappingCompletionStatus.contains(issue.getStatus()))
 					.collect(Collectors.toSet()));
-			newCompletedSet= statusWiseIssues;
+			newCompletedSet = statusWiseIssues;
 		} else if (CollectionUtils.isNotEmpty(fieldMapingCompletionType)) {
 			typeWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
 					.filter(issue -> fieldMapingCompletionType.contains(issue.getTypeName()))
 					.collect(Collectors.toSet()));
-			newCompletedSet=typeWiseIssues;
+			newCompletedSet = typeWiseIssues;
 		}
 		return newCompletedSet;
 	}
@@ -1029,7 +1066,6 @@ public final class KpiDataHelper {
 			}
 		}).sum();
 	}
-
 
 	/**
 	 * To calculate the added/removed date of sprint change for JiraIssues
