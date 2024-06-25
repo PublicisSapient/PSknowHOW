@@ -51,7 +51,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
             this.selectedFilters = Array.from(
               this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
             );
-            this.selectedFilters = this.filterData[this.selectedLevel].filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
+            this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
             this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
             this.onPrimaryFilterChange.emit(this.selectedFilters);
             this.setProjectAndLevelBackupBasedOnSelectedLevel();
@@ -88,8 +88,6 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
       if (this.primaryFilterConfig['defaultLevel'].sortBy) {
         this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel], [this.primaryFilterConfig['defaultLevel'].sortBy]);
-      } else {
-        this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
       }
     } else if (this.selectedLevel && Object.keys(this.selectedLevel).length) {
       // check for iterations and releases
