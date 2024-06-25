@@ -23,7 +23,7 @@ import lombok.Data;
 /**
  * DTO of userboardconfigdto and ConfigDetails
  *
- * @author yasbano
+ * @author purgupta2
  *
  */
 @Data
