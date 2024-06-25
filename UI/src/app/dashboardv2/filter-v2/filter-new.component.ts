@@ -403,36 +403,33 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handleAdditionalChange(event) {
-    if (event?.length) {
-      this.filterApplyData['level'] = event[0].level;
-      this.filterApplyData['label'] = event[0].labelName;
-      // if Additional Filters are selected
-      if (this.filterApplyData['level'] > 4) {
-        if (this.selectedTab?.toLowerCase() === 'backlog') {
-          this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
-        }
-
-
-        this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
-        this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
-
-
-        // set selected projects(trends)
-        // this.service.setSelectedTrends(event);  // The purpose of setSelectedTrends backup is to store project only not other subfilter(sprint/release) node details
-
-        if (this.selectedLevel) {
-          if (typeof this.selectedLevel === 'string') {
-            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
-          } else {
-            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
-          }
-        } else {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
-        }
-      }
-    } else {
+    if (!event?.length) {
       this.handlePrimaryFilterChange(this.previousFilterEvent);
+      return;
     }
+
+    this.filterApplyData['level'] = event[0].level;
+    this.filterApplyData['label'] = event[0].labelName;
+
+    // if Additional Filters are selected
+    if (this.filterApplyData['level'] <= 4) return;
+    if (this.selectedTab?.toLowerCase() === 'backlog') {
+      this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
+    }
+
+    this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
+    this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
+
+    if (!this.selectedLevel) {
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+      return;
+    }
+
+    if (typeof this.selectedLevel === 'string') {
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+      return;
+    }
+    this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
   }
 
   applyDateFilter() {
@@ -518,36 +515,41 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.selectedProjectLastSyncStatus = '';
       this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
         this.displayModal = false;
-        if (activeSprintStatus['success']) {
-          interval(3000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
-            if (response?.['success']) {
-              this.selectedProjectLastSyncStatus = '';
-              this.lastSyncData = response['data'];
-              if (response['data']?.fetchSuccessful === true) {
-                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
-                this.selectedProjectLastSyncStatus = 'SUCCESS';
-                this.subject.next(true);
-              } else if (response['data']?.errorInFetch) {
-                this.lastSyncData = {};
-                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
-                this.selectedProjectLastSyncStatus = 'FAILURE';
-                this.subject.next(true);
-              }
-            } else {
-              this.subject.next(true);
-              this.lastSyncData = {};
-            }
-          }, error => {
+
+        if (!activeSprintStatus['success']) {
+          this.lastSyncData = {};
+          return;
+        }
+
+        interval(3000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
+          if (!(response?.['success'])) {
             this.subject.next(true);
             this.lastSyncData = {};
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error in syncing data. Please try after some time.',
-            });
-          });
-        } else {
+            return;
+          }
+
+          this.selectedProjectLastSyncStatus = '';
+          this.lastSyncData = response['data'];
+
+          if (response['data']?.fetchSuccessful === true) {
+            this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+            this.selectedProjectLastSyncStatus = 'SUCCESS';
+            this.subject.next(true);
+          } else if (response['data']?.errorInFetch) {
+            this.lastSyncData = {};
+            this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+            this.selectedProjectLastSyncStatus = 'FAILURE';
+            this.subject.next(true);
+          }
+
+        }, error => {
+          this.subject.next(true);
           this.lastSyncData = {};
-        }
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error in syncing data. Please try after some time.',
+          });
+        });
       });
     }
   }

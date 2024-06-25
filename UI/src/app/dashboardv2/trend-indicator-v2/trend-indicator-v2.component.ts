@@ -1,18 +1,17 @@
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-trend-indicator-v2',
   templateUrl: './trend-indicator-v2.component.html',
   styleUrls: ['./trend-indicator-v2.component.css']
 })
-export class TrendIndicatorV2Component implements OnInit {
+export class TrendIndicatorV2Component implements OnChanges {
   @Input() cols?: Array<object> = [];
 
   @Input() trendData: any;
   @Input() colorObj: any;
   dataObj = [];
   headerObj = [];
-  constructor() { }
 
   ngOnChanges(changes: SimpleChanges) {
 
@@ -33,10 +32,6 @@ export class TrendIndicatorV2Component implements OnInit {
       this.dataObj = this.generateFlatArray(this.dataObj);
     }
   }
-
-  ngOnInit(): void {
-  }
-
 
   ngOnDestroy() {
     this.trendData = [];
