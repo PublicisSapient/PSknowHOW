@@ -360,7 +360,8 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 					if (CollectionUtils.isNotEmpty(commonLabel)) {
 						rcaList.addAll(commonLabel);
 					}
-				} else if (fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
+				} else if (fieldMapping.getRootCause() != null
+						&& fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
 						&& fields.get(fieldMapping.getRootCause().trim()) != null
 						&& fields.get(fieldMapping.getRootCause().trim()).getValue() != null) {
 					rcaList.addAll(getRootCauses(fieldMapping, fields));

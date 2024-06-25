@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Method;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -34,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -51,19 +50,26 @@ import org.testng.collections.Lists;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
 import com.publicissapient.kpidashboard.apis.data.CapacityKpiDataDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KanbanCapacityDataFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
+import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 
 /**
@@ -92,6 +98,8 @@ public class CapacityMasterServiceImplTest {
 	@Mock
 	private CacheService cacheService;
 	@Mock
+	private FilterHelperService filterHelperService;
+	@Mock
 	private CustomApiConfig customApiConfig;
 	@Mock
 	private ProjectBasicConfigService projectBasicConfigService;
@@ -119,6 +127,7 @@ public class CapacityMasterServiceImplTest {
 		scrumCapacityMaster.setSprintNodeId("38296_Scrum Project_6335363749794a18e8a4479b");
 		scrumCapacityMaster.setKanban(false);
 		scrumCapacityMaster.setCapacity(500.0);
+		scrumCapacityMaster.setAdditionalFilterCapacityList(createAdditionalFilter());
 		scrumCapacityMaster.setBasicProjectConfigId(new ObjectId("65eec0156f35b0294eb765f6"));
 
 		kanbanCapacity = new CapacityMaster();
@@ -171,7 +180,32 @@ public class CapacityMasterServiceImplTest {
 		kanbanCapacityAssignee.setCapacity(500.0);
 		kanbanCapacityAssignee.setAssigneeDetails(true);
 		kanbanCapacityAssignee.setAssigneeCapacity(assigneeCapacityList);
+		kanbanCapacityAssignee.setAdditionalFilterCapacityList(createAdditionalFilter());
 
+		kanbanCapacityAsigneeList.forEach(a -> a.setAdditionalFilterCapacityList(createAdditionalFilter()));
+
+		AdditionalFilterCategoryFactory additionalFilterCategoryFactory = AdditionalFilterCategoryFactory.newInstance();
+		List<AdditionalFilterCategory> additionalFilterCategoryList = additionalFilterCategoryFactory
+				.getAdditionalFilterCategoryList();
+		Map<String, AdditionalFilterCategory> additonalFilterMap = additionalFilterCategoryList.stream()
+				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
+		when(filterHelperService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
+
+	}
+
+	private List<AdditionalFilterCapacity> createAdditionalFilter() {
+
+		List<AdditionalFilterCapacity>  additionalFilterCapacityList= new ArrayList<>();
+		AdditionalFilterCapacity additionalFilterCapacity= new AdditionalFilterCapacity();
+		additionalFilterCapacity.setFilterId("sqd");
+		List<LeafNodeCapacity> leafNodeCapacityList= new ArrayList<>();
+		leafNodeCapacityList.add(new LeafNodeCapacity("filterId1",50D));
+		leafNodeCapacityList.add(new LeafNodeCapacity("filterId2",40D));
+		leafNodeCapacityList.add(new LeafNodeCapacity("filterId3",60D));
+		additionalFilterCapacity.setNodeCapacityList(leafNodeCapacityList);
+		additionalFilterCapacityList.add(additionalFilterCapacity);
+
+		return additionalFilterCapacityList;
 	}
 
 	private AssigneeCapacity createAssigneeData(String userId, String userName, double planned, double leaves) {
@@ -385,4 +419,19 @@ public class CapacityMasterServiceImplTest {
 		kanbanCapacityAssignee.setBasicProjectConfigId(new ObjectId("65eec0156f35b0294eb765f6"));
 		assertNotNull(capacityMasterServiceImpl.processCapacityData(kanbanCapacityAssignee));
 	}
+
+	@Test
+	public void testSaveAdditionalFilterCapacity_EmptyList() throws Exception {
+		//List<AdditionalFilterCapacity> additionalFilterCapacityList= new ArrayList<>();
+		//when(scrumCapacityMaster.getAdditionalFilterCapacityList()).thenReturn(additionalFilterCapacityList);
+
+		Method method = CapacityMasterServiceImpl.class.getDeclaredMethod("saveAdditionalFilterCapacity", CapacityMaster.class);
+		method.setAccessible(true);
+
+		@SuppressWarnings("unchecked")
+		List<AdditionalFilterCapacity> result = (List<AdditionalFilterCapacity>) method.invoke(capacityMasterServiceImpl, scrumCapacityMaster);
+
+		assertNotNull(String.valueOf(result), "The result should be null when the input list is empty.");
+	}
+
 }
