@@ -499,45 +499,49 @@ export class JiraConfigComponent implements OnInit {
 
 
   fetchBoards(self) {
-    if (self.selectedConnection && self.selectedConnection.id) {
-      if (self.toolForm.controls['projectKey'].dirty && self.toolForm.controls['projectKey'].value && self.toolForm.controls['projectKey'].value.length) {
-        const postData = {};
-        self.isLoading = true;
-        postData['connectionId'] = self.selectedConnection.id;
-        postData['projectKey'] = self.toolForm.controls['projectKey'].value;
-        postData['boardType'] = self.selectedProject['Type'];
-        self.http.getAllBoards(postData).subscribe((response) => {
-          if (response && response['data']) {
-            self.boardsData = response['data'];
-            self.boardsData.forEach((board) => {
-              board['projectKey'] = self.toolForm.controls['projectKey'].value;
-            });
-            // if boards already has value
-            if (self.toolForm.controls['boards'].value.length) {
-              self.toolForm.controls['boards'].value.forEach((val) => {
-                self.boardsData = self.boardsData.filter((data) => (data.boardId + '') !== (val.boardId + ''));
-              });
-            }
-          } else {
-            self.messenger.add({
-              severity: 'error',
-              summary:
-                'No boards found for the selected Project Key.',
-            });
-            self.boardsData = [];
-            self.toolForm.controls['boards'].setValue([]);
-          }
-          self.isLoading = false;
-        });
-      }
-    } else {
+    if (!self.selectedConnection?.id || !self.toolForm.controls['projectKey'].dirty || !self.toolForm.controls['projectKey'].value?.length) {
       self.toolForm.controls['projectKey'].setValue('');
       self.messenger.add({
         severity: 'error',
-        summary:
-          'Select Connection first.',
+        summary: 'Select Connection first.',
       });
+      return;
     }
+
+    const postData = {
+      connectionId: self.selectedConnection.id,
+      projectKey: self.toolForm.controls['projectKey'].value,
+      boardType: self.selectedProject['Type']
+    };
+
+    self.isLoading = true;
+    self.http.getAllBoards(postData).subscribe((response) => {
+      if (!(response && response['data'])) {
+        self.messenger.add({
+          severity: 'error',
+          summary:
+            'No boards found for the selected Project Key.',
+        });
+        self.boardsData = [];
+        self.toolForm.controls['boards'].setValue([]);
+        self.isLoading = false;
+        return;
+      }
+
+      self.boardsData = response['data'];
+      self.boardsData.forEach((board) => {
+        board['projectKey'] = self.toolForm.controls['projectKey'].value;
+      });
+
+      // If boards already has value
+      if (self.toolForm.controls['boards'].value.length) {
+        self.toolForm.controls['boards'].value.forEach((val) => {
+          self.boardsData = self.boardsData.filter((data) => (data.boardId + '') !== (val.boardId + ''));
+        });
+      }
+
+      self.isLoading = false;
+    });
   };
 
   fetchTeams(self) {

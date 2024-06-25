@@ -653,7 +653,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
         });
     } else {
-
       this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
         .subscribe(getData => {
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
@@ -725,20 +724,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
-
-          if (localVariable['kpi997']) {
-            if (localVariable['kpi997'].trendValueList && localVariable['kpi997'].xAxisValues) {
-                localVariable['kpi997'].trendValueList.forEach(trendElem => {
-                    trendElem.value.forEach(valElem => {
-                        if (valElem.value.length === 5 && localVariable['kpi997'].xAxisValues.length === 5) {
-                            valElem.value.forEach((element, index) => {
-                                element['xAxisTick'] = localVariable['kpi997'].xAxisValues[index];
-                            });
-                        }
-                    });
+          const kpi997 = localVariable['kpi997'];
+          if (kpi997 && kpi997.trendValueList && kpi997.xAxisValues && kpi997.xAxisValues.length === 5) {
+            kpi997.trendValueList.forEach(trendElem => {
+              trendElem.value
+                .filter(valElem => valElem.value.length === 5)
+                .forEach((valElem, index) => {
+                  valElem.value['xAxisTick'] = kpi997.xAxisValues[index];
                 });
-            }
-        }
+            });
+          }
 
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(localVariable);
@@ -1350,24 +1345,19 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   checkIfDataPresent(data) {
     let dataCount = 0;
-    for (let i = 0; i < data?.length; i++) {
-      if (data[i]?.data && !isNaN(parseInt(data[i]?.data))) {
-        dataCount += data[i]?.data;
-        if (parseInt(dataCount + '') > 0) {
-          return true;
-        }
-      } else if (data[i].value && !isNaN(parseInt(data[i]?.value[0]?.data))) {
-        for (let j = 0; j < data[i]?.value?.length; j++) {
-          dataCount += data[i]?.value[j]?.data;
-          if (parseInt(dataCount + '') > 0) {
-            return true;
+    data?.forEach(item => {
+      if (item?.data && !isNaN(parseInt(item?.data))) {
+        dataCount += item?.data;
+      } else if (item.value) {
+        item?.value?.forEach(val => {
+          if (!isNaN(parseInt(val?.data))) {
+            dataCount += val?.data;
           }
-        }
+        });
       }
-    }
-    return false;
+    });
+    return parseInt(dataCount + '') > 0;
   }
-
 
   evalvateExpression(element, aggregatedArr, filteredArr) {
 
@@ -1394,22 +1384,23 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
 
   generateColorObj(kpiId, arr) {
-    const finalArr = [];
-    if (arr?.length > 0) {
-      this.chartColorList[kpiId] = [];
-      for (let i = 0; i < arr?.length; i++) {
-        for (const key in this.colorObj) {
-          if (kpiId == 'kpi17') {
-            if (this.colorObj[key]?.nodeName == arr[i].value[0].sprojectName) {
-              this.chartColorList[kpiId].push(this.colorObj[key]?.color);
-              finalArr.push(JSON.parse(JSON.stringify(arr[i])));
-            }
+    // If the arr is empty, return an empty array
+    if (!arr?.length) return [];
 
-          } else if (this.colorObj[key]?.nodeName == arr[i]?.data) {
-            this.chartColorList[kpiId].push(this.colorObj[key]?.color);
-            finalArr.push(arr.filter((a) => a.data === this.colorObj[key].nodeName)[0]);
-          }
+    const finalArr = [];
+    this.chartColorList[kpiId] = [];
+
+    for (let i = 0; i < arr?.length; i++) {
+      for (const key in this.colorObj) {
+        if (kpiId == 'kpi17' && this.colorObj[key]?.nodeName == arr[i].value[0].sprojectName) {
+          this.chartColorList[kpiId].push(this.colorObj[key]?.color);
+          finalArr.push(JSON.parse(JSON.stringify(arr[i])));
         }
+        else if (this.colorObj[key]?.nodeName == arr[i]?.data) {
+          this.chartColorList[kpiId].push(this.colorObj[key]?.color);
+          finalArr.push(arr.filter((a) => a.data === this.colorObj[key].nodeName)[0]);
+        }
+        else continue;
       }
     }
     return finalArr;
