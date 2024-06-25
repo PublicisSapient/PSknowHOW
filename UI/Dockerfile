@@ -23,7 +23,7 @@ ENV PID_LOC="/run/nginx" \
     CERT_LOC="/etc/ssl/certs"
 
 # Create necessary directories
-RUN mkdir -p ${PID_LOC}  ${UI2_LOC} && rm -f ${CONF_LOC}/default.conf ${HTML_LOC}index.html
+RUN mkdir -p ${PID_LOC}  ${UI2_LOC} && rm -f ${CONF_LOC}/default.conf ${HTML_LOC}index.html && touch /var/run/nginx.pid
 
 # Copy files
 COPY nginx/files/nginx-dev.conf /tmp/nginx_dev.conf
@@ -46,6 +46,7 @@ RUN chown -R $USER:$USER ${CONF_LOC} \
     && chown -R $USER:$USER /var/log/ \
     && chown -R $USER:$USER /var/cache/ \
     && chown -R $USER:$USER /var/lib/ \
+    && chown $USER:$USER /var/run/nginx.pid \
     && chown -R $USER:$USER /tmp/ \
     && apk add --no-cache libcap \
     && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
