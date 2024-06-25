@@ -352,8 +352,7 @@ export class MilestoneComponent implements OnInit {
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
       if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList) && filters && Object.keys(filters)?.length > 0) {
         this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
-      }
-      else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
+      } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
@@ -661,25 +660,20 @@ export class MilestoneComponent implements OnInit {
   handleTabChange(event) {
     this.activeIndex = event.index;
   }
-
   checkIfDataPresent(data) {
     let dataCount = 0;
-    for(let i = 0; i<data?.length; i++){
-      if(data[i]?.data && !isNaN(parseInt(data[i]?.data))) {
-        dataCount += data[i]?.data;
-        if(parseInt(dataCount + '') > 0) {
-          return true;
-        }
-      } else if(data[i].value && !isNaN(parseInt(data[i]?.value[0]?.data))) {
-        for(let j = 0; j < data[i]?.value?.length; j++){
-          dataCount += data[i]?.value[j]?.data;
-          if(parseInt(dataCount + '') > 0) {
-            return true;
+    data?.forEach(item => {
+      if (item?.data && !isNaN(parseInt(item?.data))) {
+        dataCount += item?.data;
+      } else if (item.value) {
+        item?.value?.forEach(val => {
+          if (!isNaN(parseInt(val?.data))) {
+            dataCount += val?.data;
           }
-        }
+        });
       }
-    }
-    return false;
+    });
+    return parseInt(dataCount + '') > 0;
   }
 
   /** unsubscribing all Kpi Request  */

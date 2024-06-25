@@ -166,14 +166,16 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
       return { ...x, count: 0 };
     });
-    for (let i = 0; i < this.upDatedConfigData?.length; i++) {
-      let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
+
+    this.upDatedConfigData?.forEach(data => {
+      let board = data?.kpiDetail.kpiSubCategory;
       let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
-      if (idx != -1) {
+      if (idx !== -1) {
         this.navigationTabs[idx]['count']++;
-        this.navigationTabs[idx]['kpis'].push(this.upDatedConfigData[i]);
+        this.navigationTabs[idx]['kpis'].push(data);
       }
-    }
+    });
+
     if (this.commitmentReliabilityKpi?.isEnabled) {
       this.navigationTabs[0]['count']++;
     }
