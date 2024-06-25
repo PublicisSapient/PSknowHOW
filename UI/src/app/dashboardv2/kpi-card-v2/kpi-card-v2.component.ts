@@ -71,43 +71,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() colors;
   colorCssClassArray = ['sprint-hover-project1', 'sprint-hover-project2', 'sprint-hover-project3', 'sprint-hover-project4', 'sprint-hover-project5', 'sprint-hover-project6'];
   commentDialogRef: DynamicDialogRef | undefined;
+  disableSettings: boolean = false;
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService) { }
 
   ngOnInit(): void {
-    this.menuItems = [
-      {
-        label: 'Settings',
-        icon: 'fas fa-cog',
-        command: () => {
-          this.onOpenFieldMappingDialog();
-        },
-      },
-      {
-        label: 'List View',
-        icon: 'pi pi-align-justify',
-        command: ($event) => {
-          this.prepareData();
-        },
-      },
-      {
-        label: 'Explore',
-        icon: 'pi pi-table',
-        command: () => {
-          this.exportToExcel();
-        }
-      },
-      {
-        label: 'Comments',
-        icon: 'pi pi-comments',
-        command: ($event) => {
-          this.showComments = true;
-          this.openCommentModal();
-        },
-      }
-    ];
-
+  
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
       if (Object.keys(x)?.length > 1) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
@@ -159,13 +129,50 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     /** assign 1st value to radio button by default */
     if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
       this.radioOption = this.dropdownArr[0]?.options[0];
-      console.log(this.dropdownArr[0]?.options);
     }
+  }
+
+  initializeMenu() {
+    this.menuItems = [
+      {
+        label: 'Settings',
+        icon: 'fas fa-cog',
+        command: () => {
+          this.onOpenFieldMappingDialog();
+        },
+        disabled: this.disableSettings
+      },
+      {
+        label: 'List View',
+        icon: 'pi pi-align-justify',
+        command: ($event) => {
+          this.prepareData();
+        },
+        disabled: this.selectedTab === 'release'
+      },
+      {
+        label: 'Explore',
+        icon: 'pi pi-table',
+        command: () => {
+          this.exportToExcel();
+        }
+      },
+      {
+        label: 'Comments',
+        icon: 'pi pi-comments',
+        command: ($event) => {
+          this.showComments = true;
+          this.openCommentModal();
+        },
+      }
+    ];
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.userRole = this.authService.getRole();
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
+    this.disableSettings = this.colors && Object.keys(this.colors)?.length > 1;
+    this.initializeMenu();
   }
 
   openCommentModal = () => {

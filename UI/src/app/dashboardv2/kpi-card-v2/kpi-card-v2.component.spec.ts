@@ -46,7 +46,7 @@ describe('KpiCardV2Component', () => {
     "jiraDefectDroppedStatus": [],
     "epicCostOfDelay": "customfield_58102",
     "epicRiskReduction": "customfield_58101",
-   
+
   };
 
   beforeEach(async () => {
@@ -397,27 +397,27 @@ describe('KpiCardV2Component', () => {
     expect(component.fieldMappingMetaData).not.toBeNull();
   });
 
-  it('should handle filter change for radio',()=>{
-    const spy = spyOn(component.optionSelected,'emit');
-    component.handleChange('radio','Story Points');
+  it('should handle filter change for radio', () => {
+    const spy = spyOn(component.optionSelected, 'emit');
+    component.handleChange('radio', 'Story Points');
     expect(spy).toHaveBeenCalledWith('Story Points');
   });
 
-  it('should handle filter change for single select',()=>{
+  it('should handle filter change for single select', () => {
     const filterOptionsingle = {
       filter1: [{}]
     };
-    component.filterOptions ={};
-    const spy = spyOn(component.optionSelected,'emit');
-    component.handleChange('single',undefined);
+    component.filterOptions = {};
+    const spy = spyOn(component.optionSelected, 'emit');
+    component.handleChange('single', undefined);
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should handle filter change for multi select',()=>{
-    const filterOptionMulti ={filter1 : ['P1','P2']};
+  it('should handle filter change for multi select', () => {
+    const filterOptionMulti = { filter1: ['P1', 'P2'] };
     component.filterOptions = filterOptionMulti;
-    const spy = spyOn(component.optionSelected,'emit');
-    component.handleChange('multi',undefined);
+    const spy = spyOn(component.optionSelected, 'emit');
+    component.handleChange('multi', undefined);
     expect(spy).toHaveBeenCalledWith(filterOptionMulti);
   });
 
@@ -462,7 +462,7 @@ describe('KpiCardV2Component', () => {
       shown: true
     };
 
-    const response = { kpi3: ['default'],action : "update" };
+    const response = { kpi3: ['default'], action: "update" };
     sharedService.setKpiSubFilterObj(response);
     component.ngOnInit();
     tick();
@@ -470,18 +470,22 @@ describe('KpiCardV2Component', () => {
   }));
 
   it('should set menuItems correctly', () => {
-    component.ngOnInit();
 
+    component.selectedTab = 'release';
+    component.colors = {};
+    component.ngOnChanges({});
     expect(component.menuItems).toEqual([
       {
         label: 'Settings',
         icon: 'fas fa-cog',
         command: jasmine.any(Function),
+        disabled: false
       },
       {
         label: 'List View',
         icon: 'pi pi-align-justify',
         command: jasmine.any(Function),
+        disabled: true
       },
       {
         label: 'Explore',
@@ -509,7 +513,7 @@ describe('KpiCardV2Component', () => {
     // const selectedFilterOptionObsSpy = spyOn(sharedService,'setKpiSubFilterObj').and.callFake(()=>of(selectedFilterOptionObs));
 
     component.ngOnInit();
-    
+
     // expect(selectedFilterOptionObsSpy).toHaveBeenCalled();
     // expect(component.filterOptions).toEqual({
     //   filter1: ['Overall'],
