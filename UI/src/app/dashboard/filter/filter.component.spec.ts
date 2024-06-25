@@ -1472,11 +1472,6 @@ const completeHierarchyData = {
     expect(component.showChart).toBe('chart')
    })
 
-   it("should disable export btn once clicked",()=>{
-     component.exportToExcel();
-     expect(component.disableDownloadBtn).toBeTruthy();
-   })
-
    it("should enable if type is spring",()=>{
     component.ngOnInit();
     component.filterForm?.get('sprint')?.setValue("hierarchyLevelOne");

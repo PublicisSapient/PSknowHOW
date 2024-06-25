@@ -336,6 +336,8 @@ public final class CommonConstant {
 	public static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
 	public static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; // NOSONAR
+    public static final String PARENT_STORY_ID = "parentStoryId";
+	public static final String NUMBER = "number";
 
 	//-- auth-N-auth changes ends here --
 
