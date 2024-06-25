@@ -18,7 +18,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   selectedType: string = '';
   subscriptions: any[] = [];
 
-  constructor(private httpService: HttpService, private sharedService: SharedService, public messageService: MessageService, private router: Router) {
+  constructor(private httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router) {
   }
 
   ngOnInit(): void {
@@ -51,18 +51,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
               label: obj['boardName'],
               slug: obj['boardSlug'],
               command: () => {
-                this.selectedTab = obj['boardSlug'];
-                if (this.selectedTab !== 'unauthorized access') {
-                  if (obj['boardName'].toLowerCase() === 'kpi maturity') {
-                    setTimeout(() => {
-                      this.sharedService.setDashConfigData(getDashConfData.data);
-                    }, 100);
-                  }
-                  setTimeout(() => {
-                    this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
-                  }, 100);
-                }
-                this.router.navigate(['/dashboard/' + obj['boardSlug']]);
+                this.handleMenuTabFunctionality(obj)
               },
             };
           });
@@ -76,6 +65,21 @@ export class NavNewComponent implements OnInit, OnDestroy {
         });
       },
     );
+  }
+
+  handleMenuTabFunctionality(obj) {
+    this.selectedTab = obj['boardSlug'];
+    if (this.selectedTab !== 'unauthorized access') {
+      if (obj['boardName'].toLowerCase() === 'kpi maturity') {
+        setTimeout(() => {
+          this.sharedService.setDashConfigData(getDashConfData.data);
+        }, 100);
+      }
+      setTimeout(() => {
+        this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+      }, 100);
+    }
+    this.router.navigate(['/dashboard/' + obj['boardSlug']]);
   }
 
 }

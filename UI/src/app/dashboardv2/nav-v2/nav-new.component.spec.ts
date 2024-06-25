@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { NavNewComponent } from './nav-new.component';
 
 import { RouterTestingModule } from '@angular/router/testing';
@@ -13,6 +13,9 @@ import { HttpService } from '../../services/http.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
+import { Routes } from '@angular/router';
+import { ExecutiveV2Component } from '../executive-v2/executive-v2.component';
+import { MaturityComponent } from 'src/app/dashboard/maturity/maturity.component';
 
 const getDashConfData = require('../../../test/resource/boardConfigNew.json');
 
@@ -24,11 +27,20 @@ describe('NavNewComponent', () => {
   let sharedService: SharedService;
   let helperService: HelperService;
   let messageService: MessageService;
+  let mockRouter;
 
   beforeEach(async () => {
+
+    const routes: Routes = [
+      { path: 'dashboard/mydashboard', component: ExecutiveV2Component },
+      { path: 'dashboard/dashboard', component: ExecutiveV2Component },
+      { path: 'dashboard/Maturity', component: MaturityComponent },
+    ];
+
+
     await TestBed.configureTestingModule({
       declarations: [NavNewComponent],
-      imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
+      imports: [RouterTestingModule.withRoutes(routes), HttpClientModule, BrowserAnimationsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
       providers: [SharedService, GetAuthService, HttpService, HelperService, CommonModule, DatePipe, MessageService,
@@ -44,6 +56,7 @@ describe('NavNewComponent', () => {
     sharedService = TestBed.inject(SharedService);
     helperService = TestBed.inject(HelperService);
     messageService = TestBed.inject(MessageService);
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     fixture.detectChanges();
   });
 
@@ -112,4 +125,43 @@ describe('NavNewComponent', () => {
       }
     ]);
   });
+
+
+  it('should set the selectedTab correctly', fakeAsync(() => {
+    const obj = { boardSlug: 'mydashboard', boardName: 'My KnowHOW' };
+    const setSelectedTypeOrTabRefreshSpy = spyOn(sharedService, 'setSelectedTypeOrTabRefresh');
+    // const navigateSpy = spyOn(mockRouter, 'navigate');
+    component.handleMenuTabFunctionality(obj);
+    // expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/mydashboard']);
+    tick(200);
+    expect(setSelectedTypeOrTabRefreshSpy).toHaveBeenCalledWith('mydashboard', 'scrum');
+  }
+  ));
+
+  it('should call setDashConfigData when boardName is "KPI Maturity"', fakeAsync(() => {
+    const obj = { boardSlug: 'Maturity', boardName: 'KPI Maturity' };
+    const setDashConfigDataSpy = spyOn(sharedService, 'setDashConfigData');
+    component.handleMenuTabFunctionality(obj);
+    tick(200);
+    expect(setDashConfigDataSpy).toHaveBeenCalled();
+  }
+  ));
+
+  it('should not call setDashConfigData when boardName is not "KPI Maturity"', fakeAsync(() => {
+    const obj = { boardSlug: 'dashboard', boardName: 'Other Board' };
+    const setDashConfigDataSpy = spyOn(sharedService, 'setDashConfigData');
+    component.handleMenuTabFunctionality(obj);
+    tick(200);
+    expect(setDashConfigDataSpy).not.toHaveBeenCalled();
+  }
+  ));
+
+  xit('should navigate to the correct route', fakeAsync(() => {
+    const obj = { boardSlug: 'Maturity', boardName: 'KPI Maturity' };
+
+    component.handleMenuTabFunctionality(obj);
+    tick(200);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/Maturity']);
+  }));
 });
+
