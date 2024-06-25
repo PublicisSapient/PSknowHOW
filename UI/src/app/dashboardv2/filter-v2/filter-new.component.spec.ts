@@ -13357,6 +13357,7 @@ describe('FilterNewComponent', () => {
     };
     component.selectedLevel = 'Level 1';
     component.selectedTab = 'Backlog';
+    component.selectedType = 'Type 1';
     component.filterDataArr = {
       'Type 1': {
         'Level 1': {},
