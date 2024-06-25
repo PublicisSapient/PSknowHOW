@@ -45,7 +45,6 @@ RUN chown -R $USER:$USER ${CONF_LOC} \
     && chown -R $USER:$USER /var/lib/ \
     && chown $USER:$USER /var/run/nginx.pid \
     && find /var -path /var/run/secrets -prune -o -exec chown $USER:$USER {} + \
-    && chown -R $USER:$USER /var/ \
     && chmod 777 /var/run/nginx.pid \
     && chown -R $USER:$USER /tmp/ \
     && apk add --no-cache libcap \
