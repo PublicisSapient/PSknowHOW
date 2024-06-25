@@ -171,7 +171,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.userRole = this.authService.getRole();
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
-    this.disableSettings =  Object.keys(this.colors)?.length > 1;
+    this.disableSettings = this.colors && Object.keys(this.colors)?.length > 1;
     this.initializeMenu();
   }
 
