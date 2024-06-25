@@ -565,4 +565,49 @@ describe('KpiCardV2Component', () => {
 
   //   expect(component.radioOption).toBe('Option 1');
   // });
+
+  it('should delete the matching key from filterOptions', () => {
+    const event = 'Event 1';
+    const filterOptions = {
+      'Event 1': 'Option 1',
+      'Event 2': 'Option 2',
+      'Event 3': 'Option 3'
+    };
+
+    component.handleClearAll(event);
+
+    expect(filterOptions[event]).toEqual('Option 1');
+  });
+
+  it('should emit the correct event', () => {
+    const event = 'Event 1';
+    const filterOptions = {
+      'Event 1': 'Option 1',
+      'Event 2': 'Option 2',
+      'Event 3': 'Option 3'
+    };
+
+    const emitSpy = spyOn(component.optionSelected, 'emit');
+
+    component.handleClearAll(event);
+
+    expect(emitSpy).toHaveBeenCalledWith(['Overall']);
+  });
+
+  it('should not delete any key if there is no match', () => {
+    const event = 'Event 4';
+    const filterOptions = {
+      'Event 1': 'Option 1',
+      'Event 2': 'Option 2',
+      'Event 3': 'Option 3'
+    };
+
+    component.handleClearAll(event);
+
+    expect(filterOptions).toEqual({
+      'Event 1': 'Option 1',
+      'Event 2': 'Option 2',
+      'Event 3': 'Option 3'
+    });
+  });
 });

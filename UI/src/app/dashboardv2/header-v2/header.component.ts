@@ -24,6 +24,8 @@ export class HeaderComponent implements OnInit {
   kpiListDataProjectLevel: any = {};
   kpiListData: any = {};
   lastVisitedFromUrl: string = '';
+  ifSuperUser: boolean = false;
+  ifProjectAdmin: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -40,7 +42,8 @@ export class HeaderComponent implements OnInit {
     this.activeItem = this.items[0];
 
     this.userDetails = this.sharedService.getCurrentUserDetails();
-
+    this.ifSuperUser = this.getAuthorizationService.checkIfSuperUser();
+    this.ifProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
     this.userMenuItems = [
       {
         label: 'Settings',
@@ -62,7 +65,7 @@ export class HeaderComponent implements OnInit {
 
   // when user would want to give access on project from notification list
   routeForAccess(type: string) {
-    if (this.getAuthorizationService.checkIfSuperUser() || this.getAuthorizationService.checkIfProjectAdmin()) {
+    if (this.ifSuperUser || this.ifProjectAdmin) {
       // this.isAdmin = true;
       switch (type) {
         case 'Project Access Request':

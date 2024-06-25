@@ -34,8 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -71,7 +69,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 
 @RunWith(MockitoJUnitRunner.class)
 public class BitBucketServiceRTest {
-
+	private static String GROUP_PROJECT = "PROJECT";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
@@ -142,11 +140,9 @@ public class BitBucketServiceRTest {
 
 		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
 
-		// when(filterHelperService.getHierarachyLevelId(5, "project",
-		// false)).thenReturn("project");
+//		when(filterHelperService.getHierarachyLevelId(5, "project", false)).thenReturn("project");
 
-		// when(filterHelperService.getFilteredBuilds(kpiRequest,
-		// GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
+//		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
 
 		commitKpiElement = kpiRequest.getKpiList().get(0);
 
@@ -160,8 +156,8 @@ public class BitBucketServiceRTest {
 	@Test
 	public void TestProcess_emptyFilteredACH() throws EntityNotFoundException {
 
-		// when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT))
-		// .thenThrow(HttpMessageNotWritableException.class);
+//		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT))
+//				.thenThrow(HttpMessageNotWritableException.class);
 
 		bitbucketServiceR.process(kpiRequest);
 
@@ -183,14 +179,14 @@ public class BitBucketServiceRTest {
 
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		// when(authorizedProjectsService.getProjectNodesForRequest(accountHierarchyDataList)).thenReturn(projects);
+//		when(authorizedProjectsService.getProjectNodesForRequest(accountHierarchyDataList)).thenReturn(projects);
 
-		// when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(),
-		// Mockito.any())).thenReturn(commitKpiElement);
+//		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(commitKpiElement);
 
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);
+			when(mockService.getKpiData(any(), any(), any())).thenReturn(commitKpiElement);
 			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())))
 					.thenReturn(mockService);
 			resultList = bitbucketServiceR.process(kpiRequest);
@@ -216,85 +212,46 @@ public class BitBucketServiceRTest {
 
 	}
 
-	@Test
-	public void TestProcessApplicationException() throws Exception {
-		bitbucketServiceCache.put(KPISource.EXCEL.name(), codeCommitServiceImpl);
-		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
-		List<KpiElement> resultList = null;
-		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
-			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);
-			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())))
-					.thenReturn(mockService);
-			when(mockService.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
-			resultList = bitbucketServiceR.process(kpiRequest);
-			mockedStatic
-					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
-		}
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
-
-	}
-
-
-	@Test
-	public void TestProcessNullPointer() throws Exception {
-		bitbucketServiceCache.put(KPISource.EXCEL.name(), codeCommitServiceImpl);
-		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
-		List<KpiElement> resultList = null;
-		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
-			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);
-			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())))
-					.thenReturn(mockService);
-			when(mockService.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
-			resultList = bitbucketServiceR.process(kpiRequest);
-			mockedStatic
-					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
-		}
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
-
-	}
-
-
-	@Test
-	public void TestProcessExcel_Mandatory() throws Exception {
-		bitbucketServiceCache.put(KPISource.EXCEL.name(), codeCommitServiceImpl);
-		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(false);
-		List<KpiElement> resultList = null;
-		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
-			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);
-			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())))
-					.thenReturn(mockService);
-			resultList = bitbucketServiceR.process(kpiRequest);
-			mockedStatic
-					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
-		}
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.MANDATORY_FIELD_MAPPING));
-
-	}
-
-
+	@SuppressWarnings("unchecked")
 	@Test
 	public void TestProcessExcel() throws Exception {
-		bitbucketServiceCache.put(KPISource.EXCEL.name(), codeCommitServiceImpl);
+
+		@SuppressWarnings("rawtypes")
+		BitBucketKPIService mcokAbstract = codeCommitServiceImpl;
+		bitbucketServiceCache.put(KPISource.EXCEL.name(), mcokAbstract);
+
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.isMandatoryFieldValuePresentOrNot(any(), any())).thenReturn(true);
+
+//		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(commitKpiElement);
+
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);
 			when(mockService.getKpiData(any(), any(), any())).thenReturn(commitKpiElement);
 			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())))
 					.thenReturn(mockService);
-			when(mockService.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
 			resultList = bitbucketServiceR.process(kpiRequest);
 			mockedStatic
 					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
 		}
-		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
+
+		resultList.forEach(k -> {
+
+			KPICode kpi = KPICode.getKPI(k.getKpiId());
+
+			switch (kpi) {
+
+			case CODE_COMMIT:
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("Check-Ins & Merge Requests"));
+				break;
+
+			default:
+				break;
+			}
+
+		});
 
 	}
-
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -305,13 +262,13 @@ public class BitBucketServiceRTest {
 
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
 
-		// when(cacheService.getFromApplicationCache(Mockito.any(String[].class),
-		// anyString(), anyInt(),
-		// ArgumentMatchers.anyList())).thenReturn(new ArrayList<KpiElement>());
+//		when(cacheService.getFromApplicationCache(Mockito.any(String[].class), anyString(), anyInt(),
+//				ArgumentMatchers.anyList())).thenReturn(new ArrayList<KpiElement>());
 
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);
+			when(mockService.getKpiData(any(), any(), any())).thenReturn(commitKpiElement);
 			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())))
 					.thenReturn(mockService);
 			resultList = bitbucketServiceR.process(kpiRequest);

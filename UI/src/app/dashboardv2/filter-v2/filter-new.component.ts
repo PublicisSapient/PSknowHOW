@@ -344,7 +344,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
         }
       } else {
-        this.filterApplyData['ids'] =  [...new Set(event.map((proj) => proj.nodeId))];
+        this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
         this.filterApplyData['startDate'] = '';
         this.filterApplyData['endDate'] = '';
         this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
@@ -366,7 +366,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         const endDateFormatted = this.formatDate(event[0].sprintEndDate);
         this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
         console.log(event[0])
-        if(JSON.stringify(event[0]) !== '{}') {
+        if (JSON.stringify(event[0]) !== '{}') {
           this.additionalData = true;
         } else {
           this.additionalData = false;
@@ -414,7 +414,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     // if Additional Filters are selected
     if (this.filterApplyData['level'] <= 4) return;
     if (this.selectedTab?.toLowerCase() === 'backlog') {
-      this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
+      this.filterApplyData['selectedMap']['sprint']?.push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
     }
 
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
@@ -457,17 +457,20 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
       let allFilters = this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName];
       selectedProjectIds.forEach(nodeId => {
-
-        this.additionalFiltersArr['filter' + (index + 1)].push(...allFilters.filter((filterItem) => {
-          let parentId = '';
-          if (addtnlFilter.defaultLevel.labelName === 'sqd' && !this.kanban) {
-            parentId = filterItem.parentId.substring(filterItem.parentId.indexOf('_') + 1, filterItem.parentId.length)
-          } else {
-            parentId = filterItem.parentId;
-          }
-          return parentId === nodeId
-        })
-        );
+        if (allFilters?.length) {
+          this.additionalFiltersArr['filter' + (index + 1)].push(...allFilters?.filter((filterItem) => {
+            let parentId = '';
+            if (addtnlFilter.defaultLevel.labelName === 'sqd' && !this.kanban) {
+              parentId = filterItem.parentId.substring(filterItem.parentId.indexOf('_') + 1, filterItem.parentId.length)
+            } else {
+              parentId = filterItem.parentId;
+            }
+            return parentId === nodeId
+          })
+          );
+        } else {
+          this.additionalFiltersArr['filter' + (index + 1)] = [];
+        }
       });
 
       // make arrays unique
@@ -480,7 +483,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       for (let uniqueId of uniqueIdsArr) {
         let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)].filter(f => f.nodeId === uniqueId)[0];
         uniqueObjArr.push({
-            ...uniqueObj
+          ...uniqueObj
         });
         // continue;
       }

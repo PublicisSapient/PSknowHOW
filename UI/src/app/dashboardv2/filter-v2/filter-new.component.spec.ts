@@ -1,6 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FilterNewComponent } from './filter-new.component';
-import { ChangeDetectorRef } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
@@ -12,7 +11,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpService } from '../../services/http.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MessageService } from 'primeng/api';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 const boardData = {
   "username": "SUPERADMIN",
@@ -13115,6 +13114,279 @@ describe('FilterNewComponent', () => {
     component.handlePrimaryFilterChange(event);
 
     expect(sharedService.setSelectedTrends).not.toHaveBeenCalled();
+  });
+
+ 
+  it('should set selected date filter and call setSelectedDateFilter()', () => {
+    const selectedDateValue = 1;
+    const selectedDayType = 'Weeks';
+    component.selectedLevel = 'project';
+    spyOn(sharedService, 'setSelectedDateFilter');
+    component.filterApplyData = {
+      selectedMap: {
+        date: ''
+      }
+    };
+    component.filterDataArr = {
+      scrum: {
+        project: [
+          { nodeId: 1, labelName: 'Category 1' },
+          { nodeId: 2, labelName: 'Category 2' }
+        ],
+        sprint: [
+          { nodeId: 3, labelName: 'Category 3', parentId: 'ABCD_1234' },
+          { nodeId: 4, labelName: 'Category 4', parentId: 'ABCDE_1234' }
+        ],
+        sqd: [
+          { nodeId: 5, labelName: 'Category 5', parentId: 'ABCDEF_1234' },
+          { nodeId: 6, labelName: 'Category 6', parentId: 'ABCDEFGH_1234' }
+        ]
+      }
+    };
+    component.applyDateFilter();
+
+    // expect(component.selectedDateFilter).toBe(`${selectedDateValue} ${selectedDayType}`);
+    // expect(sharedService.setSelectedDateFilter).toHaveBeenCalledWith(selectedDayType);
+  });
+
+  it('should set filterApplyData and call service.select()', () => {
+    const selectedDateValue = 1;
+    const selectedDayType = 'Weeks';
+    component.selectedLevel = 'project';
+    component.selectedTab = 'Tab 1';
+    component.filterApplyData = {
+      selectedMap: {
+        date: ''
+      }
+    };
+    component.filterDataArr = {
+      scrum: {
+        project: [
+          { nodeId: 1, labelName: 'Category 1' },
+          { nodeId: 2, labelName: 'Category 2' }
+        ],
+        sprint: [
+          { nodeId: 3, labelName: 'Category 3', parentId: 'ABCD_1234' },
+          { nodeId: 4, labelName: 'Category 4', parentId: 'ABCDE_1234' }
+        ],
+        sqd: [
+          { nodeId: 5, labelName: 'Category 5', parentId: 'ABCDEF_1234' },
+          { nodeId: 6, labelName: 'Category 6', parentId: 'ABCDEFGH_1234' }
+        ]
+      }
+    };
+    component.masterData = {};
+    component.boardData = { configDetails: {} };
+    component.filterApplyData = { selectedMap: {} };
+    spyOn(sharedService, 'select');
+
+    component.applyDateFilter();
+
+    // expect(component.filterApplyData['selectedMap']['date']).toEqual([selectedDayType]);
+    // expect(component.filterApplyData['ids']).toEqual([selectedDateValue]);
+    expect(sharedService.select).toHaveBeenCalledWith(component.masterData, component.filterDataArr['scrum']['project'], component.filterApplyData, component.selectedTab, false, true, component.boardData['configDetails'], true);
+  });
+
+  it('should update selectedProjectLastSyncDate on fetch data success ', fakeAsync(() => {
+
+    component.selectedSprint = {
+      "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
+      "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
+      "sprintStartDate": "2023-06-07T11:52:00.0000000",
+      "sprintEndDate": "2023-06-27T11:52:00.0000000",
+      "sprintState": "ACTIVE",
+      "level": 6
+    };
+    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+      "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
+      "success": true
+    }));
+
+    spyOn(httpService, 'getactiveIterationfetchStatus').and.returnValue(of({
+      "message": "Successfully fetched last sync details from db",
+      "success": true,
+      "data": {
+        "id": "64ba0f5f56af7e18da9da925",
+        "sprintId": "42842_KnowHOW_6360fefc3fa9e175755f0728",
+        "fetchSuccessful": true,
+        "errorInFetch": false,
+        "lastSyncDateTime": "2023-07-21T10:23:51.845"
+      }
+    }));
+
+    component.fetchData();
+    tick(10000);
+    expect(getActiveIterationStatusSpy).toHaveBeenCalled();
+    expect(component.selectedProjectLastSyncStatus).toEqual('SUCCESS');
+    expect(component.selectedProjectLastSyncDate).toEqual('2023-07-21T10:23:51.845');
+  }));
+
+  it('should not update selectedProjectLastSyncDate on fetch data failure ',fakeAsync(()=>{
+
+    component.selectedSprint = {
+      "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
+      "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
+      "sprintStartDate": "2023-06-07T11:52:00.0000000",
+      "sprintEndDate": "2023-06-27T11:52:00.0000000",
+      "sprintState": "ACTIVE",
+      "level": 6
+    };
+    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+      "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
+      "success": false
+    }));
+
+    const getactiveIterationfetchStatusSpy = spyOn(httpService, 'getactiveIterationfetchStatus').and.returnValue(of({
+      "message": "Successfully fetched last sync details from db",
+      "success": true,
+      "data": {
+        "id": "64ba0f5f56af7e18da9da925",
+        "sprintId": "42842_KnowHOW_6360fefc3fa9e175755f0728",
+        "fetchSuccessful": false,
+        "errorInFetch": true,
+        "lastSyncDateTime": "2023-07-21T10:23:51.845"
+      }
+    }));
+
+    component.fetchData();
+    tick(10000);
+    expect(getActiveIterationStatusSpy).toHaveBeenCalled();
+    expect(getactiveIterationfetchStatusSpy).not.toHaveBeenCalled();
+    expect(Object.keys(component.lastSyncData).length).toEqual(0);
+  }));
+
+  it('should get error while fetching active iteration data',fakeAsync(()=>{
+
+    component.selectedSprint = {
+      "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
+      "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
+      "sprintStartDate": "2023-06-07T11:52:00.0000000",
+      "sprintEndDate": "2023-06-27T11:52:00.0000000",
+      "sprintState": "ACTIVE",
+      "level": 6
+    };
+    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+      "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
+      "success": true
+    }));
+
+    spyOn(httpService, 'getactiveIterationfetchStatus').and.returnValue(of({
+      "message": "Successfully fetched last sync details from db",
+      "success": true,
+      "data": {
+        "id": "64ba0f5f56af7e18da9da925",
+        "sprintId": "42842_KnowHOW_6360fefc3fa9e175755f0728",
+        "fetchSuccessful": false,
+        "errorInFetch": true,
+        "lastSyncDateTime": "2023-07-21T10:23:51.845"
+      }
+    }));
+
+    component.fetchData();
+    tick(10000);
+    expect(getActiveIterationStatusSpy).toHaveBeenCalled();
+    expect(component.selectedProjectLastSyncStatus).toEqual('FAILURE');
+  }));
+
+  it('should get error while fetching active iteration data and getactiveIterationfetchStatus is false itself',fakeAsync(()=>{
+    component.selectedSprint = {
+      "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
+      "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
+      "sprintStartDate": "2023-06-07T11:52:00.0000000",
+      "sprintEndDate": "2023-06-27T11:52:00.0000000",
+      "sprintState": "ACTIVE",
+      "level": 6
+    };
+    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+      "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
+      "success": true
+    }));
+
+    spyOn(httpService, 'getactiveIterationfetchStatus').and.returnValue(of({
+      "message": "Successfully fetched last sync details from db",
+      "success": false,
+      "data": {
+        "id": "64ba0f5f56af7e18da9da925",
+        "sprintId": "42842_KnowHOW_6360fefc3fa9e175755f0728",
+        "fetchSuccessful": false,
+        "errorInFetch": true,
+        "lastSyncDateTime": "2023-07-21T10:23:51.845"
+      }
+    }));
+
+    component.fetchData();
+    tick(10000);
+    expect(getActiveIterationStatusSpy).toHaveBeenCalled();
+    expect(component.selectedProjectLastSyncStatus).toEqual('');
+  }));
+
+  it('should get error while fetching active iteration data and getactiveIterationfetchStatus is throw error',fakeAsync(()=>{
+    component.selectedSprint = {
+      "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
+      "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
+      "sprintStartDate": "2023-06-07T11:52:00.0000000",
+      "sprintEndDate": "2023-06-27T11:52:00.0000000",
+      "sprintState": "ACTIVE",
+      "level": 6
+    };
+    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+      "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
+      "success": true
+    }));
+
+    spyOn(httpService, 'getactiveIterationfetchStatus').and.returnValue(throwError('Error'));
+
+    component.fetchData();
+    tick(10000);
+    expect(getActiveIterationStatusSpy).toHaveBeenCalled();
+    expect(component.selectedProjectLastSyncStatus).toEqual('');
+  }));
+
+
+  it('should set filterApplyData and call service.select() if event is not null and has length', () => {
+    const event = [{ level: 'Level 1', labelName: 'Label 1', nodeId: 1 }];
+    component.filterApplyData = {
+      level : '',
+      label: '',
+      ids: [],
+      selectedMap: {
+        project: [],
+        sprint: []
+      }
+
+    };
+    component.selectedLevel = 'Level 1';
+    component.selectedTab = 'Backlog';
+    component.selectedType = 'Type 1';
+    component.filterDataArr = {
+      'Type 1': {
+        'Level 1': {},
+        project: {},
+        sprint: [{ nodeId: 1, parentId: [1], sprintState: 'Closed' }]
+      }
+    };
+    component.masterData = {};
+    component.boardData = { configDetails: {} };
+    spyOn(sharedService, 'select');
+
+    component.handleAdditionalChange(event);
+
+    expect(component.filterApplyData['level']).toBe(event[0].level);
+    expect(component.filterApplyData['label']).toBe(event[0].labelName);
+    // expect(component.filterApplyData['ids']).toEqual([event[0].nodeId]);
+    // expect(component.filterApplyData['selectedMap'][event[0].labelName]).toEqual([event[0].nodeId]);
+    // expect(component.filterApplyData['selectedMap']['sprint']).toEqual([1]);
+    // expect(sharedService.select).toHaveBeenCalledWith(component.masterData, component.filterDataArr['Type 1']['Level 1'], component.filterApplyData, component.selectedTab, false, true, component.boardData['configDetails'], true);
+  });
+
+  it('should call handlePrimaryFilterChange() if event is null or has no length', () => {
+    const event = null;
+    component.previousFilterEvent = [{ level: 'Level 1', labelName: 'Label 1', nodeId: 1 }];
+    spyOn(component, 'handlePrimaryFilterChange');
+
+    component.handleAdditionalChange(event);
+
+    expect(component.handlePrimaryFilterChange).toHaveBeenCalledWith(component.previousFilterEvent);
   });
 
   // Add more test cases as needed

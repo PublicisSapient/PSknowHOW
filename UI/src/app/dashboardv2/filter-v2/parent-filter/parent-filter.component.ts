@@ -46,14 +46,14 @@ export class ParentFilterComponent implements OnChanges {
 
       } else if (this['parentFilterConfig']['labelName'] !== 'Organization Level') {
         if (this.filterData && Object.keys(this.filterData).length) {
-          this.filterLevels = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()].map((item) => item.nodeName);
+          this.filterLevels = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()]?.map((item) => item.nodeName);
           this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
           this.stateFilters = this.helperService.getBackupOfFilterSelectionState('parent_level');
 
           setTimeout(() => {
             if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel) {
               if (this.stateFilters) {
-                this.selectedLevel = this.filterLevels.filter((level) => {
+                this.selectedLevel = this.filterLevels?.filter((level) => {
                   return level.toLowerCase() === this.stateFilters.toLowerCase()
                 })[0];
               } 
@@ -76,7 +76,7 @@ export class ParentFilterComponent implements OnChanges {
       this.onSelectedLevelChange.emit(this.selectedLevel.toLowerCase());
     } else {
       setTimeout(() => {
-        let selectedNode = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()].filter((filter) => filter.nodeName === this.selectedLevel);
+        let selectedNode = this.filterData[this['parentFilterConfig']['labelName']?.toLowerCase()].filter((filter) => filter.nodeName === this.selectedLevel);
         this.onSelectedLevelChange.emit({ nodeId: selectedNode[0].nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'],fullNodeDetails : selectedNode });
       }, 0);
     }

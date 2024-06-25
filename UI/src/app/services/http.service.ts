@@ -175,6 +175,7 @@ export class HttpService {
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
   private validateResourceUrl = this.baseUrl + '/api/validateResource';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
+  private getShowHideKpiNewUIUrl = this.baseUrl + '/api/user-board-config/getBoardConfig';
   private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
   constructor(
     private router: Router,
@@ -960,6 +961,11 @@ export class HttpService {
   /** show-Hide for other nav, filter component */
   getShowHideOnDashboard(payload){
     return this.http.post<any>(this.getShowHideKpiUrl + '/getConfig',payload);
+  }
+
+   /** show-Hide for other nav, filter component in New UI */
+   getShowHideOnDashboardNewUI(payload){
+    return this.http.post<any>(this.getShowHideKpiNewUIUrl,payload);
   }
 
   submitShowHideOnDashboard(data){

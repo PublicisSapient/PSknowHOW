@@ -15,24 +15,19 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.common.model.userboardconfig;
+package com.publicissapient.kpidashboard.apis.model;
 
-import java.util.List;
-
-import com.publicissapient.kpidashboard.common.model.application.Filters;
+import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfigDTO;
 import lombok.Data;
 
 /**
- * DTO of board
- * 
- * @author narsingh9
+ * DTO of userboardconfigdto and ConfigDetails
+ *
+ * @author purgupta2
  *
  */
 @Data
-public class BoardDTO {
-	private int boardId;
-	private String boardName;
-	private String boardSlug;
-	private List<BoardKpisDTO> kpis;
-	private Filters filters;
+public class UserBoardDTO {
+    private UserBoardConfigDTO userBoardConfigDTO;
+    private ConfigDetails configDetails;
 }
