@@ -106,6 +106,9 @@ export class SharedService {
   boardNamesListSubject = new BehaviorSubject<any>([]);
   boardNamesListObs = this.boardNamesListSubject.asObservable();
 
+  isRecommendationsEnabledSubject = new BehaviorSubject<boolean>(false);
+  isRecommendationsEnabledObs = this.isRecommendationsEnabledSubject.asObservable();
+
   constructor() {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
@@ -477,6 +480,10 @@ export class SharedService {
 
   setSprintForRnR(sprint){
     this.sprintForRnR = sprint;
+  }
+
+  setRecommendationsFlag(value: boolean) {
+    this.isRecommendationsEnabledSubject.next(value);
   }
 }
 

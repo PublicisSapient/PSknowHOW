@@ -68,6 +68,7 @@ export class DoraComponent implements OnInit {
   maturityObj = {};
   toolTipTop: number = 0;
   kpiList:Array<string> = [];
+  isRecommendationsEnabled: boolean = false;
 
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService) {
 
@@ -123,6 +124,11 @@ export class DoraComponent implements OnInit {
         this.noTabAccess = false;
       }
     });
+
+    /** Get recommendations flag */
+    this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
+      this.isRecommendationsEnabled = item;
+    }));
   }
 
   processKpiConfigData() {

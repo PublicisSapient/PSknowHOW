@@ -65,6 +65,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
   fullPageLoader: boolean = true;
   kpiTrendObject = {};
   kpiList:Array<string> = [];
+  isRecommendationsEnabled: boolean = false;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -124,6 +125,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
       this.noProjects = res;
        this.fullPageLoader = false;
+    }));
+
+    /** Get recommendations flag */
+    this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
+      this.isRecommendationsEnabled = item;
     }));
   }
   processKpiConfigData() {
