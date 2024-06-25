@@ -34,21 +34,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
@@ -64,7 +63,6 @@ import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -238,6 +236,7 @@ public class DefectCountByStatusServiceImpl extends JiraIterationKPIService {
 					DataCount priorityStatusData = new DataCount();
 					priorityStatusData.setData(String.valueOf(priorityStatusCount));
 					priorityStatusData.setValue(statusCountMap);
+
 					List<DataCount> dataCountList = new ArrayList<>();
 					dataCountList.add(priorityStatusData);
 					dataCountListForAllPriorities.add(priorityStatusData);
@@ -262,8 +261,10 @@ public class DefectCountByStatusServiceImpl extends JiraIterationKPIService {
 							latestSprint.getSprintFilter().getName(), fieldMapping);
 
 					kpiElement.setSprint(latestSprint.getName());
-					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_PIE_CHART.getColumns(List.of(latestSprint), cacheService,filterHelperService));
-					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_PIE_CHART.getColumns(List.of(latestSprint), cacheService,filterHelperService));
+					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_PIE_CHART
+							.getColumns(List.of(latestSprint), cacheService, filterHelperService));
+					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_PIE_CHART
+							.getColumns(List.of(latestSprint), cacheService, filterHelperService));
 					kpiElement.setExcelData(excelData);
 					sortedFilterDataList.add(filterDataList.stream()
 							.filter(iterationKpiValue -> iterationKpiValue.getFilter1()
