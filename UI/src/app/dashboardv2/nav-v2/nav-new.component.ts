@@ -41,10 +41,12 @@ export class NavNewComponent implements OnInit, OnDestroy {
   }
 
   getBoardConfig() {
-    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(
+    this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: [] }).subscribe(
       (response) => {
         if (response.success === true) {
-          this.sharedService.setDashConfigData(getDashConfData.data);
+          let data = response.data.userBoardConfigDTO;
+          data['configDetails'] = response.data.configDetails;
+          this.sharedService.setDashConfigData(data);
           this.items = response.data;
           this.items = [...getDashConfData.data['scrum'], ...getDashConfData.data['others']].map((obj, index) => {
             return {
