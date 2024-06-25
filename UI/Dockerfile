@@ -24,7 +24,7 @@ ENV PID_LOC="/run/nginx" \
     ENVIRONMENT="dev"
 
 # Create necessary directories
-RUN mkdir -p ${PID_LOC}  ${UI2_LOC} ${HTML_LOC}index.html && touch /var/run/nginx.pid
+RUN mkdir -p ${PID_LOC}  ${UI2_LOC} ${HTML_LOC}index.html
 
 # Copy files
 COPY nginx/files/nginx-dev.conf /tmp/nginx_dev.conf
