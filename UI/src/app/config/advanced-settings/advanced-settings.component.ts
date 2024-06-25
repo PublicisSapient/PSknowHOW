@@ -162,7 +162,7 @@ export class AdvancedSettingsComponent implements OnInit {
               }
           })
 
-          
+
           if(this.decideWhetherLoaderOrNot(that.findTraceLogForTool('Jira'))){
             that.jiraStatusContinuePulling = true;
             const runProcessorInput = {
@@ -175,7 +175,7 @@ export class AdvancedSettingsComponent implements OnInit {
             const jiraDAta = that.findTraceLogForTool('Jira');
             jiraDAta.executionOngoing = false;
           }
-          
+
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error in fetching processor\'s execution date. Please try after some time.' });
         }
@@ -238,7 +238,7 @@ export class AdvancedSettingsComponent implements OnInit {
     };;
     if (this.isProjectSelected()) {
       runProcessorInput['projects'] = [this.selectedProject['id']];
-    } 
+    }
     const pDetails = this.findTraceLogForTool(processorName)
     if(pDetails){
       pDetails['executionOngoing'] = true;
@@ -371,7 +371,7 @@ export class AdvancedSettingsComponent implements OnInit {
       const logs = jiraLogDetails.progressStatusList;
       const lastLOgTime = logs[logs.length-1].endTime;
       const currentTime = new Date().getTime();
-      var differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
+      const differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
       if(differenceInMilliseconds > 600000){
         return false;
       }else if(differenceInMilliseconds <= 600000){

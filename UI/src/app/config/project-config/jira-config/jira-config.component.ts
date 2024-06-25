@@ -2671,7 +2671,7 @@ export class JiraConfigComponent implements OnInit {
     value = value['name'] || value;
     if (value.toLowerCase() === 'customfield' && elementId === 'testAutomatedIdentification') {
       this.showFormElements(['testAutomated', 'jiraCanBeAutomatedTestValue']);
-    } if (value.toLowerCase() === 'labels' && elementId === 'testAutomatedIdentification') {
+    } else if (value.toLowerCase() === 'labels' && elementId === 'testAutomatedIdentification') {
       this.hideFormElements(['testAutomated']);
       this.showFormElements(['jiraCanBeAutomatedTestValue']);
     } else if (value.toLowerCase() === 'customfield' && elementId === 'testAutomationCompletedIdentification') {

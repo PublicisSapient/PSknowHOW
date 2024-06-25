@@ -7,7 +7,6 @@ import { Component, Input } from '@angular/core';
 })
 export class IssueBodyComponent {
   @Input() issueData;
-  constructor() { }
 
   convertToHoursIfTime(val, unit) {
     if (val === '-' || isNaN(val)) {
