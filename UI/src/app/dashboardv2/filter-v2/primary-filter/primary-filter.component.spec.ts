@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { PrimaryFilterComponent } from './primary-filter.component';
 
 import { RouterTestingModule } from '@angular/router/testing';
@@ -52,4 +52,200 @@ describe('PrimaryFilterComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should call applyDefaultFilters() when primaryFilterConfig, selectedType, and selectedLevel change', () => {
+    component.primaryFilterConfig = { labelName: 'Filter1' };
+    component.selectedType = 'Type1';
+    component.selectedLevel = 'Level1';
+    spyOn(component, 'applyDefaultFilters');
+
+    component.ngOnChanges({
+      primaryFilterConfig: {
+        currentValue: { labelName: 'Filter1' }, previousValue: null, firstChange: false,
+        isFirstChange: function (): boolean {
+          throw new Error('Function not implemented.');
+        }
+      },
+      selectedType: {
+        currentValue: 'Type1', previousValue: null, firstChange: false,
+        isFirstChange: function (): boolean {
+          throw new Error('Function not implemented.');
+        }
+      },
+      selectedLevel: {
+        currentValue: 'Level1', previousValue: null, firstChange: false,
+        isFirstChange: function (): boolean {
+          throw new Error('Function not implemented.');
+        }
+      }
+    });
+
+    expect(component.applyDefaultFilters).toHaveBeenCalled();
+  });
+
+  it('should populate filters and emit onPrimaryFilterChange when primaryFilterConfig, selectedType, or selectedLevel change', fakeAsync(() => {
+    component.primaryFilterConfig = { labelName: 'Filter1' };
+    component.selectedType = 'Type1';
+    component.selectedLevel = 'Level1';
+    component.filters = [{ nodeId: 1, nodeName: 'Node1' }];
+    component.filterData = {
+      Level1: [{ nodeId: 1, nodeName: 'Node1' }, { nodeId: 2, nodeName: 'Node2' }],
+      Level2: [{ nodeId: 3, nodeName: 'Node3' }]
+    };
+    spyOn(component, 'populateFilters');
+    spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue([{ nodeId: 1, nodeName: 'Node1' }]);
+    spyOn(helperService, 'setBackupOfFilterSelectionState');
+    spyOn(component.onPrimaryFilterChange, 'emit');
+    spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
+
+    component.ngOnChanges({
+      primaryFilterConfig: {
+        currentValue: { labelName: 'Filter1' }, previousValue: null, firstChange: true,
+        isFirstChange: function (): boolean {
+          throw new Error('Function not implemented.');
+        }
+      },
+      selectedType: {
+        currentValue: 'Type1', previousValue: null, firstChange: true,
+        isFirstChange: function (): boolean {
+          throw new Error('Function not implemented.');
+        }
+      },
+      selectedLevel: {
+        currentValue: 'Level1', previousValue: null, firstChange: true,
+        isFirstChange: function (): boolean {
+          throw new Error('Function not implemented.');
+        }
+      }
+    });
+    tick(200);
+    expect(component.populateFilters).toHaveBeenCalled();
+    expect(helperService.getBackupOfFilterSelectionState).toHaveBeenCalledWith('primary_level');
+    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ nodeId: 1, nodeName: 'Node1' }] });
+    expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([{ nodeId: 1, nodeName: 'Node1' }]);
+    expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
+  })
+  );
+
+  it('should populate filters based on selectedLevel when it is a string', () => {
+    component.selectedLevel = 'Level1';
+    component.filterData = {
+      Level1: [{ nodeId: 1, nodeName: 'Node1' }, { nodeId: 2, nodeName: 'Node2' }],
+      Level2: [{ nodeId: 3, nodeName: 'Node3' }]
+    };
+
+    component.primaryFilterConfig = {
+      "type": "multiSelect",
+      "defaultLevel": {
+        "labelName": "Level1",
+        "sortBy": null
+      }
+    };
+    spyOn(helperService, 'sortAlphabetically');
+
+    component.populateFilters();
+
+    expect(helperService.sortAlphabetically).toHaveBeenCalledTimes(1);
+    // expect(component.filters).toEqual([{ nodeId: 1, nodeName: 'Node1' }, { nodeId: 2, nodeName: 'Node2' }]);
+  });
+
+  it('should populate filters based on selectedLevel when it is an object', () => {
+    component.selectedLevel = { nodeId: 1, nodeType: 'Level1', emittedLevel: 'Level2' };
+    component.filterData = { level2: [{ nodeId: 1, nodeName: 'Node1', parentId: 1 }, { nodeId: 2, nodeName: 'Node2', parentId: 1 }] };
+    component.primaryFilterConfig = {
+      "type": "multiSelect",
+      "defaultLevel": {
+        "labelName": "Level1",
+        "sortBy": 'nodeName'
+      }
+    };
+    
+    spyOn(helperService, 'sortByField');
+
+    component.populateFilters();
+
+    expect(helperService.sortByField).toHaveBeenCalledWith([{ nodeId: 1, nodeName: 'Node1', parentId: 1 }, { nodeId: 2, nodeName: 'Node2', parentId: 1 }], ['nodeName']);
+  });
+
+  it('should populate filters with defaultLevel when selectedLevel is not provided', () => {
+    component.selectedLevel = null;
+    component.primaryFilterConfig = { defaultLevel: { sortBy: 'sortByField' } };
+    component.filterData = { project: [{ nodeId: 1, nodeName: 'Node1' }] };
+    spyOn(helperService, 'sortAlphabetically');
+
+    component.populateFilters();
+
+    expect(helperService.sortAlphabetically).toHaveBeenCalledWith([{ nodeId: 1, nodeName: 'Node1' }]);
+  });
+
+  it('should convert selectedFilters to an array if it is not already an array', () => {
+    component.selectedFilters = { nodeId: 1, nodeName: 'Node1' };
+    spyOn(helperService, 'setBackupOfFilterSelectionState');
+    spyOn(component.onPrimaryFilterChange, 'emit');
+    spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
+    
+    component.applyPrimaryFilters(null);
+
+    expect(component.selectedFilters).toEqual([{ nodeId: 1, nodeName: 'Node1' }]);
+    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ nodeId: 1, nodeName: 'Node1' }] });
+    expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([{ nodeId: 1, nodeName: 'Node1' }]);
+    expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
+  });
+
+  it('should not convert selectedFilters to an array if it is already an array', () => {
+    component.selectedFilters = [{ nodeId: 1, nodeName: 'Node1' }];
+    spyOn(helperService, 'setBackupOfFilterSelectionState');
+    spyOn(component.onPrimaryFilterChange, 'emit');
+    spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
+
+    component.applyPrimaryFilters(null);
+
+    expect(component.selectedFilters).toEqual([{ nodeId: 1, nodeName: 'Node1' }]);
+    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ nodeId: 1, nodeName: 'Node1' }] });
+    expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([{ nodeId: 1, nodeName: 'Node1' }]);
+    expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
+  });
+
+  it('should set selectedTrends and selectedLevel based on selectedLevel when it is a string', () => {
+    component.selectedLevel = 'Level1';
+    component.selectedFilters = [{ nodeId: 1, nodeName: 'Node1' }];
+    spyOn(sharedService, 'setSelectedTrends');
+    spyOn(sharedService, 'setSelectedLevel');
+
+    component.setProjectAndLevelBackupBasedOnSelectedLevel();
+
+    expect(sharedService.setSelectedTrends).toHaveBeenCalledWith([{ nodeId: 1, nodeName: 'Node1' }]);
+    expect(sharedService.setSelectedLevel).toHaveBeenCalledWith({ hierarchyLevelName: 'level1' });
+  });
+
+  it('should set selectedTrends and selectedLevel based on selectedLevel when it is an object', () => {
+    component.selectedLevel = { nodeId: 1, nodeType: 'Level1', emittedLevel: 'Level2', fullNodeDetails: [{ nodeId: 1, nodeName: 'Node1' }] };
+    spyOn(sharedService, 'setSelectedTrends');
+    spyOn(sharedService, 'setSelectedLevel');
+
+    component.setProjectAndLevelBackupBasedOnSelectedLevel();
+
+    expect(sharedService.setSelectedTrends).toHaveBeenCalledWith([{ nodeId: 1, nodeName: 'Node1' }]);
+    expect(sharedService.setSelectedLevel).toHaveBeenCalledWith({ hierarchyLevelName: 'level1' });
+  });
+
+  it('should populate filters, set selectedFilters, and call other methods after a delay', fakeAsync(() => {
+    component.populateFilters = jasmine.createSpy('populateFilters');
+    spyOn(helperService, 'setBackupOfFilterSelectionState');
+    spyOn(component, 'applyPrimaryFilters');
+    spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
+
+    component.applyDefaultFilters();
+    tick(100);
+
+    expect(component.populateFilters).toHaveBeenCalled();
+    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ ...component.filters[0] }] });
+    expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
+    expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
+  }));
+
+  // Add more test cases as needed
+
 });
+
+
