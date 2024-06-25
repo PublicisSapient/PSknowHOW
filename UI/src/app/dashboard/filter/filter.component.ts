@@ -319,7 +319,6 @@ export class FilterComponent implements OnInit, OnDestroy {
             ]
           }
         }
-        // this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
         this.service.setSelectedDateFilter(this.selectedDayType);
         this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
         this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
@@ -368,7 +367,6 @@ export class FilterComponent implements OnInit, OnDestroy {
         label: 'Settings',
         icon: 'fa fa-cog',
         command: () => {
-          // this.service.setSideNav(false);
           this.router.navigate(['/dashboard/Config/']);
         },
       });

@@ -348,25 +348,6 @@
   word-wrap: break-word;
 }
 
-:host ::ng-deep .p-inputtext {
-  font-family: Poppins_Regular, sans-serif;
-  font-size: 12px;
-}
-
-:host ::ng-deep .p-multiselect {
-  border: 1px solid #D5DBE1;
-}
-
-:host ::ng-deep .p-inputtext,
-:host ::ng-deep .p-multiselect .p-multiselect-label {
-  font-size: 0.75rem;
-}
-
-:host ::ng-deep .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
-  margin: 5px 0 0 0;
-  word-wrap: break-word;
-}
-
 :host ::ng-deep .p-menu.p-component.p-menu-overlay {
   left: unset !important;
   right: 10px !important;
