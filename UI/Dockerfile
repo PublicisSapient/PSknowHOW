@@ -40,15 +40,8 @@ RUN tar xvf ${HTML_LOC}${UI2_ASSETS_ARCHIVE} -C ${UI2_LOC} && tar xvf ${HTML_LOC
 # granting permission's
 RUN chown -R $USER:$USER ${CONF_LOC} \
     && chown -R $USER:$USER ${CERT_LOC} \
-    && chown -R $USER:$USER /var/log/ \
-    && chown -R $USER:$USER /var/cache/ \
-    && chown -R $USER:$USER /var/lib/ \
-    && chown $USER:$USER /var/run/nginx.pid \
-    && chown -R $USER:$USER /run \
     && find /var -path /var/run/secrets -prune -o -exec chown $USER:$USER {} + \
     && find /run -path /run/secrets -prune -o -exec chown -R $USER:$USER {} + \
-    && chmod 777 /var/run/nginx.pid \
-    && chown -R $USER:$USER /tmp/ \
     && apk add --no-cache libcap \
     && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
 
