@@ -20,7 +20,8 @@ ENV PID_LOC="/run/nginx" \
     UI2_ASSETS_ARCHIVE="ui2.tar" \
     ERRORPAGE_ASSETS_ARCHIVE="ErrorPage.tar" \
     ASSETS_ARCHIVE="*.tar" \
-    CERT_LOC="/etc/ssl/certs"
+    CERT_LOC="/etc/ssl/certs" \
+    ENVIRONMENT="dev"
 
 # Create necessary directories
 RUN mkdir -p ${PID_LOC}  ${UI2_LOC} && rm -f ${CONF_LOC}/default.conf ${HTML_LOC}index.html && touch /var/run/nginx.pid
@@ -32,25 +33,23 @@ COPY nginx/files/${ASSETS_ARCHIVE} ${HTML_LOC}
 COPY nginx/scripts/start_nginx.sh ${START_SCRIPT_LOC}/start_nginx.sh
 COPY nginx/files/certs/* ${CERT_LOC}/
 
-# Expose ports
-ENV ENVIRONMENT=dev
-
 # Extract assets
 RUN tar xvf ${HTML_LOC}${UI2_ASSETS_ARCHIVE} -C ${UI2_LOC} && tar xvf ${HTML_LOC}${ERRORPAGE_ASSETS_ARCHIVE} -C ${UI2_LOC} \
     && chmod +x ${START_SCRIPT_LOC}/start_nginx.sh && rm -f ${HTML_LOC}${ASSETS_ARCHIVE}
 
 # granting permission's
-
 RUN chown -R $USER:$USER ${CONF_LOC} \
     && chown -R $USER:$USER ${CERT_LOC} \
     && chown -R $USER:$USER /var/log/ \
     && chown -R $USER:$USER /var/cache/ \
     && chown -R $USER:$USER /var/lib/ \
     && chown $USER:$USER /var/run/nginx.pid \
+    && chmod 777 /var/run/nginx.pid \
     && chown -R $USER:$USER /tmp/ \
     && apk add --no-cache libcap \
     && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
 
+# Expose ports
 EXPOSE 80 443
 
 # Switch to the non-root user
