@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -143,49 +144,52 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 				}
 
 				Node filteredNode = getFilteredNodes(kpiRequest, filteredAccountDataList);
+				if (filteredNode != null) {
+					if (!CollectionUtils.isEmpty(origRequestedKpis)
+							&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
+						updateJiraIssueList(kpiRequest, filteredAccountDataList);
+					}
+					// set filter value to show on trend line. If subprojects are
+					// in
+					// selection then show subprojects on trend line else show
+					// projects
+					kpiRequest.setFilterToShowOnTrend(groupName);
 
-				if (!CollectionUtils.isEmpty(origRequestedKpis)
-						&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
-					updateJiraIssueList(kpiRequest, filteredAccountDataList);
+					ExecutorService executorService = Executors
+							.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+					List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+					for (KpiElement kpiEle : kpiRequest.getKpiList()) {
+						CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+							threadLocalSprintDetails.set(sprintDetails);
+							threadLocalJiraIssues.set(jiraIssueList);
+							threadLocalHistory.set(jiraIssueCustomHistoryList);
+
+							try {
+								calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
+							} catch (Exception e) {
+								log.error("Error while KPI calculation for data +" , e);
+							}
+						}, executorService);
+						futures.add(future);
+					}
+
+					CompletableFuture<Void>[] futureArray = futures.toArray(new CompletableFuture[0]);
+
+					CompletableFuture<Void> allOf = CompletableFuture.allOf(futureArray);
+					allOf.join(); // Wait for all tasks to complete
+
+					executorService.shutdown();
+
+					List<KpiElement> missingKpis = origRequestedKpis.stream()
+							.filter(reqKpi -> responseList.stream()
+									.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
+							.toList();
+					responseList.addAll(missingKpis);
+
+					kpiHelperService.setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
 				}
-				// set filter value to show on trend line. If subprojects are
-				// in
-				// selection then show subprojects on trend line else show
-				// projects
-				kpiRequest.setFilterToShowOnTrend(groupName);
-
-				ExecutorService executorService = Executors
-						.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-				List<CompletableFuture<Void>> futures = new ArrayList<>();
-
-				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
-					CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-						threadLocalSprintDetails.set(sprintDetails);
-						threadLocalJiraIssues.set(jiraIssueList);
-						threadLocalHistory.set(jiraIssueCustomHistoryList);
-
-						try {
-							calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
-						} catch (Exception e) {
-							log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
-						}
-					}, executorService);
-					futures.add(future);
-				}
-
-				CompletableFuture<Void>[] futureArray = futures.toArray(new CompletableFuture[0]);
-
-				CompletableFuture<Void> allOf = CompletableFuture.allOf(futureArray);
-				allOf.join(); // Wait for all tasks to complete
-
-				executorService.shutdown();
-
-				List<KpiElement> missingKpis = origRequestedKpis.stream().filter(reqKpi -> responseList.stream()
-						.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId()))).toList();
-				responseList.addAll(missingKpis);
-
-				kpiHelperService.setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
 			} else {
 				responseList.addAll(origRequestedKpis);
 			}
@@ -203,16 +207,27 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
-		Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
-		Node parentNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 2);
-		filteredNode.setParent(parentNode);
+		Optional<Node> sprintNode = filteredAccountDataList.get(0).getNode().stream()
+				.filter(node -> node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
+				.findFirst();
+		Optional<Node> projectNode = filteredAccountDataList.get(0).getNode().stream()
+				.filter(node -> node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT))
+				.findFirst();
+		if (sprintNode.isPresent() && projectNode.isPresent()) {
+			Node parentNode = projectNode.get();
+			Node filteredNode = sprintNode.get();
 
-		filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getParent().getId(),
-				filteredNode.getParent().getName(), filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
-		filteredNode.setSprintFilter(new SprintFilter(filteredNode.getId(), filteredNode.getName(),
-				filteredNode.getAccountHierarchy().getBeginDate(), filteredNode.getAccountHierarchy().getEndDate()));
+			filteredNode.setParent(parentNode);
 
-		return filteredNode;
+			filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getParent().getId(),
+					filteredNode.getParent().getName(), filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
+			filteredNode.setSprintFilter(new SprintFilter(filteredNode.getId(), filteredNode.getName(),
+					filteredNode.getAccountHierarchy().getBeginDate(),
+					filteredNode.getAccountHierarchy().getEndDate()));
+
+			return filteredNode;
+		}
+		return null;
 	}
 
 	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest, String groupName) {
@@ -220,10 +235,14 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 				.cacheSprintLevelData();
 
 		List<String> selectedValue = kpiRequest.getSelectedMap().getOrDefault(groupName, Collections.emptyList());
+		List<String> orDefault = kpiRequest.getSelectedMap().getOrDefault(CommonConstant.SPRINT,
+				Collections.emptyList());
 		return accountDataListAll.stream()
 				.filter(data -> data.getNode().stream().anyMatch(
 						d -> d.getGroupName().equalsIgnoreCase(groupName) && selectedValue.contains(d.getId())))
-				.findFirst().map(List::of).orElse(List.of());
+				.filter(data -> data.getNode().stream().anyMatch(
+						d -> d.getGroupName().equalsIgnoreCase(CommonConstant.SPRINT) && orDefault.contains(d.getId())))
+				.collect(Collectors.toList());
 	}
 
 	private void updateJiraIssueList(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {

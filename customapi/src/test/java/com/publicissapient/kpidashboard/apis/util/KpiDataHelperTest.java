@@ -122,6 +122,22 @@ public class KpiDataHelperTest {
 	}
 
 	@Test
+	public void createAdditionalFilterMap_Capacity() {
+
+		KpiRequest kpiRequest = createKpiRequest();
+		Map<String, List<String>> selectedMap = new HashMap<>();
+		selectedMap.put(Constant.SPRINT, Arrays.asList("Test"));
+		selectedMap.put("SQD", Arrays.asList("Squad Test"));
+
+		kpiRequest.setSelectedMap(selectedMap);
+
+		Map<String, Object> mapOfFilters = new HashMap<>();
+
+		KpiDataHelper.createAdditionalFilterMapForCapacity(kpiRequest, mapOfFilters,flterHelperService);
+		assertEquals(2, mapOfFilters.size());
+	}
+
+	@Test
 	public void testCreateSubCategoryWiseMap() {
 		Map<Pair<String, String>, Map<String, List<String>>> subCategoryWiseMap = KpiDataHelper
 				.createSubCategoryWiseMap(Constant.SPRINT, sprintWiseStoryList, "");
