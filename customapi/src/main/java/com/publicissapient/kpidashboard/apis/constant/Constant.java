@@ -143,6 +143,8 @@ public final class Constant {
 
 	public static final String REPO_TOOLS = "RepoTool";
 
+	public static final String FEATURE_BRANCH = "/feature/";
+
 	private Constant() {
 	}
 
