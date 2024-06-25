@@ -27,6 +27,7 @@ import javax.validation.Valid;
 import com.mysema.commons.lang.Pair;
 import com.publicissapient.kpidashboard.apis.common.service.ConfigDetailService;
 import com.publicissapient.kpidashboard.apis.model.ConfigDetails;
+import com.publicissapient.kpidashboard.apis.model.UserBoardDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -79,13 +80,21 @@ public class UserBoardConfigController {
 	 *
 	 * @return response
 	 */
-	@PostMapping(value = "/getBoardConfig" ,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/getBoardConfig", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getUserBoardConfigurations(@Valid @RequestBody ProjectListRequested listOfRequestedProj) {
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigService.getUserBoardConfig(listOfRequestedProj);
-		ServiceResponse response = new ServiceResponse(false, "No data found", null);
-		if (null != userBoardConfigDTO) {
-			response = new ServiceResponse(true, "Fetched successfully", userBoardConfigDTO);
+		if (userBoardConfigDTO == null) {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "No data found", null));
 		}
+
+		ConfigDetails configDetails = configDetailService.getConfigDetails();
+
+		// Create a UserBoardDTO to hold the combined data
+		UserBoardDTO userBoardDTO = new UserBoardDTO();
+		userBoardDTO.setUserBoardConfigDTO(userBoardConfigDTO);
+		userBoardDTO.setConfigDetails(configDetails);
+
+		ServiceResponse response = new ServiceResponse(true, "Project Config Fetched successfully", userBoardDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
