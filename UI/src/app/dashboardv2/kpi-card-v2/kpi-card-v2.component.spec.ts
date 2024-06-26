@@ -7,7 +7,7 @@ import { HelperService } from 'src/app/services/helper.service';
 import { GetAuthService } from '../../services/getauth.service';
 import { HttpClientModule } from '@angular/common/http';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpService } from '../../services/http.service';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -22,6 +22,7 @@ describe('KpiCardV2Component', () => {
   let sharedService: SharedService;
   let helperService: HelperService;
   let dialogService: DialogService;
+  let mockService: jasmine.SpyObj<SharedService>;
   const fakeKpiFieldMappingList = require('../../../test/resource/fakeMappingFieldConfig.json');
   const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
   const fakeSelectedFieldMapping = {
@@ -68,6 +69,13 @@ describe('KpiCardV2Component', () => {
     sharedService = TestBed.inject(SharedService);
     helperService = TestBed.inject(HelperService);
     dialogService = TestBed.inject(DialogService);
+    mockService = jasmine.createSpyObj(SharedService, ['selectedFilterOptionObs', 'getSelectedTab']);
+
+    component.kpiData = {
+      kpiId: 'kpi72',
+      kpiDetail: { kpiFilter: 'radioButton' }
+    };
+    component.dropdownArr = [{ options: ['option1', 'option2'] }];
     fixture.detectChanges();
   });
 
@@ -445,28 +453,28 @@ describe('KpiCardV2Component', () => {
     expect(component.filterOption).toBe('Overall');
   }));
 
-  it('should set default filter value for kpi having radiobutton filter', fakeAsync(() => {
+  it('should set filter default option', fakeAsync(() => {
+    const response = {
+      kpi113: [
+        'Overall'
+      ]
+    };
+
     component.kpiData = {
-      kpiId: 'kpi3',
-      kpiName: 'Lead Time',
+      kpiId: 'kpi113',
+      kpiName: 'Value delivered (Cost of Delay)',
       isEnabled: true,
-      order: 25,
+      order: 28,
       kpiDetail: {
-        id: '633ed17f2c2d5abef2451ff0',
-        kpiId: 'kpi3',
-        kpiName: 'Lead Time',
-        kpiSource: 'Jira',
-        kanban: false,
-        kpiFilter: 'radioButton',
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi113',
       },
       shown: true
     };
-
-    const response = { kpi3: ['default'], action: "update" };
     sharedService.setKpiSubFilterObj(response);
     component.ngOnInit();
     tick();
-    expect(component.radioOption).toBe('default');
+    expect(component.filterOption).toBe('Overall');
   }));
 
   it('should set menuItems correctly', () => {
@@ -509,66 +517,9 @@ describe('KpiCardV2Component', () => {
     };
 
     sharedService.setKpiSubFilterObj(selectedFilterOptionObs);
-
-    // const selectedFilterOptionObsSpy = spyOn(sharedService,'setKpiSubFilterObj').and.callFake(()=>of(selectedFilterOptionObs));
-
     component.ngOnInit();
-
-    // expect(selectedFilterOptionObsSpy).toHaveBeenCalled();
-    // expect(component.filterOptions).toEqual({
-    //   filter1: ['Overall'],
-    //   filter2: ['Option 1'],
-    // });
     expect(component.filterOption).toBe('Overall');
   });
-
-  // it('should set radioOption correctly when kpiFilter is "radiobutton"', () => {
-  //   const selectedFilterOptionObs = of({
-  //     kpi72: {
-  //       filter1: ['Option 1'],
-  //     },
-  //   });
-  //   sharedService.selectedFilterOptionObs.and.returnValue(selectedFilterOptionObs);
-  //   component.kpiData = {
-  //     kpiDetail: {
-  //       kpiFilter: 'radiobutton',
-  //     },
-  //   };
-
-  //   component.ngOnInit();
-
-  //   expect(component.radioOption).toBe('Option 1');
-  // });
-
-  // it('should set selectedTab correctly', () => {
-  //   const selectedFilterOptionObs = of({});
-  //   sharedService.selectedFilterOptionObs.and.returnValue(selectedFilterOptionObs);
-  //   sharedService.getSelectedTab.and.returnValue('Tab 1');
-
-  //   component.ngOnInit();
-
-  //   expect(sharedService.getSelectedTab).toHaveBeenCalled();
-  //   expect(component.selectedTab).toBe('tab 1');
-  // });
-
-  // it('should set radioOption correctly when dropdownArr is not empty', () => {
-  //   const selectedFilterOptionObs = of({});
-  //   sharedService.selectedFilterOptionObs.and.returnValue(selectedFilterOptionObs);
-  //   component.kpiData = {
-  //     kpiDetail: {
-  //       kpiFilter: 'radiobutton',
-  //     },
-  //   };
-  //   component.dropdownArr = [
-  //     {
-  //       options: ['Option 1', 'Option 2'],
-  //     },
-  //   ];
-
-  //   component.ngOnInit();
-
-  //   expect(component.radioOption).toBe('Option 1');
-  // });
 
   it('should delete the matching key from filterOptions', () => {
     const event = 'Event 1';
@@ -614,4 +565,250 @@ describe('KpiCardV2Component', () => {
       'Event 3': 'Option 3'
     });
   });
+
+  it('should subscribe to selectedFilterOptionObs and handle multiple keys', () => {
+    const filterData = {
+      kpi72: {
+        filter1: ['Overall'],
+        filter2: ['Other']
+      }
+    };
+
+    mockService.selectedFilterOptionObs = of(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+
+    // expect(component.kpiSelectedFilterObj).toEqual(filterData);
+    // expect(component.filterOptions[0]).toEqual(['Overall']);
+    expect(component.filterOption).toEqual('Overall');
+    // expect(component.selectedTab).toEqual('tab1');
+  });
+
+  it('should handle non-Overall values correctly', () => {
+    const filterData = {
+      kpi72: {
+        filter1: ['Specific'],
+        filter2: ['Other']
+      },
+      kpi113: {
+        filter1: ['Specific'],
+        filter2: ['Other']
+      }
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi72',
+      kpiName: 'Value delivered (Cost of Delay)',
+      isEnabled: true,
+      order: 28,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi72',
+      },
+      shown: true
+    };
+
+    sharedService.setKpiSubFilterObj(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+
+    expect(component.kpiSelectedFilterObj).toEqual(filterData);
+    expect(component.filterOptions["filter1"]).toBe('Specific');
+    expect(component.filterOptions["filter2"]).toBe('Other');
+  });
+
+  it('should handle Overall values correctly for kpi72', () => {
+    const filterData = {
+      kpi72: {
+        filter2: ['Overall'],
+        filter3: ['Other'],
+        filter4: ['OtherFilters']
+      },
+      kpi113: {
+        filter1: ['Specific'],
+        filter2: ['Other']
+      }
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi72',
+      kpiName: 'Value delivered (Cost of Delay)',
+      isEnabled: true,
+      order: 28,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi72',
+      },
+      shown: true
+    };
+
+    sharedService.setKpiSubFilterObj(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+
+    expect(component.kpiSelectedFilterObj).toEqual(filterData);
+    // expect(component.filterOptions["filter1"]).toEqual('Overall');
+    expect(component.filterOptions["filter2"]).toEqual('Overall');
+  });
+
+
+  it('should handle Overall values in filter1 correctly for kpi72', () => {
+    const filterData = {
+      kpi72: {
+        filter1: ['Overall'],
+        filter2: ['Other'],
+        filter3: ['OtherFilters']
+      },
+      kpi113: {
+        filter1: ['Specific'],
+        filter2: ['Other']
+      }
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi72',
+      kpiName: 'Value delivered (Cost of Delay)',
+      isEnabled: true,
+      order: 28,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi72',
+      },
+      shown: true
+    };
+
+    sharedService.setKpiSubFilterObj(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+
+    expect(component.kpiSelectedFilterObj).toEqual(filterData);
+    expect(component.filterOptions["filter1"]).toEqual('Overall');
+    // expect(component.filterOptions["filter2"]).toEqual('Overall');
+  });
+
+  it('should handle other key values in filter1 correctly for kpi72', () => {
+    const filterData = {
+      kpi72: {
+        filter3: ['option3'],
+        filter: ['Overall']
+      },
+      kpi113: {
+        filter1: ['Specific'],
+        filter2: ['Other']
+      }
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi72',
+      kpiName: 'Value delivered (Cost of Delay)',
+      isEnabled: true,
+      order: 28,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi72',
+      },
+      shown: true
+    };
+
+    sharedService.setKpiSubFilterObj(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+
+    expect(component.kpiSelectedFilterObj).toEqual(filterData);
+    // expect(component.filterOptions).toEqual(filterData);
+    // expect(component.filterOptions["filter2"]).toEqual('Overall');
+  });
+
+  it('should handle kpiFilter radio button logic', fakeAsync(() => {
+    const filterData = {
+      kpi72: {
+        filter1: ['option2']
+      },
+      kpi113: {
+        filter1: ['option2']
+      }
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi113',
+      kpiName: 'Value delivered (Cost of Delay)',
+      isEnabled: true,
+      order: 28,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi113',
+        kpiFilter: 'radiobutton'
+      },
+      shown: true
+    };
+    component.dropdownArr = [];
+    sharedService.setKpiSubFilterObj(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+    tick(100);
+    fixture.detectChanges();
+    expect(component.radioOption).toEqual('option2');
+})
+);
+
+  it('should set displayConfigModel to false and emit reloadKPITab event', () => {
+    component.displayConfigModel = true;
+    component.kpiData = { id: 1, name: 'KPI 1' };
+    component.reloadKPITab = new EventEmitter();
+    const reloadKPISpy = spyOn(component.reloadKPITab, 'emit');
+    component.reloadKPI();
+
+    expect(component.displayConfigModel).toBe(false);
+    expect(reloadKPISpy).toHaveBeenCalledWith({ id: 1, name: 'KPI 1' });
+  });
+
+
+  it('should emit downloadExcel event with true value', () => {
+    component.downloadExcel = new EventEmitter();
+    const exportSpy = spyOn(component.downloadExcel, 'emit');
+    component.exportToExcel();
+
+    expect(exportSpy).toHaveBeenCalledWith(true);
+  });
+
+
+  it('should call getKPIFieldMappingConfig function', () => {
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    const getFieldMappingSpy = spyOn(component, 'getKPIFieldMappingConfig');
+    component.onOpenFieldMappingDialog();
+
+    expect(getFieldMappingSpy).toHaveBeenCalled();
+  });
+
+  it('should return the correct color CSS class based on the index', () => {
+    const mockColorCssClassArray = ['color1', 'color2', 'color3'];
+    component.colorCssClassArray = mockColorCssClassArray;
+
+    expect(component.getColorCssClasses(0)).toBe('color1');
+    expect(component.getColorCssClasses(1)).toBe('color2');
+    expect(component.getColorCssClasses(2)).toBe('color3');
+  });
+
+
+  it('should return true if any rowData has a non-null and non-undefined value for the specified field', () => {
+    component.sprintDetailsList = [
+      {
+        hoverList: [
+          { field1: null, field2: 'value2' },
+          { field1: 'value1', field2: 'value2' }
+        ]
+      },
+      {
+        hoverList: [
+          { field1: 'value1', field2: null },
+          { field1: null, field2: null }
+        ]
+      }
+    ];
+    component.selectedTabIndex = 0;
+    expect(component.hasData('field1')).toBe(true);
+    expect(component.hasData('field2')).toBe(true);
+  });
+
+
 });

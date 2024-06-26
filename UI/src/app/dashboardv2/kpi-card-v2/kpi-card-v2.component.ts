@@ -104,7 +104,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
               if (key === "filter1") {
                 this.filterOptions["filter1"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0];
               }
-              else {
+              else if (key === "filter2") {
                 this.filterOptions["filter2"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter2'][0];
               }
 
@@ -239,8 +239,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   /** This method is responsible for getting field mapping configuration for specfic KPI */
   getKPIFieldMappingConfig() {
-    const selectedTab = this.service.getSelectedTab().toLowerCase();
-    const selectedType = this.service.getSelectedType().toLowerCase();
+    const selectedTab = this.service.getSelectedTab()?.toLowerCase();
+    const selectedType = this.service.getSelectedType()?.toLowerCase();
     const selectedTrend = this.service.getSelectedTrends();
     if (selectedType === 'scrum' && selectedTrend.length == 1 || selectedTab === 'release') {
       this.loadingKPIConfig = true;

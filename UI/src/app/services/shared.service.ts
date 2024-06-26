@@ -312,7 +312,7 @@ export class SharedService {
     this.mapColorToProject.next(value);
   }
 
-  setKpiSubFilterObj(value) {
+  setKpiSubFilterObj(value: any) {
     this.selectedFilterOption.next(value);
   }
 
