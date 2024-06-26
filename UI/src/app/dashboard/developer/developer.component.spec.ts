@@ -1023,5 +1023,49 @@ it('should generate dropdown options',()=>{
   expect(component.kpiDropdowns).toBeDefined()
 })
 
+it('should call createCombinations', () => {
+    const t1 = ['Initial Commitment (Story Points)']
+    const t2 = ['Overall']
+    const response = component.createCombinations(t1, t2);
+    const t3 = [
+      {
+        "filter1": "Initial Commitment (Story Points)",
+        "filter2": "Overall"
+      }
+    ]
+    expect(response).toEqual(t3);
+  });
+
+  it('should handle select for kpi72 when filters are single selection',()=>{
+    const event = {
+      filter1 : 'f1',
+      filter2 : 'f2'
+    }
+    const kpi={kpiId : 'kpi72'}
+    component.handleSelectedOption(event,kpi);
+    expect(component.kpiSelectedFilterObj).toBeDefined();
+  })
+
+  it('should preapare chart data for kpi17 when filters dropdown',()=>{
+    component.allKpiArray = [
+      {
+        trendValueList : [
+          {
+            filter : 'f1',
+            value : [
+              {value : 'deummy value'}
+            ]
+          }
+        ]
+      }
+    ]
+    component.kpiSelectedFilterObj = {
+      kpi17 : ['f1','f2']
+    }
+    component.getChartData('kpi17',0,'sum');
+    expect(component.kpiChartData['kpi17'].length).toBeGreaterThan(0)
+  })
+
+
 
 });

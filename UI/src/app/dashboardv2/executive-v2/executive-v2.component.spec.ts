@@ -8057,36 +8057,33 @@ describe('ExecutiveV2Component', () => {
     expect(spyJenkins).toHaveBeenCalled();
   });
 
-  // it('should make post Sonar call', fakeAsync(() => {
-  //   const postData = {
-  //     kpiList: [
-  //       {
-  //         id: '633ed17f2c2d5abef2451fe3',
-  //         kpiId: 'kpi17',
-  //         kpiName: 'Unit Test Coverage',
-  //       },
-  //       {
-  //         id: '633ed17f2c2d5abef2451fe4',
-  //         kpiId: 'kpi38',
-  //         kpiName: 'Sonar Violations'
-  //       },
-  //       {
-  //         id: '633ed17f2c2d5abef2451fe5',
-  //         kpiId: 'kpi27',
-  //         kpiName: 'Sonar Tech Debt',
-  //       }
-  //     ]
-  //   };
-  //   const mockSubscription = {
-  //     unsubscribe: jasmine.createSpy('unsubscribe'),
-  //   };
-  //   component.sonarKpiRequest = mockSubscription;
-  //   spyOn(httpService, 'postKpi').and.returnValue(of(postData.kpiList));
-  //   const spy = spyOn(component, 'afterSonarKpiResponseReceived');
-  //   component.postSonarKpi(postData, 'Sonar');
-  //   tick();
-  //   expect(spy).toHaveBeenCalledWith(postData.kpiList);
-  // }));
+  it('should make post Sonar call', fakeAsync(() => {
+    const postData = {
+      kpiList: [
+        {
+          id: '633ed17f2c2d5abef2451fe3',
+          kpiId: 'kpi17',
+          kpiName: 'Unit Test Coverage',
+        },
+      ]
+    };
+    const successRes = [
+      {
+        "kpiId": "kpi17",
+        "kpiName": "Unit Test Coverage",
+        "id": "633ed17f2c2d5abef2451fe3",
+      }
+    ]
+    const mockSubscription = {
+      unsubscribe: jasmine.createSpy('unsubscribe'),
+    };
+    component.sonarKpiRequest = mockSubscription;
+    spyOn(httpService, 'postKpi').and.returnValue(of(postData.kpiList));
+    const spy = spyOn(component, 'afterSonarKpiResponseReceived');
+    component.postSonarKpi(postData, 'Sonar');
+    tick();
+    expect(spy).toHaveBeenCalledWith(successRes, postData);
+  }));
 
   // it('should make post Sonar Kanban Kpi call', fakeAsync(() => {
   //   const postData = {
@@ -13033,7 +13030,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = '-- --';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -13069,7 +13066,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = '-ve';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -13095,7 +13092,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = 'NA';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -13123,7 +13120,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = 'NA';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -13144,7 +13141,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = 'NA';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -13695,4 +13692,462 @@ describe('ExecutiveV2Component', () => {
     expect(component.additionalFiltersArr).toEqual(additionalFiltersArr);
 
   });
+
+  it('should make post Sonar Kanban Kpi call', fakeAsync(() => {
+    const postData = {
+      kpiList: [
+        {
+          id: '633ed17f2c2d5abef2451fe3',
+          kpiId: 'kpi17',
+          kpiName: 'Unit Test Coverage',
+        },
+      ]
+    };
+    const successRes = [
+      {
+        "kpiId": "kpi17",
+        "kpiName": "Unit Test Coverage",
+        "id": "633ed17f2c2d5abef2451fe3",
+      }
+    ]
+    const mockSubscription = {
+      unsubscribe: jasmine.createSpy('unsubscribe'),
+    };
+    component.sonarKpiRequest = mockSubscription;
+    spyOn(httpService, 'postKpiKanban').and.returnValue(of(postData.kpiList));
+    const spy = spyOn(component, 'afterSonarKpiResponseReceived');
+    component.postSonarKanbanKpi(postData, 'sonar');
+    tick();
+    expect(spy).toHaveBeenCalledWith(successRes, postData);
+  }));
+
+  it('should get chartdataforRelease for kpi when trendValueList is an Array of two filters for card', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: [
+        { filter1: 'hold', filter2: 'f2', value: [{ count: 1 }] },
+        { filter1: 'f2', filter2: 'f2', value: [{ count: 2 }] },
+        { filter1: 'in progress', filter2: 'f2', value: [{ count: 2 }] },
+      ]
+    }];
+    component.kpiSelectedFilterObj['kpi124'] = {
+      filter1: ['hold', 'in progress'],
+      filter2: ['f2']
+    }
+    const spyObj = spyOn(component, 'applyAggregationLogic');
+    spyOn(component, 'getKpiChartType').and.returnValue('abc')
+    component.getChartDataforRelease('kpi124', 0)
+    expect(spyObj).toHaveBeenCalled();
+  })
+
+
+  it('should get chartdataforRelease for kpi when trendValueList is an Array of two filters for card and kpiSelectedFilters have only 1 filter', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: [
+        { filter1: 'hold', filter2: 'f2', value: [{ count: 1 }] },
+        { filter1: 'f2', filter2: 'f2', value: [{ count: 2 }] },
+        { filter1: 'in progress', filter2: 'f2', value: [{ count: 2 }] },
+      ]
+    }];
+    component.kpiSelectedFilterObj['kpi124'] = {
+      filter1: ['hold', 'in progress']
+    }
+    const spyObj = spyOn(component, 'applyAggregationLogic');
+    spyOn(component, 'getKpiChartType').and.returnValue('abc')
+    component.getChartDataforRelease('kpi124', 0)
+    expect(spyObj).toHaveBeenCalled();
+  })
+
+  it('should get chartdataforRelease for kpi when trendValueList is an Array of two filters without aggregration', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: [
+        { filter1: 'hold', filter2: 'f2', value: [{ count: 1 }] },
+      ]
+    }];
+    component.kpiSelectedFilterObj['kpi124'] = {
+      filter1: ['hold', 'in progress'],
+      filter2: ['f2']
+    }
+    spyOn(component, 'getKpiChartType').and.returnValue('abc')
+    component.getChartDataforRelease('kpi124', 0)
+  })
+
+  it('should getChartDataforRelease for kpi when trendValueList is an object', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: {
+        value: [
+          {
+            filter1: "Overall",
+            filter2: "Overall",
+            data: [{
+              "label": "Scope added",
+              "value": 1,
+              "value1": 0,
+              "labelInfo": "(Issue Count/Original Estimate)",
+              "unit": "",
+              "modalValues": [
+                {
+                  "Issue Id": "DTS-22685",
+                  "Issue URL": "http://testabc.com/jira/browse/DTS-22685",
+                  "Issue Description": "Iteration KPI | Popup window is not wide enough to read details  ",
+                  "Issue Status": "Open",
+                  "Due Date": "-"
+                }
+              ]
+            }]
+          }
+        ]
+
+      }
+    }];
+    component.kpiSelectedFilterObj['kpi124'] = {
+      'filter1': ['Overall'],
+      'filter2': ['Overall']
+    }
+    const res = {
+      "filter1": "Overall",
+      "filter2": "Overall",
+      "data": [
+        {
+          "label": "Issue without estimates",
+          "value": 21,
+        },
+      ]
+    }
+    const combo = [{
+      filter1: 'Overall',
+      filter2: 'Overall',
+    }]
+
+    spyOn(helperService, 'createCombinations').and.returnValue(combo);
+    component.getChartDataforRelease('kpi124', 0)
+    expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
+  })
+
+  it('should getChartDataforRelease for kpi when trendValueList is an object with single filter', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: {
+        value: [
+          {
+            filter1: "Overall",
+            data: [{
+              "label": "Scope added",
+              "value": 1,
+              "value1": 0,
+              "labelInfo": "(Issue Count/Original Estimate)",
+              "unit": "",
+              "modalValues": [
+                {
+                  "Issue Id": "DTS-22685",
+                  "Issue URL": "http://testabc.com/jira/browse/DTS-22685",
+                  "Issue Description": "Iteration KPI | Popup window is not wide enough to read details  ",
+                }
+              ]
+            }]
+          }
+        ]
+
+      }
+    }];
+    component.kpiSelectedFilterObj['kpi124'] = {
+      'filter1': ['Overall']
+    }
+    const res = {
+      "filter1": "Overall",
+      "data": [
+        {
+          "label": "Issue without estimates",
+          "value": 21,
+          "value1": 51,
+          "unit": "",
+          "modalValues": []
+        },
+      ]
+    }
+    const combo = [{
+      filter1: 'Overall',
+    }]
+
+    spyOn(helperService, 'createCombinations').and.returnValue(combo);
+    component.getChartDataforRelease('kpi124', 0)
+    expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
+  })
+
+  it('should getChartDataforRelease for kpi when trendValueList is an object and KPI selected filter is blank', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: {
+        value: [
+          {
+            filter1: "Overall",
+            data: [{
+              "label": "Scope added",
+              "value": 1,
+              "value1": 0,
+              "labelInfo": "(Issue Count/Original Estimate)",
+              "unit": "",
+              "modalValues": [
+                {
+                  "Issue Id": "DTS-22685",
+                  "Issue URL": "http://testabc.com/jira/browse/DTS-22685",
+                  "Issue Description": "Iteration KPI | Popup window is not wide enough to read details  ",
+                }
+              ]
+            }]
+          }
+        ]
+
+      }
+    }];
+    component.kpiSelectedFilterObj['kpi124'] = {}
+
+    const combo = [{
+      filter1: 'Overall',
+    }]
+
+    spyOn(helperService, 'createCombinations').and.returnValue(combo);
+    component.getChartDataforRelease('kpi124', 0)
+    expect(component.kpiChartData['kpi124'][0].data.length).toBeGreaterThan(0)
+  })
+
+  it('should getChartDataforRelease for kpi when trendValueList is an object but there is no data', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: {
+        value: []
+      }
+    }];
+    component.kpiSelectedFilterObj['kpi124'] = {}
+    const combo = [{ filter1: 'Overall' }]
+
+    spyOn(helperService, 'createCombinations').and.returnValue(combo);
+    component.getChartDataforRelease('kpi124', 0)
+    expect(component.kpiChartData['kpi124'].length).toBeGreaterThan(0)
+  })
+
+  it('should apply aggregation logic correctly for a single data array', () => {
+    const mockData = [
+      {
+        data: [
+          { label: 'Label 1', value: 10, value1: 5, modalValues: ['value1', 'value2'] },
+          { label: 'Label 2', value: 20, value1: 10, modalValues: ['value3', 'value4'] }
+        ]
+      }
+    ];
+
+    const expectedAggregatedData = [
+      {
+        data: [
+          { label: 'Label 1', value: 10, value1: 5, modalValues: ['value1', 'value2'] },
+          { label: 'Label 2', value: 20, value1: 10, modalValues: ['value3', 'value4'] }
+        ]
+      }
+    ];
+
+    const result = component.applyAggregationLogic(mockData);
+
+    expect(result).toEqual(expectedAggregatedData);
+  });
+
+  it('should apply aggregation logic correctly for multiple data arrays', () => {
+    const mockData = [
+      {
+        data: [
+          { label: 'Label 1', value: 10, value1: 5, modalValues: ['value1', 'value2'] },
+          { label: 'Label 2', value: 20, value1: 10, modalValues: ['value3', 'value4'] }
+        ]
+      },
+      {
+        data: [
+          { label: 'Label 2', value: 30, value1: 15, modalValues: ['value5', 'value6'] },
+          { label: 'Label 3', value: 40, value1: 20, modalValues: ['value7', 'value8'] }
+        ]
+      }
+    ];
+
+    const expectedAggregatedData = [
+      {
+        data: [
+          { label: 'Label 1', value: 10, value1: 5, modalValues: ['value1', 'value2'] },
+          { label: 'Label 2', value: 50, value1: 25, modalValues: ['value3', 'value4', 'value5', 'value6'] },
+          { label: 'Label 3', value: 40, value1: 20, modalValues: ['value7', 'value8'] }
+        ]
+      }
+    ];
+
+    const result = component.applyAggregationLogic(mockData);
+
+    expect(result).toEqual(expectedAggregatedData);
+  });
+
+  it('should get table data for kpi when trendValueList dont have filter', () => {
+    component.allKpiArray = [{
+      "kpiId": "kpi172",
+      "kpiName": "Build Frequency",
+      "unit": "",
+      "chartType": "",
+      "id": "65eeb08194c86b415f978935",
+      "isDeleted": "False",
+      "kpiUnit": "",
+      "kanban": false,
+      "kpiSource": "Jenkins",
+      "thresholdValue": 8,
+      "maturityRange": [
+        "1-2",
+        "2-4",
+        "5-8",
+        "8-10",
+        "10-"
+      ],
+      "groupId": 1,
+      "trendValueList": [],
+      "maxValue": "",
+      "kpiInfo": {
+        "definition": "Build frequency refers the number of successful builds done in a specific time frame.",
+        "details": [
+          {
+            "type": "link",
+            "kpiLinkDetail": {
+              "text": "Detailed Information at",
+              "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/92930049/Build+Frequency"
+            }
+          }
+        ]
+      }
+    }];
+    component.kpiTableHeadingArr = fakeKpiTableHeadingArray;
+    component.noOfDataPoints = 5;
+    component.colorObj = {
+      "AddingIterationProject_64e739541426ba469c39c102": {
+        "nodeName": "AddingIterationProject",
+        "color": "#079FFF"
+      }
+    };
+    component.kpiTableDataObj['AddingIterationProject'] = [];
+    const enabledKpi = {
+      'kpiDetail': {
+        'xaxisLabel': 'Sprints'
+      },
+      'isEnabled': true,
+      'shown': true,
+      "order": '1',
+      "kpiId": "kpi172"
+    }
+
+    component.kpiTrendsObj = {
+      kpi172: [
+        {
+          "hierarchyName": "AddingIterationProject",
+          "value": "66.7 %",
+          "trend": "+ve",
+          "maturity": "M4",
+          "maturityValue": "65.03",
+          "kpiUnit": "%"
+        }
+      ]
+    };
+    const returnedObj = {
+      'AddingIterationProject': [{
+        "1": "122.6",
+        "2": "126.9",
+        "3": "176.5",
+        "4": "83.3",
+        "5": "57.7",
+        "kpiId": "kpi172",
+        "kpiName": "Defect Injection Rate",
+        "frequency": "Sprints",
+        "show": true,
+        "hoverText": [
+          "1 - DRP Sprint 71_AddingIterationProject",
+          "2 - DRP Sprint 72_AddingIterationProject",
+          "3 - DRP Sprint 73_AddingIterationProject",
+          "4 - DRP Sprint 74_AddingIterationProject",
+          "5 - DRP Sprint 75_AddingIterationProject"
+        ],
+        "latest": "85 %",
+        "trend": "-ve",
+        "maturity": "M3",
+        "order": '1'
+      }]
+    }
+
+    component.getTableData('kpi172', 0, enabledKpi);
+    expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
+  });
+
+  it('should group Jira kanban kpi', () => {
+    const kpiListJiraKanban = [{
+      id: '64c27a3b1d26a19187772b2e',
+      kpiId: 'kpi54',
+      kpiName: 'Ticket Open vs Closed rate by Priority'
+    }, {
+      id: '64c27a3b1d26a19187772b2d',
+      kpiId: 'kpi55',
+      kpiName: 'Ticket Open vs Closed rate by type'
+    }];
+    component.jiraKpiData = {};
+    component.masterData = fakeMasterData;
+    component.kpiJira = {};
+    spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJiraKanban });
+    const spy = spyOn(component, 'postJiraKanbanKpi');
+    component.groupJiraKanbanKpi(['kpi54', 'kpi55']);
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should group Sonar kanban kpi', () => {
+    const kpiListSonarKanban = [{
+      id: '64c27a3b1d26a19187772b2e',
+      kpiId: 'kpi62',
+      kpiName: 'Unit Test Coverage'
+    }];
+    component.kpiListSonar = {};
+    component.masterData = fakeMasterData;
+    spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListSonarKanban });
+    const spy = spyOn(component, 'postSonarKanbanKpi');
+    component.groupSonarKanbanKpi(['kpi62']);
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should group Jenkins kanban kpi', () => {
+    const kpiListJenkinsKanban = [{
+      id: '64c27a3b1d26a19187772b3a',
+      kpiId: 'kpi66',
+      kpiName: 'Code Build Time'
+    }];
+    component.masterData = fakeMasterData;
+    spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJenkinsKanban });
+    const spy = spyOn(component, 'postJenkinsKanbanKpi');
+    component.groupJenkinsKanbanKpi(['kpi66']);
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should group Zypher kanban kpi', () => {
+    const kpiListZypherKanban = [{
+      id: '64c27a3b1d26a19187772b33',
+      kpiId: 'kpi63',
+      kpiName: 'Regression Automation Coverage'
+    }];
+    component.masterData = fakeMasterData;
+    spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListZypherKanban });
+    const spy = spyOn(component, 'postZypherKanbanKpi');
+    component.groupZypherKanbanKpi(['kpi63']);
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should group Bitbucket kanban kpi', () => {
+    const kpiListBitbucketKanban = [{
+      id: '64c27a3b1d26a19187772b3b',
+      kpiId: 'kpi65',
+      kpiName: 'Number of Check-ins'
+    }];
+    component.masterData = fakeMasterData;
+    spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListBitbucketKanban });
+    const spy = spyOn(component, 'postBitBucketKanbanKpi');
+    component.groupBitBucketKanbanKpi(['kpi65']);
+    expect(spy).toHaveBeenCalled();
+  })
 });

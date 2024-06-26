@@ -256,8 +256,8 @@ export class AdvancedSettingsComponent implements OnInit {
         if (!response.error && response.success) {
           severity = 'success';
           summary = `${processor} started successfully.`;
-          this.jiraStatusContinuePulling = isJira;
           if (isJira) {
+            this.jiraStatusContinuePulling = isJira;
             this.getProcessorCompletionSteps(runProcessorInput);
           } else {
             this.setExecutionOngoing(processor, false);

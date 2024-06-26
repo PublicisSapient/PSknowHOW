@@ -113,7 +113,23 @@
     },
     "parentFilter": {
       "labelName": "Organization Level"
-    }
+    },
+    "additionalFilters": [
+      {
+        "type": "multiSelect",
+        "defaultLevel": {
+          "labelName": "sprint",
+          "sortBy": null
+        }
+      },
+      {
+        "type": "multiSelect",
+        "defaultLevel": {
+          "labelName": "sqd",
+          "sortBy": null
+        }
+      }
+    ]
   },
   {
     "boardId": 5,
