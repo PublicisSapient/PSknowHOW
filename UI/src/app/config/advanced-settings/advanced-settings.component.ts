@@ -22,7 +22,7 @@ import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { DatePipe } from '@angular/common';
-import { forkJoin,interval,Subscription } from 'rxjs';
+import { forkJoin, interval, Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { switchMap, takeWhile } from 'rxjs/operators';
 
@@ -42,12 +42,12 @@ export class AdvancedSettingsComponent implements OnInit {
   userProjects = [];
   selectedProject = {};
   processorsTracelogs = [];
-  toolConfigsDetails=[];
+  toolConfigsDetails = [];
   ssoLogin = environment.SSO_LOGIN;
-  jirsStepsPopup : boolean = false;
-  jiraExecutionSteps : any = [];
+  jirsStepsPopup: boolean = false;
+  jiraExecutionSteps: any = [];
   jiraStatusContinuePulling = false;
-   subscription: Subscription;
+  subscription: Subscription;
   dataMismatchObj: object = {};
 
   constructor(private httpService: HttpService, private messageService: MessageService, private getAuthorizationService: GetAuthorizationService,
@@ -75,9 +75,9 @@ export class AdvancedSettingsComponent implements OnInit {
   // called when user selects a tab from the left menu
   switchView(event) {
     if (event.item.label === 'Processor State') {
-        this.selectedView = 'processor_state';
-        this.getProcessorData();
-        this.getProjects();
+      this.selectedView = 'processor_state';
+      this.getProcessorData();
+      this.getProjects();
     }
   }
 
@@ -105,15 +105,15 @@ export class AdvancedSettingsComponent implements OnInit {
         if (response[0] !== 'error' && !response.error) {
           if (this.getAuthorizationService.checkIfSuperUser()) {
             that.userProjects = response.data.map((proj) => ({
-                name: proj.projectName,
-                id: proj.id
-              }));
+              name: proj.projectName,
+              id: proj.id
+            }));
           } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
             that.userProjects = response.data.filter(proj => !this.getAuthorizationService.checkIfViewer(proj))
               .map((filteredProj) => ({
-                  name: filteredProj.projectName,
-                  id: filteredProj.id
-                }));
+                name: filteredProj.projectName,
+                id: filteredProj.id
+              }));
           }
         } else {
           this.messageService.add({ severity: 'error', summary: 'User needs to be assigned a project for the access to work on dashboards.' });
@@ -153,24 +153,24 @@ export class AdvancedSettingsComponent implements OnInit {
         this.jiraExecutionSteps = []
         if (response.success) {
           that.processorsTracelogs = response.data;
-          that.processorsTracelogs.forEach(pDetails=>{
-              if(pDetails.processorName !== 'Jira'){
-                pDetails['executionOngoing'] = false;
-              }
-              if(pDetails.dataMismatch && pDetails.firstRunDate){
-                this.dataMismatchObj[pDetails.processorName] = pDetails.dataMismatch;
-              }
+          that.processorsTracelogs.forEach(pDetails => {
+            if (pDetails.processorName !== 'Jira') {
+              pDetails['executionOngoing'] = false;
+            }
+            if (pDetails.dataMismatch && pDetails.firstRunDate) {
+              this.dataMismatchObj[pDetails.processorName] = pDetails.dataMismatch;
+            }
           })
 
 
-          if(this.decideWhetherLoaderOrNot(that.findTraceLogForTool('Jira'))){
+          if (this.decideWhetherLoaderOrNot(that.findTraceLogForTool('Jira'))) {
             that.jiraStatusContinuePulling = true;
             const runProcessorInput = {
               processor: 'Jira',
               projects: [this.selectedProject['id']]
             };
             that.getProcessorCompletionSteps(runProcessorInput);
-          }else{
+          } else {
             that.jiraStatusContinuePulling = false;
             const jiraDAta = that.findTraceLogForTool('Jira');
             jiraDAta.executionOngoing = false;
@@ -200,10 +200,10 @@ export class AdvancedSettingsComponent implements OnInit {
 
 
   findTraceLogForTool(processorName) {
-    if(processorName.toLowerCase() === 'jira'){
+    if (processorName.toLowerCase() === 'jira') {
       const jiraInd = this.findCorrectJiraDetails();
       return this.processorsTracelogs[jiraInd];
-    }else{
+    } else {
       return this.processorsTracelogs.find(ptl => ptl['processorName'] == processorName);
     }
   }
@@ -226,7 +226,7 @@ export class AdvancedSettingsComponent implements OnInit {
     return this.selectedProject != null || this.selectedProject != undefined;
   }
 
-  endTimeConversion(time){
+  endTimeConversion(time) {
     return new DatePipe('en-US').transform(time, 'dd-MMM-yyyy (EEE) - hh:mmaaa')
   }
 
@@ -240,38 +240,43 @@ export class AdvancedSettingsComponent implements OnInit {
       runProcessorInput['projects'] = [this.selectedProject['id']];
     }
     const pDetails = this.findTraceLogForTool(processorName)
-    if(pDetails){
+    if (pDetails) {
       pDetails['executionOngoing'] = true;
     }
 
-    if(processorName === 'Jira'){
+    if (processorName === 'Jira') {
       this.resetLogs()
     }
     this.httpService.runProcessor(runProcessorInput)
       .subscribe(response => {
+        const processor = runProcessorInput['processor'];
+        const isJira = processor.toLowerCase() === 'jira';
+        let severity, summary;
+
         if (!response.error && response.success) {
-          this.messageService.add({ severity: 'success', summary: `${runProcessorInput['processor']} started successfully.` });
-          if(runProcessorInput['processor'].toLowerCase() === 'jira'){
-            this.jiraStatusContinuePulling = true;
-            this.getProcessorCompletionSteps(runProcessorInput)
-          }else{
-            const pDetails = this.findTraceLogForTool(runProcessorInput['processor'])
-            if(pDetails){
-              pDetails['executionOngoing'] = false;
-            }
+          severity = 'success';
+          summary = `${processor} started successfully.`;
+          this.jiraStatusContinuePulling = isJira;
+          if (isJira) {
+            this.getProcessorCompletionSteps(runProcessorInput);
+          } else {
+            this.setExecutionOngoing(processor, false);
           }
-        } else if (runProcessorInput['processor'].toLowerCase() === 'jira') {
-          this.messageService.add({ severity: 'error', summary: response.data });
         } else {
-          this.messageService.add({ severity: 'error', summary: `Error in running ${runProcessorInput['processor']} processor. Please try after some time.` });
-          const pDetails = this.findTraceLogForTool(runProcessorInput['processor'])
-          if (pDetails) {
-            pDetails['executionOngoing'] = false;
-          }
+          severity = 'error';
+          summary = isJira ? response.data : `Error in running ${processor} processor. Please try after some time.`;
+          this.setExecutionOngoing(processor, false);
         }
+        this.messageService.add({ severity, summary });
       });
   }
 
+  setExecutionOngoing(processor, value) {
+    const pDetails = this.findTraceLogForTool(processor);
+    if (pDetails) {
+      pDetails['executionOngoing'] = value;
+    }
+  }
 
   shouldDisableRunProcessor() {
 
@@ -286,18 +291,18 @@ export class AdvancedSettingsComponent implements OnInit {
     return true;
   }
 
-  deleteProcessorData(processorDetails){
+  deleteProcessorData(processorDetails) {
     this.confirmationService.confirm({
-			message:`Do you want to delete ${this.selectedProject['name']} data for ${processorDetails?.processorName}`,
-			header: `Delete ${this.selectedProject['name']} Data?`,
-			icon: 'pi pi-info-circle',
-			accept: () => {
-				this.deleteProcessorDataReq(processorDetails,this.selectedProject);
-			},
-      reject : ()=>{
+      message: `Do you want to delete ${this.selectedProject['name']} data for ${processorDetails?.processorName}`,
+      header: `Delete ${this.selectedProject['name']} Data?`,
+      icon: 'pi pi-info-circle',
+      accept: () => {
+        this.deleteProcessorDataReq(processorDetails, this.selectedProject);
+      },
+      reject: () => {
         console.log("reject")
       }
-		});
+    });
   }
 
   deleteProcessorDataReq(processorDetails, selectedProject) {
@@ -324,7 +329,7 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
 
-  getProcessorCompletionSteps(runProcessorInput){
+  getProcessorCompletionSteps(runProcessorInput) {
     const jiraInd = this.findCorrectJiraDetails();
     this.subscription = interval(15000).pipe(
       takeWhile(() => this.jiraStatusContinuePulling),
@@ -332,54 +337,54 @@ export class AdvancedSettingsComponent implements OnInit {
     ).subscribe(response => {
       if (response && response['success']) {
         if (this.decideWhetherLoaderOrNot(response['data'][0])) {
-            this.processorsTracelogs[jiraInd].executionOngoing = true;
-            this.jiraStatusContinuePulling = true
+          this.processorsTracelogs[jiraInd].executionOngoing = true;
+          this.jiraStatusContinuePulling = true
         } else {
           this.processorsTracelogs[jiraInd].executionOngoing = false;
           this.jiraStatusContinuePulling = false;
           this.getProcessorsTraceLogsForProject(this.selectedProject['id'])
         }
-        Object.assign(this.findTraceLogForTool('Jira'),response['data'][0])
+        Object.assign(this.findTraceLogForTool('Jira'), response['data'][0])
       }
     })
   }
 
-  resetLogs(){
+  resetLogs() {
     const jiraInd = this.findCorrectJiraDetails();
-      if(jiraInd !== -1){
-        this.processorsTracelogs[jiraInd].errorMessage = '';
-        this.processorsTracelogs[jiraInd].progressStatusList = [];
+    if (jiraInd !== -1) {
+      this.processorsTracelogs[jiraInd].errorMessage = '';
+      this.processorsTracelogs[jiraInd].progressStatusList = [];
 
-      }
-  }
-
-  findCorrectJiraDetails(){
-    const processorName = 'Jira';
-    const jiraCount = this.processorsTracelogs.filter(ptl => ptl['processorName'] == processorName).length;
-    if(jiraCount === 1){
-      return this.processorsTracelogs.findIndex(ptl => ptl['processorName'] == processorName);
-    }else if(jiraCount >= 1){
-       return this.processorsTracelogs.findIndex(ptl => ptl['processorName'] == processorName && ptl['progressStats'] === true);
-    }else{
-      this.processorsTracelogs.push({processorName : 'Jira',errorMessage : '',progressStatusList : [],executionOngoing : false,executionEndedAt : 0,isDeleteDisable : true});
-      return  this.processorsTracelogs.length;
     }
   }
 
-  decideWhetherLoaderOrNot(jiraLogDetails){
-    if(jiraLogDetails && jiraLogDetails?.executionOngoing && jiraLogDetails?.progressStatusList?.length){
+  findCorrectJiraDetails() {
+    const processorName = 'Jira';
+    const jiraCount = this.processorsTracelogs.filter(ptl => ptl['processorName'] == processorName).length;
+    if (jiraCount === 1) {
+      return this.processorsTracelogs.findIndex(ptl => ptl['processorName'] == processorName);
+    } else if (jiraCount >= 1) {
+      return this.processorsTracelogs.findIndex(ptl => ptl['processorName'] == processorName && ptl['progressStats'] === true);
+    } else {
+      this.processorsTracelogs.push({ processorName: 'Jira', errorMessage: '', progressStatusList: [], executionOngoing: false, executionEndedAt: 0, isDeleteDisable: true });
+      return this.processorsTracelogs.length;
+    }
+  }
+
+  decideWhetherLoaderOrNot(jiraLogDetails) {
+    if (jiraLogDetails && jiraLogDetails?.executionOngoing && jiraLogDetails?.progressStatusList?.length) {
       const logs = jiraLogDetails.progressStatusList;
-      const lastLOgTime = logs[logs.length-1].endTime;
+      const lastLOgTime = logs[logs.length - 1].endTime;
       const currentTime = new Date().getTime();
       const differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
-      if(differenceInMilliseconds > 600000){
+      if (differenceInMilliseconds > 600000) {
         return false;
-      }else if(differenceInMilliseconds <= 600000){
+      } else if (differenceInMilliseconds <= 600000) {
         return true;
-      }else{
+      } else {
         return false;
       }
-    }else{
+    } else {
       return false;
     }
 
