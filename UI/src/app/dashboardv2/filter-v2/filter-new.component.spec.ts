@@ -13419,4 +13419,260 @@ describe('FilterNewComponent', () => {
       summary: "Error in fetching processor's execution date. Please try after some time."
     });
   });
+
+  it('should update filterApplyData and selectedSprint when selectedTab is iteration', () => {
+    component.additionalFilterConfig = [
+      {
+        "type": "multiSelect",
+        "defaultLevel": {
+          "labelName": "sprint",
+          "sortBy": null
+        }
+      },
+      {
+        "type": "multiSelect",
+        "defaultLevel": {
+          "labelName": "sqd",
+          "sortBy": null
+        }
+      }
+    ];
+    component.selectedType = 'Type 1';
+    component.filterDataArr = {
+      'Type 1': {
+        'Level 1': {},
+        project: {},
+        sprint: [{ nodeId: 'sprint1', parentId: [1], sprintState: 'Closed' }]
+      }
+    };
+    const mockEvent = [
+      {
+        nodeId: 'sprint1',
+        sprintEndDate: '2022-06-30',
+        sprintStartDate: '2022-06-01'
+      }
+    ];
+
+    component.selectedTab = 'iteration';
+    component.filterApplyData = {};
+    component.selectedSprint = null;
+    component.additionalData = false;
+
+    component.handlePrimaryFilterChange(mockEvent);
+
+    expect(component.filterApplyData['ids']).toEqual(['sprint1']);
+    expect(component.selectedSprint).toEqual(mockEvent[0]);
+    expect(component.additionalData).toBe(true);
+  });
+
+  it('should set additionalData to false when selectedTab is not iteration', () => {
+    component.additionalFilterConfig = [
+      {
+        "type": "multiSelect",
+        "defaultLevel": {
+          "labelName": "sprint",
+          "sortBy": null
+        }
+      },
+      {
+        "type": "multiSelect",
+        "defaultLevel": {
+          "labelName": "sqd",
+          "sortBy": null
+        }
+      }
+    ];
+    component.selectedType = 'Type 1';
+    component.filterDataArr = {
+      'Type 1': {
+        'Level 1': {},
+        project: {},
+        sprint: [{ nodeId: 'sprint1', parentId: [1], sprintState: 'Closed' }]
+      }
+    };
+    const mockEvent = [
+      {
+        nodeId: 'sprint1',
+        sprintEndDate: '2022-06-30',
+        sprintStartDate: '2022-06-01'
+      }
+    ];
+
+    component.selectedTab = 'backlog';
+    component.additionalData = true;
+
+    component.handlePrimaryFilterChange(mockEvent);
+
+    expect(component.additionalData).toBe(false);
+  });
+
+  it('should call service.select with correct parameters when selectedLevel is a string', () => {
+    component.additionalFilterConfig = [
+      {
+        "type": "multiSelect",
+        "defaultLevel": {
+          "labelName": "sprint",
+          "sortBy": null
+        }
+      },
+      {
+        "type": "multiSelect",
+        "defaultLevel": {
+          "labelName": "sqd",
+          "sortBy": null
+        }
+      }
+    ];
+    component.selectedType = 'type1';
+    const mockEvent = [
+      {
+        nodeId: 'sprint1',
+        sprintEndDate: '2022-06-30',
+        sprintStartDate: '2022-06-01'
+      }
+    ];
+    component.filterDataArr = {
+      'type1': {
+        'Level1': {},
+        project: {},
+        sprint: [{ nodeId: 'sprint1', parentId: [1], sprintState: 'Closed' }]
+      }
+    };
+    component.selectedLevel = 'level 1';
+    component.masterData = {};
+    component.filterApplyData = {};
+    component.selectedTab = 'iteration';
+    component.boardData = {
+      configDetails: {}
+    };
+
+    spyOn(component.service, 'select');
+
+    component.handlePrimaryFilterChange(mockEvent);
+
+    expect(component.service.select).toHaveBeenCalledOnceWith(
+      component.masterData,
+      component.filterDataArr['type1'].level1,
+      component.filterApplyData,
+      component.selectedTab,
+      false,
+      true,
+      component.boardData['configDetails'],
+      true
+    );
+  });
+
+  it('should call service.select with correct parameters when selectedLevel is an object', () => {
+    component.additionalFilterConfig = [
+      {
+        "type": "multiSelect",
+        "defaultLevel": {
+          "labelName": "sprint",
+          "sortBy": null
+        }
+      },
+      {
+        "type": "multiSelect",
+        "defaultLevel": {
+          "labelName": "sqd",
+          "sortBy": null
+        }
+      }
+    ];
+    component.selectedType = 'type1';
+    component.filterDataArr = {
+      'type1': {
+        'Level1': [{ nodeId: 'level1'}],
+        project: {},
+        sprint: [{ nodeId: 'sprint1', parentId: [1], sprintState: 'Closed' }]
+      }
+    };
+    const mockEvent = [
+      {
+        nodeId: 'sprint1',
+        sprintEndDate: '2022-06-30',
+        sprintStartDate: '2022-06-01'
+      }
+    ];
+
+    component.selectedLevel = { emittedLevel: 'level1' };
+    component.masterData = {};
+    component.filterApplyData = {};
+    component.selectedTab = 'iteration';
+    component.boardData = {
+      configDetails: {}
+    };
+
+    spyOn(component.service, 'select');
+
+    component.handlePrimaryFilterChange(mockEvent);
+
+    expect(component.service.select).toHaveBeenCalledOnceWith(
+      component.masterData,
+      component.filterDataArr['type1'].level1,
+      component.filterApplyData,
+      component.selectedTab,
+      false,
+      true,
+      component.boardData['configDetails'],
+      true
+    );
+  });
+
+  it('should call service.select with correct parameters when selectedLevel is not defined', () => {
+    component.additionalFilterConfig = [
+      {
+        "type": "multiSelect",
+        "defaultLevel": {
+          "labelName": "sprint",
+          "sortBy": null
+        }
+      },
+      {
+        "type": "multiSelect",
+        "defaultLevel": {
+          "labelName": "sqd",
+          "sortBy": null
+        }
+      }
+    ];
+    component.selectedType = 'type1';
+    component.filterDataArr = {
+      'type1': {
+        project: [{ nodeId: 'project1'},{ nodeId: 'project2'}],
+        sprint: [{ nodeId: 'sprint1', parentId: [1], sprintState: 'Closed' }]
+      }
+    };
+    const mockEvent = [
+      {
+        nodeId: 'sprint1',
+        sprintEndDate: '2022-06-30',
+        sprintStartDate: '2022-06-01'
+      }
+    ];
+
+    component.selectedLevel = null;
+    component.masterData = {};
+    component.filterApplyData = {};
+    component.selectedTab = 'iteration';
+    component.kanban = true;
+    component.boardData = {
+      configDetails: {}
+    };
+
+    spyOn(component.service, 'select');
+
+    component.handlePrimaryFilterChange(mockEvent);
+
+    expect(component.service.select).toHaveBeenCalledOnceWith(
+      component.masterData,
+      component.filterDataArr['type1'].project,
+      component.filterApplyData,
+      component.selectedTab,
+      false,
+      true,
+      component.boardData['configDetails'],
+      true
+    );
+  });
 });
