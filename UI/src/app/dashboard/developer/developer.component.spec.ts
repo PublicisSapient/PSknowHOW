@@ -1241,6 +1241,53 @@ it('should call createCombinations', () => {
     expect(component.kpiChartData).toBeDefined();
   });
 
+  it('should populate kpiDropdowns with correct options when trendValueList has filter property', () => {
+    const mockKpiId = 'kpi1';
+    const mockTrendValueList = [
+      { value: [{ data: 'branch1' }], filter: 'filter1' },
+      { value: [{ data: 'branch2' }], filter: 'filter2' },
+      { value: [{ data: 'branch3' }], filter: 'filter1' },
+    ];
 
+    component.allKpiArray = [{ kpiId: mockKpiId, trendValueList: mockTrendValueList }];
+    component.colorObj = { color1: { nodeName: 'branch1' }, color2: { nodeName: 'branch2' } };
 
+    component.getDropdownArray(mockKpiId);
+
+    expect(component.kpiDropdowns[mockKpiId]).toEqual([
+      { filterType: 'Filter by Branch', options: ['filter1', 'filter2'] },
+    ]);
+  });
+
+  it('should not populate kpiDropdowns when trendValueList does not have filter or filter1 properties', () => {
+    const mockKpiId = 'kpi1';
+    const mockTrendValueList = [
+      { value: [{ data: 'branch1' }] },
+      { value: [{ data: 'branch2' }] },
+      { value: [{ data: 'branch3' }] },
+    ];
+
+    component.allKpiArray = [{ kpiId: mockKpiId, trendValueList: mockTrendValueList }];
+    component.colorObj = { color1: { nodeName: 'branch1' }, color2: { nodeName: 'branch2' } };
+
+    component.getDropdownArray(mockKpiId);
+
+    expect(component.kpiDropdowns[mockKpiId]).toBeUndefined();
+  });
+
+  it('should not populate kpiDropdowns when kpiId does not exist in allKpiArray', () => {
+    const mockKpiId = 'kpi1';
+    const mockTrendValueList = [
+      { value: [{ data: 'branch1' }], filter: 'filter1' },
+      { value: [{ data: 'branch2' }], filter: 'filter2' },
+      { value: [{ data: 'branch3' }], filter: 'filter1' },
+    ];
+
+    component.allKpiArray = [{ kpiId: 'kpi2', trendValueList: mockTrendValueList }];
+    component.colorObj = { color1: { nodeName: 'branch1' }, color2: { nodeName: 'branch2' } };
+
+    component.getDropdownArray(mockKpiId);
+
+    expect(component.kpiDropdowns[mockKpiId]).toBeUndefined();
+  });
 });
