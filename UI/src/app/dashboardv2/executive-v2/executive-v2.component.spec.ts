@@ -14759,4 +14759,54 @@ describe('ExecutiveV2Component', () => {
 
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual({ filter2: ['value1'] });
   });
+
+  it('should get table data for kpi when trendValueList dont have filter when kpi name is availiable', () => {
+    component.allKpiArray = [{
+      kpiName : 'abc'
+    }];
+    component.kpiTableHeadingArr = fakeKpiTableHeadingArray;
+    component.noOfDataPoints = 5;
+    component.colorObj = {
+      "AddingIterationProject_64e739541426ba469c39c102": {
+        "nodeName": "AddingIterationProject",
+        "color": "#079FFF"
+      }
+    };
+    component.kpiTableDataObj['AddingIterationProject'] = [];
+    const enabledKpi = {
+      'kpiDetail': {
+        'xaxisLabel': 'Sprints'
+      },
+      'isEnabled': true,
+      'shown': true,
+      "order": '1'
+    }
+    const returnedObj = {
+      'AddingIterationProject': [{
+        "1": "122.6",
+        "2": "126.9",
+        "3": "176.5",
+        "4": "83.3",
+        "5": "57.7",
+        "kpiId": "kpi14",
+        "kpiName": "Defect Injection Rate",
+        "frequency": "Sprints",
+        "show": true,
+        "hoverText": [
+          "1 - DRP Sprint 71_AddingIterationProject",
+          "2 - DRP Sprint 72_AddingIterationProject",
+          "3 - DRP Sprint 73_AddingIterationProject",
+          "4 - DRP Sprint 74_AddingIterationProject",
+          "5 - DRP Sprint 75_AddingIterationProject"
+        ],
+        "latest": "85 %",
+        "trend": "-ve",
+        "maturity": "M3",
+        "order": '1'
+      }]
+    }
+  
+    component.getTableData('kpi14', 0, enabledKpi);
+    expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
+  });
 });
