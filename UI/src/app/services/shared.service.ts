@@ -90,6 +90,7 @@ export class SharedService {
   fieldMappingOptionsMetaData : any = []
   kpiCardView : string = "chart";
   maturityTableLoader = new Subject<boolean>();
+  globalConfigData = {}
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -369,6 +370,14 @@ export class SharedService {
 
   getAddtionalFilterBackup(){
     return this.addtionalFilterBackup;
+  }
+
+  setGlobalConfigData(data) {
+    this.globalConfigData = data;
+  }
+
+  getGlobalConfigData() {
+    return this.globalConfigData;
   }
 }
 
