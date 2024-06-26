@@ -12769,13 +12769,15 @@ describe('FilterNewComponent', () => {
   });
 
   it('should subscribe to globalDashConfigData and process boardData', () => {
+    component.selectedTab = 'release';
+    component.selectedType = 'kanban';
     spyOn(sharedService.globalDashConfigData, 'subscribe').and.callFake(callback => {
       callback(boardData);
     });
     spyOn(component, 'processBoardData');
 
     component.ngOnInit();
-
+    expect(component.selectedType).toEqual('scrum');
     expect(component.processBoardData).toHaveBeenCalledWith(boardData);
   });
 
