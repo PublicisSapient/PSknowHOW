@@ -13030,7 +13030,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = '-- --';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -13066,7 +13066,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = '-ve';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -13092,7 +13092,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = 'NA';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -13120,7 +13120,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = 'NA';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -13141,7 +13141,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = 'NA';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -13734,22 +13734,6 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled()
   })
 
-  it('should aggregate the values correctly for a single data array', () => {
-    const mockData = [
-      {
-        label: 'Label 1',
-        value: [
-          { label: 'Value 1', value: 10, hoverValue: { field1: 'value1', field2: 'value2' } },
-          { label: 'Value 2', value: 20, hoverValue: { field1: 'value3', field2: 'value4' } }
-        ]
-      }
-    ];
-
-    const result = component.applyAggregationForChart(mockData);
-
-    expect(result).toEqual(mockData);
-  });
-
 
   it('should get chartdataforRelease for kpi when trendValueList is an Array of two filters for card', () => {
     component.allKpiArray = [{
@@ -13770,7 +13754,8 @@ describe('ExecutiveV2Component', () => {
     expect(spyObj).toHaveBeenCalled();
   })
 
-  it('should get chartdataforRelease for kpi when trendValueList is an Array of two filters for chart', () => {
+
+  it('should get chartdataforRelease for kpi when trendValueList is an Array of two filters for card and kpiSelectedFilters have only 1 filter', () => {
     component.allKpiArray = [{
       kpiId: 'kpi124',
       trendValueList: [
@@ -13780,12 +13765,10 @@ describe('ExecutiveV2Component', () => {
       ]
     }];
     component.kpiSelectedFilterObj['kpi124'] = {
-      filter1: ['hold', 'in progress'],
-      filter2: ['f2']
+      filter1: ['hold', 'in progress']
     }
-
-    const spyObj = spyOn(component, 'applyAggregationForChart');
-    spyOn(component, 'getKpiChartType').and.returnValue('GroupBarChart')
+    const spyObj = spyOn(component, 'applyAggregationLogic');
+    spyOn(component, 'getKpiChartType').and.returnValue('abc')
     component.getChartDataforRelease('kpi124', 0)
     expect(spyObj).toHaveBeenCalled();
   })
@@ -14015,38 +13998,45 @@ describe('ExecutiveV2Component', () => {
     expect(result).toEqual(expectedAggregatedData);
   });
 
-  it('should apply aggregation for chart correctly for a single data array', () => {
-    const mockData = [
-      {
-        label: 'Label 1',
-        value: [
-          { label: 'Value 1', value: 10, hoverValue: { field1: 'value1', field2: 'value2' } },
-          { label: 'Value 2', value: 20, hoverValue: { field1: 'value3', field2: 'value4' } }
-        ]
-      }
-    ];
-
-    const expectedAggregatedData = [
-      {
-        label: 'Label 1',
-        value: [
-          { label: 'Value 1', value: 10, hoverValue: { field1: 'value1', field2: 'value2' } },
-          { label: 'Value 2', value: 20, hoverValue: { field1: 'value3', field2: 'value4' } }
-        ]
-      }
-    ];
-
-    const result = component.applyAggregationForChart(mockData);
-
-    expect(result).toEqual(expectedAggregatedData);
-  });
-
   it('should get table data for kpi when trendValueList dont have filter', () => {
-    component.allKpiArray = fakeAllKpiArrayForTableData;
+    component.allKpiArray = [{
+      "kpiId": "kpi172",
+      "kpiName": "Build Frequency",
+      "unit": "",
+      "chartType": "",
+      "id": "65eeb08194c86b415f978935",
+      "isDeleted": "False",
+      "kpiUnit": "",
+      "kanban": false,
+      "kpiSource": "Jenkins",
+      "thresholdValue": 8,
+      "maturityRange": [
+        "1-2",
+        "2-4",
+        "5-8",
+        "8-10",
+        "10-"
+      ],
+      "groupId": 1,
+      "trendValueList": [],
+      "maxValue": "",
+      "kpiInfo": {
+        "definition": "Build frequency refers the number of successful builds done in a specific time frame.",
+        "details": [
+          {
+            "type": "link",
+            "kpiLinkDetail": {
+              "text": "Detailed Information at",
+              "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/92930049/Build+Frequency"
+            }
+          }
+        ]
+      }
+    }];
     component.kpiTableHeadingArr = fakeKpiTableHeadingArray;
     component.noOfDataPoints = 5;
     component.colorObj = {
-      "AddingIterationProject": {
+      "AddingIterationProject_64e739541426ba469c39c102": {
         "nodeName": "AddingIterationProject",
         "color": "#079FFF"
       }
@@ -14059,8 +14049,21 @@ describe('ExecutiveV2Component', () => {
       'isEnabled': true,
       'shown': true,
       "order": '1',
-      "kpiId": "kpi14"
+      "kpiId": "kpi172"
     }
+
+    component.kpiTrendsObj = {
+      kpi172: [
+        {
+          "hierarchyName": "AddingIterationProject",
+          "value": "66.7 %",
+          "trend": "+ve",
+          "maturity": "M4",
+          "maturityValue": "65.03",
+          "kpiUnit": "%"
+        }
+      ]
+    };
     const returnedObj = {
       'AddingIterationProject': [{
         "1": "122.6",
@@ -14068,7 +14071,7 @@ describe('ExecutiveV2Component', () => {
         "3": "176.5",
         "4": "83.3",
         "5": "57.7",
-        "kpiId": "kpi14",
+        "kpiId": "kpi172",
         "kpiName": "Defect Injection Rate",
         "frequency": "Sprints",
         "show": true,
@@ -14086,7 +14089,7 @@ describe('ExecutiveV2Component', () => {
       }]
     }
 
-    component.getTableData('kpi14', 0, enabledKpi);
+    component.getTableData('kpi172', 0, enabledKpi);
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
   });
 
