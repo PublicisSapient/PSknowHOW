@@ -13389,6 +13389,34 @@ describe('FilterNewComponent', () => {
     expect(component.handlePrimaryFilterChange).toHaveBeenCalledWith(component.previousFilterEvent);
   });
 
-  // Add more test cases as needed
+  it('should set processor log details when response is successful', () => {
+    const mockBasicProjectConfigId = '123';
+    const mockResponse = { success: true, data: { /* mock data */ } };
 
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(mockResponse));
+    spyOn(component.service, 'setProcessorLogDetails');
+
+    component.previousFilterEvent = [{ basicProjectConfigId: mockBasicProjectConfigId }];
+    component.getProcessorsTraceLogsForProject();
+
+    expect(httpService.getProcessorsTraceLogsForProject).toHaveBeenCalledWith(mockBasicProjectConfigId);
+    expect(component.service.setProcessorLogDetails).toHaveBeenCalledWith(mockResponse.data);
+  });
+
+  it('should show error message when response is not successful', () => {
+    const mockBasicProjectConfigId = '123';
+    const mockResponse = { success: false };
+
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(mockResponse));
+    spyOn(messageService, 'add');
+
+    component.previousFilterEvent = [{ basicProjectConfigId: mockBasicProjectConfigId }];
+    component.getProcessorsTraceLogsForProject();
+
+    expect(httpService.getProcessorsTraceLogsForProject).toHaveBeenCalledWith(mockBasicProjectConfigId);
+    expect(messageService.add).toHaveBeenCalledOnceWith({
+      severity: 'error',
+      summary: "Error in fetching processor's execution date. Please try after some time."
+    });
+  });
 });

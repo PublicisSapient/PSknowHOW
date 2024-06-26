@@ -50,7 +50,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   subject = new Subject();
   constructor(
     private httpService: HttpService,
-    private service: SharedService,
+    public service: SharedService,
     private helperService: HelperService,
     public cdr: ChangeDetectorRef,
     private messageService: MessageService,) { }

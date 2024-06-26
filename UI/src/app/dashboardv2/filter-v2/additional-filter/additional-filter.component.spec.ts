@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AdditionalFilterComponent } from './additional-filter.component';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -363,4 +363,47 @@ describe('AdditionalFilterComponent', () => {
     expect(sharedService.applyAdditionalFilters).toHaveBeenCalledWith(2);
   });
 
+  it('should apply default filter when Overall is present in filterData', fakeAsync(() => {
+    const mockFilterData = [
+      { nodeId: 'Overall', nodeName: 'Overall' },
+      { nodeId: 'Node 1', nodeName: 'Node 1' },
+      { nodeId: 'Node 2', nodeName: 'Node 2' }
+    ];
+
+    spyOn(component, 'applyAdditionalFilter');
+
+    component.filterData = mockFilterData;
+    component.applyDefaultFilter();
+    tick(100);
+    expect(component.filterData[0].nodeName).toEqual('Overall');
+    expect(component.selectedFilters).toEqual(['Overall']);
+    expect(component.applyAdditionalFilter).toHaveBeenCalledOnceWith({ value: 'Overall' }, 1);
+  }));
+
+  it('should apply default filter when Overall is not present in filterData', fakeAsync(() => {
+    const mockFilterData = [
+      [{ nodeId: 'Node 1', nodeName: 'Node 1' }],
+      [{ nodeId: 'Node 2', nodeName: 'Node 2' }]
+    ];
+
+    spyOn(component, 'applyAdditionalFilter');
+
+    component.filterData = mockFilterData;
+    component.applyDefaultFilter();
+    tick(100);
+    expect(component.filterData[0][0].nodeId).toEqual('Node 1');
+    expect(component.selectedFilters).toEqual([{ nodeId: 'Node 1', nodeName: 'Node 1' }]);
+    expect(component.applyAdditionalFilter).toHaveBeenCalledOnceWith({ value: 'Node 1' }, 1);
+  }));
+
+  it('should apply default filter when filterData is empty', fakeAsync(() => {
+    spyOn(component, 'applyAdditionalFilter');
+
+    component.filterData = [];
+    component.applyDefaultFilter();
+    tick(100);
+    expect(component.filterData).toEqual([]);
+    expect(component.selectedFilters).toEqual(['Overall']);
+    expect(component.applyAdditionalFilter).toHaveBeenCalledOnceWith({ value: 'Overall' }, 1);
+  }));
 });
