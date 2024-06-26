@@ -24,11 +24,8 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
-import { distinctUntilChanged, filter, mergeMap } from 'rxjs/operators';
-import * as Excel from 'exceljs';
-import * as fs from 'file-saver';
+import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
-declare let require: any;
 
 @Component({
   selector: 'app-executive-v2',

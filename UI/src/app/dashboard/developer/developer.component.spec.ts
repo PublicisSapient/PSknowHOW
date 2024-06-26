@@ -48,6 +48,7 @@ const masterData = require('../../../test/resource/masterData.json');
 const filterData = require('../../../test/resource/filterData.json');
 const fakeDeveloperTabData = require('../../../test/resource/fakeDeveloperTabData.json');
 const dashConfigData = require('../../../test/resource/fakeShowHideApi.json').data;
+const fakeDoraKpiFilters = require('../../../test/resource/fakeDoraKpiFilters.json');
 const filterApplyDataWithScrum = {
   kpiList: [
     {
@@ -1065,6 +1066,180 @@ it('should call createCombinations', () => {
     component.getChartData('kpi17',0,'sum');
     expect(component.kpiChartData['kpi17'].length).toBeGreaterThan(0)
   })
+
+
+  it('should getchartdata for kpi when trendValueList is arry with two filter', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi118',
+      trendValueList: [
+        {
+          filter1: "f1",
+          filter2: "f2",
+
+        }
+      ]
+    }];
+    component.kpiSelectedFilterObj['kpi118'] = {
+      filter1: "f1",
+      filter2: "f2",
+    }
+    const res = fakeDoraKpiFilters;
+    component.tooltip = {
+      'percentile': 90
+    };
+    spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+    spyOn(component, 'createCombinations').and.returnValue([{ filter1: 'f1', filter2: 'filter2' }])
+    component.getChartData('kpi118', 0, 'sum')
+    expect(component.kpiChartData).toBeDefined();
+  });
+
+  it('should getchartdata for kpi when trendValueList is arry with any one i.e filter1', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi118',
+      trendValueList: [
+        {
+          filter1: "f1",
+
+        }
+      ]
+    }];
+    component.kpiSelectedFilterObj['kpi118'] = {
+      filter1: "f1",
+    }
+    const res = fakeDoraKpiFilters;
+    component.tooltip = {
+      'percentile': 90
+    };
+    spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+    spyOn(component, 'createCombinations').and.returnValue([{ filter1: 'f1', filter2: 'filter2' }])
+    component.getChartData('kpi118', 0, 'sum')
+    expect(component.kpiChartData).toBeDefined();
+  });
+
+  xit('should getchartdata for kpi when kpiSelectedFilterObj do not have filter1 and filter2', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi118',
+      trendValueList: [
+        {
+          filter1: "f1",
+
+        }
+      ]
+    }];
+    component.kpiSelectedFilterObj['kpi118'] = {
+      filter: "f1",
+    }
+    const res = fakeDoraKpiFilters;
+    component.tooltip = {
+      'percentile': 90
+    };
+    spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+    spyOn(component, 'createCombinations').and.returnValue([{ filter1: 'f1', filter2: 'filter2' }])
+    component.getChartData('kpi118', 0, 'sum')
+    expect(component.kpiChartData).toBeDefined();
+  });
+
+  it('should getchartdata for kpi17', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi17',
+      trendValueList: [
+        {
+          filter: "f1",
+          value: [{ value: 5 }]
+        },
+        {
+          filter: "f2",
+          value: [{ value: 10 }]
+        }
+      ]
+    }];
+    component.kpiSelectedFilterObj['kpi17'] = ['f1', 'f2']
+    const res = fakeDoraKpiFilters;
+    component.tooltip = {
+      'percentile': 90
+    };
+    spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+    spyOn(component, 'createCombinations').and.returnValue([{ filter1: 'f1', filter2: 'filter2' }])
+    component.getChartData('kpi17', 0, 'sum')
+    expect(component.kpiChartData).toBeDefined();
+  });
+
+  it('should getchartdata for kpi17 and filter is average coverage', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi17',
+      trendValueList: [
+        {
+          filter: "average coverage",
+          value: [{ value: 5 }]
+        },
+        {
+          filter: "f2",
+          value: [{ value: 10 }]
+        }
+      ]
+    }];
+    component.kpiSelectedFilterObj['kpi17'] = ['average coverage']
+    const res = fakeDoraKpiFilters;
+    component.tooltip = {
+      'percentile': 90
+    };
+    spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+    spyOn(component, 'createCombinations').and.returnValue([{ filter1: 'f1', filter2: 'filter2' }])
+    component.getChartData('kpi17', 0, 'sum')
+    expect(component.kpiChartData).toBeDefined();
+  });
+
+  it('should preapare column of kpi3', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi3',
+      trendValueList: [
+        {
+          filter: "average coverage",
+          value: [{
+            value: [
+              { data: 0 }
+            ]
+          }]
+        },
+        {
+          filter: "f2",
+          value: [{ value: 10 }]
+        }
+      ]
+    }];
+    component.hierarchyLevel = [
+      {
+        hierarchyLevelName: "h1"
+      }, {
+        hierarchyLevelName: "h2"
+      }
+    ]
+    component.filterApplyData = {
+      ids: [
+        'bittest_corporate'
+      ],
+      sprintIncluded: [
+        'CLOSED'
+      ],
+      selectedMap: {
+        business: [],
+        account: [],
+        subaccount: [],
+        project: [],
+        sprint: [],
+        sqd: []
+      },
+      level: 1
+    },
+      component.kpiSelectedFilterObj['kpi3'] = ['average coverage'];
+    component.tooltip = {
+      'percentile': 90
+    };
+    spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+    spyOn(component, 'createCombinations').and.returnValue([{ filter1: 'f1', filter2: 'filter2' }])
+    component.getChartData('kpi3', 0, 'sum')
+    expect(component.kpiChartData).toBeDefined();
+  });
 
 
 
