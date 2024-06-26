@@ -593,42 +593,29 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
   // post request of Jira(scrum)
   postJiraKpi(postData, source): void {
-
-    postData.kpiList.forEach(element => {
-      this.loaderJiraArray.push(element.kpiId);
-    });
-
+    this.loaderJiraArray = [...postData.kpiList.map(element => element.kpiId)];
     this.jiraKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
-        if (getData !== null && getData[0] !== 'error' && !getData['error']) {
-          const releaseFrequencyInd = getData.findIndex(de => de.kpiId === 'kpi73')
+        this.loaderJiraArray = this.loaderJiraArray.filter(kpiId => !getData.some(de => de.kpiId === kpiId));
+        if (getData !== null && !getData['error']) {
+          const releaseFrequencyInd = getData.findIndex(de => de.kpiId === 'kpi73');
           if (this.filterApplyData['label'] !== 'sprint') {
             this.getLastConfigurableTrendingListData(getData);
           }
           if (releaseFrequencyInd !== -1) {
-            getData[releaseFrequencyInd].trendValueList?.map(trendData => {
-              const valueLength = trendData.value.length;
-              if (valueLength > this.tooltip.sprintCountForKpiCalculation) {
-                trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
-              }
-            })
+            getData[releaseFrequencyInd].trendValueList?.forEach(trendData => {
+              trendData.value.splice(0, trendData.value.length - this.tooltip.sprintCountForKpiCalculation);
+            });
           }
-          // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
-          for (const kpi in localVariable) {
-            this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(kpi), 1);
-          }
           if (localVariable && localVariable['kpi3'] && localVariable['kpi3'].maturityValue) {
             this.colorAccToMaturity(localVariable['kpi3'].maturityValue);
           }
 
-          this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
+          this.jiraKpiData = {...this.jiraKpiData, ...localVariable};
           this.createAllKpiArray(localVariable);
         } else {
           this.jiraKpiData = getData;
-          postData.kpiList.forEach(element => {
-            this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(element.kpiId), 1);
-          });
         }
         this.kpiLoader = false;
       });
