@@ -158,7 +158,7 @@ a{
 body {
   background-color: #dedede;
   /* overflow-x: hidden; */
-  
+
   overflow: auto;
 }
 
@@ -1577,10 +1577,6 @@ a:hover {
   background: #ffffff !important;
   padding: 20px;
 }
-.dashboard-config-tabs .p-tabview.p-component {
-  background: #fff !important;
-  padding: 20px;
-}
 .dashboard-config-tabs .p-tabview .p-tabview-nav li {
   margin-right: 15px !important;
   position: relative;
@@ -1718,9 +1714,6 @@ a:hover {
   background: #079FFF !important;
   width: 7px !important;
   height: 7px !important;
-}
-.date-filter-dropdown .p-radiobutton.p-radiobutton-checked .p-radiobutton-box {
-  border-color: #079FFF !important;
 }
 .date-filter-dropdown .p-radiobutton.p-radiobutton-checked .p-radiobutton-box {
   border-color: #079FFF !important;

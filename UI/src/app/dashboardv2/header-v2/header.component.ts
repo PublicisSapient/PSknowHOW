@@ -66,14 +66,11 @@ export class HeaderComponent implements OnInit {
   // when user would want to give access on project from notification list
   routeForAccess(type: string) {
     if (this.ifSuperUser || this.ifProjectAdmin) {
-      // this.isAdmin = true;
       switch (type) {
         case 'Project Access Request':
-          // this.service.setSideNav(false);
           this.router.navigate(['/dashboard/Config/Profile/GrantRequests']);
           break;
         case 'User Access Request':
-          // this.service.setSideNav(false);
           this.router.navigate(['/dashboard/Config/Profile/GrantNewUserAuthRequests']);
           break;
         default:
