@@ -13714,26 +13714,12 @@ describe('ExecutiveV2Component', () => {
       unsubscribe: jasmine.createSpy('unsubscribe'),
     };
     component.sonarKpiRequest = mockSubscription;
-    spyOn(httpService, 'postKpi').and.returnValue(of(postData.kpiList));
+    spyOn(httpService, 'postKpiKanban').and.returnValue(of(postData.kpiList));
     const spy = spyOn(component, 'afterSonarKpiResponseReceived');
-    component.postSonarKpi(postData, 'sonar');
+    component.postSonarKanbanKpi(postData, 'sonar');
     tick();
     expect(spy).toHaveBeenCalledWith(successRes, postData);
   }));
-
-  xit('should group bitbucket kpi', () => {
-    const kpiIds = ['kpi74'];
-    component.filterData = filterData;
-    component.selectedTab = 'speed';
-    component.filterApplyData = filterApplyDataWithScrum;
-    component.updatedConfigGlobalData = configGlobalData;
-    component.kpiBitBucket = spyOn(helperService, 'groupKpiFromMaster').and.callThrough();
-
-    const spy = spyOn(component, 'postBitBucketKpi');
-    component.groupBitBucketKpi(kpiIds);
-    expect(spy).toHaveBeenCalled()
-  })
-
 
   it('should get chartdataforRelease for kpi when trendValueList is an Array of two filters for card', () => {
     component.allKpiArray = [{
@@ -14093,4 +14079,75 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
   });
 
+  it('should group Jira kanban kpi', () => {
+    const kpiListJiraKanban = [{
+      id: '64c27a3b1d26a19187772b2e',
+      kpiId: 'kpi54',
+      kpiName: 'Ticket Open vs Closed rate by Priority'
+    }, {
+      id: '64c27a3b1d26a19187772b2d',
+      kpiId: 'kpi55',
+      kpiName: 'Ticket Open vs Closed rate by type'
+    }];
+    component.jiraKpiData = {};
+    component.masterData = fakeMasterData;
+    component.kpiJira = {};
+    spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJiraKanban });
+    const spy = spyOn(component, 'postJiraKanbanKpi');
+    component.groupJiraKanbanKpi(['kpi54', 'kpi55']);
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should group Sonar kanban kpi', () => {
+    const kpiListSonarKanban = [{
+      id: '64c27a3b1d26a19187772b2e',
+      kpiId: 'kpi62',
+      kpiName: 'Unit Test Coverage'
+    }];
+    component.kpiListSonar = {};
+    component.masterData = fakeMasterData;
+    spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListSonarKanban });
+    const spy = spyOn(component, 'postSonarKanbanKpi');
+    component.groupSonarKanbanKpi(['kpi62']);
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should group Jenkins kanban kpi', () => {
+    const kpiListJenkinsKanban = [{
+      id: '64c27a3b1d26a19187772b3a',
+      kpiId: 'kpi66',
+      kpiName: 'Code Build Time'
+    }];
+    component.masterData = fakeMasterData;
+    spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJenkinsKanban });
+    const spy = spyOn(component, 'postJenkinsKanbanKpi');
+    component.groupJenkinsKanbanKpi(['kpi66']);
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should group Zypher kanban kpi', () => {
+    const kpiListZypherKanban = [{
+      id: '64c27a3b1d26a19187772b33',
+      kpiId: 'kpi63',
+      kpiName: 'Regression Automation Coverage'
+    }];
+    component.masterData = fakeMasterData;
+    spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListZypherKanban });
+    const spy = spyOn(component, 'postZypherKanbanKpi');
+    component.groupZypherKanbanKpi(['kpi63']);
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should group Bitbucket kanban kpi', () => {
+    const kpiListBitbucketKanban = [{
+      id: '64c27a3b1d26a19187772b3b',
+      kpiId: 'kpi65',
+      kpiName: 'Number of Check-ins'
+    }];
+    component.masterData = fakeMasterData;
+    spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListBitbucketKanban });
+    const spy = spyOn(component, 'postBitBucketKanbanKpi');
+    component.groupBitBucketKanbanKpi(['kpi65']);
+    expect(spy).toHaveBeenCalled();
+  })
 });
