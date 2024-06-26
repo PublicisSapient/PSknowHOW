@@ -8057,36 +8057,33 @@ describe('ExecutiveV2Component', () => {
     expect(spyJenkins).toHaveBeenCalled();
   });
 
-  // it('should make post Sonar call', fakeAsync(() => {
-  //   const postData = {
-  //     kpiList: [
-  //       {
-  //         id: '633ed17f2c2d5abef2451fe3',
-  //         kpiId: 'kpi17',
-  //         kpiName: 'Unit Test Coverage',
-  //       },
-  //       {
-  //         id: '633ed17f2c2d5abef2451fe4',
-  //         kpiId: 'kpi38',
-  //         kpiName: 'Sonar Violations'
-  //       },
-  //       {
-  //         id: '633ed17f2c2d5abef2451fe5',
-  //         kpiId: 'kpi27',
-  //         kpiName: 'Sonar Tech Debt',
-  //       }
-  //     ]
-  //   };
-  //   const mockSubscription = {
-  //     unsubscribe: jasmine.createSpy('unsubscribe'),
-  //   };
-  //   component.sonarKpiRequest = mockSubscription;
-  //   spyOn(httpService, 'postKpi').and.returnValue(of(postData.kpiList));
-  //   const spy = spyOn(component, 'afterSonarKpiResponseReceived');
-  //   component.postSonarKpi(postData, 'Sonar');
-  //   tick();
-  //   expect(spy).toHaveBeenCalledWith(postData.kpiList);
-  // }));
+  it('should make post Sonar call', fakeAsync(() => {
+    const postData = {
+      kpiList: [
+        {
+          id: '633ed17f2c2d5abef2451fe3',
+          kpiId: 'kpi17',
+          kpiName: 'Unit Test Coverage',
+        },
+      ]
+    };
+    const successRes = [
+      {
+        "kpiId": "kpi17",
+        "kpiName": "Unit Test Coverage",
+        "id": "633ed17f2c2d5abef2451fe3",
+      }
+    ]
+    const mockSubscription = {
+      unsubscribe: jasmine.createSpy('unsubscribe'),
+    };
+    component.sonarKpiRequest = mockSubscription;
+    spyOn(httpService, 'postKpi').and.returnValue(of(postData.kpiList));
+    const spy = spyOn(component, 'afterSonarKpiResponseReceived');
+    component.postSonarKpi(postData, 'Sonar');
+    tick();
+    expect(spy).toHaveBeenCalledWith(successRes, postData);
+  }));
 
   // it('should make post Sonar Kanban Kpi call', fakeAsync(() => {
   //   const postData = {
@@ -13695,4 +13692,45 @@ describe('ExecutiveV2Component', () => {
     expect(component.additionalFiltersArr).toEqual(additionalFiltersArr);
 
   });
+
+  it('should make post Sonar Kanban Kpi call', fakeAsync(() => {
+    const postData = {
+      kpiList: [
+        {
+          id: '633ed17f2c2d5abef2451fe3',
+          kpiId: 'kpi17',
+          kpiName: 'Unit Test Coverage',
+        },
+      ]
+    };
+    const successRes = [
+      {
+        "kpiId": "kpi17",
+        "kpiName": "Unit Test Coverage",
+        "id": "633ed17f2c2d5abef2451fe3",
+      }
+    ]
+    const mockSubscription = {
+      unsubscribe: jasmine.createSpy('unsubscribe'),
+    };
+    component.sonarKpiRequest = mockSubscription;
+    spyOn(httpService, 'postKpi').and.returnValue(of(postData.kpiList));
+    const spy = spyOn(component, 'afterSonarKpiResponseReceived');
+    component.postSonarKpi(postData, 'sonar');
+    tick();
+    expect(spy).toHaveBeenCalledWith(successRes, postData);
+  }));
+
+  xit('should group bitbucket kpi', () => {
+    const kpiIds = ['kpi74'];
+    component.filterData = filterData;
+    component.selectedTab = 'speed';
+    component.filterApplyData = filterApplyDataWithScrum;
+    component.updatedConfigGlobalData = configGlobalData;
+    component.kpiBitBucket = spyOn(helperService, 'groupKpiFromMaster').and.callThrough();
+    
+    const spy = spyOn(component, 'postBitBucketKpi');
+    component.groupBitBucketKpi(kpiIds);
+    expect(spy).toHaveBeenCalled()
+  })
 });
