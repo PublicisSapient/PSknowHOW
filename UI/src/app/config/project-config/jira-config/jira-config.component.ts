@@ -228,41 +228,41 @@ export class JiraConfigComponent implements OnInit {
   }
 
   getDeploymentProjects(connectionId) {
-    if (connectionId) {
-      const self = this;
-      this.showLoadingOnFormElement('deploymentProject');
+    if (!connectionId) return;
 
-      this.http.getDeploymentProjectsForBamboo(connectionId).subscribe((response) => {
-        try {
-          if (response.success) {
-            self.deploymentProjectList = response.data.map(element => ({
-              name: element.deploymentProjectName,
-              code: element.deploymentProjectId
-            }));
+    const self = this;
+    this.showLoadingOnFormElement('deploymentProject');
 
-          } else {
-            self.deploymentProjectList = [];
-            if (this.toolForm.controls['jobType'].value && this.toolForm.controls['jobType'].value.name === 'Deploy') {
-              self.messenger.add({
-                severity: 'error',
-                summary: response.message,
-              });
-            }
-          }
-          this.hideLoadingOnFormElement('deploymentProject');
-        } catch (error) {
+    this.http.getDeploymentProjectsForBamboo(connectionId).subscribe((response) => {
+      try {
+        if (response.success) {
+          self.deploymentProjectList = response.data.map(element => ({
+            name: element.deploymentProjectName,
+            code: element.deploymentProjectId
+          }));
+
+        } else {
           self.deploymentProjectList = [];
-          if (this.toolForm?.controls['jobType'].value && this.toolForm?.controls['jobType'].value.name === 'Deploy') {
+          if (this.toolForm.controls['jobType'].value && this.toolForm.controls['jobType'].value.name === 'Deploy') {
             self.messenger.add({
               severity: 'error',
-              summary: error.message,
+              summary: response.message,
             });
           }
-          this.hideLoadingOnFormElement('deploymentProject');
-
         }
-      });
-    }
+        this.hideLoadingOnFormElement('deploymentProject');
+      } catch (error) {
+        self.deploymentProjectList = [];
+        if (this.toolForm?.controls['jobType'].value && this.toolForm?.controls['jobType'].value.name === 'Deploy') {
+          self.messenger.add({
+            severity: 'error',
+            summary: error.message,
+          });
+        }
+        this.hideLoadingOnFormElement('deploymentProject');
+
+      }
+    });
   }
 
   getJenkinsJobNames(connectionId) {
@@ -703,47 +703,35 @@ export class JiraConfigComponent implements OnInit {
 
   jobTypeChangeHandler = (value: string, elementId?) => {
     value = value['name'] || value;
-    switch (this.urlParam) {
-      case 'Bamboo':
-        if (value.toLowerCase() === 'build') {
-          const planField = this.formTemplate?.elements?.find(element => element.id === 'planName');
-          if (this.bambooPlanList?.length == 0 && !planField?.isLoading) {
-            this.messenger.add({
-              severity: 'error',
-              summary: 'No plan details found',
-            });
-          }
-          this.hideFormElements(['deploymentProject',]);
-          this.showFormElements(['planName', 'planKey', 'branchName', 'branchKey']);
-        } else if (value.toLowerCase() === 'deploy') {
-          this.showFormElements(['deploymentProject']);
-          this.hideFormElements(['planName', 'planKey', 'branchName', 'branchKey']);
-        }
-        break;
-      case 'AzurePipeline':
+    const formElements = this.formTemplate?.elements;
+    const lowerValue = value.toLowerCase();
+    const planField = formElements?.find(element => element.id === 'planName');
 
-        if (value.toLowerCase() === 'build') {
-          this.getAzureBuildPipelines(this.selectedConnection);
-        } else if (value.toLowerCase() === 'deploy') {
-          this.getAzureReleasePipelines(this.selectedConnection);
-        }
+    if (this.urlParam === 'Bamboo') {
+      this.hideFormElements(lowerValue === 'build' ? ['deploymentProject'] : ['planName', 'planKey', 'branchName', 'branchKey']);
+      this.showFormElements(lowerValue === 'build' ? ['planName', 'planKey', 'branchName', 'branchKey'] : ['deploymentProject']);
+    }
 
-        break;
-      case 'Jenkins':
+    if (this.urlParam === 'AzurePipeline') {
+      const pipelineMethod = lowerValue === 'build' ? this.getAzureBuildPipelines : this.getAzureReleasePipelines;
+      pipelineMethod.call(this, this.selectedConnection);
+    }
 
-        if (value.toLowerCase() === 'build') {
-          this.hideFormElements(['parameterNameForEnvironment']);
-        } else if (value.toLowerCase() === 'deploy') {
-          this.showFormElements(['parameterNameForEnvironment']);
-        }
-        break;
-      case 'GitHubAction':
-        if (value.toLowerCase() === 'build') {
-          this.showFormElements(['workflowID']);
-        } else {
-          this.hideFormElements(['workflowID']);
-        }
-        break;
+    if (this.urlParam === 'Jenkins') {
+      this.hideFormElements(lowerValue === 'build' ? ['parameterNameForEnvironment'] : []);
+      this.showFormElements(lowerValue === 'deploy' ? ['parameterNameForEnvironment'] : []);
+    }
+
+    if (this.urlParam === 'GitHubAction') {
+      this.showFormElements(lowerValue === 'build' ? ['workflowID'] : []);
+      this.hideFormElements(lowerValue === 'deploy' ? ['workflowID'] : []);
+    }
+
+    if (this.urlParam === 'Bamboo' && lowerValue === 'build' && planField?.isLoading && !this.bambooPlanList?.length) {
+      this.messenger.add({
+        severity: 'error',
+        summary: 'No plan details found',
+      });
     }
   };
 
@@ -2236,7 +2224,7 @@ export class JiraConfigComponent implements OnInit {
           };
         }
         break;
-        case 'ArgoCD':
+      case 'ArgoCD':
         {
           this.formTitle = 'ArgoCD';
           this.connectionTableCols = [
@@ -2303,12 +2291,12 @@ export class JiraConfigComponent implements OnInit {
           if (obj !== 'queryEnabled' && obj !== "team") {
             if (this.toolForm && this.toolForm.controls[obj]) {
 
-                this.toolForm.controls[obj].setValue(
-                  this.selectedToolConfig[0][obj],
-                );
+              this.toolForm.controls[obj].setValue(
+                this.selectedToolConfig[0][obj],
+              );
 
-                this.toolForm.controls[obj].markAsDirty();
-              }
+              this.toolForm.controls[obj].markAsDirty();
+            }
 
           } else if (obj === 'queryEnabled') {
             if (this.urlParam === 'Jira' || this.urlParam === 'Azure') {
@@ -2460,7 +2448,7 @@ export class JiraConfigComponent implements OnInit {
     if (this.urlParam === 'AzurePipeline') {
       submitData['apiVersion'] = this.azurePipelineApiVersion;
       submitData['deploymentProjectName'] = this.tool['azurePipelineName'].value;
-      submitData['azurePipelineName'] = this.azurePipelineList.find(de=>de.code===this.tool['azurePipelineName'].value)?.name;
+      submitData['azurePipelineName'] = this.azurePipelineList.find(de => de.code === this.tool['azurePipelineName'].value)?.name;
     }
 
     submitData['toolName'] = this.urlParam;
