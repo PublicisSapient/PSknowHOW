@@ -56,7 +56,6 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
-import com.atlassian.jira.rest.client.api.domain.Subtask;
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -81,6 +80,9 @@ import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.helper.AdditionalFilterHelper;
 import com.publicissapient.kpidashboard.jira.helper.JiraHelper;
+import com.publicissapient.kpidashboard.jira.model.CustomIssue;
+import com.publicissapient.kpidashboard.jira.model.CustomIssueLink;
+import com.publicissapient.kpidashboard.jira.model.CustomSubtask;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.JiraIssueClientUtil;
@@ -201,6 +203,18 @@ public class JiraIssueV2ProcessorImpl implements JiraIssueV2Processor {
 		jiraIssue.setIssueType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
 		jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
 
+		// Access custom fields
+		IssueField acceptanceCriteria = issue.getFieldByName("Acceptance Criteria");
+		if (acceptanceCriteria != null && acceptanceCriteria.getValue() != null ) {
+			jiraIssue.setAcceptanceCriteria(acceptanceCriteria.getValue().toString());
+		}
+
+		// Get the resolution date
+		IssueField resolutionDateField = issue.getField("resolutiondate");
+		if (resolutionDateField != null && resolutionDateField.getValue() != null) {
+			String resolutionDate = resolutionDateField.getValue().toString();
+			jiraIssue.setResolutionDate(resolutionDate);
+		}
 		setEpicLinked(fieldMapping, jiraIssue, fields);
 		setSubTaskLinkage(jiraIssue, fieldMapping, issue, fields);
 		setSubTaskDetails(jiraIssue, issue);
@@ -236,22 +250,34 @@ public class JiraIssueV2ProcessorImpl implements JiraIssueV2Processor {
 	}
 
 	private void setIssueLinkDetails(JiraIssueV2 jiraIssue, Issue issue) {
-		final Iterable<IssueLink> issueLinks = issue.getIssueLinks();
+		if (!(issue instanceof CustomIssue customIssue)) {
+			throw new IllegalArgumentException("Issue is not an instance of CustomIssue");
+		}
+		final Iterable<CustomIssueLink> issueLinks = customIssue.getCustomIssueLinks();
 		if (issueLinks != null && issueLinks.iterator().hasNext()) {
 			List<IssueLinkDetail> issueLinkDetailsList = StreamSupport.stream(issueLinks.spliterator(), false)
-					.map(issueLink -> new IssueLinkDetail(issueLink.getIssueLinkType().getName(), issueLink.getIssueLinkType().getDescription(),
-							issueLink.getIssueLinkType().getDirection().toString()))
+					.map(issueLink -> new IssueLinkDetail(issueLink.getTargetIssueKey(),
+							issueLink.getIssueLinkType().getName(), issueLink.getIssueLinkType().getDescription(),
+							issueLink.getIssueLinkType().getDirection().toString(), issueLink.getSummary(),
+							issueLink.getPriority().getName(), issueLink.getIssueType().getName(),
+							issueLink.getIssueType().isSubtask()))
 					.toList();
 			jiraIssue.setIssueLinks(issueLinkDetailsList);
+		} else {
+			jiraIssue.setIssueLinks(Collections.emptyList());
 		}
 	}
 
 	private void setSubTaskDetails(JiraIssueV2 jiraIssue, Issue issue) {
-		Iterable<Subtask> subtasksIterable = issue.getSubtasks();
+		if (!(issue instanceof CustomIssue customIssue)) {
+			throw new IllegalArgumentException("Issue is not an instance of CustomIssue");
+		}
+		final Iterable<CustomSubtask> subtasksIterable = customIssue.getCustomSubtasks();
 		if (subtasksIterable != null && subtasksIterable.iterator().hasNext()) {
 			List<SubTaskDetails> subTaskDetailsList = StreamSupport.stream(subtasksIterable.spliterator(), false)
 					.map(subtask -> new SubTaskDetails(subtask.getIssueKey(), subtask.getSummary(),
-							subtask.getIssueType().getName(),subtask.getIssueType().getId(), subtask.getStatus().getName()))
+							subtask.getIssueType().getName(), subtask.getIssueType().getId(),
+							subtask.getStatus().getName(), subtask.getPriority().getName()))
 					.toList();
 			jiraIssue.setSubTasks(subTaskDetailsList);
 		} else {

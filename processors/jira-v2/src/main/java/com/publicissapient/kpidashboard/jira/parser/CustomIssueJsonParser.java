@@ -107,6 +107,9 @@ import com.atlassian.jira.rest.client.internal.json.WorklogJsonParserV5;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.publicissapient.kpidashboard.jira.model.CustomIssue;
+import com.publicissapient.kpidashboard.jira.model.CustomIssueLink;
+import com.publicissapient.kpidashboard.jira.model.CustomSubtask;
 
 public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 
@@ -134,6 +137,8 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 	private final CustomChangelogJsonParser changelogJsonParser = new CustomChangelogJsonParser();
 	private final OperationsJsonParser operationsJsonParser = new OperationsJsonParser();
 	private final JsonWeakParserForString jsonWeakParserForString = new JsonWeakParserForString();
+	private final CustomSubtaskJsonParser customSubtaskJsonParser = new CustomSubtaskJsonParser();
+	private final CustomIssueLinkJsonParserV5 customIssueLinkJsonParserV5 = new CustomIssueLinkJsonParserV5();
 	private final JSONObject providedNames;
 	private final JSONObject providedSchema;
 
@@ -257,9 +262,14 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 		final Collection<IssueLink> issueLinks;
 		issueLinks = parseOptionalArray(issueJson, new JsonWeakParserForJsonObject<IssueLink>(issueLinkJsonParserV5),
 				FIELDS, LINKS_FIELD.id);
+		final Collection<CustomIssueLink> customIssueLinks;
+		customIssueLinks = parseOptionalArray(issueJson,
+				new JsonWeakParserForJsonObject<CustomIssueLink>(customIssueLinkJsonParserV5), FIELDS, LINKS_FIELD.id);
 
 		Collection<Subtask> subtasks = parseOptionalArray(issueJson,
 				new JsonWeakParserForJsonObject<Subtask>(subtaskJsonParser), FIELDS, SUBTASKS_FIELD.id);
+		Collection<CustomSubtask> customSubtasks = parseOptionalArray(issueJson,
+				new JsonWeakParserForJsonObject<CustomSubtask>(customSubtaskJsonParser), FIELDS, SUBTASKS_FIELD.id);
 
 		final BasicVotes votes = getOptionalNestedField(issueJson, VOTES_FIELD.id, votesJsonParser);
 		final Status status = statusJsonParser.parse(getFieldUnisex(issueJson, STATUS_FIELD.id));
@@ -302,10 +312,11 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 				new JsonWeakParserForJsonObject<ChangelogGroup>(changelogJsonParser), "changelog", "histories");
 		final Operations operations = parseOptionalJsonObject(issueJson, "operations", operationsJsonParser);
 
-		return new Issue(summary, selfUri, basicIssue.getKey(), basicIssue.getId(), project, issueType, status,
+		return new CustomIssue(summary, selfUri, basicIssue.getKey(), basicIssue.getId(), project, issueType, status,
 				description, priority, resolution, attachments, reporter, assignee, creationDate, updateDate, dueDate,
 				affectedVersions, fixVersions, components, timeTracking, fields, comments, transitionsUri, issueLinks,
-				votes, worklogs, watchers, expandos, subtasks, changelog, operations, labels);
+				votes, worklogs, watchers, expandos, subtasks, changelog, operations, labels, customIssueLinks,
+				customSubtasks);
 	}
 
 	private URI parseTransisionsUri(final String transitionsUriString, final URI selfUri) {

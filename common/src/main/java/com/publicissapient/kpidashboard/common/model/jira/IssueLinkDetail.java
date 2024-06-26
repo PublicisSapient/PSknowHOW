@@ -31,7 +31,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @Data
 public class IssueLinkDetail {
+    private String issueKey;
     private String typeName;
     private String description;
     private String direction;
+    private String summary;
+    private String priorityName;
+    private String issueTypeName;
+    private boolean isSubTask;
 }
