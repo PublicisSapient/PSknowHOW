@@ -75,33 +75,22 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   applyAdditionalFilter(e, index, multi = false) {
-    if (this.selectedTab.toLowerCase() === 'developer') {
-      if (this.filterData.length === 1) {
+    const filterKey = this.filterData.length === 1 ? 'filter' : 'filter' + index;
+    const isDeveloper = this.selectedTab.toLowerCase() === 'developer';
 
-        this.appliedFilters['filter'] = [];
-
-        if (!multi) {
-          this.appliedFilters['filter'].push(e.value);
-        } else {
-          this.appliedFilters['filter'] = [...e];
-        }
-        this.appliedFilters['filter'][0]?.nodeId ? this.service.applyAdditionalFilters(this.appliedFilters['filter'][0].nodeId) : this.service.applyAdditionalFilters(this.appliedFilters['filter'][0]);
-      } else {
-        if (!this.appliedFilters['filter' + index]) {
-          this.appliedFilters['filter' + index] = [];
-        }
-        if (!multi) {
-          this.appliedFilters['filter' + index].push(e.value);
-        } else {
-          this.appliedFilters['filter' + index] = [...e];
-        }
-        this.service.applyAdditionalFilters(this.appliedFilters['filter' + index][0]);
-      }
-    } else {
+    if (!isDeveloper) {
       this.onPrimaryFilterChange.emit(e[index - 1]);
+    } else {
+      this.appliedFilters[filterKey] = this.appliedFilters[filterKey] || [];
+      this.appliedFilters[filterKey] = !multi ? [...this.appliedFilters[filterKey], e.value] : [...e];
+
+      const filterValue = this.appliedFilters[filterKey][0];
+      const nodeId = filterValue?.nodeId || filterValue;
+      this.service.applyAdditionalFilters(nodeId);
     }
+
     if (this.multiSelect?.overlayVisible) {
-      this.multiSelect.close(event);
+      this.multiSelect.close(e);
     }
   }
 }
