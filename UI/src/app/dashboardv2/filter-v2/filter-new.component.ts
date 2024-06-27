@@ -493,7 +493,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   getProcessorsTraceLogsForProject() {
-    this.httpService.getProcessorsTraceLogsForProject(this.previousFilterEvent[0]?.basicProjectConfigId).subscribe((response) => {
+    this.httpService.getProcessorsTraceLogsForProject(this.previousFilterEvent[0]?.basicProjectConfigId).subscribe(response => {
       if (response.success) {
         this.service.setProcessorLogDetails(response.data);
       } else {
@@ -503,6 +503,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             "Error in fetching processor's execution date. Please try after some time.",
         });
       }
+    },  error => {
+      console.log(error);
     });
   }
 

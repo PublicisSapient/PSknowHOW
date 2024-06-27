@@ -14352,6 +14352,237 @@ describe('ExecutiveV2Component', () => {
     expect(helperService.createKpiWiseId).toHaveBeenCalledWith(mockGetData);
     // expect(component.jiraKpiData).toEqual(mockGetData);
   });
+
+  it('should handle successful post request and update jiraKpiData when api resturns no data', () => {
+    const mockPostData = {
+      "kpiList": [
+        {
+          "id": "65793ddb127be336160bc0fe",
+          "kpiId": "kpi141",
+          "kpiName": "Defect Count by Status",
+          "isDeleted": "False",
+          "defaultOrder": 1,
+          "kpiCategory": "Release",
+          "kpiSubCategory": "Quality",
+          "kpiUnit": "Count",
+          "chartType": "",
+          "showTrend": false,
+          "isPositiveTrend": true,
+          "boxType": "chart",
+          "calculateMaturity": false,
+          "hideOverallFilter": false,
+          "kpiSource": "Jira",
+          "combinedKpiSource": "Jira/Azure",
+          "maxValue": "",
+          "kanban": false,
+          "groupId": 9,
+          "kpiInfo": {
+            "definition": "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage.",
+            "details": [
+              {
+                "type": "link",
+                "kpiLinkDetail": {
+                  "text": "Detailed Information at",
+                  "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79986689/Release+Defect+count+by+Status"
+                }
+              }
+            ]
+          },
+          "kpiFilter": "",
+          "trendCalculative": false,
+          "xaxisLabel": "",
+          "yaxisLabel": "",
+          "isAdditionalFilterSupport": false
+        },
+      ],
+      "ids": [
+        "148419_API POD 2 - Account Management_6524a7de7c8bb73cd0c3fe6d"
+      ],
+      "level": 6,
+      "selectedMap": {
+        "bu": [],
+        "ver": [],
+        "acc": [],
+        "port": [],
+        "project": [],
+        "release": [
+          "148419_API POD 2 - Account Management_6524a7de7c8bb73cd0c3fe6d"
+        ],
+        "sprint": [],
+        "sqd": []
+      },
+      "sprintIncluded": [
+        "CLOSED"
+      ],
+      "label": "release"
+    };
+    const mockGetData = {
+      error: 'API call failed'
+    };
+  
+    spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(mockGetData));
+    spyOn(helperService, 'createKpiWiseId').and.returnValue(mockGetData);
+  
+    component.postJiraKPIForRelease(mockPostData, 'jira');
+  
+    expect(httpService.postKpiNonTrend).toHaveBeenCalledWith(mockPostData, 'jira');
+    expect(helperService.createKpiWiseId).not.toHaveBeenCalled();
+    expect(component.jiraKpiData).toEqual(mockGetData);
+  });
+
+  it('should handle successful post request and update bitbucketKpiData when api resturns no data', () => {
+    const mockPostData = {
+      "kpiList": [
+        {
+          "id": "65793ddb127be336160bc0fe",
+          "kpiId": "kpi141",
+          "kpiName": "Defect Count by Status",
+          "isDeleted": "False",
+          "defaultOrder": 1,
+          "kpiCategory": "Release",
+          "kpiSubCategory": "Quality",
+          "kpiUnit": "Count",
+          "chartType": "",
+          "showTrend": false,
+          "isPositiveTrend": true,
+          "boxType": "chart",
+          "calculateMaturity": false,
+          "hideOverallFilter": false,
+          "kpiSource": "bitbucket",
+          "combinedKpiSource": "bitbucket",
+          "maxValue": "",
+          "kanban": false,
+          "groupId": 9,
+          "kpiInfo": {
+            "definition": "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage.",
+            "details": [
+              {
+                "type": "link",
+                "kpiLinkDetail": {
+                  "text": "Detailed Information at",
+                  "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79986689/Release+Defect+count+by+Status"
+                }
+              }
+            ]
+          },
+          "kpiFilter": "",
+          "trendCalculative": false,
+          "xaxisLabel": "",
+          "yaxisLabel": "",
+          "isAdditionalFilterSupport": false
+        },
+      ],
+      "ids": [
+        "148419_API POD 2 - Account Management_6524a7de7c8bb73cd0c3fe6d"
+      ],
+      "level": 6,
+      "selectedMap": {
+        "bu": [],
+        "ver": [],
+        "acc": [],
+        "port": [],
+        "project": [],
+        "release": [
+          "148419_API POD 2 - Account Management_6524a7de7c8bb73cd0c3fe6d"
+        ],
+        "sprint": [],
+        "sqd": []
+      },
+      "sprintIncluded": [
+        "CLOSED"
+      ],
+      "label": "release"
+    };
+    const mockGetData = {
+      error: 'API call failed'
+    };
+  
+    spyOn(httpService, 'postKpi').and.returnValue(of(mockGetData));
+    spyOn(helperService, 'createKpiWiseId').and.returnValue(mockGetData);
+  
+    component.postBitBucketKpi(mockPostData, 'bitbucket');
+  
+    expect(httpService.postKpi).toHaveBeenCalledWith(mockPostData, 'bitbucket');
+    expect(helperService.createKpiWiseId).not.toHaveBeenCalled();
+    expect(component.bitBucketKpiData).toEqual(mockGetData);
+  });
+
+  it('should handle successful post request and update jenkinsKpiData when api resturns no data', () => {
+    const mockPostData = {
+      "kpiList": [
+        {
+          "id": "65793ddb127be336160bc0fe",
+          "kpiId": "kpi141",
+          "kpiName": "Defect Count by Status",
+          "isDeleted": "False",
+          "defaultOrder": 1,
+          "kpiCategory": "Release",
+          "kpiSubCategory": "Quality",
+          "kpiUnit": "Count",
+          "chartType": "",
+          "showTrend": false,
+          "isPositiveTrend": true,
+          "boxType": "chart",
+          "calculateMaturity": false,
+          "hideOverallFilter": false,
+          "kpiSource": "jenkins",
+          "combinedKpiSource": "jenkins",
+          "maxValue": "",
+          "kanban": false,
+          "groupId": 9,
+          "kpiInfo": {
+            "definition": "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage.",
+            "details": [
+              {
+                "type": "link",
+                "kpiLinkDetail": {
+                  "text": "Detailed Information at",
+                  "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79986689/Release+Defect+count+by+Status"
+                }
+              }
+            ]
+          },
+          "kpiFilter": "",
+          "trendCalculative": false,
+          "xaxisLabel": "",
+          "yaxisLabel": "",
+          "isAdditionalFilterSupport": false
+        },
+      ],
+      "ids": [
+        "148419_API POD 2 - Account Management_6524a7de7c8bb73cd0c3fe6d"
+      ],
+      "level": 6,
+      "selectedMap": {
+        "bu": [],
+        "ver": [],
+        "acc": [],
+        "port": [],
+        "project": [],
+        "release": [
+          "148419_API POD 2 - Account Management_6524a7de7c8bb73cd0c3fe6d"
+        ],
+        "sprint": [],
+        "sqd": []
+      },
+      "sprintIncluded": [
+        "CLOSED"
+      ],
+      "label": "release"
+    };
+    const mockGetData = null;
+  
+    spyOn(httpService, 'postKpi').and.returnValue(of(mockGetData));
+    spyOn(helperService, 'createKpiWiseId').and.returnValue(mockGetData);
+  
+    component.postJenkinsKpi(mockPostData, 'jenkins');
+  
+    expect(httpService.postKpi).toHaveBeenCalledWith(mockPostData, 'jenkins');
+    expect(helperService.createKpiWiseId).not.toHaveBeenCalled();
+    // expect(component.jenkinsKpiData).toEqual(mockGetData);
+  });
+
+  
   
   it('should handle error response and update jiraKpiData', () => {
     const mockPostData = {
@@ -14951,25 +15182,6 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'sortingRowsInTable');
 
     component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
-
-    // expect(component.kpiTableDataObj).toEqual({
-    //   branch1: [
-    //     {
-    //       kpiId: 'kpi1',
-    //       kpiName: 'KPI 1',
-    //       frequency: 'Monthly',
-    //       show: true,
-    //       hoverText: ['1 - ', '2 - '],
-    //       order: 1,
-    //       latest: 'value1',
-    //       trend: 'trend1',
-    //       maturity: 'maturity1',
-    //       '1': 'value1 unit1',
-    //       '2': 'value2 unit1',
-    //     },
-    //   ],
-    //   branch2: [{ kpiId: 'kpi2', kpiName: 'KPI 2', frequency: 'Weekly', show: true, hoverText: [], order: 2 }],
-    // });
     expect(component.sortingRowsInTable).toHaveBeenCalledWith('branch1');
   });
 
@@ -14995,25 +15207,6 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'sortingRowsInTable');
 
     component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
-
-    // expect(component.kpiTableDataObj).toEqual({
-    //   branch1: [
-    //     {
-    //       kpiId: 'kpi17',
-    //       kpiName: 'KPI 1',
-    //       frequency: 'Monthly',
-    //       show: true,
-    //       hoverText: [],
-    //       order: 1,
-    //       latest: '-',
-    //       trend: '-',
-    //       maturity: '-',
-    //       '1': '-',
-    //       '2': '-',
-    //     },
-    //   ],
-    //   // branch2: [{ kpiId: 'kpi2', kpiName: 'KPI 2', frequency: 'Weekly', show: true, hoverText: [], order: 2 }],
-    // });
     expect(component.sortingRowsInTable).toHaveBeenCalledWith('branch1');
   });
 
@@ -15041,39 +15234,6 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'sortingRowsInTable');
 
     component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
-
-    // expect(component.kpiTableDataObj).toEqual({
-    //   branch1: [
-    //     {
-    //       kpiId: 'kpi1',
-    //       kpiName: 'KPI 1',
-    //       frequency: 'Monthly',
-    //       show: true,
-    //       hoverText: ['1 - ', '2 - '],
-    //       order: 1,
-    //       latest: 'value1',
-    //       trend: 'trend1',
-    //       maturity: 'maturity1',
-    //       '1': 'value1 unit1',
-    //       '2': 'value2 unit1',
-    //     },
-    //   ],
-    //   branch2: [
-    //     {
-    //       kpiId: 'kpi2',
-    //       kpiName: 'KPI 2',
-    //       frequency: 'Weekly',
-    //       show: true,
-    //       hoverText: ['1 - ', '2 - '],
-    //       order: 2,
-    //       latest: 'value2',
-    //       trend: 'trend2',
-    //       maturity: 'maturity2',
-    //       '1': 'value3 unit2',
-    //       '2': 'value4 unit2',
-    //     },
-    //   ],
-    // });
     expect(component.sortingRowsInTable).not.toHaveBeenCalled();
   });
 
@@ -15100,39 +15260,6 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'sortingRowsInTable');
 
     component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
-
-    // expect(component.kpiTableDataObj).toEqual({
-    //   branch1: [
-    //     {
-    //       kpiId: 'kpi1',
-    //       kpiName: 'KPI 1',
-    //       frequency: 'Monthly',
-    //       show: true,
-    //       hoverText: ['1 - ', '2 - '],
-    //       order: 1,
-    //       latest: 'value1',
-    //       trend: 'trend1',
-    //       maturity: 'maturity1',
-    //       '1': 'value1 unit1',
-    //       '2': 'value2 unit1',
-    //     },
-    //   ],
-    //   branch2: [
-    //     {
-    //       kpiId: 'kpi2',
-    //       kpiName: 'KPI 2',
-    //       frequency: 'Weekly',
-    //       show: true,
-    //       hoverText: ['1 - ', '2 - '],
-    //       order: 2,
-    //       latest: 'value2',
-    //       trend: 'trend2',
-    //       maturity: 'maturity2',
-    //       '1': 'value3 unit2',
-    //       '2': 'value4 unit2',
-    //     },
-    //   ],
-    // });
     expect(component.sortingRowsInTable).not.toHaveBeenCalled();
   });
 
@@ -15157,8 +15284,6 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'sortingRowsInTable');
 
     component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
-
-    // expect(component.maturityTableKpiList).toEqual(['kpi1', 'kpi2', 'kpi5']);
     expect(component.sortingRowsInTable).toHaveBeenCalledWith('branch1');
   });
 
@@ -15389,6 +15514,13 @@ describe('ExecutiveV2Component', () => {
   }]);
   });
 
+  it('should set selectedKPITab to the provided tab', () => {
+    const mockTab = 'tab1';
+
+    component.selectKPITab(mockTab);
+
+    expect(component.selectedKPITab).toEqual(mockTab);
+  });
 });
 
 
