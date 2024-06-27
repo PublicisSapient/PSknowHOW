@@ -13184,7 +13184,7 @@ describe('FilterNewComponent', () => {
 
     // expect(component.filterApplyData['selectedMap']['date']).toEqual([selectedDayType]);
     // expect(component.filterApplyData['ids']).toEqual([selectedDateValue]);
-    expect(sharedService.select).toHaveBeenCalledWith(component.masterData, component.filterDataArr['scrum']['project'], component.filterApplyData, component.selectedTab, false, true, component.boardData['configDetails'], true);
+    expect(sharedService.select).toHaveBeenCalledWith(component.masterData, component.filterDataArr['scrum']['project'], component.filterApplyData, component.selectedTab, false, true, component.boardData['configDetails'], true, undefined);
   });
 
   it('should update selectedProjectLastSyncDate on fetch data success ', fakeAsync(() => {
@@ -13558,7 +13558,8 @@ describe('FilterNewComponent', () => {
       false,
       true,
       component.boardData['configDetails'],
-      true
+      true,
+      undefined
     );
   });
 
@@ -13615,7 +13616,8 @@ describe('FilterNewComponent', () => {
       false,
       true,
       component.boardData['configDetails'],
-      true
+      true,
+      undefined
     );
   });
 
@@ -13672,7 +13674,8 @@ describe('FilterNewComponent', () => {
       false,
       true,
       component.boardData['configDetails'],
-      true
+      true,
+      undefined
     );
   });
 });

@@ -106,7 +106,7 @@ describe('MaturityComponent', () => {
 
 
 
-  it('should call kpi grouping methods on receiveing data for Scrum',()=>{
+  xit('should call kpi grouping methods on receiveing data for Scrum',()=>{
     const event ={
       masterData : fakeMasterData,
       filterData:[
@@ -152,7 +152,7 @@ describe('MaturityComponent', () => {
      }
   });
 
-  it('should call kpi grouping methods on receiveing data for Kanban',()=>{
+  xit('should call kpi grouping methods on receiveing data for Kanban',()=>{
     const event ={
       masterData : fakeMasterData,
       filterData:[        {

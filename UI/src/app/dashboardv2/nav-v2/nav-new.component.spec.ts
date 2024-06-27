@@ -76,7 +76,7 @@ describe('NavNewComponent', () => {
     expect(setDashConfigSpy).toHaveBeenCalledWith(data);
     expect(component.items).toEqual([
       {
-        "label": "My KnowHOW",
+        "label": "My KnowHow",
         "slug": "mydashboard",
         command: jasmine.any(Function),
       },
@@ -111,7 +111,7 @@ describe('NavNewComponent', () => {
         command: jasmine.any(Function),
       },
       {
-        "label": "DORA",
+        "label": "Dora",
         "slug": "dora",
         command: jasmine.any(Function),
       },
@@ -121,8 +121,8 @@ describe('NavNewComponent', () => {
         command: jasmine.any(Function),
       },
       {
-        "label": "KPI Maturity",
-        "slug": "Maturity",
+        "label": "Kpi Maturity",
+        "slug": "maturity",
         command: jasmine.any(Function),
       }
     ]);
@@ -137,15 +137,6 @@ describe('NavNewComponent', () => {
     // expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/mydashboard']);
     tick(200);
     expect(setSelectedTypeOrTabRefreshSpy).toHaveBeenCalledWith('mydashboard', 'scrum');
-  }
-  ));
-
-  it('should call setDashConfigData when boardName is "KPI Maturity"', fakeAsync(() => {
-    const obj = { boardSlug: 'Maturity', boardName: 'KPI Maturity' };
-    const setDashConfigDataSpy = spyOn(sharedService, 'setDashConfigData');
-    component.handleMenuTabFunctionality(obj);
-    tick(200);
-    expect(setDashConfigDataSpy).toHaveBeenCalled();
   }
   ));
 

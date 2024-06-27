@@ -55,7 +55,7 @@ import * as fs from 'file-saver';
 
 const masterData = require('../../../test/resource/masterData.json');
 const filterData = require('../../../test/resource/filterData.json');
-
+const dashConfigData2 = require('../../../test/resource/boardConfigNew.json').data;
 describe('ExecutiveV2Component', () => {
   let component: ExecutiveV2Component;
   let fixture: ComponentFixture<ExecutiveV2Component>;
@@ -7598,7 +7598,8 @@ describe('ExecutiveV2Component', () => {
           ]
         },
         "repoToolFlag": false
-      }
+      },
+      dashConfigData: dashConfigData2
     });
 
     fixture.detectChanges();
