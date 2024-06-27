@@ -272,7 +272,8 @@
                                     <tag>${project.version}</tag>
                                     <buildArgs>
                                         <NOTIFICATION_CONSUMER_JAR_FILE>kafka-consumers/notification-consumer/target/notification-consumer-exec.jar</NOTIFICATION_CONSUMER_JAR_FILE>
-                                        </buildArgs>
+                                        <APPLICATION_PROPERTIES_FILE>kafka-consumers/notification-consumer/src/main/resources/application.properties</APPLICATION_PROPERTIES_FILE>
+                                    </buildArgs>
                                 </configuration>
                             </execution>
                         </executions>
