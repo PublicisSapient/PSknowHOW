@@ -14150,4 +14150,60 @@ describe('ExecutiveV2Component', () => {
     component.groupBitBucketKanbanKpi(['kpi65']);
     expect(spy).toHaveBeenCalled();
   })
+
+  it('should post jira kpis when Release board is selected', fakeAsync(() => {
+    component.tooltip = {
+      sprintCountForKpiCalculation: 2
+    }
+    component.filterApplyData = {
+      label: 'project',
+      selectedMap: {
+        sprint: []
+      }
+    }
+    component.selectedTab = 'release';
+    const postData = {
+      kpiList: [
+        {
+          id: '64c27a3b1d26a19187772b52',
+          kpiId: 'kpi141',
+          kpiName: 'Defect Count by Status',
+        },
+        {
+          id: '64c27a3b1d26a19187772b53',
+          kpiId: 'kpi142',
+          kpiName: 'Defect Count by RCA'
+        },
+        {
+          id: '64c27a3b1d26a19187772b54',
+          kpiId: 'kpi143',
+          kpiName: 'Defect Count by Assignee',
+        }
+      ]
+    };
+
+    const kpiWiseData = {
+      kpi141: {
+        id: '64c27a3b1d26a19187772b52',
+        kpiName: 'Defect Count by Status',
+      },
+      kpi142: {
+        id: '64c27a3b1d26a19187772b53',
+        kpiName: 'Defect Count by RCA'
+      },
+      kpi143: {
+        id: '64c27a3b1d26a19187772b54',
+        kpiName: 'Defect Count by Assignee',
+      }
+    };
+    component.jiraKpiRequest = '';
+    spyOn(helperService, 'createKpiWiseId').and.returnValue(kpiWiseData);
+    spyOn(component, 'removeLoaderFromKPIs');
+    spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(postData.kpiList));
+    const spy = spyOn(component, 'createAllKpiArray');
+    component.postJiraKpi(postData, 'Jira');
+    component.jiraKpiData = {};
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }));
 });
