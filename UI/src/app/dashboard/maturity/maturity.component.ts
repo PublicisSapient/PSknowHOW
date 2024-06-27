@@ -127,18 +127,24 @@ export class MaturityComponent implements OnInit, OnDestroy {
     this.showNoDataMsg = false;
     if (this.service.getSelectedTab() === 'Maturity') {
       this.masterData = $event?.masterData;
+      if (!this.masterData?.kpiList?.length || (this.masterData?.kpiList?.length === 1 && this.masterData?.kpiList[0].kpiId === 'kpi989')) {
+        if (!this.configGlobalData || !this.configGlobalData[this.selectedtype] || !this.configGlobalData[this.selectedtype].length) {
+          this.configGlobalData = $event.dashConfigData;
+        }
+        this.masterData.kpiList = this.configGlobalData[this.selectedtype].filter((board) => board['boardSlug'] = 'mydashboard')[0].kpis;
+      }
       this.filterData = $event?.filterData;
       this.filterApplyData = $event?.filterApplyData;
       this.loaderMaturity = true;
       this.isKanban = this.selectedtype?.toLowerCase() === 'kanban';
-      const kpiIdsForCurrentBoard = $event.masterData['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => kpi.kpiId);
-      this.updatedGlobalConfigData = $event.masterData['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => {
+      const kpiIdsForCurrentBoard = this.masterData['kpiList']?.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.kpiDetail.kanban === this.isKanban).map(kpi => kpi.kpiId);
+      this.updatedGlobalConfigData = this.masterData['kpiList']?.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.kpiDetail.kanban === this.isKanban).map(kpi => {
         return {
           "kpiId": kpi.kpiId,
           "kpiName": kpi.kpiName,
           "isEnabled": this.updatedGlobalConfigData.filter(globalCOnfigKpi => globalCOnfigKpi['kpiId'] === kpi.kpiId)[0] ? this.updatedGlobalConfigData.filter(globalCOnfigKpi => globalCOnfigKpi['kpiId'] === kpi.kpiId)[0]['isEnabled'] : true,
           "order": 1,
-          "kpiDetail": kpi,
+          "kpiDetail": kpi.kpiDetail,
           "shown": this.updatedGlobalConfigData.filter(globalCOnfigKpi => globalCOnfigKpi['kpiId'] === kpi.kpiId)[0] ? this.updatedGlobalConfigData.filter(globalCOnfigKpi => globalCOnfigKpi['kpiId'] === kpi.kpiId)[0]['shown'] : true
         }
       });

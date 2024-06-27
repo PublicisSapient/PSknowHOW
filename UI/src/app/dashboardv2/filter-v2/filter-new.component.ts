@@ -48,6 +48,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   selectedProjectLastSyncDetails: any;
   selectedProjectLastSyncStatus: any;
   subject = new Subject();
+  dashConfigData: any;
   constructor(
     private httpService: HttpService,
     public service: SharedService,
@@ -62,6 +63,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
     this.subscriptions.push(
       this.service.globalDashConfigData.subscribe((boardData) => {
+        this.dashConfigData = boardData;
         this.processBoardData(boardData);
       })
     );
@@ -151,7 +153,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       let newMasterData = {
         'kpiList': []
       };
-      this.masterData['kpiList'].forEach(element => {
+      this.masterData['kpiList']?.forEach(element => {
         element = { ...element, ...element.kpiDetail };
         newMasterData['kpiList'].push(element);
       });
@@ -379,12 +381,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
       if (this.selectedLevel) {
         if (typeof this.selectedLevel === 'string') {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
         } else {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
         }
       } else {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       }
     }
   }
@@ -418,15 +420,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
 
     if (!this.selectedLevel) {
-      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       return;
     }
 
     if (typeof this.selectedLevel === 'string') {
-      this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       return;
     }
-    this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+    this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
   }
 
   applyDateFilter() {
@@ -438,12 +440,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     if (this.selectedLevel) {
       if (typeof this.selectedLevel === 'string') {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       } else {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       }
     } else {
-      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true);
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
     }
   }
 

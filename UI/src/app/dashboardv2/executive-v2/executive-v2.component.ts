@@ -238,7 +238,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     }
     if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
-      this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
+      this.configGlobalData = $event.dashConfigData[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
+      // this.configGlobalData = $event.dashConfigData;
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
       this.tooltip = $event.configDetails;
       this.additionalFiltersArr = {};

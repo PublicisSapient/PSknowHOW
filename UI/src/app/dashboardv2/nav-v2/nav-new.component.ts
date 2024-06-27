@@ -3,7 +3,6 @@ import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
-const getDashConfData = require('../../../test/resource/boardConfigNew.json');
 import { Router } from '@angular/router';
 
 @Component({
@@ -17,6 +16,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   selectedTab: string = '';
   selectedType: string = '';
   subscriptions: any[] = [];
+  dashConfigData: any;
 
   constructor(private httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router) {
   }
@@ -47,8 +47,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
           let data = response.data.userBoardConfigDTO;
           data['configDetails'] = response.data.configDetails;
           this.sharedService.setDashConfigData(data);
-          this.items = response.data;
-          this.items = [...getDashConfData.data['scrum'], ...getDashConfData.data['others']].map((obj, index) => {
+          this.dashConfigData = data;
+          this.items = [...this.dashConfigData['scrum'], ...this.dashConfigData['others']].map((obj) => {
             return {
               label: obj['boardName'],
               slug: obj['boardSlug'],
@@ -72,9 +72,6 @@ export class NavNewComponent implements OnInit, OnDestroy {
   handleMenuTabFunctionality(obj) {
     this.selectedTab = obj['boardSlug'];
     if (this.selectedTab !== 'unauthorized access') {
-      if (obj['boardName'].toLowerCase() === 'kpi maturity') {
-        this.sharedService.setDashConfigData(getDashConfData.data);
-      }
       this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
     }
     this.router.navigate(['/dashboard/' + obj['boardSlug']]);
