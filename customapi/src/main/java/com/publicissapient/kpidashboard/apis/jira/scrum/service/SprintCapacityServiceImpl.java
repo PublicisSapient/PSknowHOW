@@ -230,8 +230,8 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 												  KpiRequest kpiRequest) {
-		Map<String, Object> resultListMap = kpiHelperService.fetchSprintCapacityDataFromDb(leafNodeList);
-		List<CapacityKpiData> estimateTimeList = kpiHelperService.fetchCapacityDataFromDB(leafNodeList);
+		Map<String, Object> resultListMap = kpiHelperService.fetchSprintCapacityDataFromDb(kpiRequest, leafNodeList);
+		List<CapacityKpiData> estimateTimeList = kpiHelperService.fetchCapacityDataFromDB(kpiRequest, leafNodeList);
 		resultListMap.put(ESTIMATE_TIME, estimateTimeList);
 		return resultListMap;
 

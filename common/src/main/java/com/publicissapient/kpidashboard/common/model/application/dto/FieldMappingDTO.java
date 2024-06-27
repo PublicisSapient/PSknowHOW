@@ -93,6 +93,7 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	private List<String> jiraDodKPI37;
 	private List<String> jiraDodKPI142;
 	private List<String> jiraDodKPI144;
+	private List<String> jiraDodKPI143;
 
 	private String jiraDefectCreatedStatus;
 	private String jiraDefectCreatedStatusKPI14;

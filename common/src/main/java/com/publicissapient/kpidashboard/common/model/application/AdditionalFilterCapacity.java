@@ -15,25 +15,21 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package com.publicissapient.kpidashboard.common.model.application;
 
-package com.publicissapient.kpidashboard.apis.repotools.model;
+import java.util.List;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
+/**
+ * @author shi6
+ *
+ * for each additonalfilter id like "sqd", saving the ncapacity of
+ *         each node
+ */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class RepoToolsStatusResponse implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-	private String project;
-	private String repository;
-	private String source;
-	private String status;
-	private Long timestamp;
+public class AdditionalFilterCapacity {
+	private String filterId;
+	private List<LeafNodeCapacity> nodeCapacityList;
 
 }

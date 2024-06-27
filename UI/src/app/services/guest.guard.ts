@@ -1,10 +1,11 @@
  import { Injectable } from '@angular/core';
- import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+ import { CanActivate, Router } from '@angular/router';
+ import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
  import { SharedService } from './shared.service';
  @Injectable()
  export class GuestGuard implements CanActivate {
 
-     constructor(private sharedService : SharedService) { }
+     constructor(private sharedService : SharedService, private router: Router) { }
 
      canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
 
@@ -12,9 +13,10 @@
             return false;
         }
         if (this.sharedService.getCurrentUserDetails('authorities').includes('ROLE_GUEST')) {
-             return false;
+            this.router.navigate(['/dashboard/iteration']) 
+            return false;
         }else{
-             return true;
+            return true;
         }
      }
  }
