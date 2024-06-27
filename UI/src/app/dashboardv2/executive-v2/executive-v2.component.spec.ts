@@ -14809,4 +14809,67 @@ describe('ExecutiveV2Component', () => {
     component.getTableData('kpi14', 0, enabledKpi);
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
   });
+
+  it('should return true when data contains at least one numeric value', () => {
+    const mockData = [
+      { data: 'value1' },
+      { data: 2 },
+      { value: [{ data: 'value2' }, { data: 3 }] },
+    ];
+
+    const result = component.checkIfDataPresent(mockData);
+
+    expect(result).toBeTrue();
+  });
+
+  it('should return false when data does not contain any numeric value', () => {
+    const mockData = [
+      { data: 'value1' },
+      { data: 'value2' },
+      { value: [{ data: 'value3' }, { data: 'value4' }] },
+    ];
+
+    const result = component.checkIfDataPresent(mockData);
+
+    expect(result).toBeFalse();
+  });
+
+  it('should return false when data is undefined', () => {
+    const mockData = undefined;
+
+    const result = component.checkIfDataPresent(mockData);
+
+    expect(result).toBeFalse();
+  });
+
+  it('should return false when data is an empty array', () => {
+    const mockData = [];
+
+    const result = component.checkIfDataPresent(mockData);
+
+    expect(result).toBeFalse();
+  });
+
+  it('should return the correct chart type when kpiId exists in updatedConfigGlobalData', () => {
+    const mockKpiId = 'kpi1';
+    component.updatedConfigGlobalData = [{ 
+      kpiId: 'kpi1',
+      kpiDetail: {
+      kpiId: 'kpi1',
+      chartType: 'line'
+    }
+  }];
+    const result = component.getKpiChartType(mockKpiId);
+
+    expect(result).toEqual('line');
+  });
+
+  it('should return undefined when kpiId does not exist in updatedConfigGlobalData', () => {
+    const mockKpiId = 'kpi4';
+    component.updatedConfigGlobalData = [];
+    const result = component.getKpiChartType(mockKpiId);
+
+    expect(result).toBeUndefined();
+  });
 });
+
