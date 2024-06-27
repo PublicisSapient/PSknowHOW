@@ -33,46 +33,40 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     } else {
       this.selectedFilters = [];
       this.populateFilters();
-      setTimeout(() => {
+      if (this.filters.length) {
+        this.selectedFilters = new Set();
 
-        if (this.filters.length) {
-          this.selectedFilters = new Set();
+        this.stateFilters = this.helperService.getBackupOfFilterSelectionState('primary_level');
+        if (this.stateFilters?.length > 0) {
+          this.stateFilters.forEach(stateFilter => {
+            this.selectedFilters.add(stateFilter);
+          });
 
-          this.stateFilters = this.helperService.getBackupOfFilterSelectionState('primary_level');
+          this.selectedFilters = [...this.selectedFilters];
 
-
-          if (this.stateFilters?.length > 0) {
-            this.stateFilters.forEach(stateFilter => {
-              this.selectedFilters.add(stateFilter);
-            });
-
-            this.selectedFilters = [...this.selectedFilters];
-
-            this.selectedFilters = Array.from(
-              this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
-            );
-            this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
-            this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
-            this.onPrimaryFilterChange.emit(this.selectedFilters);
-            this.setProjectAndLevelBackupBasedOnSelectedLevel();
-          } else {
-            this.applyDefaultFilters();
-          }
+          this.selectedFilters = Array.from(
+            this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
+          );
+          this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
+          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
+          this.onPrimaryFilterChange.emit(this.selectedFilters);
+          this.setProjectAndLevelBackupBasedOnSelectedLevel();
+        } else {
+          this.applyDefaultFilters();
         }
-      }, 100);
+      }
     }
   }
 
   applyDefaultFilters() {
     this.populateFilters();
-
-    setTimeout(() => {
+    Promise.resolve().then(() => {
       this.selectedFilters = [];
       this.selectedFilters.push({ ...this.filters[0] });
       this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
       this.applyPrimaryFilters({});
       this.setProjectAndLevelBackupBasedOnSelectedLevel();
-    }, 100);
+    });
   }
 
   ngOnInit() {

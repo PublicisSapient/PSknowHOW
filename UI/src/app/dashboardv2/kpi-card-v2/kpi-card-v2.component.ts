@@ -77,7 +77,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService) { }
 
   ngOnInit(): void {
-  
+
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
       if (Object.keys(x)?.length > 1) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
@@ -305,6 +305,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       } else {
         this.fieldMappingMetaData = [];
       }
+    }, error => {
+      console.log(error);
     });
   }
 

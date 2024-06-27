@@ -12924,11 +12924,9 @@ describe('FilterNewComponent', () => {
     spyOn(sharedService, 'setColorObj');
 
     component.setColors(data);
+    expect(sharedService.setColorObj).toHaveBeenCalledWith(component.colorObj);
+    done();
 
-    setTimeout(() => {
-      expect(sharedService.setColorObj).toHaveBeenCalledWith(component.colorObj);
-      done();
-    }, 0);
   });
 
   it('should return keys of object if object is not null and has keys', () => {
@@ -13118,7 +13116,7 @@ describe('FilterNewComponent', () => {
     expect(sharedService.setSelectedTrends).not.toHaveBeenCalled();
   });
 
- 
+
   it('should set selected date filter and call setSelectedDateFilter()', () => {
     const selectedDateValue = 1;
     const selectedDayType = 'Weeks';
@@ -13199,7 +13197,7 @@ describe('FilterNewComponent', () => {
       "sprintState": "ACTIVE",
       "level": 6
     };
-    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+    const getActiveIterationStatusSpy = spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
       "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
       "success": true
     }));
@@ -13223,7 +13221,7 @@ describe('FilterNewComponent', () => {
     expect(component.selectedProjectLastSyncDate).toEqual('2023-07-21T10:23:51.845');
   }));
 
-  it('should not update selectedProjectLastSyncDate on fetch data failure ',fakeAsync(()=>{
+  it('should not update selectedProjectLastSyncDate on fetch data failure ', fakeAsync(() => {
 
     component.selectedSprint = {
       "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
@@ -13233,7 +13231,7 @@ describe('FilterNewComponent', () => {
       "sprintState": "ACTIVE",
       "level": 6
     };
-    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+    const getActiveIterationStatusSpy = spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
       "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
       "success": false
     }));
@@ -13257,7 +13255,7 @@ describe('FilterNewComponent', () => {
     expect(Object.keys(component.lastSyncData).length).toEqual(0);
   }));
 
-  it('should get error while fetching active iteration data',fakeAsync(()=>{
+  it('should get error while fetching active iteration data', fakeAsync(() => {
 
     component.selectedSprint = {
       "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
@@ -13267,7 +13265,7 @@ describe('FilterNewComponent', () => {
       "sprintState": "ACTIVE",
       "level": 6
     };
-    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+    const getActiveIterationStatusSpy = spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
       "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
       "success": true
     }));
@@ -13290,7 +13288,7 @@ describe('FilterNewComponent', () => {
     expect(component.selectedProjectLastSyncStatus).toEqual('FAILURE');
   }));
 
-  it('should get error while fetching active iteration data and getactiveIterationfetchStatus is false itself',fakeAsync(()=>{
+  it('should get error while fetching active iteration data and getactiveIterationfetchStatus is false itself', fakeAsync(() => {
     component.selectedSprint = {
       "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
       "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
@@ -13299,7 +13297,7 @@ describe('FilterNewComponent', () => {
       "sprintState": "ACTIVE",
       "level": 6
     };
-    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+    const getActiveIterationStatusSpy = spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
       "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
       "success": true
     }));
@@ -13322,7 +13320,7 @@ describe('FilterNewComponent', () => {
     expect(component.selectedProjectLastSyncStatus).toEqual('');
   }));
 
-  it('should get error while fetching active iteration data and getactiveIterationfetchStatus is throw error',fakeAsync(()=>{
+  it('should get error while fetching active iteration data and getactiveIterationfetchStatus is throw error', fakeAsync(() => {
     component.selectedSprint = {
       "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
       "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
@@ -13331,7 +13329,7 @@ describe('FilterNewComponent', () => {
       "sprintState": "ACTIVE",
       "level": 6
     };
-    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+    const getActiveIterationStatusSpy = spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
       "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
       "success": true
     }));
@@ -13348,7 +13346,7 @@ describe('FilterNewComponent', () => {
   it('should set filterApplyData and call service.select() if event is not null and has length', () => {
     const event = [{ level: 'Level 1', labelName: 'Label 1', nodeId: 1 }];
     component.filterApplyData = {
-      level : '',
+      level: '',
       label: '',
       ids: [],
       selectedMap: {
@@ -13584,7 +13582,7 @@ describe('FilterNewComponent', () => {
     component.selectedType = 'type1';
     component.filterDataArr = {
       'type1': {
-        'Level1': [{ nodeId: 'level1'}],
+        'Level1': [{ nodeId: 'level1' }],
         project: {},
         sprint: [{ nodeId: 'sprint1', parentId: [1], sprintState: 'Closed' }]
       }
@@ -13641,7 +13639,7 @@ describe('FilterNewComponent', () => {
     component.selectedType = 'type1';
     component.filterDataArr = {
       'type1': {
-        project: [{ nodeId: 'project1'},{ nodeId: 'project2'}],
+        project: [{ nodeId: 'project1' }, { nodeId: 'project2' }],
         sprint: [{ nodeId: 'sprint1', parentId: [1], sprintState: 'Closed' }]
       }
     };

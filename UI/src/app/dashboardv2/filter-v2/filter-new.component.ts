@@ -216,9 +216,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
     }
     if (Object.keys(this.colorObj).length) {
-      setTimeout(() => {
-        this.service.setColorObj(this.colorObj);
-      }, 0);
+      this.service.setColorObj(this.colorObj);
     }
   }
 
@@ -503,7 +501,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             "Error in fetching processor's execution date. Please try after some time.",
         });
       }
-    },  error => {
+    }, error => {
       console.log(error);
     });
   }
