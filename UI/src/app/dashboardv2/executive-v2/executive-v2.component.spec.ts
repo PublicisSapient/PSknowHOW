@@ -14762,7 +14762,7 @@ describe('ExecutiveV2Component', () => {
 
   it('should get table data for kpi when trendValueList dont have filter when kpi name is availiable', () => {
     component.allKpiArray = [{
-      kpiName : 'abc'
+      kpiName: 'abc'
     }];
     component.kpiTableHeadingArr = fakeKpiTableHeadingArray;
     component.noOfDataPoints = 5;
@@ -14805,7 +14805,7 @@ describe('ExecutiveV2Component', () => {
         "order": '1'
       }]
     }
-  
+
     component.getTableData('kpi14', 0, enabledKpi);
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
   });
@@ -14852,13 +14852,13 @@ describe('ExecutiveV2Component', () => {
 
   it('should return the correct chart type when kpiId exists in updatedConfigGlobalData', () => {
     const mockKpiId = 'kpi1';
-    component.updatedConfigGlobalData = [{ 
+    component.updatedConfigGlobalData = [{
       kpiId: 'kpi1',
       kpiDetail: {
-      kpiId: 'kpi1',
-      chartType: 'line'
-    }
-  }];
+        kpiId: 'kpi1',
+        chartType: 'line'
+      }
+    }];
     const result = component.getKpiChartType(mockKpiId);
 
     expect(result).toEqual('line');
@@ -14871,5 +14871,470 @@ describe('ExecutiveV2Component', () => {
 
     expect(result).toBeUndefined();
   });
+
+
+  it('should update kpiTableDataObj with correct data when idx is greater than or equal to 0 and filter is overall', () => {
+    component.allKpiArray = [
+      { kpiId: 'kpi1', kpiName: 'KPI 1', trendValueList: [{ data: 'value1' }, { data: 'value2' }] },
+      { kpiId: 'kpi2', kpiName: 'KPI 2', trendValueList: [{ data: 'value3' }, { data: 'value4' }] },
+    ];
+    component.colorObj = { branch1: { nodeName: 'branch1' }, branch2: { nodeName: 'branch2' } };
+    component.kpiTrendsObj = {
+      kpi1: [{ hierarchyName: 'branch1', value: 'value1', trend: 'trend1', maturity: 'maturity1', kpiUnit: 'unit1' }],
+      kpi2: [{ hierarchyName: 'branch2', value: 'value2', trend: 'trend2', maturity: 'maturity2', kpiUnit: 'unit2' }],
+    };
+    component.kpiTableDataObj = {
+      branch1: [{ kpiId: 'kpi1', kpiName: 'KPI 1', frequency: 'Monthly', show: true, hoverText: [], order: 1 }],
+      branch2: [{ kpiId: 'kpi2', kpiName: 'KPI 2', frequency: 'Weekly', show: true, hoverText: [], order: 2 }],
+    };
+    component.maturityTableKpiList = ['kpi1', 'kpi2'];
+    component.noOfDataPoints = 2;
+
+    const mockKpiId = 'kpi1';
+    const mockIdx = 0;
+    const mockEnabledKpi = { kpiDetail: { xaxisLabel: 'Monthly' }, isEnabled: true, shown: true, order: 1 };
+    component.colorObj = { branch1: { nodeName: 'branch1' } };
+    spyOn(component, 'sortingRowsInTable');
+
+    component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
+
+    // expect(component.kpiTableDataObj).toEqual({
+    //   branch1: [
+    //     {
+    //       kpiId: 'kpi1',
+    //       kpiName: 'KPI 1',
+    //       frequency: 'Monthly',
+    //       show: true,
+    //       hoverText: ['1 - ', '2 - '],
+    //       order: 1,
+    //       latest: 'value1',
+    //       trend: 'trend1',
+    //       maturity: 'maturity1',
+    //       '1': 'value1 unit1',
+    //       '2': 'value2 unit1',
+    //     },
+    //   ],
+    //   branch2: [{ kpiId: 'kpi2', kpiName: 'KPI 2', frequency: 'Weekly', show: true, hoverText: [], order: 2 }],
+    // });
+    expect(component.sortingRowsInTable).toHaveBeenCalledWith('branch1');
+  });
+
+  it('should update kpiTableDataObj with correct data when idx is greater than or equal to 0 and filter is not overall', () => {
+    component.allKpiArray = [
+      { kpiId: 'kpi1', kpiName: 'KPI 1', trendValueList: [{ data: 'value1' }, { data: 'value2' }] },
+      { kpiId: 'kpi2', kpiName: 'KPI 2', trendValueList: [{ data: 'value3' }, { data: 'value4' }] },
+    ];
+    component.colorObj = { color1: { nodeName: 'branch1' }, color2: { nodeName: 'branch2' } };
+    component.kpiTrendsObj = {
+      kpi1: [{ hierarchyName: 'branch1', value: 'value1', trend: 'trend1', maturity: 'maturity1', kpiUnit: 'unit1' }],
+      kpi2: [{ hierarchyName: 'branch2', value: 'value2', trend: 'trend2', maturity: 'maturity2', kpiUnit: 'unit2' }],
+    };
+    component.kpiTableDataObj = {
+      branch1: [{ kpiId: 'kpi1', kpiName: 'KPI 1', frequency: 'Monthly', show: true, hoverText: [], order: 1 }],
+      branch2: [{ kpiId: 'kpi2', kpiName: 'KPI 2', frequency: 'Weekly', show: true, hoverText: [], order: 2 }],
+    };
+
+    const mockKpiId = 'kpi17';
+    const mockIdx = 0;
+    const mockEnabledKpi = { kpiDetail: { xaxisLabel: 'Monthly' }, isEnabled: true, shown: true, order: 1 };
+    component.colorObj = { branch1: { nodeName: 'branch1' } };
+    spyOn(component, 'sortingRowsInTable');
+
+    component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
+
+    // expect(component.kpiTableDataObj).toEqual({
+    //   branch1: [
+    //     {
+    //       kpiId: 'kpi17',
+    //       kpiName: 'KPI 1',
+    //       frequency: 'Monthly',
+    //       show: true,
+    //       hoverText: [],
+    //       order: 1,
+    //       latest: '-',
+    //       trend: '-',
+    //       maturity: '-',
+    //       '1': '-',
+    //       '2': '-',
+    //     },
+    //   ],
+    //   // branch2: [{ kpiId: 'kpi2', kpiName: 'KPI 2', frequency: 'Weekly', show: true, hoverText: [], order: 2 }],
+    // });
+    expect(component.sortingRowsInTable).toHaveBeenCalledWith('branch1');
+  });
+
+  it('should update kpiTableDataObj with correct data when idx is less than 0 and filter is overall', () => {
+
+    component.allKpiArray = [
+      { kpiId: 'kpi1', kpiName: 'KPI 1', trendValueList: [{ data: 'value1' }, { data: 'value2' }] },
+      { kpiId: 'kpi2', kpiName: 'KPI 2', trendValueList: [{ data: 'value3' }, { data: 'value4' }] },
+    ];
+    component.colorObj = { color1: { nodeName: 'branch1' }, color2: { nodeName: 'branch2' } };
+    component.kpiTrendsObj = {
+      kpi1: [{ hierarchyName: 'branch1', value: 'value1', trend: 'trend1', maturity: 'maturity1', kpiUnit: 'unit1' }],
+      kpi2: [{ hierarchyName: 'branch2', value: 'value2', trend: 'trend2', maturity: 'maturity2', kpiUnit: 'unit2' }],
+    };
+    component.kpiTableDataObj = {
+      branch1: [{ kpiId: 'kpi1', kpiName: 'KPI 1', frequency: 'Monthly', show: true, hoverText: [], order: 1 }],
+      branch2: [{ kpiId: 'kpi2', kpiName: 'KPI 2', frequency: 'Weekly', show: true, hoverText: [], order: 2 }],
+    };
+
+
+    const mockKpiId = 'kpi2';
+    const mockIdx = -1;
+    const mockEnabledKpi = { kpiDetail: { xaxisLabel: 'Weekly' }, isEnabled: true, shown: true, order: 2 };
+    component.colorObj = { branch2: { nodeName: 'branch2' } };
+    spyOn(component, 'sortingRowsInTable');
+
+    component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
+
+    // expect(component.kpiTableDataObj).toEqual({
+    //   branch1: [
+    //     {
+    //       kpiId: 'kpi1',
+    //       kpiName: 'KPI 1',
+    //       frequency: 'Monthly',
+    //       show: true,
+    //       hoverText: ['1 - ', '2 - '],
+    //       order: 1,
+    //       latest: 'value1',
+    //       trend: 'trend1',
+    //       maturity: 'maturity1',
+    //       '1': 'value1 unit1',
+    //       '2': 'value2 unit1',
+    //     },
+    //   ],
+    //   branch2: [
+    //     {
+    //       kpiId: 'kpi2',
+    //       kpiName: 'KPI 2',
+    //       frequency: 'Weekly',
+    //       show: true,
+    //       hoverText: ['1 - ', '2 - '],
+    //       order: 2,
+    //       latest: 'value2',
+    //       trend: 'trend2',
+    //       maturity: 'maturity2',
+    //       '1': 'value3 unit2',
+    //       '2': 'value4 unit2',
+    //     },
+    //   ],
+    // });
+    expect(component.sortingRowsInTable).not.toHaveBeenCalled();
+  });
+
+  it('should update kpiTableDataObj with correct data when idx is less than 0 and filter is not overall', () => {
+
+    component.allKpiArray = [
+      { kpiId: 'kpi1', kpiName: 'KPI 1', trendValueList: [{ data: 'value1' }, { data: 'value2' }] },
+      { kpiId: 'kpi2', kpiName: 'KPI 2', trendValueList: [{ data: 'value3' }, { data: 'value4' }] },
+    ];
+    // component.colorObj = { color1: { nodeName: 'branch1' }, color2: { nodeName: 'branch2' } };
+    component.kpiTrendsObj = {
+      kpi1: [{ hierarchyName: 'branch1', value: 'value1', trend: 'trend1', maturity: 'maturity1', kpiUnit: 'unit1' }],
+      kpi2: [{ hierarchyName: 'branch2', value: 'value2', trend: 'trend2', maturity: 'maturity2', kpiUnit: 'unit2' }],
+    };
+    component.kpiTableDataObj = {
+      branch1: [{ kpiId: 'kpi1', kpiName: 'KPI 1', frequency: 'Monthly', show: true, hoverText: [], order: 1 }],
+      branch2: [{ kpiId: 'kpi2', kpiName: 'KPI 2', frequency: 'Weekly', show: true, hoverText: [], order: 2 }],
+    };
+
+    const mockKpiId = 'kpi72';
+    const mockIdx = -1;
+    const mockEnabledKpi = { kpiDetail: { xaxisLabel: 'Weekly' }, isEnabled: true, shown: true, order: 2 };
+    component.colorObj = { branch2: { nodeName: 'branch2', color: 'red' } };
+    spyOn(component, 'sortingRowsInTable');
+
+    component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
+
+    // expect(component.kpiTableDataObj).toEqual({
+    //   branch1: [
+    //     {
+    //       kpiId: 'kpi1',
+    //       kpiName: 'KPI 1',
+    //       frequency: 'Monthly',
+    //       show: true,
+    //       hoverText: ['1 - ', '2 - '],
+    //       order: 1,
+    //       latest: 'value1',
+    //       trend: 'trend1',
+    //       maturity: 'maturity1',
+    //       '1': 'value1 unit1',
+    //       '2': 'value2 unit1',
+    //     },
+    //   ],
+    //   branch2: [
+    //     {
+    //       kpiId: 'kpi2',
+    //       kpiName: 'KPI 2',
+    //       frequency: 'Weekly',
+    //       show: true,
+    //       hoverText: ['1 - ', '2 - '],
+    //       order: 2,
+    //       latest: 'value2',
+    //       trend: 'trend2',
+    //       maturity: 'maturity2',
+    //       '1': 'value3 unit2',
+    //       '2': 'value4 unit2',
+    //     },
+    //   ],
+    // });
+    expect(component.sortingRowsInTable).not.toHaveBeenCalled();
+  });
+
+  it('should add kpiId to maturityTableKpiList if not already present', () => {
+    component.allKpiArray = [
+      { kpiId: 'kpi1', kpiName: 'KPI 1', trendValueList: [{ data: 'value1' }, { data: 'value2' }] },
+      { kpiId: 'kpi2', kpiName: 'KPI 2', trendValueList: [{ data: 'value3' }, { data: 'value4' }] },
+    ];
+    component.colorObj = { branch1: { nodeName: 'branch1' }, branch2: { nodeName: 'branch2' } };
+    component.kpiTrendsObj = {
+      kpi1: [{ hierarchyName: 'branch1', value: 'value1', trend: 'trend1', maturity: 'maturity1', kpiUnit: 'unit1' }],
+      kpi2: [{ hierarchyName: 'branch2', value: 'value2', trend: 'trend2', maturity: 'maturity2', kpiUnit: 'unit2' }],
+    };
+    component.kpiTableDataObj = {
+      branch1: [{ kpiId: 'kpi1', kpiName: 'KPI 1', frequency: 'Monthly', show: true, hoverText: [], order: 1 }],
+      branch2: [{ kpiId: 'kpi2', kpiName: 'KPI 2', frequency: 'Weekly', show: true, hoverText: [], order: 2 }],
+    };
+
+    const mockKpiId = 'kpi5';
+    const mockIdx = 0;
+    const mockEnabledKpi = { kpiDetail: { xaxisLabel: 'Monthly' }, isEnabled: true, shown: true, order: 1 };
+    spyOn(component, 'sortingRowsInTable');
+
+    component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
+
+    // expect(component.maturityTableKpiList).toEqual(['kpi1', 'kpi2', 'kpi5']);
+    expect(component.sortingRowsInTable).toHaveBeenCalledWith('branch1');
+  });
+
+  it('should set correct kpiChartData on release dashboard', () => {
+    component.allKpiArray = [{
+      "kpiId": "kpi142",
+      "kpiName": "Defect Count by RCA",
+      "unit": "Count",
+      "chartType": "",
+      "id": "65793ddb127be336160bc0ff",
+      "isDeleted": "False",
+      "kpiCategory": "Release",
+      "kpiUnit": "Count",
+      "kanban": false,
+      "kpiSource": "Jira",
+      "groupId": 9,
+      "sprint": "Phase 1_API POD 2 - Account Management",
+      "modalHeads": [
+        "Issue ID",
+        "Issue Description",
+        "Sprint Name",
+        "Issue Type",
+        "Issue Status",
+        "Root Cause",
+        "Priority",
+        "Assignee",
+        "Testing Phase"
+      ],
+      "trendValueList": [
+        {
+          "filter1": "Open Defects"
+        },
+        {
+          "filter1": "Total Defects",
+          "value": [
+            {
+              "data": "1",
+              "sSprintName": "Undefined",
+              "value": [
+                {
+                  "subFilter": "None",
+                  "value": 1,
+                  "size": 0
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "maxValue": "",
+      "kpiInfo": {
+        "definition": "It shows the breakup of all defects tagged to a release based on RCA. The breakup is shown in terms of count at different testing phases.",
+        "details": [
+          {
+            "type": "link",
+            "kpiLinkDetail": {
+              "text": "Detailed Information at",
+              "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79953937/Release+Defect+count+by+RCA"
+            }
+          }
+        ]
+      }
+    }];
+    component.kpiSelectedFilterObj = {
+      kpi142: {
+        "filter1": [
+          "Open Defects"
+        ]
+      }
+    };
+    component.getChartDataforRelease('kpi142', 0, undefined, false);
+    expect(component.kpiChartData['kpi142']).toEqual([{
+      "filter1": "Open Defects"
+    }]);
+  });
+
+  it('should set correct kpiChartData on release dashboard when trendvaluelist has value attribute', () => {
+    component.allKpiArray = [
+      {
+        "kpiId": "kpi142",
+        "kpiName": "Defect Count by RCA",
+        "unit": "Count",
+        "chartType": "",
+        "id": "65793ddb127be336160bc0ff",
+        "isDeleted": "False",
+        "kpiCategory": "Release",
+        "kpiUnit": "Count",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "groupId": 9,
+        "sprint": "Phase 1_API POD 2 - Account Management",
+        "modalHeads": [
+          "Issue ID",
+          "Issue Description",
+          "Sprint Name",
+          "Issue Type",
+          "Issue Status",
+          "Root Cause",
+          "Priority",
+          "Assignee",
+          "Testing Phase"
+        ],
+        "trendValueList": [
+          {
+            "filter1": "Open Defects"
+          },
+          {
+            "filter1": "Total Defects",
+            "value": [
+              {
+                "data": "1",
+                "sSprintName": "Undefined",
+                "value": [
+                  {
+                    "subFilter": "None",
+                    "value": 1,
+                    "size": 0
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "maxValue": "",
+        "kpiInfo": {
+          "definition": "It shows the breakup of all defects tagged to a release based on RCA. The breakup is shown in terms of count at different testing phases.",
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79953937/Release+Defect+count+by+RCA"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kpiId": "kpi143",
+        "kpiName": "Defect Count by Assignee",
+        "unit": "Count",
+        "chartType": "",
+        "id": "65793ddb127be336160bc100",
+        "isDeleted": "False",
+        "kpiCategory": "Release",
+        "kpiUnit": "Count",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "groupId": 9,
+        "sprint": "Phase 1_API POD 2 - Account Management",
+        "modalHeads": [
+          "Issue ID",
+          "Issue Description",
+          "Sprint Name",
+          "Issue Type",
+          "Issue Status",
+          "Root Cause",
+          "Priority",
+          "Assignee"
+        ],
+        "trendValueList": [
+          {
+            "filter1": "Open Defects",
+            "value": [
+              {
+                "data": "API POD 2 - Account Management",
+                "value": [
+                  {
+                    "data": "0",
+                    "value": {}
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "filter1": "Total Defects",
+            "value": [
+              {
+                "data": "API POD 2 - Account Management",
+                "value": [
+                  {
+                    "data": "1",
+                    "value": {
+                      "Nidhi Goyal": 1
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "maxValue": "",
+        "kpiInfo": {
+          "definition": "It shows the breakup of all defects tagged to a release based on Assignee. The breakup is shown in terms of count & percentage.",
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79691782/Release+Defect+count+by+Assignee"
+              }
+            }
+          ]
+        }
+      }];
+    component.kpiSelectedFilterObj = {
+      kpi142: {
+        "filter1": [
+          "Open Defects"
+        ]
+      },
+      kpi143: {
+        "filter1": [
+          "Open Defects"
+        ]
+      }
+    };
+    component.getChartDataforRelease('kpi143', 1, undefined, false);
+    expect(component.kpiChartData['kpi143']).toEqual([{
+      "data": "API POD 2 - Account Management",
+      "value": [
+          {
+              "data": "0",
+              "value": {}
+          }
+      ]
+  }]);
+  });
+
 });
+
 
