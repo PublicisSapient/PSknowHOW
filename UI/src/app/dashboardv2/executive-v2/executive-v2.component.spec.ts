@@ -14165,7 +14165,61 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled();
   })
 
+  it('should post jira kpis when Release board is selected', fakeAsync(() => {
+    component.tooltip = {
+      sprintCountForKpiCalculation: 2
+    }
+    component.filterApplyData = {
+      label: 'project',
+      selectedMap: {
+        sprint: []
+      }
+    }
+    component.selectedTab = 'release';
+    const postData = {
+      kpiList: [
+        {
+          id: '64c27a3b1d26a19187772b52',
+          kpiId: 'kpi141',
+          kpiName: 'Defect Count by Status',
+        },
+        {
+          id: '64c27a3b1d26a19187772b53',
+          kpiId: 'kpi142',
+          kpiName: 'Defect Count by RCA'
+        },
+        {
+          id: '64c27a3b1d26a19187772b54',
+          kpiId: 'kpi143',
+          kpiName: 'Defect Count by Assignee',
+        }
+      ]
+    };
 
+    const kpiWiseData = {
+      kpi141: {
+        id: '64c27a3b1d26a19187772b52',
+        kpiName: 'Defect Count by Status',
+      },
+      kpi142: {
+        id: '64c27a3b1d26a19187772b53',
+        kpiName: 'Defect Count by RCA'
+      },
+      kpi143: {
+        id: '64c27a3b1d26a19187772b54',
+        kpiName: 'Defect Count by Assignee',
+      }
+    };
+    component.jiraKpiRequest = '';
+    spyOn(helperService, 'createKpiWiseId').and.returnValue(kpiWiseData);
+    spyOn(component, 'removeLoaderFromKPIs');
+    spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(postData.kpiList));
+    const spy = spyOn(component, 'createAllKpiArray');
+    component.postJiraKpi(postData, 'Jira');
+    component.jiraKpiData = {};
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }));
   it('should handle successful post request and update jiraKpiData', () => {
     const mockPostData = {
       "kpiList": [
@@ -14288,17 +14342,17 @@ describe('ExecutiveV2Component', () => {
         }
       }
     ];
-
+  
     spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(mockGetData));
     spyOn(helperService, 'createKpiWiseId').and.returnValue(mockGetData);
-
+  
     component.postJiraKPIForRelease(mockPostData, 'jira');
-
+  
     expect(httpService.postKpiNonTrend).toHaveBeenCalledWith(mockPostData, 'jira');
     expect(helperService.createKpiWiseId).toHaveBeenCalledWith(mockGetData);
     // expect(component.jiraKpiData).toEqual(mockGetData);
   });
-
+  
   it('should handle error response and update jiraKpiData', () => {
     const mockPostData = {
       "kpiList": [
@@ -14718,48 +14772,48 @@ describe('ExecutiveV2Component', () => {
       "label": "release"
     };
     const mockErrorData = {};
-
+  
     spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(mockErrorData));
-
+  
     component.postJiraKPIForRelease(mockPostData, 'jira');
-
+  
     expect(httpService.postKpiNonTrend).toHaveBeenCalledWith(mockPostData, 'jira');
     expect(component.jiraKpiData).toEqual(mockErrorData);
   });
-
+  
   it('should handle selected option on release when event is an object', () => {
     const mockEvent = {
       filter1: ['value1', 'value2'],
       filter2: ['value3']
     };
     const mockKpi = { kpiId: 'kpi1' };
-
+  
     component.handleSelectedOptionOnRelease(mockEvent, mockKpi);
-
+  
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual(mockEvent);
   });
-
+  
   it('should handle selected option on release when event is not an object', () => {
     const mockEvent = 'value1';
     const mockKpi = { kpiId: 'kpi1' };
-
+  
     component.handleSelectedOptionOnRelease(mockEvent, mockKpi);
-
+  
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual({ filter1: [mockEvent] });
   });
-
+  
   it('should delete empty values from event object', () => {
     const mockEvent = {
       filter1: [],
       filter2: ['value1']
     };
     const mockKpi = { kpiId: 'kpi1' };
-
+  
     component.handleSelectedOptionOnRelease(mockEvent, mockKpi);
-
+  
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual({ filter2: ['value1'] });
   });
-
+  
   it('should get table data for kpi when trendValueList dont have filter when kpi name is availiable', () => {
     component.allKpiArray = [{
       kpiName: 'abc'
@@ -14809,47 +14863,47 @@ describe('ExecutiveV2Component', () => {
     component.getTableData('kpi14', 0, enabledKpi);
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
   });
-
+  
   it('should return true when data contains at least one numeric value', () => {
     const mockData = [
       { data: 'value1' },
       { data: 2 },
       { value: [{ data: 'value2' }, { data: 3 }] },
     ];
-
+  
     const result = component.checkIfDataPresent(mockData);
-
+  
     expect(result).toBeTrue();
   });
-
+  
   it('should return false when data does not contain any numeric value', () => {
     const mockData = [
       { data: 'value1' },
       { data: 'value2' },
       { value: [{ data: 'value3' }, { data: 'value4' }] },
     ];
-
+  
     const result = component.checkIfDataPresent(mockData);
-
+  
     expect(result).toBeFalse();
   });
-
+  
   it('should return false when data is undefined', () => {
     const mockData = undefined;
-
+  
     const result = component.checkIfDataPresent(mockData);
-
+  
     expect(result).toBeFalse();
   });
-
+  
   it('should return false when data is an empty array', () => {
     const mockData = [];
-
+  
     const result = component.checkIfDataPresent(mockData);
-
+  
     expect(result).toBeFalse();
   });
-
+  
   it('should return the correct chart type when kpiId exists in updatedConfigGlobalData', () => {
     const mockKpiId = 'kpi1';
     component.updatedConfigGlobalData = [{
@@ -14860,15 +14914,15 @@ describe('ExecutiveV2Component', () => {
       }
     }];
     const result = component.getKpiChartType(mockKpiId);
-
+  
     expect(result).toEqual('line');
   });
-
+  
   it('should return undefined when kpiId does not exist in updatedConfigGlobalData', () => {
     const mockKpiId = 'kpi4';
     component.updatedConfigGlobalData = [];
     const result = component.getKpiChartType(mockKpiId);
-
+  
     expect(result).toBeUndefined();
   });
 
