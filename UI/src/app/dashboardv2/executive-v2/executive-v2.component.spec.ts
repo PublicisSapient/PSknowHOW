@@ -68,55 +68,7 @@ describe('ExecutiveV2Component', () => {
   const fakeDoraKpiFilters = require('../../../test/resource/fakeDoraKpiFilters.json');
   const globalData = require('../../../test/resource/fakeGlobalConfigData.json');
   const fakeMasterData = require('../../../test/resource/fakeMasterData.json');
-  const configGlobalData = [
-    {
-      kpiId: 'kpi74',
-      kpiName: 'Release Frequency',
-      isEnabled: true,
-      order: 1,
-      kpiDetail: {
-        id: '63320976b7f239ac93c2686a',
-        kpiId: 'kpi74',
-        kpiName: 'Release Frequency',
-        isDeleted: 'False',
-        defaultOrder: 17,
-        kpiUnit: '',
-        chartType: 'line',
-        showTrend: true,
-        isPositiveTrend: true,
-        calculateMaturity: false,
-        kpiSource: 'Jira',
-        maxValue: '300',
-        kanban: true,
-        groupId: 4,
-        kpiInfo: {
-          definition: 'Release Frequency highlights the number of releases done in a month',
-          formula: [
-            {
-              lhs: 'Release Frequency for a month',
-              rhs: 'Number of fix versions in JIRA for a project that have a release date falling in a particular month'
-            }
-          ],
-          details: [
-            {
-              type: 'paragraph',
-              value: 'It is calculated as a ‘Count’. Higher the Release Frequency, more valuable it is for the Business or a Project'
-            },
-            {
-              type: 'paragraph',
-              value: 'A progress indicator shows trend of Release Frequency between last 2 months. An upward trend is considered positive'
-            }
-          ]
-        },
-        aggregationCriteria: 'sum',
-        trendCalculative: false,
-        squadSupport: false,
-        xaxisLabel: 'Months',
-        yaxisLabel: 'Count'
-      },
-      shown: true
-    }
-  ];
+
   const filterApplyDataWithNoFilter = {};
   const filterApplyDataWithScrum = { kpiList: [{ id: '5d3013be4020938b42c23ba7', kpiId: 'kpi8', kpiName: 'Code Build Time', isDeleted: 'False', kpiCategory: 'Productivity', kpiUnit: 'min', kpiSource: 'Jenkins', maxValue: '100', kanban: false, chartType: 'gaugeChart' }], ids: ['Speedy 2.0_62503_Speedy 2.0'], level: 3, selectedMap: { hierarchyLevelOne: ['ASDFG_hierarchyLevelOne'], Project: ['Speedy 2.0_62503_Speedy 2.0'], SubProject: [], Sprint: [], Build: [], Release: [], Squad: [], Individual: [] } };
   const filterApplyDataWithKanban = { kpiList: [{ id: '5d3013be4020938b42c23bd0', kpiId: 'kpi66', kpiName: 'Code Build Time', isDeleted: 'False', kpiCategory: 'Productivity', kpiUnit: 'min', kpiSource: 'Jenkins', maxValue: '100', kanban: true, chartType: 'gaugeChart' }], ids: ['Date Range'], level: 5, selectedMap: { hierarchyLevelOne: ['ASDFG_hierarchyLevelOne'], Project: [], SubProject: [], Date: ['Date Range'], Build: [], Release: [], Squad: [], Individual: [] }, startDate: '2019-04-30T18:30:00.000Z', endDate: '2019-08-08T11:00:24.000Z' };
@@ -2418,8 +2370,6 @@ describe('ExecutiveV2Component', () => {
   ];
 
   const fakeJiraGroupId1 = require('../../../test/resource/fakeJiraGroupId1.json');
-  const fakeAllKpiArrayForTableData = require('../../../test/resource/fakeAllKpiArrayForTableData.json');
-  const fakeAllKpiArrayForTableDataWithFilter = require('../../../test/resource/fakeAllKpiArrayForTableDataWithFilter.json');
   const fakeKpiTableHeadingArray = [
     {
       "field": "kpiName",
