@@ -50,7 +50,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   subject = new Subject();
   constructor(
     private httpService: HttpService,
-    private service: SharedService,
+    public service: SharedService,
     private helperService: HelperService,
     public cdr: ChangeDetectorRef,
     private messageService: MessageService,) { }
@@ -454,7 +454,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
       this.additionalFiltersArr['filter' + (index + 1)] = [];
 
-      let allFilters = this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName];
+      let allFilters = this.filterDataArr[this.selectedType] && this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] ? this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] : [];
       selectedProjectIds.forEach(nodeId => {
         if (allFilters?.length) {
           this.additionalFiltersArr['filter' + (index + 1)].push(...allFilters?.filter((filterItem) => {

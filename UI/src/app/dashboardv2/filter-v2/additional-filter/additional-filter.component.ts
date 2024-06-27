@@ -43,7 +43,14 @@ export class AdditionalFilterComponent implements OnChanges {
 
       // Apply the first/ Overall filter
       if (this.selectedTab.toLowerCase() === 'developer') {
-        let fakeEvent = {};
+        this.applyDefaultFilter();
+      }
+
+    }));
+  }
+
+  applyDefaultFilter() {
+    let fakeEvent = {};
         if (this.filterData.map(f => f.nodeName).includes('Overall')) {
           this.filterData.splice(this.filterData.map(f => f.nodeName).indexOf('Overall'), 1);
           this.filterData.unshift({ nodeId: 'Overall', nodeName: 'Overall' });
@@ -61,9 +68,6 @@ export class AdditionalFilterComponent implements OnChanges {
         setTimeout(() => {
           this.applyAdditionalFilter(fakeEvent, 0 + 1);
         }, 100);
-      }
-
-    }));
   }
 
   ngOnChanges(changes: SimpleChanges): void {

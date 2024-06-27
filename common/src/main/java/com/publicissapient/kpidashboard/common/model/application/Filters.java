@@ -35,9 +35,9 @@ import java.util.List;
 public class Filters extends BasicModel {
     private Integer boardId;
     private ProjectTypeSwitch projectTypeSwitch;
-    private PrimaryFilter primaryFilter;
+    private BasicFilter primaryFilter;
     private ParentFilter parentFilter;
-    private List<AdditionalFilter> additionalFilters;
+    private List<BasicFilter> additionalFilters;
 
     @Data
     @NoArgsConstructor
@@ -50,15 +50,7 @@ public class Filters extends BasicModel {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PrimaryFilter {
-        private String type;
-        private DefaultLevel defaultLevel;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class AdditionalFilter {
+    public static class BasicFilter {
         private String type;
         private DefaultLevel defaultLevel;
     }

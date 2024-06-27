@@ -24,11 +24,8 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
-import { distinctUntilChanged, filter, mergeMap } from 'rxjs/operators';
-import * as Excel from 'exceljs';
-import * as fs from 'file-saver';
+import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
-declare let require: any;
 
 @Component({
   selector: 'app-executive-v2',
@@ -653,25 +650,30 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
         });
     } else {
-      this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
-        .subscribe(getData => {
-          if (getData !== null && getData[0] !== 'error' && !getData['error']) {
-            /** creating array into object where key is kpi id */
-            const localVariable = this.helperService.createKpiWiseId(getData);
-            this.removeLoaderFromKPIs(localVariable);
-            this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
-            this.createAllKpiArray(localVariable);
-
-          } else {
-            this.jiraKpiData = getData;
-            postData.kpiList.forEach(element => {
-              this.kpiLoader.delete(element.kpiId);
-            });
-          }
-
-        });
+      this.postJiraKPIForRelease(postData, source);
     }
   }
+
+  postJiraKPIForRelease(postData, source) {
+    this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
+      .subscribe(getData => {
+        if (getData !== null && getData[0] !== 'error' && !getData['error']) {
+          /** creating array into object where key is kpi id */
+          const localVariable = this.helperService.createKpiWiseId(getData);
+          this.removeLoaderFromKPIs(localVariable);
+          this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
+          this.createAllKpiArray(localVariable);
+
+        } else {
+          this.jiraKpiData = getData;
+          postData.kpiList.forEach(element => {
+            this.kpiLoader.delete(element.kpiId);
+          });
+        }
+      });
+  }
+
+
   // post request of BitBucket(scrum)
   postBitBucketKpi(postData, source): void {
     if (this.bitBucketKpiRequest && this.bitBucketKpiRequest !== '') {
@@ -780,12 +782,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   // Return video link if video link present
-  getVideoLink(kpiId) {
-    const kpiData = this.masterData.kpiList.find(kpiObj => kpiObj.kpiId === kpiId);
-    if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
-      return kpiData?.videoLink?.videoUrl;
-    }
-  }
+  // getVideoLink(kpiId) {
+  //   const kpiData = this.masterData.kpiList.find(kpiObj => kpiObj.kpiId === kpiId);
+  //   if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
+  //     return kpiData?.videoLink?.videoUrl;
+  //   }
+  // }
 
   changeView(text) {
     if (text == 'list') {
@@ -1032,7 +1034,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             // if (this.getKpiChartType(kpiId) === 'GroupBarChart' || this.getKpiChartType(kpiId) === 'horizontalPercentBarChart') {
             //   this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
             // } else {
-              this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+            this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
             // }
           } else {
             this.kpiChartData[kpiId] = [...preAggregatedValues];
@@ -1051,7 +1053,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             // if (this.getKpiChartType(kpiId) === 'GroupBarChart' || this.getKpiChartType(kpiId) === 'horizontalPercentBarChart') {
             //   this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
             // } else {
-              this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+            this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
             // }
           } else {
             if (preAggregatedValues[0]?.hasOwnProperty('value')) {
@@ -1462,25 +1464,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   handleSelectedOption(event, kpi) {
     if (this.selectedTab.toLowerCase() === 'release') {
-      this.kpiSelectedFilterObj[kpi?.kpiId] = {};
-      if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
-
-        for (const key in event) {
-          if (event[key]?.length == 0) {
-            delete event[key];
-          }
-        }
-        this.kpiSelectedFilterObj[kpi?.kpiId] = event;
-      } else {
-        this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
-      }
-      if (this.selectedTab.toLowerCase() !== 'release') {
-        this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), true);
-      } else {
-        this.getChartDataforRelease(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), true);
-      }
-      this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj, this.selectedTab, this.filterApplyData['ids'][0]);
-      this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+      this.handleSelectedOptionOnRelease(event, kpi);
     } else {
       this.kpiSelectedFilterObj[kpi?.kpiId] = [];
       if (kpi.kpiId === "kpi72") {
@@ -1529,6 +1513,24 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
     }
 
+  }
+
+  handleSelectedOptionOnRelease(event, kpi) {
+    this.kpiSelectedFilterObj[kpi?.kpiId] = {};
+    if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
+
+      for (const key in event) {
+        if (event[key]?.length == 0) {
+          delete event[key];
+        }
+      }
+      this.kpiSelectedFilterObj[kpi?.kpiId] = event;
+    } else {
+      this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
+    }
+    this.getChartDataforRelease(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), true);
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj, this.selectedTab, this.filterApplyData['ids'][0]);
+    this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 
 
