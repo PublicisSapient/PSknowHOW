@@ -1290,4 +1290,31 @@ it('should call createCombinations', () => {
 
     expect(component.kpiDropdowns[mockKpiId]).toBeUndefined();
   });
+
+  it('should generate dropdown options when filter2 is present',()=>{
+    spyOn(component,'ifKpiExist').and.returnValue(0);
+    component.colorObj = { knowhow: { nodeName: 'knowhow' },knowhow2 :  { nodeName: 'knowhow2' }};
+    component.allKpiArray = [{
+      trendValueList: [
+        {
+          filter1 : 'f4',
+          filter2: 'f5',
+          value: [
+            { data: 'knowhow' },
+            { data: 'knowhow2' }
+          ]
+        },
+        {
+          filter1 : 'f46',
+          filter2: 'f56',
+          value: [
+            { data: 'knowhow' },
+            { data: 'knowhow2' }
+          ]
+        }
+      ]
+    }]
+    component.getDropdownArray('kpi123')
+    expect(component.kpiDropdowns).toBeDefined()
+  })
 });
