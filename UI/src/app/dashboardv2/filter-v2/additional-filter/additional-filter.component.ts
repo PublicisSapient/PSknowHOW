@@ -65,9 +65,9 @@ export class AdditionalFilterComponent implements OnChanges {
             this.selectedFilters = ['Overall'];
           }
         }
-        setTimeout(() => {
+        Promise.resolve().then(() => {
           this.applyAdditionalFilter(fakeEvent, 0 + 1);
-        }, 100);
+        });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
