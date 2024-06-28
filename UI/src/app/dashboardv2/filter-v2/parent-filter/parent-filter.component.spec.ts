@@ -22,7 +22,7 @@ describe('ParentFilterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ParentFilterComponent ],
+      declarations: [ParentFilterComponent],
       imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
@@ -30,7 +30,7 @@ describe('ParentFilterComponent', () => {
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(ParentFilterComponent);
     component = fixture.componentInstance;
@@ -125,7 +125,7 @@ describe('ParentFilterComponent', () => {
       parentFilterConfig: {
         currentValue: { labelName: 'Level1' }, previousValue: {
           labelName: 'Organization Level'
-      },
+        },
         firstChange: false,
         isFirstChange: function (): boolean {
           return false;
@@ -159,4 +159,39 @@ describe('ParentFilterComponent', () => {
     expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': component.selectedLevel.toLowerCase(), 'primary_level': null });
   });
 
+
+  it('should fill additionalFilterLevels with keys that have a higher level than project', () => {
+    component.filterData = {
+      project: [{ level: 2 }],
+      department: [{ level: 3 }],
+      team: [{ level: 4 }],
+    };
+    component.fillAdditionalFilterLevels();
+
+    expect(component.additionalFilterLevels).toEqual(['department', 'team']);
+  });
+
+  it('should not fill additionalFilterLevels if project has no length', () => {
+    component.filterData = {
+      project: [{ level: 2 }],
+      department: [{ level: 3 }],
+      team: [{ level: 4 }],
+    };
+
+    component.filterData['project'] = [];
+    component.fillAdditionalFilterLevels();
+
+    expect(component.additionalFilterLevels).toEqual([]);
+  });
+
+  it('should not fill additionalFilterLevels if no keys have a higher level than project', () => {
+    component.filterData = {
+      project: [{ level: 2 }],
+      department: [{ level: 1 }],
+      team: [{ level: 1 }],
+    };
+    component.fillAdditionalFilterLevels();
+
+    expect(component.additionalFilterLevels).toEqual([]);
+  });
 });

@@ -23,14 +23,7 @@ export class ParentFilterComponent implements OnChanges {
 
     if (changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab']?.previousValue || changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue) {
       if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
-        if (this.filterData['project']?.length) {
-          let projectLevel = this.filterData['project'][0].level;
-          Object.keys(this.filterData).forEach((key) => {
-            if (this.filterData[key][0].level > projectLevel) {
-              this.additionalFilterLevels.push(key);
-            }
-          });
-        }
+        this.fillAdditionalFilterLevels();
         this.filterLevels = Object.keys(this.filterData);
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level));
         this.filterLevels = this.filterLevels.map(level => level.toUpperCase());
@@ -76,6 +69,17 @@ export class ParentFilterComponent implements OnChanges {
           });
         }
       }
+    }
+  }
+
+  fillAdditionalFilterLevels() {
+    if (this.filterData['project']?.length) {
+      let projectLevel = this.filterData['project'][0].level;
+      Object.keys(this.filterData).forEach((key) => {
+        if (this.filterData[key][0].level > projectLevel) {
+          this.additionalFilterLevels.push(key);
+        }
+      });
     }
   }
 
