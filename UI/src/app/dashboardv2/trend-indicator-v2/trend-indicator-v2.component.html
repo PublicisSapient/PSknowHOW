@@ -11,7 +11,7 @@
             <tr *ngFor="let item of dataObj; let i = index;">
                 <td class="p-text-center" width="80" *ngFor="let value of item | keyvalue">
                     <div class="indicator" *ngIf="i === 0" [ngStyle]="{'background-color': value.value}"></div>
-                    <span *ngIf="i > 0">{{ value.value.indexOf('--') === -1 ? value.value : 'NA' }}</span>
+                    <span *ngIf="i > 0" [ngStyle]="{'color': value.value.indexOf('--') === -1 && value.value.indexOf('+ve') >= 0 ? 'green' : value.value.indexOf('--') === -1 && value.value.indexOf('-ve') >= 0 ? 'red' : '#333333' }">{{ value.value.indexOf('--') === -1 ? value.value : 'NA' }}</span>
                 </td>
             </tr>
         </tbody>
