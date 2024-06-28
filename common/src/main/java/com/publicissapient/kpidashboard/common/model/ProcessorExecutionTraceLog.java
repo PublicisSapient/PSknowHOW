@@ -55,8 +55,6 @@ public class ProcessorExecutionTraceLog {
 	private boolean dataMismatch;
 	private boolean progressStats;
 	private boolean executionOngoing;
-	private boolean executionWarning;
-	private long executionResumesAt;
 	private String errorMessage;
 	private String failureLog;
 	private List<ProgressStatus> progressStatusList;
