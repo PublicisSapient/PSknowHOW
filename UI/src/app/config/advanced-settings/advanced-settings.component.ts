@@ -380,7 +380,7 @@ export class AdvancedSettingsComponent implements OnInit {
       const logs = jiraLogDetails.progressStatusList;
       const lastLOgTime = logs[logs.length-1].endTime;
       const currentTime = new Date().getTime();
-      var differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
+      let differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
       if(differenceInMilliseconds > 600000){
         return false;
       }else if(differenceInMilliseconds <= 600000){
