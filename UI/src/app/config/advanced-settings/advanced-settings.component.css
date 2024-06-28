@@ -42,11 +42,6 @@ div.main {
   min-width: 60px;
 }
 
-.status-container.pending {
-  background-color: #FFBF00;
-  border: 1px solid #FFBF00;
-}
-
 .status-container.inactive {
   background-color: #ea6a47;
   border: 1px solid #ea6a47;
