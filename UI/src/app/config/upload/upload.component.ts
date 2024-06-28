@@ -26,8 +26,7 @@ import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { first } from 'rxjs/operators';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
-import { FormControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ManageAssigneeComponent } from '../manage-assignee/manage-assignee.component';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 declare let $: any;
 import { HelperService } from 'src/app/services/helper.service';
 
@@ -569,7 +568,7 @@ export class UploadComponent implements OnInit {
           if (obj.isSelected === false || this.selectedFilterData.filterDataList[i].level > currentSelection) {
 
             this.selectedFilterData.filterDataList[i].filterData.splice(j, 1);
-            j = -1;
+            // j = -1;
           }
         }
       }

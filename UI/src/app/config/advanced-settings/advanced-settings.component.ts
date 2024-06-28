@@ -242,10 +242,10 @@ export class AdvancedSettingsComponent implements OnInit {
     if (this.isProjectSelected()) {
       runProcessorInput['projects'] = [this.selectedProject['id']];
     }
-    const pDetails = this.findTraceLogForTool(processorName)
-    if(pDetails){
-      pDetails['executionOngoing'] = true;
-    }
+    // const pDetails = this.findTraceLogForTool(processorName)
+    // if(pDetails){
+    //   pDetails['executionOngoing'] = true;
+    // }
 
     if(processorName === 'Jira'){
       this.resetLogs()
@@ -257,20 +257,21 @@ export class AdvancedSettingsComponent implements OnInit {
           if(runProcessorInput['processor'].toLowerCase() === 'jira'){
             this.jiraStatusContinuePulling = true;
             this.getProcessorCompletionSteps(runProcessorInput)
-          }else{
-            const pDetails = this.findTraceLogForTool(runProcessorInput['processor'])
-            if(pDetails){
-              pDetails['executionOngoing'] = false;
-            }
           }
+          // else{
+          //   const pDetails = this.findTraceLogForTool(runProcessorInput['processor'])
+          //   if(pDetails){
+          //     pDetails['executionOngoing'] = false;
+          //   }
+          // }
         } else if (runProcessorInput['processor'].toLowerCase() === 'jira') {
           this.messageService.add({ severity: 'error', summary: response.data });
         } else {
           this.messageService.add({ severity: 'error', summary: `Error in running ${runProcessorInput['processor']} processor. Please try after some time.` });
-          const pDetails = this.findTraceLogForTool(runProcessorInput['processor'])
-          if (pDetails) {
-            pDetails['executionOngoing'] = false;
-          }
+          // const pDetails = this.findTraceLogForTool(runProcessorInput['processor'])
+          // if (pDetails) {
+          //   pDetails['executionOngoing'] = false;
+          // }
         }
       });
   }
