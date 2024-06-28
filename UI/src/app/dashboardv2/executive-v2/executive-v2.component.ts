@@ -1784,28 +1784,28 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
-  getLastConfigurableTrendingListData(KpiData) {
-    if (this.tooltip && this.tooltip.sprintCountForKpiCalculation !== undefined) {
-      if (!(this.filterApplyData['label'] === 'sqd' && this.filterApplyData['selectedMap']['sprint'].length !== 0)) {
-        KpiData.map(kpiList => {
-          kpiList.trendValueList?.map(trendData => {
-            if (trendData.hasOwnProperty('filter') || trendData.hasOwnProperty('filter1')) {
-              trendData?.value.map(projectWiseData => {
-                const valueLength = projectWiseData.value.length;
-                if (valueLength > this.tooltip.sprintCountForKpiCalculation) {
-                  projectWiseData.value = projectWiseData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
-                }
-              })
-            } else {
-              const valueLength = trendData.value.length;
-              if (valueLength > this.tooltip.sprintCountForKpiCalculation) {
-                trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
-              }
-            }
+  // getLastConfigurableTrendingListData(KpiData) {
+  //   if (this.tooltip && this.tooltip.sprintCountForKpiCalculation !== undefined) {
+  //     if (!(this.filterApplyData['label'] === 'sqd' && this.filterApplyData['selectedMap']['sprint'].length !== 0)) {
+  //       KpiData.map(kpiList => {
+  //         kpiList.trendValueList?.map(trendData => {
+  //           if (trendData.hasOwnProperty('filter') || trendData.hasOwnProperty('filter1')) {
+  //             trendData?.value.map(projectWiseData => {
+  //               const valueLength = projectWiseData.value.length;
+  //               if (valueLength > this.tooltip.sprintCountForKpiCalculation) {
+  //                 projectWiseData.value = projectWiseData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
+  //               }
+  //             })
+  //           } else {
+  //             const valueLength = trendData.value.length;
+  //             if (valueLength > this.tooltip.sprintCountForKpiCalculation) {
+  //               trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
+  //             }
+  //           }
 
-          })
-        })
-      }
-    }
-  }
+  //         })
+  //       })
+  //     }
+  //   }
+  // }
 }

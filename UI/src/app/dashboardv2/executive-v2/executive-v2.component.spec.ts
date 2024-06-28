@@ -9173,7 +9173,7 @@ describe('ExecutiveV2Component', () => {
     component.filterApplyData = {
       label: 'project'
     }
-    spyOn(component, 'getLastConfigurableTrendingListData')
+    // spyOn(component, 'getLastConfigurableTrendingListData')
     const response = [
       {
         "kpiId": "kpi42",
@@ -12194,7 +12194,7 @@ describe('ExecutiveV2Component', () => {
     component.filterApplyData = {
       label: 'project'
     }
-    spyOn(component, 'getLastConfigurableTrendingListData');
+    // spyOn(component, 'getLastConfigurableTrendingListData');
     const jiraKpiData = {
       kpi14: {
         kpiId: 'kpi14',
@@ -12776,147 +12776,7 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'checkLatestAndTrendValue').and.returnValue([])
     component.createTrendsData("kpi17")
     expect(component.kpiChartData).toBeDefined();
-  })
-
-  it('should filter trending list based on configuration', () => {
-    component.tooltip = {
-      sprintCountForKpiCalculation: 1
-    }
-    component.filterApplyData = {
-      label: 'project',
-      selectedMap: {
-        sprint: []
-      }
-    }
-    const kpiList = [{
-      trendValueList: [
-        {
-          "data": "PSKnowHOW",
-          "maturity": "5",
-          "value": [
-            {
-              "data": "0",
-              "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
-              "sSprintName": "KnowHOW | PI_14| ITR_3_PSKnowHOW",
-            },
-            {
-              "data": "0",
-              "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
-              "sSprintName": "KnowHOW | PI_14| ITR_3_PSKnowHOW",
-              "sprintIds": [
-                "288_PSKnowHOW_6577df1242f50c39ed783590"
-              ],
-            },
-            {
-              "data": "0",
-              "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
-              "sSprintName": "KnowHOW | PI_14| ITR_3_PSKnowHOW",
-            }
-          ],
-          "maturityValue": "0.0"
-        }
-      ],
-    },
-    {
-      trendValueList: [
-        {
-          "filter": "Total Defects",
-          "value": [
-            {
-              "data": "PSKnowHOW",
-              "value": [
-                {
-                  "data": "27.0",
-                  "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
-                },
-                {
-                  "data": "27.0",
-                  "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
-                },
-                {
-                  "data": "27.0",
-                  "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
-                }
-              ]
-            }
-          ]
-        },
-      ]
-    }
-
-    ]
-    component.getLastConfigurableTrendingListData(kpiList)
-  })
-
-  it('should filter trending list based on configuration when label is sqd', () => {
-    component.tooltip = {
-      sprintCountForKpiCalculation: 1
-    }
-    component.filterApplyData = {
-      label: 'sqd',
-      selectedMap: {
-        sprint: ['abc']
-      }
-    }
-    const kpiList = [{
-      trendValueList: [
-        {
-          "data": "PSKnowHOW",
-          "maturity": "5",
-          "value": [
-            {
-              "data": "0",
-              "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
-              "sSprintName": "KnowHOW | PI_14| ITR_3_PSKnowHOW",
-            },
-            {
-              "data": "0",
-              "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
-              "sSprintName": "KnowHOW | PI_14| ITR_3_PSKnowHOW",
-              "sprintIds": [
-                "288_PSKnowHOW_6577df1242f50c39ed783590"
-              ],
-            },
-            {
-              "data": "0",
-              "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
-              "sSprintName": "KnowHOW | PI_14| ITR_3_PSKnowHOW",
-            }
-          ],
-          "maturityValue": "0.0"
-        }
-      ],
-    },
-    {
-      trendValueList: [
-        {
-          "filter": "Total Defects",
-          "value": [
-            {
-              "data": "PSKnowHOW",
-              "value": [
-                {
-                  "data": "27.0",
-                  "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
-                },
-                {
-                  "data": "27.0",
-                  "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
-                },
-                {
-                  "data": "27.0",
-                  "sSprintID": "288_PSKnowHOW_6577df1242f50c39ed783590",
-                }
-              ]
-            }
-          ]
-        },
-      ]
-    }
-
-    ]
-    component.getLastConfigurableTrendingListData(kpiList)
-  })
+  });
 
   it('should handle selected option when triggerAdditionalFilters is triggered and selectedTab is developer', () => {
     spyOn(component, 'handleSelectedOption');
