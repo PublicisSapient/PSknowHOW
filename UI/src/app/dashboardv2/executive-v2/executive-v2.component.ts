@@ -1230,7 +1230,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.allKpiArray.push(data[key]);
       const trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
-      if (trendValueList && !Array.isArray(trendValueList) && Object.keys(trendValueList)?.length > 0 && Object.keys(filters)?.length > 0) {
+      if (trendValueList && !Array.isArray(trendValueList) && Object.keys(trendValueList)?.length > 0 && filters && Object.keys(filters)?.length > 0) {
         this.getDropdownArray(data[key]?.kpiId);
         this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
       }
