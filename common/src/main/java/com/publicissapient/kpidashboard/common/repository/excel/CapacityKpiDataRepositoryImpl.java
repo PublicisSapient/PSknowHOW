@@ -88,16 +88,21 @@ public class CapacityKpiDataRepositoryImpl implements CapacityKpiDataCustomRepos
 		List<CapacityKpiData> data = operations.find(query, CapacityKpiData.class);
 		if (mapofFilters.containsKey("additionalFilterCapacityList.nodeCapacityList.additionalFilterId")) {
 			data.stream().forEach(capacityKpiData -> {
-				List<String> additionalFilter = (List<String>) mapofFilters
-						.get("additionalFilterCapacityList.nodeCapacityList.additionalFilterId");
-				List<String> upperCaseKey = ((List<String>) mapofFilters.get("additionalFilterCapacityList.filterId"))
-						.stream().map(String::toUpperCase).toList();
-				capacityKpiData.setCapacityPerSprint(capacityKpiData.getAdditionalFilterCapacityList().stream()
-						.filter(additionalFilterCapacity -> upperCaseKey
-								.contains(additionalFilterCapacity.getFilterId().toUpperCase()))
-						.flatMap(additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
-						.filter(leaf -> additionalFilter.contains(leaf.getAdditionalFilterId()))
-						.mapToDouble(LeafNodeCapacity::getAdditionalFilterCapacity).sum());
+				if (CollectionUtils.isNotEmpty(capacityKpiData.getAdditionalFilterCapacityList())) {
+					List<String> additionalFilter = (List<String>) mapofFilters
+							.get("additionalFilterCapacityList.nodeCapacityList.additionalFilterId");
+					List<String> upperCaseKey = ((List<String>) mapofFilters
+							.get("additionalFilterCapacityList.filterId")).stream().map(String::toUpperCase).toList();
+					capacityKpiData.setCapacityPerSprint(capacityKpiData.getAdditionalFilterCapacityList().stream()
+							.filter(additionalFilterCapacity -> upperCaseKey
+									.contains(additionalFilterCapacity.getFilterId().toUpperCase()))
+							.flatMap(
+									additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
+							.filter(leaf -> additionalFilter.contains(leaf.getAdditionalFilterId()))
+							.mapToDouble(LeafNodeCapacity::getAdditionalFilterCapacity).sum());
+				} else {
+					capacityKpiData.setCapacityPerSprint(0D);
+				}
 			});
 		}
 		if (CollectionUtils.isEmpty(data)) {
