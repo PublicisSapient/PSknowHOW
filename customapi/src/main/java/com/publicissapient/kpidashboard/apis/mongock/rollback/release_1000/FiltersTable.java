@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_940;
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1000;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author purgupta2
  */
 @Slf4j
-@ChangeUnit(id = "r_new_filters", order = "9401", author = "purgupta2", systemVersion = "9.4.0")
+@ChangeUnit(id = "r_new_filters", order = "10001", author = "purgupta2", systemVersion = "10.0.0")
 public class FiltersTable {
 
 	private final MongoTemplate mongoTemplate;
