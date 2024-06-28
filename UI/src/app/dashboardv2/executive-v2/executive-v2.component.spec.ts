@@ -15472,6 +15472,191 @@ describe('ExecutiveV2Component', () => {
 
     expect(component.selectedKPITab).toEqual(mockTab);
   });
+
+  it('should set filter value to first option if formType is radiobutton', () => {
+    component.allKpiArray = [
+      {
+        filters: {
+          filter1: ['value1'],
+          filter2: ['value2'],
+        },
+      },
+      {
+        kpiId: 'kpi1',
+        filters: {},
+      },
+    ];
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi1',
+        kpiDetail: {
+          kpiFilter: 'RadioButton',
+        },
+      },
+      {
+        kpiId: 'kpi2',
+        kpiDetail: {
+          kpiFilter: 'Dropdown',
+        },
+      },
+    ];
+    component.kpiDropdowns = {
+      kpi1: [
+        {
+          options: ['option1', 'option2'],
+        },
+      ],
+    };
+    const mockData = {
+      kpi1: {
+        kpiId: 'kpi1',
+      },
+    };
+    const mockKey = 'kpi1';
+    const setBackupSpy = spyOn(component, 'setFilterValueIfAlreadyHaveBackup');
+    component.populateKPIFilters(mockData, mockKey);
+
+    expect(setBackupSpy).toHaveBeenCalledWith('kpi1', {}, [undefined]);
+  });
+
+  it('should set filter value to Overall if formType is dropdown', () => {
+    component.allKpiArray = [
+      {
+        filters: {
+          filter1: ['value1'],
+          filter2: ['value2'],
+        },
+      },
+      {
+        kpiId: 'kpi1',
+        filters: {},
+      },
+    ];
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi1',
+        kpiDetail: {
+          kpiFilter: 'RadioButton',
+        },
+      },
+      {
+        kpiId: 'kpi2',
+        kpiDetail: {
+          kpiFilter: 'Dropdown',
+        },
+      },
+    ];
+    component.kpiDropdowns = {
+      kpi1: [
+        {
+          options: ['option1', 'option2'],
+        },
+      ],
+    };
+    const mockData = {
+      kpi2: {
+        kpiId: 'kpi2',
+      },
+    };
+    const mockKey = 'kpi2';
+    const setBackupSpy = spyOn(component, 'setFilterValueIfAlreadyHaveBackup');
+    component.populateKPIFilters(mockData, mockKey);
+
+    expect(setBackupSpy).toHaveBeenCalledWith('kpi2', {}, ['Overall']);
+  });
+
+  it('should set filter value to Overall if filters exist', () => {
+    component.allKpiArray = [
+      {
+        filters: {
+          filter1: ['value1'],
+          filter2: ['value2'],
+        },
+      },
+      {
+        kpiId: 'kpi1',
+        filters: {},
+      },
+    ];
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi1',
+        kpiDetail: {
+          kpiFilter: 'RadioButton',
+        },
+      },
+      {
+        kpiId: 'kpi2',
+        kpiDetail: {
+          kpiFilter: 'Dropdown',
+        },
+      },
+    ];
+    component.kpiDropdowns = {
+      kpi1: [
+        {
+          options: ['option1', 'option2'],
+        },
+      ],
+    };
+    const mockData = {
+      kpi3: {
+        kpiId: 'kpi3',
+      },
+    };
+    const mockKey = 'kpi3';
+    const setBackupSpy = spyOn(component, 'setFilterValueIfAlreadyHaveBackup');
+    component.populateKPIFilters(mockData, mockKey);
+
+    expect(setBackupSpy).toHaveBeenCalledWith('kpi3', {}, ['Overall']);
+  });
+
+  it('should set filter value to Overall if no matching filter is found', () => {
+    component.allKpiArray = [
+      {
+        filters: {
+          filter1: ['value1'],
+          filter2: ['value2'],
+        },
+      },
+      {
+        kpiId: 'kpi1',
+        filters: {},
+      },
+    ];
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi1',
+        kpiDetail: {
+          kpiFilter: 'RadioButton',
+        },
+      },
+      {
+        kpiId: 'kpi2',
+        kpiDetail: {
+          kpiFilter: 'Dropdown',
+        },
+      },
+    ];
+    component.kpiDropdowns = {
+      kpi1: [
+        {
+          options: ['option1', 'option2'],
+        },
+      ],
+    };
+    const mockData = {
+      kpi4: {
+        kpiId: 'kpi4',
+      },
+    };
+    const mockKey = 'kpi4';
+    const setBackupSpy = spyOn(component, 'setFilterValueIfAlreadyHaveBackup');
+
+    component.populateKPIFilters(mockData, mockKey);
+
+    expect(setBackupSpy).toHaveBeenCalledWith('kpi4', {}, ['Overall']);
+  });
 });
 
 

@@ -1235,24 +1235,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.allKpiArray.push(data[key]);
       const trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
-      if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList) && filters && Object.keys(filters)?.length > 0) {
+      if (trendValueList && !Array.isArray(trendValueList) && Object.keys(trendValueList)?.length > 0 && Object.keys(filters)?.length > 0) {
         this.getDropdownArray(data[key]?.kpiId);
         this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
       }
       else if (trendValueList?.length > 0 && (trendValueList[0]?.hasOwnProperty('filter') || trendValueList[0]?.hasOwnProperty('filter1'))) {
-        this.getDropdownArray(data[key]?.kpiId);
-        const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
-        if (formType?.toLowerCase() == 'radiobutton') {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]])
-        }
-        else if (formType?.toLowerCase() == 'dropdown') {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
-        }
-        else if (filters && Object.keys(filters)?.length > 0) {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
-        } else {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
-        }
+       this.populateKPIFilters(data, key);
       } else if (!trendValueList || trendValueList?.length == 0) {
         this.getDropdownArray(data[key]?.kpiId);
       }
@@ -1264,6 +1252,23 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       } else {
         this.getChartDataforRelease(data[key]?.kpiId, (this.allKpiArray?.length - 1), agType);
       }
+    }
+  }
+
+  populateKPIFilters(data, key) {
+    const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
+    this.getDropdownArray(data[key]?.kpiId);
+    const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
+    if (formType?.toLowerCase() == 'radiobutton') {
+      this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]])
+    }
+    else if (formType?.toLowerCase() == 'dropdown') {
+      this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
+    }
+    else if (filters && Object.keys(filters)?.length > 0) {
+      this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
+    } else {
+      this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
     }
   }
 
