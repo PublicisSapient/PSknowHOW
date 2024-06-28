@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.common.repository.excel;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -72,16 +73,18 @@ public class KanbanCapacityRepositoryImpl implements KanbanCapacityRepoCustom {
 		List<KanbanCapacity> kanbanCapacityList = operations.find(query, KanbanCapacity.class);
 		if (mapOfFilters.containsKey("additionalFilterCapacityList.nodeCapacityList.additionalFilterId")) {
 			kanbanCapacityList.stream().forEach(capacityKpiData -> {
-				List<String> additionalFilter = (List<String>) mapOfFilters
-						.get("additionalFilterCapacityList.nodeCapacityList.additionalFilterId");
-				List<String> upperCaseKey = ((List<String>) mapOfFilters.get("additionalFilterCapacityList.filterId"))
-						.stream().map(String::toUpperCase).toList();
-				capacityKpiData.setCapacity(capacityKpiData.getAdditionalFilterCapacityList().stream()
-						.filter(additionalFilterCapacity -> upperCaseKey
-								.contains(additionalFilterCapacity.getFilterId().toUpperCase()))
-						.flatMap(additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
-						.filter(leaf -> additionalFilter.contains(leaf.getAdditionalFilterId()))
-						.mapToDouble(LeafNodeCapacity::getAdditionalFilterCapacity).sum());
+				if(CollectionUtils.isNotEmpty(capacityKpiData.getAdditionalFilterCapacityList())) {
+					List<String> additionalFilter = (List<String>) mapOfFilters
+							.get("additionalFilterCapacityList.nodeCapacityList.additionalFilterId");
+					List<String> upperCaseKey = ((List<String>) mapOfFilters.get("additionalFilterCapacityList.filterId"))
+							.stream().map(String::toUpperCase).toList();
+					capacityKpiData.setCapacity(capacityKpiData.getAdditionalFilterCapacityList().stream()
+							.filter(additionalFilterCapacity -> upperCaseKey
+									.contains(additionalFilterCapacity.getFilterId().toUpperCase()))
+							.flatMap(additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
+							.filter(leaf -> additionalFilter.contains(leaf.getAdditionalFilterId()))
+							.mapToDouble(LeafNodeCapacity::getAdditionalFilterCapacity).sum());
+				}
 			});
 		}
 		return kanbanCapacityList;
