@@ -19,7 +19,6 @@
 /** Importing Services **/
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { HttpService } from '../../services/http.service';
-import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
@@ -114,9 +113,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   selectedKPITab: string;
   additionalFiltersArr = {};
 
-  constructor(public service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
-    const selectedTab = window.location.hash.substring(1);
-    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+  constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
 
     this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
       this.noFilterApplyData = false;
@@ -131,23 +128,21 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
       this.maturityTableKpiList = [];
-      if (Object.keys(x).length > 0) {
-        this.colorObj = x;
-        this.trendBoxColorObj = { ...x };
-        let tempObj = {};
-        for (const key in this.trendBoxColorObj) {
-          const idx = key.lastIndexOf('_');
-          const nodeName = key.slice(0, idx);
-          this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-          tempObj[nodeName] = [];
-        }
-        this.kpiTableDataObj = { ...tempObj };
-        if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-          for (const key in this.kpiChartData) {
-            this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
-            this.createTrendsData(key);
-            this.handleMaturityTableLoader();
-          }
+      this.colorObj = x;
+      this.trendBoxColorObj = { ...x };
+      let tempObj = {};
+      for (const key in this.trendBoxColorObj) {
+        const idx = key.lastIndexOf('_');
+        const nodeName = key.slice(0, idx);
+        this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+        tempObj[nodeName] = [];
+      }
+      this.kpiTableDataObj = { ...tempObj };
+      if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
+        for (const key in this.kpiChartData) {
+          this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
+          this.createTrendsData(key);
+          this.handleMaturityTableLoader();
         }
       }
       return this.service.passDataToDashboard;
@@ -239,7 +234,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
       this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
-      if(!this.configGlobalData?.length && $event.dashConfigData) {
+      if (!this.configGlobalData?.length && $event.dashConfigData) {
         this.configGlobalData = $event.dashConfigData[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
       }
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
@@ -1240,7 +1235,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
       }
       else if (trendValueList?.length > 0 && (trendValueList[0]?.hasOwnProperty('filter') || trendValueList[0]?.hasOwnProperty('filter1'))) {
-       this.populateKPIFilters(data, key);
+        this.populateKPIFilters(data, key);
       } else if (!trendValueList || trendValueList?.length == 0) {
         this.getDropdownArray(data[key]?.kpiId);
       }
