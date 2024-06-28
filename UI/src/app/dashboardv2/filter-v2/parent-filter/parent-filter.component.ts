@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { HelperService } from 'src/app/services/helper.service';
 
 
@@ -15,14 +15,22 @@ export class ParentFilterComponent implements OnChanges {
   filterLevels: string[];
   selectedLevel: any;
   stateFilters: string = '';
-  additionalFilterLevels = ['release', 'sprint', 'sqd'];
+  additionalFilterLevels = [];
   @Output() onSelectedLevelChange = new EventEmitter();
-  constructor(private helperService: HelperService, private ngZone: NgZone, private cdr: ChangeDetectorRef) { }
+  constructor(private helperService: HelperService) { }
 
   ngOnChanges(changes: SimpleChanges) {
 
     if (changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab']?.previousValue || changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue) {
       if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
+        if (this.filterData['project']?.length) {
+          let projectLevel = this.filterData['project'][0].level;
+          Object.keys(this.filterData).forEach((key) => {
+            if (this.filterData[key][0].level > projectLevel) {
+              this.additionalFilterLevels.push(key);
+            }
+          });
+        }
         this.filterLevels = Object.keys(this.filterData);
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level));
         this.filterLevels = this.filterLevels.map(level => level.toUpperCase());
@@ -43,7 +51,6 @@ export class ParentFilterComponent implements OnChanges {
           }
 
           this.onSelectedLevelChange.emit(this.selectedLevel.toLowerCase());
-          this.cdr.detectChanges();
         });
       } else if (this['parentFilterConfig']['labelName'] !== 'Organization Level') {
         if (this.filterData && Object.keys(this.filterData).length) {

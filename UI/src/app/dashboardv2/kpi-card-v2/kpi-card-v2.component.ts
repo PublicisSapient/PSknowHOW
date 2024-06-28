@@ -290,6 +290,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       } else {
         this.loadingKPIConfig = false;
       }
+    }, error => {
+      console.log(error);
     });
   }
 
