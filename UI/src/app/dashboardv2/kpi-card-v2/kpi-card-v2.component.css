@@ -350,3 +350,7 @@
   left: unset !important;
   right: 10px !important;
 }
+
+:host ::ng-deep .p-overflowlabel {
+  word-break: break-all;
+}
