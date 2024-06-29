@@ -54,6 +54,7 @@ import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardCo
 @RequestMapping("/user-board-config")
 public class UserBoardConfigController {
 
+	private static final String NO_DATA_FOUND = "No data found";
 	@Autowired
 	UserBoardConfigService userBoardConfigService;
 	@Autowired
@@ -68,7 +69,7 @@ public class UserBoardConfigController {
 	@PostMapping(value = "/getConfig" ,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getUserBoardConfiguration(@Valid @RequestBody ProjectListRequested listOfRequestedProj) {
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigService.getUserBoardConfig(listOfRequestedProj);
-		ServiceResponse response = new ServiceResponse(false, "No data found", null);
+		ServiceResponse response = new ServiceResponse(false, NO_DATA_FOUND, null);
 		if (null != userBoardConfigDTO) {
 			response = new ServiceResponse(true, "Fetched successfully", userBoardConfigDTO);
 		}
@@ -84,7 +85,7 @@ public class UserBoardConfigController {
 	public ResponseEntity<ServiceResponse> getUserBoardConfigurations(@Valid @RequestBody ProjectListRequested listOfRequestedProj) {
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigService.getUserBoardConfig(listOfRequestedProj);
 		if (userBoardConfigDTO == null) {
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "No data found", null));
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, NO_DATA_FOUND, null));
 		}
 
 		ConfigDetails configDetails = configDetailService.getConfigDetails();
@@ -124,7 +125,7 @@ public class UserBoardConfigController {
 	@GetMapping(value = "/{basicProjectConfigId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getUserBoardConfigurationAdmin(@PathVariable String basicProjectConfigId) {
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigService.getProjBoardConfigAdmin(basicProjectConfigId);
-		ServiceResponse response = new ServiceResponse(false, "No data found", null);
+		ServiceResponse response = new ServiceResponse(false, NO_DATA_FOUND, null);
 		if (null != userBoardConfigDTO) {
 			response = new ServiceResponse(true, "Project Config Fetched successfully", userBoardConfigDTO);
 		}
