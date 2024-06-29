@@ -20,7 +20,7 @@
     <ng-container *ngIf="additionalFilterConfig?.length">
       <app-additional-filter [selectedTab]="selectedTab" [selectedLevel]="selectedLevel" [selectedType]="selectedType"
         [additionalFilterConfig]="additionalFilterConfig"
-        (onPrimaryFilterChange)="handleAdditionalChange($event)"></app-additional-filter>
+        (onAdditionalFilterChange)="handleAdditionalChange($event)"></app-additional-filter>
     </ng-container>
   </div>
 </div>

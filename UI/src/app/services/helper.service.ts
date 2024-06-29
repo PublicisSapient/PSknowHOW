@@ -679,15 +679,22 @@ export class HelperService {
     }
 
     setBackupOfFilterSelectionState = (selectedFilterObj) => {
-        if (Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
+        if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
             this.selectedFilters = { ...selectedFilterObj };
-        } else {
+        } else if(selectedFilterObj){
             this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
+        } else {
+            this.selectedFilters = null;
         }
+        console.log(this.selectedFilters);
     }
 
-    getBackupOfFilterSelectionState = (prop) => {
-        return this.selectedFilters[prop];
+    getBackupOfFilterSelectionState = (prop = null) => {
+        if (prop) {
+            return this.selectedFilters[prop];
+        } else {
+            return this.selectedFilters;
+        }
     }
 
     setFilterValueIfAlreadyHaveBackup(kpiId, kpiSelectedFilterObj, tab, refreshValue, initialValue, subFilter, filters?) {

@@ -99,7 +99,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiExcelData;
   isGlobalDownload = false;
   kpiTrendsObj = {};
-  selectedTab = 'iteration';
+  selectedTab = '';
   showCommentIcon = false;
   noProjects = false;
   sprintsOverlayVisible: boolean = false;
@@ -114,7 +114,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   additionalFiltersArr = {};
 
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
-
+    const selectedTab = window.location.hash.substring(1);
+    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
     this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
       this.noFilterApplyData = false;
       this.kpiLoader = new Set();

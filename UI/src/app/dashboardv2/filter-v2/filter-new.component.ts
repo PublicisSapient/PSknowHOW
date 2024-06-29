@@ -279,7 +279,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handlePrimaryFilterChange(event) {
-    if (event?.length) { // && Object.keys(event[0]).length) {
+    if (!event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
       // set selected projects(trends)
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
         this.service.setSelectedTrends(event);
@@ -362,7 +362,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
 
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
-
+      // Promise.resolve(() => {
       if (this.selectedLevel) {
         if (typeof this.selectedLevel === 'string') {
           this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
@@ -372,27 +372,38 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       } else {
         this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       }
+      // });
+    } else {
+      if (this.selectedTab.toLowerCase() !== 'developer') {
+        setTimeout(() => {
+          this.additionalFiltersArr = [];
+          this.populateAdditionalFilters(this.previousFilterEvent);
+        }, 100);
+      }
+      Object.keys(event['additional_level']).forEach((key) => {
+        this.handleAdditionalChange(event['additional_level'][key]);
+      });
     }
   }
 
   setSprintDetails(event) {
     const currentDate = new Date().getTime();
-        const stopDate = new Date(event[0].sprintEndDate).getTime();
-        const timeRemaining = stopDate - currentDate;
-        const millisecondsPerDay = 24 * 60 * 60 * 1000;
-        this.daysRemaining = Math.ceil(timeRemaining / millisecondsPerDay) < 0 ? 0 : Math.ceil(timeRemaining / millisecondsPerDay);
-        const startDateFormatted = this.formatDate(event[0].sprintStartDate);
-        const endDateFormatted = this.formatDate(event[0].sprintEndDate);
-        this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
-        console.log(event[0])
-        if (JSON.stringify(event[0]) !== '{}') {
-          this.additionalData = true;
-        } else {
-          this.additionalData = false;
-        }
-        this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
-        this.selectedSprint = event[0];
-        this.service.setCurrentSelectedSprint(this.selectedSprint);
+    const stopDate = new Date(event[0].sprintEndDate).getTime();
+    const timeRemaining = stopDate - currentDate;
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+    this.daysRemaining = Math.ceil(timeRemaining / millisecondsPerDay) < 0 ? 0 : Math.ceil(timeRemaining / millisecondsPerDay);
+    const startDateFormatted = this.formatDate(event[0].sprintStartDate);
+    const endDateFormatted = this.formatDate(event[0].sprintEndDate);
+    this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
+    console.log(event[0])
+    if (JSON.stringify(event[0]) !== '{}') {
+      this.additionalData = true;
+    } else {
+      this.additionalData = false;
+    }
+    this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
+    this.selectedSprint = event[0];
+    this.service.setCurrentSelectedSprint(this.selectedSprint);
   }
 
   formatDate(dateString) {
@@ -422,7 +433,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
-
+    // Promise.resolve(() => {
     if (!this.selectedLevel) {
       this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       return;
@@ -433,6 +444,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       return;
     }
     this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+    // });
   }
 
   applyDateFilter() {

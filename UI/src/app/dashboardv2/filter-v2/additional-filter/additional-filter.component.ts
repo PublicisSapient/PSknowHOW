@@ -20,8 +20,9 @@ export class AdditionalFilterComponent implements OnChanges {
   appliedFilters = {};
   selectedFilters = [];
   selectedTrends = [];
-  @Output() onPrimaryFilterChange = new EventEmitter();
+  @Output() onAdditionalFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
+  stateFilters: any;
 
   constructor(private service: SharedService, private helperService: HelperService) {
   }
@@ -39,6 +40,17 @@ export class AdditionalFilterComponent implements OnChanges {
         this.filterData.forEach(filterGroup => {
           filterGroup = this.helperService.sortByField(filterGroup, ['nodeName', 'parentId']);
         });
+
+        this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
+        if (this.stateFilters && Object.keys(this.stateFilters)) {
+          Object.keys(this.stateFilters['level']).forEach((key, index) => {
+            this.selectedFilters[index] = this.stateFilters['level'][key];
+            // setTimeout(() => {
+            //   this.applyAdditionalFilter(this.selectedFilters[index], index + 1, true, true);
+            // }, 200);
+          });
+        }
+
       }
 
       // Apply the first/ Overall filter
@@ -51,23 +63,23 @@ export class AdditionalFilterComponent implements OnChanges {
 
   applyDefaultFilter() {
     let fakeEvent = {};
-        if (this.filterData.map(f => f.nodeName).includes('Overall')) {
-          this.filterData.splice(this.filterData.map(f => f.nodeName).indexOf('Overall'), 1);
-          this.filterData.unshift({ nodeId: 'Overall', nodeName: 'Overall' });
-          fakeEvent['value'] = 'Overall';
-          this.selectedFilters = ['Overall'];
-        } else {
-          if (this.filterData[0]?.length && this.filterData[0][0]?.nodeId) {
-            fakeEvent['value'] = this.filterData[0][0].nodeId;
-            this.selectedFilters = [this.filterData[0][0]];
-          } else {
-            fakeEvent['value'] = 'Overall';
-            this.selectedFilters = ['Overall'];
-          }
-        }
-        Promise.resolve().then(() => {
-          this.applyAdditionalFilter(fakeEvent, 0 + 1);
-        });
+    if (this.filterData.map(f => f.nodeName).includes('Overall')) {
+      this.filterData.splice(this.filterData.map(f => f.nodeName).indexOf('Overall'), 1);
+      this.filterData.unshift({ nodeId: 'Overall', nodeName: 'Overall' });
+      fakeEvent['value'] = 'Overall';
+      this.selectedFilters = ['Overall'];
+    } else {
+      if (this.filterData[0]?.length && this.filterData[0][0]?.nodeId) {
+        fakeEvent['value'] = this.filterData[0][0].nodeId;
+        this.selectedFilters = [this.filterData[0][0]];
+      } else {
+        fakeEvent['value'] = 'Overall';
+        this.selectedFilters = ['Overall'];
+      }
+    }
+    Promise.resolve().then(() => {
+      this.applyAdditionalFilter(fakeEvent, 0 + 1);
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -78,12 +90,24 @@ export class AdditionalFilterComponent implements OnChanges {
     }
   }
 
-  applyAdditionalFilter(e, index, multi = false) {
+  applyAdditionalFilter(e, index, multi = false, fromBackup = false) {
     const filterKey = this.filterData.length === 1 ? 'filter' : 'filter' + index;
     const isDeveloper = this.selectedTab.toLowerCase() === 'developer';
 
     if (!isDeveloper) {
-      this.onPrimaryFilterChange.emit(e[index - 1]);
+
+      if (!fromBackup) {
+        let obj = {};
+        for (let i = 0; i < index; i++) {
+          let selectedAdditionalFilterLevel = e[i][0]['labelName'];
+          obj['level'] = obj['level'] ? obj['level'] : {};
+          obj['level'][selectedAdditionalFilterLevel] = e[i] ? e[i] : this.stateFilters['level'][Object.keys(this.stateFilters['level'])[i]];
+          this.onAdditionalFilterChange.emit(e[i]);
+        }
+        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });
+      } else {
+        this.onAdditionalFilterChange.emit(e);
+      }
     } else {
       this.appliedFilters[filterKey] = this.appliedFilters[filterKey] || [];
       this.appliedFilters[filterKey] = !multi ? [...this.appliedFilters[filterKey], e.value] : [...e];
@@ -94,6 +118,10 @@ export class AdditionalFilterComponent implements OnChanges {
     }
 
     if (this.multiSelect?.overlayVisible) {
+      if (!e.hasOwnProperty('preventDefault')) {
+        e.preventDefault = () => { };
+        e.stopPropagation = () => { };
+      }
       this.multiSelect.close(e);
     }
   }
