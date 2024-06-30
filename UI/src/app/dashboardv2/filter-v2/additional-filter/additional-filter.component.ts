@@ -24,7 +24,7 @@ export class AdditionalFilterComponent implements OnChanges {
   @ViewChild('multiSelect') multiSelect: MultiSelect;
   stateFilters: any;
 
-  constructor(private service: SharedService, private helperService: HelperService) {
+  constructor(public service: SharedService, public helperService: HelperService) {
   }
 
   ngOnInit() {
@@ -95,11 +95,10 @@ export class AdditionalFilterComponent implements OnChanges {
     const isDeveloper = this.selectedTab.toLowerCase() === 'developer';
 
     if (!isDeveloper) {
-
       if (!fromBackup) {
         let obj = {};
         for (let i = 0; i < index; i++) {
-          let selectedAdditionalFilterLevel = e[i][0]['labelName'];
+          let selectedAdditionalFilterLevel = e && e[i] && e[i][0] ? e[i][0]['labelName'] : '';
           obj['level'] = obj['level'] ? obj['level'] : {};
           obj['level'][selectedAdditionalFilterLevel] = e[i] ? e[i] : this.stateFilters['level'][Object.keys(this.stateFilters['level'])[i]];
           this.onAdditionalFilterChange.emit(e[i]);
@@ -110,7 +109,7 @@ export class AdditionalFilterComponent implements OnChanges {
       }
     } else {
       this.appliedFilters[filterKey] = this.appliedFilters[filterKey] || [];
-      this.appliedFilters[filterKey] = !multi ? [...this.appliedFilters[filterKey], e.value] : [...e];
+      this.appliedFilters[filterKey] = !multi ? [...this.appliedFilters[filterKey], e.value] : e && e.length ? [...e] : [];
 
       const filterValue = this.appliedFilters[filterKey][0];
       const nodeId = filterValue?.nodeId || filterValue;

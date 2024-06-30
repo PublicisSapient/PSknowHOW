@@ -18,11 +18,11 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   selectedFilters: any;
   selectedAdditionalFilters: any;
   subscriptions: any[] = [];
-  stateFilters: any[] = [];
+  stateFilters: any = {};
   @Output() onPrimaryFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
 
-  constructor(private service: SharedService, private helperService: HelperService) {
+  constructor(private service: SharedService, public helperService: HelperService) {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -34,11 +34,11 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     } else {
       this.selectedFilters = [];
       this.populateFilters();
-      if (this.filters.length) {
+      if (this.filters?.length) {
         this.selectedFilters = new Set();
 
         this.stateFilters = this.helperService.getBackupOfFilterSelectionState();
-        if (this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && !this.stateFilters['additional_level']) {
+        if (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && !this.stateFilters['additional_level']) {
           this.stateFilters['primary_level'].forEach(stateFilter => {
             this.selectedFilters.add(stateFilter);
           });
@@ -48,11 +48,11 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
           this.selectedFilters = Array.from(
             this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
           );
-          this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
+          // this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
           this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
           this.onPrimaryFilterChange.emit(this.selectedFilters);
           this.setProjectAndLevelBackupBasedOnSelectedLevel();
-        } else if (this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && this.stateFilters['additional_level'] && Object.keys(this.stateFilters['additional_level'])?.length) {
+        } else if (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && this.stateFilters['additional_level'] && Object.keys(this.stateFilters['additional_level'])?.length) {
 
           this.stateFilters['primary_level'].forEach(stateFilter => {
             this.selectedFilters.add(stateFilter);

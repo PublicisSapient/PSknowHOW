@@ -279,7 +279,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handlePrimaryFilterChange(event) {
-    if (!event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
+    if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
       // set selected projects(trends)
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
         this.service.setSelectedTrends(event);
@@ -373,7 +373,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       }
       // });
-    } else {
+    } else if(event && event['additional_level']){
       if (this.selectedTab.toLowerCase() !== 'developer') {
         setTimeout(() => {
           this.additionalFiltersArr = [];

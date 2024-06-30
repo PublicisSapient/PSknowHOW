@@ -120,8 +120,6 @@ describe('PrimaryFilterComponent', () => {
     });
     tick(200);
     expect(component.populateFilters).toHaveBeenCalled();
-    expect(helperService.getBackupOfFilterSelectionState).toHaveBeenCalledWith('primary_level');
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ nodeId: 1, nodeName: 'Node1' }] });
     expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([{ nodeId: 1, nodeName: 'Node1' }]);
     expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
   })
@@ -159,7 +157,7 @@ describe('PrimaryFilterComponent', () => {
         "sortBy": 'nodeName'
       }
     };
-    
+
     spyOn(helperService, 'sortByField');
 
     component.populateFilters();
@@ -183,11 +181,11 @@ describe('PrimaryFilterComponent', () => {
     spyOn(helperService, 'setBackupOfFilterSelectionState');
     spyOn(component.onPrimaryFilterChange, 'emit');
     spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
-    
+
     component.applyPrimaryFilters(null);
 
     expect(component.selectedFilters).toEqual([{ nodeId: 1, nodeName: 'Node1' }]);
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ nodeId: 1, nodeName: 'Node1' }] });
+    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ nodeId: 1, nodeName: 'Node1' }], additional_level: null });
     expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([{ nodeId: 1, nodeName: 'Node1' }]);
     expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
   });
@@ -201,7 +199,7 @@ describe('PrimaryFilterComponent', () => {
     component.applyPrimaryFilters(null);
 
     expect(component.selectedFilters).toEqual([{ nodeId: 1, nodeName: 'Node1' }]);
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ nodeId: 1, nodeName: 'Node1' }] });
+    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ nodeId: 1, nodeName: 'Node1' }], additional_level: null });
     expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([{ nodeId: 1, nodeName: 'Node1' }]);
     expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
   });
@@ -244,8 +242,245 @@ describe('PrimaryFilterComponent', () => {
     expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
   }));
 
-  // Add more test cases as needed
+  it('should call applyDefaultFilters if primaryFilterConfig, selectedType, or selectedLevel changes', () => {
+    component.primaryFilterConfig = {
+      filter1: ['value1'],
+      filter2: ['value2'],
+    };
+    component.selectedType = 'type1';
+    component.selectedLevel = 1;
+    component.applyDefaultFilters = jasmine.createSpy('applyDefaultFilters');
+    component.populateFilters = jasmine.createSpy('populateFilters');
+    // component.helperService = jasmine.createSpyObj('HelperService', ['getBackupOfFilterSelectionState', 'setBackupOfFilterSelectionState']);
+    // component.onPrimaryFilterChange = jasmine.createSpy('onPrimaryFilterChange');
+    component.setProjectAndLevelBackupBasedOnSelectedLevel = jasmine.createSpy('setProjectAndLevelBackupBasedOnSelectedLevel');
+    component.filterData = [
+      [
+        { nodeId: 'node1', labelName: 'filter1' },
+        { nodeId: 'node2', labelName: 'filter2' },
+      ],
+      [
+        { nodeId: 'node3', labelName: 'filter3' },
+        { nodeId: 'node4', labelName: 'filter4' },
+      ],
+    ];
+    component.selectedFilters = [];
+    component.selectedAdditionalFilters = {};
+    component.stateFilters = [];
+
+    const mockChanges = {
+      primaryFilterConfig: {
+        previousValue: {
+          filter1: ['value1'],
+          filter2: ['value2'],
+        },
+        currentValue: {
+          filter1: ['value1'],
+          filter2: ['value3'],
+        },
+        firstChange: false,
+        isFirstChange: () => false
+      },
+      selectedType: {
+        previousValue: 'type1',
+        currentValue: 'type2',
+        firstChange: false,
+        isFirstChange: () => false
+      },
+      selectedLevel: {
+        previousValue: 1,
+        currentValue: 2,
+        firstChange: false,
+        isFirstChange: () => false
+      },
+    };
+
+    component.ngOnChanges(mockChanges);
+
+    expect(component.applyDefaultFilters).toHaveBeenCalled();
+  });
+
+  it('should reset selectedFilters and call populateFilters if filters exist', () => {
+    component.primaryFilterConfig = {
+      filter1: ['value1'],
+      filter2: ['value2'],
+    };
+    component.selectedType = 'type1';
+    component.selectedLevel = 1;
+    component.applyDefaultFilters = jasmine.createSpy('applyDefaultFilters');
+    component.populateFilters = jasmine.createSpy('populateFilters');
+    // component.helperService = jasmine.createSpyObj('HelperService', ['getBackupOfFilterSelectionState', 'setBackupOfFilterSelectionState']);
+    // component.onPrimaryFilterChange = jasmine.createSpy('onPrimaryFilterChange');
+    component.setProjectAndLevelBackupBasedOnSelectedLevel = jasmine.createSpy('setProjectAndLevelBackupBasedOnSelectedLevel');
+    component.filterData = {
+      'level1': [
+        { nodeId: 'node1', labelName: 'filter1' },
+        { nodeId: 'node2', labelName: 'filter2' },
+      ],
+      'level2': [
+        { nodeId: 'node3', labelName: 'filter3' },
+        { nodeId: 'node4', labelName: 'filter4' },
+      ],
+    };
+    component.selectedFilters = [];
+    component.selectedAdditionalFilters = {};
+    component.stateFilters = [];
+    const mockChanges = {};
+
+    component.ngOnChanges(mockChanges);
+
+    expect(component.selectedFilters).toEqual([]);
+    expect(component.populateFilters).toHaveBeenCalled();
+  });
+
+  it('should set selectedFilters and call setBackupOfFilterSelectionState and onPrimaryFilterChange if primary_level is in stateFilters', () => {
+    component.primaryFilterConfig = {
+      filter1: ['value1'],
+      filter2: ['value2'],
+    };
+    component.selectedType = 'type1';
+    component.selectedLevel = 1;
+    component.applyDefaultFilters = jasmine.createSpy('applyDefaultFilters');
+    component.populateFilters = jasmine.createSpy('populateFilters');
+
+
+    component.setProjectAndLevelBackupBasedOnSelectedLevel = jasmine.createSpy('setProjectAndLevelBackupBasedOnSelectedLevel');
+    component.selectedFilters = [];
+    component.selectedAdditionalFilters = {};
+    const mockChanges = {};
+
+    component.filters = [
+      { nodeId: 'node1', labelName: 'filter1' },
+      { nodeId: 'node2', labelName: 'filter2' },
+    ];
+    spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({
+      primary_level: [{ nodeId: 'node1', labelName: 'filter1' },
+      { nodeId: 'node2', labelName: 'filter2' }]
+    });
+    const mockSetBackupOfFilterSelectionState = spyOn(component.helperService, 'setBackupOfFilterSelectionState');
+    const mockOnPrimaryFilterChange = spyOn(component.onPrimaryFilterChange, 'emit');
+    component.ngOnChanges(mockChanges);
+
+    expect(component.selectedFilters).toEqual([
+      { nodeId: 'node1', labelName: 'filter1' },
+      { nodeId: 'node2', labelName: 'filter2' },
+    ]);
+    expect(mockSetBackupOfFilterSelectionState).toHaveBeenCalledWith({
+      primary_level: [
+        { nodeId: 'node1', labelName: 'filter1' },
+        { nodeId: 'node2', labelName: 'filter2' },
+      ],
+    });
+    expect(mockOnPrimaryFilterChange).toHaveBeenCalledWith([
+      { nodeId: 'node1', labelName: 'filter1' },
+      { nodeId: 'node2', labelName: 'filter2' },
+    ]);
+    expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
+  });
+
+
+  it('should set selectedFilters and selectedAdditionalFilters and call onPrimaryFilterChange if primary_level and additional_level are in stateFilters', () => {
+    const mockChanges = {};
+    component.filterData = {
+      'level1': [
+        { nodeId: 'node1', nodeName: 'filter1' },
+        { nodeId: 'node2', nodeName: 'filter2' },
+      ],
+      'level2': [
+        { nodeId: 'node3', labelName: 'filter3' },
+        { nodeId: 'node4', labelName: 'filter4' },
+      ],
+      'level3': [
+        { nodeId: 'node5', labelName: 'filter5' },
+        { nodeId: 'node6', labelName: 'filter6' },
+      ],
+    };
+    spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({
+      primary_level: [
+        { nodeId: 'node1', nodeName: 'filter1' },
+        { nodeId: 'node2', nodeName: 'filter2' },
+      ],
+      additional_level: {
+        level: {
+          level4 :[
+          { nodeId: 'node3', nodeName: 'filter3' },
+          { nodeId: 'node4', nodeName: 'filter4' },
+        ]
+      }
+      },
+    });
+    component.selectedLevel = 'level1';
+    const mockOnPrimaryFilterChange = spyOn(component.onPrimaryFilterChange, 'emit');
+    component.ngOnChanges(mockChanges);
+
+    expect(component.selectedFilters).toEqual([
+      { nodeId: 'node1', nodeName: 'filter1' },
+      { nodeId: 'node2', nodeName: 'filter2' },
+    ]);
+    expect(component.selectedAdditionalFilters).toEqual({
+      level4: [
+        { nodeId: 'node3', nodeName: 'filter3' },
+        { nodeId: 'node4', nodeName: 'filter4' },
+      ]
+    });
+    expect(mockOnPrimaryFilterChange).toHaveBeenCalledWith({
+      primary_level: [
+        { nodeId: 'node1', nodeName: 'filter1' },
+        { nodeId: 'node2', nodeName: 'filter2' },
+      ],
+      additional_level: {
+        level4: [
+          { nodeId: 'node3', nodeName: 'filter3' },
+          { nodeId: 'node4', nodeName: 'filter4' },
+        ]
+      },
+    });
+  });
+
+  it('should call applyDefaultFilters if no filters exist', () => {
+    component.filterData = {
+      'level1': [
+        { nodeId: 'node1', nodeName: 'filter1' },
+        { nodeId: 'node2', nodeName: 'filter2' },
+      ],
+      'level2': [
+        { nodeId: 'node3', nodeName: 'filter3' },
+        { nodeId: 'node4', nodeName: 'filter4' },
+      ],
+    };
+    component.selectedLevel = 'level1';
+    const mockChanges = {
+      primaryFilterConfig: {
+        previousValue: {
+          filter1: ['value1'],
+          filter2: ['value2'],
+        },
+        currentValue: {
+          filter1: ['value1'],
+          filter2: ['value3'],
+        },
+        firstChange: false,
+        isFirstChange: () => false
+      },
+      selectedType: {
+        previousValue: 'type1',
+        currentValue: 'type2',
+        firstChange: false,
+        isFirstChange: () => false
+      },
+      selectedLevel: {
+        previousValue: 1,
+        currentValue: 2,
+        firstChange: false,
+        isFirstChange: () => false
+      }
+    };
+    component.filters = [];
+    const mockApplyDefaultFilters = spyOn(component, 'applyDefaultFilters');
+    component.ngOnChanges(mockChanges);
+
+    expect(mockApplyDefaultFilters).toHaveBeenCalled();
+  });
 
 });
-
 

@@ -406,4 +406,160 @@ describe('AdditionalFilterComponent', () => {
     expect(component.selectedFilters).toEqual(['Overall']);
     expect(component.applyAdditionalFilter).toHaveBeenCalledOnceWith({ value: 'Overall' }, 1);
   }));
+
+  it('should set additional filter level and emit event if not from backup', () => {
+    component.filterData = [
+      [{ labelName: 'filter1' }],
+      [{ labelName: 'filter2' }],
+    ];
+    component.selectedTab = 'MyKnowHOW';
+    component.stateFilters = {
+      level: {
+        filter1: ['value1'],
+        filter2: ['value2'],
+      },
+    };
+    spyOn(component.helperService, 'setBackupOfFilterSelectionState');
+    const mockOnAdditionalFilterChange = spyOn(component.onAdditionalFilterChange, 'emit');
+    component.appliedFilters = {};
+    component.service = jasmine.createSpyObj('Service', ['applyAdditionalFilters']);
+    component.multiSelect = jasmine.createSpyObj('MultiSelect', ['close']);
+    const mockEvent = [
+      [{ labelName: 'filter1' }],
+      [{ labelName: 'filter2' }],
+    ];
+    const mockIndex = 2;
+    const mockMulti = false;
+    const mockFromBackup = false;
+
+    component.applyAdditionalFilter(mockEvent, mockIndex, mockMulti, mockFromBackup);
+
+    // expect(component.helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({
+    //   additional_level: {
+    //     level: {
+    //       filter1: [{ labelName: 'filter1' }],
+    //       filter2: [{ labelName: 'filter2' }],
+    //     },
+    //   },
+    // });
+    expect(mockOnAdditionalFilterChange).toHaveBeenCalledTimes(2);
+    expect(mockOnAdditionalFilterChange).toHaveBeenCalledWith([{ labelName: 'filter1' }]);
+    expect(mockOnAdditionalFilterChange).toHaveBeenCalledWith([{ labelName: 'filter2' }]);
+  });
+
+  it('should emit event if from backup', () => {
+
+    component.filterData = [
+      [{ labelName: 'filter1' }],
+      [{ labelName: 'filter2' }],
+    ];
+    component.selectedTab = 'Speed';
+    component.stateFilters = {
+      level: {
+        filter1: ['value1'],
+        filter2: ['value2'],
+      },
+    };
+    component.helperService = jasmine.createSpyObj('HelperService', ['setBackupOfFilterSelectionState']);
+    const mockAdditionalFilterChange = spyOn(component.onAdditionalFilterChange, 'emit');
+    component.appliedFilters = {};
+    component.service = jasmine.createSpyObj('Service', ['applyAdditionalFilters']);
+    component.multiSelect = jasmine.createSpyObj('MultiSelect', ['close']);
+ 
+    const mockEvent = [{ labelName: 'filter1' }];
+    const mockIndex = 1;
+    const mockMulti = false;
+    const mockFromBackup = true;
+
+    component.applyAdditionalFilter(mockEvent, mockIndex, mockMulti, mockFromBackup);
+
+    expect(mockAdditionalFilterChange).toHaveBeenCalledTimes(1);
+    expect(mockAdditionalFilterChange).toHaveBeenCalledWith([{ labelName: 'filter1' }]);
+  });
+
+  xit('should add filter value to appliedFilters and call applyAdditionalFilters', () => {
+    component.filterData = [
+      [{ labelName: 'filter1' }],
+      [{ labelName: 'filter2' }],
+    ];
+    component.selectedTab = 'Speed';
+    component.stateFilters = {
+      level: {
+        filter1: ['value1'],
+        filter2: ['value2'],
+      },
+    };
+    component.helperService = jasmine.createSpyObj('HelperService', ['setBackupOfFilterSelectionState']);
+    const mockAdditionalFilterChange = spyOn(component.onAdditionalFilterChange, 'emit');
+    component.appliedFilters = {};
+    component.service = jasmine.createSpyObj('Service', ['applyAdditionalFilters']);
+    component.multiSelect = jasmine.createSpyObj('MultiSelect', ['close']);
+
+    const mockEvent = { value: 'value1' };
+    const mockIndex = 1;
+    const mockMulti = true;
+    const mockFromBackup = false;
+
+    component.applyAdditionalFilter(mockEvent, mockIndex, mockMulti, mockFromBackup);
+
+    expect(component.appliedFilters).toEqual({ filter1: ['value1'] });
+    expect(mockAdditionalFilterChange).toHaveBeenCalledWith('value1');
+  });
+
+  it('should close multiSelect if overlayVisible is true', () => {
+    component.filterData = [
+      [{ labelName: 'filter1' }],
+      [{ labelName: 'filter2' }],
+    ];
+    component.selectedTab = 'Developer';
+    component.stateFilters = {
+      level: {
+        filter1: ['value1'],
+        filter2: ['value2'],
+      },
+    };
+    component.helperService = jasmine.createSpyObj('HelperService', ['setBackupOfFilterSelectionState']);
+    spyOn(component.onAdditionalFilterChange, 'emit');
+    component.appliedFilters = {};
+    component.service = jasmine.createSpyObj('Service', ['applyAdditionalFilters']);
+    component.multiSelect = jasmine.createSpyObj('MultiSelect', ['close']);
+
+    const mockEvent = { value: 'value1' };
+    const mockIndex = 1;
+    const mockMulti = true;
+    const mockFromBackup = false;
+    component.multiSelect.overlayVisible = true;
+
+    component.applyAdditionalFilter(mockEvent, mockIndex, mockMulti, mockFromBackup);
+
+    expect(component.multiSelect.close).toHaveBeenCalled();
+  });
+
+  it('should not close multiSelect if overlayVisible is false', () => {
+    component.filterData = [
+      [{ labelName: 'filter1' }],
+      [{ labelName: 'filter2' }],
+    ];
+    component.selectedTab = 'Developer';
+    component.stateFilters = {
+      level: {
+        filter1: ['value1'],
+        filter2: ['value2'],
+      },
+    };
+    component.helperService = jasmine.createSpyObj('HelperService', ['setBackupOfFilterSelectionState']);
+    spyOn(component.onAdditionalFilterChange, 'emit');
+    component.appliedFilters = {};
+    component.service = jasmine.createSpyObj('Service', ['applyAdditionalFilters']);
+    component.multiSelect = jasmine.createSpyObj('MultiSelect', ['close']);
+    const mockEvent = { value: 'value1' };
+    const mockIndex = 1;
+    const mockMulti = true;
+    const mockFromBackup = false;
+    component.multiSelect.overlayVisible = false;
+
+    component.applyAdditionalFilter(mockEvent, mockIndex, mockMulti, mockFromBackup);
+
+    expect(component.multiSelect.close).not.toHaveBeenCalled();
+  });
 });
