@@ -427,7 +427,7 @@ export class GroupstackchartComponent implements OnChanges {
     let result = JSON.parse(JSON.stringify(data));
     result.forEach(element => {
       let obj = {};
-      element.value.forEach(val => {
+      element?.value?.forEach(val => {
         obj['drillDown' + '_' + val['subFilter']] = [];
         obj[val['subFilter']] = this.filter['filter1'][0] === 'Story Points' ? val['size'] : val['value'];
         obj['drillDown' + '_' + val['subFilter']].push(...val['drillDown'] ? val['drillDown'] : []);
@@ -468,7 +468,7 @@ export class GroupstackchartComponent implements OnChanges {
           obj['hoverText'] = {};
           obj['xName'] = sprintValue;
           obj['type'] = item?.subFilter;
-          obj['value'] = this.filter['filter1'][0] === 'Story Points' ? item['size'] : item['value'];
+          obj['value'] = this.filter && this.filter['filter1'] ? this.filter['filter1'][0] === 'Story Points' ? item['size'] : item['value'] : item['value'];
           obj['drillDown'] = item.value?.drillDown?.length ? item.value['drillDown'] : [];
           max = Math.max(max, obj['value']);
           targetList.push(obj);
@@ -523,7 +523,7 @@ export class GroupstackchartComponent implements OnChanges {
   checkIfDrillDownNeedOrNot(data){
     var counter = 0;
      data.forEach((val)=>{
-        val.value.forEach(sprint=>{
+        val?.value?.forEach(sprint=>{
           if(sprint?.drillDown && sprint?.drillDown?.length){
             counter++;
           }

@@ -72,3 +72,12 @@
   left: 50%;
   top: 50%;
 }
+
+.ui-switch-container {
+  text-align: center;
+  background-color: #F5F9FF;
+  padding: 5px;
+  font-size: 0.75rem;
+  max-width: 100vw;
+}
+

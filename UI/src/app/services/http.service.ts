@@ -155,6 +155,7 @@ export class HttpService {
   private getCommentCountUrl = this.baseUrl + '/api/comments/getCommentCount';
   private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
   private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
+  private getAssingeeEmailsUrl = this.baseUrl + 'repotool/assignees/email/';
   private saveAssigneeForProjectUrl = this.baseUrl + '/api/capacity/assignee';
   private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
   private commentsSummaryUrl = this.baseUrl + '/api/comments/commentsSummary';
@@ -174,6 +175,7 @@ export class HttpService {
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
   private validateResourceUrl = this.baseUrl + '/api/validateResource';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
+  private getShowHideKpiNewUIUrl = this.baseUrl + '/api/user-board-config/getBoardConfig';
   private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
   constructor(
     private router: Router,
@@ -290,9 +292,6 @@ export class HttpService {
     if (provider === 'LDAP') {
       return this.ldapLoginUrl;
     }
-    // if (provider === 'CROWDSSO' || provider === '') {
-    //     return this.crowdSsoLoginLoginUrl;
-    // }
   }
 
   /** POST: login user */
@@ -962,6 +961,11 @@ export class HttpService {
   /** show-Hide for other nav, filter component */
   getShowHideOnDashboard(payload){
     return this.http.post<any>(this.getShowHideKpiUrl + '/getConfig',payload);
+  }
+
+   /** show-Hide for other nav, filter component in New UI */
+   getShowHideOnDashboardNewUI(payload){
+    return this.http.post<any>(this.getShowHideKpiNewUIUrl,payload);
   }
 
   submitShowHideOnDashboard(data){

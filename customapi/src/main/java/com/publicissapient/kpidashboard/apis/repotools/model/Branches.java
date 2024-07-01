@@ -35,6 +35,8 @@ public class Branches {
     private List<MergeRequests> mergeRequestList;
     private Map<String, Double> mergeRequestsPT;
     private long mergeRequests;
+    @JsonProperty("merge_request_count")
+    private long mergeRequestCount;
     private double grade;
     private double average;
     private double hours;
@@ -42,4 +44,5 @@ public class Branches {
     private long linesChanged;
     private double branchReworkRateGrade;
     private double branchReworkRateScore;
+    private List<RepoToolUserDetails> users;
 }

@@ -26,10 +26,9 @@
         <div class="request-table-container">
           <p-table dataKey="id" [value]="accessRequestList" [paginator]="true" [rows]="5"
             [loading]="!dataLoading.includes('allRequests') || !dataLoading.includes('allRoles')"
-            styleClass="p-datatable-striped"  loadingIcon="loading-img">
+            styleClass="p-datatable-striped" loadingIcon="loading-img">
             <ng-template pTemplate="header">
               <tr>
-                <!-- <th id="expandCollapase" style="width: 50px;"></th> -->
                 <th id="userName" style="width: 125px;">User Name</th>
                 <th id="projects" style="width: 250px;">Access Level</th>
                 <th id="role" style="width: 250px;">Role</th>
@@ -40,25 +39,19 @@
             </ng-template>
             <ng-template pTemplate="body" let-request let-expanded="expanded">
               <tr>
-                <!-- <td class='custom-table-cell'>
-                  <button type="button" pRipple pButton pRipple [pRowToggler]="request"
-                    class="p-button-text p-button-rounded p-button-plain"
-                    [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
-                </td> -->
                 <td class='custom-table-cell  text-truncate'>{{request.username}}</td>
                 <td class='custom-table-cell'>
                   <div class="info-block-container">
-                    <div class="info-block" *ngFor="let item of request.accessNode.accessItems" title="{{ item.itemName }}">
+                    <div class="info-block" *ngFor="let item of request.accessNode.accessItems"
+                      title="{{ item.itemName }}">
                       {{request.accessNode.accessLevel | namePipe }} - {{ item.itemName }}
                     </div>
                   </div>
                 </td>
                 <td class='custom-table-cell'>
-                  <!-- <span *ngFor="let role of request.roles"> -->
-                    <p-dropdown id="roleList" class="mb-2 mr-sm-2" [options]="roleList" [(ngModel)]="request.role"
-                      [style]="{'width':'200px'}">
-                    </p-dropdown>
-                  <!-- </span> -->
+                  <p-dropdown id="roleList" class="mb-2 mr-sm-2" [options]="roleList" [(ngModel)]="request.role"
+                    [style]="{'width':'200px'}">
+                  </p-dropdown>
                 </td>
                 <td pEditableColumn class='custom-table-cell'>
                   <p-cellEditor>
@@ -74,14 +67,15 @@
                 <td class='custom-table-cell'>
                   <div class="accept-reject-container p-d-flex">
                     <div class="action-btns p-mr-5" (click)="approveRejectRequest(request, true)">
-                        <i class="fas fa-check"></i></div>
+                      <i class="fas fa-check"></i>
+                    </div>
                     <div class="action-btns" (click)="approveRejectRequest(request, false)"><i
                         class="far fa-trash-alt"></i></div>
                   </div>
                 </td>
               </tr>
             </ng-template>
-           
+
             <ng-template pTemplate="emptymessage">
               <tr>
                 <td [attr.colspan]="5">

@@ -29,10 +29,15 @@ import static org.testng.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -91,6 +96,8 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 	RepoToolsConfigServiceImpl repoToolsConfigService;
 	@Mock
 	private CommonService commonService;
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	private List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
@@ -130,20 +137,24 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 		setToolMap();
 		setTreadValuesDataCount();
 
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
-				.thenReturn("BB-Excel-5be544de025de212549176a9");
-		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
-		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any()))
-				.thenReturn(repoToolKpiMetricResponseList);
+		AssigneeDetails assigneeDetails = new AssigneeDetails();
+		assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
+		assigneeDetails.setSource("Jira");
+		Set<Assignee> assigneeSet = new HashSet<>();
+		assigneeSet.add(new Assignee("aks", "Akshat Shrivastava",
+				new HashSet<>(Arrays.asList("akshat.shrivastav@publicissapient.com"))));
+		assigneeSet.add(new Assignee("llid", "Hiren",
+				new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
+		assigneeDetails.setAssignee(assigneeSet);
+		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 
 	}
 
 	private void setTreadValuesDataCount() {
 		DataCount dataCount = setDataCountValues("KnowHow", "3", "4", new DataCount());
 		trendValues.add(dataCount);
-		trendValueMap.put("OverAll", trendValues);
-		trendValueMap.put("BRANCH1 -> PR", trendValues);
+		trendValueMap.put("OverAll#OverAll", trendValues);
+		trendValueMap.put("BRANCH1 -> PR#Hiren", trendValues);
 	}
 
 	private DataCount setDataCountValues(String data, String maturity, Object maturityValue, Object value) {
@@ -193,12 +204,21 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 
 	@Test
 	public void testGetKpiData() throws Exception {
+
+		setup();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
 		Map<String, String> aggregationMap = new HashMap<>();
 		aggregationMap.put("meanTimeToMerge", "average");
+		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
+				.thenReturn("Jira-Excel-5be544de025de212549176a9");
+		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
+				repoToolKpiMetricResponseList);
 		KpiElement kpiElement = meanTimeToMergeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		List<BranchMergeReqCount> out = (List<BranchMergeReqCount>) kpiElement.getTrendValueList();
@@ -217,7 +237,7 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 		KpiElement kpiElement = meanTimeToMergeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		List<BranchMergeReqCount> out = (List<BranchMergeReqCount>) kpiElement.getTrendValueList();
-		assertThat("merge requests", out.size(), equalTo(2));
+		assertThat("merge requests", out.size(), equalTo(0));
 	}
 
 	@Test

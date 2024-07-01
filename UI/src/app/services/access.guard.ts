@@ -17,9 +17,8 @@
  ******************************************************************************/
 
 import { Injectable } from '@angular/core';
-import { Router, CanActivate } from '@angular/router';
+import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { GetAuthorizationService } from './get-authorization.service';
-import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { SharedService } from './shared.service';
 
 @Injectable()

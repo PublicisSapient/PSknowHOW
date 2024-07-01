@@ -53,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
  * This class handle all Kanban JIRA based KPI request and call each KPIs
  * service in thread. It is responsible for cache of KPI data at different
  * level.
- * 
+ *
  * @author priyanka jain
  *
  */
@@ -76,7 +76,7 @@ public class JiraServiceKanbanR {
 	/**
 	 * This method process Kanban JIRA based kpi request, cache data and call
 	 * service in multiple thread.
-	 * 
+	 *
 	 * @param kpiRequest
 	 *            JIRA KPI request
 	 * @return List of KPI data
@@ -179,7 +179,7 @@ public class JiraServiceKanbanR {
 
 	/**
 	 * Sets cache.
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param groupId

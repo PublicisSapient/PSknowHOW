@@ -923,12 +923,15 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 			projectCriteriaList.add(projectCriteria);
 		});
 
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
-		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
-		Query query = new Query(criteriaProjectLevelAdded);
-		// add projection
-		return operations.find(query, JiraIssue.class);
+		if (CollectionUtils.isNotEmpty(projectCriteriaList)) {
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+			Query query = new Query(criteriaProjectLevelAdded);
+			// add projection
+			return operations.find(query, JiraIssue.class);
+		}
+		return new ArrayList<>();
 
 	}
 

@@ -66,7 +66,7 @@ public class SonarServiceKanbanR {
 
 	/**
 	 * Process Sonar KPI request
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @return {@code List<KpiElement>}
 	 */
@@ -131,7 +131,7 @@ public class SonarServiceKanbanR {
 
 	/**
 	 * Calculates all KPI aggregated metrics
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param kpiElement
@@ -161,7 +161,7 @@ public class SonarServiceKanbanR {
 
 	/**
 	 * Sets KPI reponse List into application Cache
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param groupId

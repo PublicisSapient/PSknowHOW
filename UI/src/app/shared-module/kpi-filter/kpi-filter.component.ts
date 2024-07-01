@@ -16,22 +16,17 @@
  *
  ******************************************************************************/
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-kpi-filter',
   templateUrl: './kpi-filter.component.html',
 })
-export class KpiFilterComponent implements OnInit {
+export class KpiFilterComponent {
   @Input() kpiRelationShips: any;
   @Input() fieldMappings: any;
   @Output() fieldsToShow = new EventEmitter<any>();
   selectedKpi;
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 
   showFieldsPopup() {
     this.fieldsToShow.emit(this.selectedKpi);

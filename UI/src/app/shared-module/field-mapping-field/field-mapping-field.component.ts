@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -30,7 +30,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     }
   ]
 })
-export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor {
+export class FieldMappingFieldComponent implements ControlValueAccessor {
 
   @Input() fieldConfig;
   @Output() onSearch = new EventEmitter();
@@ -53,9 +53,6 @@ export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor 
   }
   setDisabledState?(isDisabled: boolean): void {
     this.isDisabled = isDisabled;
-  }
-
-  ngOnInit(): void {
   }
 
   setValue(isAddtional?) {

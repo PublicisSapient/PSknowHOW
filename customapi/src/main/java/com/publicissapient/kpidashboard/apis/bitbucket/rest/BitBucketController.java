@@ -24,12 +24,18 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -62,6 +68,8 @@ public class BitBucketController {
 
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
 	/**
 	 * Gets bit bucket aggregated metrics.
@@ -132,6 +140,18 @@ public class BitBucketController {
 		}
 		return ResponseEntity.ok().body(responseList);
 
+	}
+
+	/**
+	 * get all repo members from repo tool
+	 * @param projectConfigId
+	 * 				basic project config ig
+	 * @return list of members email
+	 */
+	@GetMapping(value = "repotool/assignees/email/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> getRepoToolProjectMembers(@PathVariable("id") String projectConfigId) {
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ServiceResponse(true, "", repoToolsConfigService.getProjectRepoToolMembers(projectConfigId)));
 	}
 
 }

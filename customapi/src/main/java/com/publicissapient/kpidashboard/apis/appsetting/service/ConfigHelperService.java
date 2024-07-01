@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.Filters;
+import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -81,6 +83,8 @@ public class ConfigHelperService {
 	private ProjectToolConfigRepository projectToolConfigRepository;
 	@Autowired
 	private UserBoardConfigRepository userBoardConfigRepository;
+	@Autowired
+	private FiltersRepository filtersRepository;
 
 	@Autowired
 	private FieldMappingStructureRepository fieldMappingStructureRepository;
@@ -315,4 +319,9 @@ public class ConfigHelperService {
 		return projectToolConfigRepository.findAll();
 	}
 
+	@Cacheable(CommonConstant.FILTERS)
+	public List<Filters> loadAllFilters() {
+		log.info("loading AllFilters");
+		return filtersRepository.findAll();
+	}
 }

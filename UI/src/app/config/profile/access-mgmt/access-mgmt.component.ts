@@ -100,10 +100,8 @@ export class AccessMgmtComponent implements OnInit {
 	}
 
 	mouseEnter(event, item, node) {
-		// console.log(event, item, accessLevel);
 		const accessLevel = node.accessLevel;
 		if (this.allProjectsData?.length) {
-			// console.log(this.allProjectsData);
 			if (accessLevel.toLowerCase() === 'project') {
 				const tooltipProject = this.allProjectsData?.filter((proj) => proj.id === item.itemId);
 				this.toolTipHtml = `<span>Project: ${tooltipProject[0].projectName}</span><br/>`;

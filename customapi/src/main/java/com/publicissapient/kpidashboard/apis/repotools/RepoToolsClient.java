@@ -19,10 +19,8 @@
 package com.publicissapient.kpidashboard.apis.repotools;
 
 import java.net.URI;
-import java.util.List;
 
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnectionDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -154,6 +152,24 @@ public class RepoToolsClient {
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 		return response.getStatusCode().value();
 
+	}
+
+	/**
+	 * fetch repotool project member's email
+	 *
+	 * @param membersUrl
+	 * 		url to fetch members
+	 * @param apiKey
+	 * 		api key for url
+	 * @return list of email
+	 */
+	public JsonNode fetchProjectRepoToolMembers(String membersUrl, String apiKey){
+		setHttpHeaders(apiKey);
+		log.info("get repoTool project members {}", membersUrl);
+		URI url = URI.create(membersUrl);
+		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+		ResponseEntity<JsonNode> response = restTemplate.exchange(url, HttpMethod.GET, entity, JsonNode.class);
+		return response.getBody();
 	}
 
 	/**

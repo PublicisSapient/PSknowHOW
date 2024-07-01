@@ -18,7 +18,9 @@
 
 package com.publicissapient.kpidashboard.common.model.jira;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,7 +43,7 @@ public class Assignee {
 
 	private String assigneeId;
 	private String assigneeName;
-	private String email;
+	private Set<String> email;
 
 	public Assignee(String assigneeId, String assigneeName) {
 		this.assigneeId = assigneeId;
