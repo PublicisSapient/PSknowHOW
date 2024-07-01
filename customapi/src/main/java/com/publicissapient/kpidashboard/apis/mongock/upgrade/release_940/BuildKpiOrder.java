@@ -29,7 +29,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shunaray
  */
-@ChangeUnit(id = "build_kpi_align", order = "", author = "shunaray", systemVersion = "")
+@ChangeUnit(id = "build_kpi_align", order = "10101", author = "shunaray", systemVersion = "10.1.0")
 public class BuildKpiOrder {
 	private final MongoTemplate mongoTemplate;
 
