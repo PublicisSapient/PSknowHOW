@@ -139,7 +139,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         tempObj[nodeName] = [];
       }
       this.kpiTableDataObj = { ...tempObj };
-      if (this.kpiChartData && Object.keys(this.kpiChartData)?.length <= 0) return this.service.passDataToDashboard;
+      if (!this.kpiChartData || Object.keys(this.kpiChartData)?.length <= 0) return this.service.passDataToDashboard;
       for (const key in this.kpiChartData) {
         this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
         this.createTrendsData(key);
@@ -160,15 +160,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.handleMaturityTableLoader();
     }));
 
-    this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
-      if (this.selectedTab.toLowerCase() !== 'developer') return;
-      if (data && Object.keys(data).length) {
-        this.updatedConfigGlobalData.forEach(kpi => {
+    if (this.selectedTab.toLowerCase() === 'developer') {
+      this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
+        Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
           this.handleSelectedOption(data, kpi);
         });
-      }
-    })
-    );
+      }));
+    }
   }
 
   processKpiConfigData(kpiListObj) {
