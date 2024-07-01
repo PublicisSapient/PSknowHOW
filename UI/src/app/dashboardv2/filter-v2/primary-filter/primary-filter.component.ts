@@ -29,38 +29,36 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) ||
         (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange))) {
       this.applyDefaultFilters();
-
-    } else {
-      this.selectedFilters = [];
-      this.populateFilters();
-      setTimeout(() => {
-
-        if (this.filters.length) {
-          this.selectedFilters = new Set();
-
-          this.stateFilters = this.helperService.getBackupOfFilterSelectionState('primary_level');
-
-
-          if (this.stateFilters?.length > 0) {
-            this.stateFilters.forEach(stateFilter => {
-              this.selectedFilters.add(stateFilter);
-            });
-
-            this.selectedFilters = [...this.selectedFilters];
-
-            this.selectedFilters = Array.from(
-              this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
-            );
-            this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
-            this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
-            this.onPrimaryFilterChange.emit(this.selectedFilters);
-            this.setProjectAndLevelBackupBasedOnSelectedLevel();
-          } else {
-            this.applyDefaultFilters();
-          }
-        }
-      }, 100);
+      return;
     }
+    this.selectedFilters = [];
+    this.populateFilters();
+    setTimeout(() => {
+      if (this.filters.length) {
+        this.selectedFilters = new Set();
+
+        this.stateFilters = this.helperService.getBackupOfFilterSelectionState('primary_level');
+
+        if(this.stateFilters?.length <= 0) {
+          this.applyDefaultFilters();
+          return;
+        }
+
+        this.stateFilters.forEach(stateFilter => {
+          this.selectedFilters.add(stateFilter);
+        });
+
+        this.selectedFilters = [...this.selectedFilters];
+
+        this.selectedFilters = Array.from(
+          this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
+        );
+        this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
+        this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
+        this.onPrimaryFilterChange.emit(this.selectedFilters);
+        this.setProjectAndLevelBackupBasedOnSelectedLevel();
+      }
+    }, 100);
   }
 
   applyDefaultFilters() {
