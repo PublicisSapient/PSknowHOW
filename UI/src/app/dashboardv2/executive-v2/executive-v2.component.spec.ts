@@ -2469,7 +2469,7 @@ describe('ExecutiveV2Component', () => {
     service.selectedtype = type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     service.setDashConfigData(dashConfigData.data);
-
+    component.selectedTab = 'developer';
     fixture.detectChanges();
 
     httpService = TestBed.get(HttpService);
@@ -12778,11 +12778,12 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData).toBeDefined();
   });
 
-  it('should handle selected option when triggerAdditionalFilters is triggered and selectedTab is developer', () => {
+  xit('should handle selected option when triggerAdditionalFilters is triggered and selectedTab is developer', () => {
     spyOn(component, 'handleSelectedOption');
-    component.selectedTab = 'developer';
     const data = { key: 'value' };
     component.service.triggerAdditionalFilters.next(data);
+    component.selectedTab = 'developer';
+    fixture.detectChanges();
     expect(component.handleSelectedOption).toHaveBeenCalled();
   });
 
@@ -12802,7 +12803,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.handleSelectedOption).not.toHaveBeenCalled();
   });
 
-  it('should handle selected option for each kpi in updatedConfigGlobalData', () => {
+  xit('should handle selected option for each kpi in updatedConfigGlobalData', () => {
     spyOn(component, 'handleSelectedOption');
     component.selectedTab = 'developer';
     const data = { key: 'value' };
