@@ -139,35 +139,33 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         tempObj[nodeName] = [];
       }
       this.kpiTableDataObj = { ...tempObj };
-      if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-        for (const key in this.kpiChartData) {
-          this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
-          this.createTrendsData(key);
-          this.handleMaturityTableLoader();
-        }
+      if (this.kpiChartData && Object.keys(this.kpiChartData)?.length <= 0) return this.service.passDataToDashboard;
+      for (const key in this.kpiChartData) {
+        this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
+        this.createTrendsData(key);
+        this.handleMaturityTableLoader();
       }
       return this.service.passDataToDashboard;
     }), distinctUntilChanged()).subscribe((sharedobject: any) => {
       // used to get all filter data when user click on apply button in filter
       this.maturityTableKpiList = [];
-      if (sharedobject?.filterData?.length) {
-        this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
-        this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
-        this.receiveSharedData(sharedobject);
-        this.noTabAccess = false;
-        this.handleMaturityTableLoader();
-      } else {
+      if (!sharedobject?.filterData?.length) {
         this.noTabAccess = true;
+        return;
       }
+      this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
+      this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
+      this.receiveSharedData(sharedobject);
+      this.noTabAccess = false;
+      this.handleMaturityTableLoader();
     }));
 
     this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
-      if (this.selectedTab.toLowerCase() === 'developer') {
-        if (data && Object.keys(data).length) {
-          this.updatedConfigGlobalData.forEach(kpi => {
-            this.handleSelectedOption(data, kpi);
-          });
-        }
+      if (this.selectedTab.toLowerCase() !== 'developer') return;
+      if (data && Object.keys(data).length) {
+        this.updatedConfigGlobalData.forEach(kpi => {
+          this.handleSelectedOption(data, kpi);
+        });
       }
     })
     );
