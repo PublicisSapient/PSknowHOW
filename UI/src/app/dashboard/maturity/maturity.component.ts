@@ -131,7 +131,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
         if (!this.configGlobalData || !this.configGlobalData[this.selectedtype] || !this.configGlobalData[this.selectedtype].length) {
           this.configGlobalData = $event.dashConfigData;
         }
-        this.masterData.kpiList = this.configGlobalData[this.selectedtype].filter((board) => board['boardSlug'] = 'mydashboard')[0].kpis;
+        this.masterData.kpiList = this.configGlobalData[this.selectedtype].filter((board) => board['boardSlug'] === 'mydashboard')[0].kpis;
       }
       this.filterData = $event?.filterData;
       this.filterApplyData = $event?.filterApplyData;

@@ -686,7 +686,6 @@ export class HelperService {
         } else {
             this.selectedFilters = null;
         }
-        console.log(this.selectedFilters);
     }
 
     getBackupOfFilterSelectionState = (prop = null) => {
