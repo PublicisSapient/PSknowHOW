@@ -49,7 +49,6 @@ public class UserVerificationTokenServiceImpl implements UserVerificationTokenSe
 	 */
 	@Override
 	public ResetPasswordTokenStatusEnum verifyUserToken(String token) {
-		log.info("UserServiceImpl: Validate the token {}", token);
 		UserVerificationToken userVerificationToken = userVerificationTokenRepository.findByToken(token);
 		return checkTokenValidity(userVerificationToken);
 	}
@@ -88,7 +87,6 @@ public class UserVerificationTokenServiceImpl implements UserVerificationTokenSe
 	@Override
 	public void deleteUnVerifiedUser(UUID token) {
 		UserVerificationToken userVerificationToken = userVerificationTokenRepository.findByToken(token.toString());
-		log.info("UserController: User {}", token);
 
 		if (userVerificationToken.getUsername() != null && userVerificationToken.getEmail() != null) {
 			this.notificationService.sendVerificationFailedMailUser(

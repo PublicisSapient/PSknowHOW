@@ -40,4 +40,7 @@ public class UserDTO {
 	private String firstName;
 	private String lastName;
 	private String displayName;
+	private boolean approved;
+	private boolean verified;
+
 }

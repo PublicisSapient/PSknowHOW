@@ -66,10 +66,8 @@ public class UserServiceImpl implements UserService {
 	public boolean deleteByUserName(String username) {
 		try {
 			userRepository.deleteByUsername(username);
-			log.info("User: {} has been deleted.", username);
 			return true;
 		} catch (Exception e) {
-			log.error("Error while deleting user: {}", username, e);
 			return false;
 		}
 	}
@@ -82,9 +80,16 @@ public class UserServiceImpl implements UserService {
 	public UserDTO getUserDTO(User user) {
 		UserDTO dto = null;
 		if (null != user) {
-			dto = UserDTO.builder().id(user.getId()).username(user.getUsername()).email(user.getEmail())
-						 .firstName(user.getFirstName()).lastName(user.getLastName()).displayName(user.getDisplayName())
+			dto = UserDTO.builder()
+						 .id(user.getId())
+						 .username(user.getUsername())
+						 .email(user.getEmail())
+						 .firstName(user.getFirstName())
+						 .lastName(user.getLastName())
+						 .displayName(user.getDisplayName())
 						 .authType(user.getAuthType())
+						 .approved(user.isApproved())
+						 .verified(user.isUserVerified())
 						 .build();
 		}
 		return dto;

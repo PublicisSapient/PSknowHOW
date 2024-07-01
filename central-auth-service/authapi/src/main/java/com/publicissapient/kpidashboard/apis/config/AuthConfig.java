@@ -35,7 +35,6 @@ import com.publicissapient.kpidashboard.apis.enums.AuthType;
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "auth")
-// TODO: remove useless configs
 public class AuthConfig {
 
 	private String secret;
@@ -49,9 +48,6 @@ public class AuthConfig {
 
 	private String loginView;
 	private String logoutView;
-
-	// TODO: refactor later in the cors filter
-	private List<String> corsFilterValidOrigin;
 
 	@Value("${kafka.mailtopic}")
 	private String kafkaMailTopic;

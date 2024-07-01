@@ -67,7 +67,7 @@ auth:
     userVerification: User Verification Request
     userVerificationFailed: User Verification Token Expired
 
-  secret: 3106dd9eee424487884363ce026ea979
+  secret: ${SIGNATURE_SECRET}
 
   auth-endpoints:
     authenticated-endpoints:
@@ -110,10 +110,6 @@ server:
   tomcat:
     redirect-context-root: false
 spring:
-  datasource:
-    password: sapient@123
-    url: jdbc:postgresql://authdb:5432/authNauth
-    username: authdb
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
@@ -137,8 +133,8 @@ spring:
             acs:
               location: '{baseUrl}/saml/SSO'
             assertingparty:
-              metadata-uri: https://login.microsoftonline.com/d52c9ea1-7c21-47b1-82a3-33a74b1f74b8/federationmetadata/2007-06/federationmetadata.xml?appid=bf226903-9d44-4e77-af84-e3ad008442ef
-            entity-id: "spn:bf226903-9d44-4e77-af84-e3ad008442ef"
+              metadata-uri: ${SAML_METADATA_URI}
+            entity-id: ${SAML_ENTITY_ID}
             singlelogout:
               binding: POST
               responseUrl: '{baseUrl}/saml/SingleLogout'

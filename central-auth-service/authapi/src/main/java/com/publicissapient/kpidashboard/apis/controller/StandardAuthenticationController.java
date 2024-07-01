@@ -103,7 +103,6 @@ public class StandardAuthenticationController {
 	@PostMapping(value = "/reset-password", produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponseDTO> resetPassword(@RequestBody ResetPasswordRequestDTO updatedPasswordRequest) {
 		boolean isSuccess = false;
-		log.info("ForgotPasswordController: requested token for update {}", updatedPasswordRequest.getResetToken());
 		UserDTO user = null;
 		try {
 			user = standardAuthenticationService.resetPassword(updatedPasswordRequest);

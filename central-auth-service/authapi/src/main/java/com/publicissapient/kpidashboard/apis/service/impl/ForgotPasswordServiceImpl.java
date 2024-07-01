@@ -107,8 +107,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 	@Override
 	public ServiceResponseDTO validateUserAndSendForgotPasswordEmail(String email) {
-		log.info("ForgotPasswordServiceImpl: Requested mail {}", email);
-
 		Optional<User> userOptional = userService.findByEmail(email);
 
 		if (userOptional.isPresent()) {

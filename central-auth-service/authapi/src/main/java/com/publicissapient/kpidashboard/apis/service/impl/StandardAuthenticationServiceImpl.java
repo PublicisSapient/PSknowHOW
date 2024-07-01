@@ -199,8 +199,6 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	 */
 	@Override
 	public ResetPasswordTokenStatusEnum validateEmailToken(String token) {
-		log.info("ForgotPasswordServiceImpl: Validate the token {}", token);
-
 		Optional<ForgotPasswordToken> forgotPasswordTokenOptional = forgotPasswordTokenService.findByToken(token);
 		if (forgotPasswordTokenOptional.isPresent()) {
 			return checkTokenValidity(forgotPasswordTokenOptional.get());
@@ -251,7 +249,6 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	 */
 	@Override
 	public UserDTO resetPassword(ResetPasswordRequestDTO resetPasswordRequest) throws ApplicationException {
-		log.info("ForgotPasswordServiceImpl: Reset token is {}", resetPasswordRequest.getResetToken());
 		Optional<ForgotPasswordToken> forgotPasswordTokenOptional = forgotPasswordTokenService.findByToken(
 				resetPasswordRequest.getResetToken());
 		if (forgotPasswordTokenOptional.isPresent()) {
@@ -271,11 +268,9 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 					return userService.getUserDTO(user.get());
 				}
 			} else {
-				log.error("Token is {}", resetPasswordRequest.getResetToken());
 				throw new ApplicationException("Token is " + tokenStatus.name(), ApplicationException.BAD_DATA);
 			}
 		} else {
-			log.error("Token is {}", resetPasswordRequest.getResetToken());
 			throw new ApplicationException(
 					"Token is " + ResetPasswordTokenStatusEnum.INVALID, ApplicationException.BAD_DATA);
 		}

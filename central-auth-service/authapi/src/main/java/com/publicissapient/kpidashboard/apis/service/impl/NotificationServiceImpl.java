@@ -320,8 +320,6 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	public void sendVerificationMailToRegisterUser(String username, String email, String token) {
 		String serverPath = getServerPath();
-		log.info("UserServiceImpl: serverPath {}", serverPath);
-		log.info("UserServiceImpl: registered mail {}", email);
 
 		Map<String, String> customData = createCustomDataVerificationUser(username, email, serverPath,
 																		  this.authConfig.getVerifyUserTokenExpiryInterval(), token

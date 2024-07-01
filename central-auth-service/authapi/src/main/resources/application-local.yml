@@ -38,9 +38,3 @@ notification:
 logging:
   level:
     root: INFO
-
-spring:
-  datasource:
-    password: postgres
-    url: jdbc:postgresql://localhost:5432/authdblocal
-    username: postgres
