@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;

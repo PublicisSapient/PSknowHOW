@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.common.model.application.dto;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import org.bson.types.ObjectId;
 
 import lombok.AllArgsConstructor;
