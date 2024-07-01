@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
@@ -48,7 +49,9 @@ public class ProjectBasicConfig extends BasicModel {
 
 	private String projectName;
 	private String createdAt;
+	private String createdBy;
 	private String updatedAt;
+	private String updatedBy;
 	private boolean kanban;
 	private List<HierarchyValue> hierarchy;
 	private boolean saveAssigneeDetails;

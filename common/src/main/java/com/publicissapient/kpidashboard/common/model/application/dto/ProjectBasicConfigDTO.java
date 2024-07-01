@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.model.application.dto;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import org.bson.types.ObjectId;
 
 import lombok.AllArgsConstructor;
@@ -43,7 +44,9 @@ public class ProjectBasicConfigDTO {
 	private ObjectId id;
 	private String projectName;
 	private String createdAt;
+	private String createdBy;
 	private String updatedAt;
+	private String updatedBy;
 
 	private String consumerCreatedOn;
 	private boolean kanban;
