@@ -30,64 +30,63 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) ||
         (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange))) {
       this.applyDefaultFilters();
+      return;
+    }
+    this.selectedFilters = [];
+    this.populateFilters();
+    if (this.filters?.length) {
+      this.selectedFilters = new Set();
 
-    } else {
-      this.selectedFilters = [];
-      this.populateFilters();
-      if (this.filters?.length) {
-        this.selectedFilters = new Set();
+      this.stateFilters = this.helperService.getBackupOfFilterSelectionState();
+      if (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && !this.stateFilters['additional_level']) {
+        this.stateFilters['primary_level'].forEach(stateFilter => {
+          this.selectedFilters.add(stateFilter);
+        });
 
-        this.stateFilters = this.helperService.getBackupOfFilterSelectionState();
-        if (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && !this.stateFilters['additional_level']) {
-          this.stateFilters['primary_level'].forEach(stateFilter => {
-            this.selectedFilters.add(stateFilter);
+        this.selectedFilters = [...this.selectedFilters];
+
+        this.selectedFilters = Array.from(
+          this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
+        );
+        // this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
+        this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
+        this.onPrimaryFilterChange.emit(this.selectedFilters);
+        this.setProjectAndLevelBackupBasedOnSelectedLevel();
+      } else if (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && this.stateFilters['additional_level'] && Object.keys(this.stateFilters['additional_level'])?.length) {
+
+        this.stateFilters['primary_level'].forEach(stateFilter => {
+          this.selectedFilters.add(stateFilter);
+        });
+
+        this.selectedFilters = [...this.selectedFilters];
+
+        this.selectedFilters = Array.from(
+          this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
+        );
+        this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
+        this.selectedAdditionalFilters = {};
+        Object.keys(this.stateFilters['additional_level']['level']).forEach(key => {
+
+          this.selectedAdditionalFilters[key] = new Set();
+          this.stateFilters['additional_level']['level'][key].forEach(stateFilter => {
+            this.selectedAdditionalFilters[key].add(stateFilter);
           });
 
-          this.selectedFilters = [...this.selectedFilters];
+          this.selectedAdditionalFilters[key] = [...this.selectedAdditionalFilters[key]];
 
-          this.selectedFilters = Array.from(
-            this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
+          this.selectedAdditionalFilters[key] = Array.from(
+            this.selectedAdditionalFilters[key].reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
           );
-          // this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
-          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
-          this.onPrimaryFilterChange.emit(this.selectedFilters);
-          this.setProjectAndLevelBackupBasedOnSelectedLevel();
-        } else if (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && this.stateFilters['additional_level'] && Object.keys(this.stateFilters['additional_level'])?.length) {
-
-          this.stateFilters['primary_level'].forEach(stateFilter => {
-            this.selectedFilters.add(stateFilter);
-          });
-
-          this.selectedFilters = [...this.selectedFilters];
-
-          this.selectedFilters = Array.from(
-            this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
-          );
-          this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
-          this.selectedAdditionalFilters = {};
-          Object.keys(this.stateFilters['additional_level']['level']).forEach(key => {
-
-            this.selectedAdditionalFilters[key] = new Set();
-            this.stateFilters['additional_level']['level'][key].forEach(stateFilter => {
-              this.selectedAdditionalFilters[key].add(stateFilter);
-            });
-
-            this.selectedAdditionalFilters[key] = [...this.selectedAdditionalFilters[key]];
-
-            this.selectedAdditionalFilters[key] = Array.from(
-              this.selectedAdditionalFilters[key].reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
-            );
-            // this.selectedAdditionalFilters[key] = this.filterData[this.selectedLevel]?.filter((f) => this.selectedAdditionalFilters[key].map((s) => s.nodeId).includes(f.nodeId));
-          });
+          // this.selectedAdditionalFilters[key] = this.filterData[this.selectedLevel]?.filter((f) => this.selectedAdditionalFilters[key].map((s) => s.nodeId).includes(f.nodeId));
+        });
 
 
-          let obj = {};
-          obj['primary_level'] = this.selectedFilters;
-          obj['additional_level'] = this.selectedAdditionalFilters;
-          this.onPrimaryFilterChange.emit(obj);
-        } else {
-          this.applyDefaultFilters();
-        }
+        let obj = {};
+        obj['primary_level'] = this.selectedFilters;
+        obj['additional_level'] = this.selectedAdditionalFilters;
+        this.onPrimaryFilterChange.emit(obj);
+      } else {
+        this.applyDefaultFilters();
       }
     }
   }
