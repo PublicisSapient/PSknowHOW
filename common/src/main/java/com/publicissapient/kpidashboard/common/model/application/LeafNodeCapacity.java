@@ -16,18 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.excel;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
-import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +26,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * The type Kanban capacity.
+ * @author shi6
+ * for each node under "additional filter", saving the capacity of
+ *         each leaf
  */
 @Data
 @Builder
@@ -45,15 +36,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "kanban_capacity")
-public class KanbanCapacity extends BasicModel {
-	private String projectName;
-	private String projectId;
-	private Double capacity;
-	private LocalDate startDate;
-	private LocalDate endDate;
-	private ObjectId basicProjectConfigId;
-	private List<AdditionalFilterCapacity> additionalFilterCapacityList;
-	private List<AssigneeCapacity> assigneeCapacity;
+public class LeafNodeCapacity {
+	private String additionalFilterId;
+	private Double additionalFilterCapacity;
 
 }

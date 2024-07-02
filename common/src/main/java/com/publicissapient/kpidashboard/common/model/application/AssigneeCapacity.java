@@ -24,6 +24,7 @@ public class AssigneeCapacity {
 	private String userName;
 	private String email;
 	private Role role;
+	private String squad;
 	private Double plannedCapacity;
 	private Double leaves;
 	private Double availableCapacity;

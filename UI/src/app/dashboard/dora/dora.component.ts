@@ -51,7 +51,6 @@ export class DoraComponent implements OnInit {
     tableValues: []
   };
   kpiExcelData;
-  isGlobalDownload = false;
   kpiTrendsObj = {};
   selectedTab = 'dora';
   showCommentIcon = false;

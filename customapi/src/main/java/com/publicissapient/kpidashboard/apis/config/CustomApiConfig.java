@@ -236,6 +236,7 @@ public class CustomApiConfig {// NOPMD
 
 	private String repoToolUpdateConnectionUrl;
 	private Boolean isRepoToolEnable;
+	private Boolean isGitlabFieldEnable;
 	private String repoToolCodeCommmitsUrl;
 	private String repoToolDeleteProjectUrl;
 	private String repoToolDeleteRepoUrl;
@@ -252,7 +253,6 @@ public class CustomApiConfig {// NOPMD
 	private int sprintCountForKpiCalculation;
 	private String rnrRecommendationApiKey;
 	private String rnrRecommendationUrl;
-
 
 	public String getRnrRecommendationUrl() {
 		return rnrRecommendationUrl;
@@ -277,10 +277,11 @@ public class CustomApiConfig {// NOPMD
 	public void setAesKeyValue(List<Character> aesKeyValue) {
 		this.aesKeyValue = aesKeyValue;
 	}
+
 	@Value("${exposed_api_key}")
 	private String xApiKey;
 	private String repoToolReworkRateUrl;
-	
+
 	@Value("${max-age-seconds}")
 	private long maxAgeInSeconds;
 	@Value("${include-subdomains}")
@@ -312,8 +313,6 @@ public class CustomApiConfig {// NOPMD
 	public void setCycleTimeRange(List<String> cycleTimeRange) {
 		this.cycleTimeRange = cycleTimeRange;
 	}
-
-
 
 	public List<String> getLeadTimeRange() {
 		return leadTimeRange;
@@ -409,6 +408,14 @@ public class CustomApiConfig {// NOPMD
 
 	public void setIsRepoToolEnable(Boolean isRepoToolEnable) {
 		this.isRepoToolEnable = isRepoToolEnable;
+	}
+
+	public Boolean getIsGitlabFieldEnable() {
+		return isGitlabFieldEnable;
+	}
+
+	public void setIsGitlabFieldEnable(Boolean isGitlabFieldEnable) {
+		this.isGitlabFieldEnable = isGitlabFieldEnable;
 	}
 
 	public String getRepoToolAPIKey() {

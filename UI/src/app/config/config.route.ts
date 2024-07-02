@@ -26,6 +26,7 @@ import { AdvancedSettingsComponent } from './advanced-settings/advanced-settings
 import { AccessGuard } from '../services/access.guard';
 import { GuestGuard } from '../services/guest.guard';
 import { FeatureGuard } from '../services/feature.guard';
+import { ViewerGuard } from '../services/viewer.guard';
 
 export const ConfigRoutes: Routes = [
     {
@@ -54,7 +55,7 @@ export const ConfigRoutes: Routes = [
             {
                 path: 'Dashboardconfig',
                 component: DashboardconfigComponent,
-                canActivate: [AccessGuard && GuestGuard]
+                canActivate: [ViewerGuard, GuestGuard]
             }
             ,
             {
@@ -68,7 +69,7 @@ export const ConfigRoutes: Routes = [
             {
                 path: 'AdvancedSettings',
                 component: AdvancedSettingsComponent,
-                canActivate: [AccessGuard && GuestGuard]
+                canActivate: [ViewerGuard, GuestGuard]
             }
         ]
     }
@@ -78,7 +79,7 @@ export const ConfigRoutes: Routes = [
     imports: [RouterModule.forChild(ConfigRoutes)],
     exports: [RouterModule],
     providers: [
-        AccessGuard, FeatureGuard
+        AccessGuard, FeatureGuard, ViewerGuard
     ]
 })
 
