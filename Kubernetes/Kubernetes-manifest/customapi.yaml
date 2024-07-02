@@ -3,11 +3,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: customapi
-  namespace: uat-knowhow
+  namespace: stage-knowhow
   labels:
     app: customapi
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: customapi
@@ -25,74 +25,115 @@ spec:
       #   command: ['sh', '-c', "until nslookup customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for customapi; sleep 2; done"]
       containers:
         - name: customapi
-          image: speedtools.azurecr.io/knowhow-customapi:9.0.0-SNAPSHOT
-          imagePullPolicy: Always
+          image: speedtools.azurecr.io/knowhow-customapi:9.3.0
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "0.5"
-          # readinessProbe:
-          #   tcpSocket:
-          #     port: 8080
-          #   initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-          #   periodSeconds: 5          # Check every 5 seconds
-          # livenessProbe:
-          #   tcpSocket:
-          #     port: 8080
-          #   initialDelaySeconds: 15
-          #   periodSeconds: 20
+          # resources:
+          #   requests:
+          #    memory: "750Mi"
+          #    cpu: "0.3"
+          #   limits:
+          #     memory: "4Gi"
+          #     cpu: "1"
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 45   # Wait for 10 seconds before starting probes
+            periodSeconds: 20          # Check every 5 seconds
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 45
+            periodSeconds: 20
           env:
             - name: spring.data.mongodb.uri
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
-                  key: uatknhdbconnectionstring
+                  name: stage-knhdbconnectionstring
+                  key: stage-knhdbconnectionstring
             # - name: spring.data.mongodb.host
             #   valueFrom:
             #     secretKeyRef:
-            #       name: knowhow-config-credentials
-            #       key: uatknhdbhost
+            #       name: stage-secretproviderclass
+            #       key: stage-knhdbhost
             - name: repoToolAPIKey
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
-                  key: uat-repo-tool-api-key
+                  name: stage-repo-tool-api-key
+                  key: stage-repo-tool-api-key
             - name: aesEncryptionKey
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
-                  key: knowhowaesEncryptionKey
+                  name: knowhowaesencryptionkeynew
+                  key: knowhowaesencryptionkeynew
             - name: auth.secret
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
+                  name: knowhow-auth-secret
                   key: knowhow-auth-secret
-
             - name: spring.data.mongodb.username
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
-                  key: uatknhdbusername
+                  name: stage-knhdbusername
+                  key: stage-knhdbusername
             - name: spring.data.mongodb.password
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
-                  key: uatknhdbpassword
+                  name: stage-knhdbpassword
+                  key: stage-knhdbpassword
+            - name: exposed_api_key
+              valueFrom:
+                secretKeyRef:
+                  name: exposed-api-key
+                  key: exposed-api-key
+            - name: auth.resourceAPIKey
+              valueFrom:
+                secretKeyRef:
+                  name: auth-resourceapikeys
+                  key: auth-resourceapikeys
             - name: mongock.migration-scan-package
-              value: com.publicissapient.kpidashboard.apis.mongock.installation  
-            - name: auth.centralAuthBaseURL
-              value: "https://uat-authnauth.tools.publicis.sapient.com"
+              value: "com.publicissapient.kpidashboard.apis.mongock.upgrade"
+            - name: mongock.start-system-version
+              value: "9.2.0"
+            - name: mongock.end-system-version
+              value: "9.3.0"
           envFrom:
           - configMapRef:
-              name: knowhow-config
+              name: knowhow-config  
+          volumeMounts:
+            - name: knowhow-secrets-store 
+              mountPath: "/mnt/stage-secrets-store"
+              readOnly: true
+            - name: customapi-log-volume
+              mountPath: /app/logs
+        - name: promtail
+          image: grafana/promtail:2.9.2
+          args: 
+            - -config.file=/etc/promtail/config/promtail.yaml
+          volumeMounts:
+            - name: customapi-log-volume
+              mountPath: /app/logs
+            - name: promtail-config
+              mountPath: /etc/promtail/config
+      volumes:
+        - name: knowhow-secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "stage-secretproviderclass"
+        - name: customapi-log-volume
+          emptyDir: {}
+        - name: promtail-config
+          configMap:
+            name: promtail-config
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: customapi
-  namespace: uat-knowhow
+  namespace: stage-knowhow
 spec:
   selector:
     app: customapi

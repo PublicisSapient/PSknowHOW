@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jira-processor
-  namespace: uat-knowhow
+  namespace: stage-knowhow
   labels:
     app: jira-processor
 spec:
@@ -27,43 +27,53 @@ spec:
       #   command: ['sh', '-c', "until nslookup ui-knowhow.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for ui-knowhow; sleep 2; done"]
       containers:
       - name: jira-processor
-        image: speedtools.azurecr.io/knowhow-jira-processor:0.0.2-TEST
+        image: speedtools.azurecr.io/knowhow-jira-processor:9.3.0
         imagePullPolicy: Always
         env:
             - name: spring.data.mongodb.uri
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
-                  key: uatknhdbconnectionstring
+                  name: stage-knhdbconnectionstring
+                  key: stage-knhdbconnectionstring
             - name: spring.data.mongodb.host
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
-                  key: uatknhdbhost
+                  name: stage-knhdbhost
+                  key: stage-knhdbhost
             
             - name: aesEncryptionKey
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
-                  key: knowhowaesEncryptionKey
+                  name: knowhowaesencryptionkeynew
+                  key: knowhowaesencryptionkeynew
             - name: auth.secret
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
+                  name: knowhow-auth-secret
                   key: knowhow-auth-secret
-
             - name: spring.data.mongodb.username
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
-                  key: uatknhdbusername
+                  name: stage-knhdbusername
+                  key: stage-knhdbusername
             - name: spring.data.mongodb.password
               valueFrom:
                 secretKeyRef:
-                  name: knowhow-config-credentials
-                  key: uatknhdbpassword
+                  name: stage-knhdbpassword
+                  key: stage-knhdbpassword
             - name: mongock.migration-scan-package
               value: com.publicissapient.kpidashboard.apis.mongock.installation
+            - name:  notification.switch
+              value: "true"
+            #Adding cron expressions
+            - name: jira.scrumBoardCron
+              value: "0 0 */8 * * *"
+            - name: jira.scrumJqlCron
+              value: "0 0 */10 * * *"
+            - name: jira.kanbanBoardCron
+              value: "0 0 */12 * * *"
+            - name: jira.kanbanJqlCron
+              value: "0 0 */13 * * *"
         envFrom:
         - configMapRef:
             name: knowhow-config
@@ -72,25 +82,57 @@ spec:
         - containerPort: 50008
         resources:
           requests:
-            memory: "1Gi"
+            memory: "250Mi"
+            cpu: "0.2"
+          limits:
+            memory: "2Gi"
             cpu: "0.5"
-        # readinessProbe:
-        #   tcpSocket:
-        #     port: 50008
-        #   initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-        #   periodSeconds: 5          # Check every 5 seconds
-        # livenessProbe:
-        #   tcpSocket:
-        #     port: 50008
-        #   initialDelaySeconds: 15
-        #   periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: 50008
+          initialDelaySeconds: 30   # Wait for 30 seconds before starting probes
+          periodSeconds: 15         # Check every 15 seconds
+        livenessProbe:
+          tcpSocket:
+            port: 50008
+          initialDelaySeconds: 30
+          periodSeconds: 15
+
+        volumeMounts:
+            - name: knowhow-secrets-store
+              mountPath: "/mnt/stage-secrets-store"
+              readOnly: true
+            - name: jira-processor-log-volume
+              mountPath: /app/logs
+      - name: promtail
+        image: grafana/promtail:2.9.2
+        args: 
+          - -config.file=/etc/promtail/config/promtail.yaml
+        volumeMounts:
+          - name: jira-processor-log-volume
+            mountPath: /app/logs
+          - name: promtail-config
+            mountPath: /etc/promtail/config
+            
+      volumes:
+        - name: knowhow-secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "stage-secretproviderclass"
+        - name: jira-processor-log-volume
+          emptyDir: {}
+        - name: promtail-config
+          configMap:
+            name: promtail-config
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: jira-processor
-  namespace: uat-knowhow
+  namespace: stage-knowhow
 spec:
   selector:
     app: jira-processor

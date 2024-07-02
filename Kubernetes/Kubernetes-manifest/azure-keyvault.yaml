@@ -1,0 +1,197 @@
+# This is a SecretProviderClass example using user-assigned identity to access your key vault. The secretObjects section is used to create Kubernetes secrets from the  mounted Azure Key Vault secrets.
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: stage-secretproviderclass
+  namespace: stage-knowhow
+spec:
+  provider: azure
+  parameters:
+    usePodIdentity: "false"
+    useVMManagedIdentity:   "true"                                                         # Set to true for  using managed identity
+    userAssignedIdentityID: "2db9f8e7-efad-4274-9b49-bc02d0e645e6"  # Set the   clientID of the user-assigned managed identity to use, from the previous step
+    keyvaultName: msgsseunspdkv                                                                  # Set to the name of your key vault
+    objects:  |
+      array:
+        - |
+          objectName: stage-knhdbusername
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: stage-knhdbpassword
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: stage-knhdbhost
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: stage-knhdbconnectionstring
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: stage-rabbitpass
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: stage-debbieuser
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: stage-debbiepassword
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: stage-sendgrid-apikey
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: stage-repo-tool-api-key
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: stage-debbie-secret-key
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: stage-debbie-internal-key
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: stage-debbie-db-url
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: tenginequerypass
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: knowhowaesencryptionkeynew
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: knowhow-auth-secret
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: debbietengineauthtoken
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: debbiemailhostpass
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: exposed-api-key
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: auth-resourceapikeys
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: scan-status-apis-token-debbie
+          objectType: secret
+          objectVersion: ""
+    tenantId: "d52c9ea1-7c21-47b1-82a3-33a74b1f74b8"                 # The tenant ID of the key vault
+  secretObjects:                                    #https://secrets-store-csi-driver.sigs.k8s.io/topics/sync-as-kubernetes-secret
+  - secretName: stage-knhdbusername
+    type: Opaque
+    data:
+    - objectName: stage-knhdbusername                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: stage-knhdbusername                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: stage-knhdbpassword
+    type: Opaque
+    data:
+    - objectName: stage-knhdbpassword
+      key: stage-knhdbpassword
+  - secretName: stage-knhdbhost
+    type: Opaque
+    data:
+    - objectName: stage-knhdbhost
+      key: stage-knhdbhost
+  - secretName: stage-knhdbconnectionstring
+    type: Opaque
+    data:
+    - objectName: stage-knhdbconnectionstring                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: stage-knhdbconnectionstring                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: stage-rabbitpass
+    type: Opaque
+    data:
+    - objectName: stage-rabbitpass
+      key: stage-rabbitpass
+  - secretName: stage-debbieuser
+    type: Opaque
+    data:
+    - objectName: stage-debbieuser
+      key: stage-debbieuser
+  - secretName: stage-debbiepassword
+    type: Opaque
+    data:
+    - objectName: stage-debbiepassword                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: stage-debbiepassword                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: stage-sendgrid-apikey
+    type: Opaque
+    data:
+    - objectName: stage-sendgrid-apikey
+      key: stage-sendgrid-apikey
+  - secretName: stage-repo-tool-api-key
+    type: Opaque
+    data:
+    - objectName: stage-repo-tool-api-key
+      key: stage-repo-tool-api-key
+  - secretName: stage-debbie-secret-key
+    type: Opaque
+    data:
+    - objectName: stage-debbie-secret-key                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: stage-debbie-secret-key                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: stage-debbie-internal-key
+    type: Opaque
+    data:
+    - objectName: stage-debbie-internal-key
+      key: stage-debbie-internal-key
+  - secretName: stage-debbie-db-url
+    type: Opaque
+    data:
+    - objectName: stage-debbie-db-url
+      key: stage-debbie-db-url
+  - secretName: tenginequerypass
+    type: Opaque
+    data:
+    - objectName: tenginequerypass
+      key: tenginequerypass
+  - secretName: knowhowaesencryptionkeynew
+    type: Opaque
+    data:
+    - objectName: knowhowaesencryptionkeynew                           # This refers to the name of the secret as it is stored in Azure Key Vault
+      key: knowhowaesencryptionkeynew                                               # This is the key name under which the value of the Azure Key Vault secret will be stored in the  Kubernetes secret. The key names (clientId and clientToken) must match (case sensitivity) exactly what the wiz Helm chart is expecting.
+  - secretName: knowhow-auth-secret
+    type: Opaque
+    data:
+    - objectName: knowhow-auth-secret
+      key: knowhow-auth-secret
+  - secretName: debbietengineauthtoken
+    type: Opaque
+    data:
+    - objectName: debbietengineauthtoken
+      key: debbietengineauthtoken
+  - secretName: debbiemailhostpass
+    type: Opaque
+    data:
+    - objectName: debbiemailhostpass
+      key: debbiemailhostpass
+  - secretName: exposed-api-key
+    type: Opaque
+    data:
+    - objectName: exposed-api-key
+      key: exposed-api-key
+  - secretName: auth-resourceapikeys
+    type: Opaque
+    data:
+    - objectName: auth-resourceapikeys
+      key: auth-resourceapikeys
+  - secretName: scan-status-apis-token-debbie
+    type: Opaque
+    data:
+    - objectName: scan-status-apis-token-debbie
+      key: scan-status-apis-token-debbie

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: knowhow-ui
-  namespace: uat-knowhow
+  namespace: stage-knowhow
   labels:
     app: knowhow-ui
 spec:
@@ -27,48 +27,41 @@ spec:
       #   command: ['sh', '-c', "until nslookup knowhow-ui-knowhow.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for knowhow-ui; sleep 2; done"]
       containers:
       - name: knowhow-ui
-        image: speedtools.azurecr.io/knowhow-ui:9.0.0-SNAPSHOT
+        image: speedtools.azurecr.io/knowhow-ui:9.3.0
         imagePullPolicy: Always
         ports:
         - containerPort: 80
         # - containerPort: 443
         resources:
           requests:
-            memory: "1Gi"
+           memory: "32Mi"
+           cpu: "0.1"
+          limits:
+            memory: "124Mi"
             cpu: "0.5"
-        # readinessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: 443
-        #     scheme: HTTPS
-        #   initialDelaySeconds: 10
-        #   periodSeconds: 10
-        # livenessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: 443
-        #     scheme: HTTPS
-        #   initialDelaySeconds: 15
-        #   periodSeconds: 10
-        env:
-          - name: API_HOST
-            value: customapi
-          - name: API_PORT
-            value: "8080"
-          - name: ENVIRONMENT
-            value: "prod"
-          - name: CENTRAL_LOGIN_URL
-            value: "https://uat-authnauth.tools.publicis.sapient.com"
-          - name: MAP_URL
-            value: "https://preprod-assessmentplatform.tools.publicis.sapient.com"
-          - name: RETROS_URL
-            value: "https://uat-retrospective.tools.publicis.sapient.com/"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        envFrom:
+          - configMapRef:
+              name: knowhow-config
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: knowhow-ui
-  namespace: uat-knowhow
+  namespace: stage-knowhow
 spec:
   selector:
     app: knowhow-ui
