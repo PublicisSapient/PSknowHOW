@@ -127,7 +127,8 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	@Override
 	public String addAuthentication(HttpServletResponse response, Authentication authentication) {
 		String jwt = this.tokenAuthenticationService.createJWT(
-				this.tokenAuthenticationService.extractUsernameFromAuthentication(authentication), AuthType.STANDARD,
+				this.tokenAuthenticationService.extractUsernameFromAuthentication(authentication),
+				AuthType.STANDARD,
 				authentication.getAuthorities()
 		);
 

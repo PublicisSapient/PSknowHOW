@@ -68,7 +68,12 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		return Jwts.builder()
 				   .setSubject(subject)
 				   .claim(DETAILS_CLAIM, authType)
-				   .claim(ROLES_CLAIM, Objects.nonNull(authorities) ? authorities : new HashSet<>())
+				   .claim(ROLES_CLAIM,
+						  Objects.nonNull(authorities)
+						   ? authorities.stream()
+									  .map(GrantedAuthority::getAuthority)
+									  .toList()
+						   : new ArrayList<>())
 				   .setExpiration(Date.from(expirationInstant))
 				   .signWith(SignatureAlgorithm.HS512, authProperties.getSecret())
 				   .compact();
@@ -105,10 +110,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		}
 	}
 
-	// TODO: we could store the resource names as keys and roles lists as values
 	@Override
 	public Collection<GrantedAuthority> createAuthorities(List<String> roles) {
-		Collection<GrantedAuthority> grantedAuthorities = new HashSet<>();
+		Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 
 		roles.forEach(authority -> grantedAuthorities.add(new SimpleGrantedAuthority(authority)));
 

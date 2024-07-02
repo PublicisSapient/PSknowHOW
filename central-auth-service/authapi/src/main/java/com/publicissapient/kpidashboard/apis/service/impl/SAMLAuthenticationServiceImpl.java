@@ -16,6 +16,7 @@ import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.service.SAMLAuthenticationService;
 import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.service.UserService;
+import com.publicissapient.kpidashboard.apis.service.UserRoleService;
 
 @Service
 @AllArgsConstructor
@@ -28,6 +29,8 @@ public class SAMLAuthenticationServiceImpl implements SAMLAuthenticationService 
 
 	private final UserService userService;
 
+	private final UserRoleService userRoleService;
+
 	private final TokenAuthenticationService tokenAuthenticationService;
 
 	@Override
@@ -37,7 +40,13 @@ public class SAMLAuthenticationServiceImpl implements SAMLAuthenticationService 
 		String username = extractUsernameFromEmail(userEmail);
 
 		if (Objects.nonNull(username)) {
-			String jwt = this.tokenAuthenticationService.createJWT(username, AuthType.SAML, null);
+			String jwt = this.tokenAuthenticationService.createJWT(
+					username,
+					AuthType.SAML,
+					this.tokenAuthenticationService.createAuthorities(
+							this.userRoleService.getRolesNamesByUsername(username)
+					)
+			);
 
 			this.tokenAuthenticationService.addSamlCookies(username, jwt, response);
 
