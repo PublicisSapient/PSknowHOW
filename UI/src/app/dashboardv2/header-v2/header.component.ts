@@ -5,6 +5,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { Router } from '@angular/router';
 import { HelperService } from 'src/app/services/helper.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -26,6 +27,10 @@ export class HeaderComponent implements OnInit {
   lastVisitedFromUrl: string = '';
   ifSuperUser: boolean = false;
   ifProjectAdmin: boolean = false;
+  appList: MenuItem[] | undefined;
+  ssoLogin = environment.SSO_LOGIN;
+  auth_service = environment.AUTHENTICATION_SERVICE;
+  isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
 
   constructor(
     private httpService: HttpService,
@@ -61,6 +66,37 @@ export class HeaderComponent implements OnInit {
         }
       },
     ]
+
+    if (!this.ssoLogin) {
+
+      this.appList = [
+          {
+              label: 'KnowHOW',
+              icon: '',
+              styleClass: 'p-menuitem-link-active'
+          },
+          {
+              label: 'Assessments',
+              icon: '',
+              command: () => {
+                 window.open(
+                  environment['MAP_URL'],
+                  '_blank'
+                );
+              }
+          },
+          {
+            label: 'Retros',
+            icon: '',
+            command: () => {
+               window.open(
+                  environment['RETROS_URL'],
+                  '_blank'
+                );
+            }
+          }
+      ];
+    }
   }
 
   // when user would want to give access on project from notification list
