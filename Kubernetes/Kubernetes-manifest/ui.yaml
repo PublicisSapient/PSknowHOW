@@ -27,7 +27,7 @@ spec:
       #   command: ['sh', '-c', "until nslookup knowhow-ui-knowhow.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for knowhow-ui; sleep 2; done"]
       containers:
       - name: knowhow-ui
-        image: speedtools.azurecr.io/knowhow-ui:9.3.0
+        image: speedtools.azurecr.io/knowhow-ui:9.4.0
         imagePullPolicy: Always
         ports:
         - containerPort: 80

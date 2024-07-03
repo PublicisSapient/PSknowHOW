@@ -25,7 +25,7 @@ spec:
       #   command: ['sh', '-c', "until nslookup customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for customapi; sleep 2; done"]
       containers:
         - name: customapi
-          image: speedtools.azurecr.io/knowhow-customapi:9.3.0
+          image: speedtools.azurecr.io/knowhow-customapi:9.4.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
@@ -95,9 +95,11 @@ spec:
             - name: mongock.migration-scan-package
               value: "com.publicissapient.kpidashboard.apis.mongock.upgrade"
             - name: mongock.start-system-version
-              value: "9.2.0"
-            - name: mongock.end-system-version
               value: "9.3.0"
+            - name: mongock.end-system-version
+              value: "9.4.0"
+            - name: isGitlabFieldEnable
+              value: "false"
           envFrom:
           - configMapRef:
               name: knowhow-config  

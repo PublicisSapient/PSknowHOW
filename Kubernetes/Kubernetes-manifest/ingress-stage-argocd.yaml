@@ -3,24 +3,19 @@ kind: Ingress
 metadata:
   annotations:
     appgw.ingress.kubernetes.io/appgw-ssl-certificate: wildcard-tools-publicos-sapient-com
-  name: jenkins 
+  name: argocd 
   namespace: stage-build
-  labels:
-    app.kubernetes.io/managed-by: Helm
-  annotations:
-    meta.helm.sh/release-name: jenkins
-    meta.helm.sh/release-namespace: stage-build
 spec:
   ingressClassName: azure-application-gateway
   rules:
-  - host: buildspeedtool.tools.publicis.sapient.com 
+  - host: argocdspeedtool.tools.publicis.sapient.com 
     http:
       paths:
       - backend:
           service:
-            name: jenkins
+            name: argocd-server
             port:
-              number: 8080
+              number: 80
         path: /
         pathType: Exact
 status:

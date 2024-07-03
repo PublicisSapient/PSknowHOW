@@ -19,7 +19,7 @@ data:
   forgotPassword.uiHost: "stage-psknowhow.tools.publicis.sapient.com"
   corsFilterValidOrigin: "stage-psknowhow.tools.publicis.sapient.com"
   isRepoToolEnable: "false"
-  versionnumber: "9.3.0"
+  versionnumber: "9.4.0"
   analytics.switch: "true"
   priority.P1: "p1,P1 - Blocker, blocker, 1, 0, p0, Urgent"
   priority.P2: "p2, critical, P2 - Critical, 2"
