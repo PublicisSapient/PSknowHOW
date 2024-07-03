@@ -5,6 +5,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { Subject, interval } from 'rxjs';
+import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 
 @Component({
   selector: 'app-filter-new',
@@ -49,12 +50,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   selectedProjectLastSyncStatus: any;
   subject = new Subject();
   dashConfigData: any;
+  filterApiData:any = []
   constructor(
     private httpService: HttpService,
     public service: SharedService,
     private helperService: HelperService,
     public cdr: ChangeDetectorRef,
-    private messageService: MessageService,) { }
+    private messageService: MessageService,
+    private ga: GoogleAnalyticsService) { }
 
 
   ngOnInit(): void {
@@ -177,6 +180,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.subscriptions.push(
         this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
           if (filterApiData['success']) {
+            this.filterApiData = filterApiData['data'];
             this.processFilterData(filterApiData['data']);
           } else {
             // error
@@ -384,6 +388,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.handleAdditionalChange(event['additional_level'][key]);
       });
     }
+    this.compileGAData(event);
   }
 
   setSprintDetails(event) {
@@ -395,7 +400,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     const startDateFormatted = this.formatDate(event[0].sprintStartDate);
     const endDateFormatted = this.formatDate(event[0].sprintEndDate);
     this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
-    console.log(event[0])
     if (JSON.stringify(event[0]) !== '{}') {
       this.additionalData = true;
     } else {
@@ -421,7 +425,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.handlePrimaryFilterChange(this.previousFilterEvent);
       return;
     }
-
+    this.compileGAData(event);
     this.filterApplyData['level'] = event[0].level;
     this.filterApplyData['label'] = event[0].labelName;
 
@@ -572,5 +576,35 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         });
       });
     }
+  }
+
+  compileGAData(selectedFilterArray) {
+    // const gaArray = [];
+    const gaArray = selectedFilterArray.map((item) => {
+      const catArr = ['category1', 'category2', 'category3', 'category4', 'category5', 'category6'];
+
+      let obj = {};
+        let isPathAnArray = Array.isArray(item?.path);
+        let pathArr = [];
+        if(isPathAnArray){
+          pathArr = item?.path[0]?.split('###');
+        }else{
+          pathArr = item?.path?.split('###');
+        }
+        let pathData = {};
+        pathArr = pathArr.reverse();
+        pathArr.forEach((y, i) => {
+          let selected = this.filterApiData?.filter((x) => x.nodeId == y)[0];
+          pathData[catArr[i]] = selected?.nodeName;
+        })
+        obj = {
+          'id': item.nodeId,
+          'name': item.nodeName,
+          'level': item.labelName,
+          ...pathData
+        }
+        return obj;
+    });
+    this.ga.setProjectData(gaArray);
   }
 }

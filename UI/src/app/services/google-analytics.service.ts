@@ -63,6 +63,7 @@ export class GoogleAnalyticsService {
       event: 'pageLoad',
       pageName: data.url,
       userRole: data.userRole,
+      uiType: data.uiType,
       server: {
         instanceName: window.location.origin,
         version: data.version
