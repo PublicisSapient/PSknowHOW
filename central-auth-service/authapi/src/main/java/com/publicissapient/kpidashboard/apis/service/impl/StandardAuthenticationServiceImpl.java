@@ -181,6 +181,9 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 		if (Pattern.compile(CommonConstant.PASSWORD_PATTERN).matcher(request.getPassword()).matches()) {
 			throw new GenericException(this.messageService.getMessage("error_register_password"));
 		}
+		if (Pattern.compile(CommonConstant.USERNAME_PATTERN).matcher(request.getUsername()).matches()) {
+			throw new GenericException(this.messageService.getMessage("error_register_username"));
+		}
 
 		return true;
 	}

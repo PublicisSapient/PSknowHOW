@@ -43,6 +43,9 @@ public class AuthConfig {
 
 	private Integer accountLockedThreshold;
 	private int accountLockedPeriod;
+	private Long maxAgeSeconds;
+	private Boolean includeSubdomains;
+
 
 	private String baseUiUrl;
 

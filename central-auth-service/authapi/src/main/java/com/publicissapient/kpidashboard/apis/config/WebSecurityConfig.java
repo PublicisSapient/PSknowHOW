@@ -46,11 +46,13 @@ import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.provider.service.registration.InMemoryRelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.publicissapient.kpidashboard.apis.filters.CorsFilter;
 import com.publicissapient.kpidashboard.apis.filters.standard.handlers.CustomAuthenticationFailureHandler;
 import com.publicissapient.kpidashboard.apis.filters.standard.handlers.CustomAuthenticationSuccessHandler;
 import com.publicissapient.kpidashboard.apis.filters.standard.StandardLoginRequestFilter;
@@ -61,6 +63,8 @@ import com.publicissapient.kpidashboard.apis.filters.JwtAuthenticationFilter;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
+	private final AuthConfig authConfig;
+
 	private final AuthenticationConfiguration authenticationConfiguration;
 
 	private final AuthEndpointsProperties authEndpointsProperties;
@@ -70,10 +74,19 @@ public class WebSecurityConfig {
 	private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
 	@Bean
-	protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	protected SecurityFilterChain filterChain(HttpSecurity http, HttpSecurity httpSecurity) throws Exception {
 		http.csrf(csrf -> csrf.disable());
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
-
+		httpSecurity.headers(
+				httpSecurityHeadersConfigurer ->
+						httpSecurityHeadersConfigurer
+							.httpStrictTransportSecurity(
+									hstsCustomizer ->
+											hstsCustomizer
+													.maxAgeInSeconds(authConfig.getMaxAgeSeconds())
+													.includeSubDomains(authConfig.getIncludeSubdomains())
+							)
+		);
 		http.authorizeHttpRequests(authz -> authz
 					.requestMatchers(HttpMethod.OPTIONS)
 					.permitAll()
@@ -115,7 +128,7 @@ public class WebSecurityConfig {
 			.addFilterBefore(
 					new JwtAuthenticationFilter(authEndpointsProperties),
 					UsernamePasswordAuthenticationFilter.class
-			);
+			).addFilterAfter(new CorsFilter(authConfig), ChannelProcessingFilter.class);
 		return http.build();
 	}
 

@@ -1,5 +1,8 @@
 auth:
-  accountLockedThreshold: 3
+  accountLockedThreshold: 5
+  accountLockedPeriod: 30
+  maxAgeSeconds: 315360000
+  includeSubdomains: true
 
   cookie:
     duration: 86400
