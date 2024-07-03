@@ -111,6 +111,9 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 
 .date-filter-container {
   display: flex;
+  vertical-align: middle;
+  align-content: center;
+  flex-wrap: wrap;
 }
 
 .selected-date {
@@ -268,26 +271,51 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   background-color: #0B4BC8;
 }
 
-.active-state{
+.active-state {
   color: var(--color-green);
 }
 
-.success-state{
+.success-state {
   color: var(--color-green);
   background: #d9efd9;
   border-radius: 3px;
   font-size: .85rem;
   cursor: pointer;
 }
-.refresh-state{
+
+.refresh-state {
   color: var(--color-white);
   background: #0B4BC8;
   border-radius: 3px;
   font-size: 1rem;
   cursor: pointer;
 }
-.fail-state{
-  color:  var(--color-red);
+
+.fail-state {
+  color: var(--color-red);
   border-radius: 3px;
   cursor: pointer;
+}
+
+.show-hide-container {
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+:host ::ng-deep .showHideDdn .p-element.p-multiselect-label-container,
+:host ::ng-deep .showHideDdn .p-multiselect-trigger,
+:host ::ng-deep .showHideDdn .p-checkbox-box {
+  display: none;
+}
+
+:host ::ng-deep .showHideDdn .filter-item {
+  margin-left: -20px;
+}
+
+:host ::ng-deep .showHideDdn .filter-item .p-checkbox-box,
+:host ::ng-deep .showHideDdn .showHideDdnSelectAll .p-checkbox-box {
+  display: flex;
+  position: relative;
+  z-index: 1001;
 }

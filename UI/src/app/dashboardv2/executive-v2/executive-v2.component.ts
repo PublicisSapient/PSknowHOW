@@ -115,7 +115,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
-    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
+    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
     this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
       this.noFilterApplyData = false;
       this.kpiLoader = new Set();
@@ -125,6 +125,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.selectedtype = data.selectedType;
       this.selectedTab = data.selectedTab;
       this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
+    }));
+
+    this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
+      this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+      this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
     }));
 
     this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
