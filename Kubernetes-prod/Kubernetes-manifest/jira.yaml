@@ -65,6 +65,8 @@ spec:
               value: com.publicissapient.kpidashboard.apis.mongock.installation
             - name:  notification.switch
               value: "true"
+            - name: jira.excludeLinks
+              value: "cloned from,cloned to,tests"
             #Adding cron expressions
             - name: jira.scrumBoardCron
               value: "0 0 */8 * * *"
