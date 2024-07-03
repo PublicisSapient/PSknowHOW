@@ -2,7 +2,7 @@
   <nav class="p-d-flex p-align-center p-jc-between">
 
     <div class="logo p-pt-1 p-pb-1 p-d-flex">
-      <div class="position-relative p-mr-2 die-container">
+      <div class="position-relative p-mr-2 die-container" *ngIf="auth_service && isSpeedSuite">
         <img src="assets/img/Switchplatforms.svg" class="icon-dice" (click)="appItems.toggle($event)" alt="Switch" width="50"/>
         <div class="down-arrow cursor-pointer" (click)="appItems.toggle($event)"></div>
         <p-menu [model]="appList" [popup]="true" #appItems class="app-switch"></p-menu>
