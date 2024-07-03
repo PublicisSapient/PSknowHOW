@@ -36,6 +36,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { AccordionModule } from 'primeng/accordion';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuModule } from 'primeng/menu';
+import { CheckboxModule } from 'primeng/checkbox';
 /******************************************************/
 
 /******************* components   ***********************/
@@ -262,6 +263,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         DragDropModule,
         OverlayPanelModule,
         MenuModule,
+        CheckboxModule,
         SkeletonModule,
         SharedModuleModule,
         InputTextModule

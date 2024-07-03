@@ -72,28 +72,57 @@
     </div>
 
   </div>
-  <div class="date-filter-container">
-    <!-- Date filter start -->
-    <div class="position-relative" *ngIf="kanban || this.selectedTab?.toLowerCase() === 'developer'">
-      <div class="p-d-flex p-align-center p-p-2 rounded p-ml-2 date-filter-btn" #dateToggleButton
-        [ngClass]="{'active': toggleDateDropdown}" (click)="toggleDateDropdown = !toggleDateDropdown">
-        <i class="pi pi-calendar-plus p-mr-2"></i>
-        Date Filter
-      </div>
-      <div class="filter-options-container date-filter-dropdown" *ngIf="toggleDateDropdown" #dateDrpmenu>
-        <div class="filter-options filter-date p-d-flex p-jc-evenly">
-          <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.counts"
-            [(ngModel)]="selectedDateValue"></p-dropdown>
-          <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.types" [(ngModel)]="selectedDayType"
-            (onChange)="setSelectedDateType($event.value)"></p-dropdown>
-        </div>
-        <div class="p-d-flex p-justify-end p-align-center btn-container">
-          <button pButton pRipple label="Apply" class="p-button-secondary p-button-sm btn-apply"
-            (click)="applyDateFilter()"></button>
-        </div>
-      </div>
+  <div class="p-d-flex">
+    <div class="show-hide-container" *ngIf="selectedTab !== 'iteration' && selectedTab !== 'backlog' && selectedTab !== 'release' && selectedTab !== 'dora' && selectedTab.toLowerCase() !== 'maturity'">
+      <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)">
+        <i class="pi pi-pause" style="font-size: 1rem"></i>
+      </span>
+      <p-multiSelect #showHideDdn [styleClass]="'showHideDdn'" [options]="masterData['kpiList']" optionLabel="kpiName">
+        <ng-template pTemplate="header">
+          <p-checkbox [styleClass]="'showHideDdnSelectAll'" name="showHideSelectAll" [(ngModel)]="showHideSelectAll"
+            [binary]="true" (onChange)="showHideSelectAllApply();enableShowHideApply = false;"></p-checkbox>
+        </ng-template>
+        <ng-template let-option pTemplate="item">
+          <div class="filter-item">
+            <div>
+              <p-checkbox name="{{ option.kpiId }}" [(ngModel)]="option.isEnabled" [binary]="true"
+                (onChange)="enableShowHideApply = false; showHideSelectAll = false;"></p-checkbox>
+              <span>{{option.kpiName}}</span>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <div class="p-p-3 p-text-right">
+            <p-button label="Apply" (onClick)="showHideKPIs($event)" [style]="{backgroundColor: '#0B4BC8'}"
+              [disabled]="enableShowHideApply"></p-button>
+          </div>
+        </ng-template>
+      </p-multiSelect>
     </div>
-    <!-- Date filter end -->
+
+    <div class="date-filter-container" *ngIf="kanban || selectedTab?.toLowerCase() === 'developer'">
+      <!-- Date filter start -->
+      <div class="position-relative">
+        <div class="p-d-flex p-align-center p-p-2 rounded p-ml-2 date-filter-btn" #dateToggleButton
+          [ngClass]="{'active': toggleDateDropdown}" (click)="toggleDateDropdown = !toggleDateDropdown">
+          <i class="pi pi-calendar-plus p-mr-2"></i>
+          Date Filter
+        </div>
+        <div class="filter-options-container date-filter-dropdown" *ngIf="toggleDateDropdown" #dateDrpmenu>
+          <div class="filter-options filter-date p-d-flex p-jc-evenly">
+            <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.counts"
+              [(ngModel)]="selectedDateValue"></p-dropdown>
+            <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.types"
+              [(ngModel)]="selectedDayType" (onChange)="setSelectedDateType($event.value)"></p-dropdown>
+          </div>
+          <div class="p-d-flex p-justify-end p-align-center btn-container">
+            <button pButton pRipple label="Apply" class="p-button-secondary p-button-sm btn-apply"
+              (click)="applyDateFilter()"></button>
+          </div>
+        </div>
+      </div>
+      <!-- Date filter end -->
+    </div>
   </div>
 </div>
 

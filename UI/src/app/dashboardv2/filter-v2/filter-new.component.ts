@@ -1,10 +1,11 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { Subject, interval } from 'rxjs';
+import { MultiSelect } from 'primeng/multiselect';
 
 @Component({
   selector: 'app-filter-new',
@@ -49,6 +50,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   selectedProjectLastSyncStatus: any;
   subject = new Subject();
   dashConfigData: any;
+  @ViewChild('showHideDdn') showHideDdn: MultiSelect;
+  selectedShowHideKPIs: any[] = [];
+  enableShowHideApply: boolean = true;
+  showHideSelectAll: boolean = false;
   constructor(
     private httpService: HttpService,
     public service: SharedService,
@@ -158,7 +163,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         newMasterData['kpiList'].push(element);
       });
       this.masterData['kpiList'] = newMasterData.kpiList;
-
+      this.selectedShowHideKPIs = [...this.masterData['kpiList']];
       this.parentFilterConfig = selectedBoard.filters.parentFilter;
       if (!this.parentFilterConfig) {
         this.selectedLevel = null;
@@ -373,7 +378,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       }
       // });
-    } else if(event && event['additional_level']){
+    } else if (event && event['additional_level']) {
       if (this.selectedTab.toLowerCase() !== 'developer') {
         setTimeout(() => {
           this.additionalFiltersArr = [];
@@ -572,5 +577,100 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         });
       });
     }
+  }
+
+  toggleShowHideMenu(event) {
+    console.log(this.masterData['kpiList']);
+    if (this.showHideDdn?.overlayVisible) {
+      this.showHideDdn.close(event);
+    } else {
+      this.showHideDdn.show();
+    }
+  }
+
+  showHideKPIs(e) {
+    const kpiArray = this.dashConfigData[this.kanban ? 'kanban' : 'scrum'];
+    this.assignUserNameForKpiData();
+    for (let i = 0; i < kpiArray.length; i++) {
+      if (kpiArray[i].boardSlug.toLowerCase() == this.selectedTab.toLowerCase()) {
+        if (this.selectedTab.toLowerCase() === 'iteration') {
+          this.dashConfigData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = [this.dashConfigData[this.kanban ? 'kanban'
+            : 'scrum'][i]['kpis'].find((kpi) => kpi.kpiId === 'kpi121'), ...this.masterData['kpiList']];
+        } else {
+          this.dashConfigData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = this.masterData['kpiList'];
+        }
+      }
+    }
+
+
+    let obj = Object.assign({}, this.dashConfigData);
+    delete obj['configDetails'];
+    this.httpService.submitShowHideOnDashboard(obj).subscribe(
+      (response) => {
+        if (response.success === true) {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Successfully Saved',
+            detail: '',
+          });
+          this.service.setDashConfigData(this.dashConfigData);
+          // this.toggleDropdown['showHide'] = false;
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error in Saving Configuraion',
+          });
+        }
+        // this.showHideLoader = false;
+      },
+      (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error in saving kpis. Please try after some time.',
+        });
+        // this.showHideLoader = false;
+      },
+    );
+  }
+
+  assignUserNameForKpiData() {
+    delete this.masterData['kpiList'].id;
+    this.masterData['kpiList'] = this.masterData['kpiList'].map(element => {
+      delete element.kpiDetail.id;
+      return {
+        kpiId: element.kpiId,
+        kpiName: element.kpiName,
+        isEnabled: element.isEnabled,
+        shown: element.shown,
+        order: element.order,
+        kpiDetail: element.kpiDetail
+      }
+    });
+    this.dashConfigData['username'] = this.service.getCurrentUserDetails('user_name');
+  }
+
+  showHideSelectAllApply() {
+    this.selectedShowHideKPIs = [];
+    this.masterData['kpiList'].forEach(element => {
+      if (this.showHideSelectAll) {
+        element.isEnabled = true;
+        this.selectedShowHideKPIs.push(element);
+      } else {
+        element.isEnabled = false;
+        this.selectedShowHideKPIs.push(element);
+      }
+    });
+  }
+
+  fillselectedShowHideKPIs(event, opt) {
+    // if(event.checked) {
+    //   // opt.isEnabled = true;
+    //   this.selectedShowHideKPIs = this.masterData['kpiList'].filter(kpi => kpi.kpiId !== opt.kpiId);
+    //   this.selectedShowHideKPIs.push(opt);
+    // } else {
+    //   // opt.isEnabled = false;
+    //   this.selectedShowHideKPIs = this.masterData['kpiList'].filter(kpi => kpi.kpiId !== opt.kpiId);
+    //   this.selectedShowHideKPIs.push(opt);
+    // }
   }
 }
