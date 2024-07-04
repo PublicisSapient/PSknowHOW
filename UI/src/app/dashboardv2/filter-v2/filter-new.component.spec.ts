@@ -13392,6 +13392,7 @@ describe('FilterNewComponent', () => {
 
   it('should set processor log details when response is successful', () => {
     const mockBasicProjectConfigId = '123';
+    component.service.setSelectedTrends([{basicProjectConfigId : mockBasicProjectConfigId}])
     const mockResponse = { success: true, data: { /* mock data */ } };
 
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(mockResponse));
@@ -13406,6 +13407,7 @@ describe('FilterNewComponent', () => {
 
   it('should show error message when response is not successful', () => {
     const mockBasicProjectConfigId = '123';
+    component.service.setSelectedTrends([{basicProjectConfigId : mockBasicProjectConfigId}])
     const mockResponse = { success: false };
 
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(mockResponse));
@@ -13565,6 +13567,7 @@ describe('FilterNewComponent', () => {
   });
 
   it('should call service.select with correct parameters when selectedLevel is an object', () => {
+    spyOn(component,'getProcessorsTraceLogsForProject');
     component.additionalFilterConfig = [
       {
         "type": "multiSelect",
@@ -13679,4 +13682,9 @@ describe('FilterNewComponent', () => {
       undefined
     );
   });
+
+  it('should toggle view',() => {
+     component.showChartToggle('chart');
+     expect(component.showChart).toBe('chart');
+  })
 });
