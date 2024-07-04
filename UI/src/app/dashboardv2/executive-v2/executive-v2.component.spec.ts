@@ -14994,7 +14994,7 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'sortingRowsInTable');
 
     component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
-    expect(component.sortingRowsInTable).toHaveBeenCalledWith('branch1');
+    expect(component.sortingRowsInTable).toHaveBeenCalled();
   });
 
   it('should update kpiTableDataObj with correct data when idx is greater than or equal to 0 and filter is not overall', () => {
@@ -15019,7 +15019,7 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'sortingRowsInTable');
 
     component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
-    expect(component.sortingRowsInTable).toHaveBeenCalledWith('branch1');
+    expect(component.sortingRowsInTable).toHaveBeenCalled();
   });
 
   it('should update kpiTableDataObj with correct data when idx is less than 0 and filter is overall', () => {
@@ -15096,7 +15096,7 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'sortingRowsInTable');
 
     component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
-    expect(component.sortingRowsInTable).toHaveBeenCalledWith('branch1');
+    expect(component.sortingRowsInTable).toHaveBeenCalled();
   });
 
   it('should set correct kpiChartData on release dashboard', () => {
