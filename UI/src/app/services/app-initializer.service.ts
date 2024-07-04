@@ -171,9 +171,9 @@ export class AppInitializerService {
     { path: '**', redirectTo: 'pageNotFound' }
   ];
 
-  checkFeatureFlag() {
+  async checkFeatureFlag() {
     let loc = window.location.hash ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1])) : '';
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
         if (!environment['production']) {
             this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
             this.validateToken(loc);
@@ -197,7 +197,7 @@ export class AppInitializerService {
 
 
         // load google Analytics script on all instances except local and if customAPI property is true
-        let addGAScript = this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
+        let addGAScript = await this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
         if (addGAScript) {
             if (window.location.origin.indexOf('localhost') === -1) {
                 this.ga.load('gaTagManager').then(data => {
