@@ -13722,7 +13722,6 @@ describe('FilterNewComponent', () => {
         { id: 2, name: 'kpi2', isEnabled: false },
       ],
     };
-    component.selectedShowHideKPIs = [];
 
     component.showHideSelectAll = true;
 
@@ -13730,10 +13729,6 @@ describe('FilterNewComponent', () => {
 
     expect(component.masterData['kpiList'][0].isEnabled).toBe(true);
     expect(component.masterData['kpiList'][1].isEnabled).toBe(true);
-    expect(component.selectedShowHideKPIs).toEqual([
-      { id: 1, name: 'kpi1', isEnabled: true },
-      { id: 2, name: 'kpi2', isEnabled: true },
-    ]);
   });
 
   it('should set isEnabled to false for all kpiList elements and add them to selectedShowHideKPIs if showHideSelectAll is false', () => {
@@ -13743,7 +13738,6 @@ describe('FilterNewComponent', () => {
         { id: 2, name: 'kpi2', isEnabled: false },
       ],
     };
-    component.selectedShowHideKPIs = [];
 
     component.showHideSelectAll = false;
 
@@ -13751,10 +13745,6 @@ describe('FilterNewComponent', () => {
 
     expect(component.masterData['kpiList'][0].isEnabled).toBe(false);
     expect(component.masterData['kpiList'][1].isEnabled).toBe(false);
-    expect(component.selectedShowHideKPIs).toEqual([
-      { id: 1, name: 'kpi1', isEnabled: false },
-      { id: 2, name: 'kpi2', isEnabled: false },
-    ]);
   });
 
 

@@ -53,7 +53,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   dashConfigData: any;
   filterApiData:any = []
   @ViewChild('showHideDdn') showHideDdn: MultiSelect;
-  selectedShowHideKPIs: any[] = [];
   enableShowHideApply: boolean = true;
   showHideSelectAll: boolean = false;
   showChart : string = 'chart'
@@ -169,8 +168,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         element = { ...element, ...element.kpiDetail };
         newMasterData['kpiList'].push(element);
       });
-      this.masterData['kpiList'] = newMasterData.kpiList;
-      this.selectedShowHideKPIs = [...this.masterData['kpiList']];
+      this.masterData['kpiList'] = newMasterData.kpiList.filter(kpi => kpi.shown);
       this.parentFilterConfig = selectedBoard.filters.parentFilter;
       if (!this.parentFilterConfig) {
         this.selectedLevel = null;
@@ -681,14 +679,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   showHideSelectAllApply() {
-    this.selectedShowHideKPIs = [];
     this.masterData['kpiList'].forEach(element => {
       if (this.showHideSelectAll) {
         element.isEnabled = true;
-        this.selectedShowHideKPIs.push(element);
       } else {
         element.isEnabled = false;
-        this.selectedShowHideKPIs.push(element);
       }
     });
   }
