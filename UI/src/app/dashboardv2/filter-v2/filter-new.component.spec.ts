@@ -12739,6 +12739,7 @@ describe('FilterNewComponent', () => {
     component.subscriptions = [];
     fixture.detectChanges();
     component.boardData = boardData;
+    window['dataLayer'] = [];
   });
 
   it('should create', () => {

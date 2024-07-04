@@ -584,7 +584,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   compileGAData(selectedFilterArray) {
-    const gaArray = selectedFilterArray.map((item) => {
+    const gaArray = selectedFilterArray?.map((item) => {
       const catArr = ['category1', 'category2', 'category3', 'category4', 'category5', 'category6'];
 
       let obj = {};
@@ -596,8 +596,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           pathArr = item?.path?.split('###');
         }
         let pathData = {};
-        pathArr = pathArr.reverse();
-        pathArr.forEach((y, i) => {
+        pathArr = pathArr?.reverse();
+        pathArr?.forEach((y, i) => {
           let selected = this.filterApiData?.filter((x) => x.nodeId == y)[0];
           pathData[catArr[i]] = selected?.nodeName;
         })
