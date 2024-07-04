@@ -459,7 +459,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     };
 
     this.setHierarchyLevels();
-    this.ga.setPageLoad(data);
     this.getKpiOrderedList();
     this.navigateToSelectedTab();
   }
