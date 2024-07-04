@@ -41,11 +41,6 @@ export class ExcelService {
         const rowData = {};
         for (const key in data) {
           if (!(typeof (data[key]) == 'object')) {
-            // if(key === 'Created Date' || key === 'Closed Date'){
-            //   const utcDate = new Date(data[key]).toISOString().slice(0,10)
-            //   rowData[key] = utcDate;
-            // } else {
-            // }
             rowData[key] = data[key];
           } else {
             const appendedRowData = [];
@@ -74,7 +69,6 @@ export class ExcelService {
 
           }
         }
-        // console.log(rowData)
         excelData.push(rowData);
       }
       return { headerNames, excelData };
