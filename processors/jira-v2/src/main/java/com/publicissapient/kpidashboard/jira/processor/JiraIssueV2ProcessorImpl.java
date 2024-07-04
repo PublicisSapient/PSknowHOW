@@ -67,7 +67,6 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.CommentDetails;
-import com.publicissapient.kpidashboard.common.model.jira.Field;
 import com.publicissapient.kpidashboard.common.model.jira.IssueLinkDetail;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueV2;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
@@ -189,6 +188,8 @@ public class JiraIssueV2ProcessorImpl implements JiraIssueV2Processor {
 		jiraIssue.setProcessorId(jiraProcessorId);
 
 		Map<String, IssueField> fields = buildFieldMap(issue.getFields());
+/*
+
 		// saving fields
 		Iterable<IssueField> issueFields = issue.getFields();
 		List<Field> fieldsList = StreamSupport.stream(issueFields.spliterator(), false)
@@ -196,6 +197,8 @@ public class JiraIssueV2ProcessorImpl implements JiraIssueV2Processor {
 						issueField.getValue()))
 				.toList();
 		jiraIssue.setFields(fieldsList);
+
+*/
 		IssueField epic = fields.get(fieldMapping.getEpicName());
 		jiraIssue.setIssueId(JiraProcessorUtil.deodeUTF8String(issue.getId()));
 		jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
