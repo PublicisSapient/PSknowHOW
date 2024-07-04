@@ -175,10 +175,6 @@ export class ExportExcelComponent implements OnInit {
           }
           return { name: colData.text, value: colData.text }
         } else {
-          // if (colName === 'Created Date' || colName === 'Closed Date') {
-          //   const utcDate = new Date(colData).toISOString().slice(0, 10)
-          //   return { name: utcDate, value: utcDate }
-          // }
           return { name: colData, value: colData }
         }
       });
