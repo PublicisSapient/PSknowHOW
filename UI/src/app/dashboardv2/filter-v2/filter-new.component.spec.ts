@@ -13679,4 +13679,9 @@ describe('FilterNewComponent', () => {
       undefined
     );
   });
+
+  it('should toggle view',() => {
+     component.showChartToggle('chart');
+     expect(component.showChart).toBe('chart');
+  })
 });

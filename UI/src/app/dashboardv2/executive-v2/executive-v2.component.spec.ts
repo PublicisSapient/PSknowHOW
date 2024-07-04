@@ -15518,6 +15518,53 @@ describe('ExecutiveV2Component', () => {
 
     expect(setBackupSpy).toHaveBeenCalledWith('kpi4', {}, ['Overall']);
   });
+
+  it('should return the maximum number of sprints for any project', () => {
+    const eventMock = {
+      filterApplyData: {
+        selectedMap: {
+          sprint: [
+            "sprint1_project1",
+            "sprint2_project1",
+            "n1_sprint2_project1",
+            "sprint1_project2",
+            "sprint2_project2",
+            "n1_sprint2_project2"
+          ]
+        }
+      }
+    };
+
+    const result = component.coundMaxNoOfSprintSelectedForProject(eventMock);
+    expect(result).toBe(3); // Project 1 has 3 sprints, and so does project 2
+  });
+
+  it('should return sprint count from config if no sprints are selected', () => {
+    const eventMock = {
+      configDetails: {
+        sprintCountForKpiCalculation: 5
+      }
+    };
+
+    const result = component.coundMaxNoOfSprintSelectedForProject(eventMock);
+    expect(result).toBe(5);
+  });
+
+  it('should handle empty selectedMap gracefully', () => {
+    const eventMock = {
+      filterApplyData: {
+        selectedMap: {
+          sprint: []
+        }
+      },
+      configDetails: {
+        sprintCountForKpiCalculation: 3
+      }
+    };
+
+    const result = component.coundMaxNoOfSprintSelectedForProject(eventMock);
+    expect(result).toBe(3);
+  });
 });
 
 
