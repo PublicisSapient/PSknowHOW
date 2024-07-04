@@ -106,7 +106,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiCommentsCountObj: object = {};
   kpiTableHeadingArr: Array<object> = [];
   kpiTableDataObj: object = {};
-  noOfDataPoints: number = 5;
+  noOfDataPoints: number;
   maturityTableKpiList = [];
   loading: boolean = false;
   tabsArr = new Set();
@@ -172,6 +172,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         });
       }));
     }
+
+    /**observable to get the type of view */
+    this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
+      this.showChart = view;
+  }));
   }
 
   processKpiConfigData(kpiListObj) {
@@ -242,8 +247,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
       this.tooltip = $event.configDetails;
       this.additionalFiltersArr = {};
-      this.noOfDataPoints = $event?.configDetails?.noOfDataPoints || 5;
-
+      this.noOfDataPoints = this.coundMaxNoOfSprintSelectedForProject($event);     
       this.allKpiArray = [];
       this.kpiChartData = {};
       this.chartColorList = {};
@@ -1127,8 +1131,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
       let filtersApplied = Object.keys(this.colorObj);
 
-
-      filtersApplied = filtersApplied.map((x) => x.split(' _')[0]);
+      filtersApplied = filtersApplied.map((x) => {
+        let parts = x.split('_');
+        return parts.slice(0, parts.length - 1).join('_');
+      });
 
 
       filtersApplied.forEach((hierarchyName) => {
@@ -1166,7 +1172,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (kpiIndex > -1) {
           this.kpiTableDataObj[hierarchyName]?.splice(kpiIndex, 1);
         }
-        if (enabledKpi?.isEnabled && enabledKpi?.shown && this.kpiTableDataObj[hierarchyName] && Object.keys(this.kpiTableDataObj[hierarchyName]).length) {
+        if (enabledKpi?.isEnabled && enabledKpi?.shown && this.kpiTableDataObj[hierarchyName]) {
           this.kpiTableDataObj[hierarchyName] = [...this.kpiTableDataObj[hierarchyName], obj];
         }
         this.sortingRowsInTable(hierarchyName);
@@ -1805,4 +1811,19 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   //     }
   //   }
   // }
+
+  coundMaxNoOfSprintSelectedForProject($event) {
+    let maxSprints = 0;
+    if($event.filterApplyData?.selectedMap?.sprint?.length){
+      const sprintCount = new Map();
+      $event.filterApplyData?.selectedMap?.sprint.forEach(node => {
+        const projectId = node.substring(node.lastIndexOf('_') + 1);
+        sprintCount.set(projectId, (sprintCount.get(projectId) || 0) + 1);
+      });
+      maxSprints = Math.max(...sprintCount.values());
+    }else{
+      maxSprints = $event?.configDetails?.sprintCountForKpiCalculation
+    }
+    return maxSprints;
+  }
 }

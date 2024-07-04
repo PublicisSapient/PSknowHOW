@@ -1,7 +1,11 @@
 :host ::ng-deep .p-inputtext {
-    font-size: 0.75rem;
+  font-size: 0.75rem;
 }
 
 :host ::ng-deep .p-dropdown {
-    border: 1px solid #D5DBE1;
+  border: 1px solid #d5dbe1;
+}
+
+.floating-label {
+  text-transform: capitalize;
 }

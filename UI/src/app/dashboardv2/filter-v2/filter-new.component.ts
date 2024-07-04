@@ -56,6 +56,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   selectedShowHideKPIs: any[] = [];
   enableShowHideApply: boolean = true;
   showHideSelectAll: boolean = false;
+  showChart : string = 'chart'
   constructor(
     private httpService: HttpService,
     public service: SharedService,
@@ -110,7 +111,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
               15
             ]
           };
-
+          if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release' || this.selectedTab.toLowerCase() === 'dora' || this.selectedTab.toLowerCase() === 'developer' || this.selectedTab.toLowerCase() === 'maturity') {
+            this.showChart = 'chart';
+            this.service.setShowTableView(this.showChart);
+          }
           this.service.setSelectedDateFilter(this.selectedDayType);
           this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
           this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
@@ -144,7 +148,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.boardData = boardData;
     let selectedBoard = boardData[this.selectedType ? this.selectedType : 'scrum'].filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
     if (!selectedBoard) {
-      selectedBoard = boardData['others'].filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
+      selectedBoard = boardData['others']?.filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
     }
 
     if (selectedBoard) {
@@ -352,7 +356,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
         }
       } else {
-        this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
+        this.filterApplyData['ids'] = [this.selectedDateValue];
         this.filterApplyData['startDate'] = '';
         this.filterApplyData['endDate'] = '';
         this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
@@ -518,7 +522,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   getProcessorsTraceLogsForProject() {
-    this.httpService.getProcessorsTraceLogsForProject(this.previousFilterEvent[0]?.basicProjectConfigId).subscribe(response => {
+    this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
       if (response.success) {
         this.service.setProcessorLogDetails(response.data);
       } else {
@@ -613,7 +617,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   toggleShowHideMenu(event) {
-    console.log(this.masterData['kpiList']);
     if (this.showHideDdn?.overlayVisible) {
       this.showHideDdn.close(event);
     } else {
@@ -621,17 +624,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-  showHideKPIs(e) {
+  showHideKPIs() {
     const kpiArray = this.dashConfigData[this.kanban ? 'kanban' : 'scrum'];
     this.assignUserNameForKpiData();
     for (let i = 0; i < kpiArray.length; i++) {
       if (kpiArray[i].boardSlug.toLowerCase() == this.selectedTab.toLowerCase()) {
-        if (this.selectedTab.toLowerCase() === 'iteration') {
-          this.dashConfigData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = [this.dashConfigData[this.kanban ? 'kanban'
-            : 'scrum'][i]['kpis'].find((kpi) => kpi.kpiId === 'kpi121'), ...this.masterData['kpiList']];
-        } else {
           this.dashConfigData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = this.masterData['kpiList'];
-        }
       }
     }
 
@@ -669,7 +667,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   assignUserNameForKpiData() {
     delete this.masterData['kpiList'].id;
     this.masterData['kpiList'] = this.masterData['kpiList'].map(element => {
-      delete element.kpiDetail.id;
+      delete element?.kpiDetail?.id;
       return {
         kpiId: element.kpiId,
         kpiName: element.kpiName,
@@ -695,15 +693,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     });
   }
 
-  fillselectedShowHideKPIs(event, opt) {
-    // if(event.checked) {
-    //   // opt.isEnabled = true;
-    //   this.selectedShowHideKPIs = this.masterData['kpiList'].filter(kpi => kpi.kpiId !== opt.kpiId);
-    //   this.selectedShowHideKPIs.push(opt);
-    // } else {
-    //   // opt.isEnabled = false;
-    //   this.selectedShowHideKPIs = this.masterData['kpiList'].filter(kpi => kpi.kpiId !== opt.kpiId);
-    //   this.selectedShowHideKPIs.push(opt);
-    // }
+  showChartToggle(val) {
+    this.showChart = val;
+    this.service.setShowTableView(this.showChart);
   }
 }

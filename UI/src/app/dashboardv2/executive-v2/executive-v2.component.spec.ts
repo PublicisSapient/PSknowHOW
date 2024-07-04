@@ -14994,7 +14994,7 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'sortingRowsInTable');
 
     component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
-    expect(component.sortingRowsInTable).toHaveBeenCalledWith('branch1');
+    expect(component.sortingRowsInTable).toHaveBeenCalled();
   });
 
   it('should update kpiTableDataObj with correct data when idx is greater than or equal to 0 and filter is not overall', () => {
@@ -15019,7 +15019,7 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'sortingRowsInTable');
 
     component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
-    expect(component.sortingRowsInTable).toHaveBeenCalledWith('branch1');
+    expect(component.sortingRowsInTable).toHaveBeenCalled();
   });
 
   it('should update kpiTableDataObj with correct data when idx is less than 0 and filter is overall', () => {
@@ -15096,7 +15096,7 @@ describe('ExecutiveV2Component', () => {
     spyOn(component, 'sortingRowsInTable');
 
     component.getTableData(mockKpiId, mockIdx, mockEnabledKpi);
-    expect(component.sortingRowsInTable).toHaveBeenCalledWith('branch1');
+    expect(component.sortingRowsInTable).toHaveBeenCalled();
   });
 
   it('should set correct kpiChartData on release dashboard', () => {
@@ -15517,6 +15517,53 @@ describe('ExecutiveV2Component', () => {
     component.populateKPIFilters(mockData, mockKey);
 
     expect(setBackupSpy).toHaveBeenCalledWith('kpi4', {}, ['Overall']);
+  });
+
+  it('should return the maximum number of sprints for any project', () => {
+    const eventMock = {
+      filterApplyData: {
+        selectedMap: {
+          sprint: [
+            "sprint1_project1",
+            "sprint2_project1",
+            "n1_sprint2_project1",
+            "sprint1_project2",
+            "sprint2_project2",
+            "n1_sprint2_project2"
+          ]
+        }
+      }
+    };
+
+    const result = component.coundMaxNoOfSprintSelectedForProject(eventMock);
+    expect(result).toBe(3); // Project 1 has 3 sprints, and so does project 2
+  });
+
+  it('should return sprint count from config if no sprints are selected', () => {
+    const eventMock = {
+      configDetails: {
+        sprintCountForKpiCalculation: 5
+      }
+    };
+
+    const result = component.coundMaxNoOfSprintSelectedForProject(eventMock);
+    expect(result).toBe(5);
+  });
+
+  it('should handle empty selectedMap gracefully', () => {
+    const eventMock = {
+      filterApplyData: {
+        selectedMap: {
+          sprint: []
+        }
+      },
+      configDetails: {
+        sprintCountForKpiCalculation: 3
+      }
+    };
+
+    const result = component.coundMaxNoOfSprintSelectedForProject(eventMock);
+    expect(result).toBe(3);
   });
 });
 

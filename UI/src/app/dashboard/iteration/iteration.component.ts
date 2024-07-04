@@ -33,6 +33,7 @@ import { ExportExcelComponent } from 'src/app/component/export-excel/export-exce
 import { Table } from 'primeng/table';
 import { MessageService } from 'primeng/api';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+import { SortEvent } from 'primeng/api';
 
 declare let require: any;
 
@@ -871,10 +872,6 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => ({ name: colData, value: colData }));
       this.tableColumnForm[colName] = [];
     });
-
-    this.tableComponent.sortMode = 'multiple';
-    this.tableComponent.multiSortMeta = [{ field: 'Assignee', order: 1 }, { field: 'Due Date', order: -1 }];
-    this.tableComponent.sortMultiple();
   }
 
   generateExcel(exportMode) {
@@ -954,6 +951,27 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, ['kpi154'], kpi154Data['groupId'], 'Iteration');
       this.postJiraKpi(this.kpiJira, 'jira');
     }
+  }
+
+  customSort(event: SortEvent) {
+    let result = null;
+    event.data.sort((data1, data2) => {
+      let utcDate1: any = !isNaN(new Date(data1[event.field]).getTime()) && new Date(data1[event.field]).toISOString().slice(0, 10);
+      let utcDate2: any = !isNaN(new Date(data2[event.field]).getTime()) && new Date(data2[event.field]).toISOString().slice(0, 10);
+      if (event.field.includes('Date')) {
+        if (utcDate1 === '-' && utcDate2 !== '-')
+          utcDate1 = '0';
+        else if (utcDate1 !== '-' && utcDate2 === '-')
+          utcDate2 = '0';
+        else if (utcDate1 === '-' && utcDate2 === '-')
+          utcDate1 = '0', utcDate2 = '0';
+        result = (utcDate1 < utcDate2) ? -1 : (utcDate1 > utcDate2) ? 1 : 0;
+      }
+      else {
+        result = data1[event.field].localeCompare(data2[event.field])
+      }
+      return event.order * result;
+    });
   }
 
 }

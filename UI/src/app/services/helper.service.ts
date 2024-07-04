@@ -58,7 +58,6 @@ export class HelperService {
                 downloadJson.selectedMap[filterData[0].label].push(filterData[0].filterData[i].nodeId);
             }
         }
-
         return this.httpService.downloadExcel(downloadJson, kpiId);
 
     }

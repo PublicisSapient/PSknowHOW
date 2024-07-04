@@ -541,7 +541,7 @@
   <div class="dialog-body p-mb-4">
     <p-table #table [value]="modalDetails['tableValues']" [reorderableColumns]="true" [columns]="tableHeaders"
       styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img"
-      [globalFilterFields]="modalDetails['tableHeadings']" [scrollable]="true" scrollHeight="65vh">
+      [globalFilterFields]="modalDetails['tableHeadings']" [scrollable]="true" scrollHeight="65vh" (sortFunction)="customSort($event)" [customSort]="true">
       <ng-template pTemplate="caption">
         <p-multiSelect [options]="tableColumns" [(ngModel)]="selectedColumns" resetFilterOnHide="true"
           selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'"
@@ -589,8 +589,6 @@
       </ng-template>
       <ng-template pTemplate="body" let-x let-columns="columns" let-index="rowIndex">
         <tr [pReorderableRow]="index">
-
-
           <ng-container *ngFor="let item of tableHeaders; let i = index;">
             <ng-container *ngIf="item == 'Issue Id'">
               <td class="font-small p-p-0 text-center min-max-width" pFrozenColumn>
