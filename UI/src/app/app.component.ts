@@ -83,7 +83,8 @@ export class AppComponent implements OnInit {
         const data = {
           url: event.urlAfterRedirects + '/' + (this.service.getSelectedType() ? this.service.getSelectedType() : 'Scrum'),
           userRole: this.authorisation.getRole(),
-          version: this.httpService.currentVersion
+          version: this.httpService.currentVersion,
+          uiType: JSON.parse(localStorage.getItem('newUI')) === true ? 'New' : 'Old'
         };
         this.ga.setPageLoad(data);
       }
