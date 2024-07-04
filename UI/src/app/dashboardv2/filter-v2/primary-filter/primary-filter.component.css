@@ -1,16 +1,21 @@
 .parent_span {
-    color: green;
+  color: green;
 }
 
 :host ::ng-deep .p-multiselect {
-    border: 1px solid #D5DBE1;
+  border: 1px solid #d5dbe1;
 }
 
-:host ::ng-deep .p-inputtext, :host ::ng-deep .p-multiselect .p-multiselect-label {
-    font-size: 0.75rem;
-} 
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-multiselect .p-multiselect-label {
+  font-size: 0.75rem;
+}
 
 :host ::ng-deep .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
-    margin: 5px 0 0 0;
-    word-wrap: break-word;
+  margin: 5px 0 0 0;
+  word-wrap: break-word;
+}
+
+.floating-label {
+  text-transform: capitalize;
 }
