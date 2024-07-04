@@ -219,13 +219,13 @@ export class ExportExcelComponent implements OnInit {
   customSort(event: SortEvent) {
     let result = null;
     event.data.sort((data1, data2) => {
-      const utcDate1: any = new Date(data1[event.field]).toISOString().slice(0, 10);
-      const utcDate2: any = new Date(data2[event.field]).toISOString().slice(0, 10);
-      if (event.field === 'Created Date' || 'Closed Date') {
+      const utcDate1: any = !isNaN(new Date(data1[event.field]).getTime()) && new Date(data1[event.field]).toISOString().slice(0, 10);
+      const utcDate2: any = !isNaN(new Date(data2[event.field]).getTime()) && new Date(data2[event.field]).toISOString().slice(0, 10);
+      if (event.field === 'Created Date' || event.field === 'Closed Date') {
         result = (utcDate1 < utcDate2) ? -1 : (utcDate1 > utcDate2) ? 1 : 0;
       }
       else {
-        data1[event.field].localeCompare(data2[event.field])
+        result = data1[event.field].localeCompare(data2[event.field])
       }
       return event.order * result;
     });
