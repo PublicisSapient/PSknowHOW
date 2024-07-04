@@ -73,6 +73,23 @@
 
   </div>
   <div class="p-d-flex">
+    <div class="view-tabs p-pl-2 p-pr-2"
+      *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'maturity'" >
+      <div>
+        <input id="chart-view" class="chart-view" type="radio" name="view" [checked]="showChart === 'chart'">
+        <label class="label1" for="chart-view" (click)="showChartToggle('chart')" id="Layout-Chart">
+          <img src="../../../assets/img/ico-graph-white.svg" alt="Chart View" class="ico-active" />
+          <img src="../../../assets/img/ico-graph-black.svg" alt="Chart View" class="ico-default" />
+        </label>
+      </div>
+      <div>
+        <input id="table-view" class="table-view" type="radio" name="view" [checked]="showChart === 'table'">
+        <label class="label2" for="table-view" (click)="showChartToggle('table')" id="Layout-Table">
+          <img src="../../../assets/img/ico-table-black.svg" alt="Table View" class="ico-default" />
+          <img src="../../../assets/img/ico-table-white.svg" alt="Table View" class="ico-active" />
+        </label>
+      </div>
+    </div>
     <div class="show-hide-container" *ngIf="selectedTab !== 'iteration' && selectedTab !== 'backlog' && selectedTab !== 'release' && selectedTab !== 'dora' && selectedTab.toLowerCase() !== 'maturity'">
       <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)">
         <i class="pi pi-pause" style="font-size: 1rem"></i>

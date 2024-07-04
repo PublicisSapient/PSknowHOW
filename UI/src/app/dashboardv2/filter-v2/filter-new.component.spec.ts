@@ -12746,6 +12746,10 @@ describe('FilterNewComponent', () => {
     expect(component).toBeTruthy();
   });
 
+
+
+
+
   it('should set selectedTab and selectedType in ngOnInit', () => {
     spyOn(sharedService, 'getSelectedTab').and.returnValue('iteration');
     spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue(null);
@@ -13388,6 +13392,7 @@ describe('FilterNewComponent', () => {
 
   it('should set processor log details when response is successful', () => {
     const mockBasicProjectConfigId = '123';
+    component.service.setSelectedTrends([{basicProjectConfigId : mockBasicProjectConfigId}])
     const mockResponse = { success: true, data: { /* mock data */ } };
 
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(mockResponse));
@@ -13402,6 +13407,7 @@ describe('FilterNewComponent', () => {
 
   it('should show error message when response is not successful', () => {
     const mockBasicProjectConfigId = '123';
+    component.service.setSelectedTrends([{basicProjectConfigId : mockBasicProjectConfigId}])
     const mockResponse = { success: false };
 
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(mockResponse));
@@ -13561,6 +13567,7 @@ describe('FilterNewComponent', () => {
   });
 
   it('should call service.select with correct parameters when selectedLevel is an object', () => {
+    spyOn(component,'getProcessorsTraceLogsForProject');
     component.additionalFilterConfig = [
       {
         "type": "multiSelect",
@@ -13716,7 +13723,7 @@ describe('FilterNewComponent', () => {
       ],
     };
     component.selectedShowHideKPIs = [];
-    
+
     component.showHideSelectAll = true;
 
     component.showHideSelectAllApply();
@@ -13737,7 +13744,7 @@ describe('FilterNewComponent', () => {
       ],
     };
     component.selectedShowHideKPIs = [];
-    
+
     component.showHideSelectAll = false;
 
     component.showHideSelectAllApply();
@@ -13901,4 +13908,9 @@ describe('FilterNewComponent', () => {
     //   summary: 'Error in Saving Configuraion',
     // });
   });
+
+  it('should toggle view',() => {
+     component.showChartToggle('chart');
+     expect(component.showChart).toBe('chart');
+  })
 });
