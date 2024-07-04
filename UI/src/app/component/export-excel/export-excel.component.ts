@@ -4,6 +4,7 @@ import { HelperService } from 'src/app/services/helper.service';
 import { Table } from 'primeng/table';
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
+import { SortEvent } from 'primeng/api';
 
 @Component({
   selector: 'app-export-excel',
@@ -38,11 +39,11 @@ export class ExportExcelComponent implements OnInit {
   constructor(
     private excelService: ExcelService,
     private helperService: HelperService,
-    private sharedService : SharedService,
-    private httpService : HttpService
-  ) {}
+    private sharedService: SharedService,
+    private httpService: HttpService
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   // download excel functionality
   downloadExcel(
@@ -94,7 +95,7 @@ export class ExportExcelComponent implements OnInit {
             }
 
             this.modalDetails['tableHeadings'] =
-            this.kpiExcelData.headerNames.map((column) => column.header);
+              this.kpiExcelData.headerNames.map((column) => column.header);
             this.modalDetails['tableValues'] = this.kpiExcelData.excelData;
             this.generateTableColumnData();
             this.modalDetails['header'] = kpiName;
@@ -169,11 +170,15 @@ export class ExportExcelComponent implements OnInit {
     this.modalDetails['tableHeadings'].forEach(colName => {
       this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
         if (this.typeOf(colData)) {
-          if(!this.excludeColumnFilter.includes(colName)){
+          if (!this.excludeColumnFilter.includes(colName)) {
             this.excludeColumnFilter.push(colName)
           }
           return { name: colData.text, value: colData.text }
         } else {
+          // if (colName === 'Created Date' || colName === 'Closed Date') {
+          //   const utcDate = new Date(colData).toISOString().slice(0, 10)
+          //   return { name: utcDate, value: utcDate }
+          // }
           return { name: colData, value: colData }
         }
       });
@@ -193,19 +198,19 @@ export class ExportExcelComponent implements OnInit {
     } else {
       excelData = this.tableComponent?.filteredValue ? this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
       tableData.columns = this.modalDetails['tableHeadings']
-  
+
       excelData.forEach(colData => {
         let obj = {};
         for (let key in colData) {
           if (this.typeOf(colData[key]) && colData[key].hasOwnProperty('hyperlink')) {
-            obj[key] = { [colData[key]['text']] : colData[key]['hyperlink']}
+            obj[key] = { [colData[key]['text']]: colData[key]['hyperlink'] }
           } else {
             obj[key] = colData[key]
           }
         }
         tableData.excelData.push(obj);
       });
-   
+
       let kpiData = this.excelService.generateExcelModalData(tableData);
       this.excelService.generateExcel(kpiData, this.modalDetails['header']);
     }
@@ -213,5 +218,20 @@ export class ExportExcelComponent implements OnInit {
 
   typeOf(value) {
     return typeof value === 'object' && value !== null;
+  }
+
+  customSort(event: SortEvent) {
+    let result = null;
+    event.data.sort((data1, data2) => {
+      const utcDate1: any = new Date(data1[event.field]).toISOString().slice(0, 10);
+      const utcDate2: any = new Date(data2[event.field]).toISOString().slice(0, 10);
+      if (event.field === 'Created Date' || 'Closed Date') {
+        result = (utcDate1 < utcDate2) ? -1 : (utcDate1 > utcDate2) ? 1 : 0;
+      }
+      else {
+        data1[event.field].localeCompare(data2[event.field])
+      }
+      return event.order * result;
+    });
   }
 }
