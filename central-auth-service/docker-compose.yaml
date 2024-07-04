@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 services:
   authdb:
     image: psknowhow/postgres-auth-scm:<TAG VERSION>
@@ -37,10 +37,9 @@ services:
       - auth.corsFilterValidOrigin=https://<DNS>
       - spring.datasource.password=<DB PASSWORD>
       - spring.datasource.username=<POSTGRES_USER>
-      - auth.holdingEntityId=
-      - auth.assertingEntityId=
-      - auth.alias=
-      - auth.samlLoginUrl=
+      - spring.datasource.url=<POSTGRES_URL>
+      - spring.security.saml2.relyingparty.registration.azure.assertingparty.metadata-uri=
+      - spring.security.saml2.relyingparty.registration.azure.entity-id=
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     links:
