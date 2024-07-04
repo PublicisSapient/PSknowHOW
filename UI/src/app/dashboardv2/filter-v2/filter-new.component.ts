@@ -522,7 +522,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   getProcessorsTraceLogsForProject() {
-    this.httpService.getProcessorsTraceLogsForProject(this.previousFilterEvent[0]?.basicProjectConfigId).subscribe(response => {
+    this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
       if (response.success) {
         this.service.setProcessorLogDetails(response.data);
       } else {
