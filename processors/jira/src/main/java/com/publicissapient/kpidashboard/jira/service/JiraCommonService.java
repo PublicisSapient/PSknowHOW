@@ -154,6 +154,9 @@ public class JiraCommonService {
 			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
 		}
 		request.connect();
+		int responseCode = request.getResponseCode();
+		// process the client error
+		processClientError(connectionOptional, responseCode, request);
 		StringBuilder sb = new StringBuilder();
 		try (InputStream in = (InputStream) request.getContent();
 				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
@@ -172,6 +175,42 @@ public class JiraCommonService {
 			request.disconnect();
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * Method to process client error and update the connection broken flag
+	 * 
+	 * @param connectionOptional
+	 *            connectionOptional
+	 * @param responseCode
+	 *            responseCode
+	 * @param request
+	 *            request
+	 * @throws IOException
+	 *             throw IO Error
+	 */
+	private void processClientError(Optional<Connection> connectionOptional, int responseCode,
+			HttpURLConnection request) throws IOException {
+		if (responseCode >= 400 && responseCode < 500) {
+			// Read error message from the server
+			InputStream errorStream = request.getErrorStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream));
+			StringBuilder response = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				response.append(line);
+			}
+			reader.close();
+			request.disconnect();
+			// flagging the breaking connection
+			connectionOptional.ifPresent(connection -> {
+				String errMsg = ClientErrorMessageEnum.fromValue(responseCode).getReasonPhrase();
+				processorToolConnectionService.updateBreakingConnection(connection.getId(), errMsg);
+			});
+			// Throw an exception with the error message
+			log.error("Exception when reading from server {}", response);
+			throw new IOException(String.format("Error: %d - %s", responseCode, response));
+		}
 	}
 
 	/**

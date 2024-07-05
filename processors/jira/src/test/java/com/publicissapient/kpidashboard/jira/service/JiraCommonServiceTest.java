@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
@@ -225,8 +226,10 @@ public class JiraCommonServiceTest {
 		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
 		String responseData = "Sample response data";
 		InputStream inputStream = new ByteArrayInputStream(responseData.getBytes(StandardCharsets.UTF_8));
-		List<ProjectVersion> versions = jiraCommonService.getVersion(projectConfFieldMapping1, krb5Client);
-		Assert.assertEquals(0, versions.size());
+		assertThrows(IOException.class, () -> {
+			jiraCommonService.getVersion(projectConfFieldMapping1, krb5Client);
+		});
+//		Assert.assertEquals(0, versions.size());
 	}
 	// @Test(expected = RestClientException.class)
 	// public void getVersionTest1() throws IOException, ParseException {
@@ -495,4 +498,31 @@ public class JiraCommonServiceTest {
 		// Assert
 		verify(mockExecutionContext).putInt(JiraConstants.TOTAL_ISSUES, totalIssues);
 		verify(mockExecutionContext).putInt(JiraConstants.PAGE_START, pageStart);
+	}
+
+	@Test
+	public void testProcessClientError() throws IOException {
+		// Arrange
+		int responseCode = 404;
+		String errorMessage = "Not Found";
+
+		HttpURLConnection mockConnection = Mockito.mock(HttpURLConnection.class);
+		when(mockConnection.getResponseCode()).thenReturn(responseCode);
+		when(mockConnection.getErrorStream()).thenReturn(new ByteArrayInputStream(errorMessage.getBytes(StandardCharsets.UTF_8)));
+
+		URL mockUrl = Mockito.mock(URL.class);
+		when(mockUrl.openConnection()).thenReturn(mockConnection);
+
+		Connection mockConnectionObject = Mockito.mock(Connection.class);
+		when(mockConnectionObject.getId()).thenReturn(new ObjectId("668517f812811950be19353f"));
+		Optional<Connection> connectionOptional = Optional.of(mockConnectionObject);
+
+		// Act
+		Exception exception = assertThrows(IOException.class, () -> {
+			jiraCommonService.getDataFromServer(mockUrl, connectionOptional);
+		});
+
+		// Assert
+		String expectedMessage = "Error: 404 - Not Found";
+		assertEquals(expectedMessage, exception.getMessage());
 	}}
