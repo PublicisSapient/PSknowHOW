@@ -65,7 +65,7 @@ public class AuthConfig {
 
 	private Map<String, String> mailTemplate;
 
-	private String verifyUserTokenExpiryInterval;
+	private String verifyUserTokenExpiryDays;
 
 	private String serverApiKey;
 

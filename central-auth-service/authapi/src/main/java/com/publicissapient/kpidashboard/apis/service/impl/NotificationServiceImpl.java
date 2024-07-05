@@ -322,7 +322,7 @@ public class NotificationServiceImpl implements NotificationService {
 		String serverPath = getServerPath();
 
 		Map<String, String> customData = createCustomDataVerificationUser(username, email, serverPath,
-																		  this.authConfig.getVerifyUserTokenExpiryInterval(), token
+																		  this.authConfig.getVerifyUserTokenExpiryDays(), token
 		);
 		sendEmailNotification(Arrays.asList(email), customData,
 											CommonConstant.USER_VERIFICATION_NOTIFICATION_KEY,

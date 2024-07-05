@@ -178,10 +178,10 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 		if (this.userService.findByEmail(request.getEmail().toLowerCase()).isPresent()) {
 			throw new GenericException("Cannot complete the registration process, Try with different email");
 		}
-		if (Pattern.compile(CommonConstant.PASSWORD_PATTERN).matcher(request.getPassword()).matches()) {
+		if (!Pattern.compile(CommonConstant.PASSWORD_PATTERN).matcher(request.getPassword()).matches()) {
 			throw new GenericException(this.messageService.getMessage("error_register_password"));
 		}
-		if (Pattern.compile(CommonConstant.USERNAME_PATTERN).matcher(request.getUsername()).matches()) {
+		if (!Pattern.compile(CommonConstant.USERNAME_PATTERN).matcher(request.getUsername()).matches()) {
 			throw new GenericException(this.messageService.getMessage("error_register_username"));
 		}
 
@@ -216,7 +216,7 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 						.email(request.getEmail().toLowerCase()).firstName(request.getFirstName())
 						.lastName(request.getLastName()).displayName(request.getDisplayName())
 						.createdDate(LocalDateTime.now()).modifiedDate(LocalDateTime.now())
-						.authType(AuthType.STANDARD.name()).userVerified(false).build();
+						.authType(AuthType.STANDARD.name()).userVerified(false).approved(false).build();
 
 		return this.userService.save(user);
 	}
@@ -227,7 +227,7 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 		UserVerificationToken userVerificationToken = new UserVerificationToken();
 		userVerificationToken.setToken(token);
 		userVerificationToken.setUsername(username);
-		userVerificationToken.setExpiryDate(Integer.parseInt(authConfig.getVerifyUserTokenExpiryInterval()));
+		userVerificationToken.setExpiryDate(Integer.parseInt(authConfig.getVerifyUserTokenExpiryDays()));
 		userVerificationToken.setEmail(email);
 
 		this.userVerificationTokenService.save(userVerificationToken);
