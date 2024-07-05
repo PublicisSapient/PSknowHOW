@@ -429,7 +429,9 @@ export class MilestoneComponent implements OnInit {
             this.kpiChartData[kpiId] = [...trendValueList];
           } else {
             const obj = JSON.parse(JSON.stringify(trendValueList));
-            this.kpiChartData[kpiId]?.push(obj);
+            if(obj?.length > 0 || Object.keys(obj)?.length > 0){
+              this.kpiChartData[kpiId]?.push(obj);
+            }
           }
         }
       }
@@ -489,7 +491,9 @@ export class MilestoneComponent implements OnInit {
           this.kpiChartData[kpiId] = [...trendValueList];
         } else {
           const obj = JSON.parse(JSON.stringify(trendValueList));
-          this.kpiChartData[kpiId]?.push(obj);
+          if(obj?.length > 0 || Object.keys(obj)?.length > 0){
+            this.kpiChartData[kpiId]?.push(obj);
+          }
         }
       }
     }
