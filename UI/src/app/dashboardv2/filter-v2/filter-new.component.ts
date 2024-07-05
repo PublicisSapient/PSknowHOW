@@ -404,8 +404,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     const timeRemaining = stopDate - currentDate;
     const millisecondsPerDay = 24 * 60 * 60 * 1000;
     this.daysRemaining = Math.ceil(timeRemaining / millisecondsPerDay) < 0 ? 0 : Math.ceil(timeRemaining / millisecondsPerDay);
-    const startDateFormatted = this.formatDate(event[0].sprintStartDate);
-    const endDateFormatted = this.formatDate(event[0].sprintEndDate);
+    const startDateFormatted = this.formatDate(event[0].sprintStartDate.split('T')[0]);
+    const endDateFormatted = this.formatDate(event[0].sprintEndDate.split('T')[0]);
     this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
     if (JSON.stringify(event[0]) !== '{}') {
       this.additionalData = true;
