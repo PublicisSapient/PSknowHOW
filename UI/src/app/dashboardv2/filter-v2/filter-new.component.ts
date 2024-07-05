@@ -51,11 +51,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   selectedProjectLastSyncStatus: any;
   subject = new Subject();
   dashConfigData: any;
-  filterApiData:any = []
+  filterApiData: any = []
   @ViewChild('showHideDdn') showHideDdn: MultiSelect;
   enableShowHideApply: boolean = true;
   showHideSelectAll: boolean = false;
-  showChart : string = 'chart'
+  showChart: string = 'chart'
   constructor(
     private httpService: HttpService,
     public service: SharedService,
@@ -117,6 +117,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.service.setSelectedDateFilter(this.selectedDayType);
           this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
           this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+          // Populate additional filters on MyKnowHOW, Speed and Quality
+          if (this.selectedTab.toLowerCase() !== 'developer') {
+            this.additionalFiltersArr = [];
+            this.populateAdditionalFilters(this.previousFilterEvent);
+          }
         })
     );
   }
@@ -590,26 +595,26 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       const catArr = ['category1', 'category2', 'category3', 'category4', 'category5', 'category6'];
 
       let obj = {};
-        let isPathAnArray = Array.isArray(item?.path);
-        let pathArr = [];
-        if(isPathAnArray){
-          pathArr = item?.path[0]?.split('###');
-        }else{
-          pathArr = item?.path?.split('###');
-        }
-        let pathData = {};
-        pathArr = pathArr?.reverse();
-        pathArr?.forEach((y, i) => {
-          let selected = this.filterApiData?.filter((x) => x.nodeId == y)[0];
-          pathData[catArr[i]] = selected?.nodeName;
-        })
-        obj = {
-          'id': item.nodeId,
-          'name': item.nodeName,
-          'level': item.labelName,
-          ...pathData
-        }
-        return obj;
+      let isPathAnArray = Array.isArray(item?.path);
+      let pathArr = [];
+      if (isPathAnArray) {
+        pathArr = item?.path[0]?.split('###');
+      } else {
+        pathArr = item?.path?.split('###');
+      }
+      let pathData = {};
+      pathArr = pathArr?.reverse();
+      pathArr?.forEach((y, i) => {
+        let selected = this.filterApiData?.filter((x) => x.nodeId == y)[0];
+        pathData[catArr[i]] = selected?.nodeName;
+      })
+      obj = {
+        'id': item.nodeId,
+        'name': item.nodeName,
+        'level': item.labelName,
+        ...pathData
+      }
+      return obj;
     });
     this.ga.setProjectData(gaArray);
   }
@@ -627,7 +632,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.assignUserNameForKpiData();
     for (let i = 0; i < kpiArray.length; i++) {
       if (kpiArray[i].boardSlug.toLowerCase() == this.selectedTab.toLowerCase()) {
-          this.dashConfigData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = this.masterData['kpiList'];
+        this.dashConfigData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = this.masterData['kpiList'];
       }
     }
 

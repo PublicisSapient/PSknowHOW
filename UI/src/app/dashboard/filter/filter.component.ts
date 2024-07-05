@@ -934,7 +934,7 @@ this.resetAddtionalFIlters();
           this.service.setDashConfigData(this.kpiListData);
           const selectedType = this.kanban ? 'kanban' : 'scrum';
           this.service.setUpdatedBoardList(this.kpiListData, selectedType);
-          this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter);
+          this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter, true, null, true, this.kpiListData);
           this.processKpiList();
           this.navigateToSelectedTab();
         }
@@ -1821,7 +1821,7 @@ this.resetAddtionalFIlters();
 
   onUpdateKPI() {
     this.lastSyncData = {};
-    this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+    this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter, true, null, true, this.kpiListData);
   }
 
   getRecentComments() {

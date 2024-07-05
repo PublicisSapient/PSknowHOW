@@ -954,22 +954,15 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   customSort(event: SortEvent) {
-    let result = null;
+    const getSortValue = (data: any, field: string) => {
+      const value = (field in data) ? data[field].trim() : '-';
+      return (field.includes('Date') && value !== '-') ? new Date(value).toISOString().split('T')[0] : value;
+    };
+
     event.data.sort((data1, data2) => {
-      let utcDate1: any = !isNaN(new Date(data1[event.field]).getTime()) && new Date(data1[event.field]).toISOString().slice(0, 10);
-      let utcDate2: any = !isNaN(new Date(data2[event.field]).getTime()) && new Date(data2[event.field]).toISOString().slice(0, 10);
-      if (event.field.includes('Date')) {
-        if (utcDate1 === '-' && utcDate2 !== '-')
-          utcDate1 = '0';
-        else if (utcDate1 !== '-' && utcDate2 === '-')
-          utcDate2 = '0';
-        else if (utcDate1 === '-' && utcDate2 === '-')
-          utcDate1 = '0', utcDate2 = '0';
-        result = (utcDate1 < utcDate2) ? -1 : (utcDate1 > utcDate2) ? 1 : 0;
-      }
-      else {
-        result = data1[event.field].localeCompare(data2[event.field])
-      }
+      const value1 = getSortValue(data1, event.field);
+      const value2 = getSortValue(data2, event.field);
+      const result = (value1 === '-' && value2 === '-') ? 0 : value1.localeCompare(value2);
       return event.order * result;
     });
   }

@@ -608,8 +608,8 @@
                 </ng-container>
               </td>
               <ng-template #elseBlock>
-                <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width">
-                  {{x[item]}}</td>
+                <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width" *ngIf="x[item];">{{x[item]}}</td>
+                <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width" *ngIf="!x[item];">-</td>
               </ng-template>
             </ng-container>
 
