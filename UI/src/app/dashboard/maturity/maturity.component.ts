@@ -127,12 +127,11 @@ export class MaturityComponent implements OnInit, OnDestroy {
     this.showNoDataMsg = false;
     if (this.service.getSelectedTab() === 'Maturity') {
       this.masterData = $event?.masterData;
-      if (!this.masterData?.kpiList?.length || (this.masterData?.kpiList?.length === 1 && this.masterData?.kpiList[0].kpiId === 'kpi989')) {
-        if (!this.configGlobalData || !this.configGlobalData[this.selectedtype] || !this.configGlobalData[this.selectedtype].length) {
-          this.configGlobalData = $event.dashConfigData;
-        }
-        this.masterData.kpiList = this.configGlobalData[this.selectedtype].filter((board) => board['boardSlug'] === 'mydashboard')[0].kpis;
-      }
+
+      this.configGlobalData = $event.dashConfigData;
+
+      this.masterData.kpiList = this.configGlobalData[this.selectedtype].filter((board) => board['boardSlug'] === 'mydashboard')[0].kpis;
+
       this.filterData = $event?.filterData;
       this.filterApplyData = $event?.filterApplyData;
       this.loaderMaturity = true;
