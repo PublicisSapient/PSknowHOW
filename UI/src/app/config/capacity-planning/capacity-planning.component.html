@@ -364,16 +364,14 @@
                                     <td class="expanded-table-body-cell"
                                         [style]="{'max-width':'120px', 'word-wrap': 'break-word'}">
 
-                                        <p-multiSelect [options]="projectAssigneeEmailsCopy"
+                                        <input type="email" min="0" pInputText
                                             *ngIf="projectCapacityEditMode;else showUserEmail"
-                                            defaultLabel="Select Emails" optionLabel="email"
-                                            optionDisabled="inactive" class="multiselect-custom"
-                                            [style]="{'width':'150px'}" display="chip" showClear="true"
+                                            placeholder="Repo EmailId"
+                                            (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email')"
+                                            [style]="{'width':'120px'}"
                                             [formControl]="selectedSprintAssigneFormArray[rowIndex]?.email"
-                                            (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email')"
-                                            (onClear)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email', true)">
-                                        </p-multiSelect>
-
+                                            (keypress)="validateInput($event, 'email')"
+                                            pattern="[^@]+@[^@]+\.[a-zA-Z]{2,6}"/>
 
                                         <ng-template #showUserEmail>{{assignee?.email ?
                                             assignee?.email : '- -'}}</ng-template>
