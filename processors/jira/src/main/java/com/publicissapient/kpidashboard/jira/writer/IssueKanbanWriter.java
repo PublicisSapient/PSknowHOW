@@ -77,7 +77,6 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 
 		for (CompositeResult kanbanCompositeResult : kanbanCompositeResults) {
 			if (null != kanbanCompositeResult.getKanbanJiraIssue()) {
-				#Change for DTS 38402#
 				String key = kanbanCompositeResult.getKanbanJiraIssue().getNumber() + ","
 						+ kanbanCompositeResult.getKanbanJiraIssue().getBasicProjectConfigId();
 				jiraIssues.putIfAbsent(key, kanbanCompositeResult.getKanbanJiraIssue());
