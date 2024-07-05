@@ -36,6 +36,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.config.AuthEndpointsProperties;
 import com.publicissapient.kpidashboard.apis.util.CookieUtil;
 
@@ -45,9 +46,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private static final String NO_JWT_EXCEPTION = "No JWT session token found on request.";
 
+	private static final String NO_RESOURCE_API_KEY_EXCEPTION = "No resource API key found on request.";
+
 	private static final String JWT_FILTER_GENERIC_EXCEPTION = "JWT filtering failed for URI {} with message: {}.";
 
+	private static final String X_API_KEY = "x-api-key";
+
+	private static final String RESOURCE_KEY = "resource";
+
 	private final AuthEndpointsProperties authEndpointsProperties;
+
+	private final AuthConfig authConfig;
 
 	private static boolean isRequestForURI(@NonNull HttpServletRequest request, @NotNull String uri) {
 		return new AntPathRequestMatcher(uri).matches(request);
@@ -61,6 +70,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		return isRequestForAnyURI(request, authEndpointsProperties.getPublicEndpoints());
 	}
 
+	private boolean isRequestForExternalURI(@NonNull HttpServletRequest request) {
+		return isRequestForAnyURI(request, authEndpointsProperties.getExternalEndpoints());
+	}
+
 	@Override
 	public void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
 								 @NotNull FilterChain filterChain) {
@@ -68,6 +81,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			if (isRequestForPublicURI(request)) {
 				// * public endpoints should just pass without any authentication.
 				filterChain.doFilter(request, response);
+			} if (isRequestForExternalURI(request)) {
+				String resourceAPIKey = request.getHeader(X_API_KEY);
+				String resource = request.getHeader(RESOURCE_KEY);
+
+				if (resourceAPIKey.isEmpty() ||
+					resource.isEmpty() ||
+					!resourceAPIKey.equals(authConfig.getServerApiKey())) {
+					throw  new BadCredentialsException(NO_RESOURCE_API_KEY_EXCEPTION);
+				} else {
+					filterChain.doFilter(request, response);
+				}
 			} else {
 				Optional<Cookie> authCookie = CookieUtil.getCookie(request, CookieUtil.COOKIE_NAME);
 

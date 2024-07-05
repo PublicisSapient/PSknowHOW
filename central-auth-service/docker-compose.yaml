@@ -33,6 +33,7 @@ services:
       - auth.baseUrl=https://<DNS>
       - auth.baseUiUrl=https://<DNS>
       - auth.secret=<Your Auth Secret>
+      - auth.serverApiKey=<Your Auth Server API Key>
       - forgotPassword.uiHost=https://<DNS>
       - auth.corsFilterValidOrigin=https://<DNS>
       - spring.datasource.password=<DB PASSWORD>

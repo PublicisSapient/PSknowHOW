@@ -1,13 +1,11 @@
 package com.publicissapient.kpidashboard.apis.service.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
 import jakarta.validation.constraints.NotNull;
 
 
-@Getter
-@AllArgsConstructor
+@Data
 public class UserNameRequestDTO {
 	@NotNull
 	private String username;

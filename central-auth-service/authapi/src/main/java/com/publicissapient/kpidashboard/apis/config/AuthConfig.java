@@ -67,4 +67,6 @@ public class AuthConfig {
 
 	private String verifyUserTokenExpiryInterval;
 
+	private String serverApiKey;
+
 }

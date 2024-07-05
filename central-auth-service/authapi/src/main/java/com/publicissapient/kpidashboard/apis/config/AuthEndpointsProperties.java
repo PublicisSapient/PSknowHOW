@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "auth.auth-endpoints")
 public class AuthEndpointsProperties {
 	private static final String[] NO_ENDPOINTS = {};
+	private static final String[] NO_EXTERNAL_ENDPOINTS = {};
 	private static final String[] DEFAULT_PUBLIC_ENDPOINTS = {
 			"/api-docs",
 			"/img/**",
@@ -34,6 +35,8 @@ public class AuthEndpointsProperties {
 
 	private String[] authenticatedEndpoints;
 
+	private String[] externalEndpoints;
+
 	public String[] getPublicEndpoints() {
 		return Stream.concat(
 				Arrays.stream(Optional.ofNullable(publicEndpoints).orElse(NO_ENDPOINTS)),
@@ -43,5 +46,9 @@ public class AuthEndpointsProperties {
 
 	public String[] getAuthenticatedEndpoints() {
 		return Optional.ofNullable(authenticatedEndpoints).orElse(NO_ENDPOINTS).clone();
+	}
+
+	public String[] getExternalAuthentication() {
+		return Optional.ofNullable(externalEndpoints).orElse(NO_EXTERNAL_ENDPOINTS).clone();
 	}
 }

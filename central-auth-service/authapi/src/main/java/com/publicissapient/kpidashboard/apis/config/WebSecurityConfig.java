@@ -110,6 +110,12 @@ public class WebSecurityConfig {
 					.permitAll()
 					.requestMatchers("/sso-logout")
 					.permitAll()
+					.requestMatchers("/user-approvals/pending")
+					.permitAll()
+					.requestMatchers("/approve")
+					.permitAll()
+					.requestMatchers("/reject")
+					.permitAll()
 					.anyRequest()
 					.authenticated())
 			.saml2Login((saml2) -> saml2.loginProcessingUrl("/saml/SSO"))
@@ -126,7 +132,7 @@ public class WebSecurityConfig {
 					UsernamePasswordAuthenticationFilter.class
 			)
 			.addFilterBefore(
-					new JwtAuthenticationFilter(authEndpointsProperties),
+					new JwtAuthenticationFilter(authEndpointsProperties, authConfig),
 					UsernamePasswordAuthenticationFilter.class
 			).addFilterAfter(new CorsFilter(authConfig), ChannelProcessingFilter.class);
 		return http.build();
