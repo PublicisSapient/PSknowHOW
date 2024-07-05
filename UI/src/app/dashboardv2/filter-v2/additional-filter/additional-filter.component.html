@@ -1,4 +1,4 @@
-<div style="display: flex; overflow-y: visible; overflow-x: visible;" #addnlFilterDiv>
+<div style="display: flex; overflow-y: visible; overflow-x: visible;" #addnlFilterDiv *ngIf="selectedTab !== 'value'">
     <ng-container *ngFor="let config of additionalFilterConfig; let i = index;">
         <span class="p-float-label"
             *ngIf="filterData?.length && filterData[i]?.length && config['type'] !== 'singleSelect'"

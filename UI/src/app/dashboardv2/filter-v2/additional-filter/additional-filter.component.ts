@@ -29,7 +29,6 @@ export class AdditionalFilterComponent implements OnChanges {
 
   ngOnInit() {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
-      this.filterData = [];
       this.selectedFilters = [];
       this.selectedTrends = this.service.getSelectedTrends();
       Object.keys(data).forEach((f, index) => {
@@ -84,7 +83,6 @@ export class AdditionalFilterComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedTab']) {
-      this.filterData = [];
       this.filterSet = new Set();
       this.selectedFilters = [];
     }
