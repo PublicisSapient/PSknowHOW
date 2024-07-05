@@ -24,6 +24,12 @@ else
 
 fi
 
+# Check if the passphrase file exists
+if [ ! -e $CERT_LOC/knowhow_ssl_passphrase.txt ]; then
+    echo $(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10) > $CERT_LOC/knowhow_ssl_passphrase.txt
+    echo "Passphrase file created"
+fi
+
 # Recreate config file
 rm -rf ./env-config.js
 touch ./env-config.js
