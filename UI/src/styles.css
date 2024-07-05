@@ -1637,7 +1637,7 @@ a:hover {
   background: url('./assets/img/others_w.svg') no-repeat;
 }
 .kpi-dropdown{
-  width: 130px;
+  width: 130px !important;
 }
 .kpi-dropdown .ng-dropdown-panel{
   top: 100%;
