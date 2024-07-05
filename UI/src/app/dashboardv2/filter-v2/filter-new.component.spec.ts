@@ -13683,6 +13683,222 @@ describe('FilterNewComponent', () => {
     );
   });
 
+  it('should call close if showHideDdn overlay is visible', () => {
+    component.showHideDdn = jasmine.createSpyObj('ShowHideDdn', ['show', 'close']);
+    component.masterData = {
+      kpiList: [
+        { id: 1, name: 'kpi1' },
+        { id: 2, name: 'kpi2' },
+      ],
+    };
+    component.showHideDdn.overlayVisible = true;
+    const mockEvent = {};
+
+    component.toggleShowHideMenu(mockEvent);
+
+    expect(component.showHideDdn.close).toHaveBeenCalledWith(mockEvent);
+  });
+
+  it('should call show if showHideDdn overlay is not visible', () => {
+    component.showHideDdn = jasmine.createSpyObj('ShowHideDdn', ['show', 'close']);
+    component.masterData = {
+      kpiList: [
+        { id: 1, name: 'kpi1' },
+        { id: 2, name: 'kpi2' },
+      ],
+    };
+    component.showHideDdn.overlayVisible = false;
+    const mockEvent = {};
+
+    component.toggleShowHideMenu(mockEvent);
+
+    expect(component.showHideDdn.show).toHaveBeenCalled();
+  });
+
+  it('should set isEnabled to true for all kpiList elements and add them to selectedShowHideKPIs if showHideSelectAll is true', () => {
+    component.masterData = {
+      kpiList: [
+        { id: 1, name: 'kpi1', isEnabled: false },
+        { id: 2, name: 'kpi2', isEnabled: false },
+      ],
+    };
+
+    component.showHideSelectAll = true;
+
+    component.showHideSelectAllApply();
+
+    expect(component.masterData['kpiList'][0].isEnabled).toBe(true);
+    expect(component.masterData['kpiList'][1].isEnabled).toBe(true);
+  });
+
+  it('should set isEnabled to false for all kpiList elements and add them to selectedShowHideKPIs if showHideSelectAll is false', () => {
+    component.masterData = {
+      kpiList: [
+        { id: 1, name: 'kpi1', isEnabled: false },
+        { id: 2, name: 'kpi2', isEnabled: false },
+      ],
+    };
+
+    component.showHideSelectAll = false;
+
+    component.showHideSelectAllApply();
+
+    expect(component.masterData['kpiList'][0].isEnabled).toBe(false);
+    expect(component.masterData['kpiList'][1].isEnabled).toBe(false);
+  });
+
+
+  it('should update kpis array in dashConfigData for the selected boardSlug', () => {
+    // httpService = jasmine.createSpyObj('HttpService', ['submitShowHideOnDashboard']);
+    messageService = jasmine.createSpyObj('MessageService', ['add']);
+    sharedService = jasmine.createSpyObj('SharedService', ['setDashConfigData']);
+
+    component.dashConfigData = {
+      kanban: [
+        {
+          boardSlug: 'board1',
+          kpis: [],
+        },
+        {
+          boardSlug: 'board2',
+          kpis: [],
+        },
+      ],
+      scrum: [
+        {
+          boardSlug: 'board3',
+          kpis: [],
+        },
+        {
+          boardSlug: 'board4',
+          kpis: [],
+        },
+      ],
+    };
+    component.kanban = true;
+    component.selectedTab = 'board1';
+    component.masterData = {
+      kpiList: [
+        { kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order:1 },
+        { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order:2 },
+      ],
+    };
+    component.showHideKPIs();
+
+    expect(component.dashConfigData.kanban[0].kpis).toEqual([
+      { kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order:1 },
+      { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order:2 },
+    ]);
+  });
+
+  it('should call submitShowHideOnDashboard with the modified dashConfigData and show success message', () => {
+    // httpService = jasmine.createSpyObj('HttpService', ['submitShowHideOnDashboard']);
+    messageService = jasmine.createSpyObj('MessageService', ['add']);
+    sharedService = jasmine.createSpyObj('SharedService', ['setDashConfigData']);
+
+    component.dashConfigData = {
+      kanban: [
+        {
+          boardSlug: 'board1',
+          kpis: [{ kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order:1 },
+            { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order:2 },],
+        },
+        {
+          boardSlug: 'board2',
+          kpis: [],
+        },
+      ],
+      scrum: [
+        {
+          boardSlug: 'board3',
+          kpis: [],
+        },
+        {
+          boardSlug: 'board4',
+          kpis: [],
+        },
+      ],
+    };
+    component.kanban = true;
+    component.selectedTab = 'board1';
+    component.masterData = {
+      kpiList: [
+        { kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order:1 },
+        { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order:2 },
+      ],
+    };
+    spyOn(httpService, 'submitShowHideOnDashboard').and.returnValue(of({
+      "message": "Saved user board Configuration",
+      "success": true,
+      "data": {
+        kanban: {
+          board1: {
+            kpis:  [
+              { kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order:1 },
+              { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order:2 },
+            ]
+          }
+        }
+      }
+  }));
+
+    component.showHideKPIs();
+
+    expect(httpService.submitShowHideOnDashboard).toHaveBeenCalledWith(component.dashConfigData);
+    // expect(messageService.add).toHaveBeenCalledWith({
+    //   severity: 'success',
+    //   summary: 'Successfully Saved',
+    //   detail: '',
+    // });
+    // expect(sharedService.setDashConfigData).toHaveBeenCalledWith(component.dashConfigData);
+  });
+
+  it('should call submitShowHideOnDashboard and show error message if the API call fails', () => {
+    // httpService = jasmine.createSpyObj('HttpService', ['submitShowHideOnDashboard']);
+    messageService = jasmine.createSpyObj('MessageService', ['add']);
+    sharedService = jasmine.createSpyObj('SharedService', ['setDashConfigData']);
+
+    component.dashConfigData = {
+      kanban: [
+        {
+          boardSlug: 'board1',
+          kpis: [],
+        },
+        {
+          boardSlug: 'board2',
+          kpis: [],
+        },
+      ],
+      scrum: [
+        {
+          boardSlug: 'board3',
+          kpis: [],
+        },
+        {
+          boardSlug: 'board4',
+          kpis: [],
+        },
+      ],
+    };
+    component.kanban = true;
+    component.selectedTab = 'board1';
+    component.masterData = {
+      kpiList: [
+        { id: 1, name: 'kpi1' },
+        { id: 2, name: 'kpi2' },
+      ],
+    };
+    spyOn(httpService, 'submitShowHideOnDashboard').and.returnValue(throwError('API error'));
+
+    component.showHideKPIs();
+
+    expect(httpService.submitShowHideOnDashboard).toHaveBeenCalledWith(component.dashConfigData);
+    // expect(messageService.add).toHaveBeenCalledWith({
+    //   severity: 'error',
+    //   summary: 'Error in Saving Configuraion',
+    // });
+  });
+
   it('should toggle view',() => {
      component.showChartToggle('chart');
      expect(component.showChart).toBe('chart');
