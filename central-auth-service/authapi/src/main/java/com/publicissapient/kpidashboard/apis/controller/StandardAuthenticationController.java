@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.apis.controller;
 
-import javax.validation.Valid;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.UUID;
@@ -11,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.config.UserInterfacePathsConfig;
-import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.service.*;
@@ -62,9 +61,9 @@ public class StandardAuthenticationController {
 							 ));
 	}
 
-	@PutMapping(value = "/approve/{username}", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponseDTO> approveUserCreationRequest(@PathVariable("username") String username) {
-		boolean isSuccess = userApprovalService.approveUser(username);
+	@PutMapping(value = "/approve", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponseDTO> approveUserCreationRequest(@Valid @RequestBody UserNameRequestDTO usernameRequestDTO) {
+		boolean isSuccess = userApprovalService.approveUser(usernameRequestDTO.getUsername());
 
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponseDTO(isSuccess, isSuccess ?
 				messageService.getMessage("success_request_approve") :
@@ -72,13 +71,12 @@ public class StandardAuthenticationController {
 
 	}
 
-	@GetMapping(value = "/reject/{username}", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponseDTO> deleteUser(@PathVariable("username") String username) {
-		boolean isSuccess = userApprovalService.rejectUser(username);
+	@PutMapping(value = "/reject", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponseDTO> deleteUser(@Valid @RequestBody UserNameRequestDTO usernameRequestDTO) {
+		boolean isSuccess = userApprovalService.rejectUser(usernameRequestDTO.getUsername());
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponseDTO(isSuccess, isSuccess ?
 				messageService.getMessage("rejected_user_deleted") :
 				messageService.getMessage("error_delete_user"), isSuccess));
-
 	}
 
 	@PostMapping(value = "/forgot-password", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)

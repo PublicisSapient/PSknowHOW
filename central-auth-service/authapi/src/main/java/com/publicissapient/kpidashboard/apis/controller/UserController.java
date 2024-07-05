@@ -61,11 +61,10 @@ public class UserController {
 		}
 	}
 
-	@PutMapping(value = "/users/{username}/updateProfile", consumes = APPLICATION_JSON_VALUE,
+	@PutMapping(value = "/users/updateProfile", consumes = APPLICATION_JSON_VALUE,
 				produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponseDTO> updateUserProfile(@PathVariable("username") String username,
-																@Valid @RequestBody UserDTO request) {
-		boolean isSuccess = userService.updateUserProfile(username, request);
+	public ResponseEntity<ServiceResponseDTO> updateUserProfile(@Valid @RequestBody UserDTO request) {
+		boolean isSuccess = userService.updateUserProfile(request);
 
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponseDTO(
 				isSuccess, isSuccess ?
