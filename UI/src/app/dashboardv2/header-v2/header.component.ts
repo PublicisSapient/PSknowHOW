@@ -97,6 +97,9 @@ export class HeaderComponent implements OnInit {
           }
       ];
     }
+    this.sharedService.passEventToNav.subscribe(() => {
+      this.getNotification();
+    })
   }
 
   // when user would want to give access on project from notification list
@@ -124,27 +127,22 @@ export class HeaderComponent implements OnInit {
   }
 
   getNotification() {
-    const response = {
-      data: [
-        {
-          "type": "User Access Request",
-          "count": 1
-        },
-        {
-          "type": "Project Access Request",
-          "count": 0
+    this.notificationCount = 0;
+    this.httpService.getAccessRequestsNotifications().subscribe((response) => {
+      if (response && response.success) {
+        if (response.data?.length) {
+          this.notificationList = [...response.data].map((obj) => {
+            this.notificationCount = this.notificationCount + obj.count;
+            return {
+              label: obj.type + ' : ' + obj.count,
+              icon: '',
+              command: () => {
+                this.routeForAccess(obj.type);
+              },
+            };
+          });
         }
-      ]
-    }
-    this.notificationList = [...response.data].map((obj) => {
-      this.notificationCount = this.notificationCount + obj.count;
-      return {
-        label: obj.type + ' : ' + obj.count,
-        icon: '',
-        command: () => {
-          this.routeForAccess(obj.type);
-        },
-      };
+      }
     });
   }
 

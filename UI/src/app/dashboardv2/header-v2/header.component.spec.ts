@@ -138,4 +138,15 @@ describe('HeaderComponent', () => {
 
     expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/Config/Profile/RequestStatus']);
   });
+
+  it("should notification list not null if response is comming",()=>{
+    const fakeResponce = {
+      message: 'Data came successfully',
+      success: true,
+      data: [{ count: 2, type: 'User Access Request' }],
+    };
+    spyOn(httpService,'getAccessRequestsNotifications').and.returnValue(of(fakeResponce));
+    component.getNotification();
+    expect(component.notificationList).not.toBe(null);
+  })
 });
