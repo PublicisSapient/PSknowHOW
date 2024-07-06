@@ -1790,7 +1790,7 @@
   },
   {
     "fieldName": "jiraTestAutomationIssueType",
-    "fieldLabel": "In Sprint Automation - Issue Types with Linked Defect ",
+    "fieldLabel": "In Sprint Automation - Issue Types with Linked Test Case ",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
