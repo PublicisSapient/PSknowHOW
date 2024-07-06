@@ -532,6 +532,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(RESOLUTION);
 		query.fields().include(JIRA_ISSUE_STATUS);
 		query.fields().include(ADDITIONAL_FILTER);
+		query.fields().include(TYPE_NAME);
 		return operations.find(query, JiraIssue.class);
 
 	}
