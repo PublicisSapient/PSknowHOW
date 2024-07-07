@@ -151,7 +151,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 					: LocalDate.parse(endDate.split("T")[0], DATE_TIME_FORMATTER);
 			Map<String, Long> durationRangeMap = getDurationRangeMap(startLocalDate, endLocalDate);
 			duration = durationRangeMap.keySet().stream().findFirst().orElse("");
-			range = durationRangeMap.values().stream().findFirst().orElse(0L);
+			range = Math.toIntExact(durationRangeMap.values().stream().findFirst().orElse(0L));
 			fullReleaseIssueMap = prepareIssueBeforeStartDate(fullReleaseIssueMap, startLocalDate);
 
 			assert startLocalDate != null;
