@@ -1,13 +1,10 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,18 +18,20 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -40,36 +39,44 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.LoggedTimePerIssue;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculates the Sprint capacity.
  *
- * @author pkum34
+ * @author purgupta2
  */
 @Component
 @Slf4j
 public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
 	public static final String UNCHECKED = "unchecked";
-	private static final String SEPARATOR_ASTERISK = "*************************************";
-	private static final String SPRINTCAPACITYKEY = "sprintCapacityKey";
 	private static final String ESTIMATE_TIME = "Estimate_Time";
 	private static final String ESTIMATED_HOURS = "Estimated Hours";
 	private static final String LOGGED_HOURS = "Logged Work";
+	private static final String STORY_LIST = "stories";
+	private static final String SPRINTSDETAILS = "sprints";
 	private final DecimalFormat df2 = new DecimalFormat(".##");
+	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
+
 	@Autowired
 	private KpiHelperService kpiHelperService;
 	@Autowired
@@ -78,6 +85,8 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	private FilterHelperService flterHelperService;
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	/**
 	 * Gets Qualifier Type
@@ -93,8 +102,11 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	 * Gets KPI Data
 	 *
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param kpiElement
+	 *            kpiElement
 	 * @param treeAggregatorDetail
+	 *            treeAggregatorDetail
 	 * @return KpiElement
 	 * @throws ApplicationException
 	 */
@@ -118,54 +130,10 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.SPRINT_CAPACITY_UTILIZATION);
 		// 3rd change : remove code to set trendValuelist and call
 		// getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.SPRINT_CAPACITY_UTILIZATION);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.SPRINT_CAPACITY_UTILIZATION);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
-	}
-
-	/**
-	 * Fetches KPI Data from DB
-	 *
-	 * @param leafNodeList
-	 * @param startDate
-	 * @param endDate
-	 * @param kpiRequest
-	 * @return {@code Map<String, Object>}
-	 */
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
-
-		Map<String, Object> resultListMap = new HashMap<>();
-		List<JiraIssue> sprintCapacityList = kpiHelperService.fetchSprintCapacityDataFromDb(leafNodeList);
-		List<CapacityKpiData> estimateTimeList = kpiHelperService.fetchCapacityDataFromDB(leafNodeList);
-		setDbQueryLogger(sprintCapacityList);
-		resultListMap.put(SPRINTCAPACITYKEY, sprintCapacityList);
-		resultListMap.put(ESTIMATE_TIME, estimateTimeList);
-		return resultListMap;
-
-	}
-
-	/**
-	 * @param sprintCapacityMap
-	 * @return timeLogged in seconds
-	 */
-	@SuppressWarnings(UNCHECKED)
-	@Override
-	public Double calculateKPIMetrics(Map<String, Object> sprintCapacityMap) {
-		String requestTrackerId = getRequestTrackerId();
-		Double timeLoggedInMinutes = 0.0d;
-		List<JiraIssue> sprintCapacityList = (List<JiraIssue>) sprintCapacityMap.get(SPRINTCAPACITYKEY);
-		log.debug("[SPRINT-CAPACITY][{}]. Stories Count: {}", requestTrackerId, sprintCapacityList.size());
-		if (CollectionUtils.isNotEmpty(sprintCapacityList)) {
-			for (JiraIssue jiraIssue : sprintCapacityList) {
-				if (jiraIssue.getTimeSpentInMinutes() != null) {
-					timeLoggedInMinutes = timeLoggedInMinutes + jiraIssue.getTimeSpentInMinutes();
-				}
-			}
-		}
-		log.debug("[SPRINT-CAPACITY][{}]. Logged time: {}", requestTrackerId, timeLoggedInMinutes / 60);
-		return timeLoggedInMinutes / 60;
 	}
 
 	/**
@@ -173,26 +141,32 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	 * sprint wise.
 	 *
 	 * @param mapTmp
+	 *            mapTmp
 	 * @param kpiElement
+	 *            kpiElement
 	 * @param sprintLeafNodeList
+	 *            sprintLeafNodeList
 	 * @param trendValueList
+	 *            trendValueList
 	 * @param kpiRequest
+	 *            kpiRequest
 	 */
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
 
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
 		long time = System.currentTimeMillis();
-		Map<String, Object> sprintCapacityStoryMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
-		log.info("Sprint Capacity taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
+		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
+		log.info("Sprint Capacity taking fetchKPIDataFromDb {}", System.currentTimeMillis() - time);
 
 		Map<Pair<String, String>, Double> sprintWiseEstimateTimeMap = new HashMap<>();
+		List<LoggedTimePerIssue> loggedTimePerIssueList = new ArrayList<>();
+		Map<Pair<String, String>, List<JiraIssue>> issueUsedForLoggedTimeMap = new HashMap<>();
 
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseLoggedTimeMap = prepareMapForSprintAndFilters(
-				sprintWiseEstimateTimeMap, kpiRequest, sprintCapacityStoryMap);
+		Map<Pair<String, String>, Double> sprintWiseLoggedTimeMap = prepareMapForLoggedWorkAndEstimateTime(
+				sprintWiseEstimateTimeMap, resultMap, loggedTimePerIssueList, issueUsedForLoggedTimeMap);
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 
@@ -213,14 +187,12 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 				estimateTimeForCurrentLeaf = sprintWiseEstimateTimeMap.get(currentNodeEstimateTime);
 			}
 			double loggedTimeForCurrentLeaf = 0.0;
-			if (CollectionUtils.isNotEmpty(sprintWiseLoggedTimeMap.get(currentNodeIdentifier))) {
-				Map<String, Object> currentSprintLeafCapacityMap = new HashMap<>();
-				currentSprintLeafCapacityMap.put(SPRINTCAPACITYKEY, sprintWiseLoggedTimeMap.get(currentNodeIdentifier));
+			if (ObjectUtils.isNotEmpty(sprintWiseLoggedTimeMap.get(currentNodeIdentifier))) {
 				loggedTimeForCurrentLeaf = Double
-						.valueOf(df2.format(calculateKPIMetrics(currentSprintLeafCapacityMap)));
+						.parseDouble(df2.format(sprintWiseLoggedTimeMap.get(currentNodeIdentifier)));
 
-				List<JiraIssue> sprintJiraIssues = sprintWiseLoggedTimeMap.get(currentNodeIdentifier);
-				populateExcelDataObject(requestTrackerId, excelData, sprintJiraIssues, node);
+				List<JiraIssue> sprintJiraIssues = issueUsedForLoggedTimeMap.get(currentNodeIdentifier);
+				populateExcelDataObject(requestTrackerId, excelData, sprintJiraIssues, node, loggedTimePerIssueList);
 			}
 			hoverValue.put(ESTIMATED_HOURS, (int) estimateTimeForCurrentLeaf);
 			hoverValue.put(LOGGED_HOURS, (int) loggedTimeForCurrentLeaf);
@@ -238,74 +210,187 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 			mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_CAPACITY_UTILIZATION.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_CAPACITY_UTILIZATION.getColumns(sprintLeafNodeList,
+				cacheService, flterHelperService));
 	}
 
 	/**
-	 * Prepares Map for Sprint and Filters
+	 * Fetches KPI Data from DB
+	 *
+	 * @param leafNodeList
+	 *            leafNodeList
+	 * @param startDate
+	 *            startDate
+	 * @param endDate
+	 *            endDate
+	 * @param kpiRequest
+	 *            kpiRequest
+	 * @return {@code Map<String, Object>}
+	 */
+	@Override
+	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+												  KpiRequest kpiRequest) {
+		Map<String, Object> resultListMap = kpiHelperService.fetchSprintCapacityDataFromDb(kpiRequest, leafNodeList);
+		List<CapacityKpiData> estimateTimeList = kpiHelperService.fetchCapacityDataFromDB(kpiRequest, leafNodeList);
+		resultListMap.put(ESTIMATE_TIME, estimateTimeList);
+		return resultListMap;
+
+	}
+
+	/**
+	 * Prepares a map for logged work and estimate time.
 	 *
 	 * @param sprintWiseEstimateTimeMap
-	 * @param kpiRequest
-	 * @param sprintCapacityStoryMap
-	 * @return Map<Pair < String, String>, List<Feature>>
+	 *            The map containing sprint-wise estimate time.
+	 * @param resultMap
+	 *            The result map containing various data required for processing.
+	 * @param loggedTimePerIssueList
+	 *            The list to store logged time per issue.
+	 * @param issueUsedForLoggedTimeMap
+	 *            The map to store issues used for logged time.
+	 * @return A map containing logged time data.
 	 */
 	@SuppressWarnings(UNCHECKED)
-	private Map<Pair<String, String>, List<JiraIssue>> prepareMapForSprintAndFilters(
-			Map<Pair<String, String>, Double> sprintWiseEstimateTimeMap, KpiRequest kpiRequest,
-			Map<String, Object> sprintCapacityStoryMap) {
+	private Map<Pair<String, String>, Double> prepareMapForLoggedWorkAndEstimateTime(
+			Map<Pair<String, String>, Double> sprintWiseEstimateTimeMap, Map<String, Object> resultMap,
+			List<LoggedTimePerIssue> loggedTimePerIssueList,
+			Map<Pair<String, String>, List<JiraIssue>> issueUsedForLoggedTimeMap) {
 
-		Map<Pair<String, String>, List<JiraIssue>> loggedTimeMap;
-		Map<Pair<String, String>, Double> estimateTimeMap;
+		// Extract data from resultMap
+		List<JiraIssue> allJiraIssue = (List<JiraIssue>) resultMap.get(STORY_LIST);
+		List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINTSDETAILS);
+		Map<Pair<String, String>, Set<String>> parentChildMap = KpiDataHelper.getBasicConfigIdAndParentIdWiseChildrenMap(
+				allJiraIssue);
+		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = (List<JiraIssueCustomHistory>) resultMap
+				.get(JIRA_ISSUE_HISTORY_DATA);
+		List<CapacityKpiData> capacityKpiDataList = (List<CapacityKpiData>) resultMap.get(ESTIMATE_TIME);
 
-		loggedTimeMap = ((List<JiraIssue>) sprintCapacityStoryMap.get(SPRINTCAPACITYKEY)).stream()
-				.collect(Collectors.groupingBy(
-						feature -> Pair.of(feature.getBasicProjectConfigId(), feature.getSprintID()),
-						Collectors.toList()));
-		estimateTimeMap = ((List<CapacityKpiData>) sprintCapacityStoryMap.get(ESTIMATE_TIME)).stream()
+		Map<Pair<String, String>, JiraIssueCustomHistory> jiraIssueCustomHistoryMap = jiraIssueCustomHistoryList
+				.stream()
+				.collect(Collectors.toMap(history -> Pair.of(history.getBasicProjectConfigId(), history.getStoryID()),
+						history -> history, (existing, replacement) -> existing));
+
+		Map<Pair<String, String>, Double> loggedTimeMap = new HashMap<>();
+
+		if (CollectionUtils.isNotEmpty(allJiraIssue)) {
+			for (SprintDetails sprintDetail : sprintDetails) {
+				Set<JiraIssue> totalJiraIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
+						sprintDetail, sprintDetail.getTotalIssues(), allJiraIssue);
+				double timeLoggedInSeconds = 0.0d;
+
+				for (JiraIssue issue : totalJiraIssues) {
+					// timeLoggedForAnIssueInSeconds will give work log of an issue between the time
+					// period of sprint startDate to endDate
+					double timeLoggedForAnIssueInSeconds = calculateLoggedTimeForIssue(issue.getNumber(), sprintDetail,
+							parentChildMap, jiraIssueCustomHistoryMap);
+					// timeLoggedInSeconds will give work log of all issue between the time period
+					// of sprint startDate to endDate
+					timeLoggedInSeconds += timeLoggedForAnIssueInSeconds;
+					// this will be used to create map for excel population
+					loggedTimePerIssueList.add(new LoggedTimePerIssue(sprintDetail.getBasicProjectConfigId().toString(),
+							sprintDetail.getSprintID(), issue.getNumber(), timeLoggedForAnIssueInSeconds / (60 * 60)));
+				}
+
+				loggedTimeMap.put(Pair.of(sprintDetail.getBasicProjectConfigId().toString(), sprintDetail.getSprintID()),
+						timeLoggedInSeconds / (60 * 60));
+				issueUsedForLoggedTimeMap.put(
+						Pair.of(sprintDetail.getBasicProjectConfigId().toString(), sprintDetail.getSprintID()),
+						new ArrayList<>(totalJiraIssues));
+			}
+		}
+
+		Map<Pair<String, String>, Double> estimateTimeMap = buildEstimateTimeMap(capacityKpiDataList);
+		sprintWiseEstimateTimeMap.putAll(estimateTimeMap);
+
+		return loggedTimeMap;
+	}
+
+	/**
+	 * Calculates the logged time for parent and its child issues within a sprint.
+	 *
+	 * @param issueNumber
+	 *            The issue number.
+	 * @param sprintDetail
+	 *            The sprint detail.
+	 * @param parentChildMap
+	 *            The map of parent and child issues.
+	 * @param jiraIssueCustomHistoryMap
+	 *            The map of Jira issue custom history.
+	 * @return The total logged time for the issue in seconds.
+	 */
+	private double calculateLoggedTimeForIssue(String issueNumber, SprintDetails sprintDetail,
+			Map<Pair<String, String>, Set<String>> parentChildMap,
+			Map<Pair<String, String>, JiraIssueCustomHistory> jiraIssueCustomHistoryMap) {
+		List<String> parentAndChildList = new ArrayList<>();
+		parentAndChildList.add(issueNumber);//adding parent
+
+		Set<String> childIssues = parentChildMap
+				.get(Pair.of(sprintDetail.getBasicProjectConfigId().toString(), issueNumber));
+		if (childIssues != null) {
+			parentAndChildList.addAll(childIssues);//adding respective child
+		}
+
+		double timeLoggedForAnIssueInSeconds = 0;
+		for (String parentAndChildNo : parentAndChildList) {
+			JiraIssueCustomHistory jiraIssueCustomHistory = jiraIssueCustomHistoryMap
+					.get(Pair.of(sprintDetail.getBasicProjectConfigId().toString(), parentAndChildNo));
+			if (jiraIssueCustomHistory != null && jiraIssueCustomHistory.getWorkLog() != null) {
+				timeLoggedForAnIssueInSeconds += KpiDataHelper.getWorkLogs(jiraIssueCustomHistory.getWorkLog(),
+						sprintDetail.getStartDate(), sprintDetail.getEndDate());
+			}
+		}
+
+		return timeLoggedForAnIssueInSeconds;
+	}
+
+	/**
+	 * Builds a map containing the estimate time per sprint.
+	 *
+	 * @param capacityKpiDataList
+	 *            The list of capacity KPI data.
+	 * @return A map containing the estimate time per sprint.
+	 */
+	private Map<Pair<String, String>, Double> buildEstimateTimeMap(List<CapacityKpiData> capacityKpiDataList) {
+		return capacityKpiDataList.stream()
 				.collect(Collectors.toMap(
 						key -> Pair.of(key.getBasicProjectConfigId().toString(), key.getSprintID().toLowerCase()),
-						CapacityKpiData::getCapacityPerSprint, (val1, val2) -> val1 + val2));
-
-		sprintWiseEstimateTimeMap.putAll(estimateTimeMap);
-		return loggedTimeMap;
+						CapacityKpiData::getCapacityPerSprint, Double::sum));
 	}
 
 	/**
 	 * Populates validation data node of the KPI element.
 	 *
 	 * @param requestTrackerId
+	 *            requestTrackerId
 	 * @param excelData
+	 *            excelData
 	 * @param sprintCapacityList
+	 *            sprintCapacityList
 	 * @param node
+	 *            node
+	 * @param loggedTimePerIssueList
+	 *            loggedTimePerIssueList
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> sprintCapacityList, Node node) {
+			List<JiraIssue> sprintCapacityList, Node node, List<LoggedTimePerIssue> loggedTimePerIssueList) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
 			String sprintName = node.getSprintFilter().getName();
+			String sprintId = node.getSprintFilter().getId();
+			String projectConfigId = node.getProjectFilter().getBasicProjectConfigId().toString();
 
-			KPIExcelUtility.populateSprintCapacity(sprintName, sprintCapacityList, excelData);
-		}
-	}
+			// Filter loggedTimePerIssueList based on projectConfigId and sprintId
+			List<LoggedTimePerIssue> filteredLoggedTimeList = loggedTimePerIssueList.stream()
+					.filter(item -> item.getProjectConfigId().equalsIgnoreCase(projectConfigId)
+							&& item.getSprintId().equalsIgnoreCase(sprintId))
+					.toList();
 
-	/**
-	 * Sets DB Query log
-	 *
-	 * @param storyFeatureList
-	 */
-	private void setDbQueryLogger(List<JiraIssue> storyFeatureList) {
+			// Create a map of storyId and loggedTimeInHours from filtered list
+			Map<String, Double> storyIdToLoggedTimeMap = filteredLoggedTimeList.stream().collect(
+					Collectors.toMap(LoggedTimePerIssue::getStoryId, LoggedTimePerIssue::getLoggedTimeInHours,(e1,e2)->e1));
 
-		if (customApiConfig.getApplicationDetailedLogger().equalsIgnoreCase("on")) {
-			log.info(SEPARATOR_ASTERISK);
-			log.info("************* Sprint Capacity (dB) *******************");
-			if (null != storyFeatureList && !storyFeatureList.isEmpty()) {
-				List<String> storyIdList = storyFeatureList.stream().map(JiraIssue::getNumber)
-						.collect(Collectors.toList());
-				log.info("Story[{}]: {}", storyIdList.size(), storyIdList);
-			}
-			log.info(SEPARATOR_ASTERISK);
-			log.info("******************X----X*******************");
+			KPIExcelUtility.populateSprintCapacity(sprintName, sprintCapacityList, excelData, storyIdToLoggedTimeMap);
 		}
 	}
 
@@ -320,4 +405,13 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 				KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId());
 	}
 
+	/**
+	 * @param sprintCapacityMap
+	 *            sprintCapacityMap
+	 * @return timeLogged in seconds
+	 */
+	@Override
+	public Double calculateKPIMetrics(Map<String, Object> sprintCapacityMap) {
+		return null;
+	}
 }

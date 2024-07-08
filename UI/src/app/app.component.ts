@@ -24,6 +24,7 @@ import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
+import { FeatureFlagsService } from './services/feature-toggle.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -38,25 +39,34 @@ export class AppComponent implements OnInit {
 
   authorized = <boolean>true;
 
-  constructor(public router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
-    public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute) {
+  newUI: boolean = false;
+
+  constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
+    public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private feature: FeatureFlagsService) {
     this.authorized = this.getAuth.checkAuth();
   }
 
   ngOnInit() {
+    if (!this.feature.isFeatureEnabled('UI_SWITCH')) {
+      localStorage.removeItem('newUI');
+    }
+
+    this.newUI = localStorage.getItem('newUI') ? true : false;
+
+
     /** Fetch projectId and sprintId from query param and save it to global object */
     this.route.queryParams
-    .subscribe(params => {
+      .subscribe(params => {
         let nodeId = params.projectId;
         let sprintId = params.sprintId;
-        if(nodeId){
+        if (nodeId) {
           this.service.setProjectQueryParamInFilters(nodeId)
         }
-        if(sprintId){
+        if (sprintId) {
           this.service.setSprintQueryParamInFilters(sprintId)
         }
       }
-    );
+      );
 
     this.primengConfig.ripple = true;
     this.authorized = this.getAuth.checkAuth();
@@ -73,11 +83,24 @@ export class AppComponent implements OnInit {
         const data = {
           url: event.urlAfterRedirects + '/' + (this.service.getSelectedType() ? this.service.getSelectedType() : 'Scrum'),
           userRole: this.authorisation.getRole(),
-          version: this.httpService.currentVersion
+          version: this.httpService.currentVersion,
+          uiType: JSON.parse(localStorage.getItem('newUI')) === true ? 'New' : 'Old'
         };
         this.ga.setPageLoad(data);
       }
 
     });
+  }
+
+  uiSwitch(event, userChange = false) {
+    let isChecked = event.checked;
+    if (isChecked) {
+      localStorage.setItem('newUI', 'true');
+    } else {
+      localStorage.removeItem('newUI');
+    }
+    if (userChange) {
+        window.location.reload();
+    }
   }
 }

@@ -8,7 +8,7 @@
           <p-tabView class="iteration-tabs" [(activeIndex)]="activeIndex" (onChange)="handleTabChange($event)">
             <p-tabPanel *ngFor="let board of navigationTabs" [header]="board.label" [disabled]="board.count == 0">
               <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
-                <div class="p-grid p-pr-2 p-pl-2 justify-content-start p-pt-2">
+                <div class="p-grid p-pr-2 p-pl-2 justify-content-start p-pt-2 p-m-0">
                   <!-- This container will be using for  tabs in which we have full and half width both kpi - start -->
                   <ng-container *ngIf="board.width === 'half'">
                     <!-- full width kpi render start -->
@@ -666,6 +666,3 @@
 </p-dialog>
 
 <app-export-excel #exportExcel></app-export-excel>
-<ng-container *ngIf="(filterApplyData?.label == 'project' || filterApplyData?.label == 'sprint') && filterApplyData?.ids?.length == 1">
-  <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
-</ng-container>

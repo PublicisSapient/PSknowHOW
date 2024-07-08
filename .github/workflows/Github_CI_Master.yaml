@@ -15,10 +15,16 @@ on:
       - ready_for_review
       - reopened
       - unlocked
-    branches: [ master ]
+    branches: 
+      - master
+      - develop
+      - qa-master
   pull_request_review:
     types: [edited, dismissed]
-    branches: [ master ]
+    branches: 
+      - master
+      - develop
+      - qa-master
 env:
   GITHUB_HEAD_NAME: $GITHUB_HEAD_REF
   sonartoken: ${{secrets.SONARQUBE_TOKEN}}

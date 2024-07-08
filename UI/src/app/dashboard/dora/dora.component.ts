@@ -51,7 +51,6 @@ export class DoraComponent implements OnInit {
     tableValues: []
   };
   kpiExcelData;
-  isGlobalDownload = false;
   kpiTrendsObj = {};
   selectedTab = 'dora';
   showCommentIcon = false;
@@ -132,9 +131,9 @@ export class DoraComponent implements OnInit {
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
-    this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId)
-    console.log(this.kpiList);
-    if (this.updatedConfigGlobalData?.length === 0) {
+    this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId);
+    const shownKpis = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
+    if (shownKpis?.length === 0) {
       this.noKpis = true;
     } else {
       this.noKpis = false;
@@ -382,11 +381,6 @@ export class DoraComponent implements OnInit {
     if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
-
-    // if (this.kpiChartData && Object.keys(this.kpiChartData) && Object.keys(this.kpiChartData).length === this.updatedConfigGlobalData.length) {
-    // if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
-    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    // }
     this.setMaturityColor(kpiId, this.kpiSelectedFilterObj[kpiId]);
   }
 

@@ -54,6 +54,7 @@ public class ConfigDetailsController {
 	 *            request
 	 * @return ResponseEntity<ConfigDetails>
 	 */
+	//Todo: to be removed after V2 become primary view
 	@RequestMapping(value = "/configDetails", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ConfigDetails> getConfigDetails(HttpServletRequest request) {
 		log.info("ConfigDetailsController::getConfigDetails start");

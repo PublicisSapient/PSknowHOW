@@ -27,11 +27,15 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.ObjIntConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.model.application.Filters;
+import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -97,6 +101,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	private UserInfoCustomRepository userInfoCustomRepository;
+	@Autowired
+	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
 
 	/**
 	 * This method return user board config if present in db else return a default
@@ -412,9 +418,77 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 		setUserBoardInfo(kpiCategoryBoardId, otherBoardNameList, otherBoards, false);
 
+		setFiltersInfoInBoard(scrumBoards,kanbanBoards,otherBoards);
+
 		newUserBoardConfig.setScrum(scrumBoards);
 		newUserBoardConfig.setKanban(kanbanBoards);
 		newUserBoardConfig.setOthers(otherBoards);
+	}
+
+	/**
+	 * Sets the filters for the provided scrum, kanban, and other boards. Filters
+	 * are fetched from the cache, modified to update specific label names, and then
+	 * assigned to each board based on its boardId.
+	 *
+	 * @param scrumBoards
+	 *            the list of scrum boards to set filters for
+	 * @param kanbanBoards
+	 *            the list of kanban boards to set filters for
+	 * @param otherBoards
+	 *            the list of other boards to set filters for
+	 */
+	private void setFiltersInfoInBoard(List<BoardDTO> scrumBoards, List<BoardDTO> kanbanBoards,
+			List<BoardDTO> otherBoards) {
+		// Fetch all filters and filter categories once
+		List<Filters> filtersList = configHelperService.loadAllFilters();
+		List<AdditionalFilterCategory> filterCategory = additionalFilterCategoryRepository.findAll();
+		String sqdFilterCategoryId;
+		if (!filterCategory.isEmpty()) {
+			sqdFilterCategoryId = filterCategory.get(0).getFilterCategoryId();
+		} else {
+			sqdFilterCategoryId = "sqd";
+		}
+
+		// Update the labelName for additional filters
+		filtersList.forEach(filter -> {
+			if (filter.getAdditionalFilters() != null) {
+				filter.getAdditionalFilters().stream()
+						.filter(f -> f.getDefaultLevel().getLabelName().equalsIgnoreCase("sqd"))
+						.forEach(f -> f.getDefaultLevel().setLabelName(sqdFilterCategoryId));
+			}
+		});
+
+		// Create a map for fast lookup by boardId
+		Map<Integer, Filters> filtersMap = filtersList.stream()
+				.collect(Collectors.toMap(Filters::getBoardId, Function.identity()));
+
+		// Helper method to set filters for a list of boards
+		ObjIntConsumer<List<BoardDTO>> setFiltersForBoards = (boards, offset) -> boards
+				.forEach(boardDTO -> boardDTO.setFilters(copyFiltersWithoutId(
+						filtersMap.getOrDefault(boardDTO.getBoardId() - offset, filtersMap.get(1)))));
+
+		// Set filters for each type of board
+		setFiltersForBoards.accept(scrumBoards, 0);
+		setFiltersForBoards.accept(kanbanBoards, scrumBoards.size());
+		setFiltersForBoards.accept(otherBoards, 0);
+	}
+
+	/**
+	 * Creates a copy of the provided Filters object without including the id and
+	 * boardId fields.
+	 *
+	 * @param original
+	 *            the original Filters object to copy
+	 * @return a new Filters object with the same values as the original, except for
+	 *         the id and boardId fields
+	 */
+	private Filters copyFiltersWithoutId(Filters original) {
+		Filters copy = new Filters();
+		copy.setProjectTypeSwitch(original.getProjectTypeSwitch());
+		copy.setPrimaryFilter(original.getPrimaryFilter());
+		copy.setParentFilter(original.getParentFilter());
+		copy.setAdditionalFilters(original.getAdditionalFilters());
+		return copy;
 	}
 
 	/**
@@ -486,6 +560,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		BoardDTO asPerCategoryBoard = new BoardDTO();
 		asPerCategoryBoard.setBoardId(kpiCategoryBoardId);
 		asPerCategoryBoard.setBoardName(kpiCategory.getCategoryName());
+		asPerCategoryBoard.setBoardSlug(kpiCategory.getCategoryId().toLowerCase());
 		List<BoardKpisDTO> boardKpisList = new ArrayList<>();
 		kpiCategoryMappingList.stream().filter(kpiCategoryMapping -> kpiCategoryMapping.isKanban() == kanban)
 				.sorted(Comparator.comparing(KpiCategoryMapping::getKpiOrder))
@@ -513,6 +588,10 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		BoardDTO asPerCategoryBoard = new BoardDTO();
 		asPerCategoryBoard.setBoardId(boardId);
 		asPerCategoryBoard.setBoardName(boardName);
+		if(boardName.equalsIgnoreCase("Kpi Maturity"))
+			asPerCategoryBoard.setBoardSlug("Maturity");
+		else
+			asPerCategoryBoard.setBoardSlug(boardName.toLowerCase());
 		List<BoardKpisDTO> boardKpisList = new ArrayList<>();
 		kpiMasterRepository.findByKpiCategoryAndKanban(boardName, kanban).stream()
 				.sorted(Comparator.comparing(KpiMaster::getDefaultOrder))
@@ -541,6 +620,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		BoardDTO defaultBoard = new BoardDTO();
 		defaultBoard.setBoardId(boardId);
 		defaultBoard.setBoardName(boardName);
+		defaultBoard.setBoardSlug("mydashboard");
 		List<BoardKpisDTO> boardKpisList = new ArrayList<>();
 		kpiMasterRepository.findByKanbanAndKpiCategoryNotIn(kanban, kpiCategory).stream()
 				.sorted(Comparator.comparing(KpiMaster::getDefaultOrder))

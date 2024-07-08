@@ -245,8 +245,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     }
     //Add xCaption
     d3.select(elem).select('#container')
-      .select('.x-caption')
-      .append('span')
+      .select('.x-caption span')
       .text(this.xCaption);
 
     //Add YCaption

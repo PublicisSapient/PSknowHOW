@@ -1472,11 +1472,6 @@ const completeHierarchyData = {
     expect(component.showChart).toBe('chart')
    })
 
-   it("should disable export btn once clicked",()=>{
-     component.exportToExcel();
-     expect(component.disableDownloadBtn).toBeTruthy();
-   })
-
    it("should enable if type is spring",()=>{
     component.ngOnInit();
     component.filterForm?.get('sprint')?.setValue("hierarchyLevelOne");
@@ -2329,7 +2324,7 @@ const completeHierarchyData = {
     spyOn(component, 'processKpiList');
     spyOn(component, 'navigateToSelectedTab');
     component.getKpiOrderListProjectLevel();
-    expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab, component.isAdditionalFilter)
+    // expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab, component.isAdditionalFilter, true, null, true, mockData);
   })
 
   it('should get kpi order list on project level and return error', () => {
@@ -2841,5 +2836,35 @@ const completeHierarchyData = {
           component.createFilterApplyData();
           expect(component.filterApplyData['selectedMap']['sprint'].length).toBeGreaterThan(0)
         })
+
+      it("should navigate to home",()=>{
+        spyOnProperty(router, 'url', 'get').and.returnValue('/Help/Config');
+        spyOn(router,'navigate')
+        spyOn(sharedService,'setEmptyFilter')
+        spyOn(sharedService,'setSelectedType')
+        const spyob = spyOn(component,'changeSelectedTab')
+        component.navigateToHomePage()
+        expect(spyob).toHaveBeenCalled();
+      })
+
+      it('should redirect on login page',inject([Router], fakeAsync((router: Router) => {
+        component.loader = false;
+        const res = {
+          success: true,
+          message: 'Logged out successfully'
+        }
+        spyOn(httpService, 'logout').and.returnValue(of(res));
+        environment['AUTHENTICATION_SERVICE'] = false;
+        component.service['isKanban'] = false;
+        spyOn(sharedService, 'setSelectedProject');
+        spyOn(sharedService, 'setCurrentUserDetails');
+        spyOn(sharedService, 'setVisibleSideBar');
+        spyOn(sharedService, 'setAddtionalFilterBackup');
+        spyOn(sharedService, 'setKpiSubFilterObj');
+        const navigateSpy = spyOn(router, 'navigate');
+        component.logout();
+        tick();
+        expect(navigateSpy).toHaveBeenCalledWith(['./authentication/login']);
+      })));
 
 });

@@ -80,6 +80,7 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraDodKPI37;
 	private List<ConfigurationHistoryChangeLog> historyjiraDodKPI142;
 	private List<ConfigurationHistoryChangeLog> historyjiraDodKPI144;
+	private List<ConfigurationHistoryChangeLog> historyjiraDodKPI143;
 
 	private List<ConfigurationHistoryChangeLog> historyjiraDefectCreatedStatus;
 	private List<ConfigurationHistoryChangeLog> historyjiraDefectCreatedStatusKPI14;

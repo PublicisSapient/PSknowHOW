@@ -120,7 +120,7 @@ export class MilestoneComponent implements OnInit {
     this.enableByUser = disabledKpis?.length ? true : false;
     /** noKpis - if true, all kpis are not shown to the user (not showing kpis to the user) **/
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown);
-    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
+    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.isEnabled);
 
     for (let i = 0; i < this.upDatedConfigData?.length; i++) {
       let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
@@ -352,8 +352,7 @@ export class MilestoneComponent implements OnInit {
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
       if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList) && filters && Object.keys(filters)?.length > 0) {
         this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
-      }
-      else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
+      } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
@@ -390,7 +389,7 @@ export class MilestoneComponent implements OnInit {
         filters: this.allKpiArray[idx]?.filterGroup,
         modalHeads:  this.allKpiArray[idx]?.modalHeads
       });
-      
+
     } else {
       /**if trendValueList is an object */
       if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
@@ -430,7 +429,9 @@ export class MilestoneComponent implements OnInit {
             this.kpiChartData[kpiId] = [...trendValueList];
           } else {
             const obj = JSON.parse(JSON.stringify(trendValueList));
-            this.kpiChartData[kpiId]?.push(obj);
+            if(obj?.length > 0 || Object.keys(obj)?.length > 0){
+              this.kpiChartData[kpiId]?.push(obj);
+            }
           }
         }
       }
@@ -479,11 +480,21 @@ export class MilestoneComponent implements OnInit {
         } else {
           this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
         }
-      }
-      else if (trendValueList?.length > 0) {
+      } else if (trendValueList?.length > 0) {
         this.kpiChartData[kpiId] = [...trendValueList[0]?.value];
       } else {
+        /** when there are no kpi level filters */
         this.kpiChartData[kpiId] = [];
+        if (trendValueList && trendValueList?.hasOwnProperty('value') && trendValueList['value']?.length > 0) {
+          this.kpiChartData[kpiId]?.push(trendValueList['value']?.filter((x) => x['filter1'] == 'Overall')[0]);
+        } else if (trendValueList?.length > 0) {
+          this.kpiChartData[kpiId] = [...trendValueList];
+        } else {
+          const obj = JSON.parse(JSON.stringify(trendValueList));
+          if(obj?.length > 0 || Object.keys(obj)?.length > 0){
+            this.kpiChartData[kpiId]?.push(obj);
+          }
+        }
       }
     }
   }
@@ -653,25 +664,20 @@ export class MilestoneComponent implements OnInit {
   handleTabChange(event) {
     this.activeIndex = event.index;
   }
-
   checkIfDataPresent(data) {
     let dataCount = 0;
-    for(let i = 0; i<data?.length; i++){
-      if(data[i]?.data && !isNaN(parseInt(data[i]?.data))) {
-        dataCount += data[i]?.data;
-        if(parseInt(dataCount + '') > 0) {
-          return true;
-        }
-      } else if(data[i].value && !isNaN(parseInt(data[i]?.value[0]?.data))) {
-        for(let j = 0; j < data[i]?.value?.length; j++){
-          dataCount += data[i]?.value[j]?.data;
-          if(parseInt(dataCount + '') > 0) {
-            return true;
+    data?.forEach(item => {
+      if (item?.data && !isNaN(parseInt(item?.data))) {
+        dataCount += item?.data;
+      } else if (item.value) {
+        item?.value?.forEach(val => {
+          if (!isNaN(parseInt(val?.data))) {
+            dataCount += val?.data;
           }
-        }
+        });
       }
-    }
-    return false;
+    });
+    return parseInt(dataCount + '') > 0;
   }
 
   /** unsubscribing all Kpi Request  */

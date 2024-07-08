@@ -68,6 +68,7 @@ public final class CommonConstant {
 	public static final String REJECTION_RESOLUTION = "rejectionResolution";
 	public static final String QA_ROOT_CAUSE = "qaRootCause";
 	public static final String UAT_DEFECT = "uatdefect";
+	public static final String FILTERS = "filters";
 
 	public static final String TICKET_CLOSED_STATUS = "ticketClosedStatus";
 	public static final String TICKET_LIVE_STATUS = "ticketLiveStatus";
@@ -336,6 +337,8 @@ public final class CommonConstant {
 	public static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
 	public static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; // NOSONAR
+    public static final String PARENT_STORY_ID = "parentStoryId";
+	public static final String NUMBER = "number";
 
 	//-- auth-N-auth changes ends here --
 

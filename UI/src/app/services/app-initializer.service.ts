@@ -24,6 +24,8 @@ import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/un
 import { AuthGuard } from './auth.guard';
 import { SsoAuthFailureComponent } from '../component/sso-auth-failure/sso-auth-failure.component';
 import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
+import { DashboardV2Component } from '../dashboardv2/dashboard-v2/dashboard-v2.component';
+import { ExecutiveV2Component } from '../dashboardv2/executive-v2/executive-v2.component';
 
 @Injectable({
   providedIn: 'root'
@@ -41,12 +43,12 @@ export class AppInitializerService {
         canActivate: [SSOGuard]
     },
     {
-        path: 'dashboard', component: DashboardComponent,
+        path: 'dashboard', component: !localStorage.getItem('newUI') ? DashboardComponent : DashboardV2Component,
         canActivateChild: [FeatureGuard],
         children: [
             { path: '', redirectTo: 'iteration', pathMatch: 'full' },
             {
-                path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'mydashboard', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "My Dashboard"
                 }
@@ -58,7 +60,7 @@ export class AppInitializerService {
                 }
             },
             {
-                path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'developer', component: !localStorage.getItem('newUI') ? DeveloperComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "Developer"
                 }
@@ -76,7 +78,7 @@ export class AppInitializerService {
                 }
             },
             {
-                path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'release', component: !localStorage.getItem('newUI') ? MilestoneComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "Release"
                 }
@@ -94,7 +96,7 @@ export class AppInitializerService {
                     feature: "Config"
                 }
             },
-            { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+            { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full' },
             { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
             { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
 
@@ -107,12 +109,11 @@ export class AppInitializerService {
   routesAuth: Routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     {
-        path: 'dashboard', component: DashboardComponent,
-        canActivateChild: [FeatureGuard],
+        path: 'dashboard', component: !localStorage.getItem('newUI') ? DashboardComponent : DashboardV2Component,
         children: [
             { path: '', redirectTo: 'iteration', pathMatch: 'full' },
             {
-                path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'mydashboard', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "My Dashboard"
                 }
@@ -124,7 +125,7 @@ export class AppInitializerService {
                 }
             },
             {
-                path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'developer', component: !localStorage.getItem('newUI') ? DeveloperComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "Developer"
                 }
@@ -142,7 +143,7 @@ export class AppInitializerService {
                 }
             },
             {
-                path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'release', component: !localStorage.getItem('newUI') ? MilestoneComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "Release"
                 }
@@ -162,7 +163,7 @@ export class AppInitializerService {
                     feature: "Config"
                 }
             },
-            { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+            { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full' },
 
         ], canActivate: [AuthGuard],
     },
@@ -170,9 +171,9 @@ export class AppInitializerService {
     { path: '**', redirectTo: 'pageNotFound' }
   ];
 
-  checkFeatureFlag() {
+  async checkFeatureFlag() {
     let loc = window.location.hash ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1])) : '';
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
         if (!environment['production']) {
             this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
             this.validateToken(loc);
@@ -196,7 +197,7 @@ export class AppInitializerService {
 
 
         // load google Analytics script on all instances except local and if customAPI property is true
-        let addGAScript = this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
+        let addGAScript = await this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS');
         if (addGAScript) {
             if (window.location.origin.indexOf('localhost') === -1) {
                 this.ga.load('gaTagManager').then(data => {
@@ -210,11 +211,11 @@ export class AppInitializerService {
 
   validateToken(location) {
     return new Promise<void>((resolve, reject) => {
-        if (!environment['AUTHENTICATION_SERVICE'] == true) {
+        if (!environment['AUTHENTICATION_SERVICE']) {
             this.router.resetConfig([...this.routes]);
             this.router.navigate([location]);
         } else {
-           
+
             let obj = {
                 'resource': environment.RESOURCE,
             };
@@ -228,6 +229,10 @@ export class AppInitializerService {
                     this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
                 }
                 if(location){
+                    let redirect_uri = JSON.parse(localStorage.getItem('redirect_uri'));
+                    if(redirect_uri){
+                        localStorage.removeItem('redirect_uri');
+                    }
                     this.router.navigateByUrl(location);
                 }else{
                     this.router.navigate(['/dashboard/iteration']);

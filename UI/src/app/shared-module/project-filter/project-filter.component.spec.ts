@@ -8,6 +8,7 @@ import { MessageService } from 'primeng/api';
 import { ProjectFilterComponent } from './project-filter.component';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { environment } from 'src/environments/environment';
+import { of } from 'rxjs';
 
 const allProjectsData = require('../../../test/resource/projectFilterAllProjects.json');
 const filteredData = [
@@ -78,6 +79,7 @@ describe('ProjectFilterComponent', () => {
   let fixture: ComponentFixture<ProjectFilterComponent>;
   let httpService: HttpService;
   let sharedService: SharedService;
+  let messageService: MessageService;
   let httpMock;
   const baseUrl = environment.baseUrl;
 
@@ -97,7 +99,7 @@ describe('ProjectFilterComponent', () => {
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
     httpMock = TestBed.inject(HttpTestingController);
-    // fixture.detectChanges();
+    messageService = TestBed.inject(MessageService);
   });
 
   it('should create', () => {
@@ -153,4 +155,31 @@ describe('ProjectFilterComponent', () => {
     });
     expect(component.filteredData).toEqual(filteredData);
   });
+
+  it('should give error on getting projects',() => {
+    component.resetDropdowns = true;
+    const err = {
+      error: {
+        message: 'Error'
+      }
+    }
+    spyOn(httpService, 'getAllProjects').and.returnValue(of(err));
+    const spy = spyOn(messageService, 'add');
+    component.getProjects()
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should filter data when filterType is available', () => {
+    component.valueRemoved = {};
+    const event = {
+      stopPropagation: jasmine.createSpy('stopPropagation')
+    };
+    component.data = allProjectsData.data;
+    const filterType = 'hierarchyLevelOne';
+    const filterValue = 'Sample One';
+    component.filteredData = [];
+    component.selectedVal = {};
+    component.filterData(event, filterType, filterValue);
+    expect(component.filteredData).toEqual(component.data);
+  })
 });

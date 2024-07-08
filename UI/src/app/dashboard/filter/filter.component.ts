@@ -319,7 +319,6 @@ export class FilterComponent implements OnInit, OnDestroy {
             ]
           }
         }
-        // this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
         this.service.setSelectedDateFilter(this.selectedDayType);
         this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
         this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
@@ -368,7 +367,6 @@ export class FilterComponent implements OnInit, OnDestroy {
         label: 'Settings',
         icon: 'fa fa-cog',
         command: () => {
-          // this.service.setSideNav(false);
           this.router.navigate(['/dashboard/Config/']);
         },
       });
@@ -461,7 +459,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     };
 
     this.setHierarchyLevels();
-    this.ga.setPageLoad(data);
     this.getKpiOrderedList();
     this.navigateToSelectedTab();
   }
@@ -794,13 +791,11 @@ this.resetAddtionalFIlters();
             this.filterApplyData['ids'].push(temp[j].nodeId);
           }
           this.filterApplyData['label'] = temp[j]?.labelName;
-          if (temp[j].labelName != 'sprint' || this.filterApplyData['selectedMap']['sprint']?.length == 0) {
-            if(this.selectedTab.toLowerCase() === 'iteration'){
-              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.parentId[0],this.filterApplyData['selectedMap']['project'])
-              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['sprint'])
-            }else{
-              this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['project'])
-            }
+          if(this.selectedTab?.toLowerCase() === 'iteration'){
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.parentId[0],this.filterApplyData['selectedMap']['project'])
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['sprint'])
+          }else{
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['project'])
           }
         }
       } else {
@@ -880,11 +875,8 @@ this.resetAddtionalFIlters();
       if(kpisShownCount <= 0){
         this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
         this.service.setSelectedTab(this.selectedTab);
-        // const selectedTab = this.selectedTab;
-        // const selectedType = this.kanban ? 'kanban' : 'scrum';
         this.backToDashboardLoader = false
         this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
-        // this.service.onTypeOrTabRefresh.next({ selectedTab, selectedType });
       }
     }
   }
@@ -942,7 +934,7 @@ this.resetAddtionalFIlters();
           this.service.setDashConfigData(this.kpiListData);
           const selectedType = this.kanban ? 'kanban' : 'scrum';
           this.service.setUpdatedBoardList(this.kpiListData, selectedType);
-          this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter);
+          this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter, true, null, true, this.kpiListData);
           this.processKpiList();
           this.navigateToSelectedTab();
         }
@@ -1384,6 +1376,7 @@ this.resetAddtionalFIlters();
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
       if (this.selectedSprint && Object.keys(this.selectedSprint)?.length > 0) {
         this.service.setCurrentSelectedSprint(this.selectedSprint);
+        this.service.setSprintForRnR(this.selectedSprint);
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
          if(this.filterForm.get('sqd')){
@@ -1538,11 +1531,6 @@ this.resetAddtionalFIlters();
   showChartToggle(val) {
     this.showChart = val;
     this.service.setShowTableView(this.showChart);
-  }
-
-  exportToExcel($event = null) {
-    this.disableDownloadBtn = true;
-    this.service.setGlobalDownload(true);
   }
 
   getNotification() {
@@ -1833,7 +1821,7 @@ this.resetAddtionalFIlters();
 
   onUpdateKPI() {
     this.lastSyncData = {};
-    this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+    this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter, true, null, true, this.kpiListData);
   }
 
   getRecentComments() {
