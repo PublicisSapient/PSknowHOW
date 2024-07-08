@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.azure.rest;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,7 @@ public class AzureController {
 	public ResponseEntity<ServiceResponse> getAzurePipelineNameAndDefinitionIdList(@PathVariable String connectionId,
 			@PathVariable String version) {
 		ServiceResponse response;
+		version = CommonUtils.sanitizeUserInput(version);
 		List<AzurePipelinesResponseDTO> pipelinesResponseList = azureToolConfigService
 				.getAzurePipelineNameAndDefinitionIdList(connectionId, version);
 		if (CollectionUtils.isEmpty(pipelinesResponseList)) {
