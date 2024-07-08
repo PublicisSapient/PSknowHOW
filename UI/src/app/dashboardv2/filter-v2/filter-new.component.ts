@@ -55,7 +55,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   @ViewChild('showHideDdn') showHideDdn: MultiSelect;
   enableShowHideApply: boolean = true;
   showHideSelectAll: boolean = false;
-  showChart: string = 'chart'
+  showChart: string = 'chart';
+  iterationConfigData = {};
   constructor(
     private httpService: HttpService,
     public service: SharedService,
@@ -122,7 +123,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.additionalFiltersArr = [];
             this.populateAdditionalFilters(this.previousFilterEvent);
           }
-        })
+        }),
+
+      this.service.iterationCongifData.subscribe((iterationDetails) => {
+        console.log(iterationDetails)
+        this.iterationConfigData = iterationDetails;
+      })
     );
   }
 
@@ -404,6 +410,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setSprintDetails(event) {
+    console.log(event[0])
     const currentDate = new Date().getTime();
     const stopDate = new Date(event[0].sprintEndDate).getTime();
     const timeRemaining = stopDate - currentDate;
