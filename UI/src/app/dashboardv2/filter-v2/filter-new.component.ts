@@ -59,7 +59,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   iterationConfigData = {};
   constructor(
     private httpService: HttpService,
-    public sharedService: SharedService,
+    public service: SharedService,
     private helperService: HelperService,
     public cdr: ChangeDetectorRef,
     private messageService: MessageService,
@@ -67,18 +67,18 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.selectedTab = this.sharedService.getSelectedTab() || 'iteration';
+    this.selectedTab = this.service.getSelectedTab() || 'iteration';
     this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
     this.subscriptions.push(
-      this.sharedService.globalDashConfigData.subscribe((boardData) => {
+      this.service.globalDashConfigData.subscribe((boardData) => {
         this.dashConfigData = boardData;
         this.processBoardData(boardData);
       })
     );
 
     this.subscriptions.push(
-      this.sharedService.onTypeOrTabRefresh
+      this.service.onTypeOrTabRefresh
         .subscribe(data => {
 
           this.selectedTab = data.selectedTab;
@@ -113,9 +113,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           };
           if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release' || this.selectedTab.toLowerCase() === 'dora' || this.selectedTab.toLowerCase() === 'developer' || this.selectedTab.toLowerCase() === 'maturity') {
             this.showChart = 'chart';
-            this.sharedService.setShowTableView(this.showChart);
+            this.service.setShowTableView(this.showChart);
           }
-          this.sharedService.setSelectedDateFilter(this.selectedDayType);
+          this.service.setSelectedDateFilter(this.selectedDayType);
           this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
           this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
           // Populate additional filters on MyKnowHOW, Speed and Quality
@@ -125,7 +125,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           }
         }),
 
-      this.sharedService.iterationCongifData.subscribe((iterationDetails) => {
+      this.service.iterationCongifData.subscribe((iterationDetails) => {
         console.log(iterationDetails)
         this.iterationConfigData = iterationDetails;
       })
@@ -149,9 +149,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.kanban = false;
     }
     this.filterApplyData = {};
-    this.sharedService.setSelectedType(this.selectedType);
+    this.service.setSelectedType(this.selectedType);
     this.helperService.setBackupOfFilterSelectionState({ 'selected_type': this.selectedType })
-    this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+    this.service.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
   }
 
   processBoardData(boardData) {
@@ -240,7 +240,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
     }
     if (Object.keys(this.colorObj).length) {
-      this.sharedService.setColorObj(this.colorObj);
+      this.service.setColorObj(this.colorObj);
     }
   }
 
@@ -304,9 +304,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
       // set selected projects(trends)
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
-        this.sharedService.setSelectedTrends(event);
+        this.service.setSelectedTrends(event);
       } else {
-        this.sharedService.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
+        this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
       }
 
       // Populate additional filters on MyKnowHOW, Speed and Quality
@@ -387,12 +387,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       // Promise.resolve(() => {
       if (this.selectedLevel) {
         if (typeof this.selectedLevel === 'string') {
-          this.sharedService.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
         } else {
-          this.sharedService.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
         }
       } else {
-        this.sharedService.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       }
       // });
     } else if (event && event['additional_level']) {
@@ -426,7 +426,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
     this.selectedSprint = event[0];
-    this.sharedService.setCurrentSelectedSprint(this.selectedSprint);
+    this.service.setCurrentSelectedSprint(this.selectedSprint);
   }
 
   formatDate(dateString) {
@@ -458,33 +458,33 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
     // Promise.resolve(() => {
     if (!this.selectedLevel) {
-      this.sharedService.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       return;
     }
 
     if (typeof this.selectedLevel === 'string') {
-      this.sharedService.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       return;
     }
-    this.sharedService.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+    this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
     // });
   }
 
   applyDateFilter() {
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
-    this.sharedService.setSelectedDateFilter(this.selectedDayType);
+    this.service.setSelectedDateFilter(this.selectedDayType);
     this.toggleDateDropdown = false;
     this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
     this.filterApplyData['ids'] = [this.selectedDateValue];
 
     if (this.selectedLevel) {
       if (typeof this.selectedLevel === 'string') {
-        this.sharedService.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       } else {
-        this.sharedService.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       }
     } else {
-      this.sharedService.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
     }
   }
 
@@ -528,13 +528,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
     });
 
-    this.sharedService.setAdditionalFilters(this.additionalFiltersArr);
+    this.service.setAdditionalFilters(this.additionalFiltersArr);
   }
 
   getProcessorsTraceLogsForProject() {
-    this.httpService.getProcessorsTraceLogsForProject(this.sharedService.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
+    this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
       if (response.success) {
-        this.sharedService.setProcessorLogDetails(response.data);
+        this.service.setProcessorLogDetails(response.data);
       } else {
         this.messageService.add({
           severity: 'error',
@@ -654,7 +654,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             summary: 'Successfully Saved',
             detail: '',
           });
-          this.sharedService.setDashConfigData(this.dashConfigData);
+          this.service.setDashConfigData(this.dashConfigData);
           // this.toggleDropdown['showHide'] = false;
         } else {
           this.messageService.add({
@@ -687,7 +687,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         kpiDetail: element.kpiDetail
       }
     });
-    this.dashConfigData['username'] = this.sharedService.getCurrentUserDetails('user_name');
+    this.dashConfigData['username'] = this.service.getCurrentUserDetails('user_name');
   }
 
   showHideSelectAllApply() {
@@ -702,6 +702,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   showChartToggle(val) {
     this.showChart = val;
-    this.sharedService.setShowTableView(this.showChart);
+    this.service.setShowTableView(this.showChart);
   }
 }
