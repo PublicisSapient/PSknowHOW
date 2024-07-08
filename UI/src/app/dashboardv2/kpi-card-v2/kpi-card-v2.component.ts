@@ -248,7 +248,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.displayConfigModel = true;
       this.lastSyncTime = this.showExecutionDate(this.kpiData.kpiDetail.combinedKpiSource || this.kpiData.kpiDetail.kpiSource);
       this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`).subscribe(data => {
-        if (data && data['success']) {
+        if (data?.success) {
           this.fieldMappingConfig = data?.data['fieldConfiguration'];
           const kpiSource = data?.data['kpiSource']?.toLowerCase();
           const toolConfigID = data?.data['projectToolConfigId'];
@@ -256,10 +256,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           if (this.fieldMappingConfig.length > 0) {
             this.selectedConfig = { ...selectedTrend[0], id: selectedTrend[0]?.basicProjectConfigId }
             this.getFieldMapping();
-            if (this.service.getFieldMappingMetaData().length && this.kpiData.kpiId !== 'kpi150') {
-              const metaDataList = this.service.getFieldMappingMetaData();
+            const metaDataList = this.service.getFieldMappingMetaData();
+            if (metaDataList.length && this.kpiData.kpiId !== 'kpi150') {
               const metaData = metaDataList.find(data => data.projectID === selectedTrend[0]?.basicProjectConfigId && data.kpiSource === kpiSource);
-              if (metaData && metaData.metaData && this.kpiData.kpiId !== 'kpi150') {
+              if (metaData?.metaData) {
                 this.fieldMappingMetaData = metaData.metaData;
               } else {
                 this.getFieldMappingMetaData(kpiSource);
