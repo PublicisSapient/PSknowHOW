@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_940;
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1010;
 
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
