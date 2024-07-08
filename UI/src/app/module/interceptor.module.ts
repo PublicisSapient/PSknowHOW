@@ -37,6 +37,13 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         const httpErrorHandler = req.headers.get('httpErrorHandler') || 'global';
         const requestArea = req.headers.get('requestArea') || 'internal';
 
+        let cookie = document.cookie?.split(';');
+        let authCookie_EXPIRY = cookie?.find(x => x.includes('authCookie_EXPIRY'));
+        authCookie_EXPIRY = authCookie_EXPIRY?.split('=')[1];
+        if(!authCookie_EXPIRY){
+            this.redirectToLogin();
+        }
+        
         if (req.headers.get('httpErrorHandler')) {
             req = req.clone({ headers: req.headers.delete('httpErrorHandler') });
         }
@@ -97,17 +104,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                                 this.service.setCurrentUserDetails({});
                                 console.log('SSO_LOGIN', true)
                             }else{
-                                if(environment.AUTHENTICATION_SERVICE){
-                                    /** redirect to central login url*/
-                                    let redirect_uri = window.location.href;
-                                    localStorage.setItem('redirect_uri', JSON.stringify(redirect_uri))
-                                    if(environment.CENTRAL_LOGIN_URL){
-                                        window.location.href = environment.CENTRAL_LOGIN_URL + "?redirect_uri=" + redirect_uri;
-                                    }
-                                }else{
-                                    this.service.setCurrentUserDetails({});
-                                    this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
-                                }
+                                this.redirectToLogin();
                             }
                         }
 
@@ -154,6 +151,20 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             }
         });
         return result;
+    }
+
+    redirectToLogin(){
+        if(environment.AUTHENTICATION_SERVICE){
+            /** redirect to central login url*/
+            let redirect_uri = window.location.href;
+            localStorage.setItem('redirect_uri', JSON.stringify(redirect_uri))
+            if(environment.CENTRAL_LOGIN_URL){
+                window.location.href = environment.CENTRAL_LOGIN_URL + "?redirect_uri=" + redirect_uri;
+            }
+        }else{
+            this.service.setCurrentUserDetails({});
+            this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
+        }
     }
 }
 
