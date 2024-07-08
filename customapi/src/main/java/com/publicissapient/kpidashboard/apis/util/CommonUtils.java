@@ -38,6 +38,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -67,6 +68,9 @@ public final class CommonUtils {
 
 	private static final String POSITIVE_CASE = "PositiveCase";
 	private static final String NEGATIVE_CASE = "NegativeCase";
+
+	private static final String[] ALLOWED_SCHEMES = { "http", "https" };
+	private static final UrlValidator URL_VALIDATOR = new UrlValidator(ALLOWED_SCHEMES);
 
 	private CommonUtils() {
 	}
@@ -509,8 +513,11 @@ public final class CommonUtils {
 
 	/**
 	 * Method to get next working date i.e excluding sat sun
-	 * @param currentDate currentDate
-	 * @param daysToAdd count of days to add
+	 * 
+	 * @param currentDate
+	 *            currentDate
+	 * @param daysToAdd
+	 *            count of days to add
 	 * @return
 	 */
 	public static java.time.LocalDate getNextWorkingDate(java.time.LocalDate currentDate, long daysToAdd) {
@@ -542,7 +549,6 @@ public final class CommonUtils {
 		}
 		return sb.toString();
 	}
-
 
 	// -- auth-N-auth changes starts here ------
 
@@ -590,15 +596,26 @@ public final class CommonUtils {
 	 */
 	public static String sanitizeUserInput(String input) {
 		String sanitizedString = StringEscapeUtils.escapeHtml(input);
-		return StringUtils.isNotBlank(sanitizedString)
-				? sanitizedString.replace("\\r", "").replace("\\n", "").replace("\\t", "").replaceAll("[^a-zA-Z0-9_\\-+/]", "")
-				: sanitizedString;
+		return StringUtils.isNotBlank(sanitizedString) ? sanitizedString.replace("\\r", "").replace("\\n", "")
+				.replace("\\t", "").replaceAll("[^a-zA-Z0-9_\\-+/]", "") : sanitizedString;
 	}
 
-	public static List<String> sanitizeUserInputList(List<String> inputValueList){
+	public static List<String> sanitizeUserInputList(List<String> inputValueList) {
 		List<String> result = new ArrayList<>();
 		inputValueList.forEach(input -> result.add(sanitizeUserInput(input)));
 		return result;
+	}
+
+	/**
+	 * this method uses UrlValidator to ensure that the constructed URL is valid.
+	 * This prevents security issues
+	 * 
+	 * @param url
+	 * @return
+	 */
+	public static boolean isValidUrl(String url) {
+		// Validate URL using UrlValidator
+		return URL_VALIDATOR.isValid(url);
 	}
 
 }
