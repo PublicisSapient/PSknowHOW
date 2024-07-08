@@ -361,7 +361,9 @@
                                 <tr class="expanded-table-body-row">
                                     <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName : '-
                                         -'}}</td>
-                                    <td class="expanded-table-body-cell" [style]="{'max-width':'120px', 'word-wrap': 'break-word'}">
+                                    <td class="expanded-table-body-cell"
+                                        [style]="{'max-width':'120px', 'word-wrap': 'break-word'}">
+
                                         <input type="email" min="0" pInputText
                                             *ngIf="projectCapacityEditMode;else showUserEmail"
                                             placeholder="Repo EmailId"
@@ -369,7 +371,8 @@
                                             [style]="{'width':'120px'}"
                                             [formControl]="selectedSprintAssigneFormArray[rowIndex]?.email"
                                             (keypress)="validateInput($event, 'email')"
-                                            pattern="[^@]+@[^@]+\.[a-zA-Z]{2,6}">
+                                            pattern="[^@]+@[^@]+\.[a-zA-Z]{2,6}"/>
+
                                         <ng-template #showUserEmail>{{assignee?.email ?
                                             assignee?.email : '- -'}}</ng-template>
                                     </td>

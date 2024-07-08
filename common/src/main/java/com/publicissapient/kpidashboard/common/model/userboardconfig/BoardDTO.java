@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.common.model.userboardconfig;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.Filters;
 import lombok.Data;
 
 /**
@@ -31,5 +32,7 @@ import lombok.Data;
 public class BoardDTO {
 	private int boardId;
 	private String boardName;
+	private String boardSlug;
 	private List<BoardKpisDTO> kpis;
+	private Filters filters;
 }

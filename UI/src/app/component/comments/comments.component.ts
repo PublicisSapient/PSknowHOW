@@ -61,7 +61,7 @@ export class CommentsComponent implements OnInit {
   submitComment(filterData=this.selectedFilters[this.selectedTabIndex]){
     this.showSpinner = true;
     const reqObj = {
-      node: (this.selectedTab !== 'iteration' && this.selectedTab !== 'release') ? filterData.nodeId : filterData.parentId[0],
+      node: (this.selectedTab !== 'iteration' && this.selectedTab !== 'release') ? [...filterData.nodeId] : filterData.parentId[0],
       level: filterData.level,
       nodeChildId: (this.selectedTab === 'iteration' || this.selectedTab === 'release') ? filterData.nodeId : '',
       kpiId: this.kpiId,

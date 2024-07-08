@@ -1,0 +1,150 @@
+:host::ng-deep .p-dialog {
+    width: auto !important;
+    max-width: 90vw !important;
+    min-width: 544px;
+}
+
+:host ::ng-deep.p-dialog-header-icons {
+    top: -8px;
+    right: -8px;
+    border-radius: 2px;
+    background-color: black;
+    border: none;
+}
+
+:host ::ng-deep .p-dialog-header-close-icon {
+    color: white;
+}
+
+:host ::ng-deep.p-overlaypanel .p-overlaypanel-close {
+    width: 1rem;
+    height: 1rem;
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    border-radius: 2px;
+    border: none;
+}
+
+::ng-deep .p-overlaypanel .p-overlaypanel-content {
+    padding: 1rem !important;
+}
+
+::ng-deep .p-tabview .p-tabview-panels {
+    padding: 0px;
+}
+
+::ng-deep .p-overlaypanel:after,
+.p-overlaypanel:before {
+    content: none !important;
+}
+
+.comment {
+    resize: none;
+    width: 100%;
+    height: 5rem;
+    margin-top: 5px;
+    padding: 5px;
+}
+
+.comment-box {
+    background: #4B4B4B2B;
+    border-radius: 3px;
+    padding: 10px;
+    word-break: break-word;
+}
+
+.comment-box p {
+    margin: 0;
+}
+
+.comment-combo {
+    margin-bottom: 20px;
+}
+
+.p-button {
+    margin-left: 5px;
+}
+
+.submit-button {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+.overlay-heading {
+    font-weight: 500;
+    font-size: 1.25rem;
+}
+
+.errorClass {
+    border: 1px solid #dc3545;
+}
+
+textarea:focus-visible {
+    outline: none;
+}
+
+::ng-deep .comments-overlay {
+    width: auto !important;
+    left: 20% !important;
+    right: 20% !important;
+    min-width: 450px;
+    /* z-index: 0 !important; */
+}
+
+.icon-delete {
+    cursor: pointer;
+}
+
+.commented-by {
+    display: flex;
+    justify-content: space-between;
+}
+
+.comment-count {
+    position: absolute;
+    top: 0px;
+    right: -5px;
+    width: 15px;
+    height: 15px;
+    font-size: 10px;
+    background: var(--color-cyan-blue);
+    color: #fff;
+    border-radius: 50px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+::ng-deep .comments-modal .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+    padding: 5px;
+    border-radius: 2px;
+    font-size: .8rem;
+    border: 1px solid var(--color-black);
+}
+
+::ng-deep .comments-modal .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    color: #fff;
+    background: var(--color-secondary-blue);
+    border-color: var(--color-secondary-blue);
+}
+
+::ng-deep .comments-modal .p-tabview .p-tabview-nav li {
+    margin: 0 5px 0 0;
+}
+
+.btn-confirm-delete {
+    font-size: .8rem;
+    background: #C1423F;
+    border-radius: 2px;
+    padding: 2px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.comment-list-container {
+    max-height: 200px;
+    overflow-y: auto;
+}

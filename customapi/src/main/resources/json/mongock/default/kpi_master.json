@@ -1350,7 +1350,7 @@
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
     "xaxisLabel" : "Months" ,
-    "yaxisLabel" : "Count(Days)" ,
+    "yaxisLabel" : "Cost of Delay" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "sum" ,

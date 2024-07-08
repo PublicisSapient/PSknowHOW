@@ -119,9 +119,11 @@ public class JiraServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
 					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList,referFromProjectCache);
+				projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList,
+						referFromProjectCache);
 
-				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest, filteredAccountDataList,referFromProjectCache);
+				filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest,
+						filteredAccountDataList, referFromProjectCache);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
@@ -175,14 +177,14 @@ public class JiraServiceR {
 	}
 
 	/**
-	 * updates the TreeAggregatorDetail object based on the KpiRequest.
-	 * If the selectedMap in the KpiRequest does not contain the HIERARCHY_LEVEL_ID_SPRINT,
+	 * updates the TreeAggregatorDetail object based on the KpiRequest. If the
+	 * selectedMap in the KpiRequest does not contain the HIERARCHY_LEVEL_ID_SPRINT,
 	 * filter out the sprint by sprintCountForKpiCalculation property
 	 *
 	 * @param kpiRequest
-	 * 				KpiRequest object containing the selectedMap.
+	 *            KpiRequest object containing the selectedMap.
 	 * @param treeAggregatorDetail
-	 * 				The TreeAggregatorDetail object to be updated.
+	 *            The TreeAggregatorDetail object to be updated.
 	 */
 	private void updateTreeAggregatorDetail(KpiRequest kpiRequest, TreeAggregatorDetail treeAggregatorDetail) {
 		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())
