@@ -17,5 +17,5 @@
  ******************************************************************************/
 
  export interface UserNameRequestDTO {
-    userName: string;
+    username: string;
 }
