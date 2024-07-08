@@ -139,12 +139,13 @@ public class JiraToolConfigServiceImpl {
 		long startAt = 0;
 		long nextPageIndex = startAt;
 		boolean isLast = false;
-		String projectKey = boardRequestDTO.getProjectKey();
+		String projectKey = CommonUtils.sanitizeUserInput(boardRequestDTO.getProjectKey());
+		String boardType = CommonUtils.sanitizeUserInput(boardRequestDTO.getBoardType());
+
 		do {
 			try {
 				String url = String.format(new StringBuilder(baseUrl).append(RESOURCE_JIRA_BOARD_ENDPOINT).toString(),
-						projectKey, nextPageIndex, boardRequestDTO.getBoardType());
-				url = CommonUtils.sanitizeUserInput(url);
+						projectKey, nextPageIndex, boardType);
 				validateUrl(url);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
 
@@ -160,7 +161,8 @@ public class JiraToolConfigServiceImpl {
 					setBoardListResponse(responseList, jiraBoardListResponse);
 				} else {
 					String statusCode = response.getStatusCode().toString();
-					log.error("Error while fetching BoardList from {}. with status {}", url, statusCode);
+					log.error("Error while fetching BoardList from {}. with status {}",
+							CommonUtils.sanitizeUserInput(url), statusCode);
 				}
 
 			} catch (Exception exception) {
