@@ -146,6 +146,7 @@ public class SonarController {
 	@GetMapping(value = "/sonar/project/{connectionId}/{organizationKey}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getSonarProjectList(@PathVariable String connectionId,
 			@PathVariable String organizationKey) {
+		organizationKey = CommonUtils.sanitizeUserInput(organizationKey);
 		List<String> projectKeyList = sonarToolConfigService.getSonarProjectKeyList(connectionId, organizationKey);
 		if (CollectionUtils.isEmpty(projectKeyList)) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
