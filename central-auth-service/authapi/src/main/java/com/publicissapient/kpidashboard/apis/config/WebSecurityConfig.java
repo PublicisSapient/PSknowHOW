@@ -18,15 +18,17 @@
 
 package com.publicissapient.kpidashboard.apis.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -147,10 +149,11 @@ public class WebSecurityConfig {
 	@Bean
 	InMemoryRelyingPartyRegistrationRepository repository(
 			Saml2RelyingPartyProperties properties,
-			@Value("classpath:credentials/rp-private.key") RSAPrivateKey key,
-			@Value("classpath:credentials/rp-certificate.crt") File cert
+			@Value("${auth.rpPrivateKey}") String privateKeyStr,
+			@Value("${auth.rpCertificate}") String certStr
 	) {
-		Saml2X509Credential signing = Saml2X509Credential.signing(key, x509Certificate(cert));
+		Saml2X509Credential signing = Saml2X509Credential.signing(rsaPrivateKey(privateKeyStr),
+																  x509Certificate(certStr));
 
 		Saml2RelyingPartyProperties.Registration registration = properties.getRegistration().values().iterator().next();
 
@@ -170,10 +173,25 @@ public class WebSecurityConfig {
 				 ).collect(Collectors.toList()));
 	}
 
-	X509Certificate x509Certificate(File location) {
-		try (InputStream source = new FileInputStream(location)) {
-			return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(source);
-		} catch (CertificateException | IOException ex) {
+	RSAPrivateKey rsaPrivateKey(String privateKeyStr) {
+		byte[] pkcs8EncodedBytes = Base64.getDecoder().decode(privateKeyStr);
+		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8EncodedBytes);
+
+		try {
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+			return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	X509Certificate x509Certificate(String certSrt) {
+		byte[] certificateBytes = Base64.getDecoder().decode(certSrt);
+		try {
+			return (X509Certificate) CertificateFactory
+					.getInstance("X.509")
+					.generateCertificate(new ByteArrayInputStream(certificateBytes));
+		} catch (CertificateException ex) {
 			throw new IllegalArgumentException(ex);
 		}
 	}
