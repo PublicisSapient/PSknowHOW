@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.mongock.data.FiltersDataFactory;
+import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
+import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -104,6 +107,10 @@ public class UserBoardConfigServiceImplTest {
 	private CustomApiConfig customApiConfig;
 	@Mock
 	private UserInfoCustomRepository userInfoCustomRepository;
+	@Mock
+	private FiltersRepository filtersRepository;
+	@Mock
+	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
 
 
 	private List<KpiCategory> kpiCategoryList;
@@ -119,6 +126,9 @@ public class UserBoardConfigServiceImplTest {
 		ProjectListRequested projectListRequested = new ProjectListRequested();
 		projectListRequested.setBasicProjectConfigIds(Arrays.asList("proj1","proj2"));
 		listOfReqProjects = projectListRequested;
+		FiltersDataFactory filtersDataFactory=FiltersDataFactory.newInstance();
+		when(configHelperService.loadAllFilters()).thenReturn(filtersDataFactory.getFiltersList());
+//		when()
 	}
 
 	@Test

@@ -17,9 +17,8 @@
  ******************************************************************************/
 
 import { Injectable } from '@angular/core';
-import { Router, CanActivate, UrlTree } from '@angular/router';
+import { Router, CanActivate, UrlTree, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { GetAuthService } from './getauth.service';
-import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { SharedService } from './shared.service';
 import { HttpService } from './http.service';
 import { Observable, pipe } from 'rxjs';
@@ -38,13 +37,12 @@ export class AuthGuard implements CanActivate {
             if (currentUserDetails['authorities']) {
                 return true;
             } else {
-                if (environment.AUTHENTICATION_SERVICE == true) {
+                if (environment.AUTHENTICATION_SERVICE) {
                     /** redirect to central login url*/
                     if (environment.CENTRAL_LOGIN_URL) {
                         window.location.href = environment.CENTRAL_LOGIN_URL;
                     }
                 } else {
-                    //this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                     this.router.navigate(['./authentication/register']);
                 }
                 return false;
@@ -56,13 +54,12 @@ export class AuthGuard implements CanActivate {
                     if (details['data']['authorities']) {
                         return true;
                     }
-                    if (environment.AUTHENTICATION_SERVICE == true) {
+                    if (environment.AUTHENTICATION_SERVICE) {
                         /** redirect to central login url*/
                         if (environment.CENTRAL_LOGIN_URL) {
                             window.location.href = environment.CENTRAL_LOGIN_URL;
                         }
                     } else {
-                        //this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                         this.router.navigate(['./authentication/register']);
                     }
                     return false;

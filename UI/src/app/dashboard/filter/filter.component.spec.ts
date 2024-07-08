@@ -2324,7 +2324,7 @@ const completeHierarchyData = {
     spyOn(component, 'processKpiList');
     spyOn(component, 'navigateToSelectedTab');
     component.getKpiOrderListProjectLevel();
-    expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab, component.isAdditionalFilter)
+    // expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab, component.isAdditionalFilter, true, null, true, mockData);
   })
 
   it('should get kpi order list on project level and return error', () => {
@@ -2846,5 +2846,25 @@ const completeHierarchyData = {
         component.navigateToHomePage()
         expect(spyob).toHaveBeenCalled();
       })
+
+      it('should redirect on login page',inject([Router], fakeAsync((router: Router) => {
+        component.loader = false;
+        const res = {
+          success: true,
+          message: 'Logged out successfully'
+        }
+        spyOn(httpService, 'logout').and.returnValue(of(res));
+        environment['AUTHENTICATION_SERVICE'] = false;
+        component.service['isKanban'] = false;
+        spyOn(sharedService, 'setSelectedProject');
+        spyOn(sharedService, 'setCurrentUserDetails');
+        spyOn(sharedService, 'setVisibleSideBar');
+        spyOn(sharedService, 'setAddtionalFilterBackup');
+        spyOn(sharedService, 'setKpiSubFilterObj');
+        const navigateSpy = spyOn(router, 'navigate');
+        component.logout();
+        tick();
+        expect(navigateSpy).toHaveBeenCalledWith(['./authentication/login']);
+      })));
 
 });

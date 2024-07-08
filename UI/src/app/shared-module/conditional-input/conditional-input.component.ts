@@ -13,7 +13,6 @@ export class ConditionalInputComponent implements OnChanges {
   finalValue = [];
   templateData = [];
   templateLabels = [];
-  constructor() { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.valueObj && this.valueObj.length) {

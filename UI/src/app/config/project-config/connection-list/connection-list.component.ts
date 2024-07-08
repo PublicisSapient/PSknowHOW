@@ -681,34 +681,9 @@ export class ConnectionListComponent implements OnInit {
 
   /* Assign role along with project Id */
   roleAccessAssign() {
-    /*const projectsAccess = !!localStorage.getItem('projectsAccess') && localStorage.getItem('projectsAccess') !== 'undefined' && localStorage.getItem('projectsAccess') !== 'null' ? JSON.parse(localStorage.getItem('projectsAccess')) : [];
-    projectsAccess.forEach(projectAccess => {
-      this.roleAccess[projectAccess.role] = [];
-      projectAccess.projects.forEach(project => {
-        this.roleAccess[projectAccess.role].push(project.projectId);
-      });
-    });*/
     /* Temporary commented because as per the requirement all users needs access */
     this.isConnectionAddEditAccess = true;
-    // this.checkAddEditConnectionAccess();
   }
-
-  /* check Add/Edit Connections Access
-  checkAddEditConnectionAccess() {
-    let role;
-    if (!!this.roleAccess && Object.keys(this.roleAccess).length > 0) {
-      for (role in this.roleAccess) {
-        if (role === 'ROLE_SUPERADMIN' || role === 'ROLE_PROJECT_ADMIN') {
-          this.isConnectionAddEditAccess = true;
-          break;
-        } else {
-          this.isConnectionAddEditAccess = false;
-        }
-      }
-    } else {
-      this.isConnectionAddEditAccess = false;
-    }
-  }*/
 
   connectionTypeFieldsAssignment() {
     this.fieldsObj = {};
@@ -796,18 +771,12 @@ export class ConnectionListComponent implements OnInit {
 
     let connectionType;
 
-    // this.addEditConnectionFieldsNlabels.forEach(eachConnection => {
-    //   this.connectionListAllType[eachConnection.connectionType.toLowerCase()] = [];
-    // });
-
     this.connectionTypeCompleteList.forEach(eachConnection => {
       this.connectionListAllType[eachConnection.value.toString()] = [];
     });
     if (response.data.length) {
       response.data.forEach(eachConnection => {
-        // connectionType = eachConnection.type.toLowerCase();
         connectionType = eachConnection.type;
-        // connectionType = connectionType.replace(' ', '');
 
         if (!!eachConnection.password) {
           eachConnection.password = '';
@@ -857,7 +826,6 @@ export class ConnectionListComponent implements OnInit {
       this.addEditConnectionFieldsNlabels.forEach(data => {
         if (!!this.connection.type && !!data.connectionType && (this.connection.type.toLowerCase() === data.connectionType.toLowerCase())) {
           data.inputFields.forEach(inputField => {
-            // reqData[inputField] = this.connection[inputField];
             if (this.basicConnectionForm.value[inputField] !== undefined && this.basicConnectionForm.value[inputField] !== '' && this.basicConnectionForm.value[inputField] !== 'undefined') {
               reqData[inputField] = this.basicConnectionForm.value[inputField];
             }
@@ -897,9 +865,6 @@ export class ConnectionListComponent implements OnInit {
     if(this.connection['type'].toLowerCase() === 'sonar' && this.connection['cloudEnv'] === true){
       reqData['accessTokenEnabled'] =true;
     }
-
-    // reqData['type'] = reqData['type'].replace(' ', '');
-    // this.connection.type = this.connection.type.replace(' ', '');
 
     if (this.isNewlyConfigAdded) {
       this.addConnectionReq(reqData);
@@ -1035,15 +1000,12 @@ export class ConnectionListComponent implements OnInit {
     if (!!this.basicConnectionForm.controls['isOAuth'] && this.connection['isOAuth'] === true) {
       this.basicConnectionForm.controls['privateKey'].enable();
       this.basicConnectionForm.controls['consumerKey'].enable();
-      // this.basicConnectionForm.controls['password'].disable();
     } else if (!!this.basicConnectionForm.controls['isOAuth'] && this.connection['isOAuth'] === false) {
       this.basicConnectionForm.controls['privateKey'].disable();
       this.basicConnectionForm.controls['consumerKey'].disable();
-      // this.basicConnectionForm.controls['password'].enable();
     } else if (this.selectedConnectionType.toLowerCase() === 'zephyr' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === true) {
       this.basicConnectionForm.controls['username'].disable();
       this.basicConnectionForm.controls['password'].disable();
-      // this.basicConnectionForm.controls['apiEndpoint'].disable();
       this.basicConnectionForm.controls['baseUrl'].disable();
       this.basicConnectionForm.controls['accessToken'].enable();
     } else if (this.selectedConnectionType.toLowerCase() === 'zephyr' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === false) {
@@ -1104,11 +1066,9 @@ export class ConnectionListComponent implements OnInit {
       if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === true) {
         this.basicConnectionForm.controls['privateKey'].enable();
         this.basicConnectionForm.controls['consumerKey'].enable();
-        // this.basicConnectionForm.controls['password'].disable();
       } else if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === false) {
         this.basicConnectionForm.controls['privateKey'].disable();
         this.basicConnectionForm.controls['consumerKey'].disable();
-        // this.basicConnectionForm.controls['password'].enable();
       }
 
     } else {

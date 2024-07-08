@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
@@ -154,12 +155,10 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 					Collectors.toMap(CommitDetails::getDate, CommitDetails::getCount))));
 		}
 
-		List<Map<String, Long>> repoWiseCommitList = new LinkedList<>();
 		Map<String, List<DataCount>> projectWiseDataMap = new LinkedHashMap<>();
-		List<String> listOfRepo = new LinkedList<>();
-		List<String> listOfBranch = new LinkedList<>();
 		LocalDate currentDate = LocalDate.now();
 		String projectNodeId = node.getId();
+		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
 		for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 
 			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate,
@@ -171,17 +170,15 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 			}
 			String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 			Map<String, Long> filterValueMap = filterKanbanDataBasedOnStartAndEndDateAndCommitDetails(reposList,
-					dateRange, commitListItemId, projectName, repoWiseCommitList, listOfRepo, listOfBranch);
+					dateRange, commitListItemId, projectName, repoToolValidationDataList);
 
 			String dataCountDate = getRange(dateRange, kpiRequest);
 			prepareRepoWiseMap(filterValueMap, projectName, dataCountDate, projectWiseDataMap);
 			currentDate = getNextRangeDate(kpiRequest, currentDate);
 
-			if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-				KPIExcelUtility.populateCodeCommitKanbanExcelData(node.getProjectFilter().getName(), repoWiseCommitList,
-						listOfRepo, listOfBranch, excelData);
-			}
-
+		}
+		if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+			KPIExcelUtility.populateCodeCommitKanbanExcelData(repoToolValidationDataList, excelData);
 		}
 		mapTmp.get(node.getId()).setValue(projectWiseDataMap);
 		kpiElement.setExcelData(excelData);
@@ -196,19 +193,15 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	 * @param dateRange
 	 * @param commitListItemId
 	 * @param projectName
-	 * @param repoWiseCommitList
-	 * @param listOfRepo
-	 * @param listOfBranch
+	 * @param repoToolValidationDataList
 	 * @return
 	 */
 	private Map<String, Long> filterKanbanDataBasedOnStartAndEndDateAndCommitDetails(List<Tool> reposList,
 			CustomDateRange dateRange, Map<ObjectId, Map<String, Long>> commitListItemId, String projectName,
-			List<Map<String, Long>> repoWiseCommitList, List<String> listOfRepo, List<String> listOfBranch) {
+			List<RepoToolValidationData> repoToolValidationDataList) {
 		LocalDate startDate = dateRange.getStartDate();
 		LocalDate endDate = dateRange.getEndDate();
 		Map<String, Long> filterWiseValue = new HashMap<>();
-		Map<String, Long> excelLoaderfinal = new HashMap<>();
-
 		for (Tool tool : reposList) {
 			LocalDate currentDate = startDate;
 			Map<String, Long> excelLoader = new LinkedHashMap<>();
@@ -221,20 +214,19 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 				while (currentDate.compareTo(endDate) <= 0) {
 					commitCountValue = commitCountValue + commitDateMap.getOrDefault(currentDate.toString(), 0l);
 					excelLoader.put(DATE + DateUtil.localDateTimeConverter(currentDate), commitCountValue);
+					RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+					repoToolValidationData.setProjectName(projectName);
+					repoToolValidationData.setBranchName(tool.getBranch());
+					repoToolValidationData.setDate(DATE + DateUtil.localDateTimeConverter(currentDate));
+					repoToolValidationData.setCommitCount(commitCountValue);
+					repoToolValidationData.setRepoUrl(tool.getUrl());
+					repoToolValidationDataList.add(repoToolValidationData);
 					currentDate = currentDate.plusDays(1);
-				}
-				// if data is there for any branch then only will shown on excel
-				if (MapUtils.isNotEmpty(excelLoader)) {
-					String repoName = tool.getRepositoryName() != null ? tool.getRepositoryName() : tool.getRepoSlug();
-					listOfRepo.add(repoName);
-					listOfBranch.add(tool.getBranch());
-					excelLoaderfinal.putAll(excelLoader);
 				}
 			}
 			filterWiseValue.putIfAbsent(keyName, commitCountValue);
 
 		}
-		repoWiseCommitList.add(excelLoaderfinal);
 		return filterWiseValue;
 	}
 
