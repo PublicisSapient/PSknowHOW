@@ -279,7 +279,7 @@ export class HttpService {
   /**  logout from the server */
   logout(): Observable<any> {
     if(environment?.['AUTHENTICATION_SERVICE']){
-      this.logoutUrl = this.baseUrl + '/api/centralUserlogout';
+      this.logoutUrl = this.baseUrl + '/api/sso-logout'; //replace environment?.['CENTRAL_LOGIN_URL'] with http://localhost:8787 (central BE api base url)
     }
     return this.http.get(this.logoutUrl);
   }
