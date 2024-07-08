@@ -133,7 +133,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 				.get(REMOVED_FROM_RELEASE);
 
 		IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
-		long range;
+		int range;
 		String duration;
 		if (CollectionUtils.isNotEmpty(releaseIssues) && MapUtils.isNotEmpty(fullReleaseIssueMap)) {
 			Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
