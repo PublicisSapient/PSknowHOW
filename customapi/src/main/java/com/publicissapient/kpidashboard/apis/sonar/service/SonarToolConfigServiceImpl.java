@@ -248,6 +248,11 @@ public class SonarToolConfigServiceImpl {
 		SearchProjectsResponse searchProjectsResponse = null;
 		try {
 			connectionService.validateConnectionFlag(connection);
+			// Validate the constructed URL
+			if (!CommonUtils.isValidUrl(sonarUrl)) {
+				log.error("Invalid URL: {}", sonarUrl);
+				return searchProjectsResponse;
+			}
 			ResponseEntity<String> response = restTemplate.exchange(sonarUrl, HttpMethod.GET, httpEntity, String.class);
 			if (response.getStatusCode() == HttpStatus.OK) {
 				searchProjectsResponse = mapper.readValue(response.getBody(), SearchProjectsResponse.class);
