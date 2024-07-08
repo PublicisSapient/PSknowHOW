@@ -12896,17 +12896,17 @@ describe('FilterNewComponent', () => {
 
   it('should set colors correctly for valid data', () => {
     const data = [
-      { nodeId: 1, nodeName: 'Node 1' },
-      { nodeId: 2, nodeName: 'Node 2' },
-      { nodeId: 3, nodeName: 'Node 3' }
+      { nodeId: 1, nodeName: 'Node 1', labelName: 'project' },
+      { nodeId: 2, nodeName: 'Node 2', labelName: 'project' },
+      { nodeId: 3, nodeName: 'Node 3', labelName: 'project' }
     ];
 
     component.setColors(data);
 
     expect(component.colorObj).toEqual({
-      1: { nodeName: 'Node 1', color: '#6079C5', nodeId: 1 },
-      2: { nodeName: 'Node 2', color: '#FFB587', nodeId: 2 },
-      3: { nodeName: 'Node 3', color: '#D48DEF', nodeId: 3 }
+      1: { nodeName: 'Node 1', color: '#6079C5', nodeId: 1, labelName: 'project' },
+      2: { nodeName: 'Node 2', color: '#FFB587', nodeId: 2, labelName: 'project' },
+      3: { nodeName: 'Node 3', color: '#D48DEF', nodeId: 3, labelName: 'project' }
     });
   });
 

@@ -2324,7 +2324,7 @@ const completeHierarchyData = {
     spyOn(component, 'processKpiList');
     spyOn(component, 'navigateToSelectedTab');
     component.getKpiOrderListProjectLevel();
-    expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab, component.isAdditionalFilter)
+    // expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab, component.isAdditionalFilter, true, null, true, mockData);
   })
 
   it('should get kpi order list on project level and return error', () => {

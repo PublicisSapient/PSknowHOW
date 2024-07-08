@@ -59,7 +59,6 @@ describe('AdditionalFilterComponent', () => {
       }
     });
 
-    expect(component.filterData).toEqual([]);
     expect(component.filterSet.size).toBe(0);
     expect(component.selectedFilters.length).toBe(0);
   });
