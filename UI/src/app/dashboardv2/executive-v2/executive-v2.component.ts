@@ -133,7 +133,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
       setTimeout(() => {
-        this.processKpiConfigData(this.masterData,'globalDashConfigData');
+        this.processKpiConfigData(this.masterData);
       }, 500);
     }));
 
@@ -184,8 +184,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }));
   }
 
-  processKpiConfigData(kpiListObj,from) {
-    console.log("processKpiConfigData : ",from)
+  processKpiConfigData(kpiListObj) {
     this.configGlobalData = kpiListObj?.kpiList;
     const disabledKpis = this.configGlobalData?.filter(item => item.shown && !item.isEnabled);
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
@@ -287,7 +286,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.noTabAccess = false;
           // call kpi request according to tab selected
           if (this.masterData && Object.keys(this.masterData).length) {
-            this.processKpiConfigData(this.masterData,'received shred data');
+            this.processKpiConfigData(this.masterData);
             const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
             // set up dynamic tabs
             this.setUpTabs();

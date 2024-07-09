@@ -7,6 +7,7 @@ import { switchMap, takeUntil } from 'rxjs/operators';
 import { Subject, interval } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { MultiSelect } from 'primeng/multiselect';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 @Component({
   selector: 'app-filter-new',
@@ -57,16 +58,19 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   showHideSelectAll: boolean = false;
   showChart: string = 'chart';
   iterationConfigData = {};
+  isRecommendationsEnabled: boolean = false;
+
   constructor(
     private httpService: HttpService,
     public service: SharedService,
     private helperService: HelperService,
     public cdr: ChangeDetectorRef,
     private messageService: MessageService,
-    private ga: GoogleAnalyticsService) { }
+    private ga: GoogleAnalyticsService,
+    private featureFlagsService: FeatureFlagsService) { }
 
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
     this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
@@ -76,6 +80,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.processBoardData(boardData);
       })
     );
+    this.isRecommendationsEnabled = await this.featureFlagsService.isFeatureEnabled('RECOMMENDATIONS');
+    this.service.setRecommendationsFlag(this.isRecommendationsEnabled);
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh
