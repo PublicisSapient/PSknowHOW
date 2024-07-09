@@ -74,6 +74,11 @@ public class AzureToolConfigServiceImpl {
 			try {
 				connectionService.validateConnectionFlag(connection);
 				HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
+				// Validate the constructed URL
+				if (!CommonUtils.isValidUrl(finalUrl)) {
+					log.error("Invalid URL: {}", finalUrl);
+					return responseList;
+				}
 				ResponseEntity<String> response = restTemplate.exchange(finalUrl, HttpMethod.GET, httpEntity,
 						String.class);
 

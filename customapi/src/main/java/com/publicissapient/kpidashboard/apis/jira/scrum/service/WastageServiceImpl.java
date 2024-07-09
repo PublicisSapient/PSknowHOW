@@ -355,11 +355,11 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 		LocalDateTime entryActivityDate = entry.getUpdatedOn();
 		if (entry.getChangedTo().equalsIgnoreCase(CommonConstant.FLAG_STATUS_FOR_SERVER)
 				|| entry.getChangedTo().equalsIgnoreCase(CommonConstant.FLAG_STATUS_FOR_CLOUD)) {
-			long hours = 0;
+			int hours = 0;
 			// Checking for indexOutOfBound in flagStatusUpdationLog list
 			if (flagStatusUpdationLog.size() == index + 1) {
-				hours = hoursForLastEntryOfStatusUpdationLog(sprintDetails, sprintStartDate, sprintEndDate,
-						entryActivityDate);
+				hours = Math.toIntExact(hoursForLastEntryOfStatusUpdationLog(sprintDetails, sprintStartDate, sprintEndDate,
+						entryActivityDate));
 			} else {
 				// Find fetch the next element of flagStatusUpdationLog
 				JiraHistoryChangeLog nextEntry = flagStatusUpdationLog.get(index + 1);
@@ -371,8 +371,8 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 							&& nextEntryActivityDate.isBefore(sprintStartDate))
 							&& !(entryActivityDate.isAfter(sprintEndDate)
 									&& nextEntryActivityDate.isAfter(sprintEndDate))) {
-						hours = hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
-								nextEntryActivityDate);
+						hours = Math.toIntExact(hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
+								nextEntryActivityDate));
 					}
 				}
 			}

@@ -248,18 +248,26 @@ public class SonarToolConfigServiceImpl {
 		SearchProjectsResponse searchProjectsResponse = null;
 		try {
 			connectionService.validateConnectionFlag(connection);
+			// Validate the constructed URL
+			if (!CommonUtils.isValidUrl(sonarUrl)) {
+				log.error("Invalid URL: {}", sonarUrl);
+				return searchProjectsResponse;
+			}
 			ResponseEntity<String> response = restTemplate.exchange(sonarUrl, HttpMethod.GET, httpEntity, String.class);
 			if (response.getStatusCode() == HttpStatus.OK) {
 				searchProjectsResponse = mapper.readValue(response.getBody(), SearchProjectsResponse.class);
 			} else {
 				String statusCode = response.getStatusCode().toString();
-				log.error("Error while fetching projects from {}. with status {}", CommonUtils.sanitizeUserInput(sonarUrl), statusCode);
+				log.error("Error while fetching projects from {}. with status {}",
+						CommonUtils.sanitizeUserInput(sonarUrl), statusCode);
 			}
 		} catch (RestClientException exception) {
 			isClientException(connection, exception);
-			log.error("Error while fetching projects from {}:  {}", CommonUtils.sanitizeUserInput(sonarUrl), exception.getMessage());
+			log.error("Error while fetching projects from {}:  {}", CommonUtils.sanitizeUserInput(sonarUrl),
+					exception.getMessage());
 		} catch (JsonProcessingException e) {
-			log.error("Error while fetching projects from {}:  {}", CommonUtils.sanitizeUserInput(sonarUrl), e.getMessage());
+			log.error("Error while fetching projects from {}:  {}", CommonUtils.sanitizeUserInput(sonarUrl),
+					e.getMessage());
 		}
 		return searchProjectsResponse;
 	}
@@ -285,7 +293,11 @@ public class SonarToolConfigServiceImpl {
 
 		String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 		String url = String.format(new StringBuilder(baseUrl).append(RESOURCE_BRANCH_ENDPOINT).toString(), projectKey);
-
+		// Validate the constructed URL
+		if (!CommonUtils.isValidUrl(url)) {
+			log.error("Invalid URL: {}", url);
+			return branchNameList;
+		}
 		HttpEntity<?> httpEntity = createHeaders(connection);
 		try {
 

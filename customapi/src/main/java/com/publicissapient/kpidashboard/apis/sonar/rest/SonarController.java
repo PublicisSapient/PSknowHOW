@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -145,6 +146,7 @@ public class SonarController {
 	@GetMapping(value = "/sonar/project/{connectionId}/{organizationKey}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getSonarProjectList(@PathVariable String connectionId,
 			@PathVariable String organizationKey) {
+		organizationKey = CommonUtils.sanitizeUserInput(organizationKey);
 		List<String> projectKeyList = sonarToolConfigService.getSonarProjectKeyList(connectionId, organizationKey);
 		if (CollectionUtils.isEmpty(projectKeyList)) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -170,6 +172,7 @@ public class SonarController {
 	@GetMapping(value = "/sonar/branch/{connectionId}/{version}/{projectKey}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getSonarProjectBranchList(@PathVariable String connectionId,
 			@PathVariable String version, @PathVariable String projectKey) {
+		projectKey = CommonUtils.sanitizeUserInput(projectKey);
 		ServiceResponse response = sonarToolConfigService.getSonarProjectBranchList(connectionId, version, projectKey);
 		HttpStatus httpStatus = HttpStatus.OK;
 		if (!response.getSuccess()) {

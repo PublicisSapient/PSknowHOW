@@ -23,6 +23,7 @@ import com.publicissapient.kpidashboard.apis.bamboo.model.BambooBranchesResponse
 import com.publicissapient.kpidashboard.apis.bamboo.model.BambooDeploymentProjectsResponseDTO;
 import com.publicissapient.kpidashboard.apis.bamboo.model.BambooPlansResponseDTO;
 import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -114,6 +115,12 @@ public class BambooToolConfigServiceImpl {
 			String url = String.format(new StringBuilder(baseUrl).append(RESOURCE_BRANCH_ENDPOINT).toString(),
 					jobNameKey);
 
+			// Validate the constructed URL
+			if (!CommonUtils.isValidUrl(url)) {
+				log.error("Invalid URL: {}", url);
+				return responseDTOList;
+			}
+
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
 				connectionService.validateConnectionFlag(connection);
@@ -133,19 +140,20 @@ public class BambooToolConfigServiceImpl {
 
 	/**
 	 * this method is used to call the api to get branches
+	 * 
 	 * @param responseDTOList
 	 * @param url
 	 * @param httpEntity
 	 * @throws ParseException
 	 */
-	private void apiCallToGetBranches(List<BambooBranchesResponseDTO> responseDTOList, String url, HttpEntity<?> httpEntity) throws ParseException {
+	private void apiCallToGetBranches(List<BambooBranchesResponseDTO> responseDTOList, String url,
+			HttpEntity<?> httpEntity) throws ParseException {
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
 		if (response.getStatusCode() == HttpStatus.OK) {
 			parseBranchesResponse(responseDTOList, response);
 		} else {
 			String statusCode = response.getStatusCode().toString();
-			log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url,
-					statusCode);
+			log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url, statusCode);
 		}
 	}
 

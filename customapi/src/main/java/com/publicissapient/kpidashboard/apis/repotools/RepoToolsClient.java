@@ -19,15 +19,12 @@
 package com.publicissapient.kpidashboard.apis.repotools;
 
 import java.net.URI;
-import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnectionDetail;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -36,8 +33,10 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConfig;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiRequestBody;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -94,8 +93,14 @@ public class RepoToolsClient {
 	public int triggerScanCall(String projectKey, String repoToolsUrl, String apiKey) {
 		setHttpHeaders(apiKey);
 		String triggerScanUrl = String.format(repoToolsUrl, projectKey);
-		log.info("trigger project scan request {} {}", CommonUtils.sanitizeUserInput(triggerScanUrl));
+		triggerScanUrl = CommonUtils.sanitizeUserInput(triggerScanUrl);
+		log.info("trigger project scan request {} {}", triggerScanUrl);
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+		// Validate the constructed URL
+		if (!CommonUtils.isValidUrl(triggerScanUrl)) {
+			log.error("Invalid URL: {}", triggerScanUrl);
+			return HttpStatus.NOT_FOUND.value();
+		}
 		ResponseEntity<String> response = restTemplate.exchange(triggerScanUrl, HttpMethod.GET, entity, String.class);
 		return response.getStatusCode().value();
 

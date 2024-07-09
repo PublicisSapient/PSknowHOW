@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +42,7 @@ import com.publicissapient.kpidashboard.apis.connection.service.ConnectionServic
 import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.JiraBoardListResponse;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
@@ -139,11 +139,14 @@ public class JiraToolConfigServiceImpl {
 		long startAt = 0;
 		long nextPageIndex = startAt;
 		boolean isLast = false;
+		String projectKey = CommonUtils.sanitizeUserInput(boardRequestDTO.getProjectKey());
+		String boardType = CommonUtils.sanitizeUserInput(boardRequestDTO.getBoardType());
+
 		do {
 			try {
 				String url = String.format(new StringBuilder(baseUrl).append(RESOURCE_JIRA_BOARD_ENDPOINT).toString(),
-						boardRequestDTO.getProjectKey(), nextPageIndex, boardRequestDTO.getBoardType());
-
+						projectKey, nextPageIndex, boardType);
+				validateUrl(url);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
 
 				if (response.getStatusCode() == HttpStatus.OK) {
@@ -158,7 +161,8 @@ public class JiraToolConfigServiceImpl {
 					setBoardListResponse(responseList, jiraBoardListResponse);
 				} else {
 					String statusCode = response.getStatusCode().toString();
-					log.error("Error while fetching BoardList from {}. with status {}", CommonUtils.sanitizeUserInput(url), statusCode);
+					log.error("Error while fetching BoardList from {}. with status {}",
+							CommonUtils.sanitizeUserInput(url), statusCode);
 				}
 
 			} catch (Exception exception) {
@@ -169,10 +173,21 @@ public class JiraToolConfigServiceImpl {
 							.getReasonPhrase();
 					connectionService.updateBreakingConnection(connection, errMsg);
 				}
-				log.error("Error while fetching boardList for projectKey Id {}:  {}", CommonUtils.sanitizeUserInput(boardRequestDTO.getProjectKey()),
-						exception.getMessage());
+				log.error("Error while fetching boardList for projectKey Id {}:  {}",
+						CommonUtils.sanitizeUserInput(projectKey), exception.getMessage());
 			}
 		} while (isLast);
+	}
+
+	/**
+	 * Validate the constructed URL
+	 * 
+	 * @param url
+	 */
+	private static void validateUrl(String url) {
+		if (!CommonUtils.isValidUrl(url)) {
+			log.error("Invalid URL: {}", url);
+		}
 	}
 
 	private void setBoardListResponse(List<BoardDetailsDTO> responseList, JiraBoardListResponse jiraBoardListResponse) {
