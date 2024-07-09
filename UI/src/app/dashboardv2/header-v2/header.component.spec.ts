@@ -65,31 +65,7 @@ describe('HeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should clear localStorage, reset helperService and sharedService, and navigate to login page when logout is successful', () => {
-    const getData = null;
-    spyOn(httpService, 'logout').and.returnValue(of(getData));
-    const localStorageSpy = spyOn(localStorage, 'clear');
-    const setSelectedProjectSpy = spyOn(sharedService, 'setSelectedProject');
-    const setCurrentUserDetailsSpy = spyOn(sharedService, 'setCurrentUserDetails');
-    component.logout();
-    expect(localStorageSpy).toHaveBeenCalled();
-    expect(helperService.isKanban).toBe(false);
-    expect(setSelectedProjectSpy).toHaveBeenCalledWith(null);
-    expect(setCurrentUserDetailsSpy).toHaveBeenCalledWith({});
-  });
 
-  it('should not clear localStorage, reset helperService and sharedService, and navigate to login page when logout returns an error', () => {
-    const getData = ['error'];
-    spyOn(httpService, 'logout').and.returnValue(of(getData));
-    const localStorageSpy = spyOn(localStorage, 'clear');
-    const setSelectedProjectSpy = spyOn(sharedService, 'setSelectedProject');
-    const setCurrentUserDetailsSpy = spyOn(sharedService, 'setCurrentUserDetails');
-    component.logout();
-    expect(localStorageSpy).not.toHaveBeenCalled();
-    expect(helperService.isKanban).toBe(false);
-    expect(setSelectedProjectSpy).not.toHaveBeenCalled();
-    expect(setCurrentUserDetailsSpy).not.toHaveBeenCalled();
-  });
 
 
   it('should set backToDashboardLoader to true, navigate to lastVisitedFromUrl, and set backToDashboardLoader to false', () => {

@@ -1561,38 +1561,7 @@ this.resetAddtionalFIlters();
   // logout is clicked  and removing auth token , username
   logout() {
       this.loader = true;
-      this.httpService.logout().subscribe((responseData) => {
-        if (responseData?.success) {
-          if(!environment['AUTHENTICATION_SERVICE']){
-          this.helperService.isKanban = false;
-          // Set blank selectedProject after logged out state
-          this.service.setSelectedProject(null);
-          this.service.setCurrentUserDetails({});
-          this.service.setVisibleSideBar(false);
-          this.service.setAddtionalFilterBackup({});
-          this.service.setKpiSubFilterObj({});
-          localStorage.clear();
-          this.loader = false;
-          this.router.navigate(['./authentication/login']);
-        } else{
-          let obj = {
-            'resource': environment.RESOURCE
-          };
-          this.httpService.getUserValidation(obj).toPromise()
-          .then((response) => {
-            if (response && !response['success']) {
-              this.loader = false;
-              let redirect_uri = window.location.href;
-              window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
-            }
-          })
-          .catch((error) => {
-            this.loader = false;
-            console.log("cookie not clear on error");
-          });
-        }
-      }
-    })
+      this.helperService.logoutHttp();
   }
 
   // when user would want to give access on project from notification list
