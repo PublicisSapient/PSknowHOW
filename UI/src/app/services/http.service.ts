@@ -172,8 +172,7 @@ export class HttpService {
   userEmail: string;
   private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
-  private validateTokenUrl = this.baseUrl + '/api/validateToken';
-  private validateResourceUrl = this.baseUrl + '/api/validateResource';
+  private fetchUserDetailsUrl = this.baseUrl + '/api/fetchUserDetails';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
   private getShowHideKpiNewUIUrl = this.baseUrl + '/api/user-board-config/getBoardConfig';
   private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
@@ -279,8 +278,9 @@ export class HttpService {
   /**  logout from the server */
   logout(): Observable<any> {
     if(environment?.['AUTHENTICATION_SERVICE']){
-      this.logoutUrl = this.baseUrl + '/api/sso-logout'; //replace environment?.['CENTRAL_LOGIN_URL'] with http://localhost:8787 (central BE api base url)
-    }
+      this.logoutUrl = environment?.['CENTRAL_API_URL'] + '/api/sso-logout';
+      //replace environment?.['CENTRAL_LOGIN_URL'] with  (central BE api base url)
+    } 
     return this.http.get(this.logoutUrl);
   }
 
@@ -1143,13 +1143,10 @@ export class HttpService {
     return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
   }
 
-  getUserValidation(data){
-    return this.http.post<object>(this.validateTokenUrl, data);
+  getUserDetailsForCentral(){
+    return this.http.get<object>(this.fetchUserDetailsUrl);
   }
 
-  handleValidateResource(data){
-    return this.http.post<object>(this.validateResourceUrl, data);
-  }
   getFeatureFlags() {
     return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`).toPromise();
   }
