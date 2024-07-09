@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.repotools.model;
 
 import lombok.AllArgsConstructor;
@@ -35,6 +34,6 @@ public class RepoToolsStatusResponse implements Serializable {
 	private String repository;
 	private String source;
 	private String status;
-	private String timestamp;
+	private Long timestamp;
 
 }
