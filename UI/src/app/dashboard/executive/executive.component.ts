@@ -117,6 +117,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     maturityTableKpiList = [];
     cumulativeTrend = ['kpi17', 'kpi62', 'kpi67', 'kpi27', 'kpi66', 'kpi71', 'kpi42'];
     kpiList:Array<string> = [];
+    isRecommendationsEnabled: boolean = false;
 
     constructor(public service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -225,8 +226,13 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         });
         this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
             this.noProjects = res;
-            this.kanbanActivated = this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
+            this.kanbanActivated = this.service.getSelectedType()?.toLowerCase() === 'kanban' ? true : false;
           }));
+       
+        /** Get recommendations flag */
+        this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
+            this.isRecommendationsEnabled = item;
+        }));
 
         this.service.getEmptyData().subscribe((val) => {
             if (val) {

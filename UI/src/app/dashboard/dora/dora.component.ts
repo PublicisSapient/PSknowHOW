@@ -68,6 +68,7 @@ export class DoraComponent implements OnInit {
   maturityObj = {};
   toolTipTop: number = 0;
   kpiList:Array<string> = [];
+  isRecommendationsEnabled: boolean = false;
 
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService) {
 
@@ -114,6 +115,11 @@ export class DoraComponent implements OnInit {
     this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
       this.noProjects = res;
       this.kanbanActivated = this.service.getSelectedType()?.toLowerCase() === 'kanban' ? true : false;
+    }));
+
+    /** Get recommendations flag */
+    this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
+        this.isRecommendationsEnabled = item;
     }));
 
     this.service.getEmptyData().subscribe((val) => {

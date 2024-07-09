@@ -626,3 +626,7 @@
 
 </p-dialog>
 <app-export-excel #exportExcel></app-export-excel>
+
+<ng-container *ngIf="isRecommendationsEnabled && (filterApplyData?.label == 'project' || filterApplyData?.label == 'sprint') && filterApplyData?.ids?.length == 1">
+  <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
+</ng-container>
