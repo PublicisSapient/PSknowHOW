@@ -148,14 +148,6 @@ export class HeaderComponent implements OnInit {
 
   // logout is clicked  and removing auth token , username
   logout() {
-    this.httpService.logout().subscribe((getData) => {
-      if (!(getData !== null && getData[0] === 'error')) {
-        localStorage.clear();
-        this.helperService.isKanban = false;
-        this.sharedService.setSelectedProject(null);
-        this.sharedService.setCurrentUserDetails({});
-        this.router.navigate(['./authentication/login']);
-      }
-    });
+    this.helperService.logoutHttp();
   }
 }
