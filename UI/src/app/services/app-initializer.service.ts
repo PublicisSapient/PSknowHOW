@@ -184,6 +184,7 @@ export class AppInitializerService {
                     environment['SSO_LOGIN'] = env['SSO_LOGIN'] === 'true' ? true : false;
                     environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
                     environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
+                    environment['CENTRAL_API_URL'] = env['CENTRAL_API_URL'] || '';
                     environment['MAP_URL'] = env['MAP_URL'] || '';
                     environment['RETROS_URL'] = env['RETROS_URL'] || '';
                     environment['SPEED_SUITE'] = env['SPEED_SUITE'] === 'true' ? true : false;
@@ -215,12 +216,8 @@ export class AppInitializerService {
             this.router.resetConfig([...this.routes]);
             this.router.navigate([location]);
         } else {
-
-            let obj = {
-                'resource': environment.RESOURCE,
-            };
             // Make API call or initialization logic here...
-            this.httpService.getUserValidation(obj).subscribe((response) => {
+            this.httpService.getUserDetailsForCentral().subscribe((response) => {
                 if (response?.['success']) {
                     this.sharedService.setCurrentUserDetails(response?.['data']);
                     this.router.resetConfig([...this.routesAuth]);

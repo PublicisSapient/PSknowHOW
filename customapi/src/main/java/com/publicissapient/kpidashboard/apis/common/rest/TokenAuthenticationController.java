@@ -18,22 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.common.rest;
 
-import java.util.HashMap;
 import java.util.Map;
-
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
-import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
@@ -45,43 +38,25 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @RestController
 public class TokenAuthenticationController {
-
-	public static final String AUTH_DETAILS_UPDATED_FLAG = "auth-details-updated";
-
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
-
 	@Autowired
 	private CustomAnalyticsService customAnalyticsService;
-	@Autowired
-	private AuthProperties authProperties;
-	@Autowired
-	private CookieUtil cookieUtil;
 
-	@PostMapping(value = "/validateToken")
-	public ResponseEntity<ServiceResponse> validateToken(@Valid @RequestBody UserTokenAuthenticationDTO userData,
-			HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+	@GetMapping(value = "/fetchUserDetails")
+	public ResponseEntity<ServiceResponse> fetchUserDetails(HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse) {
 
 		String authToken = tokenAuthenticationService.getAuthToken(httpServletRequest);
+		String userName = tokenAuthenticationService.getUserNameFromToken(authToken);
 		ServiceResponse serviceResponse;
 		if (null != authToken) {
-			boolean expiredToken = tokenAuthenticationService.isJWTTokenExpired(authToken);
-			String userName = tokenAuthenticationService.getUserNameFromToken(authToken);
-			if (expiredToken) {
-				Map<String, Object> userMap = new HashMap<>();
-				userMap.put("user_name", userName);
-				userMap.put("resourceTokenValid", false);
-				serviceResponse = new ServiceResponse(false, "token is expired", userMap);
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
-			} else {
-				Map<String, Object> userMap = customAnalyticsService.addAnalyticsDataAndSaveCentralUser(httpServletResponse, userName,
-						authToken);
-				userMap.put("resourceTokenValid", true);
-				serviceResponse = new ServiceResponse(true, "success_valid_token", userMap);
-				return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
-			}
+			Map<String, Object> userMap = customAnalyticsService.addAnalyticsDataAndSaveCentralUser(httpServletResponse,
+					userName, authToken);
+			serviceResponse = new ServiceResponse(true, "User Details fetched successfully", userMap);
+			return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 		} else {
-			serviceResponse = new ServiceResponse(false, "Unauthorized", null);
+			serviceResponse = new ServiceResponse(false, "token is expired", null);
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
 		}
 	}

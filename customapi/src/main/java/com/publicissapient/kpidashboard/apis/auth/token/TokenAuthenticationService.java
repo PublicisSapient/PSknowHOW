@@ -115,8 +115,6 @@ public interface TokenAuthenticationService {
 
 	void updateExpiryDate(String username, String expiryDate);
 
-	String setUpdateAuthFlag(Date userTokenData);
-
 	JSONObject getOrSaveUserByToken(HttpServletRequest request, Authentication authentication);
 
 	JSONObject createAuthDetailsJson(UserInfo userInfo);
