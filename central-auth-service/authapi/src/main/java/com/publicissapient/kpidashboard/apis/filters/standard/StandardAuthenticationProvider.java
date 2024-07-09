@@ -18,17 +18,17 @@
 
 package com.publicissapient.kpidashboard.apis.filters.standard;
 
-import java.time.LocalDateTime;
-
+import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
+import com.publicissapient.kpidashboard.apis.service.StandardAuthenticationService;
 import lombok.AllArgsConstructor;
-
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.apis.service.StandardAuthenticationService;
+import java.time.LocalDateTime;
 
 @Component
 @AllArgsConstructor
@@ -42,6 +42,10 @@ public class StandardAuthenticationProvider implements AuthenticationProvider {
 		} catch (BadCredentialsException e) {
 			standardAuthenticationService.updateFailAttempts(authentication.getName(), LocalDateTime.now());
 			throw e;
+		} catch (LockedException e) {
+			throw new LockedException(e.getMessage());
+		} catch (PendingApprovalException e) {
+			throw new PendingApprovalException(e.getMessage());
 		} catch (Exception e) {
 			throw new BadCredentialsException("Invalid username or password");
 		}
