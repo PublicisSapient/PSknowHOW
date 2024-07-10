@@ -23,6 +23,7 @@ import { ViewRequestsComponent } from 'src/app/config/profile/view-requests/view
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
+  let routerSpy: jasmine.SpyObj<Router>;
   let getAuth: GetAuthService;
   let httpService: HttpService
   let sharedService: SharedService;
@@ -39,6 +40,7 @@ describe('HeaderComponent', () => {
   ];
 
   beforeEach(async () => {
+    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     await TestBed.configureTestingModule({
       declarations: [HeaderComponent],
       imports: [RouterTestingModule.withRoutes(routes), HttpClientModule, BrowserAnimationsModule],
@@ -47,8 +49,7 @@ describe('HeaderComponent', () => {
       providers: [SharedService, GetAuthService, HttpService, HelperService, CommonModule, DatePipe, GetAuthorizationService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
-    })
-      .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
@@ -57,7 +58,7 @@ describe('HeaderComponent', () => {
     sharedService = TestBed.inject(SharedService);
     helperService = TestBed.inject(HelperService);
     mockGetAuthorizationService = jasmine.createSpyObj(GetAuthorizationService, ['checkIfSuperUser', 'checkIfProjectAdmin']);
-    mockRouter = component.router; 
+    mockRouter = component.router;
     fixture.detectChanges();
   });
 
@@ -115,14 +116,35 @@ describe('HeaderComponent', () => {
     expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/Config/Profile/RequestStatus']);
   });
 
-  it("should notification list not null if response is comming",()=>{
+  it("should notification list not null if response is comming", () => {
     const fakeResponce = {
       message: 'Data came successfully',
       success: true,
       data: [{ count: 2, type: 'User Access Request' }],
     };
-    spyOn(httpService,'getAccessRequestsNotifications').and.returnValue(of(fakeResponce));
+    spyOn(httpService, 'getAccessRequestsNotifications').and.returnValue(of(fakeResponce));
     component.getNotification();
     expect(component.notificationList).not.toBe(null);
-  })
+  });
+
+  it("should navigate to /dashboard/mydashboard when previousSelectedTab is Config", () => {
+    const navigateSpy = spyOn(mockRouter, 'navigate');
+    spyOnProperty(mockRouter, 'url', 'get').and.returnValue('/dashboard/Config');
+    component.navigateToMyKnowHOW();
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/mydashboard']);
+  });
+
+  it("should navigate to /dashboard/mydashboard when previousSelectedTab is Help", () => {
+    const navigateSpy = spyOn(mockRouter, 'navigate');
+    spyOnProperty(mockRouter, 'url', 'get').and.returnValue('/dashboard/Help');
+    component.navigateToMyKnowHOW();
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/mydashboard']);
+  });
+
+  it("should not navigate to /dashboard/mydashboard when previousSelectedTab is not Config or Help", () => {
+    const navigateSpy = spyOn(mockRouter, 'navigate');
+    spyOnProperty(mockRouter, 'url', 'get').and.returnValue('/dashboard/SomeOtherTab');
+    component.navigateToMyKnowHOW();
+    expect(navigateSpy).not.toHaveBeenCalledWith(['/dashboard/mydashboard']);
+  });
 });
