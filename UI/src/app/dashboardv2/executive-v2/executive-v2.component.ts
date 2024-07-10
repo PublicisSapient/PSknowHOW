@@ -190,7 +190,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
     this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId)
     if (this.updatedConfigGlobalData?.length === 0) {
       this.noKpis = true;
