@@ -53,7 +53,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 			if (isOldPasswordCorrect(user, oldPassword)) {
 				if (isPasswordPatternValid(newPassword)) {
-					if (isPasswordDifferent(user.getPassword(), newPassword)) {
+					if (isPasswordDifferent(oldPassword, newPassword)) {
 						if (!doesPasswordContainUsername(newPassword, user.getUsername())) {
 							return saveNewPasswordAndReturnAuthenticationToken(user, newPassword);
 						} else {
@@ -89,7 +89,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	}
 
 	private boolean isPasswordDifferent(String oldPassword, String newPassword) {
-		return oldPassword.equals(newPassword);
+		return !oldPassword.equals(newPassword);
 	}
 
 	private boolean isPasswordPatternValid(String password) {
