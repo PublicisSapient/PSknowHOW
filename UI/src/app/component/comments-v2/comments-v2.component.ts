@@ -92,20 +92,13 @@ export class CommentsV2Component implements OnInit {
   }
 
   getComments(){
-    if(this.selectedTab !== 'iteration' || this.selectedTab !== 'release'){
-      this.nodeSet.add(this.selectedFilters[this.selectedTabIndex]?.nodeId)
-      this.nodeArray = [...this.nodeSet][0];
-    } else {
-      this.nodeArray = this.selectedFilters[this.selectedTabIndex]?.parentId[0]
-    }
     const postData = {
-      node: this.nodeArray,
+      node: (this.selectedTab !== 'iteration' && this.selectedTab !== 'release') ? this.selectedFilters[this.selectedTabIndex]?.nodeId : this.selectedFilters[this.selectedTabIndex]?.parentId[0],
       nodeChildId: (this.selectedTab === 'iteration' || this.selectedTab === 'release') ? this.selectedFilters[this.selectedTabIndex].nodeId : '',
       kpiId: this.kpiId,
       level: this.selectedFilters[this.selectedTabIndex]?.level
     };
     this.dataLoaded = false;
-    console.log(postData)
     this.http_service.getComment(postData)
     .subscribe(response => {
       if(response.data?.CommentsInfo){

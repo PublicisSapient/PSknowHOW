@@ -112,6 +112,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   tabsArr = new Set();
   selectedKPITab: string;
   additionalFiltersArr = {};
+  isRecommendationsEnabled: boolean = false;
+  kpiList: Array<string> = [];
 
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
@@ -129,7 +131,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-      this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
+      this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
       setTimeout(() => {
         this.processKpiConfigData(this.masterData);
       }, 500);
@@ -179,16 +181,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     /**observable to get the type of view */
     this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
       this.showChart = view;
-  }));
+    }));
   }
 
   processKpiConfigData(kpiListObj) {
-    this.configGlobalData = kpiListObj.kpiList;
+    this.configGlobalData = kpiListObj?.kpiList;
     const disabledKpis = this.configGlobalData?.filter(item => item.shown && !item.isEnabled);
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+    this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId)
     if (this.updatedConfigGlobalData?.length === 0) {
       this.noKpis = true;
     } else {
@@ -212,7 +215,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
       this.noProjects = res;
-      this.kanbanActivated = this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
+      this.kanbanActivated = this.service.getSelectedType()?.toLowerCase() === 'kanban' ? true : false;
+    }));
+
+    /** Get recommendations flag */
+    this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
+      this.isRecommendationsEnabled = item;
     }));
 
     this.service.getEmptyData().subscribe((val) => {
@@ -250,7 +258,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
       this.tooltip = $event.configDetails;
       this.additionalFiltersArr = {};
-      this.noOfDataPoints = this.coundMaxNoOfSprintSelectedForProject($event);     
+      this.noOfDataPoints = this.coundMaxNoOfSprintSelectedForProject($event);
       this.allKpiArray = [];
       this.kpiChartData = {};
       this.chartColorList = {};
@@ -1718,10 +1726,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.kpiCommentsCountObj[kpiId] = res[kpiId];
       });
     } else {
-      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj = res;
-      });
+      requestObj['kpiIds'] = this.updatedConfigGlobalData?.map((item) => item.kpiId);
+      if (requestObj['kpiIds']?.length) {
+        this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+          this.kpiCommentsCountObj = res;
+        });
+      }
     }
   }
 
@@ -1817,14 +1827,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   coundMaxNoOfSprintSelectedForProject($event) {
     let maxSprints = 0;
-    if($event.filterApplyData?.selectedMap?.sprint?.length){
+    if ($event.filterApplyData?.selectedMap?.sprint?.length) {
       const sprintCount = new Map();
       $event.filterApplyData?.selectedMap?.sprint.forEach(node => {
         const projectId = node.substring(node.lastIndexOf('_') + 1);
         sprintCount.set(projectId, (sprintCount.get(projectId) || 0) + 1);
       });
       maxSprints = Math.max(...sprintCount.values());
-    }else{
+    } else {
       maxSprints = $event?.configDetails?.sprintCountForKpiCalculation
     }
     return maxSprints;

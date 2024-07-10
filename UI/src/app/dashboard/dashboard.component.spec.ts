@@ -64,28 +64,43 @@ describe('DashboardComponent', () => {
   it('should set page content wrapper height on initialization', () => {
     // Arrange
     spyOn(component, 'setPageContentWrapperHeight');
-  
+
     // Act
     component.ngOnInit();
-  
+
     // Assert
     expect(component.setPageContentWrapperHeight).toHaveBeenCalled();
   });
-  
+
   it('should update side nav style when isSideNav flag changes', () => {
     // Arrange
     const flag = true;
     spyOn(sharedService.isSideNav, 'subscribe').and.callFake((callback) => {
       callback(flag);
     });
-  
+
     // Act
     component.ngOnInit();
-  
+
     // Assert
     expect(component.isApply).toBe(flag);
     expect(component.sideNavStyle).toEqual({ 'toggled': component.isApply });
   });
-  
-  
+
+  it('should set modal details for created project', () => {
+    const projectName = 'Test Project';
+    httpService.createdProjectName = projectName;
+    spyOn(httpService.loadApp, 'subscribe').and.callThrough();
+    component.ngOnInit();
+    expect(component.modalDetails.header).toBe('Project Created');
+    expect(component.modalDetails.content).toBe(`The project "${projectName}" has been created successfully and you have gained admin rights for it.`);
+  });
+
+  it('should reload app when reloadApp is called', () => {
+    spyOn(httpService.loadApp, 'subscribe').and.callThrough();
+    component.ngOnInit();
+    component.reloadApp();
+    expect(component.displayModal).toBe(false);
+  });
+
 });

@@ -7,7 +7,7 @@
         <div class="down-arrow cursor-pointer" (click)="appItems.toggle($event)"></div>
         <p-menu [model]="appList" [popup]="true" #appItems class="app-switch"></p-menu>
      </div>
-      <img src="assets/img/PSKnowHowLogo.svg" alt="Logo" />
+      <img src="assets/img/PSKnowHowLogo.svg" alt="Logo" (click)="navigateToMyKnowHOW()"/>
     </div>
 
     <div class="p-d-flex p-align-center p-p-1">

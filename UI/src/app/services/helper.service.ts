@@ -25,7 +25,8 @@ import { HttpService } from './http.service';
 import { ExcelService } from './excel.service';
 import { SharedService } from './shared.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-
+import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 @Injectable()
 export class HelperService {
     isKanban = false;
@@ -34,7 +35,7 @@ export class HelperService {
     selectedFilterArray: any = [];
     selectedFilters: any = {}
 
-    constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService) {
+    constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService, private router: Router) {
         this.passMaturityToFilter = new EventEmitter();
     }
 
@@ -740,5 +741,37 @@ export class HelperService {
         this.createBackupOfFiltersSelection(kpiSelectedFilterObj, tab, subFilter);
         this.sharedService.setKpiSubFilterObj(kpiSelectedFilterObj);
         return kpiSelectedFilterObj;
+    }
+
+    logoutHttp(){
+      this.httpService.logout().subscribe((responseData) => {
+        if (responseData?.success) {
+          if(!environment['AUTHENTICATION_SERVICE']){
+          this.isKanban = false;
+          // Set blank selectedProject after logged out state
+          this.sharedService.setSelectedProject(null);
+          this.sharedService.setCurrentUserDetails({});
+          this.sharedService.setVisibleSideBar(false);
+          this.sharedService.setAddtionalFilterBackup({});
+          this.sharedService.setKpiSubFilterObj({});
+          localStorage.clear();
+          this.router.navigate(['./authentication/login']);
+        } else{
+          let obj = {
+            'resource': environment.RESOURCE
+          };
+          this.httpService.getUserValidation(obj).toPromise()
+          .then((response) => {
+            if (response && !response['success']) {
+              let redirect_uri = window.location.href;
+              window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+            }
+          })
+          .catch((error) => {
+            console.log("cookie not clear on error");
+          });
+        }
+      }
+    })
     }
 }

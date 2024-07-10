@@ -7,6 +7,7 @@ import { switchMap, takeUntil } from 'rxjs/operators';
 import { Subject, interval } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { MultiSelect } from 'primeng/multiselect';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 @Component({
   selector: 'app-filter-new',
@@ -55,17 +56,21 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   @ViewChild('showHideDdn') showHideDdn: MultiSelect;
   enableShowHideApply: boolean = true;
   showHideSelectAll: boolean = false;
-  showChart: string = 'chart'
+  showChart: string = 'chart';
+  iterationConfigData = {};
+  isRecommendationsEnabled: boolean = false;
+
   constructor(
     private httpService: HttpService,
     public service: SharedService,
     private helperService: HelperService,
     public cdr: ChangeDetectorRef,
     private messageService: MessageService,
-    private ga: GoogleAnalyticsService) { }
+    private ga: GoogleAnalyticsService,
+    private featureFlagsService: FeatureFlagsService) { }
 
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
     this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
@@ -75,6 +80,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.processBoardData(boardData);
       })
     );
+    this.isRecommendationsEnabled = await this.featureFlagsService.isFeatureEnabled('RECOMMENDATIONS');
+    this.service.setRecommendationsFlag(this.isRecommendationsEnabled);
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh
@@ -122,7 +129,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.additionalFiltersArr = [];
             this.populateAdditionalFilters(this.previousFilterEvent);
           }
-        })
+        }),
+
+      this.service.iterationCongifData.subscribe((iterationDetails) => {
+        console.log(iterationDetails)
+        this.iterationConfigData = iterationDetails;
+      })
     );
   }
 
@@ -404,6 +416,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setSprintDetails(event) {
+    console.log(event[0])
     const currentDate = new Date().getTime();
     const stopDate = new Date(event[0].sprintEndDate).getTime();
     const timeRemaining = stopDate - currentDate;

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { HelperService } from 'src/app/services/helper.service';
-
+import { DropdownFilterOptions } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-parent-filter',
@@ -13,10 +13,12 @@ export class ParentFilterComponent implements OnChanges {
   @Input() selectedType: string = '';
   @Input() selectedTab: string = '';
   filterLevels: string[];
+  options: any[] = [];
   selectedLevel: any;
   stateFilters: string = '';
   additionalFilterLevels = [];
   @Output() onSelectedLevelChange = new EventEmitter();
+  filterValue: string = '';
   constructor(private helperService: HelperService) { }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -27,6 +29,7 @@ export class ParentFilterComponent implements OnChanges {
         this.filterLevels = Object.keys(this.filterData);
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level));
         this.filterLevels = this.filterLevels.map(level => level.toUpperCase());
+        this.stringToObject();
         this.stateFilters = this.helperService.getBackupOfFilterSelectionState('parent_level');
         Promise.resolve().then(() => {
           if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel) {
@@ -49,6 +52,7 @@ export class ParentFilterComponent implements OnChanges {
         if (this.filterData && Object.keys(this.filterData).length) {
           this.filterLevels = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()]?.map((item) => item.nodeName);
           this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
+          this.stringToObject();
           this.stateFilters = this.helperService.getBackupOfFilterSelectionState('parent_level');
 
           Promise.resolve().then(() => {
@@ -93,4 +97,10 @@ export class ParentFilterComponent implements OnChanges {
     this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel.toLowerCase(), 'primary_level': null });
   }
 
+  stringToObject() {
+    this.options = [];
+    this.filterLevels.forEach(example_string => {
+      this.options.push({ label: example_string });
+    });
+  }
 }
