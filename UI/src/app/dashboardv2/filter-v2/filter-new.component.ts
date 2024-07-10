@@ -385,6 +385,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
       if (this.selectedTab?.toLowerCase() === 'iteration') {
         this.setSprintDetails(event);
+        this.service.setSprintForRnR(event[0]);
       } else {
         this.additionalData = false;
       }
@@ -412,11 +413,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.handleAdditionalChange(event['additional_level'][key]);
       });
     }
+     /** When there is no sprint selected */
+     if(this.additionalFiltersArr && this.additionalFiltersArr?.['filter1']?.length){
+      const sprintList = this.additionalFiltersArr['filter1']
+      this.service.setSprintForRnR(sprintList[sprintList.length-1])
+    }
     this.compileGAData(event);
   }
 
   setSprintDetails(event) {
-    console.log(event[0])
     const currentDate = new Date().getTime();
     const stopDate = new Date(event[0].sprintEndDate).getTime();
     const timeRemaining = stopDate - currentDate;
@@ -446,6 +451,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handleAdditionalChange(event) {
+    if(event && event?.length){
+      this.service.setSprintForRnR(event[event.length-1])
+    }
     if (!event?.length) {
       this.handlePrimaryFilterChange(this.previousFilterEvent);
       return;
