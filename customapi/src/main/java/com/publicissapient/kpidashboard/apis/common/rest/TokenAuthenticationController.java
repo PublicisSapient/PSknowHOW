@@ -43,6 +43,15 @@ public class TokenAuthenticationController {
 	@Autowired
 	private CustomAnalyticsService customAnalyticsService;
 
+	/**
+	 * Fetch user details from the Central Auth on the first login and save them
+	 * into the KnowHow database. For subsequent logins, retrieve user details from
+	 * the KnowHow database
+	 * 
+	 * @param httpServletRequest
+	 * @param httpServletResponse
+	 * @return
+	 */
 	@GetMapping(value = "/fetchUserDetails")
 	public ResponseEntity<ServiceResponse> fetchUserDetails(HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse) {
