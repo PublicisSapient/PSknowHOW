@@ -70,31 +70,31 @@ export class HeaderComponent implements OnInit {
     if (!this.ssoLogin) {
 
       this.appList = [
-          {
-              label: 'KnowHOW',
-              icon: '',
-              styleClass: 'p-menuitem-link-active'
-          },
-          {
-              label: 'Assessments',
-              icon: '',
-              command: () => {
-                 window.open(
-                  environment['MAP_URL'],
-                  '_blank'
-                );
-              }
-          },
-          {
-            label: 'Retros',
-            icon: '',
-            command: () => {
-               window.open(
-                  environment['RETROS_URL'],
-                  '_blank'
-                );
-            }
+        {
+          label: 'KnowHOW',
+          icon: '',
+          styleClass: 'p-menuitem-link-active'
+        },
+        {
+          label: 'Assessments',
+          icon: '',
+          command: () => {
+            window.open(
+              environment['MAP_URL'],
+              '_blank'
+            );
           }
+        },
+        {
+          label: 'Retros',
+          icon: '',
+          command: () => {
+            window.open(
+              environment['RETROS_URL'],
+              '_blank'
+            );
+          }
+        }
       ];
     }
     this.sharedService.passEventToNav.subscribe(() => {
@@ -149,5 +149,12 @@ export class HeaderComponent implements OnInit {
   // logout is clicked  and removing auth token , username
   logout() {
     this.helperService.logoutHttp();
+  }
+
+  navigateToMyKnowHOW() {
+    const previousSelectedTab = this.router.url.split('/')[2];
+    if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
+      this.router.navigate([`/dashboard/mydashboard`]);
+    }
   }
 }
