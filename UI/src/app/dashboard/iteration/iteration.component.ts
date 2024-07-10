@@ -109,6 +109,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   dailyStandupData: object = {};
   selectedProjectId: string;
   kpiList: Array<string> = [];
+  isRecommendationsEnabled: boolean = false;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService,
     private featureFlagService: FeatureFlagsService) {
@@ -390,6 +391,10 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
     });
 
+    /** Get recommendations flag */
+    this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
+        this.isRecommendationsEnabled = item;
+    }));
 
     this.service.getEmptyData().subscribe((val) => {
       if (val) {

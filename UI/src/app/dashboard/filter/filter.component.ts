@@ -31,6 +31,7 @@ import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
 import { first, switchMap, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { interval, Subject } from 'rxjs';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 @Component({
   selector: 'app-filter',
@@ -150,6 +151,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedProjectForIteration : any = [];
   selectedItems: number = 0;
   isAdditionalFilter: boolean = false;
+  isRecommendationsEnabled: boolean = false;
 
   constructor(
     public service: SharedService,
@@ -159,10 +161,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     private ga: GoogleAnalyticsService,
     private messageService: MessageService,
     private helperService: HelperService,
-    public route: ActivatedRoute
+    public route: ActivatedRoute,
+    private featureFlagsService: FeatureFlagsService
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.items.push({
       label: 'Logout',
       icon: 'fas fa-sign-out-alt',
@@ -216,6 +219,9 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.toggleFilter();
     this.initializeUserInfo();
     this.getLogoImage();
+    
+    this.isRecommendationsEnabled = await this.featureFlagsService.isFeatureEnabled('RECOMMENDATIONS');
+    this.service.setRecommendationsFlag(this.isRecommendationsEnabled);
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe(data => {
