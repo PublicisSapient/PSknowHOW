@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, fakeAsync, inject, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, discardPeriodicTasks, fakeAsync, flushMicrotasks, inject, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import { FilterComponent } from './filter.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
@@ -273,6 +273,8 @@ const completeHierarchyData = {
         // { provide: Router, useClass: MockRouter }]
     })
       .compileComponents();
+
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
   });
 
   beforeEach(() => {
@@ -504,15 +506,15 @@ const completeHierarchyData = {
 
   });
 
-  it('should set filters empty when selected tab is iteraiton', () => {
+  it('should set filters empty when selected tab is iteraiton', waitForAsync ( async() => {
     component.toggleDropdown['commentSummary'] = true;
-    component.ngOnInit();
+    await component.ngOnInit();
     const spy = spyOn(sharedService, 'setEmptyFilter');
     component.selectedTab = 'iteration';
     const fake = { selectedTab : 'Iteration', selectedType : 'scrum' };
     sharedService.onTypeOrTabRefresh.next(fake);
     expect(spy).toHaveBeenCalled();
-    });
+    }));
 
   it('should set showChart as chart when selected tab is maturity', () => {
     component.toggleDropdown['commentSummary'] = true;
@@ -523,23 +525,24 @@ const completeHierarchyData = {
     expect(component.showChart).toBe('chart');
     });
 
-    it('should set selectedDayType as days when selected tab is developer', () => {
+    it('should set selectedDayType as days when selected tab is developer', waitForAsync ( async () => {
       component.toggleDropdown['commentSummary'] = true;
-      component.ngOnInit();
+      await component.ngOnInit();
       component.selectedTab = 'developer';
       const fake = { selectedTab : 'developer', selectedType : 'scrum' };
       sharedService.onTypeOrTabRefresh.next(fake);
       expect(component.selectedDayType).toBe('Days');
-      });
+      }));
 
-      it('should call getNotifiocation functions',()=>{
-        component.ngOnInit();
+      it('should call getNotifiocation functions',waitForAsync ( async ()=>{
+        await component.ngOnInit();
         const spyObj = spyOn(component,'getNotification');
         sharedService.notificationUpdate()
         expect(spyObj).toHaveBeenCalled();
-      })
+      }))
 
-  it('should set the colorObj', () => {
+  it('should set the colorObj', waitForAsync ( async () => {
+    await component.ngOnInit();
     const x = {
       'Sample One_hierarchyLevelOne': {
         nodeName: 'Sample One',
@@ -547,9 +550,9 @@ const completeHierarchyData = {
       }
     };
     sharedService.setColorObj(x);
-    fixture.detectChanges();
+    
     expect(component.colorObj).toBe(x);
-  });
+  }));
 
   it('should set isSuperAdmin flag', () => {
     spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(true);

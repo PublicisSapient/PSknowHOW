@@ -65,6 +65,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
   fullPageLoader: boolean = true;
   kpiTrendObject = {};
   kpiList: Array<string> = [];
+  isRecommendationsEnabled: boolean = false;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -108,6 +109,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
           this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
         }
       }
+    }));
+
+    /** Get recommendations flag */
+    this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
+        this.isRecommendationsEnabled = item;
     }));
 
     this.service.getEmptyData().subscribe((val) => {

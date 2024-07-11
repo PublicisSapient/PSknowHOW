@@ -7,6 +7,7 @@ import { switchMap, takeUntil } from 'rxjs/operators';
 import { Subject, interval } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { MultiSelect } from 'primeng/multiselect';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 @Component({
   selector: 'app-filter-new',
@@ -55,26 +56,54 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   @ViewChild('showHideDdn') showHideDdn: MultiSelect;
   enableShowHideApply: boolean = true;
   showHideSelectAll: boolean = false;
-  showChart: string = 'chart'
+  showChart: string = 'chart';
+  iterationConfigData = {};
+  isRecommendationsEnabled: boolean = false;
+
   constructor(
     private httpService: HttpService,
     public service: SharedService,
     private helperService: HelperService,
     public cdr: ChangeDetectorRef,
     private messageService: MessageService,
-    private ga: GoogleAnalyticsService) { }
+    private ga: GoogleAnalyticsService,
+    private featureFlagsService: FeatureFlagsService) { }
 
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
     this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
+    this.selectedDayType = 'Weeks';
+    this.dateRangeFilter = {
+      "types": [
+        "Days",
+        "Weeks"
+      ],
+      "counts": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ]
+    };
+    this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+    this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     this.subscriptions.push(
       this.service.globalDashConfigData.subscribe((boardData) => {
         this.dashConfigData = boardData;
         this.processBoardData(boardData);
       })
     );
+    this.isRecommendationsEnabled = await this.featureFlagsService.isFeatureEnabled('RECOMMENDATIONS');
+    this.service.setRecommendationsFlag(this.isRecommendationsEnabled);
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh
@@ -90,39 +119,25 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           }
           this.processBoardData(this.boardData);
 
-          this.selectedDayType = 'Weeks';
-          this.dateRangeFilter = {
-            "types": [
-              "Days",
-              "Weeks"
-            ],
-            "counts": [
-              5,
-              6,
-              7,
-              8,
-              9,
-              10,
-              11,
-              12,
-              13,
-              14,
-              15
-            ]
-          };
           if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release' || this.selectedTab.toLowerCase() === 'dora' || this.selectedTab.toLowerCase() === 'developer' || this.selectedTab.toLowerCase() === 'maturity') {
             this.showChart = 'chart';
             this.service.setShowTableView(this.showChart);
           }
           this.service.setSelectedDateFilter(this.selectedDayType);
-          this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
-          this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+
           // Populate additional filters on MyKnowHOW, Speed and Quality
           if (this.selectedTab.toLowerCase() !== 'developer') {
             this.additionalFiltersArr = [];
             this.populateAdditionalFilters(this.previousFilterEvent);
+          } else {
+            this.applyDateFilter();
           }
-        })
+        }),
+
+      this.service.iterationCongifData.subscribe((iterationDetails) => {
+        console.log(iterationDetails)
+        this.iterationConfigData = iterationDetails;
+      })
     );
   }
 
@@ -357,6 +372,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         } else {
           this.filterApplyData['ids'] = [5];
           this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
+          this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+          this.service.setSelectedDateFilter(this.selectedDayType);
         }
       } else {
         this.filterApplyData['ids'] = [this.selectedDateValue];

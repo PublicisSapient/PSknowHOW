@@ -32,7 +32,7 @@
                             <ng-container
                                 *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
                                 <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
-                                    <div *ngIf="selectedKPITab === kpi.kpiDetail.kpiSubCategory"
+                                    <div *ngIf="selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled']"
                                         class="{{ kpi.kpiDetail?.kpiWidth ? kpi.kpiDetail?.kpiWidth === 100 ? 'p-col-12' : 'p-col-6'  : 'p-col-6'  }}">
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"
                                             [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
@@ -251,3 +251,7 @@
 </ng-template>
 
 <app-export-excel #exportExcel></app-export-excel>
+
+<ng-container *ngIf="isRecommendationsEnabled && (filterApplyData?.label == 'project' || filterApplyData?.label == 'sprint') && filterApplyData?.ids?.length == 1">
+    <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
+  </ng-container>
