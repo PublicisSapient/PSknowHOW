@@ -757,10 +757,7 @@ export class HelperService {
           localStorage.clear();
           this.router.navigate(['./authentication/login']);
         } else{
-          let obj = {
-            'resource': environment.RESOURCE
-          };
-          this.httpService.getUserValidation(obj).toPromise()
+          this.httpService.getUserDetailsForCentral().toPromise()
           .then((response) => {
             if (response && !response['success']) {
               let redirect_uri = window.location.href;

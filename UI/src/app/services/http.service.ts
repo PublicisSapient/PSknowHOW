@@ -279,8 +279,7 @@ export class HttpService {
   logout(): Observable<any> {
     if(environment?.['AUTHENTICATION_SERVICE']){
       this.logoutUrl = environment?.['CENTRAL_API_URL'] + '/api/sso-logout';
-      //replace environment?.['CENTRAL_LOGIN_URL'] with  (central BE api base url)
-    } 
+    }
     return this.http.get(this.logoutUrl);
   }
 
