@@ -219,9 +219,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.toggleFilter();
     this.initializeUserInfo();
     this.getLogoImage();
-    
-    this.isRecommendationsEnabled = await this.featureFlagsService.isFeatureEnabled('RECOMMENDATIONS');
-    this.service.setRecommendationsFlag(this.isRecommendationsEnabled);
+    this.getRecommendationsFlag();
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe(data => {
@@ -338,6 +336,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.sprintQueryParamObs.subscribe((val) => {
       this.sprintIdQParam = val.value;
     })
+  }
+
+  async getRecommendationsFlag(){
+    this.isRecommendationsEnabled = await this.featureFlagsService.isFeatureEnabled('RECOMMENDATIONS');
+    this.service.setRecommendationsFlag(this.isRecommendationsEnabled);
   }
 
   initializeFilterForm() {

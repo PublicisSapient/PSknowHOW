@@ -35,6 +35,7 @@
                                     <div *ngIf="selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled']"
                                         class="{{ kpi.kpiDetail?.kpiWidth ? kpi.kpiDetail?.kpiWidth === 100 ? 'p-col-12' : 'p-col-6'  : 'p-col-6'  }}">
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"
+                                            [nodeId]="filterApplyData?.selectedMap?.['release']?.[0]"
                                             [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                                             [loader]="kpiLoader.has(kpi?.kpiId)" [trendData]="kpiTrendsObj[kpi?.kpiId]"
                                             [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders"
