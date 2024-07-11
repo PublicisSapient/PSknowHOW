@@ -13912,38 +13912,28 @@ describe('FilterNewComponent', () => {
   });
 
   it('should set selectedBoard', () => {
-    boardData.scrum[0].boardSlug = 'test';
-    component.selectedTab = 'test';
+    component.selectedTab = 'mydashboard';
     component.processBoardData(boardData);
-    expect(component.selectedBoard).toEqual(boardData['scrum'][0]);
+    expect(component.selectedBoard).toEqual(boardData.scrum[0]);
   });
 
   it('should set selectedBoard from others', () => {
-    boardData.others[0].boardSlug = 'test2';
-    component.selectedTab = 'test2';
+    component.selectedTab = 'release';
     component.processBoardData(boardData);
     expect(component.selectedBoard).toEqual(boardData.others[0]);
   });
 
   it('should set the kanbanRequired property correctly', () => {
-    component.kanbanRequired = boardData.scrum[0].filters?.projectTypeSwitch;
+    component.selectedTab = 'mydashboard';
     component.processBoardData(boardData);
-    expect(component.kanbanRequired).toEqual({
-      enabled: false,
-      visible: true
-    });
+    expect(component.kanbanRequired).toEqual(boardData.scrum[0].filters?.projectTypeSwitch);
   });
 
   it('should set selectedType to scrum if kanbanRequired is not enabled', () => {
-    boardData.kanban[0].filters.projectTypeSwitch.enabled = false;
+    component.selectedType = 'kanban';
+    component.selectedTab = 'iteration';
     component.processBoardData(boardData);
     expect(component.selectedType).toEqual('scrum');
-  });
-
-  it('should set kanban to false if kanbanRequired is not enabled', () => {
-    boardData.kanban[0].filters.projectTypeSwitch.enabled = false;
-    component.selectedType = 'kanban';
-    component.processBoardData(boardData);
     expect(component.kanban).toBeFalse();
   });
 
@@ -14008,37 +13998,33 @@ describe('FilterNewComponent', () => {
   });
 
   it('should set parentFilterConfig', () => {
-    boardData.scrum[0].filters.parentFilter = {
-      "labelName": "Project",
-      "emittedLevel": "sprint"
-    }
+    component.selectedTab = 'iteration';
     component.processBoardData(boardData);
-    expect(component.parentFilterConfig).toEqual(boardData.scrum[0].filters.parentFilter);
+    expect(component.parentFilterConfig).toEqual(boardData.scrum[4].filters.parentFilter);
   });
 
-  // TODO: Programing logic is incorrect, test case is failing - NEED TO FIX
-  // it('should set selectedLevel to null if parentFilterConfig is not present', () => {
-  //   component.parentFilterConfig = undefined;
-  //   component.processBoardData(boardData);
-  //   expect(component.selectedLevel).toBeNull();
-  // });
+  it('should set selectedLevel to null if parentFilterConfig is not present', () => {
+    component.selectedTab = 'developer';
+    component.processBoardData(boardData);
+    expect(component.selectedLevel).toBeNull();
+  });
 
   it('should not set selectedLevel to null if parentFilterConfig is present', () => {
-    component.parentFilterConfig = boardData.scrum[0].filters.parentFilter;
+    component.selectedTab = 'iteration';
     component.processBoardData(boardData);
     expect(component.selectedLevel).not.toBeNull();
   });
 
   it('should set primaryFilterConfig', () => {
-      component.primaryFilterConfig = boardData.scrum[0].filters.primaryFilter;
+      component.selectedTab = 'mydashboard';
       component.processBoardData(boardData);
-      expect(component.primaryFilterConfig).toEqual(component.selectedBoard.filters.primaryFilter);
+      expect(component.primaryFilterConfig).toEqual(boardData.scrum[0].filters.primaryFilter);
   });
 
   it('should set additionalFilterConfig', () => {
-    component.additionalFilterConfig = boardData.scrum[0].filters.additionalFilters;
+    component.selectedTab = 'mydashboard';
     component.processBoardData(boardData);
-    expect(component.additionalFilterConfig).toEqual(component.selectedBoard.filters.additionalFilters);
+    expect(component.additionalFilterConfig).toEqual(boardData.scrum[0].filters.additionalFilters);
   });
 
 });
