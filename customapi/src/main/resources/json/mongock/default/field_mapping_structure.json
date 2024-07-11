@@ -1321,13 +1321,14 @@
     "nestedFields": [
       {
         "fieldName": "storyPointToHourMapping",
-        "fieldLabel": "Story Point to Hour Conversion",
+        "fieldLabel": "Hour to Story Point",
         "fieldType": "text",
         "filterGroup": [
-          "Story Point"
+          "Story Point",
+          "Actual Estimation"
         ],
         "tooltip": {
-          "definition": "Estimation technique used by teams for e.g. story points, Hours etc."
+          "definition": "Estimation technique used by teams. Eg., enter 8 if 1 Story Point is equivalent to 8hrs of effort spent per day."
         }
       }
     ],
