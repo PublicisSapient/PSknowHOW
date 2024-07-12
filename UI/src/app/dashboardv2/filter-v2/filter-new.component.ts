@@ -418,10 +418,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.handleAdditionalChange(event['additional_level'][key]);
       });
     }
-     /** When there is no sprint selected */
-     if(this.additionalFiltersArr && this.additionalFiltersArr?.['filter1']?.length){
-      const sprintList = this.additionalFiltersArr['filter1']
-      this.service.setSprintForRnR(sprintList[sprintList.length-1])
+
+     if(this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event[0]?.labelName === 'project'){
+      const allSprints = this.filterDataArr[this.selectedType]['sprint'];
+      const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId))
+      if(currentProjectSprints.length){
+        this.service.setSprintForRnR(currentProjectSprints[0])
+      }
     }
     this.compileGAData(event);
   }
