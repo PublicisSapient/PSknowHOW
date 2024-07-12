@@ -90,7 +90,7 @@ export class SharedService {
   fieldMappingOptionsMetaData : any = []
   kpiCardView : string = "chart";
   maturityTableLoader = new Subject<boolean>();
-  globalConfigData = {}
+  globalConfigData;
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();

@@ -119,7 +119,7 @@ export class JiraConfigComponent implements OnInit {
 
   ngOnInit(): void {
     this.selectedProject = this.sharedService.getSelectedProject();
-    this.isGitlabToolFieldEnabled = this.sharedService.globalDashConfigData()?.gitlabToolFieldFlag;
+    this.isGitlabToolFieldEnabled = this.sharedService.getGlobalConfigData()?.gitlabToolFieldFlag;
     if (!this.selectedProject) {
       this.router.navigate(['./dashboard/Config/ProjectList']);
     }
