@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { FilterNewComponent } from './filter-new.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedService } from '../../services/shared.service';
@@ -13063,7 +13063,7 @@ describe('FilterNewComponent', () => {
   });
 
 
-  it('should set selected trends if event is not null and has length', () => {
+  it('should set selected trends if event is not null and has length', fakeAsync (() => {
     const event = [{ level: 'Level 1', labelName: 'Label 1', nodeId: 1 }];
     component.filterDataArr = {
       scrum: {
@@ -13101,11 +13101,13 @@ describe('FilterNewComponent', () => {
     component.selectedType = 'scrum';
     component.kanban = false;
     spyOn(sharedService, 'setSelectedTrends');
+    spyOn(component, 'getProcessorsTraceLogsForProject');
 
     component.handlePrimaryFilterChange(event);
+    tick();
 
     expect(sharedService.setSelectedTrends).toHaveBeenCalledWith(event);
-  });
+  }));
 
 
   it('should not set selected trends if event is null or has no length', () => {
