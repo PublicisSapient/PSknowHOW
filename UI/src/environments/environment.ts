@@ -22,12 +22,12 @@
 
 export const environment = {
    production: false,
-   baseUrl: '//customapi:8080',
+   baseUrl: '//localhost:8080',
    SSO_LOGIN: false,
    CENTRAL_LOGIN_URL: 'http://localhost:3000',
-   CENTRAL_API_URL: 'http://localhost:8787',
+   CENTRAL_API_URL: 'http://localhost:8788',
    RESOURCE: 'PSKnowHOW',
-   AUTHENTICATION_SERVICE: false,
+   AUTHENTICATION_SERVICE: true,
    SPEED_SUITE: false,
    MAP_URL:'',
    RETROS_URL: ''
