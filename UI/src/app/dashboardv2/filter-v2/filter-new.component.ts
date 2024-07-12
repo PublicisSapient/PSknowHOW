@@ -59,6 +59,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   showChart: string = 'chart';
   iterationConfigData = {};
   isRecommendationsEnabled: boolean = false;
+  selectedBoard: any;
 
   constructor(
     private httpService: HttpService,
@@ -135,7 +136,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         }),
 
       this.service.iterationCongifData.subscribe((iterationDetails) => {
-        console.log(iterationDetails)
         this.iterationConfigData = iterationDetails;
       })
     );
@@ -165,13 +165,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   processBoardData(boardData) {
     this.boardData = boardData;
-    let selectedBoard = boardData[this.selectedType ? this.selectedType : 'scrum'].filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
-    if (!selectedBoard) {
-      selectedBoard = boardData['others']?.filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
+    this.selectedBoard = boardData[this.selectedType ? this.selectedType : 'scrum'].filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
+    if (!this.selectedBoard) {
+      this.selectedBoard = boardData['others']?.filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
     }
 
-    if (selectedBoard) {
-      this.kanbanRequired = selectedBoard.filters?.projectTypeSwitch;
+    if (this.selectedBoard) {
+      this.kanbanRequired = this.selectedBoard.filters?.projectTypeSwitch;
 
       if (!this.kanbanRequired?.enabled && this.selectedType === 'kanban') {
         this.kanban = false;
@@ -180,7 +180,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
 
       this.getFiltersData();
-      this.masterData['kpiList'] = selectedBoard.kpis;
+      this.masterData['kpiList'] = this.selectedBoard.kpis;
       let newMasterData = {
         'kpiList': []
       };
@@ -189,12 +189,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         newMasterData['kpiList'].push(element);
       });
       this.masterData['kpiList'] = newMasterData.kpiList.filter(kpi => kpi.shown);
-      this.parentFilterConfig = selectedBoard.filters.parentFilter;
+      this.parentFilterConfig = this.selectedBoard.filters.parentFilter;
       if (!this.parentFilterConfig) {
         this.selectedLevel = null;
       }
-      this.primaryFilterConfig = selectedBoard.filters.primaryFilter;
-      this.additionalFilterConfig = selectedBoard.filters.additionalFilters;
+      this.primaryFilterConfig = this.selectedBoard.filters.primaryFilter;
+      this.additionalFilterConfig = this.selectedBoard.filters.additionalFilters;
     }
   }
 

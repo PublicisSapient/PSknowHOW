@@ -13392,7 +13392,7 @@ describe('FilterNewComponent', () => {
 
   it('should set processor log details when response is successful', () => {
     const mockBasicProjectConfigId = '123';
-    component.service.setSelectedTrends([{basicProjectConfigId : mockBasicProjectConfigId}])
+    component.service.setSelectedTrends([{ basicProjectConfigId: mockBasicProjectConfigId }])
     const mockResponse = { success: true, data: { /* mock data */ } };
 
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(mockResponse));
@@ -13407,7 +13407,7 @@ describe('FilterNewComponent', () => {
 
   it('should show error message when response is not successful', () => {
     const mockBasicProjectConfigId = '123';
-    component.service.setSelectedTrends([{basicProjectConfigId : mockBasicProjectConfigId}])
+    component.service.setSelectedTrends([{ basicProjectConfigId: mockBasicProjectConfigId }])
     const mockResponse = { success: false };
 
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(mockResponse));
@@ -13567,7 +13567,7 @@ describe('FilterNewComponent', () => {
   });
 
   it('should call service.select with correct parameters when selectedLevel is an object', () => {
-    spyOn(component,'getProcessorsTraceLogsForProject');
+    spyOn(component, 'getProcessorsTraceLogsForProject');
     component.additionalFilterConfig = [
       {
         "type": "multiSelect",
@@ -13779,15 +13779,15 @@ describe('FilterNewComponent', () => {
     component.selectedTab = 'board1';
     component.masterData = {
       kpiList: [
-        { kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order:1 },
-        { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order:2 },
+        { kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order: 1 },
+        { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order: 2 },
       ],
     };
     component.showHideKPIs();
 
     expect(component.dashConfigData.kanban[0].kpis).toEqual([
-      { kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order:1 },
-      { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order:2 },
+      { kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order: 1 },
+      { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order: 2 },
     ]);
   });
 
@@ -13800,8 +13800,8 @@ describe('FilterNewComponent', () => {
       kanban: [
         {
           boardSlug: 'board1',
-          kpis: [{ kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order:1 },
-            { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order:2 },],
+          kpis: [{ kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order: 1 },
+          { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order: 2 },],
         },
         {
           boardSlug: 'board2',
@@ -13823,8 +13823,8 @@ describe('FilterNewComponent', () => {
     component.selectedTab = 'board1';
     component.masterData = {
       kpiList: [
-        { kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order:1 },
-        { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order:2 },
+        { kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order: 1 },
+        { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order: 2 },
       ],
     };
     spyOn(httpService, 'submitShowHideOnDashboard').and.returnValue(of({
@@ -13833,14 +13833,14 @@ describe('FilterNewComponent', () => {
       "data": {
         kanban: {
           board1: {
-            kpis:  [
-              { kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order:1 },
-              { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order:2 },
+            kpis: [
+              { kpiId: 1, kpiName: 'kpi1', isEnabled: true, shown: true, kpiDetail: {}, order: 1 },
+              { kpiId: 2, kpiName: 'kpi2', isEnabled: true, shown: true, kpiDetail: {}, order: 2 },
             ]
           }
         }
       }
-  }));
+    }));
 
     component.showHideKPIs();
 
@@ -13899,8 +13899,132 @@ describe('FilterNewComponent', () => {
     // });
   });
 
-  it('should toggle view',() => {
-     component.showChartToggle('chart');
-     expect(component.showChart).toBe('chart');
-  })
+  it('should toggle view', () => {
+    component.showChartToggle('chart');
+    expect(component.showChart).toBe('chart');
+  });
+
+  // -----------------------< processBoardData tests >-----------------------
+
+  it('should set boardData', () => {
+    component.processBoardData(boardData);
+    expect(component.boardData).toEqual(boardData);
+  });
+
+  it('should set selectedBoard', () => {
+    component.selectedTab = 'mydashboard';
+    component.processBoardData(boardData);
+    expect(component.selectedBoard).toEqual(boardData.scrum[0]);
+  });
+
+  it('should set selectedBoard from others', () => {
+    component.selectedTab = 'release';
+    component.processBoardData(boardData);
+    expect(component.selectedBoard).toEqual(boardData.others[0]);
+  });
+
+  it('should set the kanbanRequired property correctly', () => {
+    component.selectedTab = 'mydashboard';
+    component.processBoardData(boardData);
+    expect(component.kanbanRequired).toEqual(boardData.scrum[0].filters?.projectTypeSwitch);
+  });
+
+  it('should set selectedType to scrum if kanbanRequired is not enabled', () => {
+    component.selectedType = 'kanban';
+    component.selectedTab = 'iteration';
+    component.processBoardData(boardData);
+    expect(component.selectedType).toEqual('scrum');
+    expect(component.kanban).toBeFalse();
+  });
+
+  it('should set selectedType to scrum if kanbanRequired is not enabled', () => {
+    component.selectedType = 'kanban';
+    component.processBoardData(boardData);
+    expect(component.selectedType).toEqual('scrum');
+  });
+
+  it('should call getFiltersData', () => {
+    spyOn(component, 'getFiltersData');
+    component.processBoardData(boardData);
+    expect(component.getFiltersData).toHaveBeenCalled();
+  });
+
+  it('should only contain KPIs in masterData.kpiList, where shown property is true', () => {
+    const newMasterData = {
+      kpiList: [
+        // insert your specific mock data here, only three are shown for brevity
+        {
+          "kpiId": "kpi14",
+          "kpiName": "Defect Injection Rate",
+          "isEnabled": true,
+          "order": 1,
+          "shown": true
+        },
+        {
+          "kpiId": "kpi82",
+          "kpiName": "First Time Pass Rate",
+          "isEnabled": true,
+          "order": 2,
+          "shown": false
+        },
+        {
+          "kpiId": "kpi111",
+          "kpiName": "Defect Density",
+          "isEnabled": true,
+          "order": 3,
+          "shown": true
+        }
+      ],
+    };
+
+    component.masterData['kpiList'] = newMasterData.kpiList.filter(kpi => kpi.shown);
+
+    expect(component.masterData['kpiList']).toEqual([
+      {
+        "kpiId": "kpi14",
+        "kpiName": "Defect Injection Rate",
+        "isEnabled": true,
+        "order": 1,
+        "shown": true
+      },
+      {
+        "kpiId": "kpi111",
+        "kpiName": "Defect Density",
+        "isEnabled": true,
+        "order": 3,
+        "shown": true
+      }
+    ]);
+  });
+
+  it('should set parentFilterConfig', () => {
+    component.selectedTab = 'iteration';
+    component.processBoardData(boardData);
+    expect(component.parentFilterConfig).toEqual(boardData.scrum[4].filters.parentFilter);
+  });
+
+  it('should set selectedLevel to null if parentFilterConfig is not present', () => {
+    component.selectedTab = 'developer';
+    component.processBoardData(boardData);
+    expect(component.selectedLevel).toBeNull();
+  });
+
+  it('should not set selectedLevel to null if parentFilterConfig is present', () => {
+    component.selectedTab = 'iteration';
+    component.processBoardData(boardData);
+    expect(component.selectedLevel).not.toBeNull();
+  });
+
+  it('should set primaryFilterConfig', () => {
+      component.selectedTab = 'mydashboard';
+      component.processBoardData(boardData);
+      expect(component.primaryFilterConfig).toEqual(boardData.scrum[0].filters.primaryFilter);
+  });
+
+  it('should set additionalFilterConfig', () => {
+    component.selectedTab = 'mydashboard';
+    component.processBoardData(boardData);
+    expect(component.additionalFilterConfig).toEqual(boardData.scrum[0].filters.additionalFilters);
+  });
+
 });
