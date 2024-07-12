@@ -1757,8 +1757,10 @@ export class FilterComponent implements OnInit, OnDestroy {
      refreshKpiLevelFiltersBackup(level, isManually) {
       if (isManually) {
         if (level === 'release' || level === 'sprint') {
-          const updatedFilterBackup = { ...this.service.getAddtionalFilterBackup()['kpiFilters'][this.selectedTab.toLowerCase()]}
-          this.service.setKpiSubFilterObj(updatedFilterBackup)
+          if(this.service.getAddtionalFilterBackup()['kpiFilters'] && this.service.getAddtionalFilterBackup()['kpiFilters'][this.selectedTab.toLowerCase()]){
+            const updatedFilterBackup = { ...this.service.getAddtionalFilterBackup()['kpiFilters'][this.selectedTab.toLowerCase()]}
+            this.service.setKpiSubFilterObj(updatedFilterBackup)
+            }
         } else {
           this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), kpiFilters: {} });
           this.service.setKpiSubFilterObj({})
