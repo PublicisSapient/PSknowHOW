@@ -390,6 +390,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
       if (this.selectedTab?.toLowerCase() === 'iteration') {
         this.setSprintDetails(event);
+        this.service.setSprintForRnR(event[0]);
       } else {
         this.additionalData = false;
       }
@@ -416,6 +417,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       Object.keys(event['additional_level']).forEach((key) => {
         this.handleAdditionalChange(event['additional_level'][key]);
       });
+    }
+
+     if(this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event[0]?.labelName === 'project'){
+      const allSprints = this.filterDataArr[this.selectedType]['sprint'];
+      const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId))
+      if(currentProjectSprints.length){
+        this.service.setSprintForRnR(currentProjectSprints[0])
+      }
     }
     this.compileGAData(event);
   }
@@ -450,6 +459,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handleAdditionalChange(event) {
+    if(event && event?.length){
+      this.service.setSprintForRnR(event[event.length-1])
+    }
     if (!event?.length) {
       this.handlePrimaryFilterChange(this.previousFilterEvent);
       return;
