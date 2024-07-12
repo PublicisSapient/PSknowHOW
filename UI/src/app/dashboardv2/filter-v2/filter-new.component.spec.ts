@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { FilterNewComponent } from './filter-new.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedService } from '../../services/shared.service';
@@ -12717,8 +12717,8 @@ describe('FilterNewComponent', () => {
     fixture.destroy();
   });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach( () => {
+     TestBed.configureTestingModule({
       declarations: [FilterNewComponent],
       imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -13063,7 +13063,7 @@ describe('FilterNewComponent', () => {
   });
 
 
-  it('should set selected trends if event is not null and has length', () => {
+  it('should set selected trends if event is not null and has length', fakeAsync (() => {
     const event = [{ level: 'Level 1', labelName: 'Label 1', nodeId: 1 }];
     component.filterDataArr = {
       scrum: {
@@ -13101,11 +13101,13 @@ describe('FilterNewComponent', () => {
     component.selectedType = 'scrum';
     component.kanban = false;
     spyOn(sharedService, 'setSelectedTrends');
+    spyOn(component, 'getProcessorsTraceLogsForProject');
 
     component.handlePrimaryFilterChange(event);
+    tick();
 
     expect(sharedService.setSelectedTrends).toHaveBeenCalledWith(event);
-  });
+  }));
 
 
   it('should not set selected trends if event is null or has no length', () => {
@@ -13118,7 +13120,7 @@ describe('FilterNewComponent', () => {
   });
 
 
-  it('should set selected date filter and call setSelectedDateFilter()', () => {
+  it('should set selected date filter and call setSelectedDateFilter()', fakeAsync(() => {
     const selectedDateValue = 1;
     const selectedDayType = 'Weeks';
     component.selectedLevel = 'project';
@@ -13145,10 +13147,11 @@ describe('FilterNewComponent', () => {
       }
     };
     component.applyDateFilter();
+    tick(100)
 
     // expect(component.selectedDateFilter).toBe(`${selectedDateValue} ${selectedDayType}`);
     // expect(sharedService.setSelectedDateFilter).toHaveBeenCalledWith(selectedDayType);
-  });
+  }));
 
   it('should set filterApplyData and call service.select()', () => {
     const selectedDateValue = 1;
@@ -13344,7 +13347,7 @@ describe('FilterNewComponent', () => {
   }));
 
 
-  it('should set filterApplyData and call service.select() if event is not null and has length', () => {
+  it('should set filterApplyData and call service.select() if event is not null and has length', fakeAsync(() => {
     const event = [{ level: 'Level 1', labelName: 'Label 1', nodeId: 1 }];
     component.filterApplyData = {
       level: '',
@@ -13371,6 +13374,7 @@ describe('FilterNewComponent', () => {
     spyOn(sharedService, 'select');
 
     component.handleAdditionalChange(event);
+    tick(100);
 
     expect(component.filterApplyData['level']).toBe(event[0].level);
     expect(component.filterApplyData['label']).toBe(event[0].labelName);
@@ -13378,7 +13382,7 @@ describe('FilterNewComponent', () => {
     // expect(component.filterApplyData['selectedMap'][event[0].labelName]).toEqual([event[0].nodeId]);
     // expect(component.filterApplyData['selectedMap']['sprint']).toEqual([1]);
     // expect(sharedService.select).toHaveBeenCalledWith(component.masterData, component.filterDataArr['Type 1']['Level 1'], component.filterApplyData, component.selectedTab, false, true, component.boardData['configDetails'], true);
-  });
+  }));
 
   it('should call handlePrimaryFilterChange() if event is null or has no length', () => {
     const event = null;
@@ -13949,7 +13953,7 @@ describe('FilterNewComponent', () => {
     expect(component.getFiltersData).toHaveBeenCalled();
   });
 
-  it('should only contain KPIs in masterData.kpiList, where shown property is true', () => {
+  it('should only contain KPIs in masterData.kpiList, where shown property is true', fakeAsync(() => {
     const newMasterData = {
       kpiList: [
         // insert your specific mock data here, only three are shown for brevity
@@ -13995,7 +13999,7 @@ describe('FilterNewComponent', () => {
         "shown": true
       }
     ]);
-  });
+  }));
 
   it('should set parentFilterConfig', () => {
     component.selectedTab = 'iteration';
