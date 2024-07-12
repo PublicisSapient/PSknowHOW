@@ -12717,8 +12717,8 @@ describe('FilterNewComponent', () => {
     fixture.destroy();
   });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach( () => {
+     TestBed.configureTestingModule({
       declarations: [FilterNewComponent],
       imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -13953,7 +13953,7 @@ describe('FilterNewComponent', () => {
     expect(component.getFiltersData).toHaveBeenCalled();
   });
 
-  it('should only contain KPIs in masterData.kpiList, where shown property is true', () => {
+  it('should only contain KPIs in masterData.kpiList, where shown property is true', fakeAsync(() => {
     const newMasterData = {
       kpiList: [
         // insert your specific mock data here, only three are shown for brevity
@@ -13999,7 +13999,7 @@ describe('FilterNewComponent', () => {
         "shown": true
       }
     ]);
-  });
+  }));
 
   it('should set parentFilterConfig', () => {
     component.selectedTab = 'iteration';
