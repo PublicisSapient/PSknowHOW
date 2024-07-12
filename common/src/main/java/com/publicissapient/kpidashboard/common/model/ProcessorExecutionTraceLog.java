@@ -24,6 +24,7 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.publicissapient.kpidashboard.common.model.application.ErrorDetail;
 import com.publicissapient.kpidashboard.common.model.application.ProgressStatus;
 
 import lombok.Data;
@@ -58,4 +59,6 @@ public class ProcessorExecutionTraceLog {
 	private String errorMessage;
 	private String failureLog;
 	private List<ProgressStatus> progressStatusList;
+	//for resource not found error
+	private List<ErrorDetail> errorDetailList;
 }
