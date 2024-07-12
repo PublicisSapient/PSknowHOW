@@ -7,7 +7,7 @@ describe('Pipe: Default', () => {
     pipe = new NamePipePipe();
   });
 
-  it('Corrent value is returning', () => {
+  it('should transform value correctly when input is not "project" and hierarchyData is available', () => {
     const hierarchyData = [
       {
         level: 1,
@@ -50,5 +50,16 @@ describe('Pipe: Default', () => {
     expect(pipe.transform('')).toBe('');
     expect(pipe.transform('Project')).toBe('Project');
     expect(pipe.transform('hierarchyLevelTwo')).toBe('Level Two');
+  });
+
+  it('should transform value correctly when input is not "project" and hierarchyData is not available', () => {
+    localStorage.removeItem('hierarchyData');
+    const transformedValue = pipe.transform('hierarchyLevelThree');
+    expect(transformedValue).toEqual('hierarchyLevelThree');
+  });
+
+  it('should transform value to "Project" when input is "project"', () => {
+    const transformedValue = pipe.transform('project');
+    expect(transformedValue).toEqual('Project');
   });
 });

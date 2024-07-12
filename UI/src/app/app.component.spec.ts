@@ -22,6 +22,7 @@ describe('AppComponent', () => {
   let getAuthService: GetAuthService;
   let sharedService: SharedService;
   let primengConfig: PrimeNGConfig;
+  let originalLocation: Location;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -56,5 +57,18 @@ describe('AppComponent', () => {
 
   it('should set authorized to true on init', () => {
     expect(component.authorized).toBeTrue();
+  });
+
+  it('should set localStorage item when switch is checked', () => {
+    const event = { checked: true };
+    component.uiSwitch(event);
+    expect(localStorage.getItem('newUI')).toBe('true');
+  });
+
+  it('should remove localStorage item when switch is unchecked', () => {
+    const event = { checked: false };
+    localStorage.setItem('newUI', 'true');
+    component.uiSwitch(event);
+    expect(localStorage.getItem('newUI')).toBeNull();
   });
 });
