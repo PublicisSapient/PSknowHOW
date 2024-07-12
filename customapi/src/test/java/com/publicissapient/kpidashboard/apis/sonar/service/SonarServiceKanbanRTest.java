@@ -144,8 +144,6 @@ public class SonarServiceKanbanRTest {
 		Map<String, Integer> map = new HashMap<>();
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(true)).thenReturn(map);
-//		when(cacheService.getFromApplicationCache(any(), anyString(), anyInt(),
-//				anyList())).thenReturn(new ArrayList<KpiElement>());
 
 
 	}

@@ -290,6 +290,16 @@ public class CustomApiConfig {// NOPMD
 	@Value("${zephyrCloudBaseUrl}")
 	private String zephyrCloudBaseUrl;
 
+	public String getRepoToolMembersUrl() {
+		return repoToolMembersUrl;
+	}
+
+	public void setRepoToolMembersUrl(String repoToolMembersUrl) {
+		this.repoToolMembersUrl = repoToolMembersUrl;
+	}
+
+	private String repoToolMembersUrl;
+
 	public String getRepoToolReworkRateUrl() {
 		return repoToolReworkRateUrl;
 	}

@@ -26,7 +26,7 @@
             <p-tabView class="iteration-tabs" [(activeIndex)]="activeIndex" (onChange)="handleTabChange($event)">
               <p-tabPanel *ngFor="let board of navigationTabs" [header]="board.label" [disabled]="board.count == 0">
                 <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined && activeIndex!==2">
-                  <div class="p-grid p-pr-2 p-pl-2 iteration-dashboard">
+                  <div class="p-grid p-m-0 iteration-dashboard">
                     <ng-container *ngIf="board.width === 'half'">
 
                       <!-- full width kpi render start -->
@@ -281,7 +281,7 @@
                                   </ng-container>
                                 </app-kpi-card>
                               </div>
-                            
+
                             <!--chart container-->
                             <ng-template #chart>
                               <div class="p-sm-12 p-pl-0 p-pr-0 iteration-chart p-pt-0 p-pb-0">
@@ -541,7 +541,7 @@
   <div class="dialog-body p-mb-4">
     <p-table #table [value]="modalDetails['tableValues']" [reorderableColumns]="true" [columns]="tableHeaders"
       styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img"
-      [globalFilterFields]="modalDetails['tableHeadings']" [scrollable]="true" scrollHeight="65vh">
+      [globalFilterFields]="modalDetails['tableHeadings']" [scrollable]="true" scrollHeight="65vh" (sortFunction)="customSort($event)" [customSort]="true">
       <ng-template pTemplate="caption">
         <p-multiSelect [options]="tableColumns" [(ngModel)]="selectedColumns" resetFilterOnHide="true"
           selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'"
@@ -589,8 +589,6 @@
       </ng-template>
       <ng-template pTemplate="body" let-x let-columns="columns" let-index="rowIndex">
         <tr [pReorderableRow]="index">
-
-
           <ng-container *ngFor="let item of tableHeaders; let i = index;">
             <ng-container *ngIf="item == 'Issue Id'">
               <td class="font-small p-p-0 text-center min-max-width" pFrozenColumn>
@@ -610,8 +608,8 @@
                 </ng-container>
               </td>
               <ng-template #elseBlock>
-                <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width">
-                  {{x[item]}}</td>
+                <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width" *ngIf="x[item];">{{x[item]}}</td>
+                <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width" *ngIf="!x[item];">-</td>
               </ng-template>
             </ng-container>
 
@@ -628,6 +626,7 @@
 
 </p-dialog>
 <app-export-excel #exportExcel></app-export-excel>
-<!-- <ng-container *ngIf="(filterApplyData?.label == 'project' || filterApplyData?.label == 'sprint') && filterApplyData?.ids?.length == 1">
+
+<ng-container *ngIf="isRecommendationsEnabled && (filterApplyData?.label == 'project' || filterApplyData?.label == 'sprint') && filterApplyData?.ids?.length == 1">
   <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
-</ng-container> -->
+</ng-container>

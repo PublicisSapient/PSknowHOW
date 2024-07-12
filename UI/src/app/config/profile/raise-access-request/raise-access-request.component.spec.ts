@@ -237,14 +237,6 @@ describe('RaiseRequestComponent', () => {
     expect(component.roleSelected).toBeTruthy();
   });
 
-  it('should logout application', inject([Router], (router: Router) => {
-    spyOn(httpService, 'logout').and.returnValue(of({}));
-    spyOn(router, 'navigate').and.stub();
-    fixture.detectChanges();
-    component.logout();
-    expect(router.navigate).toHaveBeenCalledWith(['./authentication/login']);
-  }))
-
 
 it('should update the roleList and requestData when accessItem is provided', () => {
   component.roleList = [

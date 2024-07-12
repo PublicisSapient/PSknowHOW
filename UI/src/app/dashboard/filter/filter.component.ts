@@ -31,6 +31,7 @@ import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
 import { first, switchMap, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { interval, Subject } from 'rxjs';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 @Component({
   selector: 'app-filter',
@@ -150,6 +151,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedProjectForIteration : any = [];
   selectedItems: number = 0;
   isAdditionalFilter: boolean = false;
+  isRecommendationsEnabled: boolean = false;
 
   constructor(
     public service: SharedService,
@@ -159,10 +161,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     private ga: GoogleAnalyticsService,
     private messageService: MessageService,
     private helperService: HelperService,
-    public route: ActivatedRoute
+    public route: ActivatedRoute,
+    private featureFlagsService: FeatureFlagsService
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.items.push({
       label: 'Logout',
       icon: 'fas fa-sign-out-alt',
@@ -216,6 +219,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.toggleFilter();
     this.initializeUserInfo();
     this.getLogoImage();
+    this.getRecommendationsFlag();
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe(data => {
@@ -319,7 +323,6 @@ export class FilterComponent implements OnInit, OnDestroy {
             ]
           }
         }
-        // this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
         this.service.setSelectedDateFilter(this.selectedDayType);
         this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
         this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
@@ -333,6 +336,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.sprintQueryParamObs.subscribe((val) => {
       this.sprintIdQParam = val.value;
     })
+  }
+
+  async getRecommendationsFlag(){
+    this.isRecommendationsEnabled = await this.featureFlagsService.isFeatureEnabled('RECOMMENDATIONS');
+    this.service.setRecommendationsFlag(this.isRecommendationsEnabled);
   }
 
   initializeFilterForm() {
@@ -368,7 +376,6 @@ export class FilterComponent implements OnInit, OnDestroy {
         label: 'Settings',
         icon: 'fa fa-cog',
         command: () => {
-          // this.service.setSideNav(false);
           this.router.navigate(['/dashboard/Config/']);
         },
       });
@@ -461,7 +468,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     };
 
     this.setHierarchyLevels();
-    this.ga.setPageLoad(data);
     this.getKpiOrderedList();
     this.navigateToSelectedTab();
   }
@@ -878,11 +884,8 @@ this.resetAddtionalFIlters();
       if(kpisShownCount <= 0){
         this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
         this.service.setSelectedTab(this.selectedTab);
-        // const selectedTab = this.selectedTab;
-        // const selectedType = this.kanban ? 'kanban' : 'scrum';
         this.backToDashboardLoader = false
         this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
-        // this.service.onTypeOrTabRefresh.next({ selectedTab, selectedType });
       }
     }
   }
@@ -940,7 +943,7 @@ this.resetAddtionalFIlters();
           this.service.setDashConfigData(this.kpiListData);
           const selectedType = this.kanban ? 'kanban' : 'scrum';
           this.service.setUpdatedBoardList(this.kpiListData, selectedType);
-          this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter);
+          this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter, true, null, true, this.kpiListData);
           this.processKpiList();
           this.navigateToSelectedTab();
         }
@@ -1567,38 +1570,7 @@ this.resetAddtionalFIlters();
   // logout is clicked  and removing auth token , username
   logout() {
       this.loader = true;
-      this.httpService.logout().subscribe((responseData) => {
-        if (responseData?.success) {
-          if(!environment['AUTHENTICATION_SERVICE']){
-          this.helperService.isKanban = false;
-          // Set blank selectedProject after logged out state
-          this.service.setSelectedProject(null);
-          this.service.setCurrentUserDetails({});
-          this.service.setVisibleSideBar(false);
-          this.service.setAddtionalFilterBackup({});
-          this.service.setKpiSubFilterObj({});
-          localStorage.clear();
-          this.loader = false;
-          this.router.navigate(['./authentication/login']);
-        } else{
-          let obj = {
-            'resource': environment.RESOURCE
-          };
-          this.httpService.getUserValidation(obj).toPromise()
-          .then((response) => {
-            if (response && !response['success']) {
-              this.loader = false;
-              let redirect_uri = window.location.href;
-              window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
-            }
-          })
-          .catch((error) => {
-            this.loader = false;
-            console.log("cookie not clear on error");
-          });
-        }
-      }
-    })
+      this.helperService.logoutHttp();
   }
 
   // when user would want to give access on project from notification list
@@ -1827,7 +1799,7 @@ this.resetAddtionalFIlters();
 
   onUpdateKPI() {
     this.lastSyncData = {};
-    this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+    this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter, true, null, true, this.kpiListData);
   }
 
   getRecentComments() {

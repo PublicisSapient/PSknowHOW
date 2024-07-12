@@ -89,7 +89,6 @@ export class FieldMappingComponent implements OnInit {
           this.fieldMappingForm.controls[obj].setValue(this.selectedFieldMapping[obj]);
         }
       }
-      // this.generateAdditionalFilterMappings();
     }
   }
 

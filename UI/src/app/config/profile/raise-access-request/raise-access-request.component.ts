@@ -134,16 +134,4 @@ export class RaiseAccessRequestComponent implements OnInit {
       this.roleList.filter((role) => role.roleName === 'ROLE_SUPERADMIN')[0].disabled = false;
     }
   }
-
-  // logout is clicked  and removing auth token , username
-  logout() {
-    this.httpService.logout()
-      .subscribe(getData => {
-        if (!(getData !== null && getData[0] === 'error')) {
-          this.sharedService.setCurrentUserDetails({});
-
-          this.router.navigate(['./authentication/login']);
-        }
-      });
-  }
 }

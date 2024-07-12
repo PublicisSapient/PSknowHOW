@@ -5,7 +5,7 @@ import { ExcelService } from 'src/app/services/excel.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
-import { CdkDragDrop} from '@angular/cdk/drag-drop';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-backlog',
@@ -64,7 +64,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
   kpiThresholdObj: any = [];
   fullPageLoader: boolean = true;
   kpiTrendObject = {};
-  kpiList:Array<string> = [];
+  kpiList: Array<string> = [];
+  isRecommendationsEnabled: boolean = false;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -91,8 +92,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
   }
   ngOnInit() {
-    this.selectedtype = this.service.getSelectedType();
-
     this.httpService.getConfigDetails()
       .subscribe(filterData => {
         if (filterData[0] !== 'error') {
@@ -103,13 +102,18 @@ export class BacklogComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
       if (Object.keys(x).length > 0) {
         this.colorObj = x;
-       this.trendBoxColorObj = { ...x };
-          for (const key in this.trendBoxColorObj) {
-            const idx = key.lastIndexOf('_');
-            const nodeName = key.slice(0, idx);
-            this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-          }
+        this.trendBoxColorObj = { ...x };
+        for (const key in this.trendBoxColorObj) {
+          const idx = key.lastIndexOf('_');
+          const nodeName = key.slice(0, idx);
+          this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+        }
       }
+    }));
+
+    /** Get recommendations flag */
+    this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
+        this.isRecommendationsEnabled = item;
     }));
 
     this.service.getEmptyData().subscribe((val) => {
@@ -123,7 +127,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
       this.noProjects = res;
-       this.fullPageLoader = false;
+      this.fullPageLoader = false;
     }));
   }
   processKpiConfigData() {
@@ -200,6 +204,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       click apply and call kpi
    **/
   receiveSharedData($event) {
+    this.selectedtype = this.service.getSelectedType();
     this.fullPageLoader = true;
     this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
     this.processKpiConfigData();
@@ -283,7 +288,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
               });
             }
           }
-          
+
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(this.jiraKpiData);
         } else {
@@ -297,7 +302,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
         this.fullPageLoader = false;
       });
   }
-  
+
   getSelectedType(sharedobject) {
     this.selectedtype = sharedobject;
   }
@@ -325,31 +330,31 @@ export class BacklogComponent implements OnInit, OnDestroy {
           this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
         }
       } else {
-        if(Object.values(this.kpiSelectedFilterObj[kpiId]).length === 1){
+        if (Object.values(this.kpiSelectedFilterObj[kpiId]).length === 1) {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == Object.values(this.kpiSelectedFilterObj[kpiId])[0])[0]?.value;
-      }else{
+        } else {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
-      }
+        }
       }
     } else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')) || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2'))) {
-        const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
-        const filter2 = this.kpiSelectedFilterObj[kpiId]['filter2'] ;
-        let preAggregatedValues = [];
-        for (let i = 0; i < filters?.length; i++) {
-          if(Object.keys(this.kpiSelectedFilterObj[kpiId]).length === 1) {
-            preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
-          }else{
-            preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] && x['filter2'] == filter2[i])];
-          }
+      const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
+      const filter2 = this.kpiSelectedFilterObj[kpiId]['filter2'];
+      let preAggregatedValues = [];
+      for (let i = 0; i < filters?.length; i++) {
+        if (Object.keys(this.kpiSelectedFilterObj[kpiId]).length === 1) {
+          preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
+        } else {
+          preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] && x['filter2'] == filter2[i])];
         }
-        this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
+      }
+      this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
     }
     else {
       if (trendValueList?.length > 0) {
         this.kpiChartData[kpiId] = [...this.helperService.sortAlphabetically(trendValueList)];
-      } else if(trendValueList?.hasOwnProperty('value')){
+      } else if (trendValueList?.hasOwnProperty('value')) {
         this.kpiChartData[kpiId] = [...trendValueList?.value];
-      }else{
+      } else {
         this.kpiChartData[kpiId] = [];
       }
 
@@ -372,26 +377,21 @@ export class BacklogComponent implements OnInit, OnDestroy {
     let maxValue = 0;
     let value = 0;
     for (const key in obj) {
-      if (obj[key].length > 0 && obj[key][0] && obj[key][0]?.value) {
-        if (obj[key][0]?.value && obj[key][0]?.value.length > 0) {
-          if (obj[key][0]?.value[0]?.hasOwnProperty('hoverValue')) {
-            Object.keys(obj[key][0]?.value[0]?.hoverValue)?.forEach((prop) => {
-              if (prop?.toLowerCase()?.includes('total')) {
-                maxValue += obj[key][0]?.value[0]?.hoverValue[prop];
-              } else {
-                value += obj[key][0]?.value[0]?.hoverValue[prop];
-              }
-            });
-          }
+      const currentObj = obj[key][0]?.value[0]?.hoverValue;
+      if (!currentObj) continue;
+      Object.keys(currentObj).forEach((prop) => {
+        if (prop?.toLowerCase()?.includes('total')) {
+          maxValue += currentObj[prop];
+        } else {
+          value += currentObj[prop];
         }
-      }
+      });
     }
     const kpiChartData = obj[Object.keys(obj)[0]];
     kpiChartData[0].value[0].maxValue = maxValue;
     kpiChartData[0].value[0].value = value;
     return kpiChartData;
   }
-
 
   ifKpiExist(kpiId) {
     const id = this.allKpiArray?.findIndex((kpi) => kpi.kpiId == kpiId);
@@ -413,7 +413,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
 
     this.getChartDataForCard(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
-    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj,'backlog','');
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj, 'backlog', '');
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 
@@ -431,20 +431,20 @@ export class BacklogComponent implements OnInit, OnDestroy {
       /** if: for graphs, else: for other than graphs */
       if (this.updatedConfigGlobalData.find(kpi => kpi?.kpiId === key)?.kpiDetail?.chartType) {
         if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,[],'Overall')
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, [], 'Overall')
         } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
           this.getDropdownArray(data[key]?.kpiId);
           const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
           if (formType?.toLowerCase() == 'radiobutton') {
-            this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},[this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] )
+            this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]])
           }
           else if (formType?.toLowerCase() == 'dropdown' && (!filters)) {
-            this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'] )
+            this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
           }
           else if (filters && Object.keys(filters)?.length > 0) {
-            this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'],filters)
+            this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
           } else {
-            this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'] )
+            this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
           }
         }
 
@@ -453,7 +453,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
       } else {
         if (trendValueList && Object.keys(trendValueList)?.length > 0 && filters && Object.keys(filters)?.length > 0) {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'],filters)
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
         }
         this.getChartDataForCard(data[key]?.kpiId, this.ifKpiExist(data[key]?.kpiId));
       }
@@ -461,8 +461,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
   }
 
-  setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters?){
-    this.kpiSelectedFilterObj  = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId,this.kpiSelectedFilterObj,'backlog', refreshValue, initialValue, '',filters)
+  setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters?) {
+    this.kpiSelectedFilterObj = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId, this.kpiSelectedFilterObj, 'backlog', refreshValue, initialValue, '', filters)
     this.getDropdownArray(kpiId);
   }
 
@@ -538,8 +538,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
   }
 
-  getkpi171Data(kpiId, trendValueList) {   
-    let durationChanged = false;   
+  getkpi171Data(kpiId, trendValueList) {
+    let durationChanged = false;
     if (this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1'] !== this.durationFilter) {
       durationChanged = true;
       this.kpiChartData[kpiId] = [];
@@ -641,8 +641,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
         const obj = {};
         for (let i = 0; i < trendValueList?.length; i++) {
-          if (trendValueList[i]?.filter?.toLowerCase() != 'overall' && trendValueList.length > 1)
-          {
+          if (trendValueList[i]?.filter?.toLowerCase() != 'overall' && trendValueList.length > 1) {
             optionsArr?.push(trendValueList[i]?.filter);
           }
         }
@@ -690,7 +689,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
   }
 
   handleSelectedOption(event, kpi) {
-    const selectedFilterBackup =  this.kpiSelectedFilterObj[kpi?.kpiId];
+    const selectedFilterBackup = this.kpiSelectedFilterObj[kpi?.kpiId];
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
     /** When we have single dropdown */
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && !selectedFilterBackup.hasOwnProperty('filter2')) {
@@ -704,18 +703,18 @@ export class BacklogComponent implements OnInit, OnDestroy {
         }
       }
       /** When we have multi dropdown */
-    } else if(event && Object.keys(event)?.length !== 0 && typeof event === 'object' && !Array.isArray(selectedFilterBackup) && selectedFilterBackup.hasOwnProperty('filter2')){
+    } else if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && !Array.isArray(selectedFilterBackup) && selectedFilterBackup.hasOwnProperty('filter2')) {
       const selectedFilter = {};
       for (const key in event) {
-         const updatedFilter = typeof event[key] === 'string' ? [event[key]] : [...event[key]];
-         selectedFilter[key] = updatedFilter;
+        const updatedFilter = typeof event[key] === 'string' ? [event[key]] : [...event[key]];
+        selectedFilter[key] = updatedFilter;
       }
-      this.kpiSelectedFilterObj[kpi?.kpiId] = {...selectedFilterBackup,...selectedFilter};
-    }else {
+      this.kpiSelectedFilterObj[kpi?.kpiId] = { ...selectedFilterBackup, ...selectedFilter };
+    } else {
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
-    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj,'backlog','');
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj, 'backlog', '');
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 
@@ -829,8 +828,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
     const nodes = [...this.filterApplyData?.ids]
     const level = this.filterApplyData?.level;
     const nodeChildId = '';
-    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
-  
+    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj, nodes, level, nodeChildId, this.updatedConfigGlobalData, kpiId)
+
   }
 
   /** Reload KPI once field mappoing updated */
@@ -843,32 +842,32 @@ export class BacklogComponent implements OnInit, OnDestroy {
   }
 
   drop(event: CdkDragDrop<string[]>, updatedContainer) {
-    this.helperService.drop(event,updatedContainer,this.navigationTabs,this.updatedConfigGlobalData,this.configGlobalData);
+    this.helperService.drop(event, updatedContainer, this.navigationTabs, this.updatedConfigGlobalData, this.configGlobalData);
   }
 
   handleTabChange(event) {
     this.activeIndex = event.index;
   }
 
-  createTrendData(kpiId){
-    const kpiDetail = this.configGlobalData.find(details=>details.kpiId == kpiId)
+  createTrendData(kpiId) {
+    const kpiDetail = this.configGlobalData.find(details => details.kpiId == kpiId)
     const trendingList = this.kpiChartData[kpiId];
-      if(trendingList?.length){
-        this.kpiTrendObject[kpiId] = [];
-        if(trendingList[0]?.value?.length > 0 && kpiDetail){
-          let trendObj = {};
-          const [latest, trend,unit] = this.checkLatestAndTrendValue(kpiDetail, trendingList[0]);
-          trendObj = {
-              "hierarchyName": trendingList[0]?.data,
-              "trend": trend,
-              "maturity":'M'+trendingList[0]?.maturity,
-              "maturityValue":trendingList[0]?.maturityValue,
-              "maturityDenominator": trendingList[0]?.value.length,
-              "kpiUnit" : unit
-          };
-          this.kpiTrendObject[kpiId]?.push(trendObj);
+    if (trendingList?.length) {
+      this.kpiTrendObject[kpiId] = [];
+      if (trendingList[0]?.value?.length > 0 && kpiDetail) {
+        let trendObj = {};
+        const [latest, trend, unit] = this.checkLatestAndTrendValue(kpiDetail, trendingList[0]);
+        trendObj = {
+          "hierarchyName": trendingList[0]?.data,
+          "trend": trend,
+          "maturity": 'M' + trendingList[0]?.maturity,
+          "maturityValue": trendingList[0]?.maturityValue,
+          "maturityDenominator": trendingList[0]?.value.length,
+          "kpiUnit": unit
+        };
+        this.kpiTrendObject[kpiId]?.push(trendObj);
       }
-      }
+    }
 
   }
 
@@ -877,7 +876,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     if (maturity == undefined) {
       return 'NA';
     }
-    maturity = 'M'+maturity;
+    maturity = 'M' + maturity;
     return maturity;
   }
 
@@ -887,7 +886,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     let unit = '';
     if (item?.value?.length > 0) {
       let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
-       unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
+      unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
       latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
     }
     if (item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
@@ -907,7 +906,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       }
     } else {
       trend = 'NA';
-    }   
+    }
     return [latest, trend, unit];
   }
 

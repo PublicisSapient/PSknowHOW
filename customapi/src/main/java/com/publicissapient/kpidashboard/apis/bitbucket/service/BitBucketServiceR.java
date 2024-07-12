@@ -24,8 +24,6 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -44,6 +42,8 @@ import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 
 import lombok.extern.slf4j.Slf4j;
@@ -89,40 +89,40 @@ public class BitBucketServiceR {
 					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 
-			projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
-			filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
-			if (filteredAccountDataList.isEmpty()) {
-				return responseList;
+				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
+				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
+				if (filteredAccountDataList.isEmpty()) {
+					return responseList;
+				}
+
+				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.BITBUCKET.name(),
+						groupId, kpiRequest.getSprintIncluded());
+				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+						&& null != cachedData) {
+					log.info("[BITBUCKET][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
+							kpiRequest.getIds());
+					return (List<KpiElement>) cachedData;
+				}
+
+				Node filteredNode = getFilteredNodes(kpiRequest, filteredAccountDataList);
+				kpiRequest.setXAxisDataPoints(Integer.parseInt(kpiRequest.getIds()[0]));
+				kpiRequest.setDuration(kpiRequest.getSelectedMap().get(CommonConstant.date).get(0));
+				List<ParallelBitBucketServices> listOfTask = new ArrayList<>();
+				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
+
+					listOfTask.add(new ParallelBitBucketServices(kpiRequest, responseList, kpiEle, filteredNode));
+				}
+
+				ForkJoinTask.invokeAll(listOfTask);
+				List<KpiElement> missingKpis = origRequestedKpis.stream()
+						.filter(reqKpi -> responseList.stream()
+								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
+						.collect(Collectors.toList());
+				responseList.addAll(missingKpis);
+				setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
+			} else {
+				responseList.addAll(origRequestedKpis);
 			}
-
-			Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.BITBUCKET.name(),
-					groupId, kpiRequest.getSprintIncluded());
-			if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-					&& null != cachedData) {
-				log.info("[BITBUCKET][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
-						kpiRequest.getIds());
-				return (List<KpiElement>) cachedData;
-			}
-
-			Node filteredNode = getFilteredNodes(kpiRequest, filteredAccountDataList);
-			kpiRequest.setXAxisDataPoints(Integer.parseInt(kpiRequest.getIds()[0]));
-			kpiRequest.setDuration(kpiRequest.getSelectedMap().get(CommonConstant.date).get(0));
-			List<ParallelBitBucketServices> listOfTask = new ArrayList<>();
-			for (KpiElement kpiEle : kpiRequest.getKpiList()) {
-
-				listOfTask.add(new ParallelBitBucketServices(kpiRequest, responseList, kpiEle, filteredNode));
-			}
-
-			ForkJoinTask.invokeAll(listOfTask);
-			List<KpiElement> missingKpis = origRequestedKpis.stream()
-					.filter(reqKpi -> responseList.stream()
-							.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
-					.collect(Collectors.toList());
-			responseList.addAll(missingKpis);
-			setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
-		} else {
-			responseList.addAll(origRequestedKpis);
-		}
 
 		} catch (Exception e) {
 			log.error("[BITBUCKET][{}]. Error while KPI calculation for data {} {}", kpiRequest.getRequestTrackerId(),
@@ -194,13 +194,13 @@ public class BitBucketServiceR {
 		/**
 		 *
 		 * @param kpiRequest
-		 * 			kpi request
+		 *            kpi request
 		 * @param responseList
-		 * 			response list
+		 *            response list
 		 * @param kpiEle
-		 * 			kpi element
+		 *            kpi element
 		 * @param filteredNode
-		 * 			filtered project node
+		 *            filtered project node
 		 */
 		public ParallelBitBucketServices(KpiRequest kpiRequest, List<KpiElement> responseList, KpiElement kpiEle,
 				Node filteredNode) {
@@ -254,7 +254,8 @@ public class BitBucketServiceR {
 			responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone));
 
 			long processTime = System.currentTimeMillis() - startTime;
-			log.info("[BITBUCKET-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
+			log.info("[BITBUCKET-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+					processTime);
 
 		}
 

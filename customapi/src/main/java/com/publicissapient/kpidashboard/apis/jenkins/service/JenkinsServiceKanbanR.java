@@ -156,7 +156,7 @@ public class JenkinsServiceKanbanR {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param kpiElement
@@ -186,7 +186,7 @@ public class JenkinsServiceKanbanR {
 
 	/**
 	 * Sets cache.
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param groupId

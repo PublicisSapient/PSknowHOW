@@ -15,7 +15,7 @@ export class SSOGuard implements CanActivate {
 
   canActivate(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree { 
+    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
       if (!environment.SSO_LOGIN) {
         return true;
       } else {
@@ -49,9 +49,6 @@ export class SSOGuard implements CanActivate {
   }
 
   redirectToProfile() {
-    // if (!localStorage.getItem('user_email') || localStorage.getItem('user_email') === '') {
-    //     return true;
-    // }
     const authorities = this.sharedService.getCurrentUserDetails('authorities') ? this.sharedService.getCurrentUserDetails('authorities') : [];
     if (authorities && authorities.includes('ROLE_SUPERADMIN')) {
       return false;

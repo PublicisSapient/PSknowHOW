@@ -68,6 +68,7 @@ export class DoraComponent implements OnInit {
   maturityObj = {};
   toolTipTop: number = 0;
   kpiList:Array<string> = [];
+  isRecommendationsEnabled: boolean = false;
 
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService) {
 
@@ -114,6 +115,11 @@ export class DoraComponent implements OnInit {
     this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
       this.noProjects = res;
       this.kanbanActivated = this.service.getSelectedType()?.toLowerCase() === 'kanban' ? true : false;
+    }));
+
+    /** Get recommendations flag */
+    this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
+        this.isRecommendationsEnabled = item;
     }));
 
     this.service.getEmptyData().subscribe((val) => {
@@ -381,11 +387,6 @@ export class DoraComponent implements OnInit {
     if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
-
-    // if (this.kpiChartData && Object.keys(this.kpiChartData) && Object.keys(this.kpiChartData).length === this.updatedConfigGlobalData.length) {
-    // if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
-    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    // }
     this.setMaturityColor(kpiId, this.kpiSelectedFilterObj[kpiId]);
   }
 
