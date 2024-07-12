@@ -412,10 +412,10 @@ export class MaturityComponent implements OnInit, OnDestroy {
   handleTabChange(index) {
     this.selectedTabIndex = index;
     this.maturityValue = {};
-    if (!(this.tabs.length > 0 && this.selectedTabKpis.length > 0)) {
+    // if (!(this.tabs.length > 0 && this.selectedTabKpis.length > 0)) {
       this.configGlobalData = this.service.getDashConfigData();
       this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration' && board?.boardName.toLowerCase() !== 'developer');
-    }
+    // }
     this.selectedTabKpis = this.tabs[index].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled).map(kpi => kpi.kpiId);
     const allCategoriesKpis = [this.jiraKpiData, this.jenkinsKpiData, this.sonarKpiData, this.zypherKpiData, this.bitBucketKpiData];
     //updated the maturityValue with selected Category kpi

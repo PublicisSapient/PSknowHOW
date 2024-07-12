@@ -59,6 +59,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   showChart: string = 'chart';
   iterationConfigData = {};
   isRecommendationsEnabled: boolean = false;
+  selectedBoard: any;
 
   constructor(
     private httpService: HttpService,
@@ -135,7 +136,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         }),
 
       this.service.iterationCongifData.subscribe((iterationDetails) => {
-        console.log(iterationDetails)
         this.iterationConfigData = iterationDetails;
       })
     );
@@ -165,13 +165,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   processBoardData(boardData) {
     this.boardData = boardData;
-    let selectedBoard = boardData[this.selectedType ? this.selectedType : 'scrum'].filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
-    if (!selectedBoard) {
-      selectedBoard = boardData['others']?.filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
+    this.selectedBoard = boardData[this.selectedType ? this.selectedType : 'scrum'].filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
+    if (!this.selectedBoard) {
+      this.selectedBoard = boardData['others']?.filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
     }
 
-    if (selectedBoard) {
-      this.kanbanRequired = selectedBoard.filters?.projectTypeSwitch;
+    if (this.selectedBoard) {
+      this.kanbanRequired = this.selectedBoard.filters?.projectTypeSwitch;
 
       if (!this.kanbanRequired?.enabled && this.selectedType === 'kanban') {
         this.kanban = false;
@@ -180,7 +180,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
 
       this.getFiltersData();
-      this.masterData['kpiList'] = selectedBoard.kpis;
+      this.masterData['kpiList'] = this.selectedBoard.kpis;
       let newMasterData = {
         'kpiList': []
       };
@@ -189,12 +189,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         newMasterData['kpiList'].push(element);
       });
       this.masterData['kpiList'] = newMasterData.kpiList.filter(kpi => kpi.shown);
-      this.parentFilterConfig = selectedBoard.filters.parentFilter;
+      this.parentFilterConfig = this.selectedBoard.filters.parentFilter;
       if (!this.parentFilterConfig) {
         this.selectedLevel = null;
       }
-      this.primaryFilterConfig = selectedBoard.filters.primaryFilter;
-      this.additionalFilterConfig = selectedBoard.filters.additionalFilters;
+      this.primaryFilterConfig = this.selectedBoard.filters.primaryFilter;
+      this.additionalFilterConfig = this.selectedBoard.filters.additionalFilters;
     }
   }
 
@@ -390,6 +390,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
       if (this.selectedTab?.toLowerCase() === 'iteration') {
         this.setSprintDetails(event);
+        this.service.setSprintForRnR(event[0]);
       } else {
         this.additionalData = false;
       }
@@ -416,6 +417,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       Object.keys(event['additional_level']).forEach((key) => {
         this.handleAdditionalChange(event['additional_level'][key]);
       });
+    }
+
+     if(this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event[0]?.labelName === 'project'){
+      const allSprints = this.filterDataArr[this.selectedType]['sprint'];
+      const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId))
+      if(currentProjectSprints.length){
+        this.service.setSprintForRnR(currentProjectSprints[0])
+      }
     }
     this.compileGAData(event);
   }
@@ -450,6 +459,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handleAdditionalChange(event) {
+    if(event && event?.length){
+      this.service.setSprintForRnR(event[event.length-1])
+    }
     if (!event?.length) {
       this.handlePrimaryFilterChange(this.previousFilterEvent);
       return;
