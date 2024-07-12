@@ -13120,7 +13120,7 @@ describe('FilterNewComponent', () => {
   });
 
 
-  it('should set selected date filter and call setSelectedDateFilter()', () => {
+  it('should set selected date filter and call setSelectedDateFilter()', fakeAsync(() => {
     const selectedDateValue = 1;
     const selectedDayType = 'Weeks';
     component.selectedLevel = 'project';
@@ -13147,10 +13147,11 @@ describe('FilterNewComponent', () => {
       }
     };
     component.applyDateFilter();
+    tick(100)
 
     // expect(component.selectedDateFilter).toBe(`${selectedDateValue} ${selectedDayType}`);
     // expect(sharedService.setSelectedDateFilter).toHaveBeenCalledWith(selectedDayType);
-  });
+  }));
 
   it('should set filterApplyData and call service.select()', () => {
     const selectedDateValue = 1;
