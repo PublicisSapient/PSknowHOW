@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
+import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -55,10 +56,13 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.model.application.ErrorDetail;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -91,6 +95,8 @@ public class JiraCommonService {
 	private AesEncryptionService aesEncryptionService;
 	@Autowired
 	private ProcessorToolConnectionService processorToolConnectionService;
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 	/**
 	 * @param projectConfig
@@ -106,6 +112,7 @@ public class JiraCommonService {
 	public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url, KerberosClient krb5Client)
 			throws IOException {
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+		ObjectId projectConfigId = projectConfig.getBasicProjectConfigId();
 		boolean spenagoClient = connectionOptional.map(Connection::isJaasKrbAuth).orElse(false);
 		if (spenagoClient) {
 			HttpUriRequest request = RequestBuilder.get().setUri(url.toString())
@@ -114,7 +121,7 @@ public class JiraCommonService {
 			String responce = krb5Client.getResponse(request);
 			return responce;
 		} else {
-			return getDataFromServer(url, connectionOptional);
+			return getDataFromServer(url, connectionOptional, projectConfigId);
 		}
 	}
 
@@ -127,7 +134,7 @@ public class JiraCommonService {
 	 * @throws IOException
 	 *             IOException
 	 */
-	public String getDataFromServer(URL url, Optional<Connection> connectionOptional) throws IOException {
+	public String getDataFromServer(URL url, Optional<Connection> connectionOptional, ObjectId projectConfigId) throws IOException {
 		HttpURLConnection request = (HttpURLConnection) url.openConnection();
 
 		String username = null;
@@ -154,9 +161,8 @@ public class JiraCommonService {
 			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
 		}
 		request.connect();
-		int responseCode = request.getResponseCode();
 		// process the client error
-		processClientError(connectionOptional, responseCode, request);
+		processClientError(connectionOptional, request, projectConfigId);
 		StringBuilder sb = new StringBuilder();
 		try (InputStream in = (InputStream) request.getContent();
 				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
@@ -182,37 +188,65 @@ public class JiraCommonService {
 	 * 
 	 * @param connectionOptional
 	 *            connectionOptional
-	 * @param responseCode
-	 *            responseCode
 	 * @param request
 	 *            request
 	 * @throws IOException
 	 *             throw IO Error
 	 */
-	private void processClientError(Optional<Connection> connectionOptional, int responseCode,
-			HttpURLConnection request) throws IOException {
+	private void processClientError(Optional<Connection> connectionOptional, HttpURLConnection request,
+			ObjectId basicProjectConfigId) throws IOException {
+		int responseCode = request.getResponseCode();
 		if (responseCode >= 400 && responseCode < 500) {
 			// Read error message from the server
-			InputStream errorStream = request.getErrorStream();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream));
-			StringBuilder response = new StringBuilder();
-			String line;
-			while ((line = reader.readLine()) != null) {
-				response.append(line);
+			String errorMessage = readErrorStream(request.getErrorStream());
+			if (responseCode == 404) {
+				ErrorDetail errorDetail = new ErrorDetail(responseCode, request.getURL().toString(), errorMessage,
+						determineImpactBasedOnUrl(request.getURL().toString()));
+				Optional<ProcessorExecutionTraceLog> existingTraceLog = processorExecutionTraceLogRepository
+						.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(JiraConstants.JIRA,
+								basicProjectConfigId.toString());
+				existingTraceLog.ifPresent(traceLog -> {
+					List<ErrorDetail> errorDetailList = Optional.ofNullable(traceLog.getErrorDetailList())
+							.orElseGet(ArrayList::new);
+					errorDetailList.add(errorDetail);
+					traceLog.setErrorDetailList(errorDetailList);
+					processorExecutionTraceLogRepository.save(traceLog);
+				});
 			}
-			reader.close();
-			request.disconnect();
-			// flagging the breaking connection
+			// flagging the connection flag w.r.t error code.
 			connectionOptional.ifPresent(connection -> {
 				String errMsg = ClientErrorMessageEnum.fromValue(responseCode).getReasonPhrase();
 				processorToolConnectionService.updateBreakingConnection(connection.getId(), errMsg);
 			});
-			// Throw an exception with the error message
-			log.error("Exception when reading from server {}", response);
-			throw new IOException(String.format("Error: %d - %s", responseCode, response));
+			log.error("Exception when reading from server {} - {}", responseCode, errorMessage);
+			// Throw exception for non-404 errors, as 404 indicates the resource mightn't exist
+			if (responseCode != 404) {
+				throw new IOException(String.format("Error: %d - %s", responseCode, errorMessage));
+			}
 		}
 	}
 
+	private String readErrorStream(InputStream errorStream) throws IOException {
+		StringBuilder response = new StringBuilder();
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream, StandardCharsets.UTF_8))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				response.append(line);
+			}
+		}
+		return response.toString();
+	}
+
+	private String determineImpactBasedOnUrl(String url) {
+		if (url.contains("sprint")) {
+			return "Sprint KPI's";
+		} else if (url.contains("versions")) {
+			return "Release KPI's";
+		} else if (url.contains("epic")) {
+			return "Epic KPI's";
+		}
+		return ""; // Default or unknown impact
+	}
 	/**
 	 * 
 	 * @param connectionOptional
