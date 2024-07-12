@@ -59,6 +59,5 @@ public class ProcessorExecutionTraceLog {
 	private String errorMessage;
 	private String failureLog;
 	private List<ProgressStatus> progressStatusList;
-	//for resource not found error
 	private List<ErrorDetail> errorDetailList;
 }

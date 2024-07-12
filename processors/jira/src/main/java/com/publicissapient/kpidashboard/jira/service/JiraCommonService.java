@@ -221,7 +221,6 @@ public class JiraCommonService {
 			log.error("Exception when reading from server {} - {}", responseCode, errorMessage);
 			// Throw exception for non-404 errors, as 404 indicates the resource mightn't exist
 			if (responseCode != 404) {
-				request.disconnect();
 				throw new IOException(String.format("Error: %d - %s", responseCode, errorMessage));
 			}
 		}
