@@ -93,7 +93,8 @@
     cursor: pointer;
 }
 
-::ng-deep .ng-select-container.ng-has-value {
+::ng-deep .ng-select-container.ng-has-value,
+::ng-deep .kpi-dropdown.ng-select .ng-select-container {
     overflow: visible;
 }
 
