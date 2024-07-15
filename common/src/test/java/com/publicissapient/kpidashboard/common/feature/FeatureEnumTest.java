@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.togglz.core.manager.FeatureManager;
-
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @ExtendWith(SpringExtension.class)
@@ -40,4 +40,8 @@ public class FeatureEnumTest {
         assertTrue(featureManager.isActive(FeatureEnum.DAILY_STANDUP));
     }
 
+    @Test
+    public void testRecommendationFeatureIsActive() {
+        assertFalse(featureManager.isActive(FeatureEnum.RECOMMENDATIONS));
+    }
 }
