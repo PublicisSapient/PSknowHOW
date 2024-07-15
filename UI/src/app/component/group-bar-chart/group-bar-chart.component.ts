@@ -206,8 +206,8 @@ export class GroupBarChartComponent implements OnChanges {
       const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       const plannedDueDate = this.plannedDueDate !== 'null' ? new Date(this.plannedDueDate).getDate() + '/' + month[new Date(this.plannedDueDate).getMonth()] +'/' + new Date(this.plannedDueDate).getFullYear() : undefined;
       const releaseEndDate = this.releaseEndDate !== undefined ? new Date(this.releaseEndDate).getDate() + '/' + month[new Date(this.releaseEndDate).getMonth()] +'/' + new Date(this.releaseEndDate).getFullYear() : undefined;
-      let htmlReleaseDueDate = `Release Due Date (${plannedDueDate !== undefined ? plannedDueDate : 'No Date Found' })`;
-      let htmlReleaseEndDate = `Release End Date (${releaseEndDate !== undefined ? releaseEndDate : 'No Date Found' })`;
+      let htmlReleaseDueDate = `Release Due Date (${plannedDueDate !== undefined ? plannedDueDate : 'N/A' })`;
+      let htmlReleaseEndDate = `Release End Date (${releaseEndDate !== undefined ? releaseEndDate : 'N/A' })`;
       let htmlDiv = `${new Date(this.plannedDueDate).getTime() > new Date(this.releaseEndDate).getTime()
         ? (htmlReleaseDueDate + ' > ' + htmlReleaseEndDate)
         : (htmlReleaseDueDate + ' <= ' + htmlReleaseEndDate)}`;

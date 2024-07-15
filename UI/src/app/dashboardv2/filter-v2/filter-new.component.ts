@@ -458,7 +458,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       const year = String(date.getFullYear()).slice(-2);
       return `${day} ${month}'${year}`;
     } else {
-      return 'No Date Found';
+      return 'N/A';
     }
   }
 
