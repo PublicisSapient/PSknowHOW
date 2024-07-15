@@ -288,7 +288,7 @@
    </div>
 
    <div class="p-d-flex">
-      <div class="back-btn-wraper">
+      <div class="back-btn-wraper" *ngIf="userRole !== 'ROLE_VIEWER'">
          <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3">
             <button pButton pRipple class="back-btn" [disabled] = "backToDashboardLoader" routerLinkActive="active" icon="{{ backToDashboardLoader ? 'pi pi-spin pi-spinner' : '' }}" iconPos="left" label="BACK TO DASHBOARD" (click)="navigateToDashboard()"></button>
          </div>
