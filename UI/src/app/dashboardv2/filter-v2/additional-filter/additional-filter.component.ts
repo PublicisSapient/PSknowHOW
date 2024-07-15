@@ -96,10 +96,12 @@ export class AdditionalFilterComponent implements OnChanges {
       if (!fromBackup) {
         let obj = {};
         for (let i = 0; i < index; i++) {
-          let selectedAdditionalFilterLevel = e && e[i] && e[i][0] ? e[i][0]['labelName'] : '';
-          obj['level'] = obj['level'] ? obj['level'] : {};
-          obj['level'][selectedAdditionalFilterLevel] = e[i] ? e[i] : this.stateFilters['level'][Object.keys(this.stateFilters['level'])[i]];
-          this.onAdditionalFilterChange.emit(e[i]);
+          if (e[i]) {
+            let selectedAdditionalFilterLevel = e && e[i] && e[i][0] ? e[i][0]['labelName'] : '';
+            obj['level'] = obj['level'] ? obj['level'] : {};
+            obj['level'][selectedAdditionalFilterLevel] = e[i] ? e[i] : this.stateFilters['level'][Object.keys(this.stateFilters['level'])[i]];
+            this.onAdditionalFilterChange.emit(e[i]);
+          }
         }
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });
       } else {
