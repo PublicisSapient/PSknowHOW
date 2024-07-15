@@ -152,6 +152,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedItems: number = 0;
   isAdditionalFilter: boolean = false;
   isRecommendationsEnabled: boolean = false;
+  userRole: string = '';
 
   constructor(
     public service: SharedService,
@@ -364,6 +365,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
 
     let authoritiesArr;
+    this.userRole = this.service.getCurrentUserDetails('authorities')[0];
     if (this.service.getCurrentUserDetails('authorities')) {
       authoritiesArr = this.service.getCurrentUserDetails('authorities');
     }
