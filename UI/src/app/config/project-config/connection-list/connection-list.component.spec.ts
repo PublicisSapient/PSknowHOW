@@ -282,7 +282,6 @@ describe('ConnectionListComponent', () => {
         'IsOAuth',
         'Private Key',
         'Consumer Key',
-        'Is Offline',
         'Is Connection Private',
         'Use bearer token',
         'PAT OAuthToken',
@@ -305,8 +304,7 @@ describe('ConnectionListComponent', () => {
         'isOAuth',
         'privateKey',
         'consumerKey',
-        'offline',
-        'connPrivate',
+        'sharedConnection',
         'bearerToken',
         'patOAuthToken',
         'jaasKrbAuth',
@@ -336,7 +334,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -358,7 +356,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -380,7 +378,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -406,7 +404,7 @@ describe('ConnectionListComponent', () => {
         'vault',
         'password',
         'apiEndPoint',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -434,7 +432,7 @@ describe('ConnectionListComponent', () => {
         'accessTokenEnabled',
         'password',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -456,7 +454,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'apiKey',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -478,7 +476,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -500,7 +498,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -520,7 +518,7 @@ describe('ConnectionListComponent', () => {
         'baseUrl',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -540,7 +538,7 @@ describe('ConnectionListComponent', () => {
         'baseUrl',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -572,7 +570,7 @@ describe('ConnectionListComponent', () => {
         'password',
         'apiEndPoint',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -594,7 +592,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
   ];
@@ -615,7 +613,6 @@ describe('ConnectionListComponent', () => {
         'IsOAuth',
         'Private Key',
         'Consumer Key',
-        'Is Offline',
         'Is Connection Private',
         'Use bearer token',
         'PAT (OAuth Token)',
@@ -638,8 +635,7 @@ describe('ConnectionListComponent', () => {
         'isOAuth',
         'privateKey',
         'consumerKey',
-        'offline',
-        'connPrivate',
+        'sharedConnection',
         'bearerToken',
         'patOAuthToken',
         'jaasKrbAuth',
@@ -669,7 +665,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -691,7 +687,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -713,7 +709,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -739,7 +735,7 @@ describe('ConnectionListComponent', () => {
         'vault',
         'password',
         'apiEndPoint',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -766,7 +762,7 @@ describe('ConnectionListComponent', () => {
         'vault',
         'password',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
         "accessTokenEnabled",
       ],
     },
@@ -789,7 +785,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'apiKey',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -811,7 +807,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -833,7 +829,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -853,7 +849,7 @@ describe('ConnectionListComponent', () => {
         'baseUrl',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -873,7 +869,7 @@ describe('ConnectionListComponent', () => {
         'baseUrl',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -905,7 +901,7 @@ describe('ConnectionListComponent', () => {
         'password',
         'apiEndPoint',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -927,7 +923,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
   ];
@@ -949,7 +945,6 @@ describe('ConnectionListComponent', () => {
   const enableDisableMatrix = {
     enableDisableEachTime: {
       cloudEnv: [],
-      offline: [],
       isOAuth: [
         {
           field: 'privateKey',
@@ -994,49 +989,49 @@ describe('ConnectionListComponent', () => {
     },
     enableDisableAnotherTime: {
       cloudEnv: [],
-      offline: [
-        {
-          field: 'cloudEnv',
-          isEnabled: true,
-        },
-        {
-          field: 'baseUrl',
-          isEnabled: true,
-        },
-        {
-          field: 'username',
-          isEnabled: true,
-        },
-        {
-          field: 'password',
-          isEnabled: true,
-        },
+      // offline: [
+      //   {
+      //     field: 'cloudEnv',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'baseUrl',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'username',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'password',
+      //     isEnabled: true,
+      //   },
 
-        {
-          field: 'apiEndPoint',
-          isEnabled: true,
-        },
-        {
-          field: 'isOAuth',
-          isEnabled: true,
-        },
-        {
-          field: 'bearerToken',
-          isEnabled: true
-        },
-        {
-          field: 'patOAuthToken',
-          isEnabled: true
-        },
-        {
-          field: 'privateKey',
-          isEnabled: false,
-        },
-        {
-          field: 'consumerKey',
-          isEnabled: false,
-        },
-      ],
+      //   {
+      //     field: 'apiEndPoint',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'isOAuth',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'bearerToken',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'patOAuthToken',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'privateKey',
+      //     isEnabled: false,
+      //   },
+      //   {
+      //     field: 'consumerKey',
+      //     isEnabled: false,
+      //   },
+      // ],
       isOAuth: [],
       bearerToken: [],
       vault: [
@@ -1153,12 +1148,11 @@ describe('ConnectionListComponent', () => {
       apiEndPoint: undefined,
       baseUrl: undefined,
       cloudEnv: false,
-      connPrivate: true,
+      sharedConnection: true,
       connectionName: undefined,
       consumerKey: undefined,
       isOAuth: false,
       bearerToken:false,
-      offline: false,
       password: undefined,
       pat: undefined,
       privateKey: undefined,
@@ -1238,8 +1232,7 @@ describe('ConnectionListComponent', () => {
       'rest/api/2',
     );
     component.basicConnectionForm.controls['isOAuth'].setValue(false);
-    component.basicConnectionForm.controls['offline'].setValue(false);
-    component.basicConnectionForm.controls['connPrivate'].setValue(true);
+    component.basicConnectionForm.controls['sharedConnection'].setValue(true);
     component.basicConnectionForm.controls['vault'].setValue(false);
     component.basicConnectionForm.controls['bearerToken'].setValue(false);
     component.basicConnectionForm.controls['privateKey'].disable();
@@ -1280,10 +1273,9 @@ describe('ConnectionListComponent', () => {
       apiEndPoint: 'rest/api/2',
       isOAuth: false,
       bearerToken:false,
-      offline: false,
       createdAt: '2021-04-02T07:42:09',
       createdBy: 'SUPERADMIN',
-      connPrivate: true,
+      sharedConnection: true,
       updatedBy: 'SUPERADMIN',
       connectionUsers: ['SUPERADMIN'],
       vault: false,
@@ -1562,19 +1554,19 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['accessToken'].enabled).toBeTruthy();
   })
 
-  it("should be fields enable when checkbox is checked", () => {
-    const fakeEvent = { originalEvent: { isTrusted: true }, checked: true };
-    const field = 'offline';
-    component.enableDisableOnToggle = enableDisableMatrix;
-    component.enableDisableSwitch(fakeEvent, field);
-    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
-      (element) => {
-        expect(
-          component.basicConnectionForm.controls[element.field].enabled,
-        ).toBeTruthy();
-      },
-    );
-  })
+  // it("should be fields enable when checkbox is checked", () => {
+  //   const fakeEvent = { originalEvent: { isTrusted: true }, checked: true };
+  //   const field = 'offline';
+  //   component.enableDisableOnToggle = enableDisableMatrix;
+  //   component.enableDisableSwitch(fakeEvent, field);
+  //   component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+  //     (element) => {
+  //       expect(
+  //         component.basicConnectionForm.controls[element.field].enabled,
+  //       ).toBeTruthy();
+  //     },
+  //   );
+  // })
 
   it("should be fields disabled when checkbox is unchecked", () => {
     const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
@@ -2273,10 +2265,9 @@ describe('ConnectionListComponent', () => {
       apiEndPoint: 'rest/api/2',
       isOAuth: false,
       bearerToken:false,
-      offline: false,
       createdAt: '2021-04-02T07:42:09',
       createdBy: 'SUPERADMIN',
-      connPrivate: true,
+      sharedConnection: true,
       updatedBy: 'SUPERADMIN',
       connectionUsers: ['SUPERADMIN'],
       vault: false,
