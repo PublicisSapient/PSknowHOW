@@ -388,7 +388,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
       }
 
-      if (this.selectedTab?.toLowerCase() === 'iteration') {
+      if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'release') {
         this.setSprintDetails(event);
         this.service.setSprintForRnR(event[0]);
       } else {
@@ -430,13 +430,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setSprintDetails(event) {
+    const startDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintStartDate' : 'releaseStartDate',
+          endDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintEndDate' : 'releaseEndDate';
     const currentDate = new Date().getTime();
-    const stopDate = new Date(event[0].sprintEndDate).getTime();
+    const stopDate = new Date(event[0][endDatePropName]?.split('T')[0]).getTime();
     const timeRemaining = stopDate - currentDate;
     const millisecondsPerDay = 24 * 60 * 60 * 1000;
     this.daysRemaining = Math.ceil(timeRemaining / millisecondsPerDay) < 0 ? 0 : Math.ceil(timeRemaining / millisecondsPerDay);
-    const startDateFormatted = this.formatDate(event[0].sprintStartDate?.split('T')[0]);
-    const endDateFormatted = this.formatDate(event[0].sprintEndDate?.split('T')[0]);
+    const startDateFormatted = this.formatDate(event[0][startDatePropName]?.split('T')[0]);
+    const endDateFormatted = this.formatDate(event[0][endDatePropName]?.split('T')[0]?.split('T')[0]);
     this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
     if (JSON.stringify(event[0]) !== '{}') {
       this.additionalData = true;
@@ -449,13 +451,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   formatDate(dateString) {
-    const date = new Date(dateString);
-
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('default', { month: 'short' });
-    const year = String(date.getFullYear()).slice(-2);
-
-    return `${day} ${month}'${year}`;
+    if(dateString !== '') {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = date.toLocaleString('default', { month: 'short' });
+      const year = String(date.getFullYear()).slice(-2);
+      return `${day} ${month}'${year}`;
+    } else {
+      return 'N/A';
+    }
   }
 
   handleAdditionalChange(event) {
@@ -550,6 +554,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
     });
 
+    this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
     this.service.setAdditionalFilters(this.additionalFiltersArr);
   }
 
