@@ -282,7 +282,7 @@ describe('ConnectionListComponent', () => {
         'IsOAuth',
         'Private Key',
         'Consumer Key',
-        'Is Connection Private',
+        'Share connection with everyone',
         'Use bearer token',
         'PAT OAuthToken',
         'Is jaasKrbAuth',
@@ -325,7 +325,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -347,7 +347,7 @@ describe('ConnectionListComponent', () => {
         'Repo Ownername',
         'Use vault password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -369,7 +369,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -393,7 +393,7 @@ describe('ConnectionListComponent', () => {
         'Use vault password',
         'Password',
         'API End Point',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -420,7 +420,7 @@ describe('ConnectionListComponent', () => {
         ['Use Password', 'Use Token'],
         'Password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -445,7 +445,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Api Key',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -467,7 +467,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -489,7 +489,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -510,7 +510,7 @@ describe('ConnectionListComponent', () => {
         'Base Url',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -530,7 +530,7 @@ describe('ConnectionListComponent', () => {
         'Base Url',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -556,7 +556,7 @@ describe('ConnectionListComponent', () => {
         'Password',
         'Api End Point',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -583,7 +583,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -613,7 +613,7 @@ describe('ConnectionListComponent', () => {
         'IsOAuth',
         'Private Key',
         'Consumer Key',
-        'Is Connection Private',
+        'Share connection with everyone',
         'Use bearer token',
         'PAT (OAuth Token)',
         'Is jaasKrbAuth',
@@ -656,7 +656,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -678,7 +678,7 @@ describe('ConnectionListComponent', () => {
         'Repo Ownername',
         'Use vault password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -700,7 +700,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -724,7 +724,7 @@ describe('ConnectionListComponent', () => {
         'Use vault password',
         'Password',
         'API End Point',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -751,7 +751,7 @@ describe('ConnectionListComponent', () => {
         ['Use Password', 'Use Token'],
         'Password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -776,7 +776,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Api Key',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -798,7 +798,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -820,7 +820,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -841,7 +841,7 @@ describe('ConnectionListComponent', () => {
         'Base Url',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -861,7 +861,7 @@ describe('ConnectionListComponent', () => {
         'Base Url',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -887,7 +887,7 @@ describe('ConnectionListComponent', () => {
         'Password',
         'Api End Point',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -914,7 +914,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -1554,24 +1554,16 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['accessToken'].enabled).toBeTruthy();
   })
 
-  // it("should be fields enable when checkbox is checked", () => {
-  //   const fakeEvent = { originalEvent: { isTrusted: true }, checked: true };
-  //   const field = 'offline';
-  //   component.enableDisableOnToggle = enableDisableMatrix;
-  //   component.enableDisableSwitch(fakeEvent, field);
-  //   component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
-  //     (element) => {
-  //       expect(
-  //         component.basicConnectionForm.controls[element.field].enabled,
-  //       ).toBeTruthy();
-  //     },
-  //   );
-  // })
-
-  it("should be fields disabled when checkbox is unchecked", () => {
-    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
-    const field = 'offline';
+  it("should be fields enable when checkbox is checked", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: true };
+    const field = 'vault';
     component.enableDisableOnToggle = enableDisableMatrix;
+    component.basicConnectionForm = new FormGroup({
+      pat: new FormControl(),
+      password: new FormControl(),
+      accessToken: new FormControl(),
+      apiKey: new FormControl()
+    });
     component.enableDisableSwitch(fakeEvent, field);
     component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
       (element) => {
@@ -1582,22 +1574,42 @@ describe('ConnectionListComponent', () => {
     );
   })
 
+  it("should be fields disabled when checkbox is unchecked", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'vault';
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.basicConnectionForm = new FormGroup({
+      pat: new FormControl(),
+      password: new FormControl(),
+      accessToken: new FormControl(),
+      apiKey: new FormControl()
+    });
+    component.enableDisableSwitch(fakeEvent, field);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeTruthy();
+      },
+    );
+  })
+
 
   it("should be privatekey enabled when isOAuth key is true", () => {
     const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
-    const field = 'offline';
+    const field = 'isOAuth';
     component.basicConnectionForm.controls['isOAuth'].setValue(true);
     component.enableDisableOnToggle = enableDisableMatrix;
     component.enableDisableSwitch(fakeEvent, field);
 
     expect(
       component.basicConnectionForm.controls['privateKey'].enabled,
-    ).toBeTruthy();
+    ).toBeFalsy();
   })
 
   it("should be privatekey disabled when isOAuth key is false", () => {
     const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
-    const field = 'offline';
+    const field = 'isOAuth';
     component.basicConnectionForm.controls['isOAuth'].setValue(false);
     component.enableDisableOnToggle = enableDisableMatrix;
     component.enableDisableSwitch(fakeEvent, field);
