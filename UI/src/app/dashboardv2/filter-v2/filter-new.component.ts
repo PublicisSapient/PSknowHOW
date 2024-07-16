@@ -554,6 +554,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
     });
 
+    this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
     this.service.setAdditionalFilters(this.additionalFiltersArr);
   }
 
