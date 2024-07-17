@@ -15,6 +15,7 @@
 
 package com.publicissapient.kpidashboard.apis.userboardconfig.service;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -32,10 +33,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.Filters;
-import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -50,7 +47,10 @@ import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.UserBoardConfigEnum;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.model.application.Filters;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategoryMapping;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
@@ -61,6 +61,7 @@ import com.publicissapient.kpidashboard.common.model.userboardconfig.BoardKpisDT
 import com.publicissapient.kpidashboard.common.model.userboardconfig.ProjectListRequested;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfigDTO;
+import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiCategoryMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiCategoryRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
@@ -167,17 +168,45 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			List<KpiCategory> kpiCategoryList, Map<String, KpiMaster> kpiMasterMap) {
 		List<String> listOfBasicProjIds = listOfRequestedProj.getBasicProjectConfigIds().stream()
 				.map(s -> s.substring(s.lastIndexOf("_") + 1)).collect(Collectors.toList());
+
 		List<UserBoardConfig> adminProjectBoardConfig = userBoardConfigRepository
 				.findByBasicProjectConfigIdIn(listOfBasicProjIds);
-		long fetchProjBoardConfigsSize = adminProjectBoardConfig.stream().map(UserBoardConfig::getBasicProjectConfigId)
-				.distinct().count();
-		// checking this cond for superAdmin proj configs
-		if (fetchProjBoardConfigsSize < listOfBasicProjIds.size()) {
-			UserBoardConfigDTO missingProjConfig = new UserBoardConfigDTO();
-			setUserBoardConfigBasedOnCategoryForFreshUser(missingProjConfig, kpiCategoryList, kpiMasterMap);
-			final UserBoardConfig missingConfig = convertDTOToUserBoardConfig(missingProjConfig);
-			adminProjectBoardConfig.add(missingConfig);
+
+		if (CollectionUtils.isNotEmpty(listOfBasicProjIds)) {
+			List<UserBoardConfig> filteredUserBoard = new ArrayList<>();
+			//fetching admins of all the projects
+			List<UserInfo> adminUsers = userInfoCustomRepository.findAdminUserOfProject(listOfBasicProjIds);
+
+			//creating map of project id and its admin users
+			Map<String, List<String>> itemIdToUsernames = adminUsers.stream()
+					.flatMap(user -> user.getProjectsAccess().stream()
+							.flatMap(access -> access.getAccessNodes().stream().flatMap(node -> node.getAccessItems()
+									.stream().filter(item -> listOfBasicProjIds.contains(item.getItemId()))
+									.map(item -> new AbstractMap.SimpleEntry<>(item.getItemId(), user.getUsername())))))
+					.collect(Collectors.groupingBy(Map.Entry::getKey,
+							Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+
+			itemIdToUsernames.forEach((configId, users) -> {
+				users.add("SUPERADMIN");
+				filteredUserBoard.addAll(adminProjectBoardConfig.stream()
+						.filter(userBoard -> userBoard.getBasicProjectConfigId().equalsIgnoreCase(configId)
+								&& users.contains(userBoard.getUsername()))
+						.toList());
+			});
+
+			long fetchProjBoardConfigsSize = filteredUserBoard.stream().map(UserBoardConfig::getBasicProjectConfigId)
+					.distinct().count();
+
+			if (fetchProjBoardConfigsSize < listOfBasicProjIds.size()) {
+				UserBoardConfigDTO missingProjConfig = new UserBoardConfigDTO();
+				setUserBoardConfigBasedOnCategoryForFreshUser(missingProjConfig, kpiCategoryList, kpiMasterMap);
+				final UserBoardConfig missingConfig = convertDTOToUserBoardConfig(missingProjConfig);
+				filteredUserBoard.add(missingConfig);
+			}
+
+			return filteredUserBoard;
 		}
+
 		return adminProjectBoardConfig;
 	}
 
@@ -418,7 +447,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 		setUserBoardInfo(kpiCategoryBoardId, otherBoardNameList, otherBoards, false);
 
-		setFiltersInfoInBoard(scrumBoards,kanbanBoards,otherBoards);
+		setFiltersInfoInBoard(scrumBoards, kanbanBoards, otherBoards);
 
 		newUserBoardConfig.setScrum(scrumBoards);
 		newUserBoardConfig.setKanban(kanbanBoards);
@@ -588,7 +617,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		BoardDTO asPerCategoryBoard = new BoardDTO();
 		asPerCategoryBoard.setBoardId(boardId);
 		asPerCategoryBoard.setBoardName(boardName);
-		if(boardName.equalsIgnoreCase("Kpi Maturity"))
+		if (boardName.equalsIgnoreCase("Kpi Maturity"))
 			asPerCategoryBoard.setBoardSlug("Maturity");
 		else
 			asPerCategoryBoard.setBoardSlug(boardName.toLowerCase());
@@ -880,26 +909,28 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * This method save user board config of proj,Super admin with
 	 * basicProjectConfigId ,also modify boards of other admin of that project
 	 *
-	 * @param userBoardConfigDTO   userBoardConfigDTO
-	 * @param basicProjectConfigId basicProjConfigId
+	 * @param userBoardConfigDTO
+	 *            userBoardConfigDTO
+	 * @param basicProjectConfigId
+	 *            basicProjConfigId
 	 * @return UserBoardConfigDTO
 	 */
 	@Override
 	public ResponseEntity<ServiceResponse> saveUserBoardConfigAdmin(UserBoardConfigDTO userBoardConfigDTO,
-													String basicProjectConfigId) {
+			String basicProjectConfigId) {
 		UserBoardConfig userBoardConfig = convertDTOToUserBoardConfig(userBoardConfigDTO);
 		if (userBoardConfig != null) {
 			if (!authenticationService.getLoggedInUser().equals(userBoardConfig.getUsername())) {
 				cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
-				return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
-						"Logged In user is not authorized to change the board", null));
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(new ServiceResponse(false, "Logged In user is not authorized to change the board", null));
 			}
 			// finding all the existing admins proj level configs
 			List<UserBoardConfig> existingListOfProjBoardConfig = userBoardConfigRepository
 					.findByBasicProjectConfigId(basicProjectConfigId);
 			// fetching all the users which have admin access of this proj
 			List<UserInfo> listOfAdminUserOfProj = userInfoCustomRepository
-					.findAdminUserOfProject(basicProjectConfigId);
+					.findAdminUserOfProject(List.of(basicProjectConfigId));
 			List<String> userNameListOfAdmins = listOfAdminUserOfProj.stream().map(UserInfo::getUsername).distinct()
 					.collect(Collectors.toList());
 			userNameListOfAdmins.add("SUPERADMIN");
