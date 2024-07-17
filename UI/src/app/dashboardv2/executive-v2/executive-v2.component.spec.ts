@@ -2409,7 +2409,6 @@ describe('ExecutiveV2Component', () => {
     }
   ]
   beforeEach(() => {
-
     service = new SharedService();
 
     const routes: Routes = [
@@ -2457,9 +2456,6 @@ describe('ExecutiveV2Component', () => {
       .compileComponents();
 
   });
-
-
-
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ExecutiveV2Component);
@@ -7986,7 +7982,8 @@ describe('ExecutiveV2Component', () => {
           subaccount: [],
           project: [],
           sprint: [],
-          sqd: []
+          sqd: [],
+          release: ['release1']
         },
         level: 1
       },
@@ -8020,6 +8017,56 @@ describe('ExecutiveV2Component', () => {
     component.receiveSharedData(event);
 
     expect(spyJenkins).toHaveBeenCalled();
+  });
+
+  it('should set release end date', () => {
+    const filterData = [
+      {
+        nodeId: 'release1',
+        labelName: 'release',
+        releaseEndDate: '2023-01-01'
+      },
+      {
+        nodeId: 'release2',
+        labelName: 'release',
+        releaseEndDate: '2023-01-02'
+      }
+    ];
+    const filterApplyData = {
+      selectedMap: {
+        release: ['release1']
+      }
+    };
+    const selectedRelease = filterData.find(x => x.nodeId === filterApplyData.selectedMap.release[0] && x.labelName.toLowerCase() === 'release');
+    const endDate = new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0];
+    component.releaseEndDate = endDate;
+    expect(component.releaseEndDate).toEqual('2023-01-01');
+  });
+
+  it('should set release end date to undefined if selectedRelease is undefined', () => {
+    const filterData = [
+      {
+        nodeId: 'release1',
+        labelName: 'release',
+        releaseEndDate: '2023-01-01'
+      },
+      {
+        nodeId: 'release2',
+        labelName: 'release',
+        releaseEndDate: '2023-01-02'
+      }
+    ];
+    const filterApplyData = {
+      selectedMap: {
+        release: [undefined]
+      }
+    };
+    component.filterData = filterData;
+    component.filterApplyData = filterApplyData;
+    const selectedRelease = filterData.find(x => x.nodeId === filterApplyData.selectedMap.release[0] && x.labelName.toLowerCase() === 'release');
+    const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
+    component.releaseEndDate = endDate;
+    expect(component.releaseEndDate).toBeUndefined();
   });
 
   it('should make post Sonar call', fakeAsync(() => {
@@ -14154,12 +14201,12 @@ describe('ExecutiveV2Component', () => {
         }
       }
     ];
-  
+
     spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(mockGetData));
     spyOn(helperService, 'createKpiWiseId').and.returnValue(mockGetData);
-  
+
     component.postJiraKPIForRelease(mockPostData, 'jira');
-  
+
     expect(httpService.postKpiNonTrend).toHaveBeenCalledWith(mockPostData, 'jira');
     expect(helperService.createKpiWiseId).toHaveBeenCalledWith(mockGetData);
     // expect(component.jiraKpiData).toEqual(mockGetData);
@@ -14231,12 +14278,12 @@ describe('ExecutiveV2Component', () => {
     const mockGetData = {
       error: 'API call failed'
     };
-  
+
     spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(mockGetData));
     spyOn(helperService, 'createKpiWiseId').and.returnValue(mockGetData);
-  
+
     component.postJiraKPIForRelease(mockPostData, 'jira');
-  
+
     expect(httpService.postKpiNonTrend).toHaveBeenCalledWith(mockPostData, 'jira');
     expect(helperService.createKpiWiseId).not.toHaveBeenCalled();
     expect(component.jiraKpiData).toEqual(mockGetData);
@@ -14308,12 +14355,12 @@ describe('ExecutiveV2Component', () => {
     const mockGetData = {
       error: 'API call failed'
     };
-  
+
     spyOn(httpService, 'postKpi').and.returnValue(of(mockGetData));
     spyOn(helperService, 'createKpiWiseId').and.returnValue(mockGetData);
-  
+
     component.postBitBucketKpi(mockPostData, 'bitbucket');
-  
+
     expect(httpService.postKpi).toHaveBeenCalledWith(mockPostData, 'bitbucket');
     expect(helperService.createKpiWiseId).not.toHaveBeenCalled();
     expect(component.bitBucketKpiData).toEqual(mockGetData);
@@ -14383,19 +14430,19 @@ describe('ExecutiveV2Component', () => {
       "label": "release"
     };
     const mockGetData = null;
-  
+
     spyOn(httpService, 'postKpi').and.returnValue(of(mockGetData));
     spyOn(helperService, 'createKpiWiseId').and.returnValue(mockGetData);
-  
+
     component.postJenkinsKpi(mockPostData, 'jenkins');
-  
+
     expect(httpService.postKpi).toHaveBeenCalledWith(mockPostData, 'jenkins');
     expect(helperService.createKpiWiseId).not.toHaveBeenCalled();
     // expect(component.jenkinsKpiData).toEqual(mockGetData);
   });
 
-  
-  
+
+
   it('should handle error response and update jiraKpiData', () => {
     const mockPostData = {
       "kpiList": [
@@ -14815,48 +14862,48 @@ describe('ExecutiveV2Component', () => {
       "label": "release"
     };
     const mockErrorData = {};
-  
+
     spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(mockErrorData));
-  
+
     component.postJiraKPIForRelease(mockPostData, 'jira');
-  
+
     expect(httpService.postKpiNonTrend).toHaveBeenCalledWith(mockPostData, 'jira');
     expect(component.jiraKpiData).toEqual(mockErrorData);
   });
-  
+
   it('should handle selected option on release when event is an object', () => {
     const mockEvent = {
       filter1: ['value1', 'value2'],
       filter2: ['value3']
     };
     const mockKpi = { kpiId: 'kpi1' };
-  
+
     component.handleSelectedOptionOnRelease(mockEvent, mockKpi);
-  
+
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual(mockEvent);
   });
-  
+
   it('should handle selected option on release when event is not an object', () => {
     const mockEvent = 'value1';
     const mockKpi = { kpiId: 'kpi1' };
-  
+
     component.handleSelectedOptionOnRelease(mockEvent, mockKpi);
-  
+
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual({ filter1: [mockEvent] });
   });
-  
+
   it('should delete empty values from event object', () => {
     const mockEvent = {
       filter1: [],
       filter2: ['value1']
     };
     const mockKpi = { kpiId: 'kpi1' };
-  
+
     component.handleSelectedOptionOnRelease(mockEvent, mockKpi);
-  
+
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual({ filter2: ['value1'] });
   });
-  
+
   it('should get table data for kpi when trendValueList dont have filter when kpi name is availiable', () => {
     component.allKpiArray = [{
       kpiName: 'abc'
@@ -14906,47 +14953,47 @@ describe('ExecutiveV2Component', () => {
     component.getTableData('kpi14', 0, enabledKpi);
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
   });
-  
+
   it('should return true when data contains at least one numeric value', () => {
     const mockData = [
       { data: 'value1' },
       { data: 2 },
       { value: [{ data: 'value2' }, { data: 3 }] },
     ];
-  
+
     const result = component.checkIfDataPresent(mockData);
-  
+
     expect(result).toBeTrue();
   });
-  
+
   it('should return false when data does not contain any numeric value', () => {
     const mockData = [
       { data: 'value1' },
       { data: 'value2' },
       { value: [{ data: 'value3' }, { data: 'value4' }] },
     ];
-  
+
     const result = component.checkIfDataPresent(mockData);
-  
+
     expect(result).toBeFalse();
   });
-  
+
   it('should return false when data is undefined', () => {
     const mockData = undefined;
-  
+
     const result = component.checkIfDataPresent(mockData);
-  
+
     expect(result).toBeFalse();
   });
-  
+
   it('should return false when data is an empty array', () => {
     const mockData = [];
-  
+
     const result = component.checkIfDataPresent(mockData);
-  
+
     expect(result).toBeFalse();
   });
-  
+
   it('should return the correct chart type when kpiId exists in updatedConfigGlobalData', () => {
     const mockKpiId = 'kpi1';
     component.updatedConfigGlobalData = [{
@@ -14957,15 +15004,15 @@ describe('ExecutiveV2Component', () => {
       }
     }];
     const result = component.getKpiChartType(mockKpiId);
-  
+
     expect(result).toEqual('line');
   });
-  
+
   it('should return undefined when kpiId does not exist in updatedConfigGlobalData', () => {
     const mockKpiId = 'kpi4';
     component.updatedConfigGlobalData = [];
     const result = component.getKpiChartType(mockKpiId);
-  
+
     expect(result).toBeUndefined();
   });
 
@@ -15318,12 +15365,12 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData['kpi143']).toEqual([{
       "data": "API POD 2 - Account Management",
       "value": [
-          {
-              "data": "0",
-              "value": {}
-          }
+        {
+          "data": "0",
+          "value": {}
+        }
       ]
-  }]);
+    }]);
   });
 
   it('should set selectedKPITab to the provided tab', () => {
