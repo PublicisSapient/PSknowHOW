@@ -827,7 +827,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // this block populates additional filters on developer dashboard because on developer dashboard, the
     // additional filters depend on KPI response
     if (this.selectedTab.toLowerCase() === 'developer') {
-      if (trendValueList?.length) {
+      if(!trendValueList?.length) {
+        this.additionalFiltersArr = {};
+        this.service.setAdditionalFilters(this.additionalFiltersArr);
+      }
+      else if (trendValueList?.length) {
         let filterPropArr = Object.keys(trendValueList[0]).filter((prop) => prop.includes('filter'));
         filterPropArr.forEach((filterProp) => {
           if (!this.additionalFiltersArr[filterProp]?.size) {

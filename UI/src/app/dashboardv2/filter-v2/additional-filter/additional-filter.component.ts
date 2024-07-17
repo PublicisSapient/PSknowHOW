@@ -29,34 +29,35 @@ export class AdditionalFilterComponent implements OnChanges {
 
   ngOnInit() {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
-      this.selectedFilters = [];
-      this.selectedTrends = this.service.getSelectedTrends();
-      Object.keys(data).forEach((f, index) => {
-        this.filterData[index] = data[f];
-      });
-
-      if (this.selectedTab !== 'developer') {
-        this.filterData.forEach(filterGroup => {
-          filterGroup = this.helperService.sortByField(filterGroup, ['nodeName', 'parentId']);
+      if (data && Object.keys(data)?.length) {
+        this.selectedFilters = [];
+        this.filterData = [];
+        this.selectedTrends = this.service.getSelectedTrends();
+        Object.keys(data).forEach((f, index) => {
+          this.filterData[index] = data[f];
         });
 
-        this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
-        if (this.stateFilters && Object.keys(this.stateFilters)) {
-          Object.keys(this.stateFilters['level']).forEach((key, index) => {
-            this.selectedFilters[index] = this.stateFilters['level'][key];
-            // setTimeout(() => {
-            //   this.applyAdditionalFilter(this.selectedFilters[index], index + 1, true, true);
-            // }, 200);
+        if (this.selectedTab !== 'developer') {
+          this.filterData.forEach(filterGroup => {
+            filterGroup = this.helperService.sortByField(filterGroup, ['nodeName', 'parentId']);
           });
+
+          this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
+          if (this.stateFilters && Object.keys(this.stateFilters)) {
+            Object.keys(this.stateFilters['level']).forEach((key, index) => {
+              this.selectedFilters[index] = this.stateFilters['level'][key];
+            });
+          }
+
         }
 
+        // Apply the first/ Overall filter
+        if (this.selectedTab.toLowerCase() === 'developer') {
+          this.applyDefaultFilter();
+        }
+      } else {
+        this.filterData =[];
       }
-
-      // Apply the first/ Overall filter
-      if (this.selectedTab.toLowerCase() === 'developer') {
-        this.applyDefaultFilter();
-      }
-
     }));
   }
 
