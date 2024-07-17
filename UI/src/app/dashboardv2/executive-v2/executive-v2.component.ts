@@ -257,8 +257,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
       this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
 
-      const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap['release'][0] && x.labelName.toLowerCase() === 'release')[0];
-      const endDate = selectedRelease !== undefined && new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0];
+      const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap?.release?.[0] && x.labelName.toLowerCase() === 'release')[0];
+      const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
       this.releaseEndDate = endDate;
 
       if (!this.configGlobalData?.length && $event.dashConfigData) {
