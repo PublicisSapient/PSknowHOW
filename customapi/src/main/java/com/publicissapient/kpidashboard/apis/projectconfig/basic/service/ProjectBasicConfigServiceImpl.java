@@ -55,6 +55,7 @@ import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.errors.ProjectNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.HierarchyResponseDTO;
 import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingService;
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
@@ -68,6 +69,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
@@ -668,5 +670,46 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		for (ProjectBasicConfigNode child : node.getChildren()) {
 			findLeaf(child, leafNodes);
 		}
+	}
+
+	@Override
+	public List<HierarchyResponseDTO> getHierarchyData() {
+		List<ProjectBasicConfigDTO> basicConfigDTOS = getAllProjectsBasicConfigsDTOWithoutPermission();
+		Map<ObjectId, List<SprintDetails>> groupedByProject = getTop5SprintDetailsGroupedByProject(
+				basicConfigDTOS.stream().map(ProjectBasicConfigDTO::getId).toList());
+		List<HierarchyResponseDTO> hierarchyResponseDTOS= new ArrayList<>();
+		for (ProjectBasicConfigDTO projectBasicConfig : basicConfigDTOS) {
+			HierarchyResponseDTO dto = new HierarchyResponseDTO();
+			dto.setProjectId(projectBasicConfig.getId().toString());
+			dto.setProjectName(projectBasicConfig.getProjectName());
+			projectBasicConfig.getHierarchy().forEach(hirarchy -> {
+				int level = hirarchy.getHierarchyLevel().getLevel();
+				String value = hirarchy.getValue();
+				switch (level) {
+				case 1 -> dto.setBu(value);
+				case 2 -> dto.setVertical(value);
+				case 3 -> dto.setAccount(value);
+				default -> dto.setEngagement(value);
+				}
+			});
+			dto.setSprintDetailsList(groupedByProject.getOrDefault(projectBasicConfig.getId(), new ArrayList<>()));
+			hierarchyResponseDTOS.add(dto);
+		}
+		return hierarchyResponseDTOS;
+	}
+
+	public Map<ObjectId, List<SprintDetails>> getTop5SprintDetailsGroupedByProject(
+			List<ObjectId> basicProjectConfigIds) {
+		List<SprintDetails> sprintDetailsList = sprintRepository
+				.findByBasicProjectConfigIdInAndStateIgnoreCaseOrderByStartDateASC(basicProjectConfigIds,
+						SprintDetails.SPRINT_STATE_CLOSED);
+
+		// Sort by beginDate in descending order
+
+		sprintDetailsList.sort((s1, s2) -> s2.getStartDate().compareTo(s1.getStartDate()));
+		// Group by basicProjectConfigId and limit to top 5
+		return sprintDetailsList.stream()
+				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId, Collectors.collectingAndThen(
+						Collectors.toList(), list -> list.stream().limit(5).collect(Collectors.toList()))));
 	}
 }

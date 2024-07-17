@@ -42,6 +42,7 @@ import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.model.ProjectConfigResponse;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.HierarchyResponseDTO;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -215,5 +216,16 @@ public class ProjectBasicConfigController {
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigService.deleteProject(basicProjectConfigId);
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true,
 				projectBasicConfig.getProjectName() + " deleted successfully", projectBasicConfig));
+	}
+
+	/**
+	 *
+	 * Gets All ProjectsList
+	 *
+	 * @return list of project list
+	 */
+	@GetMapping(value = "/hierachyResponses")
+	public List<HierarchyResponseDTO> getAllHierarchyResponse() {
+		return projectBasicConfigService.getHierarchyData();
 	}
 }
