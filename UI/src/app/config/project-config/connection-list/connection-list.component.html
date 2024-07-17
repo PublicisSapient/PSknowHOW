@@ -221,7 +221,7 @@
             </div>
             <div class="p-field">
                 <label for="username">Username</label>
-                <input class="ml-2" type="text" id="username" pInputText formControlName="username" (change)="updateForm()">
+                <input class="ml-2" type="text" id="username" pInputText formControlName="username" (change)="updateForm()" placeholder="Preferably, use a service account credentials">
             </div>
             <div class="p-field"
                 *ngIf="!jiraForm.controls['vault']?.value && !jiraForm.controls['bearerToken']?.value && !jiraForm.controls['jaasKrbAuth']?.value">
