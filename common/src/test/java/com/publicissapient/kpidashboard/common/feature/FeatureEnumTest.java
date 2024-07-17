@@ -44,4 +44,9 @@ public class FeatureEnumTest {
     public void testRecommendationFeatureIsActive() {
         assertFalse(featureManager.isActive(FeatureEnum.RECOMMENDATIONS));
     }
+
+    @Test
+    public void testnewUIFeatureIsActive() {
+        assertFalse(featureManager.isActive(FeatureEnum.NEW_UI_SWITCH));
+    }
 }
