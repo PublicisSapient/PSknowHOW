@@ -432,11 +432,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   setSprintDetails(event) {
     const startDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintStartDate' : 'releaseStartDate',
           endDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintEndDate' : 'releaseEndDate';
-    const currentDate = new Date().getTime();
-    const stopDate = new Date(event[0][endDatePropName]?.split('T')[0]).getTime();
-    const timeRemaining = stopDate - currentDate;
-    const millisecondsPerDay = 24 * 60 * 60 * 1000;
-    this.daysRemaining = Math.ceil(timeRemaining / millisecondsPerDay) < 0 ? 0 : Math.ceil(timeRemaining / millisecondsPerDay);
     const startDateFormatted = this.formatDate(event[0][startDatePropName]?.split('T')[0]);
     const endDateFormatted = this.formatDate(event[0][endDatePropName]?.split('T')[0]?.split('T')[0]);
     this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
