@@ -36,7 +36,10 @@ public enum FeatureEnum implements Feature {
     GOOGLE_ANALYTICS,
 
     @Label("Recommendations")
-    RECOMMENDATIONS;
+    RECOMMENDATIONS,
+
+    @Label("New UI")
+    NEW_UI_SWITCH;
 
     public boolean isActive() {
         return FeatureContext.getFeatureManager().isActive(this);
