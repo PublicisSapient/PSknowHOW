@@ -54,13 +54,13 @@ public class UserInfoCustomRepositoryImpl implements UserInfoCustomRepository {
 	 * @return List<UserInfo>
 	 */
 	@Override
-	public List<UserInfo> findAdminUserOfProject(String basicProjectConfigId) {
+	public List<UserInfo> findAdminUserOfProject(List<String> basicProjectConfigId) {
 
 		Query query = new Query();
 
 		Criteria accessCriteria = Criteria.where("projectsAccess").elemMatch(
 				Criteria.where("role").in("ROLE_PROJECT_ADMIN", "ROLE_SUPERADMIN").and("accessNodes").elemMatch(Criteria
-						.where("accessLevel").is("project").and("accessItems.itemId").is(basicProjectConfigId)));
+						.where("accessLevel").is("project").and("accessItems.itemId").in(basicProjectConfigId)));
 
 		query.addCriteria(accessCriteria);
 

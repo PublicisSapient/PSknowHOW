@@ -452,11 +452,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   setSprintDetails(event) {
     const startDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintStartDate' : 'releaseStartDate',
       endDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintEndDate' : 'releaseEndDate';
-    const currentDate = new Date().getTime();
-    const stopDate = new Date(event[0][endDatePropName]?.split('T')[0]).getTime();
-    const timeRemaining = stopDate - currentDate;
-    const millisecondsPerDay = 24 * 60 * 60 * 1000;
-    this.daysRemaining = Math.ceil(timeRemaining / millisecondsPerDay) < 0 ? 0 : Math.ceil(timeRemaining / millisecondsPerDay);
     const startDateFormatted = this.formatDate(event[0][startDatePropName]?.split('T')[0]);
     const endDateFormatted = this.formatDate(event[0][endDatePropName]?.split('T')[0]?.split('T')[0]);
     this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
@@ -541,7 +536,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   populateAdditionalFilters(event) {
-    let selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
+    let selectedProjectIds;
+    if (event && event.length && event[0].labelName === 'project') {
+      selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
+    } else {
+      selectedProjectIds = [...new Set(event.map((item) => item.parentId))];
+    }
     this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
       this.additionalFiltersArr['filter' + (index + 1)] = [];
 
@@ -579,8 +579,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
       this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
     });
-
-    this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
+    if (this.selectedTab !== 'iteration') {
+      this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
+    }
     this.service.setAdditionalFilters(this.additionalFiltersArr);
   }
 

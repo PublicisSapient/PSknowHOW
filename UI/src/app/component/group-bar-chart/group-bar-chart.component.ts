@@ -25,9 +25,9 @@ export class GroupBarChartComponent implements OnChanges {
   @Input() legendType: string;
   @Input() releaseEndDate: string;
   VisibleXAxisLbl = [];
-  isXaxisGapRequired : any;
-  customisedGroup : any ;
-  customiseGroupIndex : number
+  isXaxisGapRequired: any;
+  customisedGroup: any;
+  customiseGroupIndex: number
   elem;
   maxYValue = 0;
   dataPoints = 2;
@@ -38,14 +38,14 @@ export class GroupBarChartComponent implements OnChanges {
   plannedDueDate: any;
   releaseEndDateIndex;
   lineColor: string = '';
-  totalAvgVelocity : string = '';
+  totalAvgVelocity: string = '';
 
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.selectedtype?.toLowerCase() === 'kanban') {
       this.xCaption = this.service.getSelectedDateFilter();
-    }else{
+    } else {
       const duration = this.data[0]?.dataGroup[0]?.duration;
       this.xCaption = duration.charAt(0).toUpperCase() + duration.slice(1).toLowerCase();
     }
@@ -99,7 +99,7 @@ export class GroupBarChartComponent implements OnChanges {
     const marginLeft = 40;
     const marginTop = 35;
     const xTick = barWidth;
-    const tempWidth = window.innerWidth - 320 - marginLeft ;
+    const tempWidth = window.innerWidth - 320 - marginLeft;
     let width = elem.offsetWidth ? (elem.offsetWidth - 20 - marginLeft) : tempWidth;
 
 
@@ -141,11 +141,11 @@ export class GroupBarChartComponent implements OnChanges {
 
     const colorList = ['#049fff', '#f4aa46', '#f8404d'];
     const color = d3.scaleOrdinal()
-      .domain([...this.subGroups,...this.lineGroups.map(lineDetails=>lineDetails.lineName)])
+      .domain([...this.subGroups, ...this.lineGroups.map(lineDetails => lineDetails.lineName)])
       .range(colorList);
 
-      this.VisibleXAxisLbl = [];
-      this.customiseGroupIndex = -1;
+    this.VisibleXAxisLbl = [];
+    this.customiseGroupIndex = -1;
     if (this.isXaxisGapRequired) {
 
       // Hide/show x-axis label logic
@@ -178,8 +178,8 @@ export class GroupBarChartComponent implements OnChanges {
     }
 
 
-      const xAxisGenerator = d3.axisBottom(x);
-      xAxisGenerator.tickFormat((d, i) => this.VisibleXAxisLbl.includes(d) ? d : "");
+    const xAxisGenerator = d3.axisBottom(x);
+    xAxisGenerator.tickFormat((d, i) => this.VisibleXAxisLbl.includes(d) ? d : "");
 
 
     const toBeCustomizeXaxis = svgX.append('g')
@@ -188,11 +188,11 @@ export class GroupBarChartComponent implements OnChanges {
       .call(xAxisGenerator)
 
 
-      toBeCustomizeXaxis.selectAll("g")
+    toBeCustomizeXaxis.selectAll("g")
       .filter((d, i) => !this.VisibleXAxisLbl.includes(d))
       .classed("minor", true);
 
-      toBeCustomizeXaxis.selectAll(".tick text")
+    toBeCustomizeXaxis.selectAll(".tick text")
       .filter((d, i) => this.VisibleXAxisLbl.includes(d))
       .attr('transform', `translate(15, 0)`)
       .call(this.wrap, x.bandwidth())
@@ -202,12 +202,12 @@ export class GroupBarChartComponent implements OnChanges {
       .attr('y', 44)
       .attr('transform', 'rotate(0)')
       .text(this.xCaption);
-    if(this.plannedDueDate){
-      const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-      const plannedDueDate = this.plannedDueDate !== 'null' ? new Date(this.plannedDueDate).getDate() + '/' + month[new Date(this.plannedDueDate).getMonth()] +'/' + new Date(this.plannedDueDate).getFullYear() : undefined;
-      const releaseEndDate = this.releaseEndDate !== undefined ? new Date(this.releaseEndDate).getDate() + '/' + month[new Date(this.releaseEndDate).getMonth()] +'/' + new Date(this.releaseEndDate).getFullYear() : undefined;
-      let htmlReleaseDueDate = `Release Due Date (${plannedDueDate !== undefined ? plannedDueDate : 'N/A' })`;
-      let htmlReleaseEndDate = `Release End Date (${releaseEndDate !== undefined ? releaseEndDate : 'N/A' })`;
+    if (this.plannedDueDate) {
+      const month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const plannedDueDate = this.plannedDueDate !== 'null' ? new Date(this.plannedDueDate).getDate() + '/' + month[new Date(this.plannedDueDate).getMonth()] + '/' + new Date(this.plannedDueDate).getFullYear() : undefined;
+      const releaseEndDate = this.releaseEndDate !== undefined ? new Date(this.releaseEndDate).getDate() + '/' + month[new Date(this.releaseEndDate).getMonth()] + '/' + new Date(this.releaseEndDate).getFullYear() : undefined;
+      let htmlReleaseDueDate = `Release Due Date (${plannedDueDate !== undefined ? plannedDueDate : 'N/A'})`;
+      let htmlReleaseEndDate = `Release End Date (${releaseEndDate !== undefined ? releaseEndDate : 'N/A'})`;
       let htmlDiv = `${new Date(this.plannedDueDate).getTime() > new Date(this.releaseEndDate).getTime()
         ? (htmlReleaseDueDate + ' > ' + htmlReleaseEndDate)
         : (htmlReleaseDueDate + ' <= ' + htmlReleaseEndDate)}`;
@@ -218,8 +218,8 @@ export class GroupBarChartComponent implements OnChanges {
         .text(htmlDiv);
     }
 
-    if(this.totalAvgVelocity){
-     d3.select(elem).select('#date-container').append('text')
+    if (this.totalAvgVelocity) {
+      d3.select(elem).select('#date-container').append('text')
         .attr('x', ((d3.select(elem).select('#groupstackchart').node().offsetWidth - 70) / 2) - 24)
         .attr('y', 44)
         .attr('transform', 'rotate(0)')
@@ -234,23 +234,23 @@ export class GroupBarChartComponent implements OnChanges {
 
 
     if (currentDayIndex) {
-        this.generateVerticleLine(currentDayIndex,0,'solid',svgX,x,y,'#944075')
+      this.generateVerticleLine(currentDayIndex, 0, 'solid', svgX, x, y, '#944075')
     }
 
-    if(releaseEndDateIndex && this.plannedDueDate){
+    if (releaseEndDateIndex && this.plannedDueDate) {
       this.lineColor = '#15BA40';
-      if(new Date(this.plannedDueDate).getTime() > new Date(this.releaseEndDate).getTime()){
+      if (new Date(this.plannedDueDate).getTime() > new Date(this.releaseEndDate).getTime()) {
         this.lineColor = '#dc3545';
       }
-      this.generateVerticleLine(releaseEndDateIndex,0,'solid',svgX,x,y, this.lineColor)
+      this.generateVerticleLine(releaseEndDateIndex, 0, 'solid', svgX, x, y, this.lineColor)
     }
 
     this.customiseGroupIndex = data.findIndex(d => d.hasOwnProperty(this.customisedGroup))
-    if(this.customiseGroupIndex && this.customiseGroupIndex > -1){
-        this.generateVerticleLine(this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1],0,data[this.customiseGroupIndex][this.customisedGroup]?.lineType,svgX,x,y, '#944075')
+    if (this.customiseGroupIndex && this.customiseGroupIndex > -1) {
+      this.generateVerticleLine(this.VisibleXAxisLbl[this.VisibleXAxisLbl.length - 1], 0, data[this.customiseGroupIndex][this.customisedGroup]?.lineType, svgX, x, y, '#944075')
     }
 
-     /** Showing  data point for current plot */
+    /** Showing  data point for current plot */
     const currentWeekTooltipContainer = d3.select(this.elem).select('#horizontalSVG').select('.current-week-tooltip');
     // let top = (height / 2) - 30;
     // for (const kpiGroup of this.lineGroups) {
@@ -308,15 +308,15 @@ export class GroupBarChartComponent implements OnChanges {
       .append("g")
       .attr("transform", d => "translate(" + x(d.group) + ",0)")
       .selectAll("rect")
-      .data(d => subgroups.map(key => ({ key, value: d[key], group: d['date'] , hoverValue:d[key+'HoverValue']})))
+      .data(d => subgroups.map(key => ({ key, value: d[key], group: d['date'], hoverValue: d[key + 'HoverValue'] })))
       .enter().append("rect")
       .attr("x", d => xSubgroup(d.key))
-      .attr("y", d=> y(0))
+      .attr("y", d => y(0))
       .attr("width", barWidth)
-      .attr("height", d=> height - y(0) - spacingVariable)
-      .attr("fill", d=> color(d.key))
+      .attr("height", d => height - y(0) - spacingVariable)
+      .attr("fill", d => color(d.key))
       .style('cursor', 'pointer')
-      .on('mouseover', (event, d)=> {
+      .on('mouseover', (event, d) => {
         if (d.hoverValue) {
           const circle = event.target;
           const {
@@ -330,7 +330,7 @@ export class GroupBarChartComponent implements OnChanges {
             .style('opacity', .9);
 
 
-          div.html(`${d?.group} : ${Object.values(d?.hoverValue).reduce((a:number, b:number) => a + b, 0)} `+ '<span class=\'toolTipValue\'> </span>')
+          div.html(`${d?.group} : ${Object.values(d?.hoverValue).reduce((a: number, b: number) => a + b, 0)} ` + '<span class=\'toolTipValue\'> </span>')
             .style('left', xPosition + 20 + 'px')
             .style('top', yPosition + 20 + 'px')
             .style('position', 'fixed');
@@ -340,7 +340,7 @@ export class GroupBarChartComponent implements OnChanges {
           }
         }
       })
-      .on('mouseout', function(d) {
+      .on('mouseout', function (d) {
         div.transition()
           .duration(500)
           .style('display', 'none')
@@ -349,94 +349,94 @@ export class GroupBarChartComponent implements OnChanges {
       .transition()
       .delay((d) => 200)
       .duration(800)
-      .attr("y", d=> y(d.value))
-      .attr("height", d=> height - y(d.value) - spacingVariable);
+      .attr("y", d => y(d.value))
+      .attr("height", d => height - y(d.value) - spacingVariable);
 
-      const tooltipContainer = d3.select(this.elem).select('#horizontalSVG').select('.tooltip-container');
-      const showTooltip = (linedata) => {
-        currentWeekTooltipContainer.style('display','none');
-        tooltipContainer
-          .selectAll('div')
-          .data(linedata.filter(data=> this.VisibleXAxisLbl.includes(data.filter))) // Tooltip will come only for Visible label
-          .join('div')
-          .attr('class', 'tooltip')
-          .style('left', d => x(d.filter)  + 0 + 'px')
-          .style('top', d => y(d.value) + 6 + 'px')
-          .text(d =>d.value)
-          .transition()
-          .duration(500)
-          .style('display', 'block')
-          .style('opacity', 1);
-      };
-      const hideTooltip = () => {
-        currentWeekTooltipContainer.style('display','block');
-        tooltipContainer
-          .selectAll('.tooltip')
-          .transition()
-          .duration(500)
-          .style('display', 'none')
-          .style('opacity', 0);
-        tooltipContainer.selectAll('.tooltip').remove();
-      };
+    const tooltipContainer = d3.select(this.elem).select('#horizontalSVG').select('.tooltip-container');
+    const showTooltip = (linedata) => {
+      currentWeekTooltipContainer.style('display', 'none');
+      tooltipContainer
+        .selectAll('div')
+        .data(linedata.filter(data => this.VisibleXAxisLbl.includes(data.filter))) // Tooltip will come only for Visible label
+        .join('div')
+        .attr('class', 'tooltip')
+        .style('left', d => x(d.filter) + 0 + 'px')
+        .style('top', d => y(d.value) + 6 + 'px')
+        .text(d => d.value)
+        .transition()
+        .duration(500)
+        .style('display', 'block')
+        .style('opacity', 1);
+    };
+    const hideTooltip = () => {
+      currentWeekTooltipContainer.style('display', 'block');
+      tooltipContainer
+        .selectAll('.tooltip')
+        .transition()
+        .duration(500)
+        .style('display', 'none')
+        .style('opacity', 0);
+      tooltipContainer.selectAll('.tooltip').remove();
+    };
 
-      for (const kpiGroup of this.lineGroups) {
-        const lineData = data.filter(d => d.hasOwnProperty(kpiGroup.lineName)).map(d=>{ return { "filter" : d['group'],"value" : d[kpiGroup.lineName].value,'lineType':d[kpiGroup.lineName].lineType}});
+    for (const kpiGroup of this.lineGroups) {
+      const lineData = data.filter(d => d.hasOwnProperty(kpiGroup.lineName)).map(d => { return { "filter": d['group'], "value": d[kpiGroup.lineName].value, 'lineType': d[kpiGroup.lineName].lineType } });
 
-        const line = svgX
-          .append('g')
-          .attr('transform', `translate(17,0)`)
-          .append('path')
-          .datum(lineData)
-          .attr('d', d3.line()
-            .x((d) => x(d.filter))
-            .y((d) => y(d.value))
-          )
-          .attr('stroke', (d) => color(kpiGroup.lineName))
-          .style('stroke-width', 2)
-          .style('fill', 'none')
-          .style('cursor', 'pointer')
-          .attr('stroke-dasharray', (d) => kpiGroup.lineType === 'dotted' ? '8,3 ' : 'none')
-          .on('mouseover', function(event, linedata) {
-            d3.select(this)
-              .style('stroke-width', 4);
-            showTooltip(linedata);
-          })
-          .on('mouseout', function(event, d) {
-            d3.select(this)
-              .style('stroke-width', 2);
-            hideTooltip();
-          });
+      const line = svgX
+        .append('g')
+        .attr('transform', `translate(17,0)`)
+        .append('path')
+        .datum(lineData)
+        .attr('d', d3.line()
+          .x((d) => x(d.filter))
+          .y((d) => y(d.value))
+        )
+        .attr('stroke', (d) => color(kpiGroup.lineName))
+        .style('stroke-width', 2)
+        .style('fill', 'none')
+        .style('cursor', 'pointer')
+        .attr('stroke-dasharray', (d) => kpiGroup.lineType === 'dotted' ? '8,3 ' : 'none')
+        .on('mouseover', function (event, linedata) {
+          d3.select(this)
+            .style('stroke-width', 4);
+          showTooltip(linedata);
+        })
+        .on('mouseout', function (event, d) {
+          d3.select(this)
+            .style('stroke-width', 2);
+          hideTooltip();
+        });
 
-        const circlegroup = svgX
-          .append('g')
-          .attr('class', 'circle-group')
-          .attr('transform', `translate(17,0)`)
-          .selectAll('circle')
-          .data(lineData)
-          .enter()
-          .append('circle')
-          .attr('cx', d => x(d.filter))
-          .attr('cy', d => y(d.value))
-          .attr('r', 3)
-          .style('stroke-width', 1)
-          .attr('stroke', 'none')
-          .attr('fill', color(kpiGroup.lineName))
-          .on('mouseover', function(event) {
-            d3.select(this)
-              .transition()
-              .duration(500)
-              .style('cursor', 'pointer')
-              .attr('r', 3);
-              showTooltip(lineData);
-          })
-          .on('mouseout', function(event, d) {
-            d3.select(this)
-              .transition()
-              .duration(500)
-              .attr('r', 3);
-            hideTooltip();
-          });
-      }
+      const circlegroup = svgX
+        .append('g')
+        .attr('class', 'circle-group')
+        .attr('transform', `translate(17,0)`)
+        .selectAll('circle')
+        .data(lineData)
+        .enter()
+        .append('circle')
+        .attr('cx', d => x(d.filter))
+        .attr('cy', d => y(d.value))
+        .attr('r', 3)
+        .style('stroke-width', 1)
+        .attr('stroke', 'none')
+        .attr('fill', color(kpiGroup.lineName))
+        .on('mouseover', function (event) {
+          d3.select(this)
+            .transition()
+            .duration(500)
+            .style('cursor', 'pointer')
+            .attr('r', 3);
+          showTooltip(lineData);
+        })
+        .on('mouseout', function (event, d) {
+          d3.select(this)
+            .transition()
+            .duration(500)
+            .attr('r', 3);
+          hideTooltip();
+        });
+    }
 
     const legendDiv = d3.select(this.elem).select('#groupstackchart').append('div');
     legendDiv.style('margin-top', '20px');
@@ -454,22 +454,22 @@ export class GroupBarChartComponent implements OnChanges {
     });
 
     this.lineGroups.forEach((d, i) => {
-      if(d.lineType==='dotted'){
+      if (d.lineType === 'dotted') {
         htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="border-top: 3px dashed ${color(d.lineName)}"></div> : ${d.lineName}</div>`;
-      }else{
+      } else {
         htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: ${color(d.lineName)}"></div> : ${d.lineName}</div>`;
       }
     })
-    if(currentDayIndex){
+    if (currentDayIndex) {
       htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: #944075"></div> : Today</div>`;
     }
 
-    if(releaseEndDateIndex && this.plannedDueDate){
+    if (releaseEndDateIndex && this.plannedDueDate) {
       htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: ${this.lineColor}"></div> : Release End Date</div>`;
     }
 
-    if(this.customiseGroupIndex && this.customiseGroupIndex > -1){
-      htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="border-top: 3px dashed #944075"></div> : Predicated Completion Till (${this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1]})</div>`;
+    if (this.customiseGroupIndex && this.customiseGroupIndex > -1) {
+      htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="border-top: 3px dashed #944075"></div> : Predicated Completion Till (${this.VisibleXAxisLbl[this.VisibleXAxisLbl.length - 1]})</div>`;
     }
 
     legendDiv.html(htmlString)
@@ -483,9 +483,9 @@ export class GroupBarChartComponent implements OnChanges {
   findMaxVal(data) {
     data.forEach(item => {
       const arrayOfObject = Object.values(item);
-      const valueList = arrayOfObject.map((item:any)=>{
-        if(typeof item === 'object'){
-           return item?.value;
+      const valueList = arrayOfObject.map((item: any) => {
+        if (typeof item === 'object') {
+          return item?.value;
         }
       });
       valueList.forEach(val => {
@@ -502,57 +502,58 @@ export class GroupBarChartComponent implements OnChanges {
     data.forEach((d) => {
       const date = d.filter;
       let graphData = {};
-      d.value.forEach(groupD=>{
-         if (!this.subGroups.includes(groupD.kpiGroup) && groupD.graphType === 'bar' ) {
-           this.subGroups.push(groupD.kpiGroup);
-         }
-         const lineNameList = this.lineGroups.map(details=>details?.lineName);
-         if (!lineNameList.includes(groupD.kpiGroup) && groupD.graphType === 'line' ) {
+      d.value.forEach(groupD => {
+        if (!this.subGroups.includes(groupD.kpiGroup) && groupD.graphType === 'bar') {
+          this.subGroups.push(groupD.kpiGroup);
+        }
+        const lineNameList = this.lineGroups.map(details => details?.lineName);
+        if (!lineNameList.includes(groupD.kpiGroup) && groupD.graphType === 'line') {
           this.lineGroups.push({
-            lineName : groupD.kpiGroup,
-            lineType : groupD.lineCategory
+            lineName: groupD.kpiGroup,
+            lineType: groupD.lineCategory
           });
         }
-         graphData = { ...graphData,
+        graphData = {
+          ...graphData,
           [groupD.kpiGroup]: {
-            value : groupD.value,
-            lineType : groupD.lineCategory,
+            value: groupD.value,
+            lineType: groupD.lineCategory,
           },
           group: date,
-          date : date,
-          [groupD.kpiGroup+'HoverValue']:groupD?.hoverValue,
-          sprojectName : groupD.sprojectName
-         }
+          date: date,
+          [groupD.kpiGroup + 'HoverValue']: groupD?.hoverValue,
+          sprojectName: groupD.sprojectName
+        }
 
       })
-      resultData[date] = {...graphData};
+      resultData[date] = { ...graphData };
 
     });
     const resultDataList = Object.values(resultData);
-    if(this.xCaption.toLowerCase() === 'weeks' || this.xCaption.toLowerCase() === 'days' || this.xCaption.toLowerCase() === 'months'){
+    if (this.xCaption.toLowerCase() === 'weeks' || this.xCaption.toLowerCase() === 'days' || this.xCaption.toLowerCase() === 'months') {
       return this.formatDateOnXAxis(resultDataList);
-    }else{
+    } else {
       return resultDataList;
     }
   }
 
-  formatDateOnXAxis(data){
+  formatDateOnXAxis(data) {
     const days = ["SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"];
     return data.map((d, i) => {
-      if(this.xCaption.toLowerCase() === 'weeks'){
-        d['group'] = d['group'].replace(" ",'');
+      if (this.xCaption.toLowerCase() === 'weeks') {
+        d['group'] = d['group'].replace(" ", '');
         const dateArray = d['group'].split('to');
         const date1 = new Date(dateArray[0]);
         const date2 = new Date(dateArray[1]);
         const today = new Date();
         const startOfCurrentWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
         const endOfCurrentWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + (6 - today.getDay()));
-        const formatedWeek = `${(date1.getDate() < 10) ? ('0' + date1.getDate()) : date1.getDate()}/${(date1.getMonth() + 1) < 10 ? '0' + (date1.getMonth() + 1) : date1.getMonth() + 1} - `+
-        `${(date2.getDate() < 10) ? ('0' + date2.getDate()) : date2.getDate()}/${(date2.getMonth() + 1) < 10 ? '0' + (date2.getMonth() + 1) : date2.getMonth() + 1}`;
+        const formatedWeek = `${(date1.getDate() < 10) ? ('0' + date1.getDate()) : date1.getDate()}/${(date1.getMonth() + 1) < 10 ? '0' + (date1.getMonth() + 1) : date1.getMonth() + 1} - ` +
+          `${(date2.getDate() < 10) ? ('0' + date2.getDate()) : date2.getDate()}/${(date2.getMonth() + 1) < 10 ? '0' + (date2.getMonth() + 1) : date2.getMonth() + 1}`;
         if (date1 <= endOfCurrentWeek && date2 >= startOfCurrentWeek) {
           this.currentDayIndex = formatedWeek;
         }
-        if(this.releaseEndDate){
+        if (this.releaseEndDate) {
           const releaseEndDate = new Date(this.releaseEndDate);
           const startOfreleaseEndDateWeek = new Date(releaseEndDate.getFullYear(), releaseEndDate.getMonth(), releaseEndDate.getDate() - releaseEndDate.getDay());
           const endOfreleaseEndDateWeek = new Date(releaseEndDate.getFullYear(), releaseEndDate.getMonth(), releaseEndDate.getDate() + (6 - releaseEndDate.getDay()));
@@ -561,27 +562,27 @@ export class GroupBarChartComponent implements OnChanges {
           }
         }
         d['group'] = formatedWeek
-      return d;
-      }else if(this.xCaption.toLowerCase() === 'days'){
+        return d;
+      } else if (this.xCaption.toLowerCase() === 'days') {
         const date = new Date(d['group']);
         const currentDate = new Date();
-        const formatedDate =  `${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;
+        const formatedDate = `${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;
         if (date.toDateString() === currentDate.toDateString()) {
           this.currentDayIndex = formatedDate;
         }
         d['group'] = formatedDate;
-        if(this.releaseEndDate){
+        if (this.releaseEndDate) {
           const releaseEndDate = new Date(this.releaseEndDate);
-          if(date.toDateString() === releaseEndDate.toDateString()){
+          if (date.toDateString() === releaseEndDate.toDateString()) {
             this.releaseEndDateIndex = formatedDate;
           }
         }
-      return d;
-      }else {
+        return d;
+      } else {
         const date = new Date(d['group']);
         const currentDate = new Date();
         const isCurrentMonth = date.getMonth() === currentDate.getMonth() && date.getFullYear() === currentDate.getFullYear();
-        if(isCurrentMonth){
+        if (isCurrentMonth) {
           this.currentDayIndex = d['group'];
         }
         d['group'] = d['group'];
@@ -589,16 +590,16 @@ export class GroupBarChartComponent implements OnChanges {
       }
     });
   }
-generateVerticleLine(xCoordinates,yCordinates,type,svg,xAxis,yAxis, color){
+  generateVerticleLine(xCoordinates, yCordinates, type, svg, xAxis, yAxis, color) {
     svg.append('line')
-    .attr('x1', xAxis(xCoordinates)+ 18)
-    .attr('y1', yAxis(yCordinates))
-    .attr('x2', xAxis(xCoordinates)+18)
-    .attr('y2', yAxis(this.maxYValue))
-    .attr('stroke', color)
-    .attr('stroke-width', 2)
-    .attr('stroke-dasharray', (d) => type === 'dotted' ? '8,3 ' : 'none' )
-}
+      .attr('x1', xAxis(xCoordinates) + 18)
+      .attr('y1', yAxis(yCordinates))
+      .attr('x2', xAxis(xCoordinates) + 18)
+      .attr('y2', yAxis(this.maxYValue))
+      .attr('stroke', color)
+      .attr('stroke-width', 2)
+      .attr('stroke-dasharray', (d) => type === 'dotted' ? '8,3 ' : 'none')
+  }
 
   ngAfterViewInit() {
     const resizeObserver = new ResizeObserver(entries => {
@@ -608,16 +609,16 @@ generateVerticleLine(xCoordinates,yCordinates,type,svg,xAxis,yAxis, color){
   }
 
   wrap(text, width) {
-    text.each(function() {
+    text.each(function () {
       var text = d3.select(this),
-          words = text.text().split(/\s+/).reverse(),
-          word,
-          line = [],
-          lineNumber = 0,
-          lineHeight = 1.1, // ems
-          y = text.attr("y"),
-          dy = parseFloat(text.attr("dy")),
-          tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
       while (word = words.pop()) {
         line.push(word)
         tspan.text(line.join(" "))
