@@ -56,7 +56,7 @@ export class AdditionalFilterComponent implements OnChanges {
           this.applyDefaultFilter();
         }
       } else {
-        this.filterData =[];
+        this.filterData = [];
       }
     }));
   }
