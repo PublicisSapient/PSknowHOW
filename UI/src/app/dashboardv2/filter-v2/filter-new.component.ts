@@ -75,7 +75,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
     this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
-    this.selectedDayType = 'Weeks';
+
     this.dateRangeFilter = {
       "types": [
         "Days",
@@ -95,6 +95,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         15
       ]
     };
+    this.selectedDayType = 'Weeks';
     this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     this.subscriptions.push(
@@ -112,6 +113,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
+
+          /**TODO: resetting the date filter on tab change for now */
+          this.selectedDayType = 'Weeks';
+          this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+          this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+          /** */
 
           if (this.selectedType.toLowerCase() === 'kanban') {
             this.kanban = true;
@@ -321,6 +328,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handlePrimaryFilterChange(event) {
+      /**TODO: resetting the date filter on filter change for now */
+      this.selectedDayType = 'Weeks';
+      this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+      this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+      /** */
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
       // set selected projects(trends)
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
