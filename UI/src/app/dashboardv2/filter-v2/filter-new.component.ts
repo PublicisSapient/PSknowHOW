@@ -75,7 +75,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
     this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
-    this.selectedDayType = 'Weeks';
+
     this.dateRangeFilter = {
       "types": [
         "Days",
@@ -95,6 +95,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         15
       ]
     };
+    this.selectedDayType = 'Weeks';
     this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     this.subscriptions.push(
@@ -112,6 +113,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
+
+          /**TODO: resetting the date filter on tab change for now */
+          this.selectedDayType = 'Weeks';
+          this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+          this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+          /** */
 
           if (this.selectedType.toLowerCase() === 'kanban') {
             this.kanban = true;
@@ -262,11 +269,22 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   removeFilter(id) {
+    let stateFilters = this.helperService.getBackupOfFilterSelectionState();
     if (Object.keys(this.colorObj).length > 1) {
       delete this.colorObj[id];
-      let selectedFilters = this.filterDataArr[this.selectedType][this.selectedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
-      this.handlePrimaryFilterChange(selectedFilters);
-      this.helperService.setBackupOfFilterSelectionState({ 'primary_level': selectedFilters });
+      if (!stateFilters['additional_level']) {
+        let selectedFilters = this.filterDataArr[this.selectedType][this.selectedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
+        this.handlePrimaryFilterChange(selectedFilters);
+        this.helperService.setBackupOfFilterSelectionState({ 'primary_level': selectedFilters });
+      } else {
+        if (typeof this.selectedLevel === 'string') {
+          stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
+        } else {
+          stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
+        }
+        this.handlePrimaryFilterChange(stateFilters['primary_level']);
+        this.helperService.setBackupOfFilterSelectionState({ 'primary_level': stateFilters['primary_level'] });
+      }
     }
   }
 
@@ -310,6 +328,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handlePrimaryFilterChange(event) {
+      /**TODO: resetting the date filter on filter change for now */
+      this.selectedDayType = 'Weeks';
+      this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+      this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+      /** */
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
       // set selected projects(trends)
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
@@ -321,6 +344,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       // Populate additional filters on MyKnowHOW, Speed and Quality
       if (this.selectedTab.toLowerCase() !== 'developer') {
         this.additionalFiltersArr = [];
+        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
         this.populateAdditionalFilters(event);
       }
       if (event.length === 1) {
@@ -396,42 +420,50 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
 
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
-      // Promise.resolve(() => {
-      if (this.selectedLevel) {
-        if (typeof this.selectedLevel === 'string') {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+      if (this.filterDataArr[this.selectedType]) {
+        // Promise.resolve(() => {
+        if (this.selectedLevel) {
+          if (typeof this.selectedLevel === 'string') {
+            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+          } else {
+            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+          }
         } else {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
         }
-      } else {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+        // });
       }
-      // });
     } else if (event && event['additional_level']) {
       if (this.selectedTab.toLowerCase() !== 'developer') {
         setTimeout(() => {
           this.additionalFiltersArr = [];
-          this.populateAdditionalFilters(this.previousFilterEvent);
+          this.populateAdditionalFilters(event['primary_level']);
         }, 100);
       }
       Object.keys(event['additional_level']).forEach((key) => {
-        this.handleAdditionalChange(event['additional_level'][key]);
+        if (Array.isArray(event['additional_level'][key])) {
+          this.handleAdditionalChange(event['additional_level'][key]);
+        } else {
+          Object.keys(event['additional_level'][key]).forEach(subKey => {
+            this.handleAdditionalChange(event['additional_level'][key][subKey]);
+          });
+        }
       });
     }
 
-     if(this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event[0]?.labelName === 'project'){
+    if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event[0]?.labelName === 'project') {
       const allSprints = this.filterDataArr[this.selectedType]['sprint'];
       const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId))
-      if(currentProjectSprints.length){
+      if (currentProjectSprints.length) {
         this.service.setSprintForRnR(currentProjectSprints[0])
       }
     }
-    this.compileGAData(event);
+    // this.compileGAData(event);
   }
 
   setSprintDetails(event) {
     const startDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintStartDate' : 'releaseStartDate',
-          endDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintEndDate' : 'releaseEndDate';
+      endDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintEndDate' : 'releaseEndDate';
     const startDateFormatted = this.formatDate(event[0][startDatePropName]?.split('T')[0]);
     const endDateFormatted = this.formatDate(event[0][endDatePropName]?.split('T')[0]?.split('T')[0]);
     this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
@@ -446,7 +478,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   formatDate(dateString) {
-    if(dateString !== '') {
+    if (dateString !== '') {
       const date = new Date(dateString);
       const day = String(date.getDate()).padStart(2, '0');
       const month = date.toLocaleString('default', { month: 'short' });
@@ -458,14 +490,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handleAdditionalChange(event) {
-    if(event && event?.length){
-      this.service.setSprintForRnR(event[event.length-1])
+    if (event && event?.length) {
+      this.service.setSprintForRnR(event[event.length - 1])
     }
     if (!event?.length) {
       this.handlePrimaryFilterChange(this.previousFilterEvent);
       return;
     }
-    this.compileGAData(event);
+    // this.compileGAData(event);
     this.filterApplyData['level'] = event[0].level;
     this.filterApplyData['label'] = event[0].labelName;
 
@@ -495,22 +527,33 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.toggleDateDropdown = false;
-    this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
-    this.filterApplyData['ids'] = [this.selectedDateValue];
-
-    if (this.selectedLevel) {
-      if (typeof this.selectedLevel === 'string') {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
-      } else {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
-      }
+    if (this.filterApplyData && this.filterApplyData['selectedMap']) {
+      this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
     } else {
-      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+      this.filterApplyData['selectedMap'] = {};
+      this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
+    }
+    this.filterApplyData['ids'] = [this.selectedDateValue];
+    if (this.filterDataArr[this.selectedType]) {
+      if (this.selectedLevel) {
+        if (typeof this.selectedLevel === 'string') {
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+        } else {
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+        }
+      } else {
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+      }
     }
   }
 
   populateAdditionalFilters(event) {
-    let selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
+    let selectedProjectIds;
+    if (event && event.length && event[0].labelName === 'project') {
+      selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
+    } else {
+      selectedProjectIds = [...new Set(event.map((item) => item.parentId))];
+    }
     this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
       this.additionalFiltersArr['filter' + (index + 1)] = [];
 
@@ -548,8 +591,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
       this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
     });
-
-    this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
+    if (this.selectedTab !== 'iteration') {
+      this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
+    }
     this.service.setAdditionalFilters(this.additionalFiltersArr);
   }
 

@@ -49,6 +49,7 @@ export class ParentFilterComponent implements OnChanges {
           this.onSelectedLevelChange.emit(this.selectedLevel.toLowerCase());
         });
       } else if (changes['parentFilterConfig'].previousValue?.labelName === 'Organization Level' && changes['parentFilterConfig'].currentValue?.labelName?.toLowerCase() === 'project' ||
+      changes['parentFilterConfig'].previousValue?.labelName.toLowerCase() === 'project' && changes['parentFilterConfig'].currentValue?.labelName === 'Organization Level' ||
         (changes['parentFilterConfig'].previousValue?.labelName.toLowerCase() === 'project' && changes['parentFilterConfig'].currentValue?.labelName?.toLowerCase() === 'project') ||
         changes['parentFilterConfig'].firstChange) {
         this.filterLevels = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()]?.map((item) => item.nodeName);

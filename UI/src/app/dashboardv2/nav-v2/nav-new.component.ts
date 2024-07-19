@@ -3,6 +3,7 @@ import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
+import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -18,7 +19,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   subscriptions: any[] = [];
   dashConfigData: any;
 
-  constructor(private httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router) {
+  constructor(private httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, private helperService: HelperService) {
   }
 
   ngOnInit(): void {
@@ -73,6 +74,10 @@ export class NavNewComponent implements OnInit, OnDestroy {
     this.selectedTab = obj['boardSlug'];
     if (this.selectedTab !== 'unauthorized access') {
       this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+    }
+    if(this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
+       || this.selectedTab === 'dora' || this.selectedTab === 'Maturity') {
+      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
     }
     this.router.navigate(['/dashboard/' + obj['boardSlug']]);
   }
