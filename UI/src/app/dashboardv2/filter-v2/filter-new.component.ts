@@ -458,7 +458,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.service.setSprintForRnR(currentProjectSprints[0])
       }
     }
-    // this.compileGAData(event);
+    this.compileGAData(event);
   }
 
   setSprintDetails(event) {
@@ -497,7 +497,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.handlePrimaryFilterChange(this.previousFilterEvent);
       return;
     }
-    // this.compileGAData(event);
+    this.compileGAData(event);
     this.filterApplyData['level'] = event[0].level;
     this.filterApplyData['label'] = event[0].labelName;
 
