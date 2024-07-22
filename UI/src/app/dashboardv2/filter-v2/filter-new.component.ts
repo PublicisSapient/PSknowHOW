@@ -328,11 +328,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handlePrimaryFilterChange(event) {
-      /**TODO: resetting the date filter on filter change for now */
-      this.selectedDayType = 'Weeks';
-      this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
-      this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
-      /** */
+    /**TODO: resetting the date filter on filter change for now */
+    this.selectedDayType = 'Weeks';
+    this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+    this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+    /** */
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
       // set selected projects(trends)
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
@@ -434,6 +434,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         // });
       }
     } else if (event && event['additional_level']) {
+      this.previousFilterEvent['additional_level'] = event['additional_level'];
       if (this.selectedTab.toLowerCase() !== 'developer') {
         setTimeout(() => {
           this.additionalFiltersArr = [];
@@ -442,10 +443,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
       Object.keys(event['additional_level']).forEach((key) => {
         if (Array.isArray(event['additional_level'][key])) {
-          this.handleAdditionalChange(event['additional_level'][key]);
+          if (event['additional_level'][key]?.length) {
+            this.handleAdditionalChange(event['additional_level'][key]);
+          }
         } else {
           Object.keys(event['additional_level'][key]).forEach(subKey => {
-            this.handleAdditionalChange(event['additional_level'][key][subKey]);
+            if (event['additional_level'][key][subKey]?.length) {
+              this.handleAdditionalChange(event['additional_level'][key][subKey]);
+            }
           });
         }
       });
@@ -490,6 +495,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handleAdditionalChange(event) {
+    this.previousFilterEvent['additional_level'] = event;
     if (event && event?.length) {
       this.service.setSprintForRnR(event[event.length - 1])
     }
