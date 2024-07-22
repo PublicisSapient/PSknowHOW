@@ -282,8 +282,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         } else {
           stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
         }
-        this.handlePrimaryFilterChange(stateFilters['primary_level']);
-        this.helperService.setBackupOfFilterSelectionState({ 'primary_level': stateFilters['primary_level'] });
+        console.log(stateFilters);
+        Object.keys(stateFilters['additional_level']).forEach((level) => {
+          Object.keys(stateFilters['additional_level'][level]).forEach(key => {
+            stateFilters['additional_level'][level][key] = stateFilters['additional_level'][level][key].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
+          })
+        });
+        this.handlePrimaryFilterChange(stateFilters);
+        this.helperService.setBackupOfFilterSelectionState(stateFilters);
       }
     }
   }
@@ -328,11 +334,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handlePrimaryFilterChange(event) {
-      /**TODO: resetting the date filter on filter change for now */
-      this.selectedDayType = 'Weeks';
-      this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
-      this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
-      /** */
+    /**TODO: resetting the date filter on filter change for now */
+    this.selectedDayType = 'Weeks';
+    this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+    this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+    /** */
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
       // set selected projects(trends)
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
@@ -434,6 +440,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         // });
       }
     } else if (event && event['additional_level']) {
+      if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
+        this.service.setSelectedTrends(event['primary_level']);
+      } else {
+        this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
+      }
+      this.previousFilterEvent['additional_level'] = event['additional_level'];
       if (this.selectedTab.toLowerCase() !== 'developer') {
         setTimeout(() => {
           this.additionalFiltersArr = [];
@@ -442,10 +454,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
       Object.keys(event['additional_level']).forEach((key) => {
         if (Array.isArray(event['additional_level'][key])) {
-          this.handleAdditionalChange(event['additional_level'][key]);
+          if (event['additional_level'][key]?.length) {
+            this.handleAdditionalChange(event['additional_level'][key]);
+          }
         } else {
           Object.keys(event['additional_level'][key]).forEach(subKey => {
-            this.handleAdditionalChange(event['additional_level'][key][subKey]);
+            if (event['additional_level'][key][subKey]?.length) {
+              this.handleAdditionalChange(event['additional_level'][key][subKey]);
+            }
           });
         }
       });
@@ -490,6 +506,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handleAdditionalChange(event) {
+    this.previousFilterEvent['additional_level'] = event;
     if (event && event?.length) {
       this.service.setSprintForRnR(event[event.length - 1])
     }
@@ -664,6 +681,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   compileGAData(selectedFilterArray) {
+    if(selectedFilterArray['additional_level']) {
+      selectedFilterArray = selectedFilterArray['additional_level'].level[Object.keys(selectedFilterArray['additional_level'].level)[0]];
+    }
     const gaArray = selectedFilterArray?.map((item) => {
       const catArr = ['category1', 'category2', 'category3', 'category4', 'category5', 'category6'];
 
