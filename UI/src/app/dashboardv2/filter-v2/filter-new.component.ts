@@ -440,6 +440,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         // });
       }
     } else if (event && event['additional_level']) {
+      if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
+        this.service.setSelectedTrends(event['primary_level']);
+      } else {
+        this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
+      }
       this.previousFilterEvent['additional_level'] = event['additional_level'];
       if (this.selectedTab.toLowerCase() !== 'developer') {
         setTimeout(() => {
@@ -676,6 +681,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   compileGAData(selectedFilterArray) {
+    if(selectedFilterArray['additional_level']) {
+      selectedFilterArray = selectedFilterArray['additional_level'].level[Object.keys(selectedFilterArray['additional_level'].level)[0]];
+    }
     const gaArray = selectedFilterArray?.map((item) => {
       const catArr = ['category1', 'category2', 'category3', 'category4', 'category5', 'category6'];
 

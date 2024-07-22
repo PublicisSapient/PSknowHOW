@@ -23,6 +23,11 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   @ViewChild('multiSelect') multiSelect: MultiSelect;
 
   constructor(private service: SharedService, public helperService: HelperService) {
+    this.service.selectedTrendsEvent.subscribe(filters => {
+      if (filters?.length && this.primaryFilterConfig['type'] !== 'singleSelect') {
+        this.selectedFilters = filters;
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
