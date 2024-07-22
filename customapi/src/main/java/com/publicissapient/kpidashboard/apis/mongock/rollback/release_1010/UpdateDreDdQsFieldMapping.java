@@ -99,8 +99,8 @@ public class UpdateDreDdQsFieldMapping {
 				.append(TOOL_TIP, new Document(DEFINITION, "All statuses which are considered for Rejecting defects"));
 
 		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE)
-				.insertMany(Arrays.asList(jiraLabelsQAKPI111, jiraLabelsKPI133, includeRCAForKPI34,
-						defectPriorityKPI34, jiraDefectRejectionStatusKPI34, resolutionTypeForRejectionKPI34));
+				.insertMany(Arrays.asList(jiraLabelsQAKPI111, jiraLabelsKPI133, includeRCAForKPI34, defectPriorityKPI34,
+						jiraDefectRejectionStatusKPI34, resolutionTypeForRejectionKPI34));
 	}
 
 	@RollbackExecution
@@ -110,8 +110,9 @@ public class UpdateDreDdQsFieldMapping {
 
 	private void deleteFieldMappingRollback() {
 		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE)
-				.deleteMany(Filters.or(Filters.eq(FIELD_NAME, "jiraLabelsQAKPI111"), Filters.eq(FIELD_NAME, "jiraLabelsKPI133"),
-						Filters.eq(FIELD_NAME, "includeRCAForKPI34"), Filters.eq(FIELD_NAME, "defectPriorityKPI34"),
+				.deleteMany(Filters.or(Filters.eq(FIELD_NAME, "jiraLabelsQAKPI111"),
+						Filters.eq(FIELD_NAME, "jiraLabelsKPI133"), Filters.eq(FIELD_NAME, "includeRCAForKPI34"),
+						Filters.eq(FIELD_NAME, "defectPriorityKPI34"),
 						Filters.eq(FIELD_NAME, "jiraDefectRejectionStatusKPI34"),
 						Filters.eq(FIELD_NAME, "resolutionTypeForRejectionKPI34")));
 	}
