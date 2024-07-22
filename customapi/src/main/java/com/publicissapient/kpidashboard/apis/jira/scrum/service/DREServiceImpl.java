@@ -100,7 +100,6 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	public static final String PROJECT_WISE_DEFECT_REMOVEL_STATUS = "projectWiseDefectRemovelStatus";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	public static final String SUB_TASK_BUGS = "subTaskBugs";
-	public static final String SPRINT_REPORTED_BUGS = "Sprint Reported Bugs";
 	public static final String JIRA_ISSUE_CLOSED_DATE = "jiraIssueClosedDate";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -161,7 +160,6 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		List<String> basicProjectConfigIds = new ArrayList<>();
 		Map<String, List<String>> projectWiseDefectRemovelStatus = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-//		List<JiraIssue> sprintReportedBugsList;
 		List<String> defectType = new ArrayList<>();
 		Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
 		Map<String, List<String>> projectWisePriority = new HashMap<>();
@@ -223,12 +221,12 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
 			List<JiraIssue> totalSprintReportDefects = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
 					uniqueProjectMap);
-			List<JiraIssue> storyListWoDrop = new ArrayList<>();// not contain droppedDefects
+			List<JiraIssue> storyListWoDrop = new ArrayList<>();
 			getDefectsWithoutDrop(droppedDefects, totalSprintReportDefects, storyListWoDrop);
-//			sprintReportedBugsList = storyListWoDrop;
 			List<JiraIssue> subTaskBugs = jiraIssueRepository
 					.findLinkedDefects(mapOfFilters, totalNonBugIssues, uniqueProjectMap).stream()
-					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber()))
+					.collect(Collectors.toList());
 			List<JiraIssue> defectListWoDrop = new ArrayList<>();
 			getDefectsWithoutDrop(droppedDefects, subTaskBugs, defectListWoDrop);
 
@@ -237,9 +235,10 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 							subTaskBugs.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
 							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-//			resultListMap.put(SPRINT_REPORTED_BUGS, KpiHelperService.excludePriorityAndIncludeRCA(sprintReportedBugsList, projectWisePriority, projectWiseRCA));
-			resultListMap.put(TOTAL_DEFECTS, KpiHelperService.excludePriorityAndIncludeRCA(storyListWoDrop, projectWisePriority, projectWiseRCA));
-			resultListMap.put(SUB_TASK_BUGS, KpiHelperService.excludePriorityAndIncludeRCA(defectListWoDrop, projectWisePriority, projectWiseRCA));
+			resultListMap.put(TOTAL_DEFECTS, KpiHelperService.excludePriorityAndIncludeRCA(storyListWoDrop,
+					projectWisePriority, projectWiseRCA));
+			resultListMap.put(SUB_TASK_BUGS, KpiHelperService.excludePriorityAndIncludeRCA(defectListWoDrop,
+					projectWisePriority, projectWiseRCA));
 			resultListMap.put(DEFECT_HISTORY, defectsCustomHistory);
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
 			resultListMap.put(PROJECT_WISE_DEFECT_REMOVEL_STATUS, projectWiseDefectRemovelStatus);
