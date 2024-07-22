@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  *    http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,9 +16,6 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
@@ -36,6 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -76,6 +74,11 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService.addPriorityProjectWise;
+import static com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService.addRCAProjectWise;
+import static com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService.getDefectsWithoutDrop;
+import static com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService.getDroppedDefectsFilters;
+
 /**
  * This class calculated KPI value for DRE and its trend analysis.
  * 
@@ -86,7 +89,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
-	private static final String SEPARATOR_ASTERISK = "*************************************";
 	private static final String CLOSED_DEFECT_DATA = "closedBugKey";
 	private static final String TOTAL_DEFECT_DATA = "totalBugKey";
 	private static final String REMOVED = "Closed Defects";
@@ -159,14 +161,21 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		List<String> basicProjectConfigIds = new ArrayList<>();
 		Map<String, List<String>> projectWiseDefectRemovelStatus = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		List<JiraIssue> sprintReportedBugsList;
+//		List<JiraIssue> sprintReportedBugsList;
 		List<String> defectType = new ArrayList<>();
+		Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
+		Map<String, List<String>> projectWisePriority = new HashMap<>();
+		Map<String, List<String>> configPriority = customApiConfig.getPriority();
+		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+
+			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityKPI34());
+			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForKPI34());
 
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
@@ -177,6 +186,9 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), defectType);
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+			getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
+					fieldMapping.getResolutionTypeForRejectionKPI34(),
+					fieldMapping.getJiraDefectRejectionStatusKPI34());
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
@@ -211,22 +223,23 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
 			List<JiraIssue> totalSprintReportDefects = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
 					uniqueProjectMap);
-			sprintReportedBugsList = totalSprintReportDefects;
+			List<JiraIssue> storyListWoDrop = new ArrayList<>();// not contain droppedDefects
+			getDefectsWithoutDrop(droppedDefects, totalSprintReportDefects, storyListWoDrop);
+//			sprintReportedBugsList = storyListWoDrop;
 			List<JiraIssue> subTaskBugs = jiraIssueRepository
 					.findLinkedDefects(mapOfFilters, totalNonBugIssues, uniqueProjectMap).stream()
 					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+			List<JiraIssue> defectListWoDrop = new ArrayList<>();
+			getDefectsWithoutDrop(droppedDefects, subTaskBugs, defectListWoDrop);
 
-			ArrayList<JiraIssue> totalDefects = new ArrayList<>(subTaskBugs);
 			List<JiraIssueCustomHistory> defectsCustomHistory = jiraIssueCustomHistoryRepository
 					.findByStoryIDInAndBasicProjectConfigIdIn(
 							subTaskBugs.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
 							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-			setDbQueryLogger(sprintDetails, totalDefects, totalSprintReportDefects);
-
-			resultListMap.put(SPRINT_REPORTED_BUGS, sprintReportedBugsList);
-			resultListMap.put(TOTAL_DEFECTS, totalSprintReportDefects);
-			resultListMap.put(SUB_TASK_BUGS, subTaskBugs);
+//			resultListMap.put(SPRINT_REPORTED_BUGS, KpiHelperService.excludePriorityAndIncludeRCA(sprintReportedBugsList, projectWisePriority, projectWiseRCA));
+			resultListMap.put(TOTAL_DEFECTS, KpiHelperService.excludePriorityAndIncludeRCA(storyListWoDrop, projectWisePriority, projectWiseRCA));
+			resultListMap.put(SUB_TASK_BUGS, KpiHelperService.excludePriorityAndIncludeRCA(defectListWoDrop, projectWisePriority, projectWiseRCA));
 			resultListMap.put(DEFECT_HISTORY, defectsCustomHistory);
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
 			resultListMap.put(PROJECT_WISE_DEFECT_REMOVEL_STATUS, projectWiseDefectRemovelStatus);
@@ -271,7 +284,6 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				kpiRequest);
 		List<JiraIssue> totalDefects = (List<JiraIssue>) storyDefectDataListMap.get(TOTAL_DEFECTS);
 		List<JiraIssue> subTaskBugs = (List<JiraIssue>) storyDefectDataListMap.get(SUB_TASK_BUGS);
-		List<JiraIssue> sprintReportedBugs = (List<JiraIssue>) storyDefectDataListMap.get(SPRINT_REPORTED_BUGS);
 		List<JiraIssueCustomHistory> defectsCustomHistory = (List<JiraIssueCustomHistory>) storyDefectDataListMap.get(DEFECT_HISTORY);
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) storyDefectDataListMap.get(SPRINT_DETAILS);
 		Map<String, List<String>> projectWiseDefectRemovalStatus = (Map<String, List<String>>) storyDefectDataListMap.get(PROJECT_WISE_DEFECT_REMOVEL_STATUS);
@@ -287,7 +299,6 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				List<JiraIssue> sprintWiseClosedDefectList = new ArrayList<>();
 				List<JiraIssue> sprintWiseTotaldDefectList = new ArrayList<>();
 
-				List<String> totalStoryIdList = new ArrayList<>();
 				Map<String, Object> subCategoryWiseClosedAndTotalDefectList = new HashMap<>();
 
 				List<String> completedSprintIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
@@ -301,7 +312,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 						.collect(Collectors.toList());
 				subCategoryWiseTotalDefectList.addAll(totalSubTask);
 
-				List<JiraIssue> subCategoryWiseClosedDefectList = sprintReportedBugs.stream()
+				List<JiraIssue> subCategoryWiseClosedDefectList = totalDefects.stream()
 						.filter(f -> completedSprintIssues.contains(f.getNumber()) && CollectionUtils
 								.emptyIfNull(projectWiseDefectRemovalStatus.get(f.getBasicProjectConfigId())).stream()
 								.anyMatch(s -> s.equalsIgnoreCase(f.getJiraStatus())))
@@ -328,8 +339,6 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				Pair<String, String> sprint = Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID());
 				sprintWiseCloseddDefectListMap.put(sprint, sprintWiseClosedDefectList);
 				sprintWiseTotaldDefectListMap.put(sprint, sprintWiseTotaldDefectList);
-
-				setSprintWiseLogger(sprint, totalStoryIdList, sprintWiseTotaldDefectList, sprintWiseClosedDefectList);
 
 				sprintWiseDREMap.put(sprint, dreForCurrentLeaf);
 				setHowerMap(sprintWiseHowerMap, sprint, sprintWiseClosedDefectList, sprintWiseTotaldDefectList);
@@ -367,7 +376,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
 			dataCount.setValue(dreForCurrentLeaf);
 			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
+			mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
 			trendValueList.add(dataCount);
 
 		});
@@ -380,56 +389,11 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
 			Map<String, JiraIssue> totalDefectList = new HashMap<>();
-			sprintWiseTotaldDefectList.stream().forEach(bugs -> totalDefectList.putIfAbsent(bugs.getNumber(), bugs));
+			sprintWiseTotaldDefectList.forEach(bugs -> totalDefectList.putIfAbsent(bugs.getNumber(), bugs));
 
 			KPIExcelUtility.populateDefectRelatedExcelData(sprintName, totalDefectList, sprintWiseClosedDefectList,
 					excelData, KPICode.DEFECT_REMOVAL_EFFICIENCY.getKpiId());
 
-		}
-	}
-
-	/**
-	 * Sets logger for DB data.
-	 * 
-	 * @param sprintDetails
-	 * @param totalDefectList
-	 * @param linkedStoryIds
-	 */
-	private void setDbQueryLogger(List<SprintDetails> sprintDetails, List<JiraIssue> totalDefectList,
-								  List<JiraIssue> linkedStoryIds) {
-
-		if (customApiConfig.getApplicationDetailedLogger().equalsIgnoreCase("on")) {
-			log.info(SEPARATOR_ASTERISK);
-			log.info("************* DRE (dB) *******************");
-			log.info("SprintDetails[{}]: {}", sprintDetails.size(), sprintDetails);
-			log.info("TotalDefectList LinkedWith -> story[{}]: {}", totalDefectList.size(), linkedStoryIds);
-			log.info(SEPARATOR_ASTERISK);
-			log.info("******************X----X*******************");
-		}
-	}
-
-	/**
-	 * Sets logger for sprint level KPI data.
-	 * 
-	 * @param sprint
-	 * @param storyIdList
-	 * @param sprintWiseTotaldDefectList
-	 * @param sprintWiseClosedDefectList
-	 */
-	private void setSprintWiseLogger(Pair<String, String> sprint, List<String> storyIdList,
-			List<JiraIssue> sprintWiseTotaldDefectList, List<JiraIssue> sprintWiseClosedDefectList) {
-
-		if (customApiConfig.getApplicationDetailedLogger().equalsIgnoreCase("on")) {
-			log.debug(SEPARATOR_ASTERISK);
-			log.debug("************* SPRINT WISE DRE *******************");
-			log.debug("Sprint: {}", sprint.getValue());
-			log.debug("Story[{}]: {}", storyIdList.size(), storyIdList);
-			log.debug("SprintWiseTotaldDefectList[{}]: {}", sprintWiseTotaldDefectList.size(),
-					sprintWiseTotaldDefectList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
-			log.debug("SprintWiseClosedDefectList[{}]: {}", sprintWiseClosedDefectList.size(),
-					sprintWiseClosedDefectList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
-			log.debug(SEPARATOR_ASTERISK);
-			log.debug(SEPARATOR_ASTERISK);
 		}
 	}
 

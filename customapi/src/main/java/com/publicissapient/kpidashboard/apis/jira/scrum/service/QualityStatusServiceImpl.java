@@ -157,6 +157,10 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(defectType));
+				if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI133())) {
+					mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
+							CommonUtils.convertToPatternList(fieldMapping.getJiraLabelsKPI133()));
+				}
 				uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
 				mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 						Collections.singletonList(basicProjectConfigId));
@@ -170,13 +174,13 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 									sprintDetails.getTotalIssues(), filteredJiraIssue);
 
 					sprintReportIssueList = getTypeNameFilterJiraIssueList(defectTypes, typeNameList,
-							sprintReportIssueList);
+							sprintReportIssueList);//has present sprint issue based on getJiraItrQSIssueTypeKPI133 and defectType
 
 					// fetched all defects which is linked to current sprint report stories
 					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
 							totalSprintReportStories, uniqueProjectMap);
 
-					// filter defects which is issue type not coming in sprint report
+					// filter defects whose issue type not coming in sprint report
 					List<JiraIssue> subTaskDefects = linkedDefects.stream()
 							.filter(jiraIssue -> !totalSprintReportDefects.contains(jiraIssue.getNumber()))
 							.collect(Collectors.toList());
