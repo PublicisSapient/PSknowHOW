@@ -3230,5 +3230,16 @@
       "definition": "This field is used to identify Dependency Issue type."
     },
     "mandatory": true
+  },
+  {
+    "fieldName" : "jiraStoryCategoryKpi40",
+    "fieldLabel" : "Issue type to identify Story category",
+    "fieldType" : "chips",
+    "fieldCategory" : "Issue_Type",
+    "section" : "Issue Types Mapping",
+    "tooltip" : {
+      "definition" : "All issue types that are used as/equivalent to Story."
+    },
+    "mandatory" : true
   }
 ]
