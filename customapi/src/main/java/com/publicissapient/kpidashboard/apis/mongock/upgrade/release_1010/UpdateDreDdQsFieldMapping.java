@@ -25,6 +25,7 @@ import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author purgupta2
@@ -46,6 +47,8 @@ public class UpdateDreDdQsFieldMapping {
 	private static final String SECTION = "section";
 	private static final String SECTION_DEF = "WorkFlow Status Mapping";
 	private static final Object CHIPS = "chips";
+	private static final String RESOLUTION_TYPE = "resolutionTypeForRejectionKPI34";
+	private static final String REJECTION_STATUS = "jiraDefectRejectionStatusKPI34";
 
 	private final MongoTemplate mongoTemplate;
 
@@ -56,6 +59,7 @@ public class UpdateDreDdQsFieldMapping {
 	@Execution
 	public void execution() {
 		updateFieldMappingStructure();
+		insertFieldMappingVal();
 	}
 
 	public void updateFieldMappingStructure() {
@@ -71,7 +75,7 @@ public class UpdateDreDdQsFieldMapping {
 				.append(TOOL_TIP, new Document(DEFINITION, TOOL_TIP_DEF));
 
 		// added fieldmapping in DRE
-		Document resolutionTypeForRejectionKPI34 = new Document().append(FIELD_NAME, "resolutionTypeForRejectionKPI34")
+		Document resolutionTypeForRejectionKPI34 = new Document().append(FIELD_NAME, RESOLUTION_TYPE)
 				.append(FIELD_LABEL, "Resolution type to be excluded").append(FIELD_TYPE, CHIPS)
 				.append(SECTION, SECTION_DEF).append(TOOL_TIP, new Document(DEFINITION,
 						"Resolutions for defects which are to be excluded from 'Defect Removal Efficiency' calculation."));
@@ -91,7 +95,7 @@ public class UpdateDreDdQsFieldMapping {
 						new Document(LABEL, "p2").append(VALUE, "p2"), new Document(LABEL, "p3").append(VALUE, "p3"),
 						new Document(LABEL, "p4").append(VALUE, "p4"), new Document(LABEL, "p5").append(VALUE, "p5")));
 
-		Document jiraDefectRejectionStatusKPI34 = new Document().append(FIELD_NAME, "jiraDefectRejectionStatusKPI34")
+		Document jiraDefectRejectionStatusKPI34 = new Document().append(FIELD_NAME, REJECTION_STATUS)
 				.append(FIELD_LABEL, "Status to be excluded").append(FIELD_TYPE, "text")
 				.append(FIELD_CATEGORY, "workflow").append(SECTION, SECTION_DEF)
 				.append(TOOL_TIP, new Document(DEFINITION, "All statuses which are considered for Rejecting defects"));
@@ -101,18 +105,45 @@ public class UpdateDreDdQsFieldMapping {
 						jiraDefectRejectionStatusKPI34, resolutionTypeForRejectionKPI34));
 	}
 
+	public void insertFieldMappingVal() {
+		var fieldMapping = mongoTemplate.getCollection("field_mapping");
+
+		// Define the new values
+		var newValues = new Document();
+		newValues.append(REJECTION_STATUS, "Rejected");
+		newValues.append(RESOLUTION_TYPE,
+				List.of("Invalid", "Duplicate", "Unrequired", "Cannot Reproduce", "Won't Fix"));
+
+		// Define the update operation
+		var update = new Document();
+		update.append("$set", newValues);
+
+		// Execute the update
+		fieldMapping.updateMany(new Document(), update);
+	}
+
 	@RollbackExecution
 	public void rollback() {
 		deleteFieldMappingRollback();
+		rollbackInsertFieldMappingVal();
 	}
 
 	private void deleteFieldMappingRollback() {
 		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE)
 				.deleteMany(Filters.or(Filters.eq(FIELD_NAME, "jiraLabelsQAKPI111"),
 						Filters.eq(FIELD_NAME, "jiraLabelsKPI133"), Filters.eq(FIELD_NAME, "includeRCAForKPI34"),
-						Filters.eq(FIELD_NAME, "defectPriorityKPI34"),
-						Filters.eq(FIELD_NAME, "jiraDefectRejectionStatusKPI34"),
-						Filters.eq(FIELD_NAME, "resolutionTypeForRejectionKPI34")));
+						Filters.eq(FIELD_NAME, "defectPriorityKPI34"), Filters.eq(FIELD_NAME, REJECTION_STATUS),
+						Filters.eq(FIELD_NAME, RESOLUTION_TYPE)));
+	}
+
+	public void rollbackInsertFieldMappingVal() {
+		// Define the update operation to remove the field
+		var update = new Document();
+		update.append("$unset", new Document(REJECTION_STATUS, ""));
+		update.append("$unset", new Document(RESOLUTION_TYPE, ""));
+
+		// Execute the update to remove the field from all documents
+		mongoTemplate.getCollection("field_mapping").updateMany(new Document(), update);
 	}
 
 }
