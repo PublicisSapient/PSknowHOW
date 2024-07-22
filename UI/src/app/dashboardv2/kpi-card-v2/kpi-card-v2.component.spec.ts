@@ -810,5 +810,65 @@ describe('KpiCardV2Component', () => {
     expect(component.hasData('field2')).toBe(true);
   });
 
+  it("should return execution date of processor",()=>{
+    const tracelog = [{
+      processorName : 'Jira',
+      executionSuccess : false,
+      executionEndedAt : '2023-01-04T06:02:20'
+    }]
+    spyOn(component,'findTraceLogForTool').and.returnValue(tracelog);
+    const resp = component.showExecutionDate('Jira')
+    expect(resp).not.toBe("NA")
+  })
+  
+  it('should find tracelog for specfic tool',()=>{
+    spyOn(sharedService,'getProcessorLogDetails').and.returnValue([{
+      processorName : 'jira',
+      executionSuccess : false,
+      executionEndedAt : '2023-01-04T06:02:20'
+    }])
+    const toolDetails = component.findTraceLogForTool("jira");
+    expect(toolDetails).toBeDefined();
+  })
+
+  it('should handle Overall values in filter1 correctly for non kpi72', () => {
+    const filterData = {
+      kpi7: {
+        filter: ['OtherFilters','Overall'],
+        filter1: ['Overall'],
+        filter2: ['Other'],
+        
+      },
+      kpi113: {
+        filter1: ['Specific'],
+        filter2: ['Other']
+      }
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi7',
+      kpiName: 'Value delivered (Cost of Delay)',
+      isEnabled: true,
+      order: 28,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi7',
+      },
+      shown: true
+    };
+
+    sharedService.setKpiSubFilterObj(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+
+    expect(component.kpiSelectedFilterObj).toEqual(filterData);
+    expect(component.filterOptions["filter1"]).toEqual(['Overall']);
+  });
+
+  it('should show tooltip',()=>{
+    component.showTooltip(true);
+    expect(component.isTooltip).toBeTrue();
+  });
+
 
 });
