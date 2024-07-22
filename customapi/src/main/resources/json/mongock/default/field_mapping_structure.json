@@ -879,15 +879,6 @@
     }
   },
   {
-    "fieldName": "resolutionTypeForRejectionKPI34",
-    "fieldLabel": "Resolution type to be excluded",
-    "fieldType": "chips",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "Resolutions for defects which are to be excluded from 'Defect Seepage rate' calculation."
-    }
-  },
-  {
     "fieldName": "jiraDefectRejectionStatusKPI35",
     "fieldLabel": "Status to be excluded",
     "fieldType": "text",
