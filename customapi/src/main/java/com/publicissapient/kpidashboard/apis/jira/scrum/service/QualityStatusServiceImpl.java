@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,21 +147,14 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 				Set<String> totalSprintReportDefects = new HashSet<>();
 				Set<String> totalSprintReportStories = new HashSet<>();
 				sprintDetails.getTotalIssues().stream().forEach(sprintIssue -> {
-					if (defectTypes.contains(sprintIssue.getTypeName())) {
-						totalSprintReportDefects.add(sprintIssue.getNumber());
-					} else {
-						totalSprintReportStories.add(sprintIssue.getNumber());
-					}
+					seperateDefectAndStories(sprintIssue, defectTypes, totalSprintReportDefects, totalSprintReportStories);
 				});
 
 				Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(defectType));
-				if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI133())) {
-					mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
-							CommonUtils.convertToPatternList(fieldMapping.getJiraLabelsKPI133()));
-				}
+				labelFilter(fieldMapping, mapOfProjectFilters);
 				uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
 				mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 						Collections.singletonList(basicProjectConfigId));
@@ -220,6 +214,21 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 		}
 		return resultListMap;
 
+	}
+
+	private static void labelFilter(FieldMapping fieldMapping, Map<String, Object> mapOfProjectFilters) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI133())) {
+			mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(fieldMapping.getJiraLabelsKPI133()));
+		}
+	}
+
+	private static void seperateDefectAndStories(SprintIssue sprintIssue, List<String> defectTypes, Set<String> totalSprintReportDefects, Set<String> totalSprintReportStories) {
+		if (defectTypes.contains(sprintIssue.getTypeName())) {
+			totalSprintReportDefects.add(sprintIssue.getNumber());
+		} else {
+			totalSprintReportStories.add(sprintIssue.getNumber());
+		}
 	}
 
 	private static List<JiraIssue> getJiraIssueLinkedStories(List<String> typeNameList,
