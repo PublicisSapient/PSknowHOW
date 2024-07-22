@@ -432,6 +432,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONKPI14, new ArrayList<>()));
 		fieldMapping.setResolutionTypeForRejectionQAKPI111(
 				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONQAKPI111, new ArrayList<>()));
+		fieldMapping.setResolutionTypeForRejectionKPI34(
+				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONKPI34, new ArrayList<>()));
 		fieldMapping.setResolutionTypeForRejectionKPI133(
 				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONKPI133, new ArrayList<>()));
 		fieldMapping.setResolutionTypeForRejectionKPI82(
@@ -490,6 +492,10 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setJiraDefectRejectionStatusQAKPI111(
 				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSQAKPI111))
 						? workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSQAKPI111).get(0)
+						: null);
+		fieldMapping.setJiraDefectRejectionStatusKPI34(
+				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI34))
+						? workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI34).get(0)
 						: null);
 		fieldMapping.setJiradefecttype(issueTypeMap.getOrDefault(CommonConstant.JIRADEFECTTYPE, new ArrayList<>()));
 		fieldMapping.setJiraDefectClosedStatusKPI137(
@@ -673,6 +679,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setResolutionTypeForRejectionKPI14(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionQAKPI111(
+					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
+			fieldMapping.setResolutionTypeForRejectionKPI34(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionKPI133(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
