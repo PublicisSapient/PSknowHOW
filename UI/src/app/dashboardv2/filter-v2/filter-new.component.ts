@@ -282,8 +282,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         } else {
           stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
         }
-        this.handlePrimaryFilterChange(stateFilters['primary_level']);
-        this.helperService.setBackupOfFilterSelectionState({ 'primary_level': stateFilters['primary_level'] });
+        console.log(stateFilters);
+        Object.keys(stateFilters['additional_level']).forEach((level) => {
+          Object.keys(stateFilters['additional_level'][level]).forEach(key => {
+            stateFilters['additional_level'][level][key] = stateFilters['additional_level'][level][key].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
+          })
+        });
+        this.handlePrimaryFilterChange(stateFilters);
+        this.helperService.setBackupOfFilterSelectionState(stateFilters);
       }
     }
   }
