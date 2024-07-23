@@ -351,7 +351,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       if (this.selectedTab.toLowerCase() !== 'developer') {
         this.additionalFiltersArr = [];
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
-        this.populateAdditionalFilters(event);
+        if (event && event[0] && event[0].labelName.toLowerCase() === 'project') {
+          this.populateAdditionalFilters(event);
+        }
       }
       if (event.length === 1) {
         this.getProcessorsTraceLogsForProject();
@@ -441,7 +443,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
     } else if (event && event['additional_level']) {
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
-        this.service.setSelectedTrends(event['primary_level']);
+        this.service.setSelectedTrends(event['0']);
       } else {
         this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
       }
@@ -449,18 +451,18 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       if (this.selectedTab.toLowerCase() !== 'developer') {
         setTimeout(() => {
           this.additionalFiltersArr = [];
-          this.populateAdditionalFilters(event['primary_level']);
+          this.populateAdditionalFilters(event['0']);
         }, 100);
       }
-      Object.keys(event['additional_level']).forEach((key) => {
+      Object.keys(event['additional_level']).forEach((key, index) => {
         if (Array.isArray(event['additional_level'][key])) {
           if (event['additional_level'][key]?.length) {
-            this.handleAdditionalChange(event['additional_level'][key]);
+            this.handleAdditionalChange({ [index]: event['additional_level'][key] });
           }
         } else {
-          Object.keys(event['additional_level'][key]).forEach(subKey => {
+          Object.keys(event['additional_level'][key]).forEach((subKey, index2) => {
             if (event['additional_level'][key][subKey]?.length) {
-              this.handleAdditionalChange(event['additional_level'][key][subKey]);
+              this.handleAdditionalChange({ [index2]: event['additional_level'][key][subKey] });
             }
           });
         }
@@ -506,11 +508,23 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handleAdditionalChange(event) {
-    this.previousFilterEvent['additional_level'] = event;
+    let level = Object.keys(event)[0];
+    event = event[level];
     if (event && event?.length) {
+      if (!this.previousFilterEvent['additional_level']) {
+        this.previousFilterEvent['additional_level'] = {};
+        this.previousFilterEvent['additional_level']['level'] = {};
+      }
+      this.previousFilterEvent['additional_level']['level'][event[0].labelName] = event;
       this.service.setSprintForRnR(event[event.length - 1])
     }
     if (!event?.length) {
+      this.filterApplyData['selectedMap'][level] = [];
+      delete this.previousFilterEvent['additional_level']['level'][level];
+      if (!Object.keys(this.previousFilterEvent['additional_level']['level'])?.length) {
+        delete this.previousFilterEvent['additional_level'];
+      }
+
       this.handlePrimaryFilterChange(this.previousFilterEvent);
       return;
     }
@@ -565,53 +579,55 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   populateAdditionalFilters(event) {
-    let selectedProjectIds;
-    if (event && event.length && event[0].labelName === 'project') {
-      selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
-    } else {
-      selectedProjectIds = [...new Set(event.map((item) => item.parentId))];
-    }
-    this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
-      this.additionalFiltersArr['filter' + (index + 1)] = [];
-
-      let allFilters = this.filterDataArr[this.selectedType] && this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] ? this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] : [];
-      selectedProjectIds.forEach(nodeId => {
-        if (allFilters?.length) {
-          this.additionalFiltersArr['filter' + (index + 1)].push(...allFilters?.filter((filterItem) => {
-            let parentId = '';
-            if (addtnlFilter.defaultLevel.labelName === 'sqd' && !this.kanban) {
-              parentId = filterItem.parentId.substring(filterItem.parentId.indexOf('_') + 1, filterItem.parentId.length)
-            } else {
-              parentId = filterItem.parentId;
-            }
-            return parentId === nodeId
-          })
-          );
-        } else {
-          this.additionalFiltersArr['filter' + (index + 1)] = [];
-        }
-      });
-
-      // make arrays unique
-      let uniqueIds = new Set();
-      this.additionalFiltersArr['filter' + (index + 1)].forEach(element => {
-        uniqueIds.add(element.nodeId);
-      });
-      let uniqueIdsArr = Array.from(uniqueIds);
-      let uniqueObjArr = [];
-      for (let uniqueId of uniqueIdsArr) {
-        let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)].filter(f => f.nodeId === uniqueId)[0];
-        uniqueObjArr.push({
-          ...uniqueObj
-        });
-        // continue;
+    if (event?.length) {
+      let selectedProjectIds;
+      if (event && event.length && event[0].labelName === 'project') {
+        selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
+      } else {
+        selectedProjectIds = [...new Set(event.map((item) => item.parentId))];
       }
-      this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
-    });
-    if (this.selectedTab !== 'iteration') {
-      this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
+      this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
+        this.additionalFiltersArr['filter' + (index + 1)] = [];
+
+        let allFilters = this.filterDataArr[this.selectedType] && this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] ? this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] : [];
+        selectedProjectIds.forEach(nodeId => {
+          if (allFilters?.length) {
+            this.additionalFiltersArr['filter' + (index + 1)].push(...allFilters?.filter((filterItem) => {
+              let parentId = '';
+              if (addtnlFilter.defaultLevel.labelName === 'sqd' && !this.kanban) {
+                parentId = filterItem.parentId.substring(filterItem.parentId.indexOf('_') + 1, filterItem.parentId.length)
+              } else {
+                parentId = filterItem.parentId;
+              }
+              return parentId === nodeId
+            })
+            );
+          } else {
+            this.additionalFiltersArr['filter' + (index + 1)] = [];
+          }
+        });
+
+        // make arrays unique
+        let uniqueIds = new Set();
+        this.additionalFiltersArr['filter' + (index + 1)].forEach(element => {
+          uniqueIds.add(element.nodeId);
+        });
+        let uniqueIdsArr = Array.from(uniqueIds);
+        let uniqueObjArr = [];
+        for (let uniqueId of uniqueIdsArr) {
+          let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)].filter(f => f.nodeId === uniqueId)[0];
+          uniqueObjArr.push({
+            ...uniqueObj
+          });
+          // continue;
+        }
+        this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
+      });
+      if (this.selectedTab !== 'iteration') {
+        this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
+      }
+      this.service.setAdditionalFilters(this.additionalFiltersArr);
     }
-    this.service.setAdditionalFilters(this.additionalFiltersArr);
   }
 
   getProcessorsTraceLogsForProject() {
@@ -681,7 +697,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   compileGAData(selectedFilterArray) {
-    if(selectedFilterArray['additional_level']) {
+    if (selectedFilterArray['additional_level']) {
       selectedFilterArray = selectedFilterArray['additional_level'].level[Object.keys(selectedFilterArray['additional_level'].level)[0]];
     }
     const gaArray = selectedFilterArray?.map((item) => {

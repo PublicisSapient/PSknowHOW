@@ -101,7 +101,7 @@ export class AdditionalFilterComponent implements OnChanges {
             let selectedAdditionalFilterLevel = e && e[i] && e[i][0] ? e[i][0]['labelName'] : '';
             obj['level'] = obj['level'] ? obj['level'] : {};
             obj['level'][selectedAdditionalFilterLevel] = e[i] ? e[i] : this.stateFilters['level'][Object.keys(this.stateFilters['level'])[i]];
-            this.onAdditionalFilterChange.emit(e[i]);
+            this.onAdditionalFilterChange.emit({[selectedAdditionalFilterLevel] : e[i]});
           }
         }
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });
