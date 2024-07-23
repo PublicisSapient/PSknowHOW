@@ -263,7 +263,9 @@ export class IterationComponent implements OnInit, OnDestroy {
                 this.timeRemaining = this.calcBusinessDays(today, endDate);
 
                 this.groupJiraKpi(kpiIdsForCurrentBoard);
-                this.getKpiCommentsCount();
+                if ($event.filterApplyData['label'] !== 'sqd') {
+                  this.getKpiCommentsCount();
+                }
               }
             }
           }
@@ -393,7 +395,7 @@ export class IterationComponent implements OnInit, OnDestroy {
 
     /** Get recommendations flag */
     this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
-        this.isRecommendationsEnabled = item;
+      this.isRecommendationsEnabled = item;
     }));
 
     this.service.getEmptyData().subscribe((val) => {
