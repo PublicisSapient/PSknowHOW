@@ -56,9 +56,9 @@
           <ng-container *ngFor="let board of boardNameArr">
             <ng-container *featureFlag="board.boardName">
               <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100"
-                *ngIf="(board.boardName?.toLowerCase() !== 'kpi maturity') || (board.boardName?.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
+                *ngIf="(board.boardName?.toLowerCase() !== 'maturity') || (board.boardName?.toLowerCase() === 'maturity' && kpiConfigData['kpi989'])">
                 <a class="nav-link w-100"
-                  [routerLink]="board.boardName?.toLowerCase() === 'kpi maturity' ? 'Maturity' : board.link"
+                  [routerLink]="board.link"
                   routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
                   [ngClass]="{'active': selectedTab?.toLowerCase() == board.boardName?.toLowerCase()}"
                   (click)="selectTab(board.boardName)">

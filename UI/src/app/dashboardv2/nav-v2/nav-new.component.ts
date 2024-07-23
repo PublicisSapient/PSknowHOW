@@ -25,7 +25,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-
+    this.selectedTab = this.selectedTab?.split(' ').join('-').toLowerCase();
     this.subscriptions.push(this.sharedService.onTypeOrTabRefresh.subscribe((data) => {
       this.selectedType = data.selectedType ? data.selectedType : 'scrum';
       this.sharedService.setSelectedType(this.selectedType)
@@ -76,7 +76,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
       this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
     }
     if(this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
-       || this.selectedTab === 'dora' || this.selectedTab === 'Maturity') {
+       || this.selectedTab === 'dora' || this.selectedTab === 'maturity') {
       this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
     }
     this.router.navigate(['/dashboard/' + obj['boardSlug']]);

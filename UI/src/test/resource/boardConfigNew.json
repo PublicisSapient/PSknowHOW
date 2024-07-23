@@ -8,7 +8,7 @@
             {
                 "boardId": 1,
                 "boardName": "My KnowHOW",
-                "boardSlug": "mydashboard",
+                "boardSlug": "my-knowhow",
                 "kpis": [
                     {
                         "kpiId": "kpi14",
@@ -1764,8 +1764,8 @@
             },
             {
                 "boardId": 16,
-                "boardName": "KPI Maturity",
-                "boardSlug": "Maturity",
+                "boardName": "Maturity",
+                "boardSlug": "maturity",
 
                 "filters": {
                     "projectTypeSwitch": {

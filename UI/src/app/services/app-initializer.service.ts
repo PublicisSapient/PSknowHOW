@@ -48,7 +48,7 @@ export class AppInitializerService {
         children: [
             { path: '', redirectTo: 'iteration', pathMatch: 'full' },
             {
-                path: 'mydashboard', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'my-knowhow', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "My Dashboard"
                 }
@@ -66,7 +66,7 @@ export class AppInitializerService {
                 }
             },
             {
-                path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "Maturity"
                 }
@@ -113,7 +113,7 @@ export class AppInitializerService {
         children: [
             { path: '', redirectTo: 'iteration', pathMatch: 'full' },
             {
-                path: 'mydashboard', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'my-knowhow', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "My Dashboard"
                 }
@@ -131,7 +131,7 @@ export class AppInitializerService {
                 }
             },
             {
-                path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                     feature: "Maturity"
                 }

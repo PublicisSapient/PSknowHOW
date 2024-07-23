@@ -212,7 +212,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.selectedTab = this.service.getSelectedTab() || 'mydashboard';
+    this.selectedTab = this.service.getSelectedTab() || 'my-knowhow';
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.service.setShowTableView(this.showChart);
     this.getNotification();
@@ -444,7 +444,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
-    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'mydashboard' || this.selectedTab?.toLowerCase() === 'developer') {
+    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'my-knowhow' || this.selectedTab?.toLowerCase() === 'developer') {
       this.allowMultipleSelection = false;
     } else {
       this.allowMultipleSelection = true;
@@ -840,17 +840,17 @@ this.resetAddtionalFIlters();
 
   checkIfMaturityTabHidden() {
     const maturityBoard = this.kpiListData['others']?.find((board) =>
-      board.boardName === 'Kpi Maturity');
+      board.boardName === 'Maturity');
     return (maturityBoard && maturityBoard.kpis[0].shown) ? false : true;
   }
 
   navigateToSelectedTab() {
     if (this.selectedTab !== 'Config' && Object.keys(this.kpiListData)?.length > 0) {
-      if (this.selectedTab === 'Maturity') {
+      if (this.selectedTab?.toLowerCase() === 'maturity') {
         if (!this.checkIfMaturityTabHidden()) {
           this.backToDashboardLoader = false
           this.router.navigateByUrl(
-            `/dashboard/Maturity`,
+            `/dashboard/maturity`,
           );
           return;
         } else {
@@ -885,7 +885,7 @@ this.resetAddtionalFIlters();
       })
       if(kpisShownCount <= 0){
         this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
-        this.service.setSelectedTab(this.selectedTab);
+        this.service.setSelectedTab(this.selectedTab?.split(' ').join('-').toLowerCase());
         this.backToDashboardLoader = false
         this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
       }

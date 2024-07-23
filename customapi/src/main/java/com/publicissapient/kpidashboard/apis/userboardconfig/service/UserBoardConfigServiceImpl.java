@@ -617,8 +617,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		BoardDTO asPerCategoryBoard = new BoardDTO();
 		asPerCategoryBoard.setBoardId(boardId);
 		asPerCategoryBoard.setBoardName(boardName);
-		if (boardName.equalsIgnoreCase("Kpi Maturity"))
-			asPerCategoryBoard.setBoardSlug("Maturity");
+		if (boardName.equalsIgnoreCase("Maturity"))
+			asPerCategoryBoard.setBoardSlug("maturity");
 		else
 			asPerCategoryBoard.setBoardSlug(boardName.toLowerCase());
 		List<BoardKpisDTO> boardKpisList = new ArrayList<>();
@@ -649,7 +649,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		BoardDTO defaultBoard = new BoardDTO();
 		defaultBoard.setBoardId(boardId);
 		defaultBoard.setBoardName(boardName);
-		defaultBoard.setBoardSlug("mydashboard");
+		defaultBoard.setBoardSlug("my-knowhow");
 		List<BoardKpisDTO> boardKpisList = new ArrayList<>();
 		kpiMasterRepository.findByKanbanAndKpiCategoryNotIn(kanban, kpiCategory).stream()
 				.sorted(Comparator.comparing(KpiMaster::getDefaultOrder))

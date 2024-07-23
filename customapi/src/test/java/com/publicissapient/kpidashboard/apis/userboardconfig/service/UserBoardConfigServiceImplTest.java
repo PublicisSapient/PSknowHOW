@@ -572,9 +572,9 @@ public class UserBoardConfigServiceImplTest {
 	private Board createKpiMaturityBoard() {
 		Board board = new Board();
 		board.setBoardId(7);
-		board.setBoardName("Kpi Maturity");
+		board.setBoardName("Maturity");
 		List<BoardKpis> boardKpisList = new ArrayList<>();
-		boardKpisList.add(createKpi("kpi989", "Kpi Maturity", true, true, 1));
+		boardKpisList.add(createKpi("kpi989", "Maturity", true, true, 1));
 		board.setKpis(boardKpisList);
 		return board;
 	}

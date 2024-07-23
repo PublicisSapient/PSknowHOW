@@ -476,7 +476,7 @@ export class SharedService {
         if (kpiShownCount > 0) {
           boardNameArr.push({
             boardName: board?.boardName,
-            link: board?.boardName.toLowerCase().split(' ').join('-')
+            link: board?.boardSlug
           });
         }
       }

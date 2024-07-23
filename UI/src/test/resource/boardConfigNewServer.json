@@ -8,7 +8,7 @@
                 {
                     "boardId": 1,
                     "boardName": "My KnowHow",
-                    "boardSlug": "mydashboard",
+                    "boardSlug": "my-knowhow",
                     "kpis": [
                         {
                             "kpiId": "kpi14",
@@ -4356,7 +4356,7 @@
                 {
                     "boardId": 7,
                     "boardName": "My KnowHow",
-                    "boardSlug": "mydashboard",
+                    "boardSlug": "my-knowhow",
                     "kpis": [
                         {
                             "kpiId": "kpi55",
@@ -8066,7 +8066,7 @@
                 },
                 {
                     "boardId": 16,
-                    "boardName": "Kpi Maturity",
+                    "boardName": "Maturity",
                     "boardSlug": "maturity",
                     "kpis": [
                         {
