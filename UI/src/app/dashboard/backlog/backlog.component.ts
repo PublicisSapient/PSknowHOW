@@ -610,10 +610,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
           return { ...filterData, data: filterData.data.map(labelData => ({ ...labelData, value: labelData.value * labelData.value1 })) }
         });
 
-        kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
+        /** I don't think these below three lines will execute since return statement will take out from this flow */
+        // kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
 
-        kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value: (labelData.value1 > 0 ? Math.round(labelData.value / labelData.value1) : 0) }));
-        this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
+        // kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value: (labelData.value1 > 0 ? Math.round(labelData.value / labelData.value1) : 0) }));
+        // this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
       } else {
         this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
       }
