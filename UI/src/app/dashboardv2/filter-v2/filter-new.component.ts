@@ -339,6 +339,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     /** */
+
+    if (this.selectedTab.toLowerCase() !== 'developer') {
+      setTimeout(() => {
+        this.additionalFiltersArr = [];
+        this.populateAdditionalFilters(event['0']);
+      }, 100);
+    }
+
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
       // set selected projects(trends)
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
@@ -448,12 +456,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
       }
       this.previousFilterEvent['additional_level'] = event['additional_level'];
-      if (this.selectedTab.toLowerCase() !== 'developer') {
-        setTimeout(() => {
-          this.additionalFiltersArr = [];
-          this.populateAdditionalFilters(event['0']);
-        }, 100);
-      }
       Object.keys(event['additional_level']).forEach((key, index) => {
         if (Array.isArray(event['additional_level'][key])) {
           if (event['additional_level'][key]?.length) {
@@ -579,6 +581,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   populateAdditionalFilters(event) {
+    if(!Array.isArray(event)) {
+      event = [event];
+    }
     if (event?.length) {
       let selectedProjectIds;
       if (event && event.length && event[0].labelName === 'project') {
