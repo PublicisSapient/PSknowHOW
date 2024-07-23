@@ -35,17 +35,17 @@ public class UpdateDreDdQsFieldMapping {
 
 	public static final String FIELD_MAPPING_STRUCTURE = "field_mapping_structure";
 	public static final String FIELD_LABEL = "fieldLabel";
-	public static final String FIELD_LABEL_DEF = "Labels to identify issues to be included";
+	public static final String FIELD_LABEL_DEF = "Labels to filter issues in consideration";
 	public static final String FIELD_TYPE = "fieldType";
 	public static final String FIELD_NAME = "fieldName";
 	public static final String TOOL_TIP = "tooltip";
-	public static final String TOOL_TIP_DEF = "Calculation should only include those issues which have defined labels tagged.";
+	public static final String TOOL_TIP_DEF = "Only issues with specified labels will be considered";
 	public static final String DEFINITION = "definition";
 	public static final String LABEL = "label";
 	public static final String VALUE = "value";
 	private static final String FIELD_CATEGORY = "fieldCategory";
 	private static final String SECTION = "section";
-	private static final String SECTION_DEF = "WorkFlow Status Mapping";
+	private static final String SECTION_DEF = "Issue Types Mapping";
 	private static final Object CHIPS = "chips";
 	private static final String RESOLUTION_TYPE = "resolutionTypeForRejectionKPI34";
 	private static final String REJECTION_STATUS = "jiraDefectRejectionStatusKPI34";
@@ -67,38 +67,40 @@ public class UpdateDreDdQsFieldMapping {
 		// added fieldmapping in DD
 		Document jiraLabelsQAKPI111 = new Document().append(FIELD_NAME, "jiraLabelsQAKPI111")
 				.append(FIELD_LABEL, FIELD_LABEL_DEF).append(FIELD_TYPE, CHIPS).append(SECTION, SECTION_DEF)
+				.append(FIELD_CATEGORY,"Issue_Type")
 				.append(TOOL_TIP, new Document(DEFINITION, TOOL_TIP_DEF));
 
 		// added fieldmapping in QS
 		Document jiraLabelsKPI133 = new Document().append(FIELD_NAME, "jiraLabelsKPI133")
 				.append(FIELD_LABEL, FIELD_LABEL_DEF).append(FIELD_TYPE, CHIPS).append(SECTION, SECTION_DEF)
+				.append(FIELD_CATEGORY,"Issue_Type")
 				.append(TOOL_TIP, new Document(DEFINITION, TOOL_TIP_DEF));
 
 		// added fieldmapping in DRE
 		Document resolutionTypeForRejectionKPI34 = new Document().append(FIELD_NAME, RESOLUTION_TYPE)
 				.append(FIELD_LABEL, "Resolution type to be excluded").append(FIELD_TYPE, CHIPS)
 				.append(SECTION, SECTION_DEF).append(TOOL_TIP, new Document(DEFINITION,
-						"Resolutions for defects which are to be excluded from 'Defect Removal Efficiency' calculation."));
+						"Resolution types for defects that can be excluded from 'Defect Removal Efficiency' calculation"));
 
 		Document includeRCAForKPI34 = new Document().append(FIELD_NAME, "includeRCAForKPI34")
 				.append(FIELD_LABEL, "Root cause values to be included").append(FIELD_TYPE, CHIPS)
 				.append(SECTION, "Defects Mapping").append(TOOL_TIP, new Document(DEFINITION,
-						"Root cause reasons for defects which are to be included in 'DSR' calculation"));
+						"Root cause reasons for defects to be included In 'Defect Removal Efficiency' calculation"));
 
 		Document defectPriorityKPI34 = new Document().append(FIELD_NAME, "defectPriorityKPI34")
 				.append(FIELD_LABEL, "Priority to be excluded").append(FIELD_TYPE, "multiselect")
 				.append(SECTION, "Defects Mapping")
 				.append(TOOL_TIP,
 						new Document(DEFINITION,
-								"Priority values of defects which are to be excluded in 'DSR' calculation"))
+								"Priority values of defects that can be excluded from 'Defect Removal Efficiency' calculation"))
 				.append("options", Arrays.asList(new Document(LABEL, "p1").append(VALUE, "p1"),
 						new Document(LABEL, "p2").append(VALUE, "p2"), new Document(LABEL, "p3").append(VALUE, "p3"),
 						new Document(LABEL, "p4").append(VALUE, "p4"), new Document(LABEL, "p5").append(VALUE, "p5")));
 
 		Document jiraDefectRejectionStatusKPI34 = new Document().append(FIELD_NAME, REJECTION_STATUS)
-				.append(FIELD_LABEL, "Status to be excluded").append(FIELD_TYPE, "text")
+				.append(FIELD_LABEL, "Status to identify rejected defects").append(FIELD_TYPE, "text")
 				.append(FIELD_CATEGORY, "workflow").append(SECTION, SECTION_DEF)
-				.append(TOOL_TIP, new Document(DEFINITION, "All statuses which are considered for Rejecting defects"));
+				.append(TOOL_TIP, new Document(DEFINITION, "All workflow statuses used to reject defects"));
 
 		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE)
 				.insertMany(Arrays.asList(jiraLabelsQAKPI111, jiraLabelsKPI133, includeRCAForKPI34, defectPriorityKPI34,
