@@ -870,5 +870,46 @@ describe('KpiCardV2Component', () => {
     expect(component.isTooltip).toBeTrue();
   });
 
+  describe('handleClearAll', () => {
+    beforeEach(() => {
+      component.filterOptions = {
+        key1: 'value1',
+        key2: 'value2',
+        Key3: 'value3'
+      };
+      component.optionSelected = jasmine.createSpyObj('EventEmitter', ['emit']);
+    });
+  
+    it('should delete the matching key from filterOptions', () => {
+      component.handleClearAll('key2');
+      expect(component.filterOptions).toEqual({
+        key1: 'value1',
+        Key3: 'value3'
+      });
+    });
+  
+    it('should delete the matching key from filterOptions ignoring case', () => {
+      component.handleClearAll('KEY3');
+      expect(component.filterOptions).toEqual({
+        key1: 'value1',
+        key2: 'value2'
+      });
+    });
+  
+    it('should not delete any key if there is no match', () => {
+      component.handleClearAll('key4');
+      expect(component.filterOptions).toEqual({
+        key1: 'value1',
+        key2: 'value2',
+        Key3: 'value3'
+      });
+    });
+  
+    it('should emit the optionSelected event with ["Overall"]', () => {
+      component.handleClearAll('key1');
+      expect(component.optionSelected.emit).toHaveBeenCalledWith(['Overall']);
+    });
+  });
+
 
 });
