@@ -33,7 +33,8 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if ((!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue)) ||
       ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) ||
-        (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange))) {
+        (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange)) ||
+        (changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange)) {
       this.applyDefaultFilters();
       return;
     }
@@ -117,10 +118,10 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
           this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
         }
       }
-      if (!this.stateFilters['additional_level']) {
+      // if (!this.stateFilters['additional_level']) {
         this.applyPrimaryFilters({});
         this.setProjectAndLevelBackupBasedOnSelectedLevel();
-      }
+      // }
     }, 100);
   }
 
