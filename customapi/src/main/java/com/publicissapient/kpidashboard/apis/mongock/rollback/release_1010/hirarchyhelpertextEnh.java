@@ -51,12 +51,6 @@ public class hirarchyhelpertextEnh {
 		Document update4 = new Document("$unset", newField4);
 		mongoTemplate.getCollection("hierarchy_levels").updateOne(query4, update4);
 
-		Document newField5 = new Document("hierarchyInfo", null);
-		Document query5 = new Document("level", 5);
-		Document update5 = new Document("$unset", newField4);
-		mongoTemplate.getCollection("hierarchy_levels").updateOne(query5, update5);
-
-
 	}
 
 	@RollbackExecution
