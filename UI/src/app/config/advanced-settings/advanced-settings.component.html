@@ -39,37 +39,36 @@
       <div class="content select-scenario" *ngIf="selectedView === 'processor_state'">
 
         <p-table [value]="processorData.data" [paginator]="true" [rows]="15" [loading]="dataLoading"
-          styleClass="p-datatable-striped"  loadingIcon="loading-img" [autoLayout]="true">
+          styleClass="p-datatable-striped" loadingIcon="loading-img" [autoLayout]="true">
 
           <ng-template pTemplate="caption">
             <div class="table-header">
               Processors
               <div class="d-flex align-items-center">
-                    <span style="font-size: 0.8em;">
-                        Select Project
-                    </span>
-                    <span class="p-mr-3 p-ml-3">
-                      <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name"
-                      [style]="{'min-width':'300px', 'max-width':'300px'}" [panelStyle]="{'min-width':'inherit', 'max-width':'inherit'}"
-                      [filter]="true" filterBy="name" [showClear]="false" placeholder="Select a Project"
-                      (onChange)="updateProjectSelection($event)"
-                      >
-                        <ng-template pTemplate="selectedItem">
-                            <div class="userProject-item userProject-item-value"  *ngIf="selectedProject">
-                                <div>{{selectedProject.name}}</div>
-                            </div>
-                        </ng-template>
-                        <ng-template let-userProject pTemplate="item">
-                            <div class="userProject-item">
-                                <div>{{userProject.name}}</div>
-                            </div>
-                        </ng-template>
-                      </p-dropdown>
-                    </span>
+                <span style="font-size: 0.8em;">
+                  Select Project
+                </span>
+                <span class="p-mr-3 p-ml-3">
+                  <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name"
+                    [style]="{'min-width':'300px', 'max-width':'300px'}"
+                    [panelStyle]="{'min-width':'inherit', 'max-width':'inherit'}" [filter]="true" filterBy="name"
+                    [showClear]="false" placeholder="Select a Project" (onChange)="updateProjectSelection($event)">
+                    <ng-template pTemplate="selectedItem">
+                      <div class="userProject-item userProject-item-value" *ngIf="selectedProject">
+                        <div>{{selectedProject.name}}</div>
+                      </div>
+                    </ng-template>
+                    <ng-template let-userProject pTemplate="item">
+                      <div class="userProject-item">
+                        <div>{{userProject.name}}</div>
+                      </div>
+                    </ng-template>
+                  </p-dropdown>
+                </span>
 
-                </div>
+              </div>
             </div>
-        </ng-template>
+          </ng-template>
           <ng-template pTemplate="header">
             <tr>
               <th id="processorName">Processor Name</th>
@@ -86,33 +85,44 @@
               </td>
 
               <td class='custom-table-cell'>
-                  <span *ngIf="(!findTraceLogForTool(processor.processorName)?.executionOngoing && processor.processorName === 'Jira') || processor.processorName !== 'Jira'">{{ showExecutionDate(processor.processorName) }}</span>
+                <span
+                  *ngIf="(!findTraceLogForTool(processor.processorName)?.executionOngoing && processor.processorName === 'Jira') || processor.processorName !== 'Jira'">{{
+                  showExecutionDate(processor.processorName) }}</span>
               </td>
               <td class="custom-table-cell">
-                  <p-progressBar mode="indeterminate" *ngIf="processor.processorName === 'Jira' && findTraceLogForTool(processor.processorName)?.executionOngoing === true " [style]="{ height: '6px' }"></p-progressBar>
+                <p-progressBar mode="indeterminate"
+                  *ngIf="processor.processorName === 'Jira' && findTraceLogForTool(processor.processorName)?.executionOngoing === true "
+                  [style]="{ height: '6px' }"></p-progressBar>
               </td>
               <td class='custom-table-cell'>
                 <div class="p-d-flex p-align-center">
-                  
-                  <div class="p-d-flex p-align-center" *ngIf="(!findTraceLogForTool(processor.processorName)?.executionOngoing && processor.processorName === 'Jira') || processor.processorName !== 'Jira'">
+
+                  <div class="p-d-flex p-align-center"
+                    *ngIf="(!findTraceLogForTool(processor.processorName)?.executionOngoing && processor.processorName === 'Jira') || processor.processorName !== 'Jira'">
                     <div *ngIf="showProcessorLastState(processor.processorName) !== 'NA'" class="status-container"
                       [ngClass]="showProcessorLastState(processor.processorName) === 'Success' ? 'active' : 'inactive'">
                       {{ showProcessorLastState(processor.processorName)}}
                     </div>
                     <span *ngIf="showProcessorLastState(processor.processorName) === 'NA'">NA</span>
                   </div>
-                <div class="p-ml-2" *ngIf="processor.processorName === 'Jira'">
-                  <i class="pi pi-info-circle" [ngClass]="{'disabled': !(findTraceLogForTool('Jira')?.progressStatusList?.length || findTraceLogForTool('Jira')?.errorMessage)}"
-                  (click)="(findTraceLogForTool('Jira')?.errorMessage || findTraceLogForTool('Jira')?.progressStatusList?.length) ? op.toggle($event) : ''" style="font-size: 1.2rem"></i>
+                  <div class="p-ml-2" *ngIf="processor.processorName === 'Jira'">
+                    <i class="pi pi-info-circle"
+                      [ngClass]="{'disabled': !(findTraceLogForTool('Jira')?.progressStatusList?.length || findTraceLogForTool('Jira')?.errorMessage)}"
+                      (click)="(findTraceLogForTool('Jira')?.errorMessage || findTraceLogForTool('Jira')?.progressStatusList?.length) ? op.toggle($event) : ''"
+                      style="font-size: 1.2rem"></i>
+                  </div>
                 </div>
-              </div>
               </td>
               <td class='custom-table-cell p-d-flex p-align-center column-width'>
                 <button pButton pRipple label="Run Now"
                   icon="{{findTraceLogForTool(processor.processorName)?.executionOngoing === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
                   [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.processorName)?.executionOngoing === true) && processor.processorName !== 'Jira'  "
-                  class="p-button-sm p-button-success p-button-raised" (click)="runProcessor(processor.processorName)"></button>
-                  <div  class="action-btns p-ml-3" [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.processorName)?.length > 0 && findTraceLogForTool(processor?.processorName)) || findTraceLogForTool(processor?.processorName)?.isDeleteDisable}" *ngIf="!shouldDisableRunProcessor()"><i class="far fa-trash-alt" (click)="deleteProcessorData(processor)"></i></div>
+                  class="p-button-sm p-button-success p-button-raised"
+                  (click)="runProcessor(processor.processorName)"></button>
+                <div class="action-btns p-ml-3"
+                  [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.processorName)?.length > 0 && findTraceLogForTool(processor?.processorName)) || findTraceLogForTool(processor?.processorName)?.isDeleteDisable}"
+                  *ngIf="!shouldDisableRunProcessor()"><i class="far fa-trash-alt"
+                    (click)="deleteProcessorData(processor)"></i></div>
               </td>
             </tr>
           </ng-template>
@@ -131,33 +141,62 @@
 
 <p-confirmDialog #cd [transitionOptions]="'0ms'">
   <p-footer>
-      <button type="button" (click)="cd.accept()" pButton label="Yes"></button>
-      <button type="button" (click)="cd.reject()" pButton label="No"></button>
+    <button type="button" (click)="cd.accept()" pButton label="Yes"></button>
+    <button type="button" (click)="cd.reject()" pButton label="No"></button>
   </p-footer>
 </p-confirmDialog>
 
 <p-overlayPanel #op [showCloseIcon]="false">
   <div class="progress-dialog-body p-mb-4">
-      <p-table [value]="findTraceLogForTool('Jira')?.progressStatusList" [tableStyle]="{ 'min-width': '40rem' }"
-       [scrollable]="true" scrollHeight="200px" *ngIf="findTraceLogForTool('Jira')?.progressStatusList?.length && !(findTraceLogForTool('Jira')?.errorMessage) ; else logError">
-        <ng-template pTemplate="header">
-            <tr>
-              <th>Step Name</th>
-              <th>End Time</th>
-              <th>Status</th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-item>
-            <tr>
-              <td>{{item.stepName}}</td>
-              <td>{{endTimeConversion(item?.endTime)}}</td>
-              <td>{{item.status}}</td>
-            </tr>
+    <h3>Progress Stats:</h3>
+    <p-table [value]="findTraceLogForTool('Jira')?.progressStatusList" [tableStyle]="{ 'min-width': '40rem' }"
+      [scrollable]="true" scrollHeight="200px"
+      *ngIf="findTraceLogForTool('Jira')?.progressStatusList?.length && !(findTraceLogForTool('Jira')?.errorMessage) ; else logError">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Step Name</th>
+          <th>End Time</th>
+          <th>Status</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{item.stepName}}</td>
+          <td>{{endTimeConversion(item?.endTime)}}</td>
+          <td>{{item.status}}</td>
+        </tr>
 
-        </ng-template>
+      </ng-template>
     </p-table>
+
+    <h3>Errors:</h3>
+    <p-table [value]="findTraceLogForTool('Jira')?.errorDetailList" [tableStyle]="{ 'min-width': '40rem' }"
+      [scrollable]="true" scrollHeight="200px"
+      *ngIf="(findTraceLogForTool('Jira')?.errorDetailList !== undefined || findTraceLogForTool('Jira')?.errorDetailList?.length > 0); else noError">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>URL</th>
+          <th>Impact</th>
+          <th>Status</th>
+          <th>Error</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td style="word-break: break-all">{{item.url}}</td>
+          <td>{{item.impact}}</td>
+          <td>{{item.status}}</td>
+          <td>{{item.error}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <ng-template #noError>
+      <h3 class="p-text-center">No Error</h3>
+    </ng-template>
+
     <ng-template #logError>
-      <h3 class="p-text-center" class="error-text"><img src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />{{ findTraceLogForTool('Jira')?.errorMessage}}</h3>
+      <h3 class="p-text-center" class="error-text"><img src="../../../assets/img/icon-failure.svg" alt="Failure"
+          class="p-mr-1" />{{ findTraceLogForTool('Jira')?.errorMessage}}</h3>
     </ng-template>
     <ul class="p-pr-1 p-pl-0 list-style-none" *ngIf="dataMismatchObj['Jira']">
       <li class="tooltip-item p-d-flex p-pt-2">
