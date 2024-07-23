@@ -4282,5 +4282,148 @@ describe('typeOf', () => {
     });
   });
 
+  it('should apply aggrefaration logic for non progress-bar chart ', () => {
+    component.allKpiArray = [{
+        kpiId: 'kpi124',
+        trendValueList: [
+
+           { filter : "f1",
+            value: [
+                {
+                    filter1: "Overall",
+                    data: [{
+                        "label": "Scope added",
+                        "value": 1,
+                    }]
+                }
+            ]
+        }
+
+        ]
+    }];
+    component.updatedConfigGlobalData = [
+        {
+            kpiId: 'kpi125',
+            kpiDetail: {
+                chartType: 'GroupBarChart'
+            }
+        }
+    ];
+    component.kpiSelectedFilterObj['kpi124'] = {f1 : ["value1"],f2 : ["value2"]}
+
+    spyOn(component, 'createTrendData')
+    spyOn(helperService, 'applyAggregationLogic')
+    component.getChartData('kpi124', 0, 'sum')
+    expect(component.kpiChartData['kpi124']).toBeUndefined();
+})
+
+it('should apply aggrefaration logic for progress-bar chart ', () => {
+    component.allKpiArray = [{
+        kpiId: 'kpi124',
+        trendValueList: [
+
+           { filter : "f1",
+            value: [
+                {
+                    filter1: "Overall",
+                    data: [{
+                        "label": "Scope added",
+                        "value": 1,
+                    }]
+                }
+            ]
+        }
+
+        ]
+    }];
+    component.updatedConfigGlobalData = [
+        {
+            kpiId: 'kpi125',
+            kpiDetail: {
+                chartType: 'GroupBarChart'
+            }
+        }
+    ];
+    spyOn(component,'getChartType').and.returnValue('progress-bar');
+    component.kpiSelectedFilterObj['kpi124'] = {f1 : ["value1"],f2 : ["value2"]}
+
+    spyOn(component, 'createTrendData')
+    spyOn(component, 'applyAggregationLogicForProgressBar')
+    component.getChartData('kpi124', 0, 'sum')
+    expect(component.kpiChartData).toBeDefined();
+})
+
+it('should get chart data when have one filter', () => {
+    component.allKpiArray = [{
+        kpiId: 'kpi124',
+        trendValueList: [
+
+           { filter : "f1",
+            value: [
+                {
+                    filter1: "Overall",
+                    data: [{
+                        "label": "Scope added",
+                        "value": 1,
+                    }]
+                }
+            ]
+        }
+
+        ]
+    }];
+    component.updatedConfigGlobalData = [
+        {
+            kpiId: 'kpi125',
+            kpiDetail: {
+                chartType: 'GroupBarChart'
+            }
+        }
+    ];
+    spyOn(component,'getChartType').and.returnValue('progress-bar');
+    component.kpiSelectedFilterObj['kpi124'] = {f1 : ["f1"]}
+
+    spyOn(component, 'createTrendData')
+    spyOn(component, 'applyAggregationLogicForProgressBar')
+    component.getChartData('kpi124', 0, 'sum')
+    expect(component.kpiChartData).toBeDefined();
+})
+
+it('should get chart data when have no filter', () => {
+    component.allKpiArray = [{
+        kpiId: 'kpi124',
+        trendValueList: [
+
+           { filter : "Overall",
+            value: [
+                {
+                    filter1: "Overall",
+                    data: [{
+                        "label": "Scope added",
+                        "value": 1,
+                    }]
+                }
+            ]
+        }
+
+        ]
+    }];
+    component.updatedConfigGlobalData = [
+        {
+            kpiId: 'kpi125',
+            kpiDetail: {
+                chartType: 'GroupBarChart'
+            }
+        }
+    ];
+    spyOn(component,'getChartType').and.returnValue('progress-bar');
+    component.kpiSelectedFilterObj['kpi124'] = {}
+
+    spyOn(component, 'createTrendData')
+    spyOn(component, 'applyAggregationLogicForProgressBar')
+    component.getChartData('kpi124', 0, 'sum')
+    expect(component.kpiChartData).toBeDefined();
+})
+
 });
 
