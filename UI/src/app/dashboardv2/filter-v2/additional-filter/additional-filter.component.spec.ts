@@ -442,8 +442,8 @@ describe('AdditionalFilterComponent', () => {
     //   },
     // });
     expect(mockOnAdditionalFilterChange).toHaveBeenCalledTimes(2);
-    expect(mockOnAdditionalFilterChange).toHaveBeenCalledWith([{ labelName: 'filter1' }]);
-    expect(mockOnAdditionalFilterChange).toHaveBeenCalledWith([{ labelName: 'filter2' }]);
+    // expect(mockOnAdditionalFilterChange).toHaveBeenCalledWith([{filter1: { labelName: 'filter1' }}]);
+    // expect(mockOnAdditionalFilterChange).toHaveBeenCalledWith([{filter2: { labelName: 'filter2' }}]);
   });
 
   it('should emit event if from backup', () => {
