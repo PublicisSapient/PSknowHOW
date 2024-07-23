@@ -513,7 +513,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     let level = Object.keys(event)[0];
     event = event[level];
     if (event && event?.length) {
-      if (!this.previousFilterEvent['additional_level']) {
+      if (!this.previousFilterEvent['additional_level'] || !this.previousFilterEvent['additional_level']['level']) {
         this.previousFilterEvent['additional_level'] = {};
         this.previousFilterEvent['additional_level']['level'] = {};
       }

@@ -33,8 +33,8 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if ((!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue)) ||
       ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) ||
-        (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange)) ||
-        (changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange)) {
+        (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange))) {
+        // (changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange)) {
       this.applyDefaultFilters();
       return;
     }
