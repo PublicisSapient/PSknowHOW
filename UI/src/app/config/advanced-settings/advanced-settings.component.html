@@ -165,34 +165,31 @@
           <td>{{endTimeConversion(item?.endTime)}}</td>
           <td>{{item.status}}</td>
         </tr>
-
       </ng-template>
     </p-table>
 
-    <h3>Errors:</h3>
-    <p-table [value]="findTraceLogForTool('Jira')?.errorDetailList" [tableStyle]="{ 'min-width': '40rem' }"
-      [scrollable]="true" scrollHeight="200px"
-      *ngIf="(findTraceLogForTool('Jira')?.errorDetailList !== undefined || findTraceLogForTool('Jira')?.errorDetailList?.length > 0); else noError">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>URL</th>
-          <th>Impact</th>
-          <th>Status</th>
-          <th>Error</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-item>
-        <tr>
-          <td style="word-break: break-all">{{item.url}}</td>
-          <td>{{item.impact}}</td>
-          <td>{{item.status}}</td>
-          <td>{{item.error}}</td>
-        </tr>
-      </ng-template>
-    </p-table>
-    <ng-template #noError>
-      <h3 class="p-text-center">No Error</h3>
-    </ng-template>
+    <section *ngIf="(findTraceLogForTool('Jira')?.errorDetailList !== undefined || findTraceLogForTool('Jira')?.errorDetailList?.length > 0)">
+      <h3>Errors:</h3>
+      <p-table [value]="findTraceLogForTool('Jira')?.errorDetailList" [tableStyle]="{ 'min-width': '40rem' }"
+        [scrollable]="true" scrollHeight="200px">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>URL</th>
+            <th>Impact</th>
+            <th>Status</th>
+            <th>Error</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+          <tr>
+            <td style="word-break: break-all">{{item.url}}</td>
+            <td>{{item.impact}}</td>
+            <td>{{item.status}}</td>
+            <td>{{item.error}}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
 
     <ng-template #logError>
       <h3 class="p-text-center" class="error-text"><img src="../../../assets/img/icon-failure.svg" alt="Failure"
