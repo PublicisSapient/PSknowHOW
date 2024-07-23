@@ -47,7 +47,7 @@ export class BasicConfigComponent implements OnInit {
   getFieldsResponse: any;
   public form: UntypedFormGroup = this.formBuilder.group({});
   blocked = true;
-  assigneeSwitchInfo = "Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project";
+  assigneeSwitchInfo = "Turn ON to retrieve people-related information, such as assignees, developer profiles from all relevant source tools connected to your project";
   isProjectAdmin = false;
 
   constructor(private formBuilder: UntypedFormBuilder, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService, private ga: GoogleAnalyticsService) {
@@ -86,6 +86,7 @@ export class BasicConfigComponent implements OnInit {
         level: this.formData.length,
         hierarchyLevelId: 'projectName',
         hierarchyLevelName: 'Project Name',
+        hierarchyLevelTooltip: 'Project Name',
         inputType: 'text',
         value: '',
         required: true
@@ -95,7 +96,7 @@ export class BasicConfigComponent implements OnInit {
       {
         level: this.formData.length,
         hierarchyLevelId: 'assigneeDetails',
-        label1:'Enable Individual KPIs',
+        label1:'Enable People performance KPIs',
         label2: this.assigneeSwitchInfo,
         inputType: 'boolean',
         value: false,
@@ -151,7 +152,7 @@ export class BasicConfigComponent implements OnInit {
         value: formValue[element.hierarchyLevelId].name ? formValue[element.hierarchyLevelId].name : formValue[element.hierarchyLevelId]
       });
       gaObj['category'+ (index+1)] = element.hierarchyLevelName;
-    }); 
+    });
     this.blocked = true;
     this.http.addBasicConfig(submitData).subscribe(response => {
       if (response && response.serviceResponse && response.serviceResponse.success) {
