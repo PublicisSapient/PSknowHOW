@@ -40,6 +40,7 @@ export class AppComponent implements OnInit {
   authorized = <boolean>true;
 
   newUI: boolean = false;
+  isNewUISwitch: boolean = false;
 
   constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
     public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private feature: FeatureFlagsService) {
@@ -47,9 +48,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!this.feature.isFeatureEnabled('UI_SWITCH')) {
-      localStorage.removeItem('newUI');
-    }
+    this.checkNewUIFlag();
 
     this.newUI = localStorage.getItem('newUI') ? true : false;
 
@@ -90,6 +89,11 @@ export class AppComponent implements OnInit {
       }
 
     });
+  }
+
+  async checkNewUIFlag(){
+    this.feature.config = this.feature.loadConfig().then((res) => res);
+    this.isNewUISwitch = await this.feature.isFeatureEnabled('NEW_UI_SWITCH');
   }
 
   uiSwitch(event, userChange = false) {

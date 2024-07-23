@@ -31,6 +31,7 @@ export class HeaderComponent implements OnInit {
   ssoLogin = environment.SSO_LOGIN;
   auth_service = environment.AUTHENTICATION_SERVICE;
   isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
+  userRole: string = '';
 
   constructor(
     private httpService: HttpService,

@@ -157,9 +157,7 @@ a{
 
 body {
   background-color: #dedede;
-  /* overflow-x: hidden; */
-
-  overflow: auto;
+  overflow-x: hidden;
 }
 
 /* html {

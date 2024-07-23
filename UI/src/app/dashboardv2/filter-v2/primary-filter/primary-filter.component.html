@@ -43,6 +43,14 @@
                 </div>
             </ng-template>
         </p-dropdown>
-        <label class="floating-label" for="singleselectFilter">Select {{ selectedLevel?.emittedLevel }}</label>
+        <label class="floating-label" for="singleselectFilter">
+          Select
+          <ng-container *ngIf="selectedLevel === 'project'; else objectTemplate">
+            {{ selectedLevel }}
+          </ng-container>
+          <ng-template #objectTemplate>
+            {{ selectedLevel?.emittedLevel }}
+          </ng-template>
+        </label>
     </span>
 </div>

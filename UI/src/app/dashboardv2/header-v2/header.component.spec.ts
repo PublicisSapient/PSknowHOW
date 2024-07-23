@@ -147,4 +147,10 @@ describe('HeaderComponent', () => {
     component.navigateToMyKnowHOW();
     expect(navigateSpy).not.toHaveBeenCalledWith(['/dashboard/mydashboard']);
   });
+
+  it('should call helperService.logoutHttp() when logout() is called', () => {
+    spyOn(helperService, 'logoutHttp');
+    component.logout();
+    expect(helperService.logoutHttp).toHaveBeenCalled();
+  });
 });
