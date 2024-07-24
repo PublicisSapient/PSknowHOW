@@ -237,9 +237,9 @@ public class ProjectBasicConfigController {
 		Boolean isApiAuth = StringUtils.isNotEmpty(apiKey)
 				&& apiKey.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (isApiAuth) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
-		} else {
 			return ResponseEntity.status(HttpStatus.OK).body(projectBasicConfigService.getHierarchyData());
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
 		}
 	}
 }
