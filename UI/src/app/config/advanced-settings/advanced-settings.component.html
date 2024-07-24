@@ -168,8 +168,7 @@
         </ng-template>
       </p-table>
     </section>
-
-    <section *ngIf="(findTraceLogForTool('Jira')?.errorDetailList !== undefined && findTraceLogForTool('Jira')?.errorDetailList?.length > 0)">
+    <section *ngIf="findTraceLogForTool('Jira')?.errorDetailList?.length > 0">
       <h3>Errors:</h3>
       <p-table [value]="findTraceLogForTool('Jira')?.errorDetailList" [tableStyle]="{ 'min-width': '40rem' }"
         [scrollable]="true" scrollHeight="200px">
