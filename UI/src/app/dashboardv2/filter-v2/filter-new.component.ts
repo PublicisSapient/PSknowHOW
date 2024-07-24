@@ -467,16 +467,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.additionalFiltersArr = [];
           this.populateAdditionalFilters(event['primary_level']);
-        }, 100);
+        }, 0);
       }
       this.previousFilterEvent['additional_level'] = event['additional_level'];
       this.previousFilterEvent['primary_level'] = event['primary_level'];
 
-      Object.keys(event['additional_level']).forEach((key, index) => {
-        if (event['additional_level'][key]?.length) {
-          this.handleAdditionalChange({ [index]: event['additional_level'][key] });
-        }
-        else {
+      Object.keys(event['additional_level']).forEach((key) => {
+        if (!event['additional_level'][key]?.length) {
           delete event['additional_level'][key];
         }
       });
