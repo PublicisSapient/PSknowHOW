@@ -46,7 +46,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   }
 
   getBoardConfig(projectList) {
-    this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList }).subscribe(
+    this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
       (response) => {
         if (response.success === true) {
           let data = response.data.userBoardConfigDTO;
