@@ -456,15 +456,21 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
       this.previousFilterEvent['additional_level'] = event['additional_level'];
       this.previousFilterEvent['primary_level'] = event['primary_level'];
+
       Object.keys(event['additional_level']).forEach((key, index) => {
         if (Array.isArray(event['additional_level'][key])) {
           if (event['additional_level'][key]?.length) {
             this.handleAdditionalChange({ [index]: event['additional_level'][key] });
           }
+          else {
+            this.handlePrimaryFilterChange(event['primary_level']);
+          }
         } else {
           Object.keys(event['additional_level'][key]).forEach((subKey, index2) => {
             if (event['additional_level'][key][subKey]?.length) {
               this.handleAdditionalChange({ [index2]: event['additional_level'][key][subKey] });
+            }else {
+              this.handlePrimaryFilterChange(event['primary_level']);
             }
           });
         }
@@ -705,7 +711,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   compileGAData(selectedFilterArray) {
     if (selectedFilterArray['additional_level']) {
-      selectedFilterArray = selectedFilterArray['additional_level'].level[Object.keys(selectedFilterArray['additional_level'].level)[0]];
+      selectedFilterArray = selectedFilterArray['additional_level'][Object.keys(selectedFilterArray['additional_level'])[0]];
     }
     const gaArray = selectedFilterArray?.map((item) => {
       const catArr = ['category1', 'category2', 'category3', 'category4', 'category5', 'category6'];
