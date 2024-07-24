@@ -292,11 +292,22 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
         Object.keys(stateFilters['additional_level']).forEach((level) => {
           stateFilters['additional_level'][level] = stateFilters['additional_level'][level].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
+          if (!stateFilters['additional_level'][level]?.length) {
+            delete stateFilters['additional_level'][level];
+          }
         });
+
+        if (!Object.keys(stateFilters['additional_level']).length) {
+          delete stateFilters['additional_level'];
+        }
 
         this.filterApplyData['selectedMap']['project'] = stateFilters['primary_level'].map((proj) => proj.nodeId);
         this.service.setSelectedTrends(stateFilters['primary_level']);
-        this.handlePrimaryFilterChange(stateFilters);
+        if (!stateFilters['additional_level'] && stateFilters['primary_level']) {
+          this.handlePrimaryFilterChange(stateFilters['primary_level']);
+        } else {
+          this.handlePrimaryFilterChange(stateFilters);
+        }
         this.helperService.setBackupOfFilterSelectionState(stateFilters);
       }
     }
@@ -720,7 +731,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   compileGAData(selectedFilterArray) {
     if (selectedFilterArray && selectedFilterArray['additional_level']) {
       selectedFilterArray = selectedFilterArray['additional_level'][Object.keys(selectedFilterArray['additional_level'])[0]];
-    } else if(!selectedFilterArray) {
+    } else if (selectedFilterArray['primary_level']) {
+      selectedFilterArray = selectedFilterArray['primary_level'];
+    } else if (!selectedFilterArray) {
       return;
     }
     const gaArray = selectedFilterArray?.map((item) => {
