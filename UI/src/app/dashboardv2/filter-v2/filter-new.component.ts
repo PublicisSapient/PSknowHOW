@@ -355,7 +355,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       } else {
         this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
       }
-
       // Populate additional filters on MyKnowHOW, Speed and Quality
       if (this.selectedTab.toLowerCase() !== 'developer') {
         this.additionalFiltersArr = [];
@@ -599,7 +598,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (!Array.isArray(event)) {
       event = [event];
     }
-    if (event?.length) {
+    if (event?.length && event[0]) {
       let selectedProjectIds;
       if (event[0].labelName === 'project') {
         selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
