@@ -33,7 +33,11 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
     this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
     this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
-    this.getBoardConfig();
+    this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
+
+    this.subscriptions.push(this.sharedService.selectedTrendsEvent.subscribe((data) => {
+      this.getBoardConfig(data.map(proj => proj['basicProjectConfigId']))
+    }));
   }
 
   // unsubscribing all Kpi Request
@@ -41,14 +45,17 @@ export class NavNewComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
-  getBoardConfig() {
-    this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: [] }).subscribe(
+  getBoardConfig(projectList) {
+    this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList }).subscribe(
       (response) => {
         if (response.success === true) {
           let data = response.data.userBoardConfigDTO;
           data['configDetails'] = response.data.configDetails;
-          this.sharedService.setDashConfigData(data);
-          this.dashConfigData = data;
+          if (!this.deepEqual(this.dashConfigData, data)) {
+            this.sharedService.setDashConfigData(data);
+            this.dashConfigData = data;
+          }
+
           this.items = [...this.dashConfigData['scrum'], ...this.dashConfigData['others']].map((obj) => {
             return {
               label: obj['boardName'],
@@ -75,11 +82,36 @@ export class NavNewComponent implements OnInit, OnDestroy {
     if (this.selectedTab !== 'unauthorized access') {
       this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
     }
-    if(this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
-       || this.selectedTab === 'dora' || this.selectedTab === 'Maturity') {
+    if (this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
+      || this.selectedTab === 'dora' || this.selectedTab === 'Maturity') {
       this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
     }
     this.router.navigate(['/dashboard/' + obj['boardSlug']]);
+  }
+
+  deepEqual(obj1: any, obj2: any): boolean {
+    if (obj1 === obj2) {
+      return true;
+    }
+  
+    if (obj1 === null || obj2 === null || typeof obj1 !== 'object' || typeof obj2 !== 'object') {
+      return false;
+    }
+  
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+  
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+  
+    for (const key of keys1) {
+      if (!keys2.includes(key) || !this.deepEqual(obj1[key], obj2[key])) {
+        return false;
+      }
+    }
+  
+    return true;
   }
 
 }
