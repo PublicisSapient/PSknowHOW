@@ -63,7 +63,7 @@ public class JiraIssueV2 extends BasicModel implements Cloneable {
 	private String createdDate;
 //	private String updatedDate;
 	private String dueDate;
-	private List<Field> fields;
+//	private List<Field> fields;
 	private List<SubTaskDetails> subTasks;
 	private Integer aggregateTimeEstimate;
 	private Integer timeOriginalEstimate;
