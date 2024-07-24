@@ -72,10 +72,10 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         );
         this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
         this.selectedAdditionalFilters = {};
-        Object.keys(this.stateFilters['additional_level']['level']).forEach(key => {
+        Object.keys(this.stateFilters['additional_level']).forEach(key => {
 
           this.selectedAdditionalFilters[key] = new Set();
-          this.stateFilters['additional_level']['level'][key].forEach(stateFilter => {
+          this.stateFilters['additional_level'][key].forEach(stateFilter => {
             this.selectedAdditionalFilters[key].add(stateFilter);
           });
 

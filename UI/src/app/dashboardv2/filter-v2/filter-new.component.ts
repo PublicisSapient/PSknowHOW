@@ -284,11 +284,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
         }
 
+        // Object.keys(stateFilters['additional_level']).forEach((level) => {
+        //   Object.keys(stateFilters['additional_level'][level]).forEach(key => {
+        //     stateFilters['additional_level'][level][key] = stateFilters['additional_level'][level][key].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
+        //   })
+        // });
+
         Object.keys(stateFilters['additional_level']).forEach((level) => {
-          Object.keys(stateFilters['additional_level'][level]).forEach(key => {
-            stateFilters['additional_level'][level][key] = stateFilters['additional_level'][level][key].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
-          })
+          stateFilters['additional_level'][level] = stateFilters['additional_level'][level].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
         });
+
         this.filterApplyData['selectedMap']['project'] = stateFilters['primary_level'].map((proj) => proj.nodeId);
         this.service.setSelectedTrends(stateFilters['primary_level']);
         this.handlePrimaryFilterChange(stateFilters);
@@ -458,23 +463,25 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.previousFilterEvent['primary_level'] = event['primary_level'];
 
       Object.keys(event['additional_level']).forEach((key, index) => {
-        if (Array.isArray(event['additional_level'][key])) {
-          if (event['additional_level'][key]?.length) {
-            this.handleAdditionalChange({ [index]: event['additional_level'][key] });
-          }
-          else {
-            this.handlePrimaryFilterChange(event['primary_level']);
-          }
-        } else {
-          Object.keys(event['additional_level'][key]).forEach((subKey, index2) => {
-            if (event['additional_level'][key][subKey]?.length) {
-              this.handleAdditionalChange({ [index2]: event['additional_level'][key][subKey] });
-            }else {
-              this.handlePrimaryFilterChange(event['primary_level']);
-            }
-          });
+        if (event['additional_level'][key]?.length) {
+          this.handleAdditionalChange({ [index]: event['additional_level'][key] });
+        }
+        else {
+          delete event['additional_level'][key];
         }
       });
+
+      if (!Object.keys(event['additional_level'])?.length) {
+        delete event['additional_level'];
+      }
+
+      if (!event['additional_level']) {
+        this.handlePrimaryFilterChange(event);
+      } else {
+        Object.keys(event['additional_level']).forEach(key => {
+          this.handleAdditionalChange({ [key]: event['additional_level'][key] })
+        });
+      }
     }
 
     if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event[0]?.labelName === 'project') {
@@ -519,21 +526,23 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     let level = Object.keys(event)[0];
     event = event[level];
     if (event && event?.length) {
-      if (!this.previousFilterEvent['additional_level'] || !this.previousFilterEvent['additional_level']['level']) {
+      if (!this.previousFilterEvent['additional_level']) {
         this.previousFilterEvent['additional_level'] = {};
-        this.previousFilterEvent['additional_level']['level'] = {};
       }
-      this.previousFilterEvent['additional_level']['level'][event[0].labelName] = event;
+      this.previousFilterEvent['additional_level'][event[0].labelName] = event;
       this.service.setSprintForRnR(event[event.length - 1])
     }
     if (!event?.length) {
       this.filterApplyData['selectedMap'][level] = [];
-      delete this.previousFilterEvent['additional_level']['level'][level];
-      if (!Object.keys(this.previousFilterEvent['additional_level']['level'])?.length) {
+      delete this.previousFilterEvent['additional_level'][level];
+      if (!Object.keys(this.previousFilterEvent['additional_level'])?.length) {
         delete this.previousFilterEvent['additional_level'];
       }
-
-      this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level'] ? this.previousFilterEvent['primary_level'] : this.previousFilterEvent);
+      if (!this.previousFilterEvent['additional_level']) {
+        this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level']);
+      } else {
+        this.handlePrimaryFilterChange(this.previousFilterEvent);
+      }
       return;
     }
     this.compileGAData(event);
