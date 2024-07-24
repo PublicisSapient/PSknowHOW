@@ -382,7 +382,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       if (this.selectedTab.toLowerCase() !== 'developer') {
         this.additionalFiltersArr = [];
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
-        if (event && event[0] && event[0].labelName.toLowerCase() === 'project') {
+        if (event && event[0] && event[0]?.labelName?.toLowerCase() === 'project') {
           this.populateAdditionalFilters(event);
         } else if (event && event[0]) {
           this.populateAdditionalFilters(event.map((e) => e.parentId));
