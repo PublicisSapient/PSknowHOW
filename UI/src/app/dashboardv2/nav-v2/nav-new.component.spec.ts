@@ -72,7 +72,7 @@ describe('NavNewComponent', () => {
     let data = response.data.userBoardConfigDTO;
     data['configDetails'] = response.data.configDetails;
     const setDashConfigSpy = spyOn(sharedService, 'setDashConfigData');
-    component.getBoardConfig();
+    component.getBoardConfig([]);
     expect(setDashConfigSpy).toHaveBeenCalledWith(data);
     expect(component.items).toEqual([
       {
@@ -156,5 +156,67 @@ describe('NavNewComponent', () => {
     tick(200);
     expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/Maturity']);
   }));
+
+  it('should return true if obj1 and obj2 are the same object', () => {
+    const obj = { prop: 'value' };
+
+    const result = component.deepEqual(obj, obj);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return false if obj1 or obj2 is null', () => {
+    const obj1 = { prop: 'value' };
+    const obj2 = null;
+
+    const result = component.deepEqual(obj1, obj2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return false if obj1 or obj2 is not an object', () => {
+    const obj1 = { prop: 'value' };
+    const obj2 = 'string';
+
+    const result = component.deepEqual(obj1, obj2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return false if obj1 and obj2 have different number of keys', () => {
+    const obj1 = { prop1: 'value1', prop2: 'value2' };
+    const obj2 = { prop1: 'value1' };
+
+    const result = component.deepEqual(obj1, obj2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return false if obj1 and obj2 have different keys', () => {
+    const obj1 = { prop1: 'value1' };
+    const obj2 = { prop2: 'value2' };
+
+    const result = component.deepEqual(obj1, obj2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return false if obj1 and obj2 have different values for the same key', () => {
+    const obj1 = { prop: 'value1' };
+    const obj2 = { prop: 'value2' };
+
+    const result = component.deepEqual(obj1, obj2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return true if obj1 and obj2 have the same keys and values', () => {
+    const obj1 = { prop1: 'value1', prop2: 'value2' };
+    const obj2 = { prop1: 'value1', prop2: 'value2' };
+
+    const result = component.deepEqual(obj1, obj2);
+
+    expect(result).toBe(true);
+  });
 });
 

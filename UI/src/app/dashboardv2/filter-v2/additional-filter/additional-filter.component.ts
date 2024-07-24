@@ -20,6 +20,7 @@ export class AdditionalFilterComponent implements OnChanges {
   appliedFilters = {};
   selectedFilters = [];
   selectedTrends = [];
+  selectedAdditionalFilterLevel = [];
   @Output() onAdditionalFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
   stateFilters: any;
@@ -44,8 +45,8 @@ export class AdditionalFilterComponent implements OnChanges {
 
           this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
           if (this.stateFilters && Object.keys(this.stateFilters)) {
-            Object.keys(this.stateFilters['level']).forEach((key, index) => {
-              this.selectedFilters[index] = this.stateFilters['level'][key];
+            Object.keys(this.stateFilters).forEach((key, index) => {
+              this.selectedFilters[index] = this.stateFilters[key];
             });
           }
 
@@ -98,10 +99,9 @@ export class AdditionalFilterComponent implements OnChanges {
         let obj = {};
         for (let i = 0; i < index; i++) {
           if (e[i]) {
-            let selectedAdditionalFilterLevel = e && e[i] && e[i][0] ? e[i][0]['labelName'] : '';
-            obj['level'] = obj['level'] ? obj['level'] : {};
-            obj['level'][selectedAdditionalFilterLevel] = e[i] ? e[i] : this.stateFilters['level'][Object.keys(this.stateFilters['level'])[i]];
-            this.onAdditionalFilterChange.emit(e[i]);
+            this.selectedAdditionalFilterLevel[i] = e && e[i] && e[i][0] ? e[i][0]['labelName'] : this.selectedAdditionalFilterLevel[i];
+            obj[this.selectedAdditionalFilterLevel[i]] = e[i] ? e[i] : this.stateFilters[Object.keys(this.stateFilters)[i]];
+            this.onAdditionalFilterChange.emit({[this.selectedAdditionalFilterLevel[i]] : e[i]});
           }
         }
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });

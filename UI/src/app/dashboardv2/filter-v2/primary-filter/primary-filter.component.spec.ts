@@ -401,12 +401,10 @@ describe('PrimaryFilterComponent', () => {
         { nodeId: 'node2', nodeName: 'filter2' },
       ],
       additional_level: {
-        level: {
           level4 :[
           { nodeId: 'node3', nodeName: 'filter3' },
           { nodeId: 'node4', nodeName: 'filter4' },
         ]
-      }
       },
     });
     component.selectedLevel = 'level1';

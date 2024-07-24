@@ -275,6 +275,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       if (!stateFilters['additional_level']) {
         let selectedFilters = this.filterDataArr[this.selectedType][this.selectedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
         this.handlePrimaryFilterChange(selectedFilters);
+        this.service.setSelectedTrends(selectedFilters);
         this.helperService.setBackupOfFilterSelectionState({ 'primary_level': selectedFilters });
       } else {
         if (typeof this.selectedLevel === 'string') {
@@ -282,12 +283,19 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         } else {
           stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
         }
-        console.log(stateFilters);
+
+        // Object.keys(stateFilters['additional_level']).forEach((level) => {
+        //   Object.keys(stateFilters['additional_level'][level]).forEach(key => {
+        //     stateFilters['additional_level'][level][key] = stateFilters['additional_level'][level][key].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
+        //   })
+        // });
+
         Object.keys(stateFilters['additional_level']).forEach((level) => {
-          Object.keys(stateFilters['additional_level'][level]).forEach(key => {
-            stateFilters['additional_level'][level][key] = stateFilters['additional_level'][level][key].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
-          })
+          stateFilters['additional_level'][level] = stateFilters['additional_level'][level].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
         });
+
+        this.filterApplyData['selectedMap']['project'] = stateFilters['primary_level'].map((proj) => proj.nodeId);
+        this.service.setSelectedTrends(stateFilters['primary_level']);
         this.handlePrimaryFilterChange(stateFilters);
         this.helperService.setBackupOfFilterSelectionState(stateFilters);
       }
@@ -339,6 +347,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     /** */
+
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
       // set selected projects(trends)
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
@@ -346,17 +355,20 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       } else {
         this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
       }
-
       // Populate additional filters on MyKnowHOW, Speed and Quality
       if (this.selectedTab.toLowerCase() !== 'developer') {
         this.additionalFiltersArr = [];
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
-        this.populateAdditionalFilters(event);
+        if (event && event[0] && event[0].labelName.toLowerCase() === 'project') {
+          this.populateAdditionalFilters(event);
+        } else if (event && event[0]) {
+          this.populateAdditionalFilters(event.map((e) => e.parentId));
+        }
       }
       if (event.length === 1) {
         this.getProcessorsTraceLogsForProject();
       }
-      this.previousFilterEvent = [].concat(event);
+      this.previousFilterEvent = event;
       this.setColors(event);
       this.filterApplyData['level'] = event[0].level;
       this.filterApplyData['label'] = event[0].labelName;
@@ -440,34 +452,38 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         // });
       }
     } else if (event && event['additional_level']) {
-      if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
-        this.service.setSelectedTrends(event['primary_level']);
-      } else {
-        this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
-      }
-      this.previousFilterEvent['additional_level'] = event['additional_level'];
       if (this.selectedTab.toLowerCase() !== 'developer') {
         setTimeout(() => {
           this.additionalFiltersArr = [];
           this.populateAdditionalFilters(event['primary_level']);
         }, 100);
       }
-      Object.keys(event['additional_level']).forEach((key) => {
-        if (Array.isArray(event['additional_level'][key])) {
-          if (event['additional_level'][key]?.length) {
-            this.handleAdditionalChange(event['additional_level'][key]);
-          }
-        } else {
-          Object.keys(event['additional_level'][key]).forEach(subKey => {
-            if (event['additional_level'][key][subKey]?.length) {
-              this.handleAdditionalChange(event['additional_level'][key][subKey]);
-            }
-          });
+      this.previousFilterEvent['additional_level'] = event['additional_level'];
+      this.previousFilterEvent['primary_level'] = event['primary_level'];
+
+      Object.keys(event['additional_level']).forEach((key, index) => {
+        if (event['additional_level'][key]?.length) {
+          this.handleAdditionalChange({ [index]: event['additional_level'][key] });
+        }
+        else {
+          delete event['additional_level'][key];
         }
       });
+
+      if (!Object.keys(event['additional_level'])?.length) {
+        delete event['additional_level'];
+      }
+
+      if (!event['additional_level']) {
+        this.handlePrimaryFilterChange(event);
+      } else {
+        Object.keys(event['additional_level']).forEach(key => {
+          this.handleAdditionalChange({ [key]: event['additional_level'][key] })
+        });
+      }
     }
 
-    if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event[0]?.labelName === 'project') {
+    if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event && event[0]?.labelName === 'project') {
       const allSprints = this.filterDataArr[this.selectedType]['sprint'];
       const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId))
       if (currentProjectSprints.length) {
@@ -506,12 +522,26 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handleAdditionalChange(event) {
-    this.previousFilterEvent['additional_level'] = event;
+    let level = Object.keys(event)[0];
+    event = event[level];
     if (event && event?.length) {
+      if (!this.previousFilterEvent['additional_level']) {
+        this.previousFilterEvent['additional_level'] = {};
+      }
+      this.previousFilterEvent['additional_level'][event[0].labelName] = event;
       this.service.setSprintForRnR(event[event.length - 1])
     }
     if (!event?.length) {
-      this.handlePrimaryFilterChange(this.previousFilterEvent);
+      this.filterApplyData['selectedMap'][level] = [];
+      delete this.previousFilterEvent['additional_level'][level];
+      if (!Object.keys(this.previousFilterEvent['additional_level'])?.length) {
+        delete this.previousFilterEvent['additional_level'];
+      }
+      if (!this.previousFilterEvent['additional_level']) {
+        this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level'] ? this.previousFilterEvent['primary_level'] : this.previousFilterEvent);
+      } else {
+        this.handlePrimaryFilterChange(this.previousFilterEvent);
+      }
       return;
     }
     this.compileGAData(event);
@@ -565,53 +595,60 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   populateAdditionalFilters(event) {
-    let selectedProjectIds;
-    if (event && event.length && event[0].labelName === 'project') {
-      selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
-    } else {
-      selectedProjectIds = [...new Set(event.map((item) => item.parentId))];
+    if (!Array.isArray(event)) {
+      event = [event];
     }
-    this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
-      this.additionalFiltersArr['filter' + (index + 1)] = [];
-
-      let allFilters = this.filterDataArr[this.selectedType] && this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] ? this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] : [];
-      selectedProjectIds.forEach(nodeId => {
-        if (allFilters?.length) {
-          this.additionalFiltersArr['filter' + (index + 1)].push(...allFilters?.filter((filterItem) => {
-            let parentId = '';
-            if (addtnlFilter.defaultLevel.labelName === 'sqd' && !this.kanban) {
-              parentId = filterItem.parentId.substring(filterItem.parentId.indexOf('_') + 1, filterItem.parentId.length)
-            } else {
-              parentId = filterItem.parentId;
-            }
-            return parentId === nodeId
-          })
-          );
-        } else {
-          this.additionalFiltersArr['filter' + (index + 1)] = [];
-        }
-      });
-
-      // make arrays unique
-      let uniqueIds = new Set();
-      this.additionalFiltersArr['filter' + (index + 1)].forEach(element => {
-        uniqueIds.add(element.nodeId);
-      });
-      let uniqueIdsArr = Array.from(uniqueIds);
-      let uniqueObjArr = [];
-      for (let uniqueId of uniqueIdsArr) {
-        let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)].filter(f => f.nodeId === uniqueId)[0];
-        uniqueObjArr.push({
-          ...uniqueObj
-        });
-        // continue;
+    if (event?.length && event[0]) {
+      let selectedProjectIds;
+      if (event[0].labelName === 'project') {
+        selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
+      } else if (event[0] && typeof event[0] !== 'string') {
+        selectedProjectIds = [...new Set(event.map((item) => item.parentId))];
+      } else if (typeof event[0] === 'string') {
+        selectedProjectIds = [...new Set(event)];
       }
-      this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
-    });
-    if (this.selectedTab !== 'iteration') {
-      this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
+      this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
+        this.additionalFiltersArr['filter' + (index + 1)] = [];
+
+        let allFilters = this.filterDataArr[this.selectedType] && this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] ? this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] : [];
+        selectedProjectIds.forEach(nodeId => {
+          if (allFilters?.length) {
+            this.additionalFiltersArr['filter' + (index + 1)].push(...allFilters?.filter((filterItem) => {
+              let parentId = '';
+              if (addtnlFilter.defaultLevel.labelName === 'sqd' && !this.kanban) {
+                parentId = filterItem.parentId.substring(filterItem.parentId.indexOf('_') + 1, filterItem.parentId.length)
+              } else {
+                parentId = filterItem.parentId;
+              }
+              return parentId === nodeId
+            })
+            );
+          } else {
+            this.additionalFiltersArr['filter' + (index + 1)] = [];
+          }
+        });
+
+        // make arrays unique
+        let uniqueIds = new Set();
+        this.additionalFiltersArr['filter' + (index + 1)].forEach(element => {
+          uniqueIds.add(element.nodeId);
+        });
+        let uniqueIdsArr = Array.from(uniqueIds);
+        let uniqueObjArr = [];
+        for (let uniqueId of uniqueIdsArr) {
+          let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)].filter(f => f.nodeId === uniqueId)[0];
+          uniqueObjArr.push({
+            ...uniqueObj
+          });
+          // continue;
+        }
+        this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
+      });
+      if (this.selectedTab !== 'iteration') {
+        this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
+      }
+      this.service.setAdditionalFilters(this.additionalFiltersArr);
     }
-    this.service.setAdditionalFilters(this.additionalFiltersArr);
   }
 
   getProcessorsTraceLogsForProject() {
@@ -681,8 +718,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   compileGAData(selectedFilterArray) {
-    if(selectedFilterArray['additional_level']) {
-      selectedFilterArray = selectedFilterArray['additional_level'].level[Object.keys(selectedFilterArray['additional_level'].level)[0]];
+    if (selectedFilterArray && selectedFilterArray['additional_level']) {
+      selectedFilterArray = selectedFilterArray['additional_level'][Object.keys(selectedFilterArray['additional_level'])[0]];
+    } else if(!selectedFilterArray) {
+      return;
     }
     const gaArray = selectedFilterArray?.map((item) => {
       const catArr = ['category1', 'category2', 'category3', 'category4', 'category5', 'category6'];
