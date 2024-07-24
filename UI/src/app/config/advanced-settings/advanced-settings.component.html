@@ -168,6 +168,11 @@
         </ng-template>
       </p-table>
     </section>
+
+    <ng-template #logError>
+      <h3 class="p-text-center" class="error-text"><img src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />{{ findTraceLogForTool('Jira')?.errorMessage}}</h3>
+    </ng-template>
+
     <section *ngIf="findTraceLogForTool('Jira')?.errorDetailList?.length > 0">
       <h3>Errors:</h3>
       <p-table [value]="findTraceLogForTool('Jira')?.errorDetailList" [tableStyle]="{ 'min-width': '40rem' }"
@@ -190,10 +195,6 @@
         </ng-template>
       </p-table>
     </section>
-
-    <ng-template #logError>
-      <h3 class="p-text-center" class="error-text"><img src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />{{ findTraceLogForTool('Jira')?.errorMessage}}</h3>
-    </ng-template>
 
     <ul class="p-pr-1 p-pl-0 list-style-none" *ngIf="dataMismatchObj['Jira']">
       <li class="tooltip-item p-d-flex p-pt-2">
