@@ -72,7 +72,7 @@ describe('NavNewComponent', () => {
     let data = response.data.userBoardConfigDTO;
     data['configDetails'] = response.data.configDetails;
     const setDashConfigSpy = spyOn(sharedService, 'setDashConfigData');
-    component.getBoardConfig();
+    component.getBoardConfig([]);
     expect(setDashConfigSpy).toHaveBeenCalledWith(data);
     expect(component.items).toEqual([
       {
