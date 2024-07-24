@@ -148,7 +148,7 @@
 
 <p-overlayPanel #op [showCloseIcon]="false">
   <div class="progress-dialog-body p-mb-4">
-    <section *ngIf="findTraceLogForTool('Jira')?.progressStatusList?.length && !(findTraceLogForTool('Jira')?.errorMessage)">
+    <section *ngIf="findTraceLogForTool('Jira')?.progressStatusList?.length && !(findTraceLogForTool('Jira')?.errorMessage); else logError">
       <h3>Progress Stats:</h3>
       <p-table [value]="findTraceLogForTool('Jira')?.progressStatusList" [tableStyle]="{ 'min-width': '40rem' }"
         [scrollable]="true" scrollHeight="200px">
@@ -190,6 +190,10 @@
         </ng-template>
       </p-table>
     </section>
+
+    <ng-template #logError>
+      <h3 class="p-text-center" class="error-text"><img src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />{{ findTraceLogForTool('Jira')?.errorMessage}}</h3>
+    </ng-template>
 
     <ul class="p-pr-1 p-pl-0 list-style-none" *ngIf="dataMismatchObj['Jira']">
       <li class="tooltip-item p-d-flex p-pt-2">
