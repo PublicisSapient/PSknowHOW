@@ -695,7 +695,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			dto.setSprintDetailsList(groupedByProject.getOrDefault(projectBasicConfig.getId(), new ArrayList<>()));
 			hierarchyResponseDTOS.add(dto);
 		}
-		return hierarchyResponseDTOS;
+		return hierarchyResponseDTOS.stream().sorted(Comparator
+				.comparing(HierarchyResponseDTO::getProjectName)).collect(Collectors.toList());
 	}
 
 	public Map<ObjectId, List<SprintDetails>> getTop5SprintDetailsGroupedByProject(
