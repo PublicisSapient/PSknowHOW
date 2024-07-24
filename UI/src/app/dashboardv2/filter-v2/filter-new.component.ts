@@ -484,7 +484,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event[0]?.labelName === 'project') {
+    if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event && event[0]?.labelName === 'project') {
       const allSprints = this.filterDataArr[this.selectedType]['sprint'];
       const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId))
       if (currentProjectSprints.length) {
@@ -539,7 +539,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         delete this.previousFilterEvent['additional_level'];
       }
       if (!this.previousFilterEvent['additional_level']) {
-        this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level']);
+        this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level'] ? this.previousFilterEvent['primary_level'] : this.previousFilterEvent);
       } else {
         this.handlePrimaryFilterChange(this.previousFilterEvent);
       }
@@ -719,8 +719,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   compileGAData(selectedFilterArray) {
-    if (selectedFilterArray['additional_level']) {
+    if (selectedFilterArray && selectedFilterArray['additional_level']) {
       selectedFilterArray = selectedFilterArray['additional_level'][Object.keys(selectedFilterArray['additional_level'])[0]];
+    } else if(!selectedFilterArray) {
+      return;
     }
     const gaArray = selectedFilterArray?.map((item) => {
       const catArr = ['category1', 'category2', 'category3', 'category4', 'category5', 'category6'];
