@@ -7799,7 +7799,6 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
     }];
-    component.masterData = fakeMasterData;
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListZypher });
     const postZypherSpy = spyOn(component, 'postZypherKpi');
     component.groupZypherKpi(['kpi17']);
@@ -7812,7 +7811,6 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
     }];
-    component.masterData = fakeMasterData;
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
     const postJiraSpy = spyOn(component, 'postJiraKpi');
     component.groupJiraKpi(['kpi17']);
@@ -7826,7 +7824,6 @@ describe('ExecutiveV2Component', () => {
       kpiName: 'Unit Test Coverage'
     }];
     component.selectedTab = 'release';
-    component.masterData = fakeMasterData;
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
     const postJiraSpy = spyOn(component, 'postJiraKpi');
     component.groupJiraKpi(['kpi17']);
@@ -7840,7 +7837,6 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
     }];
-    component.masterData = fakeMasterData;
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListBitBucket });
     const postBitBucketSpy = spyOn(component, 'postBitBucketKpi');
     component.groupBitBucketKpi(['kpi17']);
@@ -7987,7 +7983,7 @@ describe('ExecutiveV2Component', () => {
         },
         level: 1
       },
-      selectedTab: 'My Test1',
+      selectedTab: 'Quality',
       isAdditionalFilters: false,
       makeAPICall: true
     };
@@ -8004,6 +8000,7 @@ describe('ExecutiveV2Component', () => {
       },
       shown: true
     }];
+    component.configGlobalData = component.updatedConfigGlobalData;
     component.kanbanActivated = false;
     component.selectedtype = 'Scrum';
 
@@ -12859,22 +12856,6 @@ describe('ExecutiveV2Component', () => {
     expect(component.handleSelectedOption).toHaveBeenCalledTimes(2);
   });
 
-  it('should return an empty string when the master data is null', () => {
-    component.masterData = null;
-    const kpiId = 'kpi11';
-    const expectedKpiName = ' ';
-    const actualKpiName = component.getKPIName(kpiId);
-    expect(actualKpiName).toEqual(expectedKpiName);
-  });
-
-  it('should return an empty string when the KPI list in the master data is empty', () => {
-    component.masterData = { kpiList: [] };
-    const kpiId = 'kpi11';
-    const expectedKpiName = ' ';
-    const actualKpiName = component.getKPIName(kpiId);
-    expect(actualKpiName).toEqual(expectedKpiName);
-  });
-
   it('should return the correct latest value, trend value, and unit when item.value is not empty and trendCalculative is true', () => {
     const kpiData = {
       kpiDetail: {
@@ -13962,8 +13943,33 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi55',
       kpiName: 'Ticket Open vs Closed rate by type'
     }];
+    component.updatedConfigGlobalData = [{
+      kpiId: 'kpi54',
+      kpiName: 'Ticket Open vs Closed rate by Priority',
+      isEnabled: true,
+      order: 23,
+      kpiDetail: {
+        kanban: true,
+        kpiSource: 'Jira',
+        kpiCategory: 'Quality',
+        groupId: 1
+      },
+      shown: true
+    }, {
+      kpiId: 'kpi55',
+      kpiName: 'Ticket Open vs Closed rate by type',
+      isEnabled: true,
+      order: 23,
+      kpiDetail: {
+        kanban: true,
+        kpiSource: 'Jira',
+        kpiCategory: 'Quality',
+        groupId: 1
+      },
+      shown: true
+    }];
+    component.configGlobalData = component.updatedConfigGlobalData;
     component.jiraKpiData = {};
-    component.masterData = fakeMasterData;
     component.kpiJira = {};
     spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJiraKanban });
     const spy = spyOn(component, 'postJiraKanbanKpi');
@@ -13978,7 +13984,6 @@ describe('ExecutiveV2Component', () => {
       kpiName: 'Unit Test Coverage'
     }];
     component.kpiListSonar = {};
-    component.masterData = fakeMasterData;
     spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListSonarKanban });
     const spy = spyOn(component, 'postSonarKanbanKpi');
     component.groupSonarKanbanKpi(['kpi62']);
@@ -13991,7 +13996,6 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi66',
       kpiName: 'Code Build Time'
     }];
-    component.masterData = fakeMasterData;
     spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJenkinsKanban });
     const spy = spyOn(component, 'postJenkinsKanbanKpi');
     component.groupJenkinsKanbanKpi(['kpi66']);
@@ -14004,7 +14008,6 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi63',
       kpiName: 'Regression Automation Coverage'
     }];
-    component.masterData = fakeMasterData;
     spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListZypherKanban });
     const spy = spyOn(component, 'postZypherKanbanKpi');
     component.groupZypherKanbanKpi(['kpi63']);
@@ -14017,7 +14020,6 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi65',
       kpiName: 'Number of Check-ins'
     }];
-    component.masterData = fakeMasterData;
     spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListBitbucketKanban });
     const spy = spyOn(component, 'postBitBucketKanbanKpi');
     component.groupBitBucketKanbanKpi(['kpi65']);

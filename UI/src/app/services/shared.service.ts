@@ -494,7 +494,7 @@ export class SharedService {
         boardNameArr.push({
           boardName: kpiListData['others'][i].boardName,
           link:
-            kpiListData['others'][i].boardName.toLowerCase()
+            kpiListData['others'][i].boardSlug
         });
       }
     }

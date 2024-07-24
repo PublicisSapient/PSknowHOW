@@ -76,7 +76,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
       this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
     }
     if(this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
-       || this.selectedTab === 'dora' || this.selectedTab === 'maturity') {
+       || this.selectedTab === 'dora' || this.selectedTab === 'kpi-maturity') {
       this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
     }
     this.router.navigate(['/dashboard/' + obj['boardSlug']]);

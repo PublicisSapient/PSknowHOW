@@ -2940,7 +2940,7 @@ describe('ExecutiveComponent', () => {
         },
         level: 1
       },
-      selectedTab: 'My Test1',
+      selectedTab: 'Quality',
       isAdditionalFilters: false,
       makeAPICall: true
     };

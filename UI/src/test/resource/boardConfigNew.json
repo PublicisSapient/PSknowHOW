@@ -1764,8 +1764,8 @@
             },
             {
                 "boardId": 16,
-                "boardName": "Maturity",
-                "boardSlug": "maturity",
+                "boardName": "Kpi Maturity",
+                "boardSlug": "kpi-maturity",
 
                 "filters": {
                     "projectTypeSwitch": {

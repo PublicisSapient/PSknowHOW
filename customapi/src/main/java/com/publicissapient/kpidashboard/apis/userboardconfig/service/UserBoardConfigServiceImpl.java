@@ -617,8 +617,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		BoardDTO asPerCategoryBoard = new BoardDTO();
 		asPerCategoryBoard.setBoardId(boardId);
 		asPerCategoryBoard.setBoardName(boardName);
-		if (boardName.equalsIgnoreCase("Maturity"))
-			asPerCategoryBoard.setBoardSlug("maturity");
+		if (boardName.equalsIgnoreCase("Kpi Maturity"))
+			asPerCategoryBoard.setBoardSlug("kpi-maturity");
 		else
 			asPerCategoryBoard.setBoardSlug(boardName.toLowerCase());
 		List<BoardKpisDTO> boardKpisList = new ArrayList<>();

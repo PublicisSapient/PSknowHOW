@@ -125,7 +125,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
     this.loader = true;
     this.jiraGroups = 0;
     this.showNoDataMsg = false;
-    if (this.service.getSelectedTab() === 'maturity') {
+    if (this.service.getSelectedTab() === 'kpi-maturity') {
       this.masterData = $event?.masterData;
 
       this.configGlobalData = $event.dashConfigData;

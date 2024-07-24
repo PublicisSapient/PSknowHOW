@@ -34,7 +34,7 @@ describe('NavNewComponent', () => {
     const routes: Routes = [
       { path: 'dashboard/my-knowhow', component: ExecutiveV2Component },
       { path: 'dashboard/dashboard', component: ExecutiveV2Component },
-      { path: 'dashboard/Maturity', component: MaturityComponent },
+      { path: 'dashboard/kpi-maturity', component: MaturityComponent },
     ];
 
 
@@ -121,8 +121,8 @@ describe('NavNewComponent', () => {
         command: jasmine.any(Function),
       },
       {
-        "label": "Maturity",
-        "slug": "maturity",
+        "label": "Kpi Maturity",
+        "slug": "kpi-maturity",
         command: jasmine.any(Function),
       }
     ]);
@@ -150,11 +150,11 @@ describe('NavNewComponent', () => {
   ));
 
   xit('should navigate to the correct route', fakeAsync(() => {
-    const obj = { boardSlug: 'maturity', boardName: 'Maturity' };
+    const obj = { boardSlug: 'kpi-maturity', boardName: 'Kpi Maturity' };
 
     component.handleMenuTabFunctionality(obj);
     tick(200);
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/maturity']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/kpi-maturity']);
   }));
 });
 

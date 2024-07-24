@@ -242,7 +242,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.totalProjectSelected = 1;
           this.service.setShowTableView(this.showChart);
         }
-        if (this.selectedTab.toLowerCase() === 'maturity') {
+        if (this.selectedTab.toLowerCase() === 'kpi-maturity') {
           this.showChart = 'chart';
           this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase()
           this.totalProjectSelected = 1;
@@ -444,7 +444,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
-    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'my-knowhow' || this.selectedTab?.toLowerCase() === 'developer') {
+    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'kpi-maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'my-knowhow' || this.selectedTab?.toLowerCase() === 'developer') {
       this.allowMultipleSelection = false;
     } else {
       this.allowMultipleSelection = true;
@@ -750,7 +750,7 @@ this.resetAddtionalFIlters();
         }
       }
 
-      if(this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity'){
+      if(this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'kpi-maturity'){
         this.setSelectedSprintOnServiceLayer(applySource);
       }
 
@@ -840,17 +840,17 @@ this.resetAddtionalFIlters();
 
   checkIfMaturityTabHidden() {
     const maturityBoard = this.kpiListData['others']?.find((board) =>
-      board.boardName === 'Maturity');
+      board.boardName === 'Kpi Maturity');
     return (maturityBoard && maturityBoard.kpis[0].shown) ? false : true;
   }
 
   navigateToSelectedTab() {
     if (this.selectedTab !== 'Config' && Object.keys(this.kpiListData)?.length > 0) {
-      if (this.selectedTab?.toLowerCase() === 'maturity') {
+      if (this.selectedTab?.toLowerCase() === 'kpi-maturity') {
         if (!this.checkIfMaturityTabHidden()) {
           this.backToDashboardLoader = false
           this.router.navigateByUrl(
-            `/dashboard/maturity`,
+            `/dashboard/kpi-maturity`,
           );
           return;
         } else {
@@ -1924,7 +1924,7 @@ this.resetAddtionalFIlters();
 
   getSprintsWhichWasAlreadySelected(level) {
     const sprintsWhichWasAlreadySelected = []
-    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()[level] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity') {
+    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()[level] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'kpi-maturity') {
       const selectedProjects = this.service.getSelectedTrends().map(data => data.nodeId);
       selectedProjects.forEach(nodeId => {
         const projectWhichSprintWasSelected = Object.keys(this.service.getAddtionalFilterBackup()[level]);

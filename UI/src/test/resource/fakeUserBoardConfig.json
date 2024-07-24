@@ -6946,7 +6946,7 @@
         },
         {
             "boardId": 13,
-            "boardName": "Maturity",
+            "boardName": "Kpi Maturity",
             "kpis": [
                 {
                     "kpiId": "kpi989",

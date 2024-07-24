@@ -98,7 +98,7 @@
                      </ng-select>
                   </div>
                   </div>
-                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'backlog'  && selectedTab?.toLowerCase() !== 'release'">
+                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'kpi-maturity' && selectedTab?.toLowerCase() !== 'backlog'  && selectedTab?.toLowerCase() !== 'release'">
                      <!-- Date filter start -->
                      <div *ngIf="(kanban && selectedDateFilter !== '') || this.selectedTab?.toLowerCase() === 'developer'"
                         class="selected-date p-ml-auto p-mr-2 p-mt-auto p-align-end">
@@ -137,7 +137,7 @@
                      <!-- Date filter end -->
                      <!-- additional filters start -->
                      <div class="p-d-flex"
-                        *ngIf="selectedTab?.toLowerCase() !== 'value' && selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'dora' && selectedTab?.toLowerCase() !== 'developer'">
+                        *ngIf="selectedTab?.toLowerCase() !== 'value' && selectedTab?.toLowerCase() !== 'kpi-maturity' && selectedTab?.toLowerCase() !== 'dora' && selectedTab?.toLowerCase() !== 'developer'">
                         <div *ngFor="let item of additionalFiltersArr; let i = index;" class="position-relative">
                            <div *ngIf="item?.hierarchyLevelId !== 'release' && !(item?.hierarchyLevelId === 'sprint' && selectedTab?.toLowerCase() === 'iteration')"
                               class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"
@@ -191,7 +191,7 @@
 
             <!-- SHow/Hide start for iteration and backlog -->
 
-            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity' && (selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration' || selectedTab?.toLowerCase() === 'release'|| selectedTab?.toLowerCase() === 'dora')"
+            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'kpi-maturity' && (selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration' || selectedTab?.toLowerCase() === 'release'|| selectedTab?.toLowerCase() === 'dora')"
                [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
                <div
                   class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn"
@@ -238,7 +238,7 @@
             <!-- Capacity Planning link end -->
             <!-- comments icon start -->
             <div class="position-relative">
-               <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn"  *ngIf="selectedTab?.toLowerCase() != 'maturity'"
+               <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn"  *ngIf="selectedTab?.toLowerCase() != 'kpi-maturity'"
                   [ngClass]="{'disabled':filterForm.get('selectedLevel')?.value != 'project'
                || (filterForm.get('selectedLevel')?.value == 'project' && selectedFilterArray?.length > 1)}">
                   <img #commentSummary class="p-p-2 " (click)="handleBtnClick();"
@@ -337,7 +337,7 @@
             </ng-container>
          </ul>
          <!-- toggle view -->
-         <div class="tabs" *ngIf="selectedTab?.toLowerCase() !== 'maturity'">
+         <div class="tabs" *ngIf="selectedTab?.toLowerCase() !== 'kpi-maturity'">
             <input id="chart-view" class="chart-view" type="radio" name="view" [checked]="showChart === 'chart'">
             <label class="label1" for="chart-view" (click)="showChartToggle('chart')" id="Layout-Chart">
                <img src="../../../assets/img/ico-graph-white.svg" alt="Chart View" class="ico-active" />
@@ -355,7 +355,7 @@
             </label>
             <!-- SHow/Hide start -->
 
-            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity'"
+            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'kpi-maturity'"
                [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
                <div
                   class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn"
