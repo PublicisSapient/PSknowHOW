@@ -18,10 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.basic.rest;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +42,8 @@ import com.publicissapient.kpidashboard.apis.abac.ContextAwarePolicyEnforcement;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ProjectConfigResponse;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.HierarchyResponseDTO;
@@ -86,6 +90,9 @@ public class ProjectBasicConfigController {
 
 	@Autowired
 	private HierarchyLevelSuggestionsService hierarchyLevelSuggestionService;
+	
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	/**
 	 * 
@@ -220,12 +227,19 @@ public class ProjectBasicConfigController {
 
 	/**
 	 *
-	 * Gets All ProjectsList
+	 * Gets All ProjectsList with hierarchy details
 	 *
-	 * @return list of project list
+	 * @return list of project list with hierarchy details
 	 */
-	@GetMapping(value = "/hierachyResponses")
-	public List<HierarchyResponseDTO> getAllHierarchyResponse() {
-		return projectBasicConfigService.getHierarchyData();
+	@GetMapping(value = "/hierarchyResponses")
+	public ResponseEntity<List<HierarchyResponseDTO>> getAllHierarchyResponse(HttpServletRequest request) {
+		String apiKey = customApiConfig.getxApiKey();
+		Boolean isApiAuth = StringUtils.isNotEmpty(apiKey)
+				&& apiKey.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
+		if (isApiAuth) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
+		} else {
+			return ResponseEntity.status(HttpStatus.OK).body(projectBasicConfigService.getHierarchyData());
+		}
 	}
 }

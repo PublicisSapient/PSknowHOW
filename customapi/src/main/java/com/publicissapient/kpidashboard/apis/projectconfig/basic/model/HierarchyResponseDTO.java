@@ -19,11 +19,11 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.basic.model;
 
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import lombok.Data;
-import lombok.Getter;
-
 import java.util.List;
+
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+
+import lombok.Data;
 
 @Data
 public class HierarchyResponseDTO {
@@ -40,10 +40,5 @@ public class HierarchyResponseDTO {
 	private String projectId;
 
 	private List<SprintDetails> sprintDetailsList;
-	//
-	// SprintDetails
-	// //SprintStartDate
-	// //SprintEndDate
-	// //SprintName
-	// //SprintId
+
 }
