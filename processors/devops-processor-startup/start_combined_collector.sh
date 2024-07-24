@@ -20,6 +20,8 @@
 #start_combined_collector.sh
 counter=1
 
+ENV JAVA_OPTS=""
+
 # Loop through each certificate file and import it to the keystore with an incrementing alias
 for cert_file in $certhostpath/*.cer
 do
@@ -35,10 +37,10 @@ do
 done
 
 java -jar zephyr.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/zephyr.properties &
-java -jar jenkins.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/jenkins.properties &
-java -jar sonar.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/sonar.properties &
+java $JAVA_OPTS -jar jenkins.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/jenkins.properties &
+java $JAVA_OPTS -jar sonar.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/sonar.properties &
 java -jar bamboo.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/bamboo.properties &
-java -jar bitbucket.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/bitbucket.properties  &
+java $JAVA_OPTS -jar bitbucket.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/bitbucket.properties  &
 java -jar teamcity.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/teamcity.properties &
 java -jar gitlab.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/gitlab.properties &
 java -jar github.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/github.properties &
