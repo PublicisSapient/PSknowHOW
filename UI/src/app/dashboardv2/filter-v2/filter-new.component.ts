@@ -358,6 +358,18 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     /** */
+    if (event['additional_level']) {
+      Object.keys(event['additional_level']).forEach((key) => {
+        if (!event['additional_level'][key]?.length) {
+          delete event['additional_level'][key];
+        }
+      });
+
+      if (!Object.keys(event['additional_level'])?.length) {
+        delete event['additional_level'];
+        event = event['primary_level'];
+      }
+    }
 
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
       // set selected projects(trends)
@@ -471,16 +483,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
       this.previousFilterEvent['additional_level'] = event['additional_level'];
       this.previousFilterEvent['primary_level'] = event['primary_level'];
-
-      Object.keys(event['additional_level']).forEach((key) => {
-        if (!event['additional_level'][key]?.length) {
-          delete event['additional_level'][key];
-        }
-      });
-
-      if (!Object.keys(event['additional_level'])?.length) {
-        delete event['additional_level'];
-      }
 
       if (!event['additional_level']) {
         this.handlePrimaryFilterChange(event);
