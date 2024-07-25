@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    appgw.ingress.kubernetes.io/appgw-ssl-certificate: wildcard-tools-publicos-sapient-com
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"appgw.ingress.kubernetes.io/appgw-ssl-certificate":"wildcard-tools-publicos-sapient-com"},"name":"loki-ui","namespace":"stage-dashboard"},"spec":{"ingressClassName":"azure-application-gateway","rules":[{"host":"stage-loki.tools.publicis.sapient.com","http":{"paths":[{"backend":{"service":{"name":"loki","port":{"number":3100}}},"path":"/","pathType":"Exact"}]}}]}}
+  name: stage-loki
+  namespace: stage-dashboard
+spec:
+  ingressClassName: azure-application-gateway
+  rules:
+  - host: stage-loki.tools.publicis.sapient.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: loki
+            port:
+              number: 3100
+        path: /
+        pathType: Exact
+status:
+  loadBalancer:
+    ingress:
+    - ip: 13.94.97.252
+

@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customapi-promtail
+  namespace: stage-knowhow
+  labels:
+    app: customapi-promtail
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customapi-promtail
+  template:
+    metadata:
+      labels:
+        app: customapi-promtail
+    spec:
+      containers:
+        - name: customapi-promtail
+          image: speedtools.azurecr.io/knowhow-customapi:9.2.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              memory: "3Gi"
+              cpu: "1"
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          env:
+            - name: spring.data.mongodb.uri
+              valueFrom:
+                secretKeyRef:
+                  name: stage-knhdbconnectionstring
+                  key: stage-knhdbconnectionstring
+            - name: repoToolAPIKey
+              valueFrom:
+                secretKeyRef:
+                  name: stage-repo-tool-api-key
+                  key: stage-repo-tool-api-key
+            - name: aesEncryptionKey
+              valueFrom:
+                secretKeyRef:
+                  name: knowhowaesencryptionkeynew
+                  key: knowhowaesencryptionkeynew
+            - name: auth.secret
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-auth-secret
+                  key: knowhow-auth-secret
+            - name: spring.data.mongodb.username
+              valueFrom:
+                secretKeyRef:
+                  name: stage-knhdbusername
+                  key: stage-knhdbusername
+            - name: spring.data.mongodb.password
+              valueFrom:
+                secretKeyRef:
+                  name: stage-knhdbpassword
+                  key: stage-knhdbpassword
+            - name: exposed_api_key
+              valueFrom:
+                secretKeyRef:
+                  name: exposed-api-key
+                  key: exposed-api-key
+            - name: auth.resourceAPIKey
+              valueFrom:
+                secretKeyRef:
+                  name: auth-resourceapikeys
+                  key: auth-resourceapikeys
+            - name: mongock.migration-scan-package
+              value: "com.publicissapient.kpidashboard.apis.mongock.upgrade"
+            - name: mongock.start-system-version
+              value: "9.1.0"
+            - name: mongock.end-system-version
+              value: "9.2.0"
+          envFrom:
+            - configMapRef:
+                name: knowhow-config
+          volumeMounts:
+            - name: knowhow-secrets-store
+              mountPath: "/mnt/stage-secrets-store"
+              readOnly: true
+            - name: log-volume
+              mountPath: /app/logs
+        - name: promtail
+          image: grafana/promtail:2.9.2
+          args: 
+            - -config.file=/etc/promtail/config/promtail.yaml
+          volumeMounts:
+            - name: log-volume
+              mountPath: /app/logs
+            - name: promtail-config
+              mountPath: /etc/promtail/config
+      volumes:
+        - name: knowhow-secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "stage-secretproviderclass"
+        - name: log-volume
+          emptyDir: {}
+        - name: promtail-config
+          configMap:
+            name: promtail-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customapi-promtail
+  namespace: stage-knowhow
+spec:
+  selector:
+    app: customapi-promtail
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

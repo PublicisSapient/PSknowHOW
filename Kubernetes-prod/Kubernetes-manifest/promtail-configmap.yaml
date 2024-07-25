@@ -1,0 +1,98 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: promtail-config
+  namespace: prod-knowhow
+data:
+  promtail.yaml: |
+    server:
+      http_listen_port: 9080
+      grpc_listen_port: 0
+
+    positions:
+      filename: /tmp/positions.yaml
+
+    clients:
+      - url: http://loki.prod-dashboard.svc.cluster.local:3100/loki/api/v1/push
+
+    scrape_configs:
+      - job_name: customapi
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              app: customapi
+              __path__: /app/logs/ps-customapi-*.log
+      - job_name: azure-board-processor
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              app: azure-board-processor
+              __path__: /app/logs/ps-azure-processor-*.log
+      - job_name: azure-pipeline-repo
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              app: azure-pipeline-repo
+              __path__: /app/logs/ps-azurepipeline-processor-*.log
+          - targets:
+              - localhost
+            labels:
+              app: azure-pipeline-repo
+              __path__: /app/logs/ps-azurerepository-processor-*.log
+      - job_name: devops-processor
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              app: devops-processor
+              __path__: /app/logs/ps-bamboo-processor-*.log
+          - targets:
+              - localhost
+            labels:
+              app: devops-processor
+              __path__: /app/logs/ps-github-processor-*.log
+          - targets:
+              - localhost
+            labels:
+              app: devops-processor
+              __path__: /app/logs/ps-gitlab-processor-*.log
+          - targets:
+              - localhost
+            labels:
+              app: devops-processor
+              __path__: /app/logs/ps-bitbucket-processor-*.log
+          - targets:
+              - localhost
+            labels:
+              app: devops-processor
+              __path__: /app/logs/ps-teamcity-processor-*.log
+          - targets:
+              - localhost
+            labels:
+              app: devops-processor
+              __path__: /app/logs/ps-githubaction-processor-*.log
+          - targets:
+              - localhost
+            labels:
+              app: devops-processor
+              __path__: /app/logs/ps-zephyr-processor-*.log
+          - targets:
+              - localhost
+            labels:
+              app: devops-processor
+              __path__: /app/logs/ps-sonar-processor-*.log
+          - targets:
+              - localhost
+            labels:
+              app: devops-processor
+              __path__: /app/logs/ps-jenkins-processor-*.log
+      - job_name: jira-processor
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              app: jira-processor
+              __path__: /app/logs/ps-jira-processor-*.log

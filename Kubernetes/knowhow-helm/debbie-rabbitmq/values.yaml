@@ -4,13 +4,7 @@
 
 replicaCount: 1
 
-namespace: uat-knowhow
-
-configmapname: debbie-config
-
-secretname: uat-debbie-secrets
-
-env: uat
+env: stage
 
 image:
   repository: rabbitmq
