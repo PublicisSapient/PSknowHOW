@@ -100,7 +100,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
 
   reloadApp() {
     this.displayModal = false;
-    this.router.navigate(['./dashboard/mydashboard']).then(success => {
+    this.router.navigate(['./dashboard/my-knowhow']).then(success => {
       window.location.reload();
     });
   }

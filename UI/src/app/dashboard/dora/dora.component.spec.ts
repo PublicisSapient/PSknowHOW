@@ -19988,7 +19988,6 @@ describe('DoraComponent', () => {
       "label": "project"
     };
     component.filterData = filterData;
-    component.masterData = masterData;
     fixture.detectChanges();
   });
 
@@ -20092,7 +20091,22 @@ describe('DoraComponent', () => {
   });
 
   it('should call grouping kpi functions when filterdata is available', () => {
-    spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
+    const data = globalData['data'];
+    spyOn(service, 'getDashConfigData').and.returnValue(data);
+    component.configGlobalData = [{
+      kpiId: 'kpi14',
+      kpiName: 'Defect Injection Rate',
+      isEnabled: true,
+      order: 1,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451fd8',
+        kpiId: 'kpi14',
+        kpiName: 'Defect Injection Rate',
+        kanban: true,
+        groupId: 2,
+      },
+      shown: true
+    }]
     component.filterApplyData = {};
     const event = {
       masterData: {

@@ -257,7 +257,7 @@ describe('AdditionalFilterComponent', () => {
     }]);
     spyOn(helperService, 'sortByField').and.callThrough();
     spyOn(component, 'applyAdditionalFilter');
-    component.selectedTab = 'mydashboard';
+    component.selectedTab = 'my-knowhow';
     component.selectedLevel = 'project';
     component.selectedType = 'scrum';
     component.additionalFilterConfig = [

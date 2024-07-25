@@ -15,7 +15,6 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 export class BacklogComponent implements OnInit, OnDestroy {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   subscriptions: any[] = [];
-  masterData = <any>{};
   filterData = <any>[];
   filterApplyData = <any>{};
   noOfFilterSelected = 0;
@@ -208,7 +207,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
     this.fullPageLoader = true;
     this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
     this.processKpiConfigData();
-    this.masterData = $event.masterData;
     this.filterData = $event.filterData;
     this.filterApplyData = $event.filterApplyData;
     this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
@@ -216,7 +214,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       this.noTabAccess = false;
       const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
       // call kpi request according to tab selected
-      if (this.masterData && Object.keys(this.masterData).length) {
+      if (this.configGlobalData?.length > 0) {
         this.groupJiraKpi(kpiIdsForCurrentBoard);
         this.getKpiCommentsCount();
       }
@@ -320,10 +318,10 @@ export class BacklogComponent implements OnInit, OnDestroy {
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
       if (Object.values(this.kpiSelectedFilterObj[kpiId]).length > 1) {
         const tempArr = {};
-        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
-        }
+        /** This loop schenario is not possible practically inside this if block*/
+        // for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+        //   tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+        // }
         if (this.getChartType(kpiId) === 'progress-bar') {
           this.kpiChartData[kpiId] = this.applyAggregationLogicForProgressBar(tempArr);
         } else {
@@ -610,10 +608,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
           return { ...filterData, data: filterData.data.map(labelData => ({ ...labelData, value: labelData.value * labelData.value1 })) }
         });
 
-        kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
+        /** I don't think these below three lines will execute since return statement will take out from this flow */
+        // kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
 
-        kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value: (labelData.value1 > 0 ? Math.round(labelData.value / labelData.value1) : 0) }));
-        this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
+        // kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value: (labelData.value1 > 0 ? Math.round(labelData.value / labelData.value1) : 0) }));
+        // this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
       } else {
         this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
       }

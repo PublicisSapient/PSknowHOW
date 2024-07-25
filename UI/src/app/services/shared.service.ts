@@ -476,7 +476,7 @@ export class SharedService {
         if (kpiShownCount > 0) {
           boardNameArr.push({
             boardName: board?.boardName,
-            link: board?.boardName.toLowerCase().split(' ').join('-')
+            link: board?.boardSlug
           });
         }
       }
@@ -494,7 +494,7 @@ export class SharedService {
         boardNameArr.push({
           boardName: kpiListData['others'][i].boardName,
           link:
-            kpiListData['others'][i].boardName.toLowerCase()
+            kpiListData['others'][i].boardSlug
         });
       }
     }
