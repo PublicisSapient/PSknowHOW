@@ -115,15 +115,19 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.selectedType = data.selectedType;
 
           /**TODO: resetting the date filter on tab change for now */
-          this.selectedDayType = 'Weeks';
-          this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
-          this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+          // this.selectedDayType = 'Weeks';
+          // this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+          // this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
           /** */
 
           if (this.selectedType.toLowerCase() === 'kanban') {
             this.kanban = true;
+            if (!this.dateRangeFilter.types.includes('Months')) {
+              this.dateRangeFilter.types.push('Months');
+            }
           } else {
             this.kanban = false;
+            this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
           }
           this.processBoardData(this.boardData);
 
@@ -353,11 +357,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handlePrimaryFilterChange(event) {
-    /**TODO: resetting the date filter on filter change for now */
-    this.selectedDayType = 'Weeks';
-    this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
-    this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
-    /** */
     if (event['additional_level']) {
       Object.keys(event['additional_level']).forEach((key) => {
         if (!event['additional_level'][key]?.length) {
@@ -372,6 +371,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
 
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
+      /**TODO: resetting the date filter on filter change for now */
+      // this.selectedDayType = 'Weeks';
+      // this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+      // this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+      /** */
+
       // set selected projects(trends)
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
         this.service.setSelectedTrends(event);
