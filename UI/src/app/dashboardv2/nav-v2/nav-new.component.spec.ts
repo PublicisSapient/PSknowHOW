@@ -218,5 +218,49 @@ describe('NavNewComponent', () => {
 
     expect(result).toBe(true);
   });
-});
 
+  it('should return true if both arrays are empty', () => {
+    const array1: string[] = [];
+    const array2: string[] = [];
+
+    const result = component.compareStringArrays(array1, array2);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return false if arrays have different lengths', () => {
+    const array1 = ['a', 'b', 'c'];
+    const array2 = ['a', 'b'];
+
+    const result = component.compareStringArrays(array1, array2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return false if arrays have different elements', () => {
+    const array1 = ['a', 'b', 'c'];
+    const array2 = ['a', 'd', 'c'];
+
+    const result = component.compareStringArrays(array1, array2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return true if arrays have the same elements in the same order', () => {
+    const array1 = ['a', 'b', 'c'];
+    const array2 = ['a', 'b', 'c'];
+
+    const result = component.compareStringArrays(array1, array2);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if arrays have the same elements in a different order', () => {
+    const array1 = ['a', 'b', 'c'];
+    const array2 = ['c', 'a', 'b'];
+
+    const result = component.compareStringArrays(array1, array2);
+
+    expect(result).toBe(false);
+  });
+});

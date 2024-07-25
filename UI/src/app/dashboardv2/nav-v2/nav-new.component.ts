@@ -18,6 +18,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   selectedType: string = '';
   subscriptions: any[] = [];
   dashConfigData: any;
+  selectedBasicConfigIds: any[] = [];
 
   constructor(private httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, private helperService: HelperService) {
   }
@@ -36,7 +37,10 @@ export class NavNewComponent implements OnInit, OnDestroy {
     this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
 
     this.subscriptions.push(this.sharedService.selectedTrendsEvent.subscribe((data) => {
-      this.getBoardConfig(data.map(proj => proj['basicProjectConfigId']))
+      if (!this.compareStringArrays(this.selectedBasicConfigIds, data.map(proj => proj['basicProjectConfigId']))) {
+        this.selectedBasicConfigIds = data.map(proj => proj['basicProjectConfigId']).sort();
+        this.getBoardConfig(this.selectedBasicConfigIds);
+      }
     }));
   }
 
@@ -82,8 +86,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
     if (this.selectedTab !== 'unauthorized access') {
       this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
     }
-    if(this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
-       || this.selectedTab === 'dora' || this.selectedTab === 'kpi-maturity') {
+    if (this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
+      || this.selectedTab === 'dora' || this.selectedTab === 'kpi-maturity') {
       this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
     }
     this.router.navigate(['/dashboard/' + obj['boardSlug']]);
@@ -93,24 +97,40 @@ export class NavNewComponent implements OnInit, OnDestroy {
     if (obj1 === obj2) {
       return true;
     }
-  
+
     if (obj1 === null || obj2 === null || typeof obj1 !== 'object' || typeof obj2 !== 'object') {
       return false;
     }
-  
+
     const keys1 = Object.keys(obj1);
     const keys2 = Object.keys(obj2);
-  
+
     if (keys1.length !== keys2.length) {
       return false;
     }
-  
+
     for (const key of keys1) {
       if (!keys2.includes(key) || !this.deepEqual(obj1[key], obj2[key])) {
         return false;
       }
     }
-  
+
+    return true;
+  }
+
+  compareStringArrays(array1, array2) {
+    // Check if both arrays have the same length
+    if (array1.length !== array2.length) {
+      return false;
+    }
+
+    // Check if each corresponding element is the same
+    for (let i = 0; i < array1.length; i++) {
+      if (array1[i] !== array2[i]) {
+        return false;
+      }
+    }
+
     return true;
   }
 
