@@ -79,24 +79,8 @@ public class HierarchyHelpertextEnh {
 
 	public void rollbackkpi113() {
 		Document newField = new Document(HIERARCHY_INFO, null);
-		Document query1 = new Document(LEVEL, 1);
 		Document update1 = new Document(UNSET, newField);
-		mongoTemplate.getCollection(HIERARCHY_LEVELS).updateOne(query1, update1);
-
-		Document newField2 = new Document(HIERARCHY_INFO, "Industry");
-		Document query2 = new Document(LEVEL, 2);
-		Document update2 = new Document(UNSET, newField2);
-		mongoTemplate.getCollection(HIERARCHY_LEVELS).updateOne(query2, update2);
-
-		Document newField3 = new Document(HIERARCHY_INFO, null);
-		Document query3 = new Document(LEVEL, 3);
-		Document update3 = new Document(UNSET, newField3);
-		mongoTemplate.getCollection(HIERARCHY_LEVELS).updateOne(query3, update3);
-
-		Document newField4 = new Document(HIERARCHY_INFO, null);
-		Document query4 = new Document(LEVEL, 4);
-		Document update4 = new Document(UNSET, newField4);
-		mongoTemplate.getCollection(HIERARCHY_LEVELS).updateOne(query4, update4);
+		mongoTemplate.getCollection(HIERARCHY_LEVELS).updateMany(new Document(), update1);
 
 	}
 }
