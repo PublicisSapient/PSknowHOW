@@ -72,7 +72,7 @@ describe('ExecutiveV2Component', () => {
   const filterApplyDataWithNoFilter = {};
   const filterApplyDataWithScrum = { kpiList: [{ id: '5d3013be4020938b42c23ba7', kpiId: 'kpi8', kpiName: 'Code Build Time', isDeleted: 'False', kpiCategory: 'Productivity', kpiUnit: 'min', kpiSource: 'Jenkins', maxValue: '100', kanban: false, chartType: 'gaugeChart' }], ids: ['Speedy 2.0_62503_Speedy 2.0'], level: 3, selectedMap: { hierarchyLevelOne: ['ASDFG_hierarchyLevelOne'], Project: ['Speedy 2.0_62503_Speedy 2.0'], SubProject: [], Sprint: [], Build: [], Release: [], Squad: [], Individual: [] } };
   const filterApplyDataWithKanban = { kpiList: [{ id: '5d3013be4020938b42c23bd0', kpiId: 'kpi66', kpiName: 'Code Build Time', isDeleted: 'False', kpiCategory: 'Productivity', kpiUnit: 'min', kpiSource: 'Jenkins', maxValue: '100', kanban: true, chartType: 'gaugeChart' }], ids: ['Date Range'], level: 5, selectedMap: { hierarchyLevelOne: ['ASDFG_hierarchyLevelOne'], Project: [], SubProject: [], Date: ['Date Range'], Build: [], Release: [], Squad: [], Individual: [] }, startDate: '2019-04-30T18:30:00.000Z', endDate: '2019-08-08T11:00:24.000Z' };
-  const selectedTab = 'mydashboard';
+  const selectedTab = 'my-knowhow';
 
   const dashConfigData = require('../../../test/resource/fakeShowHideApi.json');
 
@@ -2409,7 +2409,6 @@ describe('ExecutiveV2Component', () => {
     }
   ]
   beforeEach(() => {
-
     service = new SharedService();
 
     const routes: Routes = [
@@ -2457,9 +2456,6 @@ describe('ExecutiveV2Component', () => {
       .compileComponents();
 
   });
-
-
-
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ExecutiveV2Component);
@@ -7518,7 +7514,7 @@ describe('ExecutiveV2Component', () => {
           "CLOSED"
         ]
       },
-      "selectedTab": "mydashboard",
+      "selectedTab": "my-knowhow",
       "isAdditionalFilters": false,
       "makeAPICall": true,
       "loading": true,
@@ -7803,7 +7799,6 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
     }];
-    component.masterData = fakeMasterData;
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListZypher });
     const postZypherSpy = spyOn(component, 'postZypherKpi');
     component.groupZypherKpi(['kpi17']);
@@ -7816,7 +7811,6 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
     }];
-    component.masterData = fakeMasterData;
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
     const postJiraSpy = spyOn(component, 'postJiraKpi');
     component.groupJiraKpi(['kpi17']);
@@ -7830,7 +7824,6 @@ describe('ExecutiveV2Component', () => {
       kpiName: 'Unit Test Coverage'
     }];
     component.selectedTab = 'release';
-    component.masterData = fakeMasterData;
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
     const postJiraSpy = spyOn(component, 'postJiraKpi');
     component.groupJiraKpi(['kpi17']);
@@ -7844,7 +7837,6 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
     }];
-    component.masterData = fakeMasterData;
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListBitBucket });
     const postBitBucketSpy = spyOn(component, 'postBitBucketKpi');
     component.groupBitBucketKpi(['kpi17']);
@@ -7986,11 +7978,12 @@ describe('ExecutiveV2Component', () => {
           subaccount: [],
           project: [],
           sprint: [],
-          sqd: []
+          sqd: [],
+          release: ['release1']
         },
         level: 1
       },
-      selectedTab: 'My Test1',
+      selectedTab: 'Quality',
       isAdditionalFilters: false,
       makeAPICall: true
     };
@@ -8007,6 +8000,7 @@ describe('ExecutiveV2Component', () => {
       },
       shown: true
     }];
+    component.configGlobalData = component.updatedConfigGlobalData;
     component.kanbanActivated = false;
     component.selectedtype = 'Scrum';
 
@@ -8020,6 +8014,56 @@ describe('ExecutiveV2Component', () => {
     component.receiveSharedData(event);
 
     expect(spyJenkins).toHaveBeenCalled();
+  });
+
+  it('should set release end date', () => {
+    const filterData = [
+      {
+        nodeId: 'release1',
+        labelName: 'release',
+        releaseEndDate: '2023-01-01'
+      },
+      {
+        nodeId: 'release2',
+        labelName: 'release',
+        releaseEndDate: '2023-01-02'
+      }
+    ];
+    const filterApplyData = {
+      selectedMap: {
+        release: ['release1']
+      }
+    };
+    const selectedRelease = filterData.find(x => x.nodeId === filterApplyData.selectedMap.release[0] && x.labelName.toLowerCase() === 'release');
+    const endDate = new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0];
+    component.releaseEndDate = endDate;
+    expect(component.releaseEndDate).toEqual('2023-01-01');
+  });
+
+  it('should set release end date to undefined if selectedRelease is undefined', () => {
+    const filterData = [
+      {
+        nodeId: 'release1',
+        labelName: 'release',
+        releaseEndDate: '2023-01-01'
+      },
+      {
+        nodeId: 'release2',
+        labelName: 'release',
+        releaseEndDate: '2023-01-02'
+      }
+    ];
+    const filterApplyData = {
+      selectedMap: {
+        release: [undefined]
+      }
+    };
+    component.filterData = filterData;
+    component.filterApplyData = filterApplyData;
+    const selectedRelease = filterData.find(x => x.nodeId === filterApplyData.selectedMap.release[0] && x.labelName.toLowerCase() === 'release');
+    const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
+    component.releaseEndDate = endDate;
+    expect(component.releaseEndDate).toBeUndefined();
   });
 
   it('should make post Sonar call', fakeAsync(() => {
@@ -12812,22 +12856,6 @@ describe('ExecutiveV2Component', () => {
     expect(component.handleSelectedOption).toHaveBeenCalledTimes(2);
   });
 
-  it('should return an empty string when the master data is null', () => {
-    component.masterData = null;
-    const kpiId = 'kpi11';
-    const expectedKpiName = ' ';
-    const actualKpiName = component.getKPIName(kpiId);
-    expect(actualKpiName).toEqual(expectedKpiName);
-  });
-
-  it('should return an empty string when the KPI list in the master data is empty', () => {
-    component.masterData = { kpiList: [] };
-    const kpiId = 'kpi11';
-    const expectedKpiName = ' ';
-    const actualKpiName = component.getKPIName(kpiId);
-    expect(actualKpiName).toEqual(expectedKpiName);
-  });
-
   it('should return the correct latest value, trend value, and unit when item.value is not empty and trendCalculative is true', () => {
     const kpiData = {
       kpiDetail: {
@@ -13915,8 +13943,33 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi55',
       kpiName: 'Ticket Open vs Closed rate by type'
     }];
+    component.updatedConfigGlobalData = [{
+      kpiId: 'kpi54',
+      kpiName: 'Ticket Open vs Closed rate by Priority',
+      isEnabled: true,
+      order: 23,
+      kpiDetail: {
+        kanban: true,
+        kpiSource: 'Jira',
+        kpiCategory: 'Quality',
+        groupId: 1
+      },
+      shown: true
+    }, {
+      kpiId: 'kpi55',
+      kpiName: 'Ticket Open vs Closed rate by type',
+      isEnabled: true,
+      order: 23,
+      kpiDetail: {
+        kanban: true,
+        kpiSource: 'Jira',
+        kpiCategory: 'Quality',
+        groupId: 1
+      },
+      shown: true
+    }];
+    component.configGlobalData = component.updatedConfigGlobalData;
     component.jiraKpiData = {};
-    component.masterData = fakeMasterData;
     component.kpiJira = {};
     spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJiraKanban });
     const spy = spyOn(component, 'postJiraKanbanKpi');
@@ -13931,7 +13984,6 @@ describe('ExecutiveV2Component', () => {
       kpiName: 'Unit Test Coverage'
     }];
     component.kpiListSonar = {};
-    component.masterData = fakeMasterData;
     spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListSonarKanban });
     const spy = spyOn(component, 'postSonarKanbanKpi');
     component.groupSonarKanbanKpi(['kpi62']);
@@ -13944,7 +13996,6 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi66',
       kpiName: 'Code Build Time'
     }];
-    component.masterData = fakeMasterData;
     spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJenkinsKanban });
     const spy = spyOn(component, 'postJenkinsKanbanKpi');
     component.groupJenkinsKanbanKpi(['kpi66']);
@@ -13957,7 +14008,6 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi63',
       kpiName: 'Regression Automation Coverage'
     }];
-    component.masterData = fakeMasterData;
     spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListZypherKanban });
     const spy = spyOn(component, 'postZypherKanbanKpi');
     component.groupZypherKanbanKpi(['kpi63']);
@@ -13970,7 +14020,6 @@ describe('ExecutiveV2Component', () => {
       kpiId: 'kpi65',
       kpiName: 'Number of Check-ins'
     }];
-    component.masterData = fakeMasterData;
     spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListBitbucketKanban });
     const spy = spyOn(component, 'postBitBucketKanbanKpi');
     component.groupBitBucketKanbanKpi(['kpi65']);
@@ -14154,12 +14203,12 @@ describe('ExecutiveV2Component', () => {
         }
       }
     ];
-  
+
     spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(mockGetData));
     spyOn(helperService, 'createKpiWiseId').and.returnValue(mockGetData);
-  
+
     component.postJiraKPIForRelease(mockPostData, 'jira');
-  
+
     expect(httpService.postKpiNonTrend).toHaveBeenCalledWith(mockPostData, 'jira');
     expect(helperService.createKpiWiseId).toHaveBeenCalledWith(mockGetData);
     // expect(component.jiraKpiData).toEqual(mockGetData);
@@ -14231,12 +14280,12 @@ describe('ExecutiveV2Component', () => {
     const mockGetData = {
       error: 'API call failed'
     };
-  
+
     spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(mockGetData));
     spyOn(helperService, 'createKpiWiseId').and.returnValue(mockGetData);
-  
+
     component.postJiraKPIForRelease(mockPostData, 'jira');
-  
+
     expect(httpService.postKpiNonTrend).toHaveBeenCalledWith(mockPostData, 'jira');
     expect(helperService.createKpiWiseId).not.toHaveBeenCalled();
     expect(component.jiraKpiData).toEqual(mockGetData);
@@ -14308,12 +14357,12 @@ describe('ExecutiveV2Component', () => {
     const mockGetData = {
       error: 'API call failed'
     };
-  
+
     spyOn(httpService, 'postKpi').and.returnValue(of(mockGetData));
     spyOn(helperService, 'createKpiWiseId').and.returnValue(mockGetData);
-  
+
     component.postBitBucketKpi(mockPostData, 'bitbucket');
-  
+
     expect(httpService.postKpi).toHaveBeenCalledWith(mockPostData, 'bitbucket');
     expect(helperService.createKpiWiseId).not.toHaveBeenCalled();
     expect(component.bitBucketKpiData).toEqual(mockGetData);
@@ -14383,19 +14432,19 @@ describe('ExecutiveV2Component', () => {
       "label": "release"
     };
     const mockGetData = null;
-  
+
     spyOn(httpService, 'postKpi').and.returnValue(of(mockGetData));
     spyOn(helperService, 'createKpiWiseId').and.returnValue(mockGetData);
-  
+
     component.postJenkinsKpi(mockPostData, 'jenkins');
-  
+
     expect(httpService.postKpi).toHaveBeenCalledWith(mockPostData, 'jenkins');
     expect(helperService.createKpiWiseId).not.toHaveBeenCalled();
     // expect(component.jenkinsKpiData).toEqual(mockGetData);
   });
 
-  
-  
+
+
   it('should handle error response and update jiraKpiData', () => {
     const mockPostData = {
       "kpiList": [
@@ -14815,48 +14864,48 @@ describe('ExecutiveV2Component', () => {
       "label": "release"
     };
     const mockErrorData = {};
-  
+
     spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(mockErrorData));
-  
+
     component.postJiraKPIForRelease(mockPostData, 'jira');
-  
+
     expect(httpService.postKpiNonTrend).toHaveBeenCalledWith(mockPostData, 'jira');
     expect(component.jiraKpiData).toEqual(mockErrorData);
   });
-  
+
   it('should handle selected option on release when event is an object', () => {
     const mockEvent = {
       filter1: ['value1', 'value2'],
       filter2: ['value3']
     };
     const mockKpi = { kpiId: 'kpi1' };
-  
+
     component.handleSelectedOptionOnRelease(mockEvent, mockKpi);
-  
+
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual(mockEvent);
   });
-  
+
   it('should handle selected option on release when event is not an object', () => {
     const mockEvent = 'value1';
     const mockKpi = { kpiId: 'kpi1' };
-  
+
     component.handleSelectedOptionOnRelease(mockEvent, mockKpi);
-  
+
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual({ filter1: [mockEvent] });
   });
-  
+
   it('should delete empty values from event object', () => {
     const mockEvent = {
       filter1: [],
       filter2: ['value1']
     };
     const mockKpi = { kpiId: 'kpi1' };
-  
+
     component.handleSelectedOptionOnRelease(mockEvent, mockKpi);
-  
+
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual({ filter2: ['value1'] });
   });
-  
+
   it('should get table data for kpi when trendValueList dont have filter when kpi name is availiable', () => {
     component.allKpiArray = [{
       kpiName: 'abc'
@@ -14906,47 +14955,47 @@ describe('ExecutiveV2Component', () => {
     component.getTableData('kpi14', 0, enabledKpi);
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
   });
-  
+
   it('should return true when data contains at least one numeric value', () => {
     const mockData = [
       { data: 'value1' },
       { data: 2 },
       { value: [{ data: 'value2' }, { data: 3 }] },
     ];
-  
+
     const result = component.checkIfDataPresent(mockData);
-  
+
     expect(result).toBeTrue();
   });
-  
+
   it('should return false when data does not contain any numeric value', () => {
     const mockData = [
       { data: 'value1' },
       { data: 'value2' },
       { value: [{ data: 'value3' }, { data: 'value4' }] },
     ];
-  
+
     const result = component.checkIfDataPresent(mockData);
-  
+
     expect(result).toBeFalse();
   });
-  
+
   it('should return false when data is undefined', () => {
     const mockData = undefined;
-  
+
     const result = component.checkIfDataPresent(mockData);
-  
+
     expect(result).toBeFalse();
   });
-  
+
   it('should return false when data is an empty array', () => {
     const mockData = [];
-  
+
     const result = component.checkIfDataPresent(mockData);
-  
+
     expect(result).toBeFalse();
   });
-  
+
   it('should return the correct chart type when kpiId exists in updatedConfigGlobalData', () => {
     const mockKpiId = 'kpi1';
     component.updatedConfigGlobalData = [{
@@ -14957,15 +15006,15 @@ describe('ExecutiveV2Component', () => {
       }
     }];
     const result = component.getKpiChartType(mockKpiId);
-  
+
     expect(result).toEqual('line');
   });
-  
+
   it('should return undefined when kpiId does not exist in updatedConfigGlobalData', () => {
     const mockKpiId = 'kpi4';
     component.updatedConfigGlobalData = [];
     const result = component.getKpiChartType(mockKpiId);
-  
+
     expect(result).toBeUndefined();
   });
 
@@ -15318,12 +15367,12 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData['kpi143']).toEqual([{
       "data": "API POD 2 - Account Management",
       "value": [
-          {
-              "data": "0",
-              "value": {}
-          }
+        {
+          "data": "0",
+          "value": {}
+        }
       ]
-  }]);
+    }]);
   });
 
   it('should set selectedKPITab to the provided tab', () => {

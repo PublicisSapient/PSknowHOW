@@ -127,24 +127,30 @@ describe('HeaderComponent', () => {
     expect(component.notificationList).not.toBe(null);
   });
 
-  it("should navigate to /dashboard/mydashboard when previousSelectedTab is Config", () => {
+  it("should navigate to /dashboard/my-knowhow when previousSelectedTab is Config", () => {
     const navigateSpy = spyOn(mockRouter, 'navigate');
     spyOnProperty(mockRouter, 'url', 'get').and.returnValue('/dashboard/Config');
     component.navigateToMyKnowHOW();
-    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/mydashboard']);
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/my-knowhow']);
   });
 
-  it("should navigate to /dashboard/mydashboard when previousSelectedTab is Help", () => {
+  it("should navigate to /dashboard/my-knowhow when previousSelectedTab is Help", () => {
     const navigateSpy = spyOn(mockRouter, 'navigate');
     spyOnProperty(mockRouter, 'url', 'get').and.returnValue('/dashboard/Help');
     component.navigateToMyKnowHOW();
-    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/mydashboard']);
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/my-knowhow']);
   });
 
-  it("should not navigate to /dashboard/mydashboard when previousSelectedTab is not Config or Help", () => {
+  it("should not navigate to /dashboard/my-knowhow when previousSelectedTab is not Config or Help", () => {
     const navigateSpy = spyOn(mockRouter, 'navigate');
     spyOnProperty(mockRouter, 'url', 'get').and.returnValue('/dashboard/SomeOtherTab');
     component.navigateToMyKnowHOW();
-    expect(navigateSpy).not.toHaveBeenCalledWith(['/dashboard/mydashboard']);
+    expect(navigateSpy).not.toHaveBeenCalledWith(['/dashboard/my-knowhow']);
+  });
+
+  it('should call helperService.logoutHttp() when logout() is called', () => {
+    spyOn(helperService, 'logoutHttp');
+    component.logout();
+    expect(helperService.logoutHttp).toHaveBeenCalled();
   });
 });

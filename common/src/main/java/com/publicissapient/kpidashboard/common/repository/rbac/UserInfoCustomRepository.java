@@ -32,5 +32,5 @@ public interface UserInfoCustomRepository {
 	 * @param basicProjectConfigId basicProjectConfigId
 	 * @return List<UserInfo>
 	 */
-	List<UserInfo> findAdminUserOfProject(String basicProjectConfigId);
+	List<UserInfo> findAdminUserOfProject(List<String> basicProjectConfigId);
 }

@@ -75,7 +75,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
     this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
-    this.selectedDayType = 'Weeks';
+
     this.dateRangeFilter = {
       "types": [
         "Days",
@@ -95,6 +95,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         15
       ]
     };
+    this.selectedDayType = 'Weeks';
     this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     this.subscriptions.push(
@@ -113,14 +114,24 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
 
+          /**TODO: resetting the date filter on tab change for now */
+          // this.selectedDayType = 'Weeks';
+          // this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+          // this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+          /** */
+
           if (this.selectedType.toLowerCase() === 'kanban') {
             this.kanban = true;
+            if (!this.dateRangeFilter.types.includes('Months')) {
+              this.dateRangeFilter.types.push('Months');
+            }
           } else {
             this.kanban = false;
+            this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
           }
           this.processBoardData(this.boardData);
 
-          if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release' || this.selectedTab.toLowerCase() === 'dora' || this.selectedTab.toLowerCase() === 'developer' || this.selectedTab.toLowerCase() === 'maturity') {
+          if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release' || this.selectedTab.toLowerCase() === 'dora' || this.selectedTab.toLowerCase() === 'developer' || this.selectedTab.toLowerCase() === 'kpi-maturity') {
             this.showChart = 'chart';
             this.service.setShowTableView(this.showChart);
           }
@@ -262,11 +273,47 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   removeFilter(id) {
+    let stateFilters = this.helperService.getBackupOfFilterSelectionState();
     if (Object.keys(this.colorObj).length > 1) {
       delete this.colorObj[id];
-      let selectedFilters = this.filterDataArr[this.selectedType][this.selectedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
-      this.handlePrimaryFilterChange(selectedFilters);
-      this.helperService.setBackupOfFilterSelectionState({ 'primary_level': selectedFilters });
+      if (!stateFilters['additional_level']) {
+        let selectedFilters = this.filterDataArr[this.selectedType][this.selectedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
+        this.handlePrimaryFilterChange(selectedFilters);
+        this.service.setSelectedTrends(selectedFilters);
+        this.helperService.setBackupOfFilterSelectionState({ 'primary_level': selectedFilters });
+      } else {
+        if (typeof this.selectedLevel === 'string') {
+          stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
+        } else {
+          stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
+        }
+
+        // Object.keys(stateFilters['additional_level']).forEach((level) => {
+        //   Object.keys(stateFilters['additional_level'][level]).forEach(key => {
+        //     stateFilters['additional_level'][level][key] = stateFilters['additional_level'][level][key].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
+        //   })
+        // });
+
+        Object.keys(stateFilters['additional_level']).forEach((level) => {
+          stateFilters['additional_level'][level] = stateFilters['additional_level'][level].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
+          if (!stateFilters['additional_level'][level]?.length) {
+            delete stateFilters['additional_level'][level];
+          }
+        });
+
+        if (!Object.keys(stateFilters['additional_level']).length) {
+          delete stateFilters['additional_level'];
+        }
+
+        this.filterApplyData['selectedMap']['project'] = stateFilters['primary_level'].map((proj) => proj.nodeId);
+        this.service.setSelectedTrends(stateFilters['primary_level']);
+        if (!stateFilters['additional_level'] && stateFilters['primary_level']) {
+          this.handlePrimaryFilterChange(stateFilters['primary_level']);
+        } else {
+          this.handlePrimaryFilterChange(stateFilters);
+        }
+        this.helperService.setBackupOfFilterSelectionState(stateFilters);
+      }
     }
   }
 
@@ -310,23 +357,46 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handlePrimaryFilterChange(event) {
+    if (event['additional_level']) {
+      Object.keys(event['additional_level']).forEach((key) => {
+        if (!event['additional_level'][key]?.length) {
+          delete event['additional_level'][key];
+        }
+      });
+
+      if (!Object.keys(event['additional_level'])?.length) {
+        delete event['additional_level'];
+        event = event['primary_level'];
+      }
+    }
+
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
+      /**TODO: resetting the date filter on filter change for now */
+      // this.selectedDayType = 'Weeks';
+      // this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+      // this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+      /** */
+
       // set selected projects(trends)
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
         this.service.setSelectedTrends(event);
       } else {
         this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
       }
-
       // Populate additional filters on MyKnowHOW, Speed and Quality
       if (this.selectedTab.toLowerCase() !== 'developer') {
         this.additionalFiltersArr = [];
-        this.populateAdditionalFilters(event);
+        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+        if (event && event[0] && event[0]?.labelName?.toLowerCase() === 'project') {
+          this.populateAdditionalFilters(event);
+        } else if (event && event[0]) {
+          this.populateAdditionalFilters(event.map((e) => e.parentId));
+        }
       }
       if (event.length === 1) {
         this.getProcessorsTraceLogsForProject();
       }
-      this.previousFilterEvent = [].concat(event);
+      this.previousFilterEvent = event;
       this.setColors(event);
       this.filterApplyData['level'] = event[0].level;
       this.filterApplyData['label'] = event[0].labelName;
@@ -388,46 +458,61 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
       }
 
-      if (this.selectedTab?.toLowerCase() === 'iteration') {
+      if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'release') {
         this.setSprintDetails(event);
+        this.service.setSprintForRnR(event[0]);
       } else {
         this.additionalData = false;
       }
 
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
-      // Promise.resolve(() => {
-      if (this.selectedLevel) {
-        if (typeof this.selectedLevel === 'string') {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+      if (this.filterDataArr[this.selectedType]) {
+        // Promise.resolve(() => {
+        if (this.selectedLevel) {
+          if (typeof this.selectedLevel === 'string') {
+            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+          } else {
+            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+          }
         } else {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
         }
-      } else {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+        // });
       }
-      // });
     } else if (event && event['additional_level']) {
       if (this.selectedTab.toLowerCase() !== 'developer') {
         setTimeout(() => {
           this.additionalFiltersArr = [];
-          this.populateAdditionalFilters(this.previousFilterEvent);
-        }, 100);
+          this.populateAdditionalFilters(event['primary_level']);
+        }, 0);
       }
-      Object.keys(event['additional_level']).forEach((key) => {
-        this.handleAdditionalChange(event['additional_level'][key]);
-      });
+      this.previousFilterEvent['additional_level'] = event['additional_level'];
+      this.previousFilterEvent['primary_level'] = event['primary_level'];
+
+      if (!event['additional_level']) {
+        this.handlePrimaryFilterChange(event);
+      } else {
+        Object.keys(event['additional_level']).forEach(key => {
+          this.handleAdditionalChange({ [key]: event['additional_level'][key] })
+        });
+      }
+    }
+
+    if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event && event[0]?.labelName === 'project') {
+      const allSprints = this.filterDataArr[this.selectedType]['sprint'];
+      const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId))
+      if (currentProjectSprints.length) {
+        this.service.setSprintForRnR(currentProjectSprints[0])
+      }
     }
     this.compileGAData(event);
   }
 
   setSprintDetails(event) {
-    const currentDate = new Date().getTime();
-    const stopDate = new Date(event[0].sprintEndDate).getTime();
-    const timeRemaining = stopDate - currentDate;
-    const millisecondsPerDay = 24 * 60 * 60 * 1000;
-    this.daysRemaining = Math.ceil(timeRemaining / millisecondsPerDay) < 0 ? 0 : Math.ceil(timeRemaining / millisecondsPerDay);
-    const startDateFormatted = this.formatDate(event[0].sprintStartDate?.split('T')[0]);
-    const endDateFormatted = this.formatDate(event[0].sprintEndDate?.split('T')[0]);
+    const startDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintStartDate' : 'releaseStartDate',
+      endDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintEndDate' : 'releaseEndDate';
+    const startDateFormatted = this.formatDate(event[0][startDatePropName]?.split('T')[0]);
+    const endDateFormatted = this.formatDate(event[0][endDatePropName]?.split('T')[0]?.split('T')[0]);
     this.combinedDate = `${startDateFormatted} - ${endDateFormatted}`;
     if (JSON.stringify(event[0]) !== '{}') {
       this.additionalData = true;
@@ -440,18 +525,38 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   formatDate(dateString) {
-    const date = new Date(dateString);
-
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('default', { month: 'short' });
-    const year = String(date.getFullYear()).slice(-2);
-
-    return `${day} ${month}'${year}`;
+    if (dateString !== '') {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = date.toLocaleString('default', { month: 'short' });
+      const year = String(date.getFullYear()).slice(-2);
+      return `${day} ${month}'${year}`;
+    } else {
+      return 'N/A';
+    }
   }
 
   handleAdditionalChange(event) {
+    let level = Object.keys(event)[0];
+    event = event[level];
+    if (event && event?.length) {
+      if (!this.previousFilterEvent['additional_level']) {
+        this.previousFilterEvent['additional_level'] = {};
+      }
+      this.previousFilterEvent['additional_level'][event[0].labelName] = event;
+      this.service.setSprintForRnR(event[event.length - 1])
+    }
     if (!event?.length) {
-      this.handlePrimaryFilterChange(this.previousFilterEvent);
+      this.filterApplyData['selectedMap'][level] = [];
+      delete this.previousFilterEvent['additional_level'][level];
+      if (!Object.keys(this.previousFilterEvent['additional_level'])?.length) {
+        delete this.previousFilterEvent['additional_level'];
+      }
+      if (!this.previousFilterEvent['additional_level']) {
+        this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level'] ? this.previousFilterEvent['primary_level'] : this.previousFilterEvent);
+      } else {
+        this.handlePrimaryFilterChange(this.previousFilterEvent);
+      }
       return;
     }
     this.compileGAData(event);
@@ -484,61 +589,81 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.toggleDateDropdown = false;
-    this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
-    this.filterApplyData['ids'] = [this.selectedDateValue];
-
-    if (this.selectedLevel) {
-      if (typeof this.selectedLevel === 'string') {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
-      } else {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
-      }
+    if (this.filterApplyData && this.filterApplyData['selectedMap']) {
+      this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
     } else {
-      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+      this.filterApplyData['selectedMap'] = {};
+      this.filterApplyData['selectedMap']['date'] = [this.selectedDayType];
+    }
+    this.filterApplyData['ids'] = [this.selectedDateValue];
+    if (this.filterDataArr[this.selectedType]) {
+      if (this.selectedLevel) {
+        if (typeof this.selectedLevel === 'string') {
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+        } else {
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+        }
+      } else {
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+      }
     }
   }
 
   populateAdditionalFilters(event) {
-    let selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
-    this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
-      this.additionalFiltersArr['filter' + (index + 1)] = [];
-
-      let allFilters = this.filterDataArr[this.selectedType] && this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] ? this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] : [];
-      selectedProjectIds.forEach(nodeId => {
-        if (allFilters?.length) {
-          this.additionalFiltersArr['filter' + (index + 1)].push(...allFilters?.filter((filterItem) => {
-            let parentId = '';
-            if (addtnlFilter.defaultLevel.labelName === 'sqd' && !this.kanban) {
-              parentId = filterItem.parentId.substring(filterItem.parentId.indexOf('_') + 1, filterItem.parentId.length)
-            } else {
-              parentId = filterItem.parentId;
-            }
-            return parentId === nodeId
-          })
-          );
-        } else {
-          this.additionalFiltersArr['filter' + (index + 1)] = [];
-        }
-      });
-
-      // make arrays unique
-      let uniqueIds = new Set();
-      this.additionalFiltersArr['filter' + (index + 1)].forEach(element => {
-        uniqueIds.add(element.nodeId);
-      });
-      let uniqueIdsArr = Array.from(uniqueIds);
-      let uniqueObjArr = [];
-      for (let uniqueId of uniqueIdsArr) {
-        let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)].filter(f => f.nodeId === uniqueId)[0];
-        uniqueObjArr.push({
-          ...uniqueObj
-        });
-        // continue;
+    if (!Array.isArray(event)) {
+      event = [event];
+    }
+    if (event?.length && event[0]) {
+      let selectedProjectIds;
+      if (event[0].labelName === 'project') {
+        selectedProjectIds = [...new Set(event.map((item) => item.nodeId))];
+      } else if (event[0] && typeof event[0] !== 'string') {
+        selectedProjectIds = [...new Set(event.map((item) => item.parentId))];
+      } else if (typeof event[0] === 'string') {
+        selectedProjectIds = [...new Set(event)];
       }
-      this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
-    });
+      this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
+        this.additionalFiltersArr['filter' + (index + 1)] = [];
 
-    this.service.setAdditionalFilters(this.additionalFiltersArr);
+        let allFilters = this.filterDataArr[this.selectedType] && this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] ? this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] : [];
+        selectedProjectIds.forEach(nodeId => {
+          if (allFilters?.length) {
+            this.additionalFiltersArr['filter' + (index + 1)].push(...allFilters?.filter((filterItem) => {
+              let parentId = '';
+              if (addtnlFilter.defaultLevel.labelName === 'sqd' && !this.kanban) {
+                parentId = filterItem.parentId.substring(filterItem.parentId.indexOf('_') + 1, filterItem.parentId.length)
+              } else {
+                parentId = filterItem.parentId;
+              }
+              return parentId === nodeId
+            })
+            );
+          } else {
+            this.additionalFiltersArr['filter' + (index + 1)] = [];
+          }
+        });
+
+        // make arrays unique
+        let uniqueIds = new Set();
+        this.additionalFiltersArr['filter' + (index + 1)].forEach(element => {
+          uniqueIds.add(element.nodeId);
+        });
+        let uniqueIdsArr = Array.from(uniqueIds);
+        let uniqueObjArr = [];
+        for (let uniqueId of uniqueIdsArr) {
+          let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)].filter(f => f.nodeId === uniqueId)[0];
+          uniqueObjArr.push({
+            ...uniqueObj
+          });
+          // continue;
+        }
+        this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
+      });
+      if (this.selectedTab !== 'iteration') {
+        this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
+      }
+      this.service.setAdditionalFilters(this.additionalFiltersArr);
+    }
   }
 
   getProcessorsTraceLogsForProject() {
@@ -608,6 +733,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   compileGAData(selectedFilterArray) {
+    if (selectedFilterArray && selectedFilterArray['additional_level']) {
+      selectedFilterArray = selectedFilterArray['additional_level'][Object.keys(selectedFilterArray['additional_level'])[0]];
+    } else if (selectedFilterArray['primary_level']) {
+      selectedFilterArray = selectedFilterArray['primary_level'];
+    } else if (!selectedFilterArray) {
+      return;
+    }
     const gaArray = selectedFilterArray?.map((item) => {
       const catArr = ['category1', 'category2', 'category3', 'category4', 'category5', 'category6'];
 

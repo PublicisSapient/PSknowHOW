@@ -3508,16 +3508,13 @@ describe('IterationComponent', () => {
     });
 
     it('should group the kpiJira and call postJiraKpi when the index is 2', () => {
-        const masterData = {
-            kpiList: [
+        component.configGlobalData = [
                 { kpiId: 'kpi154', groupId: 'group-1' },
                 { kpiId: 'kpi155', groupId: 'group-2' },
                 { kpiId: 'kpi156', groupId: 'group-3' },
-            ],
-        };
+        ];
         const filterApplyData = {};
         const filterData = {};
-        component.masterData = masterData;
         component.filterApplyData = filterApplyData;
         component.filterData = filterData;
         const e = { index: 2 };

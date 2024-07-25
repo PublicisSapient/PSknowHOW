@@ -32,9 +32,9 @@ describe('NavNewComponent', () => {
   beforeEach(async () => {
 
     const routes: Routes = [
-      { path: 'dashboard/mydashboard', component: ExecutiveV2Component },
+      { path: 'dashboard/my-knowhow', component: ExecutiveV2Component },
       { path: 'dashboard/dashboard', component: ExecutiveV2Component },
-      { path: 'dashboard/Maturity', component: MaturityComponent },
+      { path: 'dashboard/kpi-maturity', component: MaturityComponent },
     ];
 
 
@@ -72,12 +72,12 @@ describe('NavNewComponent', () => {
     let data = response.data.userBoardConfigDTO;
     data['configDetails'] = response.data.configDetails;
     const setDashConfigSpy = spyOn(sharedService, 'setDashConfigData');
-    component.getBoardConfig();
+    component.getBoardConfig([]);
     expect(setDashConfigSpy).toHaveBeenCalledWith(data);
     expect(component.items).toEqual([
       {
         "label": "My KnowHow",
-        "slug": "mydashboard",
+        "slug": "my-knowhow",
         command: jasmine.any(Function),
       },
       {
@@ -122,7 +122,7 @@ describe('NavNewComponent', () => {
       },
       {
         "label": "Kpi Maturity",
-        "slug": "maturity",
+        "slug": "kpi-maturity",
         command: jasmine.any(Function),
       }
     ]);
@@ -130,17 +130,17 @@ describe('NavNewComponent', () => {
 
 
   it('should set the selectedTab correctly', fakeAsync(() => {
-    const obj = { boardSlug: 'mydashboard', boardName: 'My KnowHOW' };
+    const obj = { boardSlug: 'my-knowhow', boardName: 'My KnowHOW' };
     const setSelectedTypeOrTabRefreshSpy = spyOn(sharedService, 'setSelectedTypeOrTabRefresh');
     // const navigateSpy = spyOn(mockRouter, 'navigate');
     component.handleMenuTabFunctionality(obj);
-    // expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/mydashboard']);
+    // expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/my-knowhow']);
     tick(200);
-    expect(setSelectedTypeOrTabRefreshSpy).toHaveBeenCalledWith('mydashboard', 'scrum');
+    expect(setSelectedTypeOrTabRefreshSpy).toHaveBeenCalledWith('my-knowhow', 'scrum');
   }
   ));
 
-  it('should not call setDashConfigData when boardName is not "KPI Maturity"', fakeAsync(() => {
+  it('should not call setDashConfigData when boardName is not "Kpi Maturity"', fakeAsync(() => {
     const obj = { boardSlug: 'dashboard', boardName: 'Other Board' };
     const setDashConfigDataSpy = spyOn(sharedService, 'setDashConfigData');
     component.handleMenuTabFunctionality(obj);
@@ -150,11 +150,117 @@ describe('NavNewComponent', () => {
   ));
 
   xit('should navigate to the correct route', fakeAsync(() => {
-    const obj = { boardSlug: 'Maturity', boardName: 'KPI Maturity' };
+    const obj = { boardSlug: 'kpi-maturity', boardName: 'Kpi Maturity' };
 
     component.handleMenuTabFunctionality(obj);
     tick(200);
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/Maturity']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/kpi-maturity']);
   }));
-});
 
+  it('should return true if obj1 and obj2 are the same object', () => {
+    const obj = { prop: 'value' };
+
+    const result = component.deepEqual(obj, obj);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return false if obj1 or obj2 is null', () => {
+    const obj1 = { prop: 'value' };
+    const obj2 = null;
+
+    const result = component.deepEqual(obj1, obj2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return false if obj1 or obj2 is not an object', () => {
+    const obj1 = { prop: 'value' };
+    const obj2 = 'string';
+
+    const result = component.deepEqual(obj1, obj2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return false if obj1 and obj2 have different number of keys', () => {
+    const obj1 = { prop1: 'value1', prop2: 'value2' };
+    const obj2 = { prop1: 'value1' };
+
+    const result = component.deepEqual(obj1, obj2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return false if obj1 and obj2 have different keys', () => {
+    const obj1 = { prop1: 'value1' };
+    const obj2 = { prop2: 'value2' };
+
+    const result = component.deepEqual(obj1, obj2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return false if obj1 and obj2 have different values for the same key', () => {
+    const obj1 = { prop: 'value1' };
+    const obj2 = { prop: 'value2' };
+
+    const result = component.deepEqual(obj1, obj2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return true if obj1 and obj2 have the same keys and values', () => {
+    const obj1 = { prop1: 'value1', prop2: 'value2' };
+    const obj2 = { prop1: 'value1', prop2: 'value2' };
+
+    const result = component.deepEqual(obj1, obj2);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if both arrays are empty', () => {
+    const array1: string[] = [];
+    const array2: string[] = [];
+
+    const result = component.compareStringArrays(array1, array2);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return false if arrays have different lengths', () => {
+    const array1 = ['a', 'b', 'c'];
+    const array2 = ['a', 'b'];
+
+    const result = component.compareStringArrays(array1, array2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return false if arrays have different elements', () => {
+    const array1 = ['a', 'b', 'c'];
+    const array2 = ['a', 'd', 'c'];
+
+    const result = component.compareStringArrays(array1, array2);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return true if arrays have the same elements in the same order', () => {
+    const array1 = ['a', 'b', 'c'];
+    const array2 = ['a', 'b', 'c'];
+
+    const result = component.compareStringArrays(array1, array2);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if arrays have the same elements in a different order', () => {
+    const array1 = ['a', 'b', 'c'];
+    const array2 = ['c', 'a', 'b'];
+
+    const result = component.compareStringArrays(array1, array2);
+
+    expect(result).toBe(false);
+  });
+});
