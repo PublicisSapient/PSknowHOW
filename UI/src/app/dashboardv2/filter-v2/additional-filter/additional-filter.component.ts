@@ -45,8 +45,16 @@ export class AdditionalFilterComponent implements OnChanges {
 
           this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
           if (this.stateFilters && Object.keys(this.stateFilters)) {
-            Object.keys(this.stateFilters['level']).forEach((key, index) => {
-              this.selectedFilters[index] = this.stateFilters['level'][key];
+            Object.keys(this.stateFilters).forEach((key, index) => {
+              let correctIndex = 0;
+              this.additionalFilterConfig.forEach((config, index) => {
+                if (config.defaultLevel.labelName === key) {
+                  correctIndex = index;
+                }
+              });
+              if (this.stateFilters[key].length) {
+                this.selectedFilters[correctIndex] = this.stateFilters[key];
+              }
             });
           }
 
@@ -100,9 +108,8 @@ export class AdditionalFilterComponent implements OnChanges {
         for (let i = 0; i < index; i++) {
           if (e[i]) {
             this.selectedAdditionalFilterLevel[i] = e && e[i] && e[i][0] ? e[i][0]['labelName'] : this.selectedAdditionalFilterLevel[i];
-            obj['level'] = obj['level'] ? obj['level'] : {};
-            obj['level'][this.selectedAdditionalFilterLevel[i]] = e[i] ? e[i] : this.stateFilters['level'][Object.keys(this.stateFilters['level'])[i]];
-            this.onAdditionalFilterChange.emit({[this.selectedAdditionalFilterLevel[i]] : e[i]});
+            obj[this.selectedAdditionalFilterLevel[i]] = e[i] ? e[i] : this.stateFilters[Object.keys(this.stateFilters)[i]];
+            this.onAdditionalFilterChange.emit({ [this.selectedAdditionalFilterLevel[i]]: e[i] });
           }
         }
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });

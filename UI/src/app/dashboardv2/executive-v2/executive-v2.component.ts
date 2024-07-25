@@ -651,8 +651,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.jiraKpiRequest = this.httpService.postKpi(postData, source)
         .subscribe(getData => {
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
-            
-            const releaseFrequencyInd = getData.findIndex(de=>de.kpiId === 'kpi73')     
+
+            const releaseFrequencyInd = getData.findIndex(de=>de.kpiId === 'kpi73')
             if(releaseFrequencyInd !== -1){
               getData[releaseFrequencyInd].trendValueList?.map(trendData=>{
                   const valueLength = trendData.value.length;
@@ -680,9 +680,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
 
         });
-    } else {
-      this.postJiraKPIForRelease(postData, source);
+      return;
     }
+    this.postJiraKPIForRelease(postData, source);
   }
 
   postJiraKPIForRelease(postData, source) {
