@@ -262,10 +262,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.releaseEndDate = endDate;
 
       if (!this.configGlobalData?.length && $event.dashConfigData) {
-        this.configGlobalData = $event.dashConfigData[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
+        this.configGlobalData = $event.dashConfigData[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
       }
 
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+
       this.tooltip = $event.configDetails;
       this.additionalFiltersArr = {};
       this.noOfDataPoints = this.coundMaxNoOfSprintSelectedForProject($event);
@@ -291,6 +292,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.filterData = $event.filterData;
         this.filterApplyData = $event.filterApplyData;
         this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
+
+        // if (this.filterApplyData?.selectedMap['date']) {
+        //   this.updatedConfigGlobalData?.forEach((kpi) => {
+        //     kpi.kpiDetail.xaxisLabel = this.filterApplyData.selectedMap['date'][0];
+        //   });
+        // }
+
         this.selectedJobFilter = 'Select';
         this.loading = $event.loading;
         if (this.filterData?.length && $event.makeAPICall) {
@@ -655,16 +663,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.jiraKpiRequest = this.httpService.postKpi(postData, source)
         .subscribe(getData => {
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
-            
-            const releaseFrequencyInd = getData.findIndex(de=>de.kpiId === 'kpi73')     
-            if(releaseFrequencyInd !== -1){
-              getData[releaseFrequencyInd].trendValueList?.map(trendData=>{
-                  const valueLength = trendData.value.length;
-                  if(valueLength > this.tooltip.sprintCountForKpiCalculation){
-                      trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
-                  }
+
+            const releaseFrequencyInd = getData.findIndex(de => de.kpiId === 'kpi73')
+            if (releaseFrequencyInd !== -1) {
+              getData[releaseFrequencyInd].trendValueList?.map(trendData => {
+                const valueLength = trendData.value.length;
+                if (valueLength > this.tooltip.sprintCountForKpiCalculation) {
+                  trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
+                }
               })
-          }
+            }
             // creating array into object where key is kpi id
             const localVariable = this.helperService.createKpiWiseId(getData);
 
@@ -847,7 +855,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // this block populates additional filters on developer dashboard because on developer dashboard, the
     // additional filters depend on KPI response
     if (this.selectedTab.toLowerCase() === 'developer') {
-      if(!trendValueList?.length) {
+      if (!trendValueList?.length) {
         this.additionalFiltersArr = {};
         this.service.setAdditionalFilters(this.additionalFiltersArr);
       }
