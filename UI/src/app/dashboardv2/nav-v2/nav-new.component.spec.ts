@@ -140,7 +140,7 @@ describe('NavNewComponent', () => {
   }
   ));
 
-  it('should not call setDashConfigData when boardName is not "Maturity"', fakeAsync(() => {
+  it('should not call setDashConfigData when boardName is not "Kpi Maturity"', fakeAsync(() => {
     const obj = { boardSlug: 'dashboard', boardName: 'Other Board' };
     const setDashConfigDataSpy = spyOn(sharedService, 'setDashConfigData');
     component.handleMenuTabFunctionality(obj);
