@@ -40,7 +40,6 @@ export class DeveloperComponent implements OnInit {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   selectedTab = 'developer';
   subscriptions: any[] = [];
-  masterData = <any>{};
   filterData = <any>[];
   filterApplyData = <any>{};
   noOfFilterSelected = 0;
@@ -206,7 +205,6 @@ export class DeveloperComponent implements OnInit {
           this.kpiLoader = true;
         }
         const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
-        this.masterData = $event.masterData;
         this.filterData = $event.filterData;
         this.filterApplyData = $event.filterApplyData;
         this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
@@ -214,7 +212,7 @@ export class DeveloperComponent implements OnInit {
         if (this.filterData?.length && $event.makeAPICall) {
           this.noTabAccess = false;
           // call kpi request according to tab selected
-          if (this.masterData && Object.keys(this.masterData).length) {
+          if (this.configGlobalData?.length > 0) {
             this.configGlobalData = this.globalConfig[this.service.getSelectedType().toLowerCase() === 'kanban' ? 'kanban' : 'scrum'].filter((item) => item.boardName.toLowerCase() == 'developer')[0]?.kpis;
             this.processKpiConfigData();
             if (this.service.getSelectedType().toLowerCase() === 'kanban') {

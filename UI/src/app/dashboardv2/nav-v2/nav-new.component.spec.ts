@@ -32,9 +32,9 @@ describe('NavNewComponent', () => {
   beforeEach(async () => {
 
     const routes: Routes = [
-      { path: 'dashboard/mydashboard', component: ExecutiveV2Component },
+      { path: 'dashboard/my-knowhow', component: ExecutiveV2Component },
       { path: 'dashboard/dashboard', component: ExecutiveV2Component },
-      { path: 'dashboard/Maturity', component: MaturityComponent },
+      { path: 'dashboard/kpi-maturity', component: MaturityComponent },
     ];
 
 
@@ -77,7 +77,7 @@ describe('NavNewComponent', () => {
     expect(component.items).toEqual([
       {
         "label": "My KnowHow",
-        "slug": "mydashboard",
+        "slug": "my-knowhow",
         command: jasmine.any(Function),
       },
       {
@@ -122,7 +122,7 @@ describe('NavNewComponent', () => {
       },
       {
         "label": "Kpi Maturity",
-        "slug": "maturity",
+        "slug": "kpi-maturity",
         command: jasmine.any(Function),
       }
     ]);
@@ -130,17 +130,17 @@ describe('NavNewComponent', () => {
 
 
   it('should set the selectedTab correctly', fakeAsync(() => {
-    const obj = { boardSlug: 'mydashboard', boardName: 'My KnowHOW' };
+    const obj = { boardSlug: 'my-knowhow', boardName: 'My KnowHOW' };
     const setSelectedTypeOrTabRefreshSpy = spyOn(sharedService, 'setSelectedTypeOrTabRefresh');
     // const navigateSpy = spyOn(mockRouter, 'navigate');
     component.handleMenuTabFunctionality(obj);
-    // expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/mydashboard']);
+    // expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/my-knowhow']);
     tick(200);
-    expect(setSelectedTypeOrTabRefreshSpy).toHaveBeenCalledWith('mydashboard', 'scrum');
+    expect(setSelectedTypeOrTabRefreshSpy).toHaveBeenCalledWith('my-knowhow', 'scrum');
   }
   ));
 
-  it('should not call setDashConfigData when boardName is not "KPI Maturity"', fakeAsync(() => {
+  it('should not call setDashConfigData when boardName is not "Kpi Maturity"', fakeAsync(() => {
     const obj = { boardSlug: 'dashboard', boardName: 'Other Board' };
     const setDashConfigDataSpy = spyOn(sharedService, 'setDashConfigData');
     component.handleMenuTabFunctionality(obj);
@@ -150,11 +150,11 @@ describe('NavNewComponent', () => {
   ));
 
   xit('should navigate to the correct route', fakeAsync(() => {
-    const obj = { boardSlug: 'Maturity', boardName: 'KPI Maturity' };
+    const obj = { boardSlug: 'kpi-maturity', boardName: 'Kpi Maturity' };
 
     component.handleMenuTabFunctionality(obj);
     tick(200);
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/Maturity']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['dashboard/kpi-maturity']);
   }));
 
   it('should return true if obj1 and obj2 are the same object', () => {

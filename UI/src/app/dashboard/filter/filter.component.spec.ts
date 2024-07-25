@@ -297,7 +297,7 @@ const completeHierarchyData = {
   });
 
   it('when  tab is clicked and  scrum is selected', (done) => {
-    const selectedTab = 'mydashboard';
+    const selectedTab = 'my-knowhow';
     const boardId = 1;
     fixture.detectChanges();
     expect(component.kanban).toBeFalsy();
@@ -306,7 +306,7 @@ const completeHierarchyData = {
 
   it('when  tab is clicked and  kanban is selected', (done) => {
     fixture.detectChanges();
-    const selectedTab = 'mydashboard';
+    const selectedTab = 'my-knowhow';
     const boardId = 7;
     component.selectedType('Kanban');
     fixture.detectChanges();
@@ -484,7 +484,7 @@ const completeHierarchyData = {
   });
 
   it('should process master Data', () => {
-    component.selectedTab = 'Maturity';
+    component.selectedTab = 'kpi-maturity';
     const spyhandleIteration = spyOn(component, 'handleIterationFilters');
     const spyapplyChanges = spyOn(component, 'applyChanges');
     component.processMasterData(fakeMasterData);
@@ -516,11 +516,11 @@ const completeHierarchyData = {
     expect(spy).toHaveBeenCalled();
     }));
 
-  it('should set showChart as chart when selected tab is maturity', () => {
+  it('should set showChart as chart when selected tab is kpi-maturity', () => {
     component.toggleDropdown['commentSummary'] = true;
     component.ngOnInit();
-    component.selectedTab = 'maturity';
-    const fake = { selectedTab : 'maturity', selectedType : 'scrum' };
+    component.selectedTab = 'kpi-maturity';
+    const fake = { selectedTab : 'kpi-maturity', selectedType : 'scrum' };
     sharedService.onTypeOrTabRefresh.next(fake);
     expect(component.showChart).toBe('chart');
     });
@@ -1677,7 +1677,7 @@ const completeHierarchyData = {
 
     component.previousType = true;
     component.kanban= false;
-    component.selectedTab = 'MyDashboard';
+    component.selectedTab = 'my-knowhow';
     let spyDefaultFilter = spyOn(component, 'checkDefaultFilterSelection');
     component.checkIfFilterAlreadySelected();
     expect(spyDefaultFilter).toHaveBeenCalled();
@@ -1738,30 +1738,30 @@ const completeHierarchyData = {
 
     component.previousType = false;
     component.kanban=false;
-    component.selectedTab = 'Mydashboard';
+    component.selectedTab = 'my-knowhow';
     component.initializeFilterForm();
     component.checkIfFilterAlreadySelected();
     expect(component.filterForm.get('selectedTrendValue').value[0]).toEqual('Level1_hierarchyLevelOne');
   });
 
   it('should navigate To Maturity tab', inject([Router], (router: Router) => {
-    component.selectedTab = 'Maturity';
+    component.selectedTab = 'kpi-maturity';
     component.kanban = false;
     component.kpiListData = configGlobalData['data'];
     const spy = spyOn(router, 'navigateByUrl');
     const spyMaturity = spyOn(component,'checkIfMaturityTabHidden').and.returnValue(false);
     component.navigateToSelectedTab();
-    expect(spy).toHaveBeenCalledWith('/dashboard/Maturity');
+    expect(spy).toHaveBeenCalledWith('/dashboard/kpi-maturity');
   }));
 
   it('should not navigate To Maturity tab', inject([Router], (router: Router) => {
-    component.selectedTab = 'Maturity';
+    component.selectedTab = 'kpi-maturity';
     component.kanban = false;
     component.kpiListData = configGlobalData['data'];
     const spy = spyOn(router, 'navigateByUrl');
     const spyMaturity = spyOn(component,'checkIfMaturityTabHidden').and.returnValue(true);
     component.navigateToSelectedTab();
-    expect(spy).not.toHaveBeenCalledWith('/dashboard/Maturity');
+    expect(spy).not.toHaveBeenCalledWith('/dashboard/kpi-maturity');
   }));
 
   it("should get project which have atleast one release",()=>{
@@ -2291,7 +2291,7 @@ const completeHierarchyData = {
   xit('should navigate to home page', () => {
     (router as any).url = '/somepath/Config';
     component.kanban = true;
-    component.selectedTab = 'maturity';
+    component.selectedTab = 'kpi-maturity';
     component.projectIndex = 1;
     spyOn(sharedService, 'setEmptyFilter');
     spyOn(sharedService, 'setSelectedType');

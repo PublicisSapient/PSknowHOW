@@ -112,7 +112,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                         }
 
                         if (environment?.['SSO_LOGIN']) {
-                            this.router.navigate(['./dashboard/mydashboard']).then(success => {
+                            this.router.navigate(['./dashboard/my-knowhow']).then(success => {
                                 window.location.reload();
                             });
                         }
@@ -122,7 +122,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                     } else {
                         if(err?.status === 0 && err?.statusText === 'Unknown Error'&& environment.SSO_LOGIN){
                             this.service.clearAllCookies();
-                            this.router.navigate(['./dashboard/mydashboard']).then(success => {
+                            this.router.navigate(['./dashboard/my-knowhow']).then(success => {
                                 window.location.reload();
                             });
                         }else{
