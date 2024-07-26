@@ -20,7 +20,6 @@ else
             -keyout $CERT_LOC/knowhow_ssl.key \
             -subj "/C=IN/ST=HR/L=ggn/O=Security/OU=IT Department/CN=${DNS_SSL}"
     echo "Self-signed certificate created"
-    echo "your_password" > $CERT_LOC/knowhow_ssl_passphrase.txt
 
 fi
 
