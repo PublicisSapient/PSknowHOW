@@ -27,6 +27,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,6 +79,8 @@ public class JobSchedulerTest {
 	private FetchProjectConfigurationImpl fetchProjectConfiguration;
 	@Mock
 	private Job fetchIssueScrumJqlJob;
+	@Mock
+	private JiraProcessorConfig jiraProcessorConfig;
 
 	@Before
 	public void init() {
@@ -90,6 +93,7 @@ public class JobSchedulerTest {
 		List<String> projectIds = new ArrayList<>();
 		projectIds.add("projectId1");
 		projectIds.add("projectId2");
+		when(jiraProcessorConfig.getThreadCount()).thenReturn(1);
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to return a JobExecution instance
@@ -104,6 +108,7 @@ public class JobSchedulerTest {
 		// Mocking fetchBasicProjConfId to return a list of project IDs
 		List<String> projectIds = new ArrayList<>();
 		projectIds.add("projectId1");
+		when(jiraProcessorConfig.getThreadCount()).thenReturn(1);
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to throw an exception
@@ -119,6 +124,7 @@ public class JobSchedulerTest {
 		// Mocking fetchBasicProjConfId to return a list of project IDs
 		List<String> projectIds = new ArrayList<>();
 		projectIds.add("projectId1");
+		when(jiraProcessorConfig.getThreadCount()).thenReturn(1);
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to return a JobExecution instance
@@ -132,6 +138,7 @@ public class JobSchedulerTest {
 		// Mocking fetchBasicProjConfId to return a list of project IDs
 		List<String> projectIds = new ArrayList<>();
 		projectIds.add("projectId1");
+		when(jiraProcessorConfig.getThreadCount()).thenReturn(1);
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to throw an exception
@@ -146,6 +153,7 @@ public class JobSchedulerTest {
 		// Mocking fetchBasicProjConfId to return a list of project IDs
 		List<String> projectIds = new ArrayList<>();
 		projectIds.add("projectId1");
+		when(jiraProcessorConfig.getThreadCount()).thenReturn(1);
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to return a JobExecution instance
@@ -160,6 +168,7 @@ public class JobSchedulerTest {
 		// Mocking fetchBasicProjConfId to return a list of project IDs
 		List<String> projectIds = new ArrayList<>();
 		projectIds.add("projectId1");
+		when(jiraProcessorConfig.getThreadCount()).thenReturn(1);
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to throw an exception
@@ -175,6 +184,7 @@ public class JobSchedulerTest {
 		// Mocking fetchBasicProjConfId to return a list of project IDs
 		List<String> projectIds = new ArrayList<>();
 		projectIds.add("projectId1");
+		when(jiraProcessorConfig.getThreadCount()).thenReturn(1);
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to return a JobExecution instance
@@ -190,7 +200,7 @@ public class JobSchedulerTest {
 		List<String> projectIds = new ArrayList<>();
 		projectIds.add("projectId1");
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
-
+		when(jiraProcessorConfig.getThreadCount()).thenReturn(1);
 		// Mocking jobLauncher.run() to throw an exception
 		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher)
 				.run(eq(fetchIssueKanbanJqlJob), any(JobParameters.class));
