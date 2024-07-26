@@ -227,9 +227,9 @@ public class ProjectBasicConfigController {
 
 	/**
 	 *
-	 * Gets All ProjectsList with hierarchy details
+	 * Gets All Scrum ProjectsList with hierarchy details
 	 *
-	 * @return list of project list with hierarchy details
+	 * @return list of Scrum project list with hierarchy details
 	 */
 	@GetMapping(value = "/hierarchyResponses")
 	public ResponseEntity<List<HierarchyResponseDTO>> getAllHierarchyResponse(HttpServletRequest request) {

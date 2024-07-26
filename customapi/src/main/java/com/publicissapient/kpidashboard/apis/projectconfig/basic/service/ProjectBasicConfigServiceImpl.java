@@ -675,10 +675,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Override
 	public List<HierarchyResponseDTO> getHierarchyData() {
 		List<ProjectBasicConfigDTO> basicConfigDTOS = getAllProjectsBasicConfigsDTOWithoutPermission();
+		List<ProjectBasicConfigDTO> scrumProjectBasicConfigList = basicConfigDTOS.stream()
+				.filter(projectBasicConfigDTO -> !projectBasicConfigDTO.getIsKanban()).collect(Collectors.toList());
 		Map<ObjectId, List<SprintDetails>> groupedByProject = getTop5SprintDetailsGroupedByProject(
-				basicConfigDTOS.stream().map(ProjectBasicConfigDTO::getId).toList());
-		List<HierarchyResponseDTO> hierarchyResponseDTOS= new ArrayList<>();
-		for (ProjectBasicConfigDTO projectBasicConfig : basicConfigDTOS) {
+				scrumProjectBasicConfigList.stream().map(ProjectBasicConfigDTO::getId).toList());
+		List<HierarchyResponseDTO> hierarchyResponseDTOS = new ArrayList<>();
+		for (ProjectBasicConfigDTO projectBasicConfig : scrumProjectBasicConfigList) {
 			HierarchyResponseDTO dto = new HierarchyResponseDTO();
 			dto.setProjectId(projectBasicConfig.getId().toString());
 			dto.setProjectName(projectBasicConfig.getProjectName());
@@ -695,15 +697,18 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			dto.setSprintDetailsList(groupedByProject.getOrDefault(projectBasicConfig.getId(), new ArrayList<>()));
 			hierarchyResponseDTOS.add(dto);
 		}
-		return hierarchyResponseDTOS.stream().sorted(Comparator
-				.comparing(HierarchyResponseDTO::getProjectName)).collect(Collectors.toList());
+		return hierarchyResponseDTOS.stream().sorted(Comparator.comparing(HierarchyResponseDTO::getProjectName))
+				.collect(Collectors.toList());
 	}
 
 	public Map<ObjectId, List<SprintDetails>> getTop5SprintDetailsGroupedByProject(
 			List<ObjectId> basicProjectConfigIds) {
+		List<String> sprintStatusList = new ArrayList<>();
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
 		List<SprintDetails> sprintDetailsList = sprintRepository
-				.findByBasicProjectConfigIdInAndStateIgnoreCaseOrderByStartDateASC(basicProjectConfigIds,
-						SprintDetails.SPRINT_STATE_CLOSED);
+				.findByBasicProjectConfigIdInAndStateInOrderByStartDateASC(basicProjectConfigIds,
+						sprintStatusList);
 
 		// Sort by beginDate in descending order
 
