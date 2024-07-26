@@ -8003,7 +8003,8 @@ describe('ExecutiveV2Component', () => {
     component.configGlobalData = component.updatedConfigGlobalData;
     component.kanbanActivated = false;
     component.selectedtype = 'Scrum';
-
+    component.timeRemaining = 0;
+    const spy = spyOn(component, 'calcBusinessDays').and.callThrough();
     const spyJenkins = spyOn(component, 'groupJenkinsKpi');
     const spyZypher = spyOn(component, 'groupZypherKpi');
     const spyJira = spyOn(component, 'groupJiraKpi');

@@ -114,7 +114,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   isRecommendationsEnabled: boolean = false;
   kpiList: Array<string> = [];
   releaseEndDate: string = '';
-
+  timeRemaining = 0;
+  
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
@@ -257,7 +258,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap?.release?.[0] && x.labelName.toLowerCase() === 'release')[0];
       const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
       this.releaseEndDate = endDate;
-
+      const today = new Date().toISOString().split('T')[0];
+      this.timeRemaining = this.calcBusinessDays(today, endDate);
+      this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
       if (!this.configGlobalData?.length && $event.dashConfigData) {
         this.configGlobalData = $event.dashConfigData[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
         if(!this.configGlobalData) {
@@ -1853,5 +1856,34 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       maxSprints = $event?.configDetails?.sprintCountForKpiCalculation
     }
     return maxSprints;
+  }
+
+  calcBusinessDays(dDate1, dDate2) { // input given as Date objects
+    let iWeeks; let iDateDiff; let iAdjust = 0;
+    if (dDate2 < dDate1) {
+      return 0;
+    } // error code if dates transposed
+    let iWeekday1 = new Date(dDate1).getDay(); // day of week
+    let iWeekday2 = new Date(dDate2).getDay();
+    iWeekday1 = (iWeekday1 == 0) ? 7 : iWeekday1; // change Sunday from 0 to 7
+    iWeekday2 = (iWeekday2 == 0) ? 7 : iWeekday2;
+    if ((iWeekday1 > 5) && (iWeekday2 > 5)) {
+      iAdjust = 1;
+    } // adjustment if both days on weekend
+    iWeekday1 = (iWeekday1 > 5) ? 5 : iWeekday1; // only count weekdays
+    iWeekday2 = (iWeekday2 > 5) ? 5 : iWeekday2;
+
+
+    // calculate differnece in weeks (1000mS * 60sec * 60min * 24hrs * 7 days = 604800000)
+    iWeeks = Math.floor((new Date(dDate2).getTime() - new Date(dDate1).getTime()) / 604800000);
+
+    if (iWeekday1 <= iWeekday2) { //Equal to makes it reduce 5 days
+      iDateDiff = (iWeeks * 5) + (iWeekday2 - iWeekday1);
+    } else {
+      iDateDiff = ((iWeeks + 1) * 5) - (iWeekday1 - iWeekday2);
+    }
+
+    iDateDiff -= iAdjust; // take into account both days on weekend
+    return (iDateDiff + 1); // add 1 because dates are inclusive
   }
 }
