@@ -59,7 +59,7 @@ const StatusPage = () => {
     }
 
     return (
-        <div className="componentContainer w-full h-screen flex items-center text-center">
+        <div className="componentContainer w-full flex items-center text-center">
             {message === 'Login Successful' &&
                 <div id="status" className='w-full h-2/3 m-auto text-center text-green-500'>
                     <div className='w-full h-1/3 flex items-center text-center'><FaCircleCheck className='m-auto text-6xl' /></div>
