@@ -9,7 +9,6 @@ ARG GID=1000
 # Creating User
 
 RUN apk add openssl --no-cache \
-    && apk add curl --no-cache \
     && addgroup -g $GID $USER \
     && adduser -u $UID -G $USER -s /bin/sh -D $USER
 
@@ -24,7 +23,7 @@ ENV CONF_LOC="/etc/nginx" \
     # ASSETS_ARCHIVE="*.tar" \
     CERT_LOC="/etc/ssl/certs"
 
-RUN rm -rf ${CONF_LOC}/nginx.conf ${CONF_LOC}/conf.d/default.conf ${HTML_LOC}index.html
+# RUN rm -rf ${CONF_LOC}/nginx.conf ${CONF_LOC}/conf.d/default.conf ${HTML_LOC}index.html
 RUN mkdir -p ${PID_LOC}  ${UI2_LOC} /var/www/authui
 
 COPY nginx/nginx_dev.conf /tmp/nginx_dev.conf
@@ -46,11 +45,13 @@ EXPOSE 80 443
 
 RUN tar xvf ${HTML_LOC}${UI2_ASSETS_ARCHIVE} -C /var/www/authui \
     && chown -R $USER:$USER ${CONF_LOC} \
-    && chown -R $USER:$USER /var/log/nginx/ \
+    # && chown -R $USER:$USER /var/log/nginx/ \
     && chown -R $USER:$USER ${CERT_LOC} \
-    && chown -R $USER:$USER /var/ \
-    && chown -R $USER:$USER /var/run \
-    && chown -R $USER:$USER /run \
+    # && chown -R $USER:$USER /var/ \
+    # && chown -R $USER:$USER /var/run \
+    # && chown -R $USER:$USER /run \
+    && find /var -path /var/run/secrets -prune -o -exec chown $USER:$USER {} + \
+    && find /run -path /run/secrets -prune -o -exec chown -R $USER:$USER {} + \
     && apk add --no-cache libcap \
     && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx \
     && apk add --no-cache bash \
