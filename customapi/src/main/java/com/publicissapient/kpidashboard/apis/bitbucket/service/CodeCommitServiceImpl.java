@@ -275,14 +275,11 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 	}
 
 	/**
-	 * Populates validation data object.
+	 * Populates the Excel data if the request tracker ID indicates an Excel source.
 	 *
-	 * @param requestTrackerId
-	 * @param repoWiseCommitList
-	 * @param repoList
-	 * @param branchList
-	 * @param node
-	 * @param repoWiseMergeRequestList
+	 * @param requestTrackerId the ID of the request tracker, used to determine if the source is Excel
+	 * @param repoToolValidationDataList the list of repository tool validation data to be populated into the Excel
+	 * @param excelData the list of KPI Excel data to be populated
 	 */
 	private void populateExcelData(String requestTrackerId, List<RepoToolValidationData> repoToolValidationDataList,
 			List<KPIExcelData> excelData) {
@@ -292,10 +289,16 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 	}
 
 	/**
-	 * @param mergeCountForRepo
-	 * @param commitCountForRepo
-	 * @param excelDataLoader
-	 * @param mergeRequestExcelDataLoader
+	 * Sets the day-wise count for the project based on commit and merge data.
+	 *
+	 * @param mergeCountForRepo a map containing the merge count data for the repository
+	 * @param commitCountForRepo a map containing the commit count data for the repository
+	 * @param repo the tool repository object
+	 * @param projectName the name of the project
+	 * @param repoToolValidationDataList the list to store repository tool validation data
+	 * @param duration the duration for which the data is being calculated
+	 * @param dataPoints the number of data points to be calculated
+	 * @return a list of DataCount objects representing the day-wise commit and merge counts
 	 */
 	private List<DataCount> setDayWiseCountForProject(Map<String, Long> mergeCountForRepo,
 			Map<String, Long> commitCountForRepo, Tool repo, String projectName,
