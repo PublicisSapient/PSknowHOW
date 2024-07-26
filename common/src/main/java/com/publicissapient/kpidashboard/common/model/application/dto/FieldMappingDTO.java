@@ -47,8 +47,6 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	private String sprintName;
 	private String epicName;
 	private List<String> jiradefecttype;
-	private List<String> jiraDefectTypeKPI75;
-	private List<String> jiraDefectTypeKPI124;
 	private String epicLink;
 	private List<String> jiraSubTaskDefectType;
 
