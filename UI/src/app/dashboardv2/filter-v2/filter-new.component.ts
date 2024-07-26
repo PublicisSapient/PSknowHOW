@@ -490,8 +490,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.previousFilterEvent['primary_level'] = event['primary_level'];
 
       if (!event['additional_level']) {
+        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
         this.handlePrimaryFilterChange(event);
       } else {
+        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': event['additional_level'] });
         Object.keys(event['additional_level']).forEach(key => {
           this.handleAdditionalChange({ [key]: event['additional_level'][key] })
         });
