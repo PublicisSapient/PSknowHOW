@@ -22,12 +22,14 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -51,6 +53,9 @@ public class JobScheduler {
 	private static final String CURRENTTIME = "currentTime";
 	private static final String IS_SCHEDULER = "isScheduler";
 	private static final String VALUE = "true";
+	@Autowired
+	private JiraProcessorConfig jiraProcessorConfig;
+	
 	@Autowired
 	JobLauncher jobLauncher;
 	@Qualifier("fetchIssueScrumBoardJob")
@@ -83,8 +88,10 @@ public class JobScheduler {
 				false, false);
 		log.info("Scrum - Board Wise Projects : {}", scrumBoardbasicProjConfIds);
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
-		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG,
+				Runtime.getRuntime().availableProcessors() * jiraProcessorConfig.getThreadCount());
+		ExecutorService executorService = Executors
+				.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * jiraProcessorConfig.getThreadCount());
 
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
@@ -119,8 +126,10 @@ public class JobScheduler {
 				true, false);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
-		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG,
+				Runtime.getRuntime().availableProcessors() * jiraProcessorConfig.getThreadCount());
+		ExecutorService executorService = Executors
+				.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * jiraProcessorConfig.getThreadCount());
 
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
@@ -153,8 +162,10 @@ public class JobScheduler {
 		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, true);
 		List<JobParameters> parameterSets = getDynamicParameterSets(kanbanBoardbasicProjConfIds);
-		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
-		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG,
+				Runtime.getRuntime().availableProcessors() * jiraProcessorConfig.getThreadCount());
+		ExecutorService executorService = Executors
+				.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * jiraProcessorConfig.getThreadCount());
 
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
@@ -189,8 +200,10 @@ public class JobScheduler {
 				true, true);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
-		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG,
+				Runtime.getRuntime().availableProcessors() * jiraProcessorConfig.getThreadCount());
+		ExecutorService executorService = Executors
+				.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * jiraProcessorConfig.getThreadCount());
 
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {

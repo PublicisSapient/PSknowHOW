@@ -86,4 +86,5 @@ public class JiraProcessorConfig {
 	private Integer chunkSize;
 	private String uiHost;
 	private List<String> domainNames;
+	private int threadCount;
 }
