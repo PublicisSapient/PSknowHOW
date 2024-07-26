@@ -84,9 +84,9 @@ const LoginPage = ({search}) => {
     }, [search]);
 
     return (
-        <div className="componentContainer flex h-screen max-w-screen">
+        <div className="componentContainer flex max-w-screen">
             <SuiteLogos/>
-            <div className="w-2/5 p-12 h-screen bg-white-A700">
+            <div className="w-2/5 p-12 bg-white-A700">
                 
                 <PSLogo/>
                 <div className='w-full mt-8 mb-8'>
