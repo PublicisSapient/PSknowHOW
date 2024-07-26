@@ -1,7 +1,7 @@
 import React from 'react';
 import BgItem from "../../components/BgItem";
 
-const bg = ['KnowHOWGroup', 'RetrosGroup', 'APGroup'];
+const bg = ['APGroup', 'KnowHOWGroup', 'RetrosGroup'];
 
 const SuiteLogos = () => {
     const speedSuite = process.env.NODE_ENV === 'production' ? window.env['REACT_APP_SPEED_SUITE'] : process.env.REACT_APP_SPEED_SUITE;
