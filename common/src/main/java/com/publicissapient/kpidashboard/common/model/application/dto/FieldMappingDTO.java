@@ -47,6 +47,8 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	private String sprintName;
 	private String epicName;
 	private List<String> jiradefecttype;
+	private List<String> jiraDefectTypeKPI75;
+	private List<String> jiraDefectTypeKPI124;
 	private String epicLink;
 	private List<String> jiraSubTaskDefectType;
 
@@ -492,6 +494,8 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	private List<String> jiraLiveStatusKPI171;
 	private String storyFirstStatusKPI171;
 
+	private List<String> jiraIssueTypeExcludeKPI124;
+	private List<String> jiraIssueTypeExcludeKPI75;
 	/**
 	 * Get jira issue type names string [ ].
 	 *
