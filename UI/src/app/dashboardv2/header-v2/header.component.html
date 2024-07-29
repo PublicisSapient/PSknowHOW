@@ -1,0 +1,53 @@
+<header class="">
+  <nav class="p-d-flex p-align-center p-jc-between">
+
+    <div class="logo p-pt-1 p-pb-1 p-d-flex">
+      <div class="position-relative p-mr-2 die-container" *ngIf="auth_service && isSpeedSuite">
+        <img src="assets/img/Switchplatforms.svg" class="icon-dice" (click)="appItems.toggle($event)" alt="Switch" width="50"/>
+        <div class="down-arrow cursor-pointer" (click)="appItems.toggle($event)"></div>
+        <p-menu [model]="appList" [popup]="true" #appItems class="app-switch"></p-menu>
+     </div>
+      <img src="assets/img/PSKnowHowLogo.svg" alt="Logo" (click)="navigateToMyKnowHOW()"/>
+    </div>
+
+    <div class="p-d-flex p-align-center p-p-1">
+
+      <app-recent-comments></app-recent-comments>
+
+      <div class="p-p-2 rounded p-mr-3 position-relative filter-btn" role="button"
+        (click)="notification.toggle($event)">
+        <img src="../../../assets/img/ico-notifications.svg" alt="Notification" />
+        <span *ngIf="notificationCount > 0" class="count noti-count">{{notificationCount}}</span>
+      </div>
+      <p-menu #notification [popup]="true" [model]="notificationList" class="custom-menu"></p-menu>
+
+      <div class="back-btn-wraper" *ngIf="!userDetails['authorities']?.includes('ROLE_VIEWER')">
+        <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')"
+          class="back-btn-container rounded p-mr-3">
+          <button pButton pRipple class="back-btn" [disabled]="backToDashboardLoader" routerLinkActive="active"
+            icon="{{ backToDashboardLoader ? 'pi pi-spin pi-spinner' : '' }}" iconPos="left" label="BACK TO DASHBOARD"
+            (click)="navigateToDashboard()"></button>
+        </div>
+      </div>
+
+      <div class="p-d-flex p-align-center p-jc-between" role="button" (click)="usermenu.toggle($event)">
+        <i class="far fa-user custom-user p-ml-2 p-mr-2"></i>
+        <div class="cursor-pointer">
+          <div>
+            {{userDetails['user_name']}}
+          </div>
+          <p class="p-mt-0 p-mb-0 profile-budge">{{userDetails['authorities']?.length>0 ? userDetails['authorities'][0]
+            : ''}}</p>
+        </div>
+      </div>
+      <p-menu #usermenu [popup]="true" [model]="userMenuItems">
+        <ng-template pTemplate="item" let-item>
+          <div>
+            <i [class]="item.icon"></i>
+            <span> {{ item.label }}</span>
+          </div>
+        </ng-template>
+      </p-menu>
+    </div>
+  </nav>
+</header>

@@ -34,7 +34,8 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.apis.repotools.model.Branches;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolUserDetails;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -42,24 +43,26 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -70,17 +73,18 @@ import java.util.stream.Collectors;
 public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Object>, Map<String, Object>> {
 
 	private static final String REPO_TOOLS = "RepoTool";
-	public static final String WEEK_FREQUENCY = "week";
-	public static final String DAY_FREQUENCY = "day";
-
+	private static final String ASSIGNEE = "assignee";
 	@Autowired
 	private ConfigHelperService configHelperService;
 
 	@Autowired
-	private RepoToolsConfigServiceImpl repoToolsConfigService;
+	private CustomApiConfig customApiConfig;
 
 	@Autowired
-	private CustomApiConfig customApiConfig;
+	private AssigneeDetailsRepository assigneeDetailsRepository;
+
+	@Autowired
+	private KpiHelperService kpiHelperService;
 
 	@Override
 	public String getQualifierType() {
@@ -89,15 +93,16 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 
 	/**
 	 * create data count
+	 *
 	 * @param kpiRequest
-	 * 				kpi request
+	 * 		kpi request
 	 * @param kpiElement
-	 * 				kpi element
+	 * 		kpi element
 	 * @param projectNode
-	 * 				project node
+	 * 		project node
 	 * @return kpi element
 	 * @throws ApplicationException
-	 * 				application exception
+	 * 		application exception
 	 */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
@@ -114,19 +119,23 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.REWORK_RATE);
-		Map<String, Map<String, List<DataCount>>> kpiFilterWiseProjectWiseDc = new LinkedHashMap<>();
-		trendValuesMap.forEach((issueType, dataCounts) -> {
+
+		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();
+		trendValuesMap.forEach((statusType, dataCounts) -> {
 			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
 					.collect(Collectors.groupingBy(DataCount::getData));
-			kpiFilterWiseProjectWiseDc.put(issueType, projectWiseDc);
+			statusTypeProjectWiseDc.put(statusType, projectWiseDc);
 		});
 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
-		kpiFilterWiseProjectWiseDc.forEach((issueType, projectWiseDc) -> {
+		statusTypeProjectWiseDc.forEach((issueType, projectWiseDc) -> {
 			DataCountGroup dataCountGroup = new DataCountGroup();
 			List<DataCount> dataList = new ArrayList<>();
-			projectWiseDc.forEach((key, value) -> dataList.addAll(value));
-			dataCountGroup.setFilter(issueType);
+			projectWiseDc.entrySet().forEach(trend -> dataList.addAll(trend.getValue()));
+			// split for filters
+			String[] issueFilter = issueType.split("#");
+			dataCountGroup.setFilter1(issueFilter[0]);
+			dataCountGroup.setFilter2(issueFilter[1]);
 			dataCountGroup.setValue(dataList);
 			dataCountGroups.add(dataCountGroup);
 		});
@@ -135,16 +144,18 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	}
 
 	/**
-	 * create data counts for kpi elements
+	 * Populates KPI value to project leaf nodes. It also gives the trend analysis project wise.
+	 *
 	 * @param kpiElement
-	 * 				kpi element
+	 * 		kpi element
 	 * @param mapTmp
-	 * 			mapTmp
+	 * 		node map
 	 * @param projectLeafNode
-	 * 				project node
+	 * 		leaf node of project
 	 * @param kpiRequest
-	 * 				kpi request
+	 * 		kpi request
 	 */
+	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, Node projectLeafNode,
 			KpiRequest kpiRequest) {
 
@@ -152,14 +163,15 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 		String requestTrackerId = getRequestTrackerId();
 		LocalDate localEndDate = dateRange.getEndDate();
 
-		Integer dataPoints = kpiRequest.getXAxisDataPoints();
+		int dataPoints = kpiRequest.getXAxisDataPoints();
 		String duration = kpiRequest.getDuration();
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 
-		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = getRepoToolsKpiMetricResponse(localEndDate,
-				toolMap, projectLeafNode, dataPoints, duration);
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = kpiHelperService.getRepoToolsKpiMetricResponse(
+				localEndDate, toolMap, projectLeafNode, duration, dataPoints,
+				customApiConfig.getRepoToolReworkRateUrl());
 
 		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
@@ -178,231 +190,177 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 			return;
 		}
 
-		List<Map<String, Double>> repoWiseReworkRateList = new ArrayList<>();
-		List<String> repoList = new ArrayList<>();
-		List<String> branchList = new ArrayList<>();
 		String projectName = projectLeafNode.getProjectFilter().getName();
 		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
-		Map<String, List<Double>> aggReworkRateForRepo = new HashMap<>();
-		reposList.forEach(repo -> {
-			if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
-					.getId() != null) {
-				Map<String, Double> excelDataLoader = new HashMap<>();
-				String branchName = getBranchSubFilter(repo, projectName);
-				Map<String, Double> dateWiseReworkRate = new HashMap<>();
-				createDateLabelWiseMap(repoToolKpiMetricResponseList, repo.getRepositoryName(), repo.getBranch(),
-						dateWiseReworkRate);
-				reworkRateForRepo(aggReworkRateForRepo, dateWiseReworkRate);
-				setWeekWiseReworkRate(dateWiseReworkRate, excelDataLoader, branchName, projectName, aggDataMap,
-						kpiRequest);
-				repoWiseReworkRateList.add(excelDataLoader);
-				repoList.add(repo.getRepositoryName());
-				branchList.add(repo.getBranch());
+		Map<String, Object> resultmap = fetchKPIDataFromDb(List.of(projectLeafNode), null, null, kpiRequest);
+		Set<Assignee> assignees = (Set<Assignee>) resultmap.get(ASSIGNEE);
+		Set<String> overAllUsers = repoToolKpiMetricResponseList.stream().flatMap(value -> value.getUsers().stream())
+				.map(RepoToolUserDetails::getEmail).collect(Collectors.toSet());
+		LocalDate currentDate = LocalDate.now();
+		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
+		for (int i = 0; i < dataPoints; i++) {
 
-			}
-		});
-		setWeekWiseReworkRate(aggReworkRateForRepo.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
-						e -> e.getValue().stream().mapToDouble(Double::doubleValue).average().orElse(0.0))), new HashMap<>(),
-				Constant.AGGREGATED_VALUE, projectName, aggDataMap, kpiRequest);
+			LocalDate finalCurrentDate = currentDate;
+			CustomDateRange weekRange = KpiDataHelper.getStartAndEndDateForDataFiltering(finalCurrentDate, duration);
+			String date = KpiHelperService.getDateRange(weekRange, duration);
+
+			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricResponseList.stream()
+					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
+
+			Double overallPickupTime = repoToolKpiMetricResponse.map(
+					RepoToolKpiMetricResponse::getProjectReworkRatePercent).orElse(0.0d);
+
+			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
+					overallPickupTime, aggDataMap);
+			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
+					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
+			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
+							projectName, date, aggDataMap);
+			reposList.forEach(repo -> {
+				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
+						.getId() != null) {
+					List<RepoToolUserDetails> repoToolUserDetailsList = new ArrayList<>();
+					String branchName = getBranchSubFilter(repo, projectName);
+					Double reworkRate = 0.0d;
+					String overallKpiGroup = branchName + "#" + Constant.AGGREGATED_VALUE;
+					if (repoToolKpiMetricResponse.isPresent()) {
+						Optional<Branches> matchingBranch = repoToolKpiMetricResponse.get().getRepositories().stream()
+								.filter(repository -> repository.getName().equals(repo.getRepositoryName()))
+								.flatMap(repository -> repository.getBranches().stream())
+								.filter(branch -> branch.getName().equals(repo.getBranch())).findFirst();
+
+						reworkRate = matchingBranch.map(Branches::getBranchReworkRateScore).orElse(0.0d);
+						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
+					}
+					repoToolValidationDataList.addAll(
+							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, repo, projectName,
+									date, aggDataMap));
+					setDataCount(projectName, date, overallKpiGroup, reworkRate, aggDataMap);
+				}
+			});
+
+			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
+		}
 		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
 
-		populateExcelDataObject(requestTrackerId, repoWiseReworkRateList, repoList, branchList, excelData,
-				projectLeafNode);
+		populateExcelDataObject(requestTrackerId, repoToolValidationDataList, excelData);
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.REWORK_RATE.getColumns());
 	}
 
 	/**
-	 * aggregate rework rate
-	 * @param aggReworkRateForRepo
-	 * 				aggregated rework rate map
-	 * @param reworkRateForRepo
-	 * 				rework rate for config
-	 */
-	private void reworkRateForRepo(Map<String, List<Double>> aggReworkRateForRepo,
-			Map<String, Double> reworkRateForRepo) {
-		if (MapUtils.isNotEmpty(reworkRateForRepo)) {
-			reworkRateForRepo.forEach(
-					(key, value) -> aggReworkRateForRepo.computeIfAbsent(key, k -> new ArrayList<>()).add(value));
-		}
-	}
-
-	/**
-	 * create date wise rework rate map
-	 * @param repoToolKpiMetricResponsesCommit
-	 * 				RepoToolKpiMetricResponse object
-	 * @param repoName
-	 * 				repository name
-	 * @param branchName
-	 * 				branch name
-	 * @param dateWiseReworkRate
-	 * 				date wise rework rate map
-	 */
-	private void createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesCommit,
-			String repoName, String branchName, Map<String, Double> dateWiseReworkRate) {
-
-		for (RepoToolKpiMetricResponse response : repoToolKpiMetricResponsesCommit) {
-			if (response.getRepositories() != null) {
-				Optional<Branches> matchingBranch = response.getRepositories().stream()
-						.filter(repository -> repository.getName().equals(repoName))
-						.flatMap(repository -> repository.getBranches().stream())
-						.filter(branch -> branch.getName().equals(branchName)).findFirst();
-				double reworkRate = matchingBranch.map(Branches::getBranchReworkRateScore).orElse(0d);
-				dateWiseReworkRate.put(response.getDateLabel(), reworkRate);
-			}
-		}
-	}
-
-	/**
-	 * create data count object of rework rate
-	 * @param weekWiseReworkRate
-	 * 				week wise rework rate
-	 * @param excelDataLoader
-	 * 				excel data loader
-	 * @param branchName
-	 * 				branch name
-	 * @param projectName
-	 * 				project name
-	 * @param aggDataMap
-	 * 				map of branch name and data count
+	 * fetch data from db
+	 *
+	 * @param leafNodeList
+	 * 		leaf node list
+	 * @param startDate
+	 * 		start date
+	 * @param endDate
+	 * 		end date
 	 * @param kpiRequest
-	 * 				kpi request object
+	 * 		kpi request
+	 * @return map of data
 	 */
-	private void setWeekWiseReworkRate(Map<String, Double> weekWiseReworkRate, Map<String, Double> excelDataLoader,
-			String branchName, String projectName, Map<String, List<DataCount>> aggDataMap, KpiRequest kpiRequest) {
-		LocalDate currentDate = LocalDate.now();
-		Integer dataPoints = kpiRequest.getXAxisDataPoints();
-		String duration = kpiRequest.getDuration();
-		for (int i = 0; i < dataPoints; i++) {
-			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate, duration);
-			Double reworkRate = weekWiseReworkRate.getOrDefault(dateRange.getStartDate().toString(), 0d);
-			String date = getDateRange(dateRange, duration);
-			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
-			DataCount dataCount = setDataCount(projectName, date, reworkRate);
-			aggDataMap.get(branchName).add(dataCount);
-			excelDataLoader.put(date, reworkRate);
-			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
-
-		}
-
+	@Override
+	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+			KpiRequest kpiRequest) {
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(
+				leafNodeList.get(0).getId());
+		Set<Assignee> assignees = assigneeDetails != null ? assigneeDetails.getAssignee() : new HashSet<>();
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put(ASSIGNEE, assignees);
+		return resultMap;
 	}
 
 	/**
-	 * get date range
-	 * @param dateRange
-	 * 				date range
-	 * @param duration
-	 * 				time duration
-	 * @return date range string
-	 */
-	private String getDateRange(CustomDateRange dateRange, String duration) {
-		String range = null;
-		if (CommonConstant.WEEK.equalsIgnoreCase(duration)) {
-			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
-					DateUtil.DISPLAY_DATE_FORMAT) + " to "
-					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
-							DateUtil.DISPLAY_DATE_FORMAT);
-		} else {
-			range = dateRange.getStartDate().toString();
-		}
-		return range;
-	}
-
-	/**
-	 * creates data count object
+	 * set data count for user filter
+	 *
+	 * @param overAllUsers
+	 * 		list of user emails from repotool
+	 * @param repoToolUserDetailsList
+	 * 		list of repo tool user data
+	 * @param assignees
+	 * 		assignee data
+	 * @param repo
+	 * 		repo tool item
 	 * @param projectName
-	 * 				project name
-	 * @param week
-	 * 				week
-	 * @param value
-	 * 				data count value
-	 * @return data count object
+	 * 		project name
+	 * @param date
+	 * 		date
+	 * @param dateUserWiseAverage
+	 * 		total data map
+	 * @return repotool validation data
 	 */
-	private DataCount setDataCount(String projectName, String week, Double value) {
-		Map<String, Object> hoverMap = new HashMap<>();
+	private List<RepoToolValidationData> setUserDataCounts(Set<String> overAllUsers,
+			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, Tool repo,
+			String projectName, String date,  Map<String, List<DataCount>> dateUserWiseAverage) {
+		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
+		overAllUsers.forEach(userEmail -> {
+			Optional<RepoToolUserDetails> repoToolUserDetails = repoToolUserDetailsList.stream()
+					.filter(user -> userEmail.equalsIgnoreCase(user.getEmail())).findFirst();
+			Optional<Assignee> assignee = assignees.stream().filter(assign -> assign.getEmail().contains(userEmail))
+					.findFirst();
+			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
+			Double userReworkRate = repoToolUserDetails.map(RepoToolUserDetails::getUserReworkRatePercent).orElse(0.0d);
+			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
+			String userKpiGroup = branchName + "#" + developerName;
+			if(repoToolUserDetails.isPresent() && repo != null) {
+				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+				repoToolValidationData.setProjectName(projectName);
+				repoToolValidationData.setBranchName(repo.getBranch());
+				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
+				repoToolValidationData.setDeveloperName(developerName);
+				repoToolValidationData.setDate(date);
+				repoToolValidationData.setReworkRate(userReworkRate);
+				repoToolValidationDataList.add(repoToolValidationData);
+			}
+
+			setDataCount(projectName, date, userKpiGroup, userReworkRate, dateUserWiseAverage);
+
+		});
+		return repoToolValidationDataList;
+	}
+
+	/**
+	 * set individual data count
+	 *
+	 * @param projectName
+	 * 		project name
+	 * @param week
+	 * 		date
+	 * @param kpiGroup
+	 * 		combined filter
+	 * @param value
+	 * 		value
+	 * @param dataCountMap
+	 * 		data count map by filter
+	 */
+	private void setDataCount(String projectName, String week, String kpiGroup, Double value,
+			Map<String, List<DataCount>> dataCountMap) {
 		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(value == null ? 0L : value));
+		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(week);
-		dataCount.setHoverValue(hoverMap);
-		dataCount.setValue(value == null ? 0L : value);
-		return dataCount;
+		dataCount.setValue(value);
+		dataCount.setKpiGroup(kpiGroup);
+		dataCount.setHoverValue(new HashMap<>());
+		dataCountMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dataCount);
 	}
 
 	/**
-	 * get kpi data from repo tools api
+	 * populate excel data
 	 *
-	 * @param endDate
-	 * 				end date
-	 * @param toolMap
-	 * 				tool map from cache
-	 * @param node
-	 * 				project node
-	 * @param dataPoint
-	 * 				no of days/weeks
-	 * @param duration
-	 * 				time duration
-	 * @return lis of RepoToolKpiMetricResponse object
-	 */
-	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
-			Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node, Integer dataPoint, String duration) {
-
-		List<String> projectCodeList = new ArrayList<>();
-		ProjectFilter accountHierarchyData = node.getProjectFilter();
-		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(REPO_TOOLS,
-				Collections.emptyList());
-		if (CollectionUtils.isEmpty(tools)) {
-			return new ArrayList<>();
-		}
-		projectCodeList.add(node.getId());
-
-		LocalDate startDate = LocalDate.now();
-		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-			startDate = LocalDate.now().minusWeeks(dataPoint);
-			while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
-				startDate = startDate.minusDays(1);
-			}
-		} else {
-			int daysSubtracted = 0;
-			while (daysSubtracted < dataPoint) {
-				// Skip the weekend days
-				if (!(startDate.getDayOfWeek() == DayOfWeek.SATURDAY || startDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
-					daysSubtracted++;
-				}
-				startDate = startDate.minusDays(1);
-			}
-		}
-
-		String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
-		return repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList, customApiConfig.getRepoToolReworkRateUrl(),
-				startDate.toString(), endDate.toString(), debbieDuration);
-
-	}
-
-	/**
-	 * populated excel data
 	 * @param requestTrackerId
-	 * 				kpi tracker id
-	 * @param repoWiseMRList
-	 * 				repo wise rework rate list
-	 * @param repoList
-	 * 				repository list
-	 * @param branchList
-	 * 				branch list
+	 * 				request tracker id
+	 * @param repoToolUserDetails
+	 * 				repo tool validation data
 	 * @param validationDataMap
-	 * 				kpi excel data map
-	 * @param node
-	 * 				project node
+	 * 				excel data map
 	 */
-	private void populateExcelDataObject(String requestTrackerId, List<Map<String, Double>> repoWiseMRList,
-			List<String> repoList, List<String> branchList, List<KPIExcelData> validationDataMap, Node node) {
+	private void populateExcelDataObject(String requestTrackerId, List<RepoToolValidationData> repoToolUserDetails,
+			List<KPIExcelData> validationDataMap) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-
-			String projectName = node.getProjectFilter().getName();
-			KPIExcelUtility.populateReworkRateExcelData(projectName, repoWiseMRList, repoList, branchList,
-					validationDataMap);
-
+			KPIExcelUtility.populateReworkRateExcelData(repoToolUserDetails, validationDataMap);
 		}
 	}
 
@@ -414,12 +372,6 @@ public class ReworkRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiId) {
 		return calculateKpiValueForDouble(valueList, kpiId);
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
-		return new HashMap<>();
 	}
 
 	@Override

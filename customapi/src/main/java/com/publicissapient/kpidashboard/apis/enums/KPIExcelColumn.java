@@ -44,9 +44,9 @@ public enum KPIExcelColumn {
 	CODE_BUILD_TIME("kpi8",
 			Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url",
 					"Weeks")), ISSUE_COUNT("kpi40",
-							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad" )), CODE_COMMIT("kpi11",
-									Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No Of Commit",
-											"No of Merge")),
+			Arrays.asList("Sprint Name", "Story ID", "Issue Description")), CODE_COMMIT("kpi11",
+			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "No Of Commit",
+					"No of Merge")),
 
 	MEAN_TIME_TO_MERGE("kpi84",
 			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks",
@@ -297,7 +297,7 @@ public enum KPIExcelColumn {
 					"Pickup Time (In Hours)")),
 
 	PR_SIZE("kpi162",
-			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks",
+			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks",
 					"PR Size (No. of lines)")),
 
 	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status",
@@ -315,7 +315,7 @@ public enum KPIExcelColumn {
 
 	CYCLE_TIME("kpi171", Arrays.asList("Issue Id", "Issue Type", "Issue Description","DOR Date", "Intake to DOR",
 			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live")),
-	REWORK_RATE("kpi173", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Rework Rate")),
+	REWORK_RATE("kpi173", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Rework Rate")),
 
 	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee")),
 

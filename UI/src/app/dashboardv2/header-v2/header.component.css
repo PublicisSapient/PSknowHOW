@@ -1,0 +1,110 @@
+header {
+  background: #fff;
+  border-bottom: 2px solid #eaedf0;
+  padding: 0 20px;
+}
+.logo > img {
+  height: 40px;
+}
+
+.logo .die-container img {
+  width: 40px;
+}
+.count {
+  position: absolute;
+  font-size: 0.75rem;
+  top: -9px;
+  right: -5px;
+  color: #fff;
+  background: #fe414d;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.noti-count {
+  top: -6px;
+}
+.list-style-none {
+  list-style: none;
+}
+.custom-navbar .link {
+  color: var(--color-black);
+}
+::ng-deep .custom-menu .p-menu .p-menuitem-link {
+  padding: 1rem 0.5rem;
+}
+::ng-deep
+  .custom-menu
+  .p-tabmenu
+  .p-tabmenu-nav
+  li.p-highlight
+  .p-menuitem-link:focus {
+  background-color: none;
+}
+
+::ng-deep p-menu.app-switch .p-menu {
+  left: 0 !important;
+  top: 50px !important;
+}
+
+::ng-deep p-menu.app-switch .p-menu .p-menuitem-link-active a::after {
+  content: '';
+  position: absolute;
+  transform: rotate(45deg);
+  height: 10px;
+  width: 5px;
+  top: 13px;
+  right: 19px;
+  border-bottom: 3px solid var(--color-secondary-blue);
+  border-right: 3px solid var(--color-secondary-blue);
+}
+
+::ng-deep p-menu.app-switch .p-menu .p-menuitem-link-active .p-menuitem-text{
+  color: var(--color-secondary-blue);
+}
+
+.custom-user {
+  height: 40px;
+  width: 40px;
+  background: var(--color-gray-c6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.profile-budge {
+  font-size: 0.725rem;
+}
+.back-btn-wraper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.back-btn-container {
+  color: var(--color-black);
+  display: flex;
+  font-size: 12px;
+}
+
+.back-btn {
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.down-arrow {
+  margin: 0 auto;
+  width: 0;
+  height: 0;
+  content: '';
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid var(--color-black);
+  z-index: 1;
+  margin-top: -2px;
+}

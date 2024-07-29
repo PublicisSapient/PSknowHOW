@@ -63,6 +63,7 @@ export class GoogleAnalyticsService {
       event: 'pageLoad',
       pageName: data.url,
       userRole: data.userRole,
+      uiType: data.uiType,
       server: {
         instanceName: window.location.origin,
         version: data.version
@@ -70,18 +71,18 @@ export class GoogleAnalyticsService {
     });
   }
 
-  setLoginMethod(data, loginType){
+  setLoginMethod(data, loginType) {
     const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
     dataLayer.push({
-         'event' : 'login',
-         'authentication_method' : loginType,
-         'user_id' : data.user_id 
+      'event': 'login',
+      'authentication_method': loginType,
+      'user_id': data.user_id
     });
   }
 
   setProjectData(data) {
     const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
-    for (let i = 0; i<data.length; i++) {
+    for (let i = 0; i < data?.length; i++) {
       dataLayer.push({
         event: 'ProjectViewed',
         ...data[i]
@@ -89,7 +90,7 @@ export class GoogleAnalyticsService {
     }
   }
 
-  setProjectToolsData(data){
+  setProjectToolsData(data) {
     const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
     dataLayer?.push({
       event: 'ProjectToolsConfigured',
@@ -97,7 +98,7 @@ export class GoogleAnalyticsService {
     });
   }
 
-  setKpiData(data){
+  setKpiData(data) {
     const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
     dataLayer?.push({
       event: 'kpiViewed',
@@ -105,7 +106,7 @@ export class GoogleAnalyticsService {
     });
   }
 
-  createProjectData(data){
+  createProjectData(data) {
     const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
     dataLayer?.push({
       event: 'projectCreated',

@@ -90,8 +90,8 @@
     }));
   
     it('select tab functionality ', () => {
-      component.selectTab('mydashboard');
-      expect(service.getSelectedTab()).toBe('mydashboard');
+      component.selectTab('my-knowhow');
+      expect(service.getSelectedTab()).toBe('my-knowhow');
     });
   
     it('should create', () => {

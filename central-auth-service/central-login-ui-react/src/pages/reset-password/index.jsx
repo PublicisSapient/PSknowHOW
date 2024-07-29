@@ -40,9 +40,9 @@ const ResetPasswordPage = () => {
     }
 
     return (
-        <div className="componentContainer flex h-screen w-full">
+        <div className="componentContainer flex w-full">
             <SuiteLogos />
-            <div className="w-2/5 p-12 h-screen bg-white-A700">
+            <div className="w-2/5 p-12 bg-white-A700">
                 <PSLogo />
 
                 <Text className='text-left mt-4' size='txtPoppinsSemiBold20'>Reset password</Text>

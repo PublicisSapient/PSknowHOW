@@ -18,8 +18,7 @@
 
 import { Injectable, NgModule } from '@angular/core';
 import { throwError } from 'rxjs';
-import { HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse, HttpResponse, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { GetAuthService } from '../services/getauth.service';
 import { SharedService } from '../services/shared.service';
 import { catchError, tap } from 'rxjs/operators';
@@ -94,11 +93,11 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                 if (err instanceof HttpErrorResponse) {
                     if (err.status === 401) {
                         if (requestArea === 'internal') {
-                            if(environment?.['SSO_LOGIN'] === true){
+                            if(environment?.['SSO_LOGIN']){
                                 this.service.setCurrentUserDetails({});
                                 console.log('SSO_LOGIN', true)
                             }else{
-                                if(environment.AUTHENTICATION_SERVICE == true){
+                                if(environment.AUTHENTICATION_SERVICE){
                                     /** redirect to central login url*/
                                     let redirect_uri = window.location.href;
                                     localStorage.setItem('redirect_uri', JSON.stringify(redirect_uri))
@@ -112,8 +111,8 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                             }
                         }
 
-                        if (environment?.['SSO_LOGIN'] === true) {
-                            this.router.navigate(['./dashboard/mydashboard']).then(success => {
+                        if (environment?.['SSO_LOGIN']) {
+                            this.router.navigate(['./dashboard/my-knowhow']).then(success => {
                                 window.location.reload();
                             });
                         }
@@ -123,14 +122,14 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                     } else {
                         if(err?.status === 0 && err?.statusText === 'Unknown Error'&& environment.SSO_LOGIN){
                             this.service.clearAllCookies();
-                            this.router.navigate(['./dashboard/mydashboard']).then(success => {
+                            this.router.navigate(['./dashboard/my-knowhow']).then(success => {
                                 window.location.reload();
                             });
                         }else{
                             if (httpErrorHandler !== 'local') {
                                 if (requestArea === 'internal') {
                                     if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
-                                        if(environment?.['SSO_LOGIN'] === false || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
+                                        if(!environment?.['SSO_LOGIN'] || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
                                         this.router.navigate(['./dashboard/Error']);
                                         }
                                         setTimeout(() => {

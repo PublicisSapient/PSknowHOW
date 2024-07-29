@@ -32,7 +32,7 @@
     -webkit-appearance: none;
     width: 7px;
   }
-  
+
 .tooltip-wrapper::-webkit-scrollbar-thumb {
     border-radius: 4px;
     background-color: rgba(0, 0, 0, .5);
@@ -40,7 +40,7 @@
 }
 .divide {
     width: 100%;
-    height: 1px;        
+    height: 1px;
     border-bottom: 1px dashed #000;
 }
 
@@ -105,18 +105,18 @@ ul.kpi-info-list {
 }
 
 .tooltip-kpi::before{
-    left: 190px;
+    left: 60px;
 }
 .tooltip-kpi{
     top: 30px;
-    left: -170px;
-    width: 500px !important;
+    left: -40px;
+    width: 450px !important;
     /* min-width: 550px; */
 }
 
 .tooltip-width{
     min-width: 450px;
-    width: 450px  !important;
+    width: 350px  !important;
 }
 
 .tooltip-wider {

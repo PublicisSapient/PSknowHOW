@@ -22,7 +22,7 @@ import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { DatePipe } from '@angular/common';
-import { forkJoin,interval,Subscription } from 'rxjs';
+import { forkJoin, interval, Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { switchMap, takeWhile } from 'rxjs/operators';
 
@@ -42,12 +42,12 @@ export class AdvancedSettingsComponent implements OnInit {
   userProjects = [];
   selectedProject = {};
   processorsTracelogs = [];
-  toolConfigsDetails=[];
+  toolConfigsDetails = [];
   ssoLogin = environment.SSO_LOGIN;
-  jirsStepsPopup : boolean = false;
-  jiraExecutionSteps : any = [];
+  jirsStepsPopup: boolean = false;
+  jiraExecutionSteps: any = [];
   jiraStatusContinuePulling = false;
-   subscription: Subscription;
+  subscription: Subscription;
   dataMismatchObj: object = {};
 
   constructor(private httpService: HttpService, private messageService: MessageService, private getAuthorizationService: GetAuthorizationService,
@@ -75,9 +75,9 @@ export class AdvancedSettingsComponent implements OnInit {
   // called when user selects a tab from the left menu
   switchView(event) {
     if (event.item.label === 'Processor State') {
-        this.selectedView = 'processor_state';
-        this.getProcessorData();
-        this.getProjects();
+      this.selectedView = 'processor_state';
+      this.getProcessorData();
+      this.getProjects();
     }
   }
 
@@ -162,7 +162,7 @@ export class AdvancedSettingsComponent implements OnInit {
               }
           })
 
-          
+
           if(this.decideWhetherLoaderOrNot(that.findTraceLogForTool('Jira'))){
             that.jiraStatusContinuePulling = true;
             const runProcessorInput = {
@@ -175,7 +175,7 @@ export class AdvancedSettingsComponent implements OnInit {
             const jiraDAta = that.findTraceLogForTool('Jira');
             jiraDAta.executionOngoing = false;
           }
-          
+
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error in fetching processor\'s execution date. Please try after some time.' });
         }
@@ -226,7 +226,7 @@ export class AdvancedSettingsComponent implements OnInit {
     return this.selectedProject != null || this.selectedProject != undefined;
   }
 
-  endTimeConversion(time){
+  endTimeConversion(time) {
     return new DatePipe('en-US').transform(time, 'dd-MMM-yyyy (EEE) - hh:mmaaa')
   }
 
@@ -238,7 +238,7 @@ export class AdvancedSettingsComponent implements OnInit {
     };;
     if (this.isProjectSelected()) {
       runProcessorInput['projects'] = [this.selectedProject['id']];
-    } 
+    }
     const pDetails = this.findTraceLogForTool(processorName)
     if(pDetails){
       pDetails['executionOngoing'] = true;
@@ -254,7 +254,8 @@ export class AdvancedSettingsComponent implements OnInit {
           if(runProcessorInput['processor'].toLowerCase() === 'jira'){
             this.jiraStatusContinuePulling = true;
             this.getProcessorCompletionSteps(runProcessorInput)
-          }else{
+          }
+          else{
             const pDetails = this.findTraceLogForTool(runProcessorInput['processor'])
             if(pDetails){
               pDetails['executionOngoing'] = false;
@@ -371,7 +372,7 @@ export class AdvancedSettingsComponent implements OnInit {
       const logs = jiraLogDetails.progressStatusList;
       const lastLOgTime = logs[logs.length-1].endTime;
       const currentTime = new Date().getTime();
-      var differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
+      let differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
       if(differenceInMilliseconds > 600000){
         return false;
       }else if(differenceInMilliseconds <= 600000){
