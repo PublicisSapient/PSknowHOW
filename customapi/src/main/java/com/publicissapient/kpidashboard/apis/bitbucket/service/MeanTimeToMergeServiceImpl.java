@@ -210,7 +210,8 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 					repoToolValidationData.setMeanTimeToMerge(
 							TimeUnit.MILLISECONDS.toHours(valueForCurrentLeaf.longValue()));
 					repoToolValidationData.setDate(date);
-					repoToolValidationData.setRepoUrl(tool.getRepositoryName());
+					repoToolValidationData.setRepoUrl(
+							tool.getRepositoryName() != null ? tool.getRepositoryName() : tool.getRepoSlug());
 					repoToolValidationData.setBranchName(tool.getBranch());
 					repoToolValidationDataList.add(repoToolValidationData);
 				}
