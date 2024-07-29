@@ -107,6 +107,7 @@ export class JiraConfigComponent implements OnInit {
   gitActionWorkflowNameList: any[];
   cloudEnv: any;
   isGitlabToolFieldEnabled : boolean;
+  isConfigureTool: boolean = false;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -2767,5 +2768,11 @@ export class JiraConfigComponent implements OnInit {
 
   redirectToConnections() {
     this.router.navigate(['./dashboard/Config/connection-list']);
+  }
+
+  handleToolConfiguration(){
+    this.isConfigureTool = true;
+    const element = document.getElementById("tool-configuration");
+    element.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
   }
 }
