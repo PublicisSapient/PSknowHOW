@@ -117,8 +117,8 @@ export class AdditionalFilterComponent implements OnChanges {
         this.onAdditionalFilterChange.emit(e);
       }
     } else {
-      this.appliedFilters[filterKey] = this.appliedFilters[filterKey] || [];
-      this.appliedFilters[filterKey] = !multi ? [...this.appliedFilters[filterKey], e.value] : e && e.length ? [...e] : [];
+      // this.appliedFilters[filterKey] = this.appliedFilters[filterKey] || [];
+      this.appliedFilters[filterKey] =  e &&  e.value ? [e.value] : [];
 
       const filterValue = this.appliedFilters[filterKey][0];
       const nodeId = filterValue?.nodeId || filterValue;
