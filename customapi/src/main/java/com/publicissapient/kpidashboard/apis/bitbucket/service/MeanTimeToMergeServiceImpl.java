@@ -164,7 +164,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 					String repoName = repo.getRepositoryName() != null ? repo.getRepositoryName() : repo.getRepoSlug();
 					aggMergeRequests.addAll(mergeReqList);
 					List<DataCount> dataCountList = setWeekWiseMeanTimeToMerge(mergeReqList, repo,
-							projectName, duration, dataPoints, repoToolValidationDataList);
+							projectName, duration, dataPoints, repoToolValidationDataList, repoName);
 					aggDataMap.put(getBranchSubFilter(repo, projectName), dataCountList);
 					repoWiseMRList.add(excelDataLoader);
 					repoList.add(repoName);
@@ -173,7 +173,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			}
 		});
 		List<DataCount> dataCountList = setWeekWiseMeanTimeToMerge(aggMergeRequests, null, projectName,
-				duration, dataPoints, new ArrayList<>());
+				duration, dataPoints, new ArrayList<>(), null);
 		aggDataMap.put(Constant.AGGREGATED_VALUE, dataCountList);
 		mapTmp.get(projectNode.getId()).setValue(aggDataMap);
 		populateExcelDataObject(requestTrackerId, repoToolValidationDataList, excelData);
@@ -183,7 +183,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 
 	private List<DataCount> setWeekWiseMeanTimeToMerge(List<MergeRequests> mergeReqList,
 			Tool tool, String projectName, String duration, Integer dataPoints,
-			List<RepoToolValidationData> repoToolValidationDataList) {
+			List<RepoToolValidationData> repoToolValidationDataList, String repoName) {
 
 		List<DataCount> dataCountList = new ArrayList<>();
 		LocalDate currentDate = LocalDate.now();
@@ -210,8 +210,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 					repoToolValidationData.setMeanTimeToMerge(
 							TimeUnit.MILLISECONDS.toHours(valueForCurrentLeaf.longValue()));
 					repoToolValidationData.setDate(date);
-					repoToolValidationData.setRepoUrl(
-							tool.getRepositoryName() != null ? tool.getRepositoryName() : tool.getRepoSlug());
+					repoToolValidationData.setRepoUrl(repoName);
 					repoToolValidationData.setBranchName(tool.getBranch());
 					repoToolValidationDataList.add(repoToolValidationData);
 				}
