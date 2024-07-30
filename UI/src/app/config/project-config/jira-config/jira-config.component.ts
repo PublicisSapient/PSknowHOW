@@ -2772,7 +2772,9 @@ export class JiraConfigComponent implements OnInit {
 
   handleToolConfiguration(){
     this.isConfigureTool = true;
-    const element = document.getElementById("tool-configuration");
-    element.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
+    setTimeout(() => {
+      const element = document.getElementById("tool-configuration");
+      element.scrollIntoView({behavior: "smooth", inline: "nearest"});
+    }, 100);
   }
 }
