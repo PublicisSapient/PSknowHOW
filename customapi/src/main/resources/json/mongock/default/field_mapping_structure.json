@@ -3230,5 +3230,27 @@
       "definition": "This field is used to identify Dependency Issue type."
     },
     "mandatory": true
+  },
+  {
+    "fieldName": "jiraIssueTypeExcludeKPI124",
+    "fieldLabel": "Issue types to be excluded",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Specify issue types to exclude from KPI calculations."
+    }
+  },
+  {
+    "fieldName": "jiraIssueTypeExcludeKPI75",
+    "fieldLabel": "Issue types to be excluded",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Specify issue types to exclude from KPI calculations."
+    }
   }
 ]
