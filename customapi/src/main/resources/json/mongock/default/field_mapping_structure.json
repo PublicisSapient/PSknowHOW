@@ -307,6 +307,15 @@
     }
   },
   {
+    "fieldName": "resolutionTypeForRejectionKPI34",
+    "fieldLabel": "Resolution type to be excluded",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Resolution types for defects that can be excluded from 'Defect Removal Efficiency' calculation"
+    }
+  },
+  {
     "fieldName": "jiraDefectRejectionStatusKPI28",
     "fieldLabel": "Status to be excluded",
     "fieldType": "text",
@@ -877,6 +886,16 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "All statuses which are considered for Rejecting defects"
+    }
+  },
+  {
+    "fieldName": "jiraDefectRejectionStatusKPI34",
+    "fieldLabel": "Status to identify rejected defects",
+    "fieldType": "text",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "All workflow statuses used to reject defects"
     }
   },
   {
@@ -2585,6 +2604,26 @@
     }
   },
   {
+    "fieldName": "jiraLabelsQAKPI111",
+    "fieldLabel": "Labels to filter issues in consideration",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Only issues with specified labels will be considered"
+    }
+  },
+  {
+    "fieldName": "jiraLabelsKPI133",
+    "fieldLabel": "Labels to filter issues in consideration",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Only issues with specified labels will be considered"
+    }
+  },
+  {
     "fieldName": "jiraStoryIdentificationKPI166",
     "fieldLabel": "Issue type to identify Production incidents",
     "fieldType": "chips",
@@ -3102,12 +3141,52 @@
     }
   },
   {
+    "fieldName": "includeRCAForKPI34",
+    "fieldLabel": "Root cause values to be included",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "Root cause reasons for defects to be included In 'Defect Removal Efficiency' calculation"
+    }
+  },
+  {
     "fieldName": "defectPriorityKPI35",
     "fieldLabel": "Priority to be excluded",
     "fieldType": "multiselect",
     "section": "Defects Mapping",
     "tooltip": {
       "definition": "Priority values of defects which are to be excluded in 'DSR' calculation"
+    },
+    "options": [
+      {
+        "label": "p1",
+        "value": "p1"
+      },
+      {
+        "label": "p2",
+        "value": "p2"
+      },
+      {
+        "label": "p3",
+        "value": "p3"
+      },
+      {
+        "label": "p4",
+        "value": "p4"
+      },
+      {
+        "label": "p5",
+        "value": "p5"
+      }
+    ]
+  },
+  {
+    "fieldName": "defectPriorityKPI34",
+    "fieldLabel": "Priority to be excluded",
+    "fieldType": "multiselect",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "Priority values of defects that can be excluded from 'Defect Removal Efficiency' calculation"
     },
     "options": [
       {

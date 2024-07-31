@@ -50,6 +50,7 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historydefectPriorityQAKPI111;
 	private List<ConfigurationHistoryChangeLog> historydefectPriorityKPI82;
 	private List<ConfigurationHistoryChangeLog> historydefectPriorityKPI133;
+	private List<ConfigurationHistoryChangeLog> historydefectPriorityKPI34;
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueTypeNames;
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueTypeNamesAVR;
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueEpicType;
@@ -102,6 +103,7 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraDefectRejectionStatusRCAKPI36;
 	private List<ConfigurationHistoryChangeLog> historyjiraDefectRejectionStatusKPI14;
 	private List<ConfigurationHistoryChangeLog> historyjiraDefectRejectionStatusQAKPI111;
+	private List<ConfigurationHistoryChangeLog> historyjiraDefectRejectionStatusKPI34;
 
 	private List<ConfigurationHistoryChangeLog> historyjiraBugRaisedByIdentification;
 	private List<ConfigurationHistoryChangeLog> historyjiraBugRaisedByValue;
@@ -196,6 +198,7 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyincludeRCAForQAKPI111;
 	private List<ConfigurationHistoryChangeLog> historyincludeRCAForKPI133;
 	private List<ConfigurationHistoryChangeLog> historyincludeRCAForKPI35;
+	private List<ConfigurationHistoryChangeLog> historyincludeRCAForKPI34;
 
 	private List<ConfigurationHistoryChangeLog> historyjiraDorToLiveIssueType;
 	private List<ConfigurationHistoryChangeLog> historyjiraProductiveStatus;
@@ -213,6 +216,7 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyresolutionTypeForRejectionRCAKPI36;
 	private List<ConfigurationHistoryChangeLog> historyresolutionTypeForRejectionKPI14;
 	private List<ConfigurationHistoryChangeLog> historyresolutionTypeForRejectionQAKPI111;
+	private List<ConfigurationHistoryChangeLog> historyresolutionTypeForRejectionKPI34;
 
 	private List<ConfigurationHistoryChangeLog> historyjiraQADefectDensityIssueType;
 	private List<ConfigurationHistoryChangeLog> historyjiraQAKPI111IssueType;
@@ -381,6 +385,8 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueTypeKPI156;
 	private List<ConfigurationHistoryChangeLog> historyjiraLabelsKPI14;
 	private List<ConfigurationHistoryChangeLog> historyjiraLabelsKPI82;
+	private List<ConfigurationHistoryChangeLog> historyjiraLabelsQAKPI111;
+	private List<ConfigurationHistoryChangeLog> historyjiraLabelsKPI133;
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueWaitStateKPI170;
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueClosedStateKPI170;
 

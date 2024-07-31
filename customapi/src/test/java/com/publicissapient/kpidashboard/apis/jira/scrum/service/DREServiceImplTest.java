@@ -207,7 +207,6 @@ public class DREServiceImplTest {
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
 				.thenReturn(new ArrayList<>());
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
 		Map<String, Object> defectDataListMap = dreServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertNotNull(defectDataListMap);
@@ -222,7 +221,6 @@ public class DREServiceImplTest {
 		maturityRangeMap.put("defectRemovalEfficiency", Arrays.asList("-30", "30-10", "10-5", "5-2", "2-"));
 
 //		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
-		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
