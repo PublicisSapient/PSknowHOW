@@ -64,7 +64,7 @@ public class ConnectionDTO {
 	private String offlineFilePath;
 	private String createdBy;
 	private String createdAt;
-	private boolean connPrivate;
+	private boolean sharedConnection;// shared with everyone
 	private String updatedBy;
 	private List<String> connectionUsers;
 	private boolean vault;// GS requirement
