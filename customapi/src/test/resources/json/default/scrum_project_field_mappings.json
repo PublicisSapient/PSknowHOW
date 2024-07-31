@@ -70,6 +70,7 @@
     "jiraStoryIdentification" : [ ],
     "jiraStoryIdentificationKPI129" : [ "Story", "Enabler Story" ],
     "jiraStoryIdentificationKpi40" : [ "Story", "Enabler Story" ],
+    "jiraStoryCategoryKpi40" : [ "Story", "Enabler Story" ],
     "jiraLiveStatusKPI152" : "Closed",
     "jiraLiveStatusKPI151" : "Closed",
     "jiraLiveStatusKPI3" : ["Closed"],

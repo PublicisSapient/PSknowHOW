@@ -168,6 +168,7 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiraStoryIdentification;
 	private List<String> jiraStoryIdentificationKPI129;
 	private List<String> jiraStoryIdentificationKpi40;
+	private List<String> jiraStoryCategoryKpi40;
 	private List<String> jiraStoryIdentificationKPI164;
 
 	private String jiraLiveStatus;

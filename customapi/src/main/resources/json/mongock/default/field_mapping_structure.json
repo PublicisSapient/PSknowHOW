@@ -3252,5 +3252,16 @@
     "tooltip": {
       "definition": "Specify issue types to exclude from KPI calculations."
     }
+  },
+  {
+    "fieldName" : "jiraStoryCategoryKpi40",
+    "fieldLabel" : "Issue type to identify Story category",
+    "fieldType" : "chips",
+    "fieldCategory" : "Issue_Type",
+    "section" : "Issue Types Mapping",
+    "tooltip" : {
+      "definition" : "All issue types that are used as/equivalent to Story."
+    },
+    "mandatory" : true
   }
 ]

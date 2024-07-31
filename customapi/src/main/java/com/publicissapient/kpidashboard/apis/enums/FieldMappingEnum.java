@@ -47,7 +47,8 @@ public enum FieldMappingEnum {
 					"jiraTicketClosedStatus", "kanbanCycleTimeIssueType", "jiraTicketTriagedStatus",
 					"jiraTicketRejectedStatus", "jiraSubTaskDefectType")),
 
-	KPI40("Issue Count", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKpi40","thresholdValueKPI40")),
+	KPI40("Issue Count", KPISource.JIRA.name(),
+			Arrays.asList("jiraStoryIdentificationKpi40", "thresholdValueKPI40", "jiraStoryCategoryKpi40")),
 
 	KPI39("Sprint Velocity", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusKpi39", "jiraIterationIssuetypeKPI39","thresholdValueKPI39")),

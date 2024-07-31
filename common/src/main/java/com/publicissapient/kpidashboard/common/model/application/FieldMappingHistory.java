@@ -151,6 +151,7 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraStoryIdentification;
 	private List<ConfigurationHistoryChangeLog> historyjiraStoryIdentificationKPI129;
 	private List<ConfigurationHistoryChangeLog> historyjiraStoryIdentificationKpi40;
+	private List<ConfigurationHistoryChangeLog> historyjiraStoryCategoryKpi40;
 	private List<ConfigurationHistoryChangeLog> historyjiraStoryIdentificationKPI164;
 
 	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatus;
