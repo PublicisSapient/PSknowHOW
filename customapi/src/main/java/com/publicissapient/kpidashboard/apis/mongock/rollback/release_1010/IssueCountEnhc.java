@@ -17,6 +17,7 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1010;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.bson.Document;
@@ -43,6 +44,7 @@ public class IssueCountEnhc {
 	public void execution() {
 		rollbackInsertFieldMappingStructure();
 		rollbackInsertFieldMappingVal();
+		rollbackMetadataIdentifier();
 	}
 
 	public void rollbackInsertFieldMappingStructure() {
@@ -62,10 +64,17 @@ public class IssueCountEnhc {
 		mongoTemplate.getCollection("field_mapping").updateMany(new Document(), update);
 	}
 
+	public void rollbackMetadataIdentifier() {
+		mongoTemplate.getCollection("metadata_identifier").updateMany(
+				new Document("templateCode", new Document("$in", Arrays.asList("7"))),
+				new Document("$pull", new Document("issues", new Document("type", JIRA_STORY_CATEGORY_KPI_40))));
+	}
+
 	@RollbackExecution
 	public void rollback() {
 		insertFieldMappingVal();
 		insertFieldMappingStructure();
+		updateMetadataIdentifier();
 	}
 
 	public void insertFieldMappingStructure() {
@@ -91,6 +100,13 @@ public class IssueCountEnhc {
 
 		// Execute the update
 		fieldMapping.updateMany(new Document(), update);
+	}
+
+	public void updateMetadataIdentifier() {
+		mongoTemplate.getCollection("metadata_identifier").updateMany(
+				new Document("templateCode", new Document("$in", Arrays.asList("7"))),
+				new Document("$push", new Document("issues", new Document("type", JIRA_STORY_CATEGORY_KPI_40)
+						.append("value", Arrays.asList("Story", "User Story", "Enabler Story", "Feature")))));
 	}
 
 }
