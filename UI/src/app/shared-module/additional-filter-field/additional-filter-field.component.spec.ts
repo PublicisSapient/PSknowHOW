@@ -118,6 +118,7 @@ describe('AdditionalFilterFieldComponent', () => {
     fixture = TestBed.createComponent(AdditionalFilterFieldComponent);
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService);
+    localStorage.setItem('completeHierarchyData', JSON.stringify(completeHierarchyData));
     fixture.detectChanges();
   });
 

@@ -45,7 +45,7 @@ export class NavComponent implements OnInit {
   visibleSidebar;
   kanban = false;
   navItems: number = 7;
-  
+
   constructor(
     private httpService: HttpService,
     private messageService: MessageService,
@@ -55,11 +55,12 @@ export class NavComponent implements OnInit {
     this.selectedType = this.service.getSelectedType() ? this.service.getSelectedType() : 'scrum';
     this.kanban= this.selectedType.toLowerCase() === 'scrum' ? false : true;
     const selectedTab = window.location.hash.substring(1);
-    
+
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
-    if(this.selectedTab.includes('-')){
-      this.selectedTab = this.selectedTab.split('-').join(' ');
-    }
+    this.selectedTab = this.selectedTab?.split(' ').join('-').toLowerCase();
+    // if(this.selectedTab.includes('-')){
+    //   this.selectedTab = this.selectedTab.split('-').join(' ');
+    // }
     if(this.selectedTab.includes('?')){
       this.selectedTab = this.selectedTab.split('?')[0];
     }
@@ -75,8 +76,6 @@ export class NavComponent implements OnInit {
       this.boardNameArr = data;
     })
 
-    // this.selectedTab = this.service.getSelectedTab();
-    
   }
 
   ngOnInit() {
@@ -96,7 +95,7 @@ export class NavComponent implements OnInit {
 
   // call when user is seleting tab
   selectTab(selectedTab) {
-    this.selectedTab = selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
+    this.selectedTab = selectedTab;
     if((selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog' || selectedTab.toLowerCase() === 'release' || selectedTab.toLowerCase() === 'dora') && this.selectedType.toLowerCase() !== 'scrum'){
       this.selectedType = 'Scrum';
     }
@@ -154,7 +153,7 @@ export class NavComponent implements OnInit {
   processKPIListData() {
     this.configOthersData = this.kpiListData['others'].find(boardDetails => boardDetails.boardName === 'Kpi Maturity')?.kpis;
     this.service.setUpdatedBoardList(this.kpiListData, this.selectedType);
-    
+
     // renamed tab name was not updating when navigating on iteration/backlog, issue fixed
     if (this.changedBoardName) {
       this.service.changedMainDashboardValueSub.next(this.changedBoardName);

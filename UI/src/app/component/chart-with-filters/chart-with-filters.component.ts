@@ -75,7 +75,6 @@ export class ChartWithFiltersComponent implements OnChanges {
         name: Object.keys(d.value)[0]
       })
     })
-    console.log(pie_input);
     let pie = d3.pie().value(function (d) { return d.value; });
     data_ready = pie(pie_input);
     // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
@@ -132,7 +131,6 @@ export class ChartWithFiltersComponent implements OnChanges {
     arr.forEach(element => {
       total += element[Object.keys(element)[0]];
     });
-    console.log(total);
     var color = d3.scaleOrdinal(d3.schemeTableau10);
     arr.forEach(element => {
       this.legendData.push({
@@ -147,7 +145,6 @@ export class ChartWithFiltersComponent implements OnChanges {
   mainFilterSelect(event) {
     this.selectedMainFilter = event.option;
     this.modifiedData = this.groupData(this.dataCopy, this.selectedMainFilter.filterKey);
-    console.log(this.modifiedData);
     this.draw(this.modifiedData);
     this.legendData = [];
     this.populateLegend(this.modifiedData);

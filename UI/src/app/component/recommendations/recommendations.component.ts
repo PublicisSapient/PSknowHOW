@@ -36,7 +36,7 @@ export class RecommendationsComponent implements OnInit {
     this.selectedSprint = this.service.getSprintForRnR();
     this.displayModal = true;
     this.filterData['kpiIdList'] = [...this.kpiList];
-    this.filterData['selectedMap']['project'] = [this.selectedSprint?.['parentId']?.[0]];
+    this.filterData['selectedMap']['project'] = [Array.isArray(this.selectedSprint?.['parentId']) ? this.selectedSprint?.['parentId']?.[0] : this.selectedSprint?.['parentId']];
     this.filterData['selectedMap']['sprint'] = [this.selectedSprint?.['nodeId']];
     this.loading = true;
     this.maturities = [];

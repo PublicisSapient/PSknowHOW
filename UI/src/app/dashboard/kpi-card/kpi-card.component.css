@@ -93,13 +93,19 @@
     cursor: pointer;
 }
 
-::ng-deep .ng-select-container.ng-has-value {
+::ng-deep .ng-select-container.ng-has-value,
+::ng-deep .kpi-dropdown.ng-select .ng-select-container {
     overflow: visible;
 }
 
 ::ng-deep .kpi-filter .ng-placeholder {
     top: 5px;
 }
+
+::ng-deep .kpi-dropdown {
+  width: 180px !important;
+}
+
 .trend-box{
     flex: 0 0 33.3333%;
 }

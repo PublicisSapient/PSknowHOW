@@ -289,7 +289,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 
 		/**
 		 * {@inheritDoc}
-		 * 
+		 *
 		 * @return
 		 */
 		@Override

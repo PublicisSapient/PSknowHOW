@@ -49,18 +49,18 @@ public class RepoToolProviderUrlChange {
 	public void changeRepoToolProviderTestApiUrls() {
 
 		// Update for bitbucket tool
-		Document filter_bitbuckrt = new Document("toolName", "bitbucket");
-		Document update_gitlab = new Document("$set",
+		Document filterBitbucket = new Document("toolName", "bitbucket");
+		Document updateGitlab = new Document("$set",
 				new Document().append("testServerApiUrl", "/bitbucket/rest/api/1.0/projects/").append("testApiUrl",
 						"https://api.bitbucket.org/2.0/workspaces/"));
 
-		mongoTemplate.getCollection("repo_tools_provider").updateOne(filter_bitbuckrt, update_gitlab);
+		mongoTemplate.getCollection("repo_tools_provider").updateOne(filterBitbucket, updateGitlab);
 		// Update for gitlab tool
-		Document filter_gl = new Document("toolName", "gitlab");
-		Document update_gl = new Document("$set",
+		Document filterGl = new Document("toolName", "gitlab");
+		Document updateGl = new Document("$set",
 				new Document().append("testApiUrl", "/api/v4/projects/").append("repoToolProvider", "gitlab"));
 
-		mongoTemplate.getCollection("repo_tools_provider").updateOne(filter_gl, update_gl);
+		mongoTemplate.getCollection("repo_tools_provider").updateOne(filterGl, updateGl);
 	}
 
 	public void changePRSizeMaturity() {
@@ -93,12 +93,12 @@ public class RepoToolProviderUrlChange {
 	}
 
 	public void changeRepoToolProviderTestApiUrlsRollback() {
-		Document filter_bb = new Document("toolName", "bitbucket");
-		Document update_bb = new Document("$set", new Document()
+		Document filterBb = new Document("toolName", "bitbucket");
+		Document updateBb = new Document("$set", new Document()
 				.append("testServerApiUrl", "https://api.bitbucket.org/2.0/repositories/")
 				.append("testApiUrl", ""));
 
-		mongoTemplate.getCollection("repo_tools_provider").updateOne(filter_bb, update_bb);
+		mongoTemplate.getCollection("repo_tools_provider").updateOne(filterBb, updateBb);
 
 		Document filter = new Document("toolName", "gitlab");
 		Document update = new Document("$set", new Document()

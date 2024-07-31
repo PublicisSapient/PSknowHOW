@@ -37,7 +37,6 @@ declare let require: any;
 
 export class ExecutiveComponent implements OnInit, OnDestroy {
     @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
-    masterData;
     filterData = [];
     sonarKpiData = {};
     jenkinsKpiData = {};
@@ -117,6 +116,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     maturityTableKpiList = [];
     cumulativeTrend = ['kpi17', 'kpi62', 'kpi67', 'kpi27', 'kpi66', 'kpi71', 'kpi42'];
     kpiList:Array<string> = [];
+    isRecommendationsEnabled: boolean = false;
 
     constructor(public service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -225,8 +225,13 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         });
         this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
             this.noProjects = res;
-            this.kanbanActivated = this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
+            this.kanbanActivated = this.service.getSelectedType()?.toLowerCase() === 'kanban' ? true : false;
           }));
+       
+        /** Get recommendations flag */
+        this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
+            this.isRecommendationsEnabled = item;
+        }));
 
         this.service.getEmptyData().subscribe((val) => {
             if (val) {
@@ -275,7 +280,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     }
                 }
                 const kpiIdsForCurrentBoard = this.updatedConfigGlobalData?.map(kpiDetails => kpiDetails.kpiId);
-                this.masterData = $event.masterData;
                 this.filterData = $event.filterData;
                 this.filterApplyData = $event.filterApplyData;
                 this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
@@ -283,7 +287,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 if (this.filterData?.length && $event.makeAPICall) {
                     this.noTabAccess = false;
                     // call kpi request according to tab selected
-                    if (this.masterData && Object.keys(this.masterData).length) {
+                    if (this.configGlobalData?.length > 0) {
                         this.processKpiConfigData();
                         if (this.service.getSelectedType().toLowerCase() === 'kanban') {
                             this.configGlobalData = this.service.getDashConfigData()[this.selectedtype.toLowerCase()].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;

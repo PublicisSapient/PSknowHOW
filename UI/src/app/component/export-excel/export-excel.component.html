@@ -15,7 +15,7 @@
   <div class="dialog-body p-mb-4">
     <p-table #table *ngIf="modalDetails['tableValues'].length > 0 ; else showNoDataMessage"
       [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img"
-      [scrollable]="true" scrollHeight="65vh">
+      [scrollable]="true" scrollHeight="65vh" (sortFunction)="customSort($event)" [customSort]="true">
       <ng-template pTemplate="header">
         <tr>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']">
@@ -23,7 +23,7 @@
               <div class="table-head">
                 <span [ngStyle]="{'width':'max-content','margin-right': '1rem'}">{{item}}</span>
                 <div class="p-d-flex">
-                  <p-columnFilter [field]="item" matchMode="in" *ngIf="!excludeColumnFilter.includes(item)" 
+                  <p-columnFilter [field]="item" matchMode="in" *ngIf="!excludeColumnFilter.includes(item)"
                     [showMenu]="false" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
                     [showClearButton]="false" [showApplyButton]="false" [style]="{'margin-top':'2px'}">
                     <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>

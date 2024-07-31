@@ -36,7 +36,6 @@ declare let require: any;
 export class MilestoneComponent implements OnInit {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   subscriptions: any[] = [];
-  masterData = <any>{};
   filterData = <any>[];
   filterApplyData = <any>{};
   noOfFilterSelected = 0;
@@ -181,13 +180,12 @@ export class MilestoneComponent implements OnInit {
     if (this.service.getDashConfigData()) {
       this.configGlobalData = this.service.getDashConfigData()['others']?.filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
       this.processKpiConfigData();
-      this.masterData = $event.masterData;
       this.filterData = $event.filterData;
       this.filterApplyData = $event.filterApplyData;
       this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
       if (this.filterData?.length) {
         /**  call kpi request according to tab selected */
-        if (this.masterData && Object.keys(this.masterData).length) {
+        if (this.configGlobalData?.length > 0) {
           if (this.selectedtype !== 'Kanban') {
             const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
             const selectedRelease = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['release'][0] && x.labelName.toLowerCase() === 'release')[0];
@@ -211,7 +209,7 @@ export class MilestoneComponent implements OnInit {
     /** creating a set of unique group Ids */
     const groupIdSet = new Set();
     this.updatedConfigGlobalData.forEach((obj) => {
-      if (!obj.kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Release') {
+      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Release') {
         groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
@@ -352,8 +350,7 @@ export class MilestoneComponent implements OnInit {
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
       if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList) && filters && Object.keys(filters)?.length > 0) {
         this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
-      }
-      else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
+      } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
@@ -390,7 +387,7 @@ export class MilestoneComponent implements OnInit {
         filters: this.allKpiArray[idx]?.filterGroup,
         modalHeads:  this.allKpiArray[idx]?.modalHeads
       });
-      
+
     } else {
       /**if trendValueList is an object */
       if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
@@ -430,7 +427,9 @@ export class MilestoneComponent implements OnInit {
             this.kpiChartData[kpiId] = [...trendValueList];
           } else {
             const obj = JSON.parse(JSON.stringify(trendValueList));
-            this.kpiChartData[kpiId]?.push(obj);
+            if(obj?.length > 0 || Object.keys(obj)?.length > 0){
+              this.kpiChartData[kpiId]?.push(obj);
+            }
           }
         }
       }
@@ -479,11 +478,21 @@ export class MilestoneComponent implements OnInit {
         } else {
           this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
         }
-      }
-      else if (trendValueList?.length > 0) {
+      } else if (trendValueList?.length > 0) {
         this.kpiChartData[kpiId] = [...trendValueList[0]?.value];
       } else {
+        /** when there are no kpi level filters */
         this.kpiChartData[kpiId] = [];
+        if (trendValueList && trendValueList?.hasOwnProperty('value') && trendValueList['value']?.length > 0) {
+          this.kpiChartData[kpiId]?.push(trendValueList['value']?.filter((x) => x['filter1'] == 'Overall')[0]);
+        } else if (trendValueList?.length > 0) {
+          this.kpiChartData[kpiId] = [...trendValueList];
+        } else {
+          const obj = JSON.parse(JSON.stringify(trendValueList));
+          if(obj?.length > 0 || Object.keys(obj)?.length > 0){
+            this.kpiChartData[kpiId]?.push(obj);
+          }
+        }
       }
     }
   }
@@ -653,25 +662,20 @@ export class MilestoneComponent implements OnInit {
   handleTabChange(event) {
     this.activeIndex = event.index;
   }
-
   checkIfDataPresent(data) {
     let dataCount = 0;
-    for(let i = 0; i<data?.length; i++){
-      if(data[i]?.data && !isNaN(parseInt(data[i]?.data))) {
-        dataCount += data[i]?.data;
-        if(parseInt(dataCount + '') > 0) {
-          return true;
-        }
-      } else if(data[i].value && !isNaN(parseInt(data[i]?.value[0]?.data))) {
-        for(let j = 0; j < data[i]?.value?.length; j++){
-          dataCount += data[i]?.value[j]?.data;
-          if(parseInt(dataCount + '') > 0) {
-            return true;
+    data?.forEach(item => {
+      if (item?.data && !isNaN(parseInt(item?.data))) {
+        dataCount += item?.data;
+      } else if (item.value) {
+        item?.value?.forEach(val => {
+          if (!isNaN(parseInt(val?.data))) {
+            dataCount += val?.data;
           }
-        }
+        });
       }
-    }
-    return false;
+    });
+    return parseInt(dataCount + '') > 0;
   }
 
   /** unsubscribing all Kpi Request  */

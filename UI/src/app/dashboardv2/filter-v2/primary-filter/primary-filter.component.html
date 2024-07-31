@@ -1,0 +1,56 @@
+<div  #filterDiv style="overflow-y: visible; overflow-x: visible;">
+    <span class="p-float-label" *ngIf="primaryFilterConfig['type'] !== 'singleSelect'">
+        <p-multiSelect #multiSelect inputId="multiselectFilter" [options]="filters" [(ngModel)]="selectedFilters"
+            optionLabel="nodeName" [style]="{'width':'300px', 'max-width': '100%', 'height': '40px'}"
+            [selectionLimit]="6" [selectedItemsLabel]="'{0} selected'" defaultLabel="Select"
+            [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }" [appendTo]="filterDiv" [resetFilterOnHide]="true">
+            <ng-template let-option pTemplate="item">
+                <div class="filter-item">
+                    <div>
+                        <span>{{option.nodeName}}</span>
+                        <span class="parent_span">
+                            ({{ option.path.split('_')[0]}})
+                        </span>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+                <div class="p-p-3 p-text-right">
+                    <p-button label="Apply" (onClick)="applyPrimaryFilters($event)"
+                        [style]="{backgroundColor: '#0B4BC8'}" [disabled]="!selectedFilters?.length"></p-button>
+                </div>
+            </ng-template>
+        </p-multiSelect>
+        <label class="floating-label" for="multiselectFilter">Select {{ selectedLevel }}</label>
+    </span>
+    <span *ngIf="primaryFilterConfig && primaryFilterConfig['type'] === 'singleSelect'" class="p-float-label">
+        <p-dropdown *ngIf="selectedFilters" inputId="singleselectFilter" [options]="filters" [(ngModel)]="selectedFilters[0]"
+            placeholder="Select"  optionLabel="nodeName"
+            [style]="{'width':'300px', 'max-width': '100%', 'height': '40px'}" (onChange)="applyPrimaryFilters($event)"
+            [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }" [appendTo]="filterDiv"
+            [filter]="true">
+            <ng-template pTemplate="selectedItem" *ngIf="selectedFilters?.length">
+                <div class="filter-item-selected">
+                    <span>{{ selectedFilters[0].nodeName  }}</span>
+                </div>
+            </ng-template>
+            <ng-template let-option pTemplate="item">
+                <div class="filter-item">
+                    <span>{{ option.nodeName }}</span>
+                    <span class="parent_span">
+                        ({{ service.getSelectedTab().toLowerCase() === 'iteration' ? option.sprintState : service.getSelectedTab().toLowerCase() === 'release' ? option.releaseState : option.path.split('_')[0]  }})
+                    </span>
+                </div>
+            </ng-template>
+        </p-dropdown>
+        <label class="floating-label" for="singleselectFilter">
+          Select
+          <ng-container *ngIf="selectedLevel === 'project'; else objectTemplate">
+            {{ selectedLevel }}
+          </ng-container>
+          <ng-template #objectTemplate>
+            {{ selectedLevel?.emittedLevel }}
+          </ng-template>
+        </label>
+    </span>
+</div>

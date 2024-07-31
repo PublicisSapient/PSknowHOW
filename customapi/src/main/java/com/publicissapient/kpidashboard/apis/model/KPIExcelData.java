@@ -421,6 +421,9 @@ public class KPIExcelData {
 	@JsonProperty("Squad")
 	private List<String> squads;
 
+	@JsonProperty("Developer")
+	private String developer;
+
 
 
 }

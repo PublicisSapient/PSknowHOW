@@ -29,7 +29,8 @@ ARG NOTIFICATION_CONSUMER_JAR_FILE
 ADD ${NOTIFICATION_CONSUMER_JAR_FILE} $APP_DIR/notification-consumer.jar
 
 # Copy application.properties file
-ADD kafka-consumers/notification-consumer/src/main/resources/application.properties $PROPERTIES_DIR/notification-consumer.properties
+ARG APPLICATION_PROPERTIES_FILE
+ADD ${APPLICATION_PROPERTIES_FILE} $PROPERTIES_DIR/notification-consumer.properties
 
 # Expose port
 EXPOSE 50020
