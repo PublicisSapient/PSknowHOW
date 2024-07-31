@@ -118,7 +118,7 @@
                     <ng-container *ngFor="let connectionLabelFields of connectionFieldLabels.labels; let i = index">
 
                         <div class="p-field"
-                             *ngIf="connectionFieldLabels.inputFields[i] === 'bearerToken' || connectionFieldLabels.inputFields[i] === 'vault' || connectionFieldLabels.inputFields[i] === 'cloudEnv' || connectionFieldLabels.inputFields[i] === 'isOAuth' || connectionFieldLabels.inputFields[i] === 'offline' || connectionFieldLabels.inputFields[i] === 'accessTokenEnabled' || connectionFieldLabels.inputFields[i] === 'isCloneable'">
+                             *ngIf="connectionFieldLabels.inputFields[i] === 'bearerToken' || connectionFieldLabels.inputFields[i] === 'vault' || connectionFieldLabels.inputFields[i] === 'cloudEnv' || connectionFieldLabels.inputFields[i] === 'isOAuth' || connectionFieldLabels.inputFields[i] === 'accessTokenEnabled' || connectionFieldLabels.inputFields[i] === 'isCloneable'">
 
                             <label for="connection_{{connectionFieldLabels.inputFields[i]}}">{{ connectionFieldLabels.inputFields[i] !== 'accessTokenEnabled' ? connectionLabelFields : connectionLabelFields[0]
                                 }}</label>
@@ -134,7 +134,7 @@
                         </div>
 
                         <div class="p-field d-flex align-items-center"
-                            *ngIf="connectionFieldLabels.inputFields[i] === 'connPrivate'">
+                            *ngIf="connectionFieldLabels.inputFields[i] === 'sharedConnection'">
 
                             <label class="mb-0" for="connection_{{connectionFieldLabels.inputFields[i]}}">{{
                                 connectionLabelFields
@@ -154,7 +154,7 @@
                         </div>
 
                         <div class="p-field"
-                             *ngIf="connectionFieldLabels.inputFields[i] !== 'type' && connectionFieldLabels.inputFields[i] !== 'repoToolProvider' && connectionFieldLabels.inputFields[i] !== 'passwordIsOAuth' && connectionFieldLabels.inputFields[i] !== 'connPrivate' && connectionFieldLabels.inputFields[i] !== 'cloudEnv' && connectionFieldLabels.inputFields[i] !== 'isOAuth' && connectionFieldLabels.inputFields[i] !== 'offline' && connectionFieldLabels.inputFields[i] !== 'vault' && connectionFieldLabels.inputFields[i] !== 'bearerToken' && connectionFieldLabels.inputFields[i] !== 'accessTokenEnabled' && connectionFieldLabels.inputFields[i] !== 'isCloneable'">
+                             *ngIf="connectionFieldLabels.inputFields[i] !== 'type' && connectionFieldLabels.inputFields[i] !== 'repoToolProvider' && connectionFieldLabels.inputFields[i] !== 'passwordIsOAuth' && connectionFieldLabels.inputFields[i] !== 'sharedConnection' && connectionFieldLabels.inputFields[i] !== 'cloudEnv' && connectionFieldLabels.inputFields[i] !== 'isOAuth' && connectionFieldLabels.inputFields[i] !== 'vault' && connectionFieldLabels.inputFields[i] !== 'bearerToken' && connectionFieldLabels.inputFields[i] !== 'accessTokenEnabled' && connectionFieldLabels.inputFields[i] !== 'isCloneable'">
                             <label for="connection_{{connectionFieldLabels.inputFields[i]}}">{{ connectionLabelFields
                                 }}</label>
                             <input #inputFieldVar name="{{ connectionFieldLabels.inputFields[i] }}"
@@ -207,7 +207,7 @@
             </div>
             <div class="p-field">
                 <label for="baseUrl">Base Url</label>
-                <input class="ml-2" type="text" id="baseUrl" pInputText formControlName="baseUrl" (change)="updateForm()">
+                <input class="ml-2" type="text" id="baseUrl" pInputText formControlName="baseUrl" placeholder="E.g. https://publicissapient.atlassian.net" (change)="updateForm()">
             </div>
             <div class="p-field">
                 <label for="apiEndPoint">API Endpoint</label>
@@ -221,7 +221,7 @@
             </div>
             <div class="p-field">
                 <label for="username">Username</label>
-                <input class="ml-2" type="text" id="username" pInputText formControlName="username" (change)="updateForm()">
+                <input class="ml-2" type="text" id="username" pInputText formControlName="username" (change)="updateForm()" placeholder="Preferably, use a service account credentials">
             </div>
             <div class="p-field"
                 *ngIf="!jiraForm.controls['vault']?.value && !jiraForm.controls['bearerToken']?.value && !jiraForm.controls['jaasKrbAuth']?.value">
@@ -261,13 +261,8 @@
                 <input class="ml-2" type="text" id="samlEndPoint" pInputText formControlName="samlEndPoint" (change)="updateForm()"/>
             </div>
             <div class="p-field">
-                <label for="offline">isOffline</label>
-                <p-inputSwitch id="offline" formControlName="offline" class="p-ml-2 p-mr-2">
-                </p-inputSwitch>
-            </div>
-            <div class="p-field">
-                <label for="connPrivate">Is Connection Private</label>
-                <input class="ml-2" type="checkbox" id="connPrivate" formControlName="connPrivate" (change)="updateForm()"/>
+                <label for="sharedConnection">Share connection with everyone</label>
+                <input class="ml-2" type="checkbox" id="sharedConnection" formControlName="sharedConnection" (change)="updateForm()"/>
             </div>
         </form>
         <button pButton pRipple label="Test Connection" icon="pi pi-question" class="p-button-warning p-mr-2"
