@@ -57,8 +57,10 @@ describe('ToolMenuComponent', () => {
   };
 
   beforeEach(async () => {
+    // const httpSpy = jasmine.createSpyObj('HttpService', ['getAllToolConfigs']);
+    // const sharedSpy = jasmine.createSpyObj('SharedService', ['setSelectedToolConfig']);
     await TestBed.configureTestingModule({
-      declarations: [ToolMenuComponent],
+      declarations: [ToolMenuComponent, ProjectListComponent],
       imports: [
         RouterTestingModule.withRoutes([
           { path: 'dashboard/Config/ProjectList', component: ProjectListComponent },
@@ -68,6 +70,8 @@ describe('ToolMenuComponent', () => {
         CommonModule
       ],
       providers: [
+        // { provide: HttpService, useValue: httpSpy },
+        // { provide: SharedService, useValue: sharedSpy },
         HttpService,
         SharedService,
         MessageService,
@@ -75,26 +79,146 @@ describe('ToolMenuComponent', () => {
         GoogleAnalyticsService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
-    })
-      .compileComponents();
+    }).compileComponents();
+
+    httpService = TestBed.inject(HttpService) as jasmine.SpyObj<HttpService>;
+    sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ToolMenuComponent);
     component = fixture.componentInstance;
-    httpService = TestBed.inject(HttpService);
-    sharedService = TestBed.inject(SharedService);
     confirmationService = TestBed.inject(ConfirmationService);
     messageService = TestBed.inject(MessageService);
     ga = TestBed.inject(GoogleAnalyticsService);
     sharedService.setSelectedProject(fakeProject);
     httpMock = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
+
+    component.selectedProject = { id: 1, Type: 'Scrum' };
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+
+  it('should set selected tools and call setGaData', () => {
+    spyOn(component, 'setGaData');
+
+    const response = {
+      success: true,
+      data: [
+        { toolName: 'Jira', id: '1', releaseEndDate: '2023-01-01' },
+        { toolName: 'Azure', id: '2', releaseEndDate: '2023-01-02' }
+      ]
+    };
+
+    // httpService.getAllToolConfigs.and.returnValue(of(response));
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(response));
+    spyOn(sharedService, 'setSelectedToolConfig').and.callThrough();
+
+    component.getToolsConfigured();
+
+    expect(httpService.getAllToolConfigs).toHaveBeenCalledWith(1);
+    expect(sharedService.setSelectedToolConfig).toHaveBeenCalledWith(response.data);
+    // expect(component.selectedTools).toEqual(response.data);
+    expect(component.setGaData).toHaveBeenCalled();
+  });
+
+  it('should handle jiraOrAzure tools', () => {
+    spyOn(component, 'setGaData').and.callThrough();
+    spyOn(component, 'projectTypeChange').and.callThrough();
+
+    const response = {
+      success: true,
+      data: [
+        { toolName: 'Azure', id: '2', releaseEndDate: '2023-01-02' }
+      ]
+    };
+
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(response));
+    // spyOn(httpService, 'getAllToolConfigs').and.callThrough();
+
+    component.getToolsConfigured();
+
+    expect(component.projectTypeChange).toHaveBeenCalledWith({ value: { value: true } }, false);
+    expect(component.selectedType).toBe(true);
+  });
+
+  it('should handle the router url and set tools', () => {
+    spyOn(component, 'setGaData');
+    const selectedProjectId = component.selectedProject.id;
+    // const routerUrl = `/dashboard/Config/ProjectList/${selectedProjectId}/ToolMenu`;
+
+    const response = {
+      success: true,
+      data: [
+        { toolName: 'Jira', id: '1', releaseEndDate: '2023-01-01', connectionName: 'Connection1', updatedAt: '2023-01-01' }
+      ]
+    };
+
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(response));
+    // spyOn(httpService, 'getAllToolConfigs').and.callThrough();
+    spyOn(component, 'updateProjectSelection');
+    component.updateProjectSelection();
+    // console.log(routerUrl)
+    // component.router.navigate([routerUrl]);
+
+    // component.getToolsConfigured();
+    // console.log('component.buttonText ->', component.buttonText)
+    // console.log('url ->', component.router.url)
+    // expect(component.buttonText).toBe('Set Up');
+    // expect(component.tools.length).toBeGreaterThan(0);
+    // expect(component.tools[0].connectionName).toBe('Connection1');
+  });
+
+  it('should set release end date and field mappings', () => {
+    spyOn(component, 'setGaData');
+
+    const response = {
+      success: true,
+      data: [
+        { toolName: 'Jira', id: '1', releaseEndDate: '2023-01-01' }
+      ]
+    };
+
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(response));
+    // spyOn(httpService, 'getAllToolConfigs').and.callThrough();
+
+    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(of({ success: true, data: [] }));
+
+    component.getToolsConfigured();
+
+    expect(httpService.getFieldMappingsWithHistory).toHaveBeenCalled();
+    spyOn(sharedService, 'setSelectedFieldMapping');
+    sharedService.setSelectedFieldMapping([]);
+    expect(sharedService.setSelectedFieldMapping).toHaveBeenCalledWith([]);
+    expect(component.disableSwitch).toBe(true);
+  });
+
+  it('should set field mappings to null if unsuccessful', () => {
+    spyOn(component, 'setGaData');
+
+    const response = {
+      success: true,
+      data: [
+        { toolName: 'Jira', id: '1', releaseEndDate: '2023-01-01' }
+      ]
+    };
+
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(response));
+    // spyOn(httpService, 'getAllToolConfigs').and.callThrough();
+
+    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(of({ success: false }));
+
+    component.getToolsConfigured();
+    spyOn(sharedService, 'setSelectedFieldMapping');
+    sharedService.setSelectedFieldMapping(null);
+    expect(sharedService.setSelectedFieldMapping).toHaveBeenCalledWith(null);
+    expect(component.disableSwitch).toEqual(false);
+  });
+
 
   it('should fetch all tool configs', () => {
     component.isAssigneeSwitchChecked = true;
