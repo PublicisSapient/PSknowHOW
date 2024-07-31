@@ -47,7 +47,7 @@
     <div class="p-d-inline-block p-mr-2">
       <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-clock"></i></span>
       <span class="text-container p-d-inline-block p-mr-2">Days Left:</span>
-      <span class="p-text-bold p-d-inline-block data-container p-mr-3">{{daysRemaining}}</span>
+      <span class="p-text-bold p-d-inline-block data-container p-mr-3">{{iterationConfigData?.daysLeft}}</span>
     </div>
     <div class="p-d-inline-block p-mr-2">
       <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-calendar-times"></i></span>
@@ -58,7 +58,7 @@
       <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-chart-line"></i></span>
       <span class="text-container p-d-inline-block p-mr-2">Capacity:</span>
       <span class="p-text-bold p-d-inline-block data-container p-mr-3">
-        {{iterationConfigData.capacity?.value?.value ? iterationConfigData.capacity?.value?.value + ' Hours' : 'NA'}}
+        {{iterationConfigData.capacity?.value?.value ? iterationConfigData.capacity?.value?.value + ' Hours' : 'N/A'}}
       </span>
     </div>
 
@@ -81,7 +81,7 @@
   </div>
   <div class="p-d-flex">
     <div class="view-tabs p-pl-2 p-pr-2"
-      *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'maturity'">
+      *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'kpi-maturity'">
       <div>
         <input id="chart-view" class="chart-view" type="radio" name="view" [checked]="showChart === 'chart'">
         <label class="label1" for="chart-view" (click)="showChartToggle('chart')" id="Layout-Chart">
@@ -98,7 +98,7 @@
       </div>
     </div>
     <div class="show-hide-container"
-      *ngIf="selectedTab !== 'iteration' && selectedTab !== 'backlog' && selectedTab !== 'release' && selectedTab !== 'dora' && selectedTab.toLowerCase() !== 'maturity'">
+      *ngIf="selectedTab !== 'iteration' && selectedTab !== 'backlog' && selectedTab !== 'release' && selectedTab !== 'dora' && selectedTab.toLowerCase() !== 'kpi-maturity'">
       <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)">
         <i class="pi pi-pause" style="font-size: 1rem"></i>
       </span>

@@ -10,6 +10,8 @@
     "6335363749794a18e8a4479b",
     "sprintName" : "customfield_12700",
     "jiradefecttype" : [ "Defect", "Bug" ],
+    "jiraIssueTypeExcludeKPI124" : [ "Exclude Bug"],
+    "jiraIssueTypeExcludeKPI75" : [ "Exclude Bug"],
     "jiraIssueTypeNames" : [ "Enabler Story", "Change request", "Defect" ],
     "jiraIssueTypeNamesAVR" : [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraIssueEpicType" : [ ],

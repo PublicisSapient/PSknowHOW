@@ -185,7 +185,7 @@ describe('PrimaryFilterComponent', () => {
     component.applyPrimaryFilters(null);
 
     expect(component.selectedFilters).toEqual([{ nodeId: 1, nodeName: 'Node1' }]);
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ nodeId: 1, nodeName: 'Node1' }], additional_level: null });
+    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ nodeId: 1, nodeName: 'Node1' }] });
     expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([{ nodeId: 1, nodeName: 'Node1' }]);
     expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
   });
@@ -199,7 +199,7 @@ describe('PrimaryFilterComponent', () => {
     component.applyPrimaryFilters(null);
 
     expect(component.selectedFilters).toEqual([{ nodeId: 1, nodeName: 'Node1' }]);
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ nodeId: 1, nodeName: 'Node1' }], additional_level: null });
+    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ nodeId: 1, nodeName: 'Node1' }] });
     expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([{ nodeId: 1, nodeName: 'Node1' }]);
     expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
   });
@@ -401,12 +401,10 @@ describe('PrimaryFilterComponent', () => {
         { nodeId: 'node2', nodeName: 'filter2' },
       ],
       additional_level: {
-        level: {
           level4 :[
           { nodeId: 'node3', nodeName: 'filter3' },
           { nodeId: 'node4', nodeName: 'filter4' },
         ]
-      }
       },
     });
     component.selectedLevel = 'level1';

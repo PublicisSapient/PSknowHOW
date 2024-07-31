@@ -493,6 +493,8 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiraLiveStatusKPI171;
 	private String storyFirstStatusKPI171;
 
+	private List<String> jiraIssueTypeExcludeKPI124;
+	private List<String> jiraIssueTypeExcludeKPI75;
 	/**
 	 * Get jira issue type names string [ ].
 	 *

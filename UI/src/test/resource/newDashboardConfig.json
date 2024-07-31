@@ -8839,7 +8839,7 @@
         "kpis": [
           {
             "kpiId": "kpi989",
-            "kpiName": "Kpi Maturity",
+            "kpiName": "Maturity",
             "isEnabled": true,
             "order": 1,
             "shown":true

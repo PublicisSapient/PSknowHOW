@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -50,7 +49,6 @@ import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -115,13 +113,12 @@ public class EstimationHygieneServiceImpl extends JiraIterationKPIService {
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), jiraIssueList);
-					if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())) {
-						List<String> defectType = new ArrayList<>();
-						defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
-						defectType.addAll(fieldMapping.getJiradefecttype());
+					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeExcludeKPI124())) {
+						Set<String> defectTypeSet = fieldMapping.getJiraIssueTypeExcludeKPI124().stream()
+								.map(String::toLowerCase).collect(Collectors.toSet());
 						filtersIssuesList = filtersIssuesList.stream()
-								.filter(jiraIssue -> !defectType.contains(jiraIssue.getTypeName()))
-								.collect(Collectors.toSet());
+								.filter(jiraIssue -> !defectTypeSet.contains(jiraIssue.getTypeName().toLowerCase()))
+								.collect(Collectors.toCollection(HashSet::new));
 					}
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 				}
