@@ -43,7 +43,9 @@ public class ProjectBasicConfigDTO {
 	private ObjectId id;
 	private String projectName;
 	private String createdAt;
+	private String createdBy;
 	private String updatedAt;
+	private String updatedBy;
 
 	private String consumerCreatedOn;
 	private boolean kanban;
