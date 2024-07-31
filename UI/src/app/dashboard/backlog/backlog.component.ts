@@ -147,11 +147,13 @@ export class BacklogComponent implements OnInit, OnDestroy {
     const disabledKpis = this.configGlobalData?.filter(item => item.shown && !item.isEnabled);
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
-    this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown);
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
     this.kpiList = this.configGlobalData.map((kpi) => kpi.kpiId);
     const kpi3Index = this.updatedConfigGlobalData.findIndex(kpi => kpi.kpiId === 'kpi3');
     const kpi3 = this.updatedConfigGlobalData.splice(kpi3Index, 1);
-    this.updatedConfigGlobalData.splice(0, 0, kpi3[0]);
+    if(this.updatedConfigGlobalData?.length > 0){
+      this.updatedConfigGlobalData?.splice(0, 0, kpi3[0]);
+    }
     if (kpi3Index >= 0) {
       this.leadTime = this.updatedConfigGlobalData.find(kpi => kpi.kpiId === 'kpi3')
     } else {
@@ -218,6 +220,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
         this.groupJiraKpi(kpiIdsForCurrentBoard);
         this.getKpiCommentsCount();
       }
+      this.fullPageLoader = false;
     } else {
       this.noTabAccess = true;
     }
@@ -229,8 +232,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
     // creating a set of unique group Ids
     const groupIdSet = new Set();
     this.updatedConfigGlobalData?.forEach((obj) => {
-      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Backlog') {
-        groupIdSet.add(obj['kpiDetail'].groupId);
+      if (!obj?.['kpiDetail'].kanban && obj?.['kpiDetail'].kpiSource === 'Jira' && obj?.['kpiDetail'].kpiCategory == 'Backlog') {
+        groupIdSet.add(obj?.['kpiDetail'].groupId);
       }
     });
 

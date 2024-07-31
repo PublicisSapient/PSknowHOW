@@ -168,6 +168,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			ModelMapper mapper = new ModelMapper();
 			basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
 			basicConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
+			basicConfig.setCreatedBy(authenticationService.getLoggedInUser());
 			tokenAuthenticationService.updateExpiryDate(username, LocalDateTime.now().toString());
 			String accessRoleOfParent = projectAccessManager.getAccessRoleOfNearestParent(basicConfig, username);
 
@@ -242,6 +243,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				}
 				basicConfig.setCreatedAt(savedConfig.getCreatedAt());
 				basicConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
+				basicConfig.setUpdatedBy(authenticationService.getLoggedInUser());
 				ProjectBasicConfig updatedBasicConfig = basicConfigRepository.save(basicConfig);
 				performFilterOperation(basicConfigDtoCreation(updatedBasicConfig, mapper), true);
 				response = new ServiceResponse(true, "Updated Successfully.", updatedBasicConfig);

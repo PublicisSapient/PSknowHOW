@@ -39,8 +39,7 @@ interface JiraConnectionField {
   'isOAuth': boolean,
   'privateKey': string,
   'consumerKey': string,
-  'offline': boolean,
-  'connPrivate': boolean,
+  'sharedConnection': boolean,
   'jaasKrbAuth': boolean,
   'jaasConfigFilePath': string,
   'krb5ConfigFilePath': string,
@@ -59,94 +58,94 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Jira',
       connectionLabel: 'Jira',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Is Offline', 'Is Connection Private','Use bearer token', 'PAT OAuthToken', 'Is jaasKrbAuth', 'Jaas Config FilePath', 'Krb5 Config FilePath', 'Jaas User', 'Saml Endpoint', 'Select Authentication Type'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'offline', 'connPrivate', 'bearerToken', 'patOAuthToken', 'jaasKrbAuth', 'jaasConfigFilePath', 'krb5ConfigFilePath', 'jaasUser', 'samlEndPoint', 'jiraAuthType']
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Share connection with everyone','Use bearer token', 'PAT OAuthToken', 'Is jaasKrbAuth', 'Jaas Config FilePath', 'Krb5 Config FilePath', 'Jaas User', 'Saml Endpoint', 'Select Authentication Type'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'sharedConnection', 'bearerToken', 'patOAuthToken', 'jaasKrbAuth', 'jaasConfigFilePath', 'krb5ConfigFilePath', 'jaasUser', 'samlEndPoint', 'jiraAuthType']
     },
     {
       connectionType: 'Azure',
       connectionLabel: 'Azure Boards',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'PAT', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'pat', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'PAT', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'pat', 'sharedConnection']
     },
     {
       connectionType: 'GitHub',
       connectionLabel: 'GitHub',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'sharedConnection']
     },
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', ['Use Password', 'Use Token'], 'Password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault','accessTokenEnabled', 'password', 'accessToken', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', ['Use Password', 'Use Token'], 'Password', 'Access Token', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault','accessTokenEnabled', 'password', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'Jenkins',
       connectionLabel: 'Jenkins',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Api Key', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'apiKey', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Api Key', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'apiKey', 'sharedConnection']
     },
     {
       connectionType: 'Bamboo',
       connectionLabel: 'Bamboo',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
     },
     {
       connectionType: 'Teamcity',
       connectionLabel: 'Teamcity',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
     },
     {
       connectionType: 'AzurePipeline',
       connectionLabel: 'Azure Pipeline',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
     },
     {
       connectionType: 'AzureRepository',
       connectionLabel: 'Azure Repository',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
     },
     {
       connectionType: 'Zephyr',
       connectionLabel: 'Zephyr',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Use Bearer Token', 'PatOAuthToken', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'bearerToken', 'patOAuthToken', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Use Bearer Token', 'PatOAuthToken', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'bearerToken', 'patOAuthToken', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'RepoTool',
       connectionLabel: 'RepoTool',
-      labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Base Url', 'Api End Point', 'Username', 'Access Token', 'User Email', 'Is Connection Private'],
-      inputFields: ['type', 'repoToolProvider', 'connectionName', 'baseUrl', 'apiEndPoint', 'username', 'accessToken', 'email', 'connPrivate']
+      labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Base Url', 'Api End Point', 'Username', 'Access Token', 'User Email', 'Share connection with everyone'],
+      inputFields: ['type', 'repoToolProvider', 'connectionName', 'baseUrl', 'apiEndPoint', 'username', 'accessToken', 'email', 'sharedConnection']
     },
     {
       connectionType: 'ArgoCD',
       connectionLabel: 'ArgoCD',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
     }
   ];
 
   enableDisableOnToggle = {
     enableDisableEachTime: {
       cloudEnv: [],
-      offline: [
-      ],
+      // offline: [
+      // ],
       isOAuth: [
         {
           field: 'privateKey',
@@ -191,40 +190,40 @@ export class ConnectionListComponent implements OnInit {
     },
     enableDisableAnotherTime: {
       cloudEnv: [],
-      offline: [
-        {
-          field: 'cloudEnv',
-          isEnabled: true
-        },
-        {
-          field: 'baseUrl',
-          isEnabled: true
-        },
-        {
-          field: 'username',
-          isEnabled: true
-        },
-        {
-          field: 'password',
-          isEnabled: true
-        },
-        {
-          field: 'apiEndPoint',
-          isEnabled: true
-        },
-        {
-          field: 'isOAuth',
-          isEnabled: true
-        },
-        {
-          field: 'privateKey',
-          isEnabled: false
-        },
-        {
-          field: 'consumerKey',
-          isEnabled: false
-        }
-      ],
+      // offline: [
+      //   {
+      //     field: 'cloudEnv',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'baseUrl',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'username',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'password',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'apiEndPoint',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'isOAuth',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'privateKey',
+      //     isEnabled: false
+      //   },
+      //   {
+      //     field: 'consumerKey',
+      //     isEnabled: false
+      //   }
+      // ],
       isOAuth: [],
       vault: [
         {
@@ -258,7 +257,6 @@ export class ConnectionListComponent implements OnInit {
       connectionTableCols: [
         { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
         { field: 'username', header: 'User Name', class: 'normal' },
-        { field: 'offline', header: 'Is Offline?', class: 'small-text' },
         { field: 'apiEndPoint', header: 'API Endpoint', class: 'long-text' },
         // { field: 'apiKey', header: 'API Key', class: 'normal' },
         { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
@@ -483,8 +481,7 @@ export class ConnectionListComponent implements OnInit {
     'krb5ConfigFilePath': '',
     'jaasUser': '',
     'samlEndPoint': '',
-    'offline': false,
-    'connPrivate': false,
+    'sharedConnection': false,
     'jiraAuthType': ''
   }
   jiraConnectionDialog: boolean;
@@ -709,7 +706,7 @@ export class ConnectionListComponent implements OnInit {
   }
 
   createConnection() {
-    this.connection = { type: this.selectedConnectionType, connPrivate: true };
+    this.connection = { type: this.selectedConnectionType, sharedConnection: true };
     this.isNewlyConfigAdded = true;
     if (this.selectedConnectionType?.toLowerCase() === 'jira') {
       this.jiraConnectionDialog = true;
@@ -935,10 +932,10 @@ export class ConnectionListComponent implements OnInit {
   }
 
   disableEnableCheckBox() {
-    if (!this.connection.connPrivate) {
-      this.basicConnectionForm.controls['connPrivate'].disable();
+    if (!this.connection.sharedConnection) {
+      this.basicConnectionForm.controls['sharedConnection'].disable();
     } else {
-      this.basicConnectionForm.controls['connPrivate'].enable();
+      this.basicConnectionForm.controls['sharedConnection'].enable();
     }
   }
 
@@ -1041,37 +1038,37 @@ export class ConnectionListComponent implements OnInit {
   }
 
   enableDisableSwitch(event, field, type?) {
-    if (field === 'offline') {
-      /* Enable/Disable fields on the basis of flag selection at one time */
-      if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {
-        this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
-          if (event.checked) {
-            this.basicConnectionForm.controls[element.field]?.enable();
-          } else {
-            this.basicConnectionForm.controls[element.field]?.disable();
-          }
-        });
-      }
-      /* Enable/Disable fields on the basis of flag selection at second time */
-      if (!!this.enableDisableOnToggle.enableDisableAnotherTime[field] && this.enableDisableOnToggle.enableDisableAnotherTime[field].length) {
-        this.enableDisableOnToggle.enableDisableAnotherTime[field].forEach(element => {
-          if (event.checked) {
-            this.basicConnectionForm.controls[element.field]?.disable();
-          } else {
-            this.basicConnectionForm.controls[element.field]?.enable();
-          }
-        });
-      }
+    // if (field === 'offline') {
+    //   /* Enable/Disable fields on the basis of flag selection at one time */
+    //   if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {
+    //     this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
+    //       if (event.checked) {
+    //         this.basicConnectionForm.controls[element.field]?.enable();
+    //       } else {
+    //         this.basicConnectionForm.controls[element.field]?.disable();
+    //       }
+    //     });
+    //   }
+    //   /* Enable/Disable fields on the basis of flag selection at second time */
+    //   if (!!this.enableDisableOnToggle.enableDisableAnotherTime[field] && this.enableDisableOnToggle.enableDisableAnotherTime[field].length) {
+    //     this.enableDisableOnToggle.enableDisableAnotherTime[field].forEach(element => {
+    //       if (event.checked) {
+    //         this.basicConnectionForm.controls[element.field]?.disable();
+    //       } else {
+    //         this.basicConnectionForm.controls[element.field]?.enable();
+    //       }
+    //     });
+    //   }
 
-      if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === true) {
-        this.basicConnectionForm.controls['privateKey'].enable();
-        this.basicConnectionForm.controls['consumerKey'].enable();
-      } else if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === false) {
-        this.basicConnectionForm.controls['privateKey'].disable();
-        this.basicConnectionForm.controls['consumerKey'].disable();
-      }
+    //   if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === true) {
+    //     this.basicConnectionForm.controls['privateKey'].enable();
+    //     this.basicConnectionForm.controls['consumerKey'].enable();
+    //   } else if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === false) {
+    //     this.basicConnectionForm.controls['privateKey'].disable();
+    //     this.basicConnectionForm.controls['consumerKey'].disable();
+    //   }
 
-    } else {
+    // } else {
       /* Enable/Disable fields on the basis of flag selection at one time */
       if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {
         this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
@@ -1108,7 +1105,7 @@ export class ConnectionListComponent implements OnInit {
           this.basicConnectionForm.controls[field]?.disable();
          }
       }
-    }
+    // }
 
     this.checkBitbucketValue(event.checked, field, type);
     if(type?.toLowerCase() == 'zephyr'){
@@ -1407,9 +1404,9 @@ export class ConnectionListComponent implements OnInit {
       const tempArr = [...this.addEditConnectionFieldsNlabels];
       const bitbucketObj = tempArr.filter((item) => item.connectionLabel.toLowerCase() == 'bitbucket')[0];
       if (this.basicConnectionForm.controls['cloudEnv'].value) {
-        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username (Profile Username)', 'Use vault password', 'Password (App Password)', 'API End Point', 'Is Connection Private'];
+        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username (Profile Username)', 'Use vault password', 'Password (App Password)', 'API End Point', 'Share connection with everyone'];
       } else {
-        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'Is Connection Private'];
+        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'Share connection with everyone'];
       }
       const index = tempArr.findIndex((item) => item.connectionLabel.toLowerCase() == 'bitbucket');
       tempArr[index] = bitbucketObj;

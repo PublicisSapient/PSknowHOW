@@ -105,7 +105,7 @@ export class AdditionalFilterComponent implements OnChanges {
     if (!isDeveloper) {
       if (!fromBackup) {
         let obj = {};
-        for (let i = 0; i < index; i++) {
+        for (let i = 0; i <= index; i++) {
           if (e[i]) {
             this.selectedAdditionalFilterLevel[i] = e && e[i] && e[i][0] ? e[i][0]['labelName'] : this.selectedAdditionalFilterLevel[i];
             obj[this.selectedAdditionalFilterLevel[i]] = e[i] ? e[i] : this.stateFilters[Object.keys(this.stateFilters)[i]];
@@ -117,8 +117,8 @@ export class AdditionalFilterComponent implements OnChanges {
         this.onAdditionalFilterChange.emit(e);
       }
     } else {
-      this.appliedFilters[filterKey] = this.appliedFilters[filterKey] || [];
-      this.appliedFilters[filterKey] = !multi ? [...this.appliedFilters[filterKey], e.value] : e && e.length ? [...e] : [];
+      // this.appliedFilters[filterKey] = this.appliedFilters[filterKey] || [];
+      this.appliedFilters[filterKey] =  e &&  e.value ? [e.value] : [];
 
       const filterValue = this.appliedFilters[filterKey][0];
       const nodeId = filterValue?.nodeId || filterValue;
