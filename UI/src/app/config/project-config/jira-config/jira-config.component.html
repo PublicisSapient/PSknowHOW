@@ -45,7 +45,7 @@
                 <ng-template pTemplate="caption">
                     <div class="table-header">
                         Configured Tools
-                        <button pButton pRipple type="button" class="p-button p-button-success p-button-raised" icon="pi pi-plus"
+                        <button *ngIf="showAddNewBtn" pButton pRipple type="button" class="p-button p-button-success p-button-raised" icon="pi pi-plus"
                         iconPos="left" label="Add New" (click)="handleToolConfiguration()"></button>
                     </div>
                 </ng-template>
@@ -55,7 +55,9 @@
                             <th *ngFor="let col of columns" [ngClass]="col.class" scope="col">
                                 {{col.header}}
                             </th>
-                            <th class="p-text-center" style="width: 180px;" scope="col">Delete</th>
+                            <th class="p-text-center" scope="col" *ngIf="formTitle?.toLowerCase() == 'jira' || formTitle?.toLowerCase() == 'jiratest' ||
+                            formTitle?.toLowerCase() == 'azure' || formTitle?.toLowerCase() == 'zephyr'">Edit</th>
+                            <th class="p-text-center" scope="col">Delete</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-tool let-columns="columns">
@@ -63,11 +65,14 @@
                             <td *ngFor="let col of columns" [ngClass]="col.class">
                                 {{tool[col.field]}}
                             </td>
-                            <td class="p-text-center">
-                                <button pButton pRipple icon="pi pi-pencil"
-                                    class="p-button-rounded p-d-none p-button-raised p-button-success p-mr-2"
-                                    (click)="editTool(tool)"></button>
-                                <div class="action-btns" (click)="confirmDeteleTool(tool)">
+                            <td *ngIf="formTitle?.toLowerCase() == 'jira' || formTitle?.toLowerCase() == 'jiratest' ||
+                            formTitle?.toLowerCase() == 'azure' || formTitle?.toLowerCase() == 'zephyr'">
+                                <div class="action-btns p-d-flex p-justify-center" (click)="editTool(tool)">
+                                    <i class="far fa-edit"></i>
+                                </div>
+                            </td>
+                            <td>
+                                <div  class="action-btns p-d-flex p-justify-center" (click)="confirmDeteleTool(tool)">
                                     <i class="far fa-trash-alt"></i>
                                 </div>
                             </td>
