@@ -32,6 +32,7 @@ import { environment } from 'src/environments/environment';
 import { CommonModule } from '@angular/common';
 import { of } from 'rxjs';
 import { ProjectListComponent } from '../project-list/project-list.component';
+import { url } from 'inspector';
 
 describe('ToolMenuComponent', () => {
   let component: ToolMenuComponent;
@@ -149,7 +150,7 @@ describe('ToolMenuComponent', () => {
   it('should handle the router url and set tools', () => {
     spyOn(component, 'setGaData');
     const selectedProjectId = component.selectedProject.id;
-    // const routerUrl = `/dashboard/Config/ProjectList/${selectedProjectId}/ToolMenu`;
+    Object.defineProperty(router, 'url', { value: `/dashboard/Config/ProjectList/${selectedProjectId}/ToolMenu` });
 
     const response = {
       success: true,
@@ -159,18 +160,15 @@ describe('ToolMenuComponent', () => {
     };
 
     spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(response));
-    // spyOn(httpService, 'getAllToolConfigs').and.callThrough();
     spyOn(component, 'updateProjectSelection');
     component.updateProjectSelection();
-    // console.log(routerUrl)
-    // component.router.navigate([routerUrl]);
 
-    // component.getToolsConfigured();
-    // console.log('component.buttonText ->', component.buttonText)
-    // console.log('url ->', component.router.url)
-    // expect(component.buttonText).toBe('Set Up');
-    // expect(component.tools.length).toBeGreaterThan(0);
-    // expect(component.tools[0].connectionName).toBe('Connection1');
+    component.getToolsConfigured();
+    expect(component.buttonText).toBe('Set Up');
+    expect(component.tools.length).toBeGreaterThan(0);
+    expect(component.tools[0].toolName).toBe('Jira');
+    expect(component.tools[0].connectionName).toBe('Connection1');
+    expect(component.tools[0].updatedAt).toBe('2023-01-01');
   });
 
   it('should set release end date and field mappings', () => {
