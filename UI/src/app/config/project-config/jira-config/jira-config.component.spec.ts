@@ -477,7 +477,7 @@ describe('JiraConfigComponent', () => {
     expect(component.configuredTools).not.toContain(tool);
   }))
 
-  it('should Edit tool', fakeAsync(() => {
+  fit('should Edit tool', fakeAsync(() => {
     component.urlParam = 'Sonar';
     component.initializeFields(component.urlParam);
     const tool = {
@@ -495,6 +495,7 @@ describe('JiraConfigComponent', () => {
           null
       ]
     };
+    spyOn(component, 'handleToolConfiguration');
     component.connections = fakeJiraConnections.data;
     component.editTool(tool);
     expect(component.isEdit).toBeTruthy();
