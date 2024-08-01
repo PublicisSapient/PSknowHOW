@@ -144,7 +144,7 @@ export class ToolMenuComponent implements OnInit {
               icon: 'fab fa-atlassian',
               routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Jira',
-              routerLink2: '/dashboard/Config/FieldMapping',
+              routerLink2: `/dashboard/Config/ProjectList/${this.selectedProject.id}/FieldMapping`,
               index: 0,
               connectionName: this.selectedTools.filter(tool => tool.toolName === 'Jira')[0]?.connectionName,
               updatedAt: this.selectedTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
@@ -319,7 +319,7 @@ export class ToolMenuComponent implements OnInit {
       icon: 'fab fa-windows',
       routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
       queryParams1: 'Azure',
-      routerLink2: '/dashboard/Config/FieldMapping',
+      routerLink2: `/dashboard/Config/ProjectList/${this.selectedProject.id}/FieldMapping`,
       index: 0
     };
     const jiraType = {
@@ -329,7 +329,7 @@ export class ToolMenuComponent implements OnInit {
       icon: 'fab fa-atlassian',
       routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
       queryParams1: 'Jira',
-      routerLink2: '/dashboard/Config/FieldMapping',
+      routerLink2: `/dashboard/Config/ProjectList/${this.selectedProject.id}/FieldMapping`,
       index: 0
     };
     this.tools = this.tools.filter((tool) => tool.toolName !== 'Azure' && tool.toolName !== 'Jira');

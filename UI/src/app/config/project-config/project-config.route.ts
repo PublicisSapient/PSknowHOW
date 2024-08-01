@@ -70,7 +70,7 @@ export const ProjectConfigRoutes: Routes = [
                 }
             },
             {
-                path: 'FieldMapping',
+                path: 'ProjectList/:id/FieldMapping',
                 component: FieldMappingComponent,
                 data: {
                     feature: "FieldMapping"

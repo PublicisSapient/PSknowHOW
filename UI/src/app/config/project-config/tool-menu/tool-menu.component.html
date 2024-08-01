@@ -104,11 +104,14 @@
                                 </div>
                                 <div class="p-md-4 inline-div">
                                     <p class="form_title p-text-capitalize">Connection Name</p>
-                                    <p><strong class="sub-text p-text-capitalize">{{ tool.connectionName }}</strong></p>
+                                    <p><strong class="sub-text p-text-capitalize">{{ tool.connectionName ? tool.connectionName : '-' }}</strong></p>
                                 </div>
                                 <div class="p-md-4 inline-div">
                                     <p class="form_title p-text-capitalize">Last Updated</p>
-                                    <p><strong class="sub-text p-text-capitalize">{{ tool.updatedAt | date: 'dd-MMM-yyyy (EE) - h:mm a' }}</strong></p>
+                                    <p>
+                                      <strong class="sub-text p-text-capitalize" *ngIf="tool.updatedAt">{{ tool.updatedAt | date: 'dd-MMM-yyyy (EE) - h:mm a' }}</strong>
+                                      <strong class="sub-text p-text-capitalize" *ngIf="!tool.updatedAt">-</strong>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -138,8 +141,11 @@
                     <div class="card__media__body">
                         <div class="card__primary__title">
                             <h4 class="card__primary__title__text">{{ tool.toolName }}</h4>
-                            <p class="card__primary__title__subtext">Connection: <strong>{{ tool.connectionName }}</strong></p>
-                            <p class="card__primary__title__subtext">Last Sync: <strong>{{ tool.updatedAt | date: 'dd-MMM-yyyy (EE) - h:mm a' }}</strong></p>
+                            <p class="card__primary__title__subtext">Connection: <strong>{{ tool.connectionName ? tool.connectionName : '-' }}</strong></p>
+                            <p class="card__primary__title__subtext">Last Sync:
+                              <strong *ngIf="tool.updatedAt">{{ tool.updatedAt | date: 'dd-MMM-yyyy (EE) - h:mm a' }}</strong>
+                              <strong *ngIf="!tool.updatedAt">-</strong>
+                            </p>
                         </div>
                     </div>
                     <div class="card__actions">
