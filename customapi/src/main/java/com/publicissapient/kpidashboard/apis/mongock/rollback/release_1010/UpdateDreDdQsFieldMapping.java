@@ -69,13 +69,11 @@ public class UpdateDreDdQsFieldMapping {
 		// added fieldmapping in DD
 		Document jiraLabelsQAKPI111 = new Document().append(FIELD_NAME, "jiraLabelsQAKPI111")
 				.append(FIELD_LABEL, FIELD_LABEL_DEF).append(FIELD_TYPE, CHIPS).append(SECTION, SECTION_DEF)
-				.append(FIELD_CATEGORY,"Issue_Type")
 				.append(TOOL_TIP, new Document(DEFINITION, TOOL_TIP_DEF));
 
 		// added fieldmapping in QS
 		Document jiraLabelsKPI133 = new Document().append(FIELD_NAME, "jiraLabelsKPI133")
 				.append(FIELD_LABEL, FIELD_LABEL_DEF).append(FIELD_TYPE, CHIPS).append(SECTION, SECTION_DEF)
-				.append(FIELD_CATEGORY,"Issue_Type")
 				.append(TOOL_TIP, new Document(DEFINITION, TOOL_TIP_DEF));
 
 		// added fieldmapping in DRE
