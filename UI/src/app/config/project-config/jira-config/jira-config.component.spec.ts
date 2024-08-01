@@ -477,7 +477,7 @@ describe('JiraConfigComponent', () => {
     expect(component.configuredTools).not.toContain(tool);
   }))
 
-  fit('should Edit tool', fakeAsync(() => {
+  it('should Edit tool', fakeAsync(() => {
     component.urlParam = 'Sonar';
     component.initializeFields(component.urlParam);
     const tool = {
