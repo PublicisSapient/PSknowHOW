@@ -73,7 +73,7 @@ export class ConfigComponent implements OnInit {
 
         if (this.hasAccess) {
             this.items.push(
-                { label: 'Misc. Settings', icon: 'fa fa-fw fa-cog', routerLink: '/dashboard/Config/AdvancedSettings', id: 'Layout-AdvanceSettings', routerLinkActiveOptions: '{ exact: true }' },
+                { label: 'Processor', icon: 'fa fa-fw fa-cog', routerLink: '/dashboard/Config/AdvancedSettings', id: 'Layout-AdvanceSettings', routerLinkActiveOptions: '{ exact: true }' },
                 { label: 'Upload Data', icon: 'fa fa-fw fa-upload', routerLink: '/dashboard/Config/Upload', id: 'Layout-Upload', routerLinkActiveOptions: '{ exact: true }' },
                 { label: 'Capacity Planning', icon: 'fa fa-regular fa-users', routerLink: '/dashboard/Config/Capacity', id: 'Layout-Capacity', routerLinkActiveOptions: '{ exact: true }' }
             );

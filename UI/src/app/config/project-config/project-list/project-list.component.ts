@@ -146,7 +146,7 @@ export class ProjectListComponent implements OnInit {
         }
         this.loading = false;
         this.table?.reset();
-
+        this.sharedService.setProjectList(this.allProjectList);
       } else {
         this.loading = false;
         this.messenger.add({
@@ -251,7 +251,7 @@ export class ProjectListComponent implements OnInit {
     newProjectObj['id'] = project['id'];
     newProjectObj['saveAssigneeDetails']= project["saveAssigneeDetails"];
     this.sharedService.setSelectedProject(newProjectObj);
-    this.router.navigate(['/dashboard/Config/ToolMenu']);
+    this.router.navigate([`/dashboard/Config/ProjectList/${newProjectObj['id']}/ToolMenu`]);
 
   }
 }
