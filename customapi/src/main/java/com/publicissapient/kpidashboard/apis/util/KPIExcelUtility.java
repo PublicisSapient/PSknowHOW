@@ -1670,6 +1670,7 @@ public class KPIExcelUtility {
 				excelData.setIssueType(jiraIssue.getTypeName());
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
 				excelData.setIssueStatus(jiraIssue.getStatus());
+				setSquads(excelData, jiraIssue);
 				if (addedIssueDateMap.containsKey(jiraIssue.getNumber())) {
 					excelData.setScopeChange(CommonConstant.ADDED);
 					excelData.setScopeChangeDate(addedIssueDateMap.get(jiraIssue.getNumber()));
