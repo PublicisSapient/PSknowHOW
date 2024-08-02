@@ -23,10 +23,10 @@
       <nav>
         <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
           <ng-container *ngIf="!last">
-            <a [routerLink]="breadcrumb.url" (click)="breadcrumb?.handleEvent()">{{ breadcrumb.label }}</a> &gt;
+            <a [routerLink]="breadcrumb.url" (click)="breadcrumb?.handleEvent()" class="cursor-pointer blue-hover-link">{{ breadcrumb.label }}</a> &gt;
           </ng-container>
           <ng-container *ngIf="last">
-            {{ breadcrumb.label }}
+            <span class="cursor-pointer">{{ breadcrumb.label }}</span>
           </ng-container>
         </ng-container>
       </nav>
@@ -113,10 +113,10 @@
               </div>
             </div>
             <div class="p-text-right p-col-12">
-              <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back"
+              <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back" icon="pi pi-angle-double-left" iconPos="left"
                 (click)="closeProjectSetupPopup.emit()"></button>
               <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
-                label="Finalize" [disabled]="!form.valid"></button>
+              icon="pi pi-save" iconPos="left" label="Finalize" [disabled]="!form.valid"></button>
             </div>
           </form>
 
@@ -125,7 +125,7 @@
       <ng-container *ngIf="isProjectCOmpletionPopup">
         <div class="p-p-0">
           <div class="p-d-flex p-jc-center p-pb-3">
-            <h5 class="card__primary__title__text p-mb-0">Project “{{selectedProject['name']}}” successfully added.
+            <h5 class="card__primary__title__text p-mb-0">Project “{{selectedProject?.['name']}}” successfully added.
               Connect Tools to sync KPI’s.</h5>
           </div>
           <div class="p-d-flex p-jc-center p-pb-3">
@@ -135,11 +135,11 @@
             <p-steps [model]="steps" [readonly]="false"></p-steps>
           </div>
           <div class="p-d-flex p-jc-center p-pb-3">
-            <label>Continue to Tool connections</label>
+            <label><a routerLink="/dashboard/Config/connection-list">Continue to Tool connections</a></label>
           </div>
 
           <div class="p-d-flex p-jc-center p-pb-3">
-            <label>Skip (continue to Projects dashboard)</label>
+            <label><a routerLink="/dashboard/Config/ProjectList" (click)="closeProjectSetupPopup.emit()">Skip (continue to Projects dashboard)</a></label>
           </div>
         </div>
       </ng-container>

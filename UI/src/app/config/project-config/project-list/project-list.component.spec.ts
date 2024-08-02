@@ -235,7 +235,7 @@ describe('ProjectListComponent', () => {
   it('should navigate to basic-config on click of "New"', () => {
     const navigateSpy = spyOn(router, 'navigate');
     component.newProject();
-    expect(navigateSpy).toHaveBeenCalledWith(['./dashboard/Config/BasicConfig']);
+    expect(component.isNewProject).toBeTruthy();
   });
 
   it('should navigate to basic-config on click of "Edit"', () => {
