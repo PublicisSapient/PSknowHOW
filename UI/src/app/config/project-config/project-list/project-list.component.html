@@ -83,7 +83,7 @@
 </div>
 
 <p-dialog [(visible)]="isNewProject" [modal]="true" styleClass="field-mapping">
-    <app-basic-config *ngIf="isNewProject" (closeProjectSetupPopup)="isNewProject = false"></app-basic-config>
+    <app-basic-config *ngIf="isNewProject" (closeProjectSetupPopup)="isNewProject = false;getData()"></app-basic-config>
 </p-dialog>
 
 <p-confirmDialog #cd>
