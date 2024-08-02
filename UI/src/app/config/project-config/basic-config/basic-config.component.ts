@@ -16,13 +16,14 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit, Output,EventEmitter} from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
+import { MenuItem } from 'primeng/api';
 declare const require: any;
 
 @Component({
@@ -49,6 +50,11 @@ export class BasicConfigComponent implements OnInit {
   blocked = true;
   assigneeSwitchInfo = "Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project";
   isProjectAdmin = false;
+  breadcrumbs: Array<any>
+  @Output() closeProjectSetupPopup = new EventEmitter();
+  steps: MenuItem[] | undefined;
+  isProjectSetupPopup : boolean = false;
+  isProjectCOmpletionPopup : boolean = false;
 
   constructor(private formBuilder: UntypedFormBuilder, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService, private ga: GoogleAnalyticsService) {
     this.projectTypeOptions = [
@@ -58,6 +64,19 @@ export class BasicConfigComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isProjectSetupPopup = true;
+    this.breadcrumbs = [{ label: 'MY PROJECTS',handleEvent : ()=>{this.closeProjectSetupPopup.emit()} },{ label: 'ADD NEW PROJECT'}];
+    this.steps = [
+      {
+          label: 'Connect tools',
+      },
+      {
+          label: 'Run processor',
+      },
+      {
+          label: 'Data ready on Dashboard',
+      }
+  ];
     this.getHierarchy();
     this.ifSuperUser = this.getAuthorizationService.checkIfSuperUser();
     this.selectedProject = this.sharedService.getSelectedProject();
@@ -177,6 +196,8 @@ export class BasicConfigComponent implements OnInit {
           summary: 'Basic config submitted!!',
           detail: ''
         });
+        this.isProjectSetupPopup = false;
+        this.isProjectCOmpletionPopup = true;
 
         // Google Analytics
         this.ga.createProjectData(gaObj);
