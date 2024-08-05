@@ -67,7 +67,9 @@
                 </div>
                 <div *ngSwitchCase="'text'">
                   <div class="p-mb-3 p-mt-3">
-                    <span class="p-float-label">
+                    <span class="p-float-label"
+                          pTooltip='{{ field.hierarchyLevelTooltip }}'
+                          tooltipPosition="bottom" tooltipEvent="hover">
                       <input required id="{{ field.hierarchyLevelId }}" [formControlName]="field.hierarchyLevelId"
                         [style]="{'width':'500px'}" type="text" pInputText>
                       <label for="{{ field.hierarchyLevelId }}">Enter {{ field.hierarchyLevelName
@@ -99,7 +101,9 @@
                     <p-autoComplete id="{{ field.hierarchyLevelId }}" [formControlName]="field.hierarchyLevelId"
                       [style]="{'width':'500px'}" [suggestions]="field.filteredSuggestions"
                       (completeMethod)="search($event, field)" required="required" [dropdown]="true" field="name"
-                      [forceSelection]="ifSuperUser === true?false:true">
+                      [forceSelection]="ifSuperUser === true?false:true"
+                                    pTooltip='{{ field.hierarchyLevelInfo}}'
+                                    tooltipPosition="bottom" tooltipEvent="hover" >
                       <ng-template let-country pTemplate="item">
                         <div class="country-item">
                           <div>{{country.name}}</div>
