@@ -46,7 +46,7 @@ export class ToolMenuComponent implements OnInit {
   tokenCopied = false;
   isAssigneeSwitchChecked: boolean = false;
   isAssigneeSwitchDisabled: boolean = false;
-  assigneeSwitchInfo = "Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project";
+  assigneeSwitchInfo = "Turn ON to retrieve people-related information, such as assignees, developer profiles from all relevant source tools connected to your project.";
   userName: string;
   repoTools = ['BitBucket', 'GitLab', 'GitHub', 'Azure Repo'];
   repoToolsEnabled: boolean;

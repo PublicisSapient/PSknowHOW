@@ -107,6 +107,8 @@ export class JiraConfigComponent implements OnInit {
   gitActionWorkflowNameList: any[];
   cloudEnv: any;
   isGitlabToolFieldEnabled : boolean;
+  isConfigureTool: boolean = false;
+  showAddNewBtn: boolean = true;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -463,6 +465,11 @@ export class JiraConfigComponent implements OnInit {
                 }
               });
             });
+
+            if(this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest' 
+            || this.urlParam?.toLowerCase() == 'zephyr' || this.urlParam?.toLowerCase() == 'azure'){
+              this.showAddNewBtn = false;
+            }
           }
 
           // prefetch boards if projectKey is present
@@ -977,7 +984,15 @@ export class JiraConfigComponent implements OnInit {
             { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
             { field: 'isOAuth', header: 'OAuth', class: 'small-text' }
           ];
-
+          this.configuredToolTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'projectKey', header: 'Project Key', class: 'long-text' },
+            { field: 'queryEnabled', header: 'Query Enabled', class: 'small-text' },
+          ];
           this.formTemplate = {
             group: 'Jira',
             elements: [
@@ -1062,6 +1077,17 @@ export class JiraConfigComponent implements OnInit {
             { field: 'apiKey', header: 'API Key', class: 'normal' },
             { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
             { field: 'isOAuth', header: 'OAuth', class: 'small-text' },
+          ];
+          this.configuredToolTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'projectKey', header: 'Project Key', class: 'long-text' },
+            { field: 'apiVersion', header: 'API Version', class: 'small-text' },
+            { field: 'queryEnabled', header: 'WIQL Query', class: 'small-text' },
+            { field: 'boardQuery', header: 'Board Query', class: 'small-text' },
           ];
           this.formTemplate = {
             group: 'Azure',
@@ -1152,7 +1178,15 @@ export class JiraConfigComponent implements OnInit {
               class: 'small-text'
             }
           ];
-
+          this.configuredToolTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'projectKey', header: 'Project Key', class: 'long-text' },
+            { field: 'projectComponent', header: 'Component', class: 'small-text' },
+          ];
           this.formTemplate = {
             group: 'Zephyr',
             elements: [
@@ -2052,7 +2086,14 @@ export class JiraConfigComponent implements OnInit {
             { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
             { field: 'isOAuth', header: 'OAuth', class: 'small-text' },
           ];
-
+          this.configuredToolTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'projectKey', header: 'JIRATEST Project Key', class: 'long-text' },
+          ];
           this.formTemplate = {
             group: 'JiraTest',
             elements: [
@@ -2608,6 +2649,7 @@ export class JiraConfigComponent implements OnInit {
   }
 
   editTool(tool) {
+    this.handleToolConfiguration();
     this.isEdit = true;
     this.selectedToolConfig = [tool];
     for (const obj in tool) {
@@ -2768,5 +2810,13 @@ export class JiraConfigComponent implements OnInit {
 
   redirectToConnections() {
     this.router.navigate(['./dashboard/Config/connection-list']);
+  }
+
+  handleToolConfiguration(){
+    this.isConfigureTool = true;
+    setTimeout(() => {
+      const element = document.getElementById("tool-configuration");
+      element.scrollIntoView({behavior: "smooth", inline: "nearest"});
+    }, 100);
   }
 }
