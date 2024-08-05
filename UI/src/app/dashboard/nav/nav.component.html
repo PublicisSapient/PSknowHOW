@@ -58,10 +58,10 @@
               <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100"
                 *ngIf="(board.boardName?.toLowerCase() !== 'kpi maturity') || (board.boardName?.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
                 <a class="nav-link w-100"
-                  [routerLink]="board.boardName?.toLowerCase() === 'kpi maturity' ? 'Maturity' : board.link"
+                  [routerLink]="board.link"
                   routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
                   [ngClass]="{'active': selectedTab?.toLowerCase() == board.boardName?.toLowerCase()}"
-                  (click)="selectTab(board.boardName)">
+                  (click)="selectTab(board.link)">
                   {{board.boardName}}
 
                   <img src="../../../assets/img/icon-feather-edit-3.svg" alt="Rename your dashboard" class="white-icon"

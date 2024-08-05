@@ -32,7 +32,7 @@ export class SsoAuthFailureComponent implements OnInit {
 
   reloadApp() {
     console.log('Reload App Called');
-    this.router.navigate(['./dashboard/mydashboard']).then(success => {
+    this.router.navigate(['./dashboard/my-knowhow']).then(success => {
       this.clearAllCookies();
       window.location.reload();
     });

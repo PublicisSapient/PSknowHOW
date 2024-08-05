@@ -100,6 +100,7 @@ export class SharedService {
   sprintQueryParamObs = this.sprintQueryParamSubject.asObservable();
   processorTraceLogs = [];
   selectedTrendsEvent;
+  projectList = [];
 
   public currentIssue = new BehaviorSubject({});
   public currentData = this.currentIssue.asObservable();
@@ -426,6 +427,14 @@ export class SharedService {
     this.authToken = value;
   }
 
+  setProjectList(projects) {
+    this.projectList = projects;
+  }
+
+  getProjectList() {
+    return this.projectList;
+  }
+
   getAuthToken() {
     return this.authToken;
   }
@@ -476,7 +485,7 @@ export class SharedService {
         if (kpiShownCount > 0) {
           boardNameArr.push({
             boardName: board?.boardName,
-            link: board?.boardName.toLowerCase().split(' ').join('-')
+            link: board?.boardSlug
           });
         }
       }
@@ -494,7 +503,7 @@ export class SharedService {
         boardNameArr.push({
           boardName: kpiListData['others'][i].boardName,
           link:
-            kpiListData['others'][i].boardName.toLowerCase()
+            kpiListData['others'][i].boardSlug
         });
       }
     }

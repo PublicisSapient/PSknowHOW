@@ -12,7 +12,6 @@ import { ExportExcelComponent } from 'src/app/component/export-excel/export-exce
 })
 export class DoraComponent implements OnInit {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
-  masterData;
   filterData = [];
   jenkinsKpiData = {};
   jiraKpiData = {};
@@ -193,7 +192,6 @@ export class DoraComponent implements OnInit {
     }
     this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
     this.processKpiConfigData();
-    this.masterData = $event.masterData;
     this.filterData = $event.filterData;
     this.filterApplyData = $event.filterApplyData;
     this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
@@ -201,7 +199,7 @@ export class DoraComponent implements OnInit {
       this.noTabAccess = false;
       const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
       // call kpi request according to tab selected
-      if (this.masterData && Object.keys(this.masterData).length) {
+      if (this.configGlobalData?.length > 0) {
         this.groupJenkinsKpi(kpiIdsForCurrentBoard);
         this.groupJiraKpi(kpiIdsForCurrentBoard);
         this.getKpiCommentsCount();
@@ -225,9 +223,9 @@ export class DoraComponent implements OnInit {
   groupJenkinsKpi(kpiIdsForCurrentBoard) {
     // creating a set of unique group Ids
     const groupIdSet = new Set();
-    this.masterData?.kpiList.forEach((obj) => {
-      if (!obj.kanban && obj.kpiSource === 'Jenkins' && obj.kpiCategory?.toLowerCase() == 'dora') {
-        groupIdSet.add(obj.groupId);
+    this.updatedConfigGlobalData?.forEach((obj) => {
+      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jenkins' && obj['kpiDetail'].kpiCategory?.toLowerCase() == 'dora') {
+        groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
 

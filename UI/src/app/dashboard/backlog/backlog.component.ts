@@ -15,7 +15,6 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 export class BacklogComponent implements OnInit, OnDestroy {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   subscriptions: any[] = [];
-  masterData = <any>{};
   filterData = <any>[];
   filterApplyData = <any>{};
   noOfFilterSelected = 0;
@@ -148,11 +147,13 @@ export class BacklogComponent implements OnInit, OnDestroy {
     const disabledKpis = this.configGlobalData?.filter(item => item.shown && !item.isEnabled);
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
-    this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown);
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
     this.kpiList = this.configGlobalData.map((kpi) => kpi.kpiId);
     const kpi3Index = this.updatedConfigGlobalData.findIndex(kpi => kpi.kpiId === 'kpi3');
     const kpi3 = this.updatedConfigGlobalData.splice(kpi3Index, 1);
-    this.updatedConfigGlobalData.splice(0, 0, kpi3[0]);
+    if(this.updatedConfigGlobalData?.length > 0){
+      this.updatedConfigGlobalData?.splice(0, 0, kpi3[0]);
+    }
     if (kpi3Index >= 0) {
       this.leadTime = this.updatedConfigGlobalData.find(kpi => kpi.kpiId === 'kpi3')
     } else {
@@ -208,7 +209,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
     this.fullPageLoader = true;
     this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
     this.processKpiConfigData();
-    this.masterData = $event.masterData;
     this.filterData = $event.filterData;
     this.filterApplyData = $event.filterApplyData;
     this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
@@ -216,10 +216,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
       this.noTabAccess = false;
       const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
       // call kpi request according to tab selected
-      if (this.masterData && Object.keys(this.masterData).length) {
+      if (this.configGlobalData?.length > 0) {
         this.groupJiraKpi(kpiIdsForCurrentBoard);
         this.getKpiCommentsCount();
       }
+      this.fullPageLoader = false;
     } else {
       this.noTabAccess = true;
     }
@@ -231,8 +232,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
     // creating a set of unique group Ids
     const groupIdSet = new Set();
     this.updatedConfigGlobalData?.forEach((obj) => {
-      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Backlog') {
-        groupIdSet.add(obj['kpiDetail'].groupId);
+      if (!obj?.['kpiDetail'].kanban && obj?.['kpiDetail'].kpiSource === 'Jira' && obj?.['kpiDetail'].kpiCategory == 'Backlog') {
+        groupIdSet.add(obj?.['kpiDetail'].groupId);
       }
     });
 
@@ -320,10 +321,10 @@ export class BacklogComponent implements OnInit, OnDestroy {
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
       if (Object.values(this.kpiSelectedFilterObj[kpiId]).length > 1) {
         const tempArr = {};
-        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
-        }
+        /** This loop schenario is not possible practically inside this if block*/
+        // for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+        //   tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+        // }
         if (this.getChartType(kpiId) === 'progress-bar') {
           this.kpiChartData[kpiId] = this.applyAggregationLogicForProgressBar(tempArr);
         } else {
@@ -610,10 +611,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
           return { ...filterData, data: filterData.data.map(labelData => ({ ...labelData, value: labelData.value * labelData.value1 })) }
         });
 
-        kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
+        /** I don't think these below three lines will execute since return statement will take out from this flow */
+        // kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
 
-        kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value: (labelData.value1 > 0 ? Math.round(labelData.value / labelData.value1) : 0) }));
-        this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
+        // kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value: (labelData.value1 > 0 ? Math.round(labelData.value / labelData.value1) : 0) }));
+        // this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
       } else {
         this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
       }

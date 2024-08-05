@@ -18,6 +18,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   selectedType: string = '';
   subscriptions: any[] = [];
   dashConfigData: any;
+  selectedBasicConfigIds: any[] = [];
 
   constructor(private httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, private helperService: HelperService) {
   }
@@ -25,7 +26,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-
+    this.selectedTab = this.selectedTab?.split(' ').join('-').toLowerCase();
     this.subscriptions.push(this.sharedService.onTypeOrTabRefresh.subscribe((data) => {
       this.selectedType = data.selectedType ? data.selectedType : 'scrum';
       this.sharedService.setSelectedType(this.selectedType)
@@ -33,7 +34,14 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
     this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
     this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
-    this.getBoardConfig();
+    this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
+
+    this.subscriptions.push(this.sharedService.selectedTrendsEvent.subscribe((data) => {
+      if (!this.compareStringArrays(this.selectedBasicConfigIds, data.map(proj => proj['basicProjectConfigId']))) {
+        this.selectedBasicConfigIds = data.map(proj => proj['basicProjectConfigId']).sort();
+        this.getBoardConfig(this.selectedBasicConfigIds);
+      }
+    }));
   }
 
   // unsubscribing all Kpi Request
@@ -41,14 +49,17 @@ export class NavNewComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
-  getBoardConfig() {
-    this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: [] }).subscribe(
+  getBoardConfig(projectList) {
+    this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
       (response) => {
         if (response.success === true) {
           let data = response.data.userBoardConfigDTO;
           data['configDetails'] = response.data.configDetails;
-          this.sharedService.setDashConfigData(data);
-          this.dashConfigData = data;
+          if (!this.deepEqual(this.dashConfigData, data)) {
+            this.sharedService.setDashConfigData(data);
+            this.dashConfigData = data;
+          }
+
           this.items = [...this.dashConfigData['scrum'], ...this.dashConfigData['others']].map((obj) => {
             return {
               label: obj['boardName'],
@@ -75,11 +86,52 @@ export class NavNewComponent implements OnInit, OnDestroy {
     if (this.selectedTab !== 'unauthorized access') {
       this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
     }
-    if(this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
-       || this.selectedTab === 'dora' || this.selectedTab === 'Maturity') {
+    if (this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
+      || this.selectedTab === 'dora' || this.selectedTab === 'kpi-maturity') {
       this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
     }
     this.router.navigate(['/dashboard/' + obj['boardSlug']]);
+  }
+
+  deepEqual(obj1: any, obj2: any): boolean {
+    if (obj1 === obj2) {
+      return true;
+    }
+
+    if (obj1 === null || obj2 === null || typeof obj1 !== 'object' || typeof obj2 !== 'object') {
+      return false;
+    }
+
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+
+    for (const key of keys1) {
+      if (!keys2.includes(key) || !this.deepEqual(obj1[key], obj2[key])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  compareStringArrays(array1, array2) {
+    // Check if both arrays have the same length
+    if (array1.length !== array2.length) {
+      return false;
+    }
+
+    // Check if each corresponding element is the same
+    for (let i = 0; i < array1.length; i++) {
+      if (array1[i] !== array2[i]) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
 }
