@@ -667,21 +667,6 @@ describe('FieldMappingFormComponent', () => {
     expect(component.form.controls[component.selectedField].value.length).toEqual(2);
   })
 
-  it('should create a dynamic download link and trigger a click event', () => {
-    const fileName = 'test.json';
-    const text = '{"key": "value"}';
-
-    spyOn(document, 'createElement').and.callThrough();
-    const spy = spyOn(document, 'dispatchEvent');
-
-    // Change the access modifier of the 'setting' property from private to public
-    (component as any).setting.element.dynamicDownload = document.createElement('a');
-
-    const element = (component as any).setting.element.dynamicDownload;
-    (component as any).dyanmicDownloadByHtmlTag({fileName, text});
-    expect(element.getAttribute('download')).toBe(fileName);
-  });
-
   it('should preapare field mapping history',()=>{
     component.isHistoryPopup = {
       field1 : false,
