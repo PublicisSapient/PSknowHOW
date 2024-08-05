@@ -986,8 +986,9 @@ export class JiraConfigComponent implements OnInit {
                 label: 'JIRA Project Key',
                 id: 'projectKey',
                 validators: ['required'],
-                containerClass: 'p-sm-6',
+                containerClass: 'p-sm-8',
                 show: true,
+                placeholder: 'E.g. “DTS” in publicissapient.atlassian.net/jira/software/c/projects/DTS/boards/22',
                 tooltip: `User can get this value from JIRA/AZURE.<br />
                Generally all issues name are started with Project key<br /> <i>
                 Impacted : Jira/Azure Collector and all Kpi</i>`,

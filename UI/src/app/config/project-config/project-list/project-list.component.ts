@@ -57,6 +57,7 @@ export class ProjectListComponent implements OnInit {
   cols: Array<any> = [];
   globalSearchFilter: Array<string> = [];
   @ViewChild(Table) table: Table;
+  isNewProject = false;
 
   constructor(private http: HttpService, private sharedService: SharedService, private messenger: MessageService, private router: Router, private confirmationService: ConfirmationService,
     private authorization: GetAuthorizationService,private helper : HelperService) { }
@@ -146,7 +147,7 @@ export class ProjectListComponent implements OnInit {
         }
         this.loading = false;
         this.table?.reset();
-
+        this.sharedService.setProjectList(this.allProjectList);
       } else {
         this.loading = false;
         this.messenger.add({
@@ -159,7 +160,7 @@ export class ProjectListComponent implements OnInit {
 
   newProject() {
     this.sharedService.setSelectedProject(null);
-    this.router.navigate(['./dashboard/Config/BasicConfig']);
+    this.isNewProject = true;
   }
 
   editProject(project) {
@@ -251,7 +252,7 @@ export class ProjectListComponent implements OnInit {
     newProjectObj['id'] = project['id'];
     newProjectObj['saveAssigneeDetails']= project["saveAssigneeDetails"];
     this.sharedService.setSelectedProject(newProjectObj);
-    this.router.navigate(['/dashboard/Config/ToolMenu']);
+    this.router.navigate([`/dashboard/Config/ProjectList/${newProjectObj['id']}/ToolMenu`]);
 
   }
 }

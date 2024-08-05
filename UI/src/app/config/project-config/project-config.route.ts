@@ -56,7 +56,7 @@ export const ProjectConfigRoutes: Routes = [
                 }
             },
             {
-                path: 'ToolMenu',
+                path: 'ProjectList/:id/ToolMenu',
                 component: ToolMenuComponent,
                 data: {
                     feature: "ToolMenu"
@@ -70,7 +70,7 @@ export const ProjectConfigRoutes: Routes = [
                 }
             },
             {
-                path: 'FieldMapping',
+                path: 'ProjectList/:id/FieldMapping',
                 component: FieldMappingComponent,
                 data: {
                     feature: "FieldMapping"
@@ -84,7 +84,7 @@ export const ProjectConfigRoutes: Routes = [
                 }
             },
             {
-                path: 'JiraConfig',
+                path: 'ProjectList/:id/JiraConfig',
                 component: JiraConfigComponent,
                 data: {
                     feature: "JiraConfig"
