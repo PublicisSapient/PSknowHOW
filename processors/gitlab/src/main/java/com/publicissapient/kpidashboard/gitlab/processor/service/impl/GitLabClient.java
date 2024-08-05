@@ -30,6 +30,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.apache.commons.lang3.StringUtils;
@@ -255,7 +256,9 @@ public class GitLabClient {
 			if (getString(mergReqObj, GitLabConstants.RESP_CLOSED_AT) != null) {
 				closedDate = getDateTimeStamp(getString(mergReqObj, GitLabConstants.RESP_CLOSED_AT));
 			}
-
+			if (Objects.equals(getString(mergReqObj, GitLabConstants.RESP_STATE), GitLabConstants.MERGED)) {
+				closedDate = getDateTimeStamp(getString(mergReqObj, GitLabConstants.RESP_CLOSED_AT));
+			}
 			String fromBranch = getString(mergReqObj, GitLabConstants.RESP_SOURCE_BRANCH);
 			String toBranch = getString(mergReqObj, GitLabConstants.RESP_TARGET_BRANCH);
 			String repoSlug = "NA";

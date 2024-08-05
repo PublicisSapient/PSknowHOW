@@ -242,6 +242,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 			String author = getString(userObj, BitBucketConstants.RESP_NAME_KEY);
 			String scmRevisionNumber = getString(mergReqObj, BitBucketConstants.RESP_ID_KEY);
 			JSONArray reviewers = (JSONArray) mergReqObj.get(BitBucketConstants.RESP_REVIEWERS);
+			String mergeReqLink  = getLinks(mergReqObj, BitBucketConstants.SELF);
 			List<String> reviewersList = new ArrayList<>();
 			if (reviewers != null) {
 				for (Object reviewersObj : reviewers) {
@@ -260,6 +261,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
 			mergeReq.setProjKey(projKey);
+			mergeReq.setMergeRequestUrl(mergeReqLink);
 			if (proBasicConfig.isSaveAssigneeDetails()) {
 				mergeReq.setAuthor(author);
 			}
