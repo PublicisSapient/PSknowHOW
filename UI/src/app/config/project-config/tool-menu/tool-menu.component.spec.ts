@@ -393,7 +393,8 @@ describe('ToolMenuComponent', () => {
   })
 
   it("should prepare data for update project", () => {
-    const hierarchyData = [
+    const hierarchyData = {
+      kanban: [
       {
         level: 1,
         hierarchyLevelId: 'hierarchyLevelOne',
@@ -409,10 +410,10 @@ describe('ToolMenuComponent', () => {
         hierarchyLevelId: 'hierarchyLevelThree',
         hierarchyLevelName: 'Level Three',
       },
-    ];
+    ]};
     component.selectedProject = {
-      Project: "My Project",
-      Type: 'kanban',
+      project: "My Project",
+      type: 'kanban',
       ["Level One"]: "T1",
       ["Level Two"]: "T2",
       ["Level Three"]: "T3",
