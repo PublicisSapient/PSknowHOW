@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigServiceImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,6 +112,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	@Autowired
 	private KpiHelperService kPIHelperService;
+
+	@Autowired
+	private ProjectBasicConfigServiceImpl projectBasicConfigService;
 
 	@Override
 	public FieldMapping getFieldMapping(String projectToolConfigId) {
@@ -287,6 +291,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			}
 			operations.updateFirst(query, update, "field_mapping");
 			saveTemplateCode(projectBasicConfig, projectToolConfig);
+			projectBasicConfigService.updateProjectConfigChanges(projectBasicConfig.getId());
 			if (cleanTraceLog.equalsIgnoreCase("True"))
 				removeTraceLog(projectBasicConfig.getId());
 			clearCache();

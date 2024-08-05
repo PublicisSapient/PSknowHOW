@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigServiceImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -81,6 +82,8 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
+	@Autowired
+	private ProjectBasicConfigServiceImpl projectBasicConfigService;
 
 	/**
 	 * make a copy of the list so the original list is not changed, and remove() is
@@ -195,6 +198,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		log.info("Successfully pushed project_tools into db");
 		projectToolConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), TIME_FORMAT));
 		projectToolConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), TIME_FORMAT));
+		projectBasicConfigService.updateProjectConfigChanges(projectToolConfig.getBasicProjectConfigId());
 		toolRepository.save(projectToolConfig);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
@@ -277,6 +281,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setTeam(projectToolConfig.getTeam());
 		log.info("Successfully update project_tools  into db");
 		toolRepository.save(projectTool);
+		projectBasicConfigService.updateProjectConfigChanges(projectToolConfig.getBasicProjectConfigId());
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
 		if (projectTool.getToolName().equalsIgnoreCase(ProcessorConstants.ZEPHYR)
@@ -328,7 +333,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			}
 			cleanData(tool);
 			toolRepository.deleteById(new ObjectId(projectToolId));
-
+			projectBasicConfigService.updateProjectConfigChanges(new ObjectId(basicProjectConfigId));
 			log.info("tool with id {} deleted", projectToolId);
 
 			return true;
