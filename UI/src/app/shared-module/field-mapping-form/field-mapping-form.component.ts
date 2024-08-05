@@ -114,7 +114,7 @@ private setting = {
         fieldMappingConfigration[field.section].push(field);
       }
     });
-   const sectionsInCorrectOrder = ["Custom Fields Mapping","Issue Types Mapping", "Defects Mapping","WorkFlow Status Mapping","Additional Filter Identifier"]
+   const sectionsInCorrectOrder = ["Custom Fields Mapping","Issue Types Mapping", "Defects Mapping","WorkFlow Status Mapping","Additional Filter Identifier","Project Level Threshold"]
        const sectionsList = [...new Set(fieldMappingSections)].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
        this.fieldMappingSectionList = this.getSectionsInCorrectOrder(sectionsList,sectionsInCorrectOrder)
        this.formConfig = this.sortingOfFieldMapping(fieldMappingConfigration)

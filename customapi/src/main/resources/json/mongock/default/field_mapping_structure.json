@@ -293,6 +293,92 @@
     "mandatory": true
   },
   {
+    "fieldName": "workingHoursDayCPT",
+    "fieldLabel": "Working Hours in a Day",
+    "fieldType": "text",
+    "fieldCategory": "fields",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Working hours in a day"
+    }
+  },
+  {
+    "fieldName": "epicPlannedValue",
+    "fieldLabel": "Custom field for Epic Planned Value",
+    "fieldType": "text",
+    "fieldCategory": "fields",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>"
+    },
+    "processorCommon": true
+  },
+  {
+    "fieldName": "epicAchievedValue",
+    "fieldLabel": "Custom field for Epic Achieved Value",
+    "fieldType": "text",
+    "fieldCategory": "fields",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>"
+    },
+    "processorCommon": true
+  },
+  {
+    "fieldName": "leadTimeConfigRepoTool",
+    "fieldLabel": "Lead Time KPI calculation logic",
+    "fieldType": "radiobutton",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "By Default State Calculation is based on Jira Issues and Releases. <br>  1. Jira : Calculation is based on Jira Issues and Releases, <br>  2. Repo : Calculation is based on Repo Data and Releases. <br> Branch Name Must have Jira Issue Key in it."
+    },
+    "options": [
+      {
+        "label": "Jira",
+        "value": "Jira"
+      },
+      {
+        "label": "Repo",
+        "value": "Repo"
+      }
+    ],
+    "nestedFields": [
+      {
+        "fieldName": "jiraIssueTypeKPI156",
+        "fieldLabel": "Issue type to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "filterGroup": [
+          "Jira"
+        ],
+        "tooltip": {
+          "definition": "Only these Issue Types will be considered for Lead Time Calculation. If this Configuration is not provided, all the Issue Types will be considered. <br> Example: Story, Enabler Story, Tech Story, Change request <hr>."
+        }
+      },
+      {
+        "fieldName": "toBranchForMRKPI156",
+        "fieldLabel": "Production Branch Name",
+        "fieldType": "text",
+        "filterGroup": [
+          "Repo"
+        ],
+        "tooltip": {
+          "definition": "Production Branch in Which all the Child Branches are Merged <br> eg. master <hr>"
+        }
+      }
+    ]
+  },
+  {
+    "fieldName": "releaseListKPI150",
+    "fieldLabel": "Select desired releases to define team's velocity",
+    "fieldType": "chips",
+    "fieldCategory": "releases",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Select releases to define team velocity as per ticket"
+    }
+  },
+  {
     "fieldName": "jiraIssueTypeNames",
     "fieldLabel": "All issue types used by your Jira project",
     "fieldDisplayOrder": 1,
@@ -2471,9 +2557,11 @@
     "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 6,
+    "sectionOrder": 4,
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "All workflow statuses used to identify completed issues. If multiple statuses are specified, the first status an issue transitions to will be considered."
+      "definition": "Resolution types for defects that can be excluded from Defect Count by Priority calculation."
     }
   },
   {
@@ -2481,9 +2569,11 @@
     "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 6,
+    "sectionOrder": 4,
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "All workflow statuses used to identify completed issues. If multiple statuses are specified, the first status an issue transitions to will be considered."
+      "definition": "Resolution types for defects that can be excluded from Defect Count by RCA calculation."
     }
   },
   {
@@ -2491,9 +2581,11 @@
     "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 6,
+    "sectionOrder": 4,
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "All workflow statuses used to identify completed issues. If multiple statuses are specified, the first status an issue transitions to will be considered."
+      "definition": "Resolution types for defects that can be excluded from Defect Count by Status calculation."
     }
   },
   {
@@ -2501,70 +2593,84 @@
     "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 8,
+    "sectionOrder": 4,
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "All workflow statuses used to identify completed issues based on Definition of Done (DoD)"
+    }
+  },
+  {
+    "fieldName": "jiraDodKPI144",
+    "fieldLabel": "Status to identify completed issues",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "fieldDisplayOrder": 8,
+    "sectionOrder": 4,
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "All workflow statuses used to identify completed issues based on Definition of Done (DoD)."
     }
   },
   {
-    "fieldName": "jiraDodKPI144",
-    "fieldLabel": "DOD Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
-    }
-  },
-  {
     "fieldName": "jiraDodKPI143",
-    "fieldLabel": "DOD Status",
+    "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 8,
+    "sectionOrder": 4,
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+      "definition": "All workflow statuses used to identify completed issues based on Definition of Done (DoD)."
     }
   },
   {
     "fieldName": "jiraDodKPI171",
-    "fieldLabel": "DOD Status",
+    "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 8,
+    "sectionOrder": 4,
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+      "definition": "All workflow statuses used to identify completed issues based on Definition of Done (DoD)."
     },
     "mandatory": true
   },
   {
     "fieldName": "jiraDodKPI152",
-    "fieldLabel": "DOD Status",
+    "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 8,
+    "sectionOrder": 4,
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+      "definition": "All workflow statuses used to identify completed issues based on Definition of Done (DoD)."
     }
   },
   {
     "fieldName": "jiraDodKPI151",
-    "fieldLabel": "DOD Status",
+    "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
+    "fieldDisplayOrder": 8,
+    "sectionOrder": 4,
     "tooltip": {
-      "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+      "definition": "All workflow statuses used to identify completed issues based on Definition of Done (DoD)."
     }
   },
   {
     "fieldName": "jiraDodKPI155",
-    "fieldLabel": "DOD Status",
+    "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 8,
+    "sectionOrder": 4,
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+      "definition": "All workflow statuses used to identify completed issues based on Definition of Done (DoD).."
     }
   },
   {
@@ -2572,6 +2678,8 @@
     "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 8,
+    "sectionOrder": 4,
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "All workflow statuses used to identify completed issues based on Definition of Done (DoD)."
@@ -2592,12 +2700,14 @@
   },
   {
     "fieldName": "jiraDodKPI166",
-    "fieldLabel": "DOD Status",
+    "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 8,
+    "sectionOrder": 4,
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+      "definition": "All workflow statuses used to identify completed issues based on Definition of Done (DoD)."
     }
   },
   {
@@ -2822,16 +2932,6 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status/es that identify that an issue is LIVE in Production."
-    }
-  },
-  {
-    "fieldName": "workingHoursDayCPT",
-    "fieldLabel": "Working Hours in a Day",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-      "definition": "Working hours in a day"
     }
   },
   {
@@ -3165,28 +3265,6 @@
     }
   },
   {
-    "fieldName": "epicPlannedValue",
-    "fieldLabel": "Custom field for Epic Planned Value",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-      "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>"
-    },
-    "processorCommon": true
-  },
-  {
-    "fieldName": "epicAchievedValue",
-    "fieldLabel": "Custom field for Epic Achieved Value",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-      "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>"
-    },
-    "processorCommon": true
-  },
-  {
     "fieldName": "jiraIssueEpicTypeKPI153",
     "fieldLabel": "Issue type to identify epic/feature",
     "fieldType": "chips",
@@ -3358,50 +3436,6 @@
     "processorCommon": true
   },
   {
-    "fieldName": "leadTimeConfigRepoTool",
-    "fieldLabel": "Lead Time KPI calculation logic",
-    "fieldType": "radiobutton",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-      "definition": "By Default State Calculation is based on Jira Issues and Releases. <br>  1. Jira : Calculation is based on Jira Issues and Releases, <br>  2. Repo : Calculation is based on Repo Data and Releases. <br> Branch Name Must have Jira Issue Key in it."
-    },
-    "options": [
-      {
-        "label": "Jira",
-        "value": "Jira"
-      },
-      {
-        "label": "Repo",
-        "value": "Repo"
-      }
-    ],
-    "nestedFields": [
-      {
-        "fieldName": "jiraIssueTypeKPI156",
-        "fieldLabel": "Issue type to be included",
-        "fieldType": "chips",
-        "fieldCategory": "Issue_Type",
-        "filterGroup": [
-          "Jira"
-        ],
-        "tooltip": {
-          "definition": "Only these Issue Types will be considered for Lead Time Calculation. If this Configuration is not provided, all the Issue Types will be considered. <br> Example: Story, Enabler Story, Tech Story, Change request <hr>."
-        }
-      },
-      {
-        "fieldName": "toBranchForMRKPI156",
-        "fieldLabel": "Production Branch Name",
-        "fieldType": "text",
-        "filterGroup": [
-          "Repo"
-        ],
-        "tooltip": {
-          "definition": "Production Branch in Which all the Child Branches are Merged <br> eg. master <hr>"
-        }
-      }
-    ]
-  },
-  {
     "fieldName": "startDateCountKPI150",
     "fieldLabel": "Count of days from the release start date to calculate closure rate for prediction",
     "fieldType": "number",
@@ -3538,16 +3572,6 @@
     "processorCommon": false,
     "tooltip": {
       "definition": "Enabled State (KPI will populate w.r.t Dev Completion date), given that the Dev Completion Status is provided."
-    }
-  },
-  {
-    "fieldName": "releaseListKPI150",
-    "fieldLabel": "Select desired releases to define team's velocity",
-    "fieldType": "chips",
-    "fieldCategory": "releases",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-      "definition": "Select releases to define team velocity as per ticket"
     }
   },
   {
