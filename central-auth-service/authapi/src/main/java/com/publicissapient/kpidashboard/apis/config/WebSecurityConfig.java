@@ -50,6 +50,7 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -89,6 +90,14 @@ public class WebSecurityConfig {
 													.includeSubDomains(authConfig.getIncludeSubdomains())
 							)
 		);
+        http.headers(
+                httpSecurityHeadersConfigurer -> {
+                    httpSecurityHeadersConfigurer.contentSecurityPolicy(
+                            contentSecurityPolicyConfig ->
+                                    contentSecurityPolicyConfig.policyDirectives(authConfig.getContentSecurityPolicy())
+                    );
+                }
+        );
 		http.authorizeHttpRequests(authz -> authz
 					.requestMatchers(HttpMethod.OPTIONS)
 					.permitAll()
