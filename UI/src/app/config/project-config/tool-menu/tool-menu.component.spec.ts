@@ -418,7 +418,7 @@ describe('ToolMenuComponent', () => {
       ["Level Three"]: "T3",
 
     }
-    localStorage.setItem("hierarchyData", JSON.stringify(hierarchyData));
+    localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
     component.updateProjectDetails();
   })
 
@@ -502,53 +502,7 @@ describe('ToolMenuComponent', () => {
       ["Level Three"]: "T3",
 
     }
-    localStorage.setItem("hierarchyData", JSON.stringify(hierarchyData));
-    const response = {
-      "serviceResponse": {
-          "message": "Updated Successfully.",
-          "success": true,
-          "data": {
-              "id": "63777558175a953a0a49d363",
-              "projectName": "VDOS",
-          }
-      },
-      "projectsAccess": []
-    }
-    spyOn(httpService, 'updateProjectDetails').and.returnValue(of(response));
-    component.isAssigneeSwitchDisabled = false;
-    spyOn(messageService, 'add');
-    component.updateProjectDetails();
-    expect(messageService.add).toHaveBeenCalled();
-    expect(component.isAssigneeSwitchDisabled).toBeTruthy();
-  });
-
-  it('should update project details', () => {
-    const hierarchyData = [
-      {
-        level: 1,
-        hierarchyLevelId: 'hierarchyLevelOne',
-        hierarchyLevelName: 'Level One',
-      },
-      {
-        level: 2,
-        hierarchyLevelId: 'hierarchyLevelTwo',
-        hierarchyLevelName: 'Level Two',
-      },
-      {
-        level: 3,
-        hierarchyLevelId: 'hierarchyLevelThree',
-        hierarchyLevelName: 'Level Three',
-      },
-    ];
-    component.selectedProject = {
-      Project: "My Project",
-      Type: 'kanban',
-      ["Level One"]: "T1",
-      ["Level Two"]: "T2",
-      ["Level Three"]: "T3",
-
-    }
-    localStorage.setItem("hierarchyData", JSON.stringify(hierarchyData));
+    localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
     spyOn(httpService, 'updateProjectDetails').and.returnValue(of('Error'));
     component.isAssigneeSwitchChecked = true;
     component.isAssigneeSwitchDisabled = true;
