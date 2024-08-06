@@ -81,6 +81,10 @@
     </p-table>
 </div>
 
+<p-dialog [(visible)]="isNewProject" [modal]="true" styleClass="field-mapping">
+    <app-basic-config *ngIf="isNewProject" (closeProjectSetupPopup)="isNewProject = false;getData()"></app-basic-config>
+</p-dialog>
+
 <p-confirmDialog #cd>
     <p-footer>
         <button *ngIf="projectConfirm" type="button" (click)="cd.accept()" pButton label="Yes"></button>

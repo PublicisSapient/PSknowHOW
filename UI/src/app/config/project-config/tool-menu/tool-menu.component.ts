@@ -46,7 +46,7 @@ export class ToolMenuComponent implements OnInit {
   tokenCopied = false;
   isAssigneeSwitchChecked: boolean = false;
   isAssigneeSwitchDisabled: boolean = false;
-  assigneeSwitchInfo = "Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project";
+  assigneeSwitchInfo = "Turn ON to retrieve people-related information, such as assignees, developer profiles from all relevant source tools connected to your project.";
   userName: string;
   repoTools = ['BitBucket', 'GitLab', 'GitHub', 'Azure Repo'];
   repoToolsEnabled: boolean;
@@ -425,27 +425,31 @@ export class ToolMenuComponent implements OnInit {
 
   updateProjectDetails() {
 
-    let hierarchyData = JSON.parse(localStorage.getItem('hierarchyData'));
-
+    let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject['type']?.toLowerCase()];
+    console.log("hierarchyData", hierarchyData);
+    console.log("selectedProject", this.selectedProject);
+    
     const updatedDetails = {};
     updatedDetails['projectName'] = this.selectedProject['name'] || this.selectedProject['Project'];
-    updatedDetails['kanban'] = this.selectedProject['Type'] === 'Kanban' ? true : false;
+    updatedDetails['kanban'] = this.selectedProject['type'] === 'Kanban' ? true : false;
     updatedDetails['hierarchy'] = [];
     updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
     updatedDetails['id'] = this.selectedProject['id'];
     updatedDetails["createdAt"] = new Date().toISOString();
-
-    hierarchyData.forEach(element => {
+    for(let element of hierarchyData){
+      if(element.hierarchyLevelId == 'project'){
+        break; 
+      }
       updatedDetails['hierarchy'].push({
         hierarchyLevel: {
           level: element.level,
           hierarchyLevelId: element.hierarchyLevelId,
           hierarchyLevelName: element.hierarchyLevelName
         },
-        value: this.selectedProject[element.hierarchyLevelName]
+        value: this.selectedProject[element.hierarchyLevelId]
       });
-    });
-
+    }
+    console.log("updatedDetails", updatedDetails);
     this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
       if (response && response.serviceResponse && response.serviceResponse.success) {
         this.isAssigneeSwitchDisabled = true;
