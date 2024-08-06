@@ -44,7 +44,6 @@ import java.util.stream.Collectors;
 
 
 import com.publicissapient.kpidashboard.apis.data.FieldMappingStructureDataFactory;
-import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingMeta;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -118,9 +117,6 @@ public class FieldMappingServiceImplTest {
 
 	@Mock
 	private AuthenticationService authenticationService;
-
-	@Mock
-	private ProjectBasicConfigServiceImpl projectBasicConfigService;
 
 	@Mock
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;

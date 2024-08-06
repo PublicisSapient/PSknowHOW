@@ -242,8 +242,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 					}
 				}
 				basicConfig.setCreatedAt(savedConfig.getCreatedAt());
-				basicConfig.setLastUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
-				basicConfig.setLastUpdatedBy(authenticationService.getLoggedInUser());
+				basicConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
+				basicConfig.setUpdatedBy(authenticationService.getLoggedInUser());
 				ProjectBasicConfig updatedBasicConfig = basicConfigRepository.save(basicConfig);
 				performFilterOperation(basicConfigDtoCreation(updatedBasicConfig, mapper), true);
 				response = new ServiceResponse(true, "Updated Successfully.", updatedBasicConfig);
@@ -669,21 +669,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		}
 		for (ProjectBasicConfigNode child : node.getChildren()) {
 			findLeaf(child, leafNodes);
-		}
-	}
-
-	/**
-	 * Updates the project configuration changes by setting the last updated timestamp and user.
-	 *
-	 * @param basicProjectConfigId the ID of the project configuration to update
-	 */
-	public void updateProjectConfigChanges(ObjectId basicProjectConfigId) {
-		Optional<ProjectBasicConfig> projectBasicConfigOptional = basicConfigRepository.findById(basicProjectConfigId);
-		if(projectBasicConfigOptional.isPresent()) {
-			ProjectBasicConfig projectBasicConfig = projectBasicConfigOptional.get();
-			projectBasicConfig.setLastUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
-			projectBasicConfig.setLastUpdatedBy(authenticationService.getLoggedInUser());
-			basicConfigRepository.save(projectBasicConfig);
 		}
 	}
 }
