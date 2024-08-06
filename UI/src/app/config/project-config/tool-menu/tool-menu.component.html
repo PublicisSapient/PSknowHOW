@@ -123,11 +123,11 @@
                             [queryParams]="{toolName : tool.queryParams1}"
                             label="{{isProjectConfigured(tool.toolName) ? 'Edit Configuration' : buttonText}}"
                             icon="far fa-plus-square"
-                            class="p-button-success p-button-raised p-button p-component p-mt-1"></button>
+                            class="p-button-success p-button-raised p-button p-component p-mt-1" (click)="setSelectedProject()"></button>
                         <button pButton type="button" routerLink="{{ tool.routerLink2 }}" label="Mappings"
                             icon="far fa-plus-square" *ngIf="tool.routerLink2 && tool.routerLink2.length"
                             class="p-button-success p-button-raised p-button p-component p-mt-1"
-                            [disabled]="!disableSwitch"></button>
+                            [disabled]="!disableSwitch" (click)="setSelectedProject()"></button>
                     </div>
                 </div>
             </div>
