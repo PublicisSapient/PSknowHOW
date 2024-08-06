@@ -77,27 +77,6 @@ private setting = {
     this.filterHierarchy = JSON.parse(localStorage.getItem('completeHierarchyData')).scrum;
     this.initializeForm();
     this.generateFieldMappingConfiguration();
-    sortingOfFieldMapping(data) {
-        const sortedData = {};
-        for (const category in data) {
-          if (data.hasOwnProperty(category)) {
-            sortedData[category] = data[category].sort((a, b) => a?.fieldDisplayOrder - b?.fieldDisplayOrder);
-          }
-        }
-        return sortedData;
-      }
-
-      getSectionsInCorrectOrder(incorrectOrder, correctOrder) {
-        const orderMap = new Map();
-
-        // Create a map with the correct order
-        correctOrder.forEach((item, index) => {
-          orderMap.set(item, index);
-        });
-
-        // Sort the incorrect order list based on the correct order map
-        return incorrectOrder.sort((a, b) => orderMap.get(a) - orderMap.get(b));
-      }
     this.form.valueChanges.subscribe(()=>{
      this.isFormDirty = true;
     })
@@ -119,6 +98,28 @@ private setting = {
        this.fieldMappingSectionList = this.getSectionsInCorrectOrder(sectionsList,sectionsInCorrectOrder)
        this.formConfig = this.sortingOfFieldMapping(fieldMappingConfigration)
 
+  }
+
+  sortingOfFieldMapping(data) {
+    const sortedData = {};
+    for (const category in data) {
+      if (data.hasOwnProperty(category)) {
+        sortedData[category] = data[category].sort((a, b) => a?.fieldDisplayOrder - b?.fieldDisplayOrder);
+      }
+    }
+    return sortedData;
+  }
+
+  getSectionsInCorrectOrder(incorrectOrder, correctOrder) {
+    const orderMap = new Map();
+
+    // Create a map with the correct order
+    correctOrder.forEach((item, index) => {
+      orderMap.set(item, index);
+    });
+
+    // Sort the incorrect order list based on the correct order map
+    return incorrectOrder.sort((a, b) => orderMap.get(a) - orderMap.get(b));
   }
 
   initializeForm(){
