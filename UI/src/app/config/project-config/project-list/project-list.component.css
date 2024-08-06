@@ -54,3 +54,13 @@ div.main {
   .col-head{
     word-break: break-word;
   }
+
+  ::ng-deep .action-btns {
+    font-size: 14px;
+    text-wrap: nowrap;
+    color: #06a0ff;
+  }
+
+  ::ng-deep  .p-datatable.p-datatable-striped .p-datatable-tbody>tr>td {
+    word-break: normal;
+  }

@@ -63,11 +63,10 @@
                 </td>
                 <td class="p-0 p-text-right">
                     <div class="p-d-flex p-jc-end">
-                        <div *ngIf="isAdminOrSuperAdmin" class="action-btns p-mr-5"
-                            (click)="editConfiguration(project)"><i class="fas fa-wrench"></i></div>
+                        <div *ngIf="isAdminOrSuperAdmin" class="action-btns p-mr-4"
+                            (click)="editConfiguration(project)">Edit Config</div>
                         <div *ngIf="isAdminOrSuperAdmin" class="action-btns" (click)="deleteProject(project)"
-                            [ngClass]="{'not-allowed': authorization.checkIfViewer(project)}"><i
-                                class="far fa-trash-alt p-mr-5"></i></div>
+                            [ngClass]="{'not-allowed': authorization.checkIfViewer(project)}">Delete Project</div>
                     </div>
                 </td>
             </tr>
