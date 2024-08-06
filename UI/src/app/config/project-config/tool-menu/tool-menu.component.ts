@@ -93,15 +93,6 @@ export class ToolMenuComponent implements OnInit {
       this.isAssigneeSwitchDisabled = true;
     }
 
-    // filtering tools based on repoToolFlag
-    this.tools = this.tools.filter(details => {
-      if (this.repoToolsEnabled) {
-        return !this.repoTools.includes(details.toolName)
-      } else {
-        return details.toolName !== 'RepoTool';
-      }
-    })
-
   }
 
   getToolsConfigured() {
@@ -307,8 +298,15 @@ export class ToolMenuComponent implements OnInit {
           ];
         }
       }
+      // filtering tools based on repoToolFlag
+      this.tools = this.tools.filter(details => {
+        if (this.repoToolsEnabled) {
+          return !this.repoTools.includes(details.toolName)
+        } else {
+          return details.toolName !== 'RepoTool';
+        }
+      })
     });
-
   }
 
   projectTypeChange(event, isClicked) {

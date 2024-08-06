@@ -582,8 +582,8 @@ export class HelperService {
 
     getGlobalConfig() {
         this.httpService.getConfigDetails().subscribe(res => {
-            if (res && res['success']) {
-                this.sharedService.setGlobalConfigData(res['data']);
+            if (res) {
+                this.sharedService.setGlobalConfigData(res);
             }
         })
     }
