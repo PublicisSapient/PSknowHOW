@@ -141,6 +141,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                                 }
                             }
                         }
+                        }
                     }
                     // error thrown here needs to catch in  error block of subscribe
                     return throwError(err);
