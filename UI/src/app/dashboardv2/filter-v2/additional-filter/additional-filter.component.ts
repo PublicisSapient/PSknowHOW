@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewC
 import { MultiSelect } from 'primeng/multiselect';
 import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
+import {TooltipModule} from 'primeng/tooltip';
 
 @Component({
   selector: 'app-additional-filter',
