@@ -32,9 +32,10 @@
                             <ng-container
                                 *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
                                 <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
-                                    <div *ngIf="selectedKPITab === kpi.kpiDetail.kpiSubCategory"
+                                    <div *ngIf="selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled']"
                                         class="{{ kpi.kpiDetail?.kpiWidth ? kpi.kpiDetail?.kpiWidth === 100 ? 'p-col-12' : 'p-col-6'  : 'p-col-6'  }}">
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"
+                                            [nodeId]="filterApplyData?.selectedMap?.['release']?.[0]"
                                             [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                                             [loader]="kpiLoader.has(kpi?.kpiId)" [trendData]="kpiTrendsObj[kpi?.kpiId]"
                                             [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders"
@@ -61,7 +62,7 @@
                                                                     <ng-container
                                                                         *ngIf="checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
                                                                         <app-groupstackchart [legendType]="'normal'"
-                                                                            [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                                                            [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
                                                                             [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                                                             [unit]="kpi?.kpiDetail?.kpiUnit"
                                                                             [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
@@ -91,7 +92,7 @@
                                                                     [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                                                     [unit]="kpi?.kpiDetail?.kpiUnit"
                                                                     [data]="kpiChartData[kpi?.kpiId]"
-                                                                    [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                                                    [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
                                                                     [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                                                     [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId"
                                                                     [color]="chartColorList[kpi?.kpiId]"
@@ -104,7 +105,7 @@
                                                                     [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                                                     [unit]="kpi?.kpiDetail?.kpiUnit"
                                                                     [data]="kpiChartData[kpi?.kpiId]"
-                                                                    [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                                                    [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
                                                                     [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                                                     [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId"
                                                                     [color]="chartColorList[kpi?.kpiId]"
@@ -116,7 +117,7 @@
                                                                     [data]="kpiChartData[kpi?.kpiId]" [lineChart]="true"
                                                                     [unit]="kpi?.kpiDetail?.kpiUnit"
                                                                     [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                                                    [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                                                    [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
                                                                     [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                                                     [color]="chartColorList[kpi?.kpiId]"
                                                                     [barLegend]="kpi?.kpiDetail?.barLegend"
@@ -131,7 +132,7 @@
                                                                     [data]="kpiChartData[kpi?.kpiId]" [lineChart]="true"
                                                                     [unit]="kpi?.kpiDetail?.kpiUnit"
                                                                     [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
-                                                                    [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                                                    [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
                                                                     [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                                                     [color]="chartColorList[kpi?.kpiId]"
                                                                     [barLegend]="kpi?.kpiDetail?.barLegend"
@@ -145,7 +146,7 @@
                                                                 <ng-container
                                                                     *ngSwitchCase="'CumulativeMultilineChart'">
                                                                     <app-group-bar-chart
-                                                                        [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                                                        [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] :kpi?.kpiDetail?.xaxisLabel"
                                                                         [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
@@ -251,3 +252,7 @@
 </ng-template>
 
 <app-export-excel #exportExcel></app-export-excel>
+
+<ng-container *ngIf="isRecommendationsEnabled && (filterApplyData?.label == 'project' || filterApplyData?.label == 'sprint') && filterApplyData?.ids?.length == 1">
+    <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
+  </ng-container>

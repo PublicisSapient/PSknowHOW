@@ -125,12 +125,12 @@ export class MaturityComponent implements OnInit, OnDestroy {
     this.loader = true;
     this.jiraGroups = 0;
     this.showNoDataMsg = false;
-    if (this.service.getSelectedTab() === 'Maturity') {
+    if (this.service.getSelectedTab() === 'kpi-maturity') {
       this.masterData = $event?.masterData;
 
       this.configGlobalData = $event.dashConfigData;
 
-      this.masterData.kpiList = this.configGlobalData[this.selectedtype].filter((board) => board['boardSlug'] === 'mydashboard')[0].kpis;
+      this.masterData.kpiList = this.configGlobalData[this.selectedtype].filter((board) => board['boardSlug'] === 'my-knowhow')[0].kpis;
 
       this.filterData = $event?.filterData;
       this.filterApplyData = $event?.filterApplyData;
@@ -412,10 +412,10 @@ export class MaturityComponent implements OnInit, OnDestroy {
   handleTabChange(index) {
     this.selectedTabIndex = index;
     this.maturityValue = {};
-    if (!(this.tabs.length > 0 && this.selectedTabKpis.length > 0)) {
+    // if (!(this.tabs.length > 0 && this.selectedTabKpis.length > 0)) {
       this.configGlobalData = this.service.getDashConfigData();
       this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration' && board?.boardName.toLowerCase() !== 'developer');
-    }
+    // }
     this.selectedTabKpis = this.tabs[index].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled).map(kpi => kpi.kpiId);
     const allCategoriesKpis = [this.jiraKpiData, this.jenkinsKpiData, this.sonarKpiData, this.zypherKpiData, this.bitBucketKpiData];
     //updated the maturityValue with selected Category kpi

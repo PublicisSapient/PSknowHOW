@@ -23,12 +23,18 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   @ViewChild('multiSelect') multiSelect: MultiSelect;
 
   constructor(private service: SharedService, public helperService: HelperService) {
+    this.service.selectedTrendsEvent.subscribe(filters => {
+      if (filters?.length && this.primaryFilterConfig['type'] !== 'singleSelect') {
+        this.selectedFilters = filters;
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue) && !changes['primaryFilterConfig']?.firstChange) ||
+    if ((!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue)) ||
       ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) ||
         (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange))) {
+        // (changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange)) {
       this.applyDefaultFilters();
       return;
     }
@@ -48,8 +54,9 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         this.selectedFilters = Array.from(
           this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
         );
-        // this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
+        // if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
         this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
+        // }
         this.onPrimaryFilterChange.emit(this.selectedFilters);
         this.setProjectAndLevelBackupBasedOnSelectedLevel();
       } else if (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && this.stateFilters['additional_level'] && Object.keys(this.stateFilters['additional_level'])?.length) {
@@ -65,10 +72,10 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         );
         this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
         this.selectedAdditionalFilters = {};
-        Object.keys(this.stateFilters['additional_level']['level']).forEach(key => {
+        Object.keys(this.stateFilters['additional_level']).forEach(key => {
 
           this.selectedAdditionalFilters[key] = new Set();
-          this.stateFilters['additional_level']['level'][key].forEach(stateFilter => {
+          this.stateFilters['additional_level'][key].forEach(stateFilter => {
             this.selectedAdditionalFilters[key].add(stateFilter);
           });
 
@@ -93,13 +100,29 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
   applyDefaultFilters() {
     this.populateFilters();
-    Promise.resolve().then(() => {
-      this.selectedFilters = [];
-      this.selectedFilters.push({ ...this.filters[0] });
-      this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
-      this.applyPrimaryFilters({});
-      this.setProjectAndLevelBackupBasedOnSelectedLevel();
-    });
+    setTimeout(() => {
+      this.stateFilters = this.helperService.getBackupOfFilterSelectionState();
+      if ((this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'project' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === 'project') ||
+        (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && (this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'sprint' || this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'release') && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === 'project')) {
+        this.selectedFilters = [];
+        if (this.stateFilters['primary_level'][0]?.labelName.toLowerCase() === 'project') {
+          this.selectedFilters.push({ ...this.filters.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].nodeId)[0] });
+        } else {
+          this.selectedFilters.push({ ...this.filters.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].parentId)[0] });
+        }
+        this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
+      } else {
+        this.selectedFilters = [];
+        this.selectedFilters.push({ ...this.filters[0] });
+        if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
+          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
+        }
+      }
+      // if (!this.stateFilters['additional_level']) {
+        this.applyPrimaryFilters({});
+        this.setProjectAndLevelBackupBasedOnSelectedLevel();
+      // }
+    }, 100);
   }
 
   ngOnInit() {
@@ -133,7 +156,9 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     if (!Array.isArray(this.selectedFilters)) {
       this.selectedFilters = [this.selectedFilters];
     }
-    this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters], 'additional_level': null })
+    // if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
+    this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
+    // }
     this.onPrimaryFilterChange.emit([...this.selectedFilters]);
     this.setProjectAndLevelBackupBasedOnSelectedLevel();
     if (this.multiSelect?.overlayVisible) {

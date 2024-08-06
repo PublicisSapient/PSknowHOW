@@ -798,6 +798,65 @@ describe('DashboardconfigComponent', () => {
     component.getProjects();
     expect(spy).toHaveBeenCalled();
   })
+
+  describe('isEmptyObject', () => {
+  
+    it('should return true for an empty object', () => {
+      const value = {};
+      const result = component.isEmptyObject(value);
+      expect(result).toBe(true);
+    });
+  
+    it('should return false for an object with properties', () => {
+      const value = { key: 'value' };
+      const result = component.isEmptyObject(value);
+      expect(result).toBe(false);
+    });
+  
+    it('should return false for an array', () => {
+      const value = [];
+      const result = component.isEmptyObject(value);
+      expect(result).toBe(false);
+    });
+  
+    it('should return false for a string', () => {
+      const value = 'string';
+      const result = component.isEmptyObject(value);
+      expect(result).toBe(false);
+    });
+  
+    it('should return false for a number', () => {
+      const value = 123;
+      const result = component.isEmptyObject(value);
+      expect(result).toBe(false);
+    });
+  
+    it('should return false for a boolean', () => {
+      const value = true;
+      const result = component.isEmptyObject(value);
+      expect(result).toBe(false);
+    });
+  });
+
+  it('should get user projects for kanban',()=>{
+    component.backupUserProjects = [{type : 'kanban'},{type : 'common'}]
+    component.tabHeaders = ['scrum','kanban'];
+    const spy = spyOn(component,'setFormControlData');
+    component.handleTabChange({
+        index : 1
+    });
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should get user projects for scrum',()=>{
+    component.backupUserProjects = [{type : 'scrum'},{type : 'common'}]
+    component.tabHeaders = ['scrum','kanban'];
+    const spy = spyOn(component,'setFormControlData');
+    component.handleTabChange({
+        index : 0
+    });
+    expect(spy).toHaveBeenCalled();
+  })
 });
 
 

@@ -46,7 +46,6 @@ export class IterationComponent implements OnInit, OnDestroy {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   @ViewChild('table') tableComponent: Table;
   subscriptions: any[] = [];
-  masterData = <any>{};
   filterData = <any>[];
   filterApplyData = <any>{};
   noOfFilterSelected = 0;
@@ -109,6 +108,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   dailyStandupData: object = {};
   selectedProjectId: string;
   kpiList: Array<string> = [];
+  isRecommendationsEnabled: boolean = false;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService,
     private featureFlagService: FeatureFlagsService) {
@@ -236,14 +236,13 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.noSprints = true;
       } else {
         this.noSprints = false;
-        this.masterData = $event.masterData;
         this.filterData = $event.filterData;
         this.filterApplyData = $event.filterApplyData;
         this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
         if (this.filterData?.length) {
           this.noTabAccess = false;
           // call kpi request according to tab selected
-          if (this.masterData && Object.keys(this.masterData).length) {
+          if (this.configGlobalData?.length > 0) {
             if (this.selectedtype !== 'Kanban') {
               // we should only call kpi154 on the click of Daily Standup tab
               let kpiIdsForCurrentBoard;
@@ -262,7 +261,9 @@ export class IterationComponent implements OnInit, OnDestroy {
                 this.timeRemaining = this.calcBusinessDays(today, endDate);
 
                 this.groupJiraKpi(kpiIdsForCurrentBoard);
-                this.getKpiCommentsCount();
+                if ($event.filterApplyData['label'] !== 'sqd') {
+                  this.getKpiCommentsCount();
+                }
               }
             }
           }
@@ -390,6 +391,10 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
     });
 
+    /** Get recommendations flag */
+    this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
+      this.isRecommendationsEnabled = item;
+    }));
 
     this.service.getEmptyData().subscribe((val) => {
       if (val) {
@@ -947,7 +952,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   handleTabChange(e) {
     let index = e.index;
     if (index === 2) {
-      let kpi154Data = this.masterData?.kpiList.filter(kpi => kpi.kpiId === 'kpi154')[0];
+      let kpi154Data = this.configGlobalData?.filter(kpi => kpi.kpiId === 'kpi154')[0];
       this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, ['kpi154'], kpi154Data['groupId'], 'Iteration');
       this.postJiraKpi(this.kpiJira, 'jira');
     }

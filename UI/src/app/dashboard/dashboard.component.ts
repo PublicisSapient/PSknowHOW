@@ -42,12 +42,12 @@ import { NavigationEnd, Router } from '@angular/router';
  */
 export class DashboardComponent implements OnInit, AfterContentInit {
   displayModal = false;
-  modalDetails={
-    header:'User Request Approved',
-    content:'Click on "Continue" to reflect the changes happened from requested Role change.'
+  modalDetails = {
+    header: 'User Request Approved',
+    content: 'Click on "Continue" to reflect the changes happened from requested Role change.'
   };
 
-  @ViewChild('header',{ static: true }) header;
+  @ViewChild('header', { static: true }) header;
   authorized = true;
   isApply = false;
   headerStyle;
@@ -61,7 +61,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
     private httpService: HttpService,
     private renderer: Renderer2
   ) {
-    this.sideNavStyle ={ 'toggled' :this.isApply};
+    this.sideNavStyle = { 'toggled': this.isApply };
     this.renderer.listen('document', 'click', (e: Event) => {
 
       // setting document click event data to identify outside click for show/hide kpi filter
@@ -73,16 +73,16 @@ export class DashboardComponent implements OnInit, AfterContentInit {
   ngOnInit() {
     this.setPageContentWrapperHeight();
 
-    this.httpService.loadApp.subscribe(data=>{
-      if(this.httpService.createdProjectName){
-        this.modalDetails.header =`Project Created`;
-        this.modalDetails.content =`The project "${this.httpService.createdProjectName}" has been created successfully and you have gained admin rights for it.`;
+    this.httpService.loadApp.subscribe(data => {
+      if (this.httpService.createdProjectName) {
+        this.modalDetails.header = `Project Created`;
+        this.modalDetails.content = `The project "${this.httpService.createdProjectName}" has been created successfully and you have gained admin rights for it.`;
       }
-      this.displayModal =data;
+      this.displayModal = data;
     });
     this.service.isSideNav.subscribe((flag) => {
       this.isApply = flag;
-      this.sideNavStyle ={ 'toggled' : this.isApply };
+      this.sideNavStyle = { 'toggled': this.isApply };
     });
 
     this.router.events.subscribe(event => {
@@ -92,15 +92,15 @@ export class DashboardComponent implements OnInit, AfterContentInit {
     });
   }
 
-  setPageContentWrapperHeight(){
-    setTimeout(()=>{
-      this.headerStyle={height: 'calc(100vh - '+this.header.nativeElement.offsetHeight+'px)',top:'calc('+this.header.nativeElement.offsetHeight+'px'+' - '+'0px)'};
-    },0);
+  setPageContentWrapperHeight() {
+    setTimeout(() => {
+      this.headerStyle = { height: 'calc(100vh - ' + this.header.nativeElement.offsetHeight + 'px)', top: 'calc(' + this.header.nativeElement.offsetHeight + 'px' + ' - ' + '0px)' };
+    }, 0);
   }
 
-  reloadApp(){
-    this.displayModal=false;
-      this.router.navigate(['./dashboard/mydashboard']).then(success =>{
+  reloadApp() {
+    this.displayModal = false;
+    this.router.navigate(['./dashboard/my-knowhow']).then(success => {
       window.location.reload();
     });
   }
@@ -111,7 +111,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
 
   ngOnDestroy() {
     this.isApply = false;
-    this.sideNavStyle ={ 'toggled' : this.isApply };
+    this.sideNavStyle = { 'toggled': this.isApply };
     this.service.setSideNav(false);
   }
 }

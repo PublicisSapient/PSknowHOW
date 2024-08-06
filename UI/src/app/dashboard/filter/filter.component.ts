@@ -31,6 +31,7 @@ import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
 import { first, switchMap, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { interval, Subject } from 'rxjs';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 @Component({
   selector: 'app-filter',
@@ -150,6 +151,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedProjectForIteration : any = [];
   selectedItems: number = 0;
   isAdditionalFilter: boolean = false;
+  isRecommendationsEnabled: boolean = false;
+  userRole: string = '';
 
   constructor(
     public service: SharedService,
@@ -159,10 +162,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     private ga: GoogleAnalyticsService,
     private messageService: MessageService,
     private helperService: HelperService,
-    public route: ActivatedRoute
+    public route: ActivatedRoute,
+    private featureFlagsService: FeatureFlagsService
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.items.push({
       label: 'Logout',
       icon: 'fas fa-sign-out-alt',
@@ -208,7 +212,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.selectedTab = this.service.getSelectedTab() || 'mydashboard';
+    this.selectedTab = this.service.getSelectedTab() || 'my-knowhow';
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.service.setShowTableView(this.showChart);
     this.getNotification();
@@ -216,6 +220,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.toggleFilter();
     this.initializeUserInfo();
     this.getLogoImage();
+    this.getRecommendationsFlag();
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe(data => {
@@ -237,7 +242,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.totalProjectSelected = 1;
           this.service.setShowTableView(this.showChart);
         }
-        if (this.selectedTab.toLowerCase() === 'maturity') {
+        if (this.selectedTab.toLowerCase() === 'kpi-maturity') {
           this.showChart = 'chart';
           this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase()
           this.totalProjectSelected = 1;
@@ -334,6 +339,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     })
   }
 
+  async getRecommendationsFlag(){
+    this.isRecommendationsEnabled = await this.featureFlagsService.isFeatureEnabled('RECOMMENDATIONS');
+    this.service.setRecommendationsFlag(this.isRecommendationsEnabled);
+  }
+
   initializeFilterForm() {
     this.filterForm = new UntypedFormGroup({
       selectedTrendValue: new UntypedFormControl(),
@@ -355,6 +365,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
 
     let authoritiesArr;
+    this.userRole = this.service.getCurrentUserDetails('authorities')[0];
     if (this.service.getCurrentUserDetails('authorities')) {
       authoritiesArr = this.service.getCurrentUserDetails('authorities');
     }
@@ -433,7 +444,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
-    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'mydashboard' || this.selectedTab?.toLowerCase() === 'developer') {
+    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'kpi-maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'developer') {
       this.allowMultipleSelection = false;
     } else {
       this.allowMultipleSelection = true;
@@ -739,7 +750,7 @@ this.resetAddtionalFIlters();
         }
       }
 
-      if(this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity'){
+      if(this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'kpi-maturity'){
         this.setSelectedSprintOnServiceLayer(applySource);
       }
 
@@ -835,11 +846,11 @@ this.resetAddtionalFIlters();
 
   navigateToSelectedTab() {
     if (this.selectedTab !== 'Config' && Object.keys(this.kpiListData)?.length > 0) {
-      if (this.selectedTab === 'Maturity') {
+      if (this.selectedTab?.toLowerCase() === 'kpi-maturity') {
         if (!this.checkIfMaturityTabHidden()) {
           this.backToDashboardLoader = false
           this.router.navigateByUrl(
-            `/dashboard/Maturity`,
+            `/dashboard/kpi-maturity`,
           );
           return;
         } else {
@@ -874,7 +885,7 @@ this.resetAddtionalFIlters();
       })
       if(kpisShownCount <= 0){
         this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
-        this.service.setSelectedTab(this.selectedTab);
+        this.service.setSelectedTab(this.selectedTab?.split(' ').join('-').toLowerCase());
         this.backToDashboardLoader = false
         this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
       }
@@ -1561,38 +1572,7 @@ this.resetAddtionalFIlters();
   // logout is clicked  and removing auth token , username
   logout() {
       this.loader = true;
-      this.httpService.logout().subscribe((responseData) => {
-        if (responseData?.success) {
-          if(!environment['AUTHENTICATION_SERVICE']){
-          this.helperService.isKanban = false;
-          // Set blank selectedProject after logged out state
-          this.service.setSelectedProject(null);
-          this.service.setCurrentUserDetails({});
-          this.service.setVisibleSideBar(false);
-          this.service.setAddtionalFilterBackup({});
-          this.service.setKpiSubFilterObj({});
-          localStorage.clear();
-          this.loader = false;
-          this.router.navigate(['./authentication/login']);
-        } else{
-          let obj = {
-            'resource': environment.RESOURCE
-          };
-          this.httpService.getUserValidation(obj).toPromise()
-          .then((response) => {
-            if (response && !response['success']) {
-              this.loader = false;
-              let redirect_uri = window.location.href;
-              window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
-            }
-          })
-          .catch((error) => {
-            this.loader = false;
-            console.log("cookie not clear on error");
-          });
-        }
-      }
-    })
+      this.helperService.logoutHttp();
   }
 
   // when user would want to give access on project from notification list
@@ -1944,7 +1924,7 @@ this.resetAddtionalFIlters();
 
   getSprintsWhichWasAlreadySelected(level) {
     const sprintsWhichWasAlreadySelected = []
-    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()[level] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity') {
+    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()[level] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'kpi-maturity') {
       const selectedProjects = this.service.getSelectedTrends().map(data => data.nodeId);
       selectedProjects.forEach(nodeId => {
         const projectWhichSprintWasSelected = Object.keys(this.service.getAddtionalFilterBackup()[level]);

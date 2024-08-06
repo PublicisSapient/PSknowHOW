@@ -7,7 +7,7 @@
         <div class="down-arrow cursor-pointer" (click)="appItems.toggle($event)"></div>
         <p-menu [model]="appList" [popup]="true" #appItems class="app-switch"></p-menu>
      </div>
-      <img src="assets/img/PSKnowHowLogo.svg" alt="Logo" />
+      <img src="assets/img/PSKnowHowLogo.svg" alt="Logo" (click)="navigateToMyKnowHOW()"/>
     </div>
 
     <div class="p-d-flex p-align-center p-p-1">
@@ -21,7 +21,7 @@
       </div>
       <p-menu #notification [popup]="true" [model]="notificationList" class="custom-menu"></p-menu>
 
-      <div class="back-btn-wraper">
+      <div class="back-btn-wraper" *ngIf="!userDetails['authorities']?.includes('ROLE_VIEWER')">
         <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')"
           class="back-btn-container rounded p-mr-3">
           <button pButton pRipple class="back-btn" [disabled]="backToDashboardLoader" routerLinkActive="active"

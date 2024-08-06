@@ -40,7 +40,6 @@ export class DeveloperComponent implements OnInit {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   selectedTab = 'developer';
   subscriptions: any[] = [];
-  masterData = <any>{};
   filterData = <any>[];
   filterApplyData = <any>{};
   noOfFilterSelected = 0;
@@ -83,6 +82,7 @@ export class DeveloperComponent implements OnInit {
   iSAdditionalFilterSelected = false;
   kpiThresholdObj = {};
   kpiList:Array<string> = [];
+  isRecommendationsEnabled: boolean = false;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService) {
 
@@ -160,6 +160,11 @@ export class DeveloperComponent implements OnInit {
         }
       });
 
+      /** Get recommendations flag */
+      this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
+          this.isRecommendationsEnabled = item;
+      }));
+
     this.service.getEmptyData().subscribe((val) => {
       if (val) {
         this.noTabAccess = true;
@@ -200,7 +205,6 @@ export class DeveloperComponent implements OnInit {
           this.kpiLoader = true;
         }
         const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
-        this.masterData = $event.masterData;
         this.filterData = $event.filterData;
         this.filterApplyData = $event.filterApplyData;
         this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
@@ -208,7 +212,7 @@ export class DeveloperComponent implements OnInit {
         if (this.filterData?.length && $event.makeAPICall) {
           this.noTabAccess = false;
           // call kpi request according to tab selected
-          if (this.masterData && Object.keys(this.masterData).length) {
+          if (this.configGlobalData?.length > 0) {
             this.configGlobalData = this.globalConfig[this.service.getSelectedType().toLowerCase() === 'kanban' ? 'kanban' : 'scrum'].filter((item) => item.boardName.toLowerCase() == 'developer')[0]?.kpis;
             this.processKpiConfigData();
             if (this.service.getSelectedType().toLowerCase() === 'kanban') {
@@ -462,7 +466,7 @@ export class DeveloperComponent implements OnInit {
         }
       } else {
         if (this.kpiSelectedFilterObj[kpiId]?.length > 0) {
-          this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value;
+          this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0].filter1)[0]?.value;
           if (kpiId == 'kpi17' && this.kpiSelectedFilterObj[kpiId][0]?.toLowerCase() == 'average coverage') {
             for (let i = 0; i < this.kpiChartData[kpiId]?.length; i++) {
               this.kpiChartData[kpiId][i]['filter'] = this.kpiSelectedFilterObj[kpiId][0];
@@ -645,13 +649,13 @@ export class DeveloperComponent implements OnInit {
 
     }
     else {
-      if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
+      if (event && Object.keys(event)?.length !== 0 && !Array.isArray(event)) {
         for (const key in event) {
           if (key !== 'filter1' && key !== 'filter2') {
             delete event[key];
           }
         }
-        this.kpiSelectedFilterObj[kpi?.kpiId] = event;
+        this.kpiSelectedFilterObj[kpi?.kpiId] = [event];
       } else {
         this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
       }

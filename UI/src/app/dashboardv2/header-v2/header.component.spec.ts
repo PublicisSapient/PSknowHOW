@@ -23,6 +23,7 @@ import { ViewRequestsComponent } from 'src/app/config/profile/view-requests/view
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
+  let routerSpy: jasmine.SpyObj<Router>;
   let getAuth: GetAuthService;
   let httpService: HttpService
   let sharedService: SharedService;
@@ -39,6 +40,7 @@ describe('HeaderComponent', () => {
   ];
 
   beforeEach(async () => {
+    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     await TestBed.configureTestingModule({
       declarations: [HeaderComponent],
       imports: [RouterTestingModule.withRoutes(routes), HttpClientModule, BrowserAnimationsModule],
@@ -47,8 +49,7 @@ describe('HeaderComponent', () => {
       providers: [SharedService, GetAuthService, HttpService, HelperService, CommonModule, DatePipe, GetAuthorizationService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
-    })
-      .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
@@ -57,7 +58,7 @@ describe('HeaderComponent', () => {
     sharedService = TestBed.inject(SharedService);
     helperService = TestBed.inject(HelperService);
     mockGetAuthorizationService = jasmine.createSpyObj(GetAuthorizationService, ['checkIfSuperUser', 'checkIfProjectAdmin']);
-    mockRouter = component.router; 
+    mockRouter = component.router;
     fixture.detectChanges();
   });
 
@@ -65,31 +66,7 @@ describe('HeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should clear localStorage, reset helperService and sharedService, and navigate to login page when logout is successful', () => {
-    const getData = null;
-    spyOn(httpService, 'logout').and.returnValue(of(getData));
-    const localStorageSpy = spyOn(localStorage, 'clear');
-    const setSelectedProjectSpy = spyOn(sharedService, 'setSelectedProject');
-    const setCurrentUserDetailsSpy = spyOn(sharedService, 'setCurrentUserDetails');
-    component.logout();
-    expect(localStorageSpy).toHaveBeenCalled();
-    expect(helperService.isKanban).toBe(false);
-    expect(setSelectedProjectSpy).toHaveBeenCalledWith(null);
-    expect(setCurrentUserDetailsSpy).toHaveBeenCalledWith({});
-  });
 
-  it('should not clear localStorage, reset helperService and sharedService, and navigate to login page when logout returns an error', () => {
-    const getData = ['error'];
-    spyOn(httpService, 'logout').and.returnValue(of(getData));
-    const localStorageSpy = spyOn(localStorage, 'clear');
-    const setSelectedProjectSpy = spyOn(sharedService, 'setSelectedProject');
-    const setCurrentUserDetailsSpy = spyOn(sharedService, 'setCurrentUserDetails');
-    component.logout();
-    expect(localStorageSpy).not.toHaveBeenCalled();
-    expect(helperService.isKanban).toBe(false);
-    expect(setSelectedProjectSpy).not.toHaveBeenCalled();
-    expect(setCurrentUserDetailsSpy).not.toHaveBeenCalled();
-  });
 
 
   it('should set backToDashboardLoader to true, navigate to lastVisitedFromUrl, and set backToDashboardLoader to false', () => {
@@ -139,14 +116,41 @@ describe('HeaderComponent', () => {
     expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/Config/Profile/RequestStatus']);
   });
 
-  it("should notification list not null if response is comming",()=>{
+  it("should notification list not null if response is comming", () => {
     const fakeResponce = {
       message: 'Data came successfully',
       success: true,
       data: [{ count: 2, type: 'User Access Request' }],
     };
-    spyOn(httpService,'getAccessRequestsNotifications').and.returnValue(of(fakeResponce));
+    spyOn(httpService, 'getAccessRequestsNotifications').and.returnValue(of(fakeResponce));
     component.getNotification();
     expect(component.notificationList).not.toBe(null);
-  })
+  });
+
+  it("should navigate to /dashboard/my-knowhow when previousSelectedTab is Config", () => {
+    const navigateSpy = spyOn(mockRouter, 'navigate');
+    spyOnProperty(mockRouter, 'url', 'get').and.returnValue('/dashboard/Config');
+    component.navigateToMyKnowHOW();
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/my-knowhow']);
+  });
+
+  it("should navigate to /dashboard/my-knowhow when previousSelectedTab is Help", () => {
+    const navigateSpy = spyOn(mockRouter, 'navigate');
+    spyOnProperty(mockRouter, 'url', 'get').and.returnValue('/dashboard/Help');
+    component.navigateToMyKnowHOW();
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/my-knowhow']);
+  });
+
+  it("should not navigate to /dashboard/my-knowhow when previousSelectedTab is not Config or Help", () => {
+    const navigateSpy = spyOn(mockRouter, 'navigate');
+    spyOnProperty(mockRouter, 'url', 'get').and.returnValue('/dashboard/SomeOtherTab');
+    component.navigateToMyKnowHOW();
+    expect(navigateSpy).not.toHaveBeenCalledWith(['/dashboard/my-knowhow']);
+  });
+
+  it('should call helperService.logoutHttp() when logout() is called', () => {
+    spyOn(helperService, 'logoutHttp');
+    component.logout();
+    expect(helperService.logoutHttp).toHaveBeenCalled();
+  });
 });

@@ -36,7 +36,6 @@ declare let require: any;
 export class MilestoneComponent implements OnInit {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   subscriptions: any[] = [];
-  masterData = <any>{};
   filterData = <any>[];
   filterApplyData = <any>{};
   noOfFilterSelected = 0;
@@ -181,13 +180,12 @@ export class MilestoneComponent implements OnInit {
     if (this.service.getDashConfigData()) {
       this.configGlobalData = this.service.getDashConfigData()['others']?.filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
       this.processKpiConfigData();
-      this.masterData = $event.masterData;
       this.filterData = $event.filterData;
       this.filterApplyData = $event.filterApplyData;
       this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
       if (this.filterData?.length) {
         /**  call kpi request according to tab selected */
-        if (this.masterData && Object.keys(this.masterData).length) {
+        if (this.configGlobalData?.length > 0) {
           if (this.selectedtype !== 'Kanban') {
             const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
             const selectedRelease = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['release'][0] && x.labelName.toLowerCase() === 'release')[0];
@@ -211,7 +209,7 @@ export class MilestoneComponent implements OnInit {
     /** creating a set of unique group Ids */
     const groupIdSet = new Set();
     this.updatedConfigGlobalData.forEach((obj) => {
-      if (!obj.kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Release') {
+      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Release') {
         groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });

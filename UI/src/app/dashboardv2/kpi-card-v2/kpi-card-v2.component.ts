@@ -140,7 +140,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: () => {
           this.onOpenFieldMappingDialog();
         },
-        disabled: this.disableSettings
+        disabled: this.disableSettings || this.service.getSelectedType()?.toLowerCase() === 'kanban'
       },
       {
         label: 'List View',
@@ -171,7 +171,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.userRole = this.authService.getRole();
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
-    this.disableSettings = this.colors && (Object.keys(this.colors)?.length > 1 || this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project');
+    this.disableSettings = this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release'));
     this.initializeMenu();
   }
 
