@@ -106,7 +106,7 @@ public class UserInfoController {
 	@PostMapping("/deleteUser")
 	public ResponseEntity<ServiceResponse> deleteUser(@Valid @RequestBody UserNameRequest userNameRequest) {
 		log.info("Inside deleteUser() method of UserInfoController ");
-		String userName = userNameRequest.getUserName();
+		String userName = userNameRequest.getUsername();
 		String loggedUserName = authenticationService.getLoggedInUser();
 		UserInfo userInfo = userInfoRepository.findByUsername(userName);
 		if ((!loggedUserName.equals(userName) && !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))) {
@@ -124,7 +124,7 @@ public class UserInfoController {
 	@PostMapping(value = "/central/deleteUser")
 	public ResponseEntity<ServiceResponse> deleteUserFromCentral(@Valid @RequestBody UserNameRequest userNameRequest) {
 		log.info("Inside deleteUser() method of UserInfoController ");
-		String userName = userNameRequest.getUserName();
+		String userName = userNameRequest.getUsername();
 		String loggedUserName = authenticationService.getLoggedInUser();
 		UserInfo userInfo = userInfoRepository.findByUsername(userName);
 		if ((!loggedUserName.equals(userName) && !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))) {

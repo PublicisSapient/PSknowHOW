@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CookieUtil {
 	public static final String AUTH_COOKIE = "authCookie";
 	@Autowired
-	private CustomApiConfig customApiConfig; // TODO needed to delete
+	private CustomApiConfig customApiConfig;
 
 	@Autowired
 	private AuthProperties authProperties;
@@ -104,5 +104,13 @@ public class CookieUtil {
 			}
 		}
 		return headers;
+	}
+
+	public HttpHeaders setCookieIntoHeader(String token) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		headers.add(HttpHeaders.COOKIE, AUTH_COOKIE + "=" + token);
+		return headers;
+
 	}
 }

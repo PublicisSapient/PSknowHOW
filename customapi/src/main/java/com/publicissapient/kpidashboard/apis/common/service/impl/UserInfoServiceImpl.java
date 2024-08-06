@@ -460,19 +460,16 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 */
 
 	@Override
-	public CentralUserInfoDTO getCentralAuthUserInfoDetails(String username) {
-		String apiKey = authProperties.getResourceAPIKey();
-		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
+	public CentralUserInfoDTO getCentralAuthUserInfoDetails(String username, String authCookieToken) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(authCookieToken);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchUserDetailsEndPoint(), "");
-		UserNameRequest userNameRequest = new UserNameRequest();
-		userNameRequest.setUserName(username);
-		HttpEntity<?> entity = new HttpEntity<>(userNameRequest, headers);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response = null;
 		try {
-			response = restTemplate.exchange(fetchUserUrl, HttpMethod.POST, entity, String.class);
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
 				JSONParser jsonParser = new JSONParser();
@@ -563,7 +560,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getUpdateUserApprovalStatus(), "");
 		UserNameRequest userNameRequest = new UserNameRequest();
-		userNameRequest.setUserName(userName);
+		userNameRequest.setUsername(userName);
 		HttpEntity<?> entity = new HttpEntity<>(userNameRequest, headers);
 
 		RestTemplate restTemplate = new RestTemplate();
@@ -595,7 +592,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	public boolean deleteFromCentralAuthUser(String user) {
 		String apiKey = authProperties.getResourceAPIKey();
 		UserNameRequest userNameRequest = new UserNameRequest();
-		userNameRequest.setUserName(user);
+		userNameRequest.setUsername(user);
 		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
 		String deleteUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getDeleteUserEndpoint(), "");
@@ -604,7 +601,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response = null;
 		try {
-			response = restTemplate.exchange(deleteUserUrl, HttpMethod.POST, entity, String.class);
+			response = restTemplate.exchange(deleteUserUrl, HttpMethod.PUT, entity, String.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return true;
