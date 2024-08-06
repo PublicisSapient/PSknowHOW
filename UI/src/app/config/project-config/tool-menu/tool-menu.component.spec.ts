@@ -393,7 +393,8 @@ describe('ToolMenuComponent', () => {
   })
 
   it("should prepare data for update project", () => {
-    const hierarchyData = [
+    const hierarchyData = {
+      kanban: [
       {
         level: 1,
         hierarchyLevelId: 'hierarchyLevelOne',
@@ -409,16 +410,16 @@ describe('ToolMenuComponent', () => {
         hierarchyLevelId: 'hierarchyLevelThree',
         hierarchyLevelName: 'Level Three',
       },
-    ];
+    ]};
     component.selectedProject = {
-      Project: "My Project",
-      Type: 'kanban',
+      project: "My Project",
+      type: 'kanban',
       ["Level One"]: "T1",
       ["Level Two"]: "T2",
       ["Level Three"]: "T3",
 
     }
-    localStorage.setItem("hierarchyData", JSON.stringify(hierarchyData));
+    localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
     component.updateProjectDetails();
   })
 
@@ -476,8 +477,9 @@ describe('ToolMenuComponent', () => {
     expect(component.isProjectConfigured('GitHub Action')).toBeTruthy();
   })
 
-  it('should update project details', () => {
-    const hierarchyData = [
+  it('should update project details successfully', () => {
+    const hierarchyData = {
+      kanban: [
       {
         level: 1,
         hierarchyLevelId: 'hierarchyLevelOne',
@@ -493,16 +495,16 @@ describe('ToolMenuComponent', () => {
         hierarchyLevelId: 'hierarchyLevelThree',
         hierarchyLevelName: 'Level Three',
       },
-    ];
+    ]};
     component.selectedProject = {
-      Project: "My Project",
-      Type: 'kanban',
+      project: "My Project",
+      type: 'kanban',
       ["Level One"]: "T1",
       ["Level Two"]: "T2",
       ["Level Three"]: "T3",
 
     }
-    localStorage.setItem("hierarchyData", JSON.stringify(hierarchyData));
+    localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
     const response = {
       "serviceResponse": {
           "message": "Updated Successfully.",
@@ -522,8 +524,9 @@ describe('ToolMenuComponent', () => {
     expect(component.isAssigneeSwitchDisabled).toBeTruthy();
   });
 
-  it('should update project details', () => {
-    const hierarchyData = [
+  it('should not update project details', () => {
+    const hierarchyData = {
+      kanban: [
       {
         level: 1,
         hierarchyLevelId: 'hierarchyLevelOne',
@@ -539,16 +542,16 @@ describe('ToolMenuComponent', () => {
         hierarchyLevelId: 'hierarchyLevelThree',
         hierarchyLevelName: 'Level Three',
       },
-    ];
+    ]};
     component.selectedProject = {
-      Project: "My Project",
-      Type: 'kanban',
+      project: "My Project",
+      type: 'kanban',
       ["Level One"]: "T1",
       ["Level Two"]: "T2",
       ["Level Three"]: "T3",
 
     }
-    localStorage.setItem("hierarchyData", JSON.stringify(hierarchyData));
+    localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
     spyOn(httpService, 'updateProjectDetails').and.returnValue(of('Error'));
     component.isAssigneeSwitchChecked = true;
     component.isAssigneeSwitchDisabled = true;
