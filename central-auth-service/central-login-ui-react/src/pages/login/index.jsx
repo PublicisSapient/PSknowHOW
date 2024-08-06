@@ -203,7 +203,7 @@ const LoginPage = ({search}) => {
                         <p className="errMsg">{methods.formState.errors['password'].message}</p>}
 
                       <Button
-                        color="blue_80"
+                        color="blue_800"
                         variant="fill"
                         className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[18px] w-full"
                         clickFn={methods.handleSubmit(PerformCredentialLogin)}
