@@ -13,8 +13,13 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.List;
 
+/**
+ * rollback field-mapping structure data
+ *
+ * @author aksshriv1
+ */
 @Slf4j
-@ChangeUnit(id = "updated_mapping_structure", order = "10101", author = "aksshriv1", systemVersion = "10.1.0")
+@ChangeUnit(id = "updated_mapping_structure", order = "10109", author = "aksshriv1", systemVersion = "10.1.0")
 public class FieldMappingStructureUpdate {
 
     private final MongoTemplate mongoTemplate;
