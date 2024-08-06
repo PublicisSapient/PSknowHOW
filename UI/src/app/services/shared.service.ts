@@ -99,6 +99,8 @@ export class SharedService {
   sprintQueryParamSubject = new BehaviorSubject<any>('');
   sprintQueryParamObs = this.sprintQueryParamSubject.asObservable();
   processorTraceLogs = [];
+  selectedTrendsEvent;
+  projectList = [];
 
   public currentIssue = new BehaviorSubject({});
   public currentData = this.currentIssue.asObservable();
@@ -123,6 +125,7 @@ export class SharedService {
     // For additional filters
     this.populateAdditionalFilters = new EventEmitter();
     this.triggerAdditionalFilters = new EventEmitter();
+    this.selectedTrendsEvent = new EventEmitter();
   }
 
   // for DSV
@@ -362,6 +365,7 @@ export class SharedService {
   }
   setSelectedTrends(values) {
     this.selectedTrends = values;
+    this.selectedTrendsEvent.emit(values);
   }
   getSelectedTrends() {
     return this.selectedTrends;
@@ -423,6 +427,14 @@ export class SharedService {
     this.authToken = value;
   }
 
+  setProjectList(projects) {
+    this.projectList = projects;
+  }
+
+  getProjectList() {
+    return this.projectList;
+  }
+
   getAuthToken() {
     return this.authToken;
   }
@@ -473,7 +485,7 @@ export class SharedService {
         if (kpiShownCount > 0) {
           boardNameArr.push({
             boardName: board?.boardName,
-            link: board?.boardName.toLowerCase().split(' ').join('-')
+            link: board?.boardSlug
           });
         }
       }
@@ -491,7 +503,7 @@ export class SharedService {
         boardNameArr.push({
           boardName: kpiListData['others'][i].boardName,
           link:
-            kpiListData['others'][i].boardName.toLowerCase()
+            kpiListData['others'][i].boardSlug
         });
       }
     }

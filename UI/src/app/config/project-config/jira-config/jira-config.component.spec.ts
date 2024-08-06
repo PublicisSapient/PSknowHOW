@@ -495,6 +495,7 @@ describe('JiraConfigComponent', () => {
           null
       ]
     };
+    spyOn(component, 'handleToolConfiguration');
     component.connections = fakeJiraConnections.data;
     component.editTool(tool);
     expect(component.isEdit).toBeTruthy();

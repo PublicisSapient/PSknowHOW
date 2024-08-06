@@ -350,6 +350,8 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setResolutionTypeForRejectionKPI14(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping
 				.setResolutionTypeForRejectionQAKPI111(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
+		fieldMapping
+				.setResolutionTypeForRejectionKPI34(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setJiraQAKPI111IssueType(issueTypeMap.get(CommonConstant.STORY));
 
 		if (projectConfig.isKanban()) {

@@ -59,8 +59,10 @@
   --color-pink: pink;
   --color-white: #ffffff;
   --color-black: #707070;
+  --color-black-dark : #000000;
   --color-gray-c6: #c6c6c6;
   --color-gray-cc: #cccccc;
+  --color-gray-9e : #9e9d9e;
   --color-gray-34: #343a40;
   --color-cyan-blue: #437495;
   --color-occur-yellow: #9D6000;
@@ -157,9 +159,7 @@ a{
 
 body {
   background-color: #dedede;
-  /* overflow-x: hidden; */
-
-  overflow: auto;
+  overflow-x: hidden;
 }
 
 /* html {

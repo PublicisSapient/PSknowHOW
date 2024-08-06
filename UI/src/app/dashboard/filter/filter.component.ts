@@ -152,6 +152,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedItems: number = 0;
   isAdditionalFilter: boolean = false;
   isRecommendationsEnabled: boolean = false;
+  userRole: string = '';
 
   constructor(
     public service: SharedService,
@@ -211,7 +212,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.selectedTab = this.service.getSelectedTab() || 'mydashboard';
+    this.selectedTab = this.service.getSelectedTab() || 'my-knowhow';
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.service.setShowTableView(this.showChart);
     this.getNotification();
@@ -241,7 +242,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.totalProjectSelected = 1;
           this.service.setShowTableView(this.showChart);
         }
-        if (this.selectedTab.toLowerCase() === 'maturity') {
+        if (this.selectedTab.toLowerCase() === 'kpi-maturity') {
           this.showChart = 'chart';
           this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase()
           this.totalProjectSelected = 1;
@@ -364,6 +365,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
 
     let authoritiesArr;
+    this.userRole = this.service.getCurrentUserDetails('authorities')[0];
     if (this.service.getCurrentUserDetails('authorities')) {
       authoritiesArr = this.service.getCurrentUserDetails('authorities');
     }
@@ -442,7 +444,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
-    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'mydashboard' || this.selectedTab?.toLowerCase() === 'developer') {
+    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'kpi-maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'developer') {
       this.allowMultipleSelection = false;
     } else {
       this.allowMultipleSelection = true;
@@ -748,7 +750,7 @@ this.resetAddtionalFIlters();
         }
       }
 
-      if(this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity'){
+      if(this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'kpi-maturity'){
         this.setSelectedSprintOnServiceLayer(applySource);
       }
 
@@ -844,11 +846,11 @@ this.resetAddtionalFIlters();
 
   navigateToSelectedTab() {
     if (this.selectedTab !== 'Config' && Object.keys(this.kpiListData)?.length > 0) {
-      if (this.selectedTab === 'Maturity') {
+      if (this.selectedTab?.toLowerCase() === 'kpi-maturity') {
         if (!this.checkIfMaturityTabHidden()) {
           this.backToDashboardLoader = false
           this.router.navigateByUrl(
-            `/dashboard/Maturity`,
+            `/dashboard/kpi-maturity`,
           );
           return;
         } else {
@@ -883,7 +885,7 @@ this.resetAddtionalFIlters();
       })
       if(kpisShownCount <= 0){
         this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
-        this.service.setSelectedTab(this.selectedTab);
+        this.service.setSelectedTab(this.selectedTab?.split(' ').join('-').toLowerCase());
         this.backToDashboardLoader = false
         this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
       }
@@ -1941,7 +1943,7 @@ this.resetAddtionalFIlters();
 
   getSprintsWhichWasAlreadySelected(level) {
     const sprintsWhichWasAlreadySelected = []
-    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()[level] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity') {
+    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()[level] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'kpi-maturity') {
       const selectedProjects = this.service.getSelectedTrends().map(data => data.nodeId);
       selectedProjects.forEach(nodeId => {
         const projectWhichSprintWasSelected = Object.keys(this.service.getAddtionalFilterBackup()[level]);

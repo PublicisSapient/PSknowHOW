@@ -307,6 +307,15 @@
     }
   },
   {
+    "fieldName": "resolutionTypeForRejectionKPI34",
+    "fieldLabel": "Resolution type to be excluded",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Resolution types for defects that can be excluded from 'Defect Removal Efficiency' calculation"
+    }
+  },
+  {
     "fieldName": "jiraDefectRejectionStatusKPI28",
     "fieldLabel": "Status to be excluded",
     "fieldType": "text",
@@ -880,6 +889,16 @@
     }
   },
   {
+    "fieldName": "jiraDefectRejectionStatusKPI34",
+    "fieldLabel": "Status to identify rejected defects",
+    "fieldType": "text",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "All workflow statuses used to reject defects"
+    }
+  },
+  {
     "fieldName": "jiraIterationCompletionStatusKPI135",
     "fieldLabel": "Custom Completion status/es",
     "fieldType": "chips",
@@ -1321,13 +1340,14 @@
     "nestedFields": [
       {
         "fieldName": "storyPointToHourMapping",
-        "fieldLabel": "Story Point to Hour Conversion",
+        "fieldLabel": "Hour to Story Point",
         "fieldType": "text",
         "filterGroup": [
-          "Story Point"
+          "Story Point",
+          "Actual Estimation"
         ],
         "tooltip": {
-          "definition": "Estimation technique used by teams for e.g. story points, Hours etc."
+          "definition": "Estimation technique used by teams. Eg., enter 8 if 1 Story Point is equivalent to 8hrs of effort spent per day."
         }
       }
     ],
@@ -1790,7 +1810,7 @@
   },
   {
     "fieldName": "jiraTestAutomationIssueType",
-    "fieldLabel": "In Sprint Automation - Issue Types with Linked Defect ",
+    "fieldLabel": "In Sprint Automation - Issue Types with Linked Test Case ",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -2585,6 +2605,24 @@
     }
   },
   {
+    "fieldName": "jiraLabelsQAKPI111",
+    "fieldLabel": "Labels to filter issues in consideration",
+    "fieldType": "chips",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Only issues with specified labels will be considered"
+    }
+  },
+  {
+    "fieldName": "jiraLabelsKPI133",
+    "fieldLabel": "Labels to filter issues in consideration",
+    "fieldType": "chips",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Only issues with specified labels will be considered"
+    }
+  },
+  {
     "fieldName": "jiraStoryIdentificationKPI166",
     "fieldLabel": "Issue type to identify Production incidents",
     "fieldType": "chips",
@@ -3102,12 +3140,52 @@
     }
   },
   {
+    "fieldName": "includeRCAForKPI34",
+    "fieldLabel": "Root cause values to be included",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "Root cause reasons for defects to be included In 'Defect Removal Efficiency' calculation"
+    }
+  },
+  {
     "fieldName": "defectPriorityKPI35",
     "fieldLabel": "Priority to be excluded",
     "fieldType": "multiselect",
     "section": "Defects Mapping",
     "tooltip": {
       "definition": "Priority values of defects which are to be excluded in 'DSR' calculation"
+    },
+    "options": [
+      {
+        "label": "p1",
+        "value": "p1"
+      },
+      {
+        "label": "p2",
+        "value": "p2"
+      },
+      {
+        "label": "p3",
+        "value": "p3"
+      },
+      {
+        "label": "p4",
+        "value": "p4"
+      },
+      {
+        "label": "p5",
+        "value": "p5"
+      }
+    ]
+  },
+  {
+    "fieldName": "defectPriorityKPI34",
+    "fieldLabel": "Priority to be excluded",
+    "fieldType": "multiselect",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "Priority values of defects that can be excluded from 'Defect Removal Efficiency' calculation"
     },
     "options": [
       {
@@ -3230,5 +3308,38 @@
       "definition": "This field is used to identify Dependency Issue type."
     },
     "mandatory": true
+  },
+  {
+    "fieldName": "jiraIssueTypeExcludeKPI124",
+    "fieldLabel": "Issue types to be excluded",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Specify issue types to exclude from KPI calculations."
+    }
+  },
+  {
+    "fieldName": "jiraIssueTypeExcludeKPI75",
+    "fieldLabel": "Issue types to be excluded",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Specify issue types to exclude from KPI calculations."
+    }
+  },
+  {
+    "fieldName" : "jiraStoryCategoryKpi40",
+    "fieldLabel" : "Issue type to identify Story category",
+    "fieldType" : "chips",
+    "fieldCategory" : "Issue_Type",
+    "section" : "Issue Types Mapping",
+    "tooltip" : {
+      "definition" : "All issue types that are used as/equivalent to Story."
+    },
+    "mandatory" : true
   }
 ]

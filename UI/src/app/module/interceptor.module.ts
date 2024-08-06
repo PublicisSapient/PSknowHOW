@@ -115,30 +115,27 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                                 }
                             }
 
-                            if (environment?.['SSO_LOGIN']) {
-                                this.router.navigate(['./dashboard/mydashboard']).then(success => {
-                                    window.location.reload();
-                                });
-                            }
-                        } else if (err.status === 403 && environment?.['SSO_LOGIN']) {
-                            this.httpService.unauthorisedAccess = true;
-                            this.router.navigate(['/dashboard/unauthorized-access']);
-                        } else {
-                            if (err?.status === 0 && err?.statusText === 'Unknown Error' && environment.SSO_LOGIN) {
-                                this.service.clearAllCookies();
-                                this.router.navigate(['./dashboard/mydashboard']).then(success => {
-                                    window.location.reload();
-                                });
-                            } else {
-                                if (httpErrorHandler !== 'local') {
-                                    if (requestArea === 'internal') {
-                                        if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
-                                            if (!environment?.['SSO_LOGIN'] || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))) {
-                                                this.router.navigate(['./dashboard/Error']);
-                                            }
-                                            setTimeout(() => {
-                                                this.service.raiseError(err);
-                                            }, 0);
+
+                        if (environment?.['SSO_LOGIN']) {
+                            this.router.navigate(['./dashboard/my-knowhow']).then(success => {
+                                window.location.reload();
+                            });
+                        }
+                    } else if(err.status === 403 && environment?.['SSO_LOGIN']){
+                        this.httpService.unauthorisedAccess =true;
+                        this.router.navigate(['/dashboard/unauthorized-access']);
+                    } else {
+                        if(err?.status === 0 && err?.statusText === 'Unknown Error'&& environment.SSO_LOGIN){
+                            this.service.clearAllCookies();
+                            this.router.navigate(['./dashboard/my-knowhow']).then(success => {
+                                window.location.reload();
+                            });
+                        }else{
+                            if (httpErrorHandler !== 'local') {
+                                if (requestArea === 'internal') {
+                                    if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
+                                        if(!environment?.['SSO_LOGIN'] || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
+                                        this.router.navigate(['./dashboard/Error']);
                                         }
                                     }
                                 }

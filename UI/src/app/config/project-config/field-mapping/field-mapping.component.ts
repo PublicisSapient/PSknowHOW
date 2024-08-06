@@ -55,11 +55,13 @@ export class FieldMappingComponent implements OnInit {
       dynamicDownload: null as HTMLElement
     }
   };
+  selectedProject: any;
 
   constructor(private formBuilder: UntypedFormBuilder, private router: Router, private sharedService: SharedService,
     private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService,private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
+    this.selectedProject = this.sharedService.getSelectedProject();
 
     if (this.sharedService.getSelectedProject()) {
       this.selectedConfig = this.sharedService.getSelectedProject();

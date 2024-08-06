@@ -18,16 +18,17 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
+import java.util.Optional;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Set;
-import java.util.Optional;
 
 
 @Component
@@ -50,7 +51,7 @@ public class ProjectAccessUtil {
 	}
 
 	public boolean ifConnectionNotAccessible(Connection connection) {
-		return connection.isConnPrivate()
+		return !connection.isSharedConnection()
 				&& (!(connection.getCreatedBy().equals(authenticationService.getLoggedInUser())
 						|| userAuthorizedProjectsService.ifSuperAdminUser()));
 	}

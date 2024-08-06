@@ -24,7 +24,7 @@
   padding: 16px;
   margin: 4px 0;
   border-radius: 4px;
-  box-shadow:0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  /* box-shadow:0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12); */
 }
 
 .back-button {
@@ -46,6 +46,7 @@ line-height: normal;
 -webkit-transform-origin: 149px 48px;
 -ms-transform-origin: 149px 48px;
 transform-origin: 149px 48px;
+font-family: inherit;
 }
 
 div.main {
@@ -89,4 +90,28 @@ width: 40%;
 
 .form-container .p-invalid {
   color: #B00020;
+}
+
+:host ::ng-deep input{
+  height: 41px;
+}
+
+button {
+  height: 34px;
+}
+
+.nav-container{
+padding-top: .8rem;
+padding-bottom: .8rem;
+padding-left: .3rem;
+border: solid 1px grey;
+font-weight: bolder;
+color: var(--color-black-dark)
+}
+
+:host ::ng-deep .p-steps .p-steps-item.p-highlight .p-steps-number{
+  background-color: var(--color-gray-9e)
+}
+.blue-hover-link:hover {
+  color: var(--color-blue)
 }

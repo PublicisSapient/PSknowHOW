@@ -243,10 +243,10 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 
 	private void initializeMergeRequestDetails(List<MergeRequests> mergeRequestList, JSONArray jsonArray,
 			ProjectBasicConfig proBasicConfig) {
-		long closedDate = 0;
-		long updatedDate = 0;
-		long createdDate = 0;
 		for (Object jsonObj : jsonArray) {
+			long closedDate = 0;
+			long updatedDate = 0;
+			long createdDate = 0;
 			JSONObject mergReqObj = (JSONObject) jsonObj;
 			String title = getString(mergReqObj, AzureRepoConstants.RESP_TITLE);
 			String state = getString(mergReqObj, AzureRepoConstants.RESP_STATUS);

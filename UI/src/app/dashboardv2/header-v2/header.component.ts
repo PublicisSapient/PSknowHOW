@@ -31,6 +31,7 @@ export class HeaderComponent implements OnInit {
   ssoLogin = environment.SSO_LOGIN;
   auth_service = environment.AUTHENTICATION_SERVICE;
   isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
+  userRole: string = '';
 
   constructor(
     private httpService: HttpService,
@@ -154,7 +155,7 @@ export class HeaderComponent implements OnInit {
   navigateToMyKnowHOW() {
     const previousSelectedTab = this.router.url.split('/')[2];
     if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
-      this.router.navigate([`/dashboard/mydashboard`]);
+      this.router.navigate([`/dashboard/my-knowhow`]);
     }
   }
 }

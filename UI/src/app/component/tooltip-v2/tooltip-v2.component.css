@@ -6,7 +6,7 @@
     box-shadow: none;
     opacity: 1;
     border-radius: 5px;
-    max-width: 550px;
+    max-width: 400px;
     min-width: 180px;
     color: #F5F9FF;
     margin-left: -24px;
@@ -107,7 +107,7 @@ ul.kpi-info-list {
 
 .tooltip-width{
     min-width: 450px;
-    width: 450px  !important;
+    width: 350px  !important;
 }
 
 .tooltip-wider {

@@ -152,6 +152,15 @@
         ]
       },
       {
+        "type": "jiraStoryCategoryKpi40",
+        "value": [
+          "Story",
+          "User Story",
+          "Enabler Story",
+          "Feature"
+        ]
+      },
+      {
         "type": "jiraTechDebtIssueType",
         "value": [
           "Story",

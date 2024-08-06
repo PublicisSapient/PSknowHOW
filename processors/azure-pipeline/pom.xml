@@ -23,7 +23,7 @@
     <groupId>com.publicissapient.kpidashboard</groupId>
     <description>Azure Pipeline Build Processor Microservice</description>
     <packaging>jar</packaging>
-    <version>9.4.0-SNAPSHOT</version>
+    <version>10.0.0-SNAPSHOT</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

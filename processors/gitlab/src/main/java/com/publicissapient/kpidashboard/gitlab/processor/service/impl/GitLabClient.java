@@ -243,8 +243,8 @@ public class GitLabClient {
 
 	private void initializeMergeRequestDetails(List<MergeRequests> mergeRequestList, JSONArray jsonArray,
 			ProjectBasicConfig projectBasicConfig) {
-		long closedDate = 0;
 		for (Object jsonObj : jsonArray) {
+			long closedDate = 0;
 			JSONObject mergReqObj = (JSONObject) jsonObj;
 			String title = getString(mergReqObj, GitLabConstants.RESP_TITLE);
 			String state = getString(mergReqObj, GitLabConstants.RESP_STATE);
@@ -252,8 +252,8 @@ public class GitLabClient {
 			boolean isClosed = Boolean.parseBoolean(getString(mergReqObj, GitLabConstants.RESP_CLOSED));
 			long createdDate = getDateTimeStamp(getString(mergReqObj, GitLabConstants.RESP_CREATED_AT));
 			long updatedDate = getDateTimeStamp(getString(mergReqObj, GitLabConstants.RESP_UPDATED_AT));
-			if (getString(mergReqObj, GitLabConstants.RESP_CLOSED_AT) != null) {
-				closedDate = getDateTimeStamp(getString(mergReqObj, GitLabConstants.RESP_CLOSED_AT));
+			if (getString(mergReqObj, GitLabConstants.RESP_MERGED_AT) != null) {
+				closedDate = getDateTimeStamp(getString(mergReqObj, GitLabConstants.RESP_MERGED_AT));
 			}
 
 			String fromBranch = getString(mergReqObj, GitLabConstants.RESP_SOURCE_BRANCH);

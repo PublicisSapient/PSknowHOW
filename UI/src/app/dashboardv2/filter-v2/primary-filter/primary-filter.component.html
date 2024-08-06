@@ -24,7 +24,7 @@
         <label class="floating-label" for="multiselectFilter">Select {{ selectedLevel }}</label>
     </span>
     <span *ngIf="primaryFilterConfig && primaryFilterConfig['type'] === 'singleSelect'" class="p-float-label">
-        <p-dropdown inputId="singleselectFilter" [options]="filters" [(ngModel)]="selectedFilters[0]"
+        <p-dropdown *ngIf="selectedFilters" inputId="singleselectFilter" [options]="filters" [(ngModel)]="selectedFilters[0]"
             placeholder="Select"  optionLabel="nodeName"
             [style]="{'width':'300px', 'max-width': '100%', 'height': '40px'}" (onChange)="applyPrimaryFilters($event)"
             [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }" [appendTo]="filterDiv"
@@ -43,6 +43,14 @@
                 </div>
             </ng-template>
         </p-dropdown>
-        <label class="floating-label" for="singleselectFilter">Select {{ selectedLevel?.emittedLevel }}</label>
+        <label class="floating-label" for="singleselectFilter">
+          Select
+          <ng-container *ngIf="selectedLevel === 'project'; else objectTemplate">
+            {{ selectedLevel }}
+          </ng-container>
+          <ng-template #objectTemplate>
+            {{ selectedLevel?.emittedLevel }}
+          </ng-template>
+        </label>
     </span>
 </div>
