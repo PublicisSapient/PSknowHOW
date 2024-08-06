@@ -19,12 +19,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
-import { SharedService } from '../../services/shared.service';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { DatePipe } from '@angular/common';
 import { forkJoin, interval, Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { switchMap, takeWhile } from 'rxjs/operators';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-advanced-settings',
@@ -49,11 +49,22 @@ export class AdvancedSettingsComponent implements OnInit {
   jiraStatusContinuePulling = false;
   subscription: Subscription;
   dataMismatchObj: object = {};
+  pid: string;
 
-  constructor(private httpService: HttpService, private messageService: MessageService, private getAuthorizationService: GetAuthorizationService,
-    private service: SharedService, private confirmationService: ConfirmationService) { }
+  constructor(
+    private httpService: HttpService,
+    private messageService: MessageService,
+    private getAuthorizationService: GetAuthorizationService,
+    private confirmationService: ConfirmationService,
+    private route: ActivatedRoute,
+    public router: Router
+  ) { }
 
   ngOnInit() {
+
+    this.route.queryParams.subscribe(params => {
+      this.pid = params['pid'];
+    });
 
     this.items = [
       {
@@ -90,7 +101,6 @@ export class AdvancedSettingsComponent implements OnInit {
         this.dataLoading = false;
         if (processorData[0] !== 'error' && !processorData.error) {
           this.processorData = processorData;
-
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error in fetching Processor data. Please try after some time.' });
         }
@@ -118,15 +128,12 @@ export class AdvancedSettingsComponent implements OnInit {
         } else {
           this.messageService.add({ severity: 'error', summary: 'User needs to be assigned a project for the access to work on dashboards.' });
         }
-
         if (that.userProjects != null && that.userProjects.length > 0) {
           that.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
-          that.selectedProject = that.userProjects[0];
+          that.selectedProject = this.pid ? that.userProjects.find(x => x.id === this.pid) : that.userProjects[0];
           that.getProcessorsTraceLogsForProject(that.selectedProject['id']);
           that.getAllToolConfigs(that.selectedProject['id']);
         }
-
-
       });
   }
 
@@ -384,6 +391,10 @@ export class AdvancedSettingsComponent implements OnInit {
       return false;
     }
 
+  }
+
+  backToProjectList() {
+    this.router.navigate(['/dashboard/Config/ProjectList']);
   }
 
   ngOnDestroy(): void {

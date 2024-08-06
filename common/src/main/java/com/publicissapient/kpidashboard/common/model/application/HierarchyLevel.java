@@ -46,6 +46,7 @@ public class HierarchyLevel extends BasicModel {
 	private int level;
 	private String hierarchyLevelId;
 	private String hierarchyLevelName;
+	private String hierarchyInfo;
 
 	@Override
 	public boolean equals(Object obj) {
