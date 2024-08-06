@@ -1492,18 +1492,36 @@ export class JiraConfigComponent implements OnInit {
                 changeHandler: this.jobTypeChangeHandler,
                 show: true
               },
+              // {
+              //   type: 'autoComplete',
+              //   label: 'Job Name',
+              //   id: 'jobName',
+              //   suggestions: 'jenkinsJobNameList',
+              //   validators: ['required'],
+              //   containerClass: 'p-sm-6',
+              //   tooltip: `Shows all the job names`,
+              //   // filterValue: 'true',
+              //   // filterByName: 'name',
+              //   filterEventHandler: this.filterJobNames,
+              //   selectEventHandler: this.onJobNameSelect,
+              //   unselectEventHandler: this.onJobNameUnselect,
+              //   // changeHandler: () => true,
+              //   show: true,
+              //   isLoading: false,
+              //   disabled: () => false,
+              //   field: 'jobName',
+              //   multiple: true
+              // },
               {
-                type: 'dropdown',
+                type: 'array',
                 label: 'Job Name',
                 id: 'jobName',
+                suggestions: 'jenkinsJobNameList',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
-                filterValue: 'true',
-                filterByName: 'name',
-                optionsList: this.jenkinsJobNameList,
-                changeHandler: () => true,
+                tooltip: `Shows all the job names`,
                 show: true,
-                isLoading: false
+                isLoading: false,
               },
               {
                 type: 'text',
@@ -2818,5 +2836,18 @@ export class JiraConfigComponent implements OnInit {
       const element = document.getElementById("tool-configuration");
       element.scrollIntoView({behavior: "smooth", inline: "nearest"});
     }, 100);
+  }
+
+  filterJobNames() {
+    console.log("filterJobNames")
+  }
+
+  onJobNameSelect(){
+    console.log("onJobNameSelect")
+  }
+
+  onJobNameUnselect(){
+    console.log("onJobNameUnselect");
+    
   }
 }
