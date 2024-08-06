@@ -79,7 +79,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
 
     this.selectedView = 'processor_state';
-    this.getProcessorData();
+    // this.getProcessorData();
     this.getProjects();
   }
 
@@ -87,25 +87,25 @@ export class AdvancedSettingsComponent implements OnInit {
   switchView(event) {
     if (event.item.label === 'Processor State') {
       this.selectedView = 'processor_state';
-      this.getProcessorData();
+      // this.getProcessorData();
       this.getProjects();
     }
   }
 
 
   // used to fetch the processors
-  getProcessorData() {
-    this.dataLoading = true;
-    this.httpService.getProcessorData()
-      .subscribe(processorData => {
-        this.dataLoading = false;
-        if (processorData[0] !== 'error' && !processorData.error) {
-          this.processorData = processorData;
-        } else {
-          this.messageService.add({ severity: 'error', summary: 'Error in fetching Processor data. Please try after some time.' });
-        }
-      });
-  }
+  // getProcessorData() {
+  //   this.dataLoading = true;
+  //   this.httpService.getProcessorData()
+  //     .subscribe(processorData => {
+  //       this.dataLoading = false;
+  //       if (processorData[0] !== 'error' && !processorData.error) {
+  //         this.processorData = processorData;
+  //       } else {
+  //         this.messageService.add({ severity: 'error', summary: 'Error in fetching Processor data. Please try after some time.' });
+  //       }
+  //     });
+  // }
 
   // used to fetch projects
   getProjects() {
@@ -131,8 +131,8 @@ export class AdvancedSettingsComponent implements OnInit {
         if (that.userProjects != null && that.userProjects.length > 0) {
           that.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
           that.selectedProject = this.pid ? that.userProjects.find(x => x.id === this.pid) : that.userProjects[0];
-          that.getProcessorsTraceLogsForProject(that.selectedProject['id']);
           that.getAllToolConfigs(that.selectedProject['id']);
+          that.getProcessorsTraceLogsForProject(that.selectedProject['id']);
         }
       });
   }
@@ -141,7 +141,9 @@ export class AdvancedSettingsComponent implements OnInit {
     this.httpService.getAllToolConfigs(basicProjectConfigId)
       .subscribe(response => {
         if (response['success']) {
-          this.toolConfigsDetails = response['data'];
+          const uniqueTools = Array.from(new Set(response['data'].map(item => item.toolName)))
+          .map(toolName => response['data'].find(item => item.toolName === toolName));
+          this.toolConfigsDetails = uniqueTools;
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error in fetching processor\'s data. Please try after some time.' });
         }
@@ -199,9 +201,8 @@ export class AdvancedSettingsComponent implements OnInit {
       this.subscription.unsubscribe();
       this.jiraStatusContinuePulling = false;
     }
-
-    this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
     this.getAllToolConfigs(this.selectedProject['id']);
+    this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
 
   }
 
@@ -296,7 +297,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   deleteProcessorData(processorDetails){
     this.confirmationService.confirm({
-			message:`Do you want to delete ${this.selectedProject['name']} data for ${processorDetails?.processorName}`,
+			message:`Do you want to delete ${this.selectedProject['name']} data for ${processorDetails?.toolName}`,
 			header: `Delete ${this.selectedProject['name']} Data?`,
 			icon: 'pi pi-info-circle',
 			accept: () => {
@@ -309,7 +310,7 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   deleteProcessorDataReq(processorDetails, selectedProject) {
-    const toolDetails = this.getToolDetailsForProcessor(processorDetails.processorName);
+    const toolDetails = this.getToolDetailsForProcessor(processorDetails.toolName);
     const toolDetailSubscription = [];
     if (toolDetails?.length > 0) {
       toolDetails.forEach(toolDetail => {
