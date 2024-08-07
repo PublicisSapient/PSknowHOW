@@ -82,7 +82,7 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'Share connection with everyone'],
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Profile Username', 'Use vault password', 'App Password', 'API End Point', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'sharedConnection']
     },
     {
@@ -95,7 +95,8 @@ export class ConnectionListComponent implements OnInit {
       connectionType: 'Jenkins',
       connectionLabel: 'Jenkins',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Api Key', 'Share connection with everyone'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'apiKey', 'sharedConnection']
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'apiKey', 'sharedConnection'],
+      placeholder: ['', '', 'Enter a public URL', '', '', '', '']
     },
     {
       connectionType: 'Bamboo',

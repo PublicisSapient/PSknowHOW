@@ -93,15 +93,6 @@ export class ToolMenuComponent implements OnInit {
       this.isAssigneeSwitchDisabled = true;
     }
 
-    // filtering tools based on repoToolFlag
-    this.tools = this.tools.filter(details => {
-      if (this.repoToolsEnabled) {
-        return !this.repoTools.includes(details.toolName)
-      } else {
-        return details.toolName !== 'RepoTool';
-      }
-    })
-
   }
 
   getToolsConfigured() {
@@ -307,8 +298,15 @@ export class ToolMenuComponent implements OnInit {
           ];
         }
       }
+      // filtering tools based on repoToolFlag
+      this.tools = this.tools.filter(details => {
+        if (this.repoToolsEnabled) {
+          return !this.repoTools.includes(details.toolName)
+        } else {
+          return details.toolName !== 'RepoTool';
+        }
+      })
     });
-
   }
 
   projectTypeChange(event, isClicked) {
@@ -428,7 +426,7 @@ export class ToolMenuComponent implements OnInit {
     let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject['type']?.toLowerCase()];
     console.log("hierarchyData", hierarchyData);
     console.log("selectedProject", this.selectedProject);
-    
+
     const updatedDetails = {};
     updatedDetails['projectName'] = this.selectedProject['name'] || this.selectedProject['Project'];
     updatedDetails['kanban'] = this.selectedProject['type'] === 'Kanban' ? true : false;
@@ -438,7 +436,7 @@ export class ToolMenuComponent implements OnInit {
     updatedDetails["createdAt"] = new Date().toISOString();
     for(let element of hierarchyData){
       if(element.hierarchyLevelId == 'project'){
-        break; 
+        break;
       }
       updatedDetails['hierarchy'].push({
         hierarchyLevel: {
@@ -506,6 +504,10 @@ export class ToolMenuComponent implements OnInit {
 
   gotoProcessor() {
     this.router.navigate(['/dashboard/Config/AdvancedSettings'], { queryParams: { pid: this.selectedProject['id'] } });
+  }
+
+  setSelectedProject() {
+    this.sharedService.setSelectedProject(this.selectedProject);
   }
 
 }
