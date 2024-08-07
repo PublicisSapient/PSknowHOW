@@ -61,3 +61,13 @@ div.main {
     max-width: 90vw;
     min-height: 20vh !important;
   }
+
+  ::ng-deep .action-btns {
+    font-size: 14px;
+    text-wrap: nowrap;
+    color: #06a0ff;
+  }
+
+  ::ng-deep  .p-datatable.p-datatable-striped .p-datatable-tbody>tr>td {
+    word-break: normal;
+  }
