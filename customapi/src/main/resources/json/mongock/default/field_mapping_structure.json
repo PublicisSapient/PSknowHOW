@@ -293,16 +293,6 @@
     "mandatory": true
   },
   {
-    "fieldName": "workingHoursDayCPT",
-    "fieldLabel": "Working Hours in a Day",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-      "definition": "Working hours in a day"
-    }
-  },
-  {
     "fieldName": "epicPlannedValue",
     "fieldLabel": "Custom field for Epic Planned Value",
     "fieldType": "text",
