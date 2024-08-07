@@ -113,4 +113,12 @@ export class GoogleAnalyticsService {
       ...data
     });
   }
+
+  setUIType(data){
+    const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
+    dataLayer?.push({
+      event: 'uiType',
+      ...data
+    });
+  }
 }
