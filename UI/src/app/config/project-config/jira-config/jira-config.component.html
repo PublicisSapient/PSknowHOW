@@ -104,7 +104,7 @@
                         </div>
                         <span class="p-input-icon-left p-mr-3">
                             <i class="pi pi-search"></i>
-                            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" (click)="$event.stopPropagation();"
                                 placeholder="Global Search" class="search-box-custom-width" />
                         </span>
                     </span>
