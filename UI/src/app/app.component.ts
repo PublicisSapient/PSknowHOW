@@ -99,7 +99,7 @@ export class AppComponent implements OnInit {
   uiSwitch(event, userChange = false) {
     let isChecked = event.checked;
     const data = {
-      uiType: isChecked ? 'New' : 'Old'
+      type: isChecked ? 'New' : 'Old'
     };
     this.ga.setUIType(data);
     if (isChecked) {
