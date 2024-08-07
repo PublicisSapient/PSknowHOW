@@ -93,8 +93,16 @@ public class ProjectDataServiceImpl implements ProjectDataService {
 	}
 
 	@Override
-	public ServiceResponse getProjectSprints(DataRequest dataRequest) {
+	public ServiceResponse getProjectSprints(DataRequest dataRequest, boolean onlyActive) {
 		if (dataRequest.getProjectId() != null) {
+			if (onlyActive) {
+				List<SprintDetailsV2> projectActiveSprintDetails = sprintV2Repository
+						.findByBasicProjectConfigIdAndStateIgnoreCase(
+								new ObjectId(dataRequest.getProjectId()), SprintDetailsV2.SPRINT_STATE_ACTIVE);
+				return new ServiceResponse(true,
+						"The active sprint details for the Scrum project have been successfully retrieved.",
+						projectActiveSprintDetails);
+			}
 			List<SprintDetailsV2> projectSprintDetails = sprintV2Repository
 					.findByBasicProjectConfigId(new ObjectId(dataRequest.getProjectId()));
 			if (CollectionUtils.isEmpty(projectSprintDetails)) {

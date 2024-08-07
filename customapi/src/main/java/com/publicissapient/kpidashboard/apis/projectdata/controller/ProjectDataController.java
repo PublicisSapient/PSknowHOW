@@ -71,14 +71,14 @@ public class ProjectDataController {
 
 	@PostMapping(value = "/sprints", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getProjectSprints(HttpServletRequest request,
-			@NotNull @RequestBody DataRequest dataRequest) {
+			@NotNull @RequestBody DataRequest dataRequest, @RequestParam(defaultValue = "false") boolean onlyActive) {
 		log.info("Received {} request for /sprints for request {}", request.getMethod(), dataRequest.toString());
 		Boolean isApiAuth = customApiConfig.getxApiKey().equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (Boolean.FALSE.equals(isApiAuth)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		}
 
-		ServiceResponse response = projectDataService.getProjectSprints(dataRequest);
+		ServiceResponse response = projectDataService.getProjectSprints(dataRequest, onlyActive);
 		if (response == null) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 		} else {

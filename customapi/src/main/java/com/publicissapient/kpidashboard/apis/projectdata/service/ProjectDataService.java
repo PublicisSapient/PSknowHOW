@@ -11,7 +11,7 @@ public interface ProjectDataService {
 
     ServiceResponse getIssueTypes(DataRequest dataRequest);
 
-    ServiceResponse getProjectSprints(DataRequest dataRequest);
+    ServiceResponse getProjectSprints(DataRequest dataRequest, boolean onlyActive);
 
     ServiceResponse getProjectReleases(DataRequest dataRequest);
 

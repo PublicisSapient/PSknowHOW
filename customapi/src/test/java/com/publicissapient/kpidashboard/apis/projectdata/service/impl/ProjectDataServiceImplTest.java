@@ -115,8 +115,8 @@ class ProjectDataServiceImplTest {
 	void testGetProjectSprints() {
 		DataRequest dataRequest = new DataRequest();
 		dataRequest.setProjectId("65118da7965fbb0d14bce23c");
-		projectDataService.getProjectSprints(dataRequest);
-		verify(sprintV2Repository, times(1)).findByBasicProjectConfigId(any());
+		projectDataService.getProjectSprints(dataRequest,true);
+		verify(sprintV2Repository, times(1)).findByBasicProjectConfigIdAndStateIgnoreCase(any(),any());
 	}
 
 	@Test
@@ -138,7 +138,7 @@ class ProjectDataServiceImplTest {
 	@Test
 	void testGetProjectSprintsWithNullProjectId() {
 		DataRequest dataRequest = new DataRequest();
-		projectDataService.getProjectSprints(dataRequest);
+		projectDataService.getProjectSprints(dataRequest,false);
 		verify(sprintV2Repository, times(0)).findByBasicProjectConfigId(any());
 	}
 
@@ -322,7 +322,7 @@ class ProjectDataServiceImplTest {
 		when(sprintV2Repository.findByBasicProjectConfigId(any())).thenReturn(mockSprintDetails);
 
 		// Act
-		ServiceResponse response = projectDataService.getProjectSprints(dataRequest);
+		ServiceResponse response = projectDataService.getProjectSprints(dataRequest,false);
 
 		// Assert
 		assertNotNull(response);

@@ -107,4 +107,7 @@ public interface SprintV2Repository extends MongoRepository<SprintDetailsV2, Obj
 	@Query(value = "{ 'basicProjectConfigId' : ?0, 'state' : { $in: [?1] } }", fields = "{'sprintName' : 1, 'startDate' : 1}", sort = "{ 'startDate' : 1 }")
 	List<SprintDetailsV2> findByBasicProjectConfigIdAndStateIgnoreCaseOrderByStartDateASC(ObjectId basicProjectConfigId,
                                                                                           String sprintState);
+
+	@Query(value = "{ 'basicProjectConfigId' : ?0, 'state' : { $regex: ?1, $options: 'i' } }")
+	List<SprintDetailsV2> findByBasicProjectConfigIdAndStateIgnoreCase(ObjectId basicProjectConfigId, String sprintState);
 }
