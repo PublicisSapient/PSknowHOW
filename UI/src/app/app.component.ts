@@ -98,13 +98,17 @@ export class AppComponent implements OnInit {
 
   uiSwitch(event, userChange = false) {
     let isChecked = event.checked;
+    const data = {
+      type: isChecked ? 'New' : 'Old'
+    };
+    this.ga.setUIType(data);
     if (isChecked) {
       localStorage.setItem('newUI', 'true');
     } else {
       localStorage.removeItem('newUI');
     }
     if (userChange) {
-        window.location.reload();
+      window.location.reload();
     }
   }
 }
