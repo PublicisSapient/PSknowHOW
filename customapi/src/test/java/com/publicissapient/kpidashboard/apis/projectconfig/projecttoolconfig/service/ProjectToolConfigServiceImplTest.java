@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -97,6 +98,8 @@ public class ProjectToolConfigServiceImplTest {
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
 	@Mock
 	private ConfigHelperService configHelperService;
+	@Mock
+	private AuthenticationService authenticationService;
 
 	/**
 	 * method includes preprocesses for test cases

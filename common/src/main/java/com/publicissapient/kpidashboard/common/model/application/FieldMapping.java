@@ -51,6 +51,8 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiradefecttype;
 	private String epicLink;
 	private List<String> jiraSubTaskDefectType;
+	private String updatedAt;
+	private String updatedBy;
 
 	// defectPriority
 	private List<String> defectPriority;

@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -81,6 +82,8 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
+	@Autowired
+	private AuthenticationService authenticationService;
 
 	/**
 	 * make a copy of the list so the original list is not changed, and remove() is
@@ -194,6 +197,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 		log.info("Successfully pushed project_tools into db");
 		projectToolConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), TIME_FORMAT));
+		projectToolConfig.setCreatedBy(authenticationService.getLoggedInUser());
 		projectToolConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), TIME_FORMAT));
 		toolRepository.save(projectToolConfig);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
@@ -277,6 +281,8 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setTeam(projectToolConfig.getTeam());
 		log.info("Successfully update project_tools  into db");
 		toolRepository.save(projectTool);
+		projectTool.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
+		projectTool.setUpdatedBy(authenticationService.getLoggedInUser());
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
 		if (projectTool.getToolName().equalsIgnoreCase(ProcessorConstants.ZEPHYR)
@@ -328,7 +334,6 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			}
 			cleanData(tool);
 			toolRepository.deleteById(new ObjectId(projectToolId));
-
 			log.info("tool with id {} deleted", projectToolId);
 
 			return true;
