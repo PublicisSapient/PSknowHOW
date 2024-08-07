@@ -3725,6 +3725,8 @@
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "processorCommon": false,
+    "fieldDisplayOrder": 2,
+    "sectionOrder": 2,
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "Specify issue types to exclude from KPI calculations."
@@ -3736,6 +3738,8 @@
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "processorCommon": false,
+    "fieldDisplayOrder": 2,
+    "sectionOrder": 2,
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "Specify issue types to exclude from KPI calculations."
@@ -3746,6 +3750,8 @@
     "fieldLabel": "Issue type to identify Story category",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 2,
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "All issue types that are used as/equivalent to Story."
