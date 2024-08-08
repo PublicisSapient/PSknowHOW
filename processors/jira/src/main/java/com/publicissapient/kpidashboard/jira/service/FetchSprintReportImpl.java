@@ -44,7 +44,6 @@ import org.springframework.stereotype.Service;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
@@ -101,9 +100,8 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			KerberosClient krb5Client, boolean isSprintFetch) throws IOException {
+										   KerberosClient krb5Client, boolean isSprintFetch, ObjectId jiraProcessorId) throws IOException {
 		Set<SprintDetails> sprintToSave = new HashSet<>();
-		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
 					.collect(Collectors.toList());
@@ -471,12 +469,13 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig,
-			KerberosClient krb5Client, BoardDetails boardDetails) throws IOException {
+			KerberosClient krb5Client, BoardDetails boardDetails, ObjectId processorId) throws IOException {
 		List<SprintDetails> sprintDetailsBasedOnBoard = new ArrayList<>();
 		List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId(), krb5Client);
 		if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
 			Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
-			sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client, false));
+			sprintDetailsBasedOnBoard
+					.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client, false, processorId));
 		}
 		return sprintDetailsBasedOnBoard;
 	}

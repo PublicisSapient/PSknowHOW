@@ -27,6 +27,7 @@ import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.bson.types.ObjectId;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -72,6 +73,11 @@ public class SprintReportTasklet implements Tasklet {
 	@Value("#{jobParameters['sprintId']}")
 	private String sprintId;
 
+	@Value("#{jobParameters['processorId']}")
+	private String processorId;
+
+
+
 	/**
 	 * @param sc
 	 *            StepContribution
@@ -107,7 +113,7 @@ public class SprintReportTasklet implements Tasklet {
 				Set<SprintDetails> sprintDetailSet = sprintDetailsList.stream()
 						.filter(s -> s.getSprintID().equalsIgnoreCase(sprintId)).collect(Collectors.toSet());
 				Set<SprintDetails> setOfSprintDetails = fetchSprintReport.fetchSprints(projConfFieldMapping,
-						sprintDetailSet, krb5Client, true);
+						sprintDetailSet, krb5Client, true, new ObjectId(processorId));
 				sprintRepository.saveAll(setOfSprintDetails);
 			}
 		}

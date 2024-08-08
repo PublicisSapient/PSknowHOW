@@ -101,9 +101,7 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 	@Test
 	public void createAccountHierarchy() {
 		when(hierarchyLevelService.getFullHierarchyLevels(false)).thenReturn(hierarchyLevelList);
-		when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchyList);
-		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(any(), any()))
-				.thenReturn(accountHierarchies);
+		when(accountHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(accountHierarchyList);
 		Assert.assertEquals(2, createAccountHierarchy
 				.createAccountHierarchy(jiraIssues.get(0), createProjectConfig(), getSprintDetails())
 				.size());

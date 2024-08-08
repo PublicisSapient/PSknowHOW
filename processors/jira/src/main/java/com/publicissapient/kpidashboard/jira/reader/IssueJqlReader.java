@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.bson.types.ObjectId;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.NonTransientResourceException;
@@ -88,6 +89,9 @@ public class IssueJqlReader implements ItemReader<ReadData> {
     @Value("#{jobParameters['projectId']}")
 	private String projectId;
 
+	@Value("#{jobParameters['processorId']}")
+	private String processorId;
+
     public void initializeReader(String projectId) {
         log.info("**** Jira Issue fetch started * * *");
         pageSize = jiraProcessorConfig.getPageSize();
@@ -124,6 +128,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 				readData.setIssue(issue);
 				readData.setProjectConfFieldMapping(projectConfFieldMapping);
 				readData.setSprintFetch(false);
+				readData.setProcessorId(new ObjectId(processorId));
 			}
 
 			if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {

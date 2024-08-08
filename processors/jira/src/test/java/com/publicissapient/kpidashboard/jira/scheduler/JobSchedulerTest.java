@@ -27,11 +27,16 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.core.Job;
@@ -78,10 +83,17 @@ public class JobSchedulerTest {
 	private FetchProjectConfigurationImpl fetchProjectConfiguration;
 	@Mock
 	private Job fetchIssueScrumJqlJob;
+	@Mock
+	private JiraProcessorRepository jiraProcessorRepository;
+	@Mock
+	private JiraProcessor jiraProcessor;
+
 
 	@Before
 	public void init() {
 		MockitoAnnotations.openMocks(this);
+		Mockito.when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
+		Mockito.when(jiraProcessor.getId()).thenReturn(new ObjectId("63bfa0d5b7617e260763ca21"));
 	}
 
 	@Test
@@ -120,9 +132,6 @@ public class JobSchedulerTest {
 		List<String> projectIds = new ArrayList<>();
 		projectIds.add("projectId1");
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
-
-		// Mocking jobLauncher.run() to return a JobExecution instance
-		when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
 
 		jobScheduler.startScrumJqlJob();
 	}

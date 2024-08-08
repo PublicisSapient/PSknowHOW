@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
@@ -61,6 +63,7 @@ import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.service.FetchEpicData;
 import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
+import org.springframework.batch.core.JobParametersBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueBoardReaderTest {
@@ -143,8 +146,15 @@ public class IssueBoardReaderTest {
 		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
 		when(jiraClientService.getRestClientMap(null)).thenReturn(client);
 		when(jiraClientService.getKerberosClientMap(null)).thenReturn(krb5Client);
+		setPrivateField(issueBoardReader, "processorId", "63bfa0d5b7617e260763ca21");
+
 	}
 
+	private void setPrivateField(Object targetObject, String fieldName, String fieldValue) throws Exception {
+		Field field = targetObject.getClass().getDeclaredField(fieldName);
+		field.setAccessible(true);
+		field.set(targetObject, fieldValue);
+	}
 	@Test
 	public void testReadData() throws Exception {
 		//when(mockRetryableOperation.execute()).thenReturn(issues);

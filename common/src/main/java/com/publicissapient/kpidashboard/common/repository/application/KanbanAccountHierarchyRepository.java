@@ -154,4 +154,12 @@ public interface KanbanAccountHierarchyRepository extends MongoRepository<Kanban
 	void deleteByIdIn(List<ObjectId> ids);
 
 	void deleteByBasicProjectConfigIdAndLabelNameIn(ObjectId basicProjectConfigId, List<String> labelName);
+
+	/**
+	 * give list of hoerarchies on the basis of config id
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return list of hierarchies
+	 */
+	List<KanbanAccountHierarchy> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
 }

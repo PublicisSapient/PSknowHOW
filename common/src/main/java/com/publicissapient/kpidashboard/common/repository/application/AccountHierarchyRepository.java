@@ -202,4 +202,13 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 	void deleteByIdIn(List<ObjectId> ids);
 
 	void deleteByBasicProjectConfigIdAndLabelNameIn(ObjectId basicProjectConfigId, List<String> labelName);
+
+	/**
+	 * find by basic config id
+	 *
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return List of Hierarchies
+	 */
+	List<AccountHierarchy> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
 }

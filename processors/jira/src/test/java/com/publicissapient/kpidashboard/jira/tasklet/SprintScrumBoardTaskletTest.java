@@ -22,12 +22,11 @@ package com.publicissapient.kpidashboard.jira.tasklet;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.service.FetchScrumReleaseData;
 import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
 import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,8 +36,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
@@ -71,10 +70,16 @@ public class SprintScrumBoardTaskletTest {
     private SprintScrumBoardTasklet sprintScrumBoardTasklet;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         // Mock any setup or common behavior needed before each test
+        setPrivateField(sprintScrumBoardTasklet, "processorId", "5e16c126e4b098db673cc372");
     }
 
+    private void setPrivateField(Object targetObject, String fieldName, String fieldValue) throws Exception {
+        Field field = targetObject.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(targetObject, fieldValue);
+    }
 
 
     @Test
@@ -93,7 +98,7 @@ public class SprintScrumBoardTaskletTest {
         RepeatStatus result = sprintScrumBoardTasklet.execute(stepContribution, chunkContext);
 
         // Assert
-        verify(fetchSprintReport, times(1)).createSprintDetailBasedOnBoard(projectConfFieldMapping, null, boardDetails);
+        verify(fetchSprintReport, times(1)).createSprintDetailBasedOnBoard(projectConfFieldMapping, null, boardDetails, new ObjectId("5e16c126e4b098db673cc372"));
         assertEquals(RepeatStatus.FINISHED, result);
     }
 

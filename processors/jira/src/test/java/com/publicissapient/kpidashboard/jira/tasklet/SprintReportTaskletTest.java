@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
@@ -95,12 +96,19 @@ public class SprintReportTaskletTest {
     List<FieldMapping> fieldMappingList;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         // Mock any setup or common behavior needed before each test
         projectToolConfigs = getMockProjectToolConfig();
         connection = getMockConnection();
         projectConfigsList = getMockProjectConfig();
         fieldMappingList = getMockFieldMapping();
+        setPrivateField(sprintReportTasklet, "processorId", "63bfa0d5b7617e260763ca21");
+    }
+
+    private void setPrivateField(Object targetObject, String fieldName, String fieldValue) throws Exception {
+        Field field = targetObject.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(targetObject, fieldValue);
     }
 
 

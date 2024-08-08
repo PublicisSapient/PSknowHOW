@@ -151,7 +151,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	@Override
-	public JiraIssue convertToJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig, String boardId)
+	public JiraIssue convertToJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig, String boardId, ObjectId processorId)
 			throws JSONException {
 
 		JiraIssue jiraIssue = null;
@@ -166,7 +166,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			return jiraIssue;
 		}
 
-		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		Set<String> issueTypeNames = Arrays.stream(fieldMapping.getJiraIssueTypeNames()).map(String::toLowerCase)
 				.collect(Collectors.toSet());
 		IssueType issueType = issue.getIssueType();
@@ -180,7 +179,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
 
 			jiraIssue = getJiraIssue(projectConfig, issueId);
-			jiraIssue.setProcessorId(jiraProcessorId);
+			jiraIssue.setProcessorId(processorId);
 
 			Map<String, IssueField> fields = buildFieldMap(issue.getFields());
 			IssueField epic = fields.get(fieldMapping.getEpicName());

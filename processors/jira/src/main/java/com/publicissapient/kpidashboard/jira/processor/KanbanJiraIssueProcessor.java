@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.processor;
 
+import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
@@ -35,11 +36,12 @@ public interface KanbanJiraIssueProcessor {
 	 *            projectConfFieldMapping
 	 * @param boardId
 	 *            boardId
-	 * @return KanbanJiraIssue
+	 * @param processorId
+     * @return KanbanJiraIssue
 	 * @throws JSONException
 	 *             JSONException
 	 */
 	KanbanJiraIssue convertToKanbanJiraIssue(Issue issue, ProjectConfFieldMapping projectConfFieldMapping,
-			String boardId) throws JSONException;
+                                             String boardId, ObjectId processorId) throws JSONException;
 
 }

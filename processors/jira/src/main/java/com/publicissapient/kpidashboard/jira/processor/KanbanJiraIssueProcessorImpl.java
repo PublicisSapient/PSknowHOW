@@ -96,7 +96,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
 
 	@Override
-	public KanbanJiraIssue convertToKanbanJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig, String boardId)
+	public KanbanJiraIssue convertToKanbanJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig, String boardId, ObjectId processorId)
 			throws JSONException {
 
 		KanbanJiraIssue jiraIssue = null;
@@ -107,7 +107,6 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		}
 
 		Map<String, String> issueEpics = new HashMap<>();
-		ObjectId jiraIssueId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();
 		if (null == fieldMapping) {
@@ -133,7 +132,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 			setRCA(fieldMapping, issue, jiraIssue, fields);
 
 			// collectorId
-			jiraIssue.setProcessorId(jiraIssueId);
+			jiraIssue.setProcessorId(processorId);
 			// ID
 			jiraIssue.setIssueId(JiraProcessorUtil.deodeUTF8String(issue.getId()));
 			// Type

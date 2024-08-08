@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
@@ -51,6 +52,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -70,6 +72,7 @@ public class JobController {
 	private static final String CURRENTTIME = "currentTime";
 	private static final String IS_SCHEDULER = "isScheduler";
 	private static final String VALUE = "false";
+	private static final String PROCESSOR_ID = "processorId";
 	@Autowired
 	JobLauncher jobLauncher;
 	@Qualifier("fetchIssueScrumBoardJob")
@@ -95,6 +98,8 @@ public class JobController {
 	private FetchProjectConfiguration fetchProjectConfiguration;
 	@Autowired
 	private OngoingExecutionsService ongoingExecutionsService;
+	@Autowired
+	private JiraProcessorRepository jiraProcessorRepository;
 
 	/**
 	 * This method is used to start job for the Scrum projects with board setup
@@ -165,13 +170,14 @@ public class JobController {
 
 	private List<JobParameters> getDynamicParameterSets(List<String> scrumBoardbasicProjConfIds) {
 		List<JobParameters> parameterSets = new ArrayList<>();
-
+		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		scrumBoardbasicProjConfIds.forEach(configId -> {
 			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 			// Add dynamic parameters as needed
 			jobParametersBuilder.addString(PROJECT_ID, configId);
 			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
-			jobParametersBuilder.addString(IS_SCHEDULER,VALUE);
+			jobParametersBuilder.addString(IS_SCHEDULER, VALUE);
+			jobParametersBuilder.addString(PROCESSOR_ID, jiraProcessorId.toString());
 
 			JobParameters params = jobParametersBuilder.toJobParameters();
 			parameterSets.add(params);
@@ -250,11 +256,12 @@ public class JobController {
 	@PostMapping(value = "/startfetchsprintjob", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> startFetchSprintJob(@RequestBody String sprintId) {
 		log.info("Request coming for fetching sprint job");
+		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		CompletableFuture.runAsync(() -> {
 			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
-
 			jobParametersBuilder.addString(SPRINT_ID, sprintId);
 			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+			jobParametersBuilder.addString(PROCESSOR_ID, jiraProcessorId.toString());
 			JobParameters params = jobParametersBuilder.toJobParameters();
 			try {
 				jobLauncher.run(fetchIssueSprintJob, params);
@@ -279,7 +286,6 @@ public class JobController {
 		log.info("Request coming for fetching issue job");
 
 		String basicProjectConfigId = processorExecutionBasicConfig.getProjectBasicConfigIds().get(0);
-
 		if (ongoingExecutionsService.isExecutionInProgress(basicProjectConfigId)) {
 			log.error("An execution is already in progress");
 			return ResponseEntity.badRequest()
@@ -288,14 +294,16 @@ public class JobController {
 
 		// Mark the execution as in progress before starting the job asynchronously
 		ongoingExecutionsService.markExecutionInProgress(basicProjectConfigId);
-
+		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		// Start the job asynchronously
 		CompletableFuture.runAsync(() -> {
 			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 			jobParametersBuilder.addString(PROJECT_ID, basicProjectConfigId);
 			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
-			jobParametersBuilder.addString(IS_SCHEDULER,VALUE);
+			jobParametersBuilder.addString(IS_SCHEDULER, VALUE);
+			jobParametersBuilder.addString(PROCESSOR_ID, jiraProcessorId.toString());
 			JobParameters params = jobParametersBuilder.toJobParameters();
+
 
 			try {
 				Optional<ProjectBasicConfig> projBasicConfOpt = projectConfigRepository

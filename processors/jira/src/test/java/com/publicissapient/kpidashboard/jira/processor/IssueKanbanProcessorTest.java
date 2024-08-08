@@ -27,12 +27,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
@@ -70,7 +68,7 @@ public class IssueKanbanProcessorTest {
 		readData.setProjectConfFieldMapping(projectConfFieldMapping);
 		readData.setSprintFetch(false);
 		KanbanJiraIssue jiraIssue = new KanbanJiraIssue();
-		when(jiraIssueProcessor.convertToKanbanJiraIssue(any(), any(), any())).thenReturn(jiraIssue);
+		when(jiraIssueProcessor.convertToKanbanJiraIssue(any(), any(), any(), any())).thenReturn(jiraIssue);
 		KanbanAccountHierarchy accountHierarchy = KanbanAccountHierarchy.builder()
 				.basicProjectConfigId(new ObjectId("63bfa0f80b28191677615735")).build();
 		Set<KanbanAccountHierarchy> accountHierarchies = new HashSet<>();

@@ -68,7 +68,7 @@ public class SprintDataProcessorImplTest {
         String boardId = "yourBoardId";
 
         // Act
-        Set<SprintDetails> result = sprintDataProcessor.processSprintData(issue, projectConfFieldMapping, boardId);
+        Set<SprintDetails> result = sprintDataProcessor.processSprintData(issue, projectConfFieldMapping, boardId, new ObjectId("5e16c126e4b098db673cc372"));
 
         // Assert
         assertNotNull(result);
