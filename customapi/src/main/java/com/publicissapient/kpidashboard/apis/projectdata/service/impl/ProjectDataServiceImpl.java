@@ -1,6 +1,11 @@
 package com.publicissapient.kpidashboard.apis.projectdata.service.impl;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -17,6 +22,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectReleaseV
 import com.publicissapient.kpidashboard.common.model.jira.DataRequest;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueV2;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetailsV2;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssueV2;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseV2Repo;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueV2Repository;
@@ -48,8 +54,24 @@ public class ProjectDataServiceImpl implements ProjectDataService {
 		}
 		if (dataRequest.getProjectId() != null && dataRequest.getBoardId() != null
 				&& CollectionUtils.isNotEmpty(dataRequest.getSprintIds())) {
-			jiraIssueV2Page = jiraIssueV2Repository.findByProjectIdAndBoardIdAndSprintIdIn(dataRequest.getProjectId(),
-					dataRequest.getBoardId(), dataRequest.getSprintIds(), pageable);
+			List<SprintDetailsV2> listOfSprintDetails = sprintV2Repository.findBySprintIDIn(dataRequest.getSprintIds());
+
+			Set<String> issuesOfSprints = new HashSet<>();
+			for (SprintDetailsV2 sprintDetail : listOfSprintDetails) {
+				issuesOfSprints.addAll(Optional.ofNullable(sprintDetail.getTotalIssues())
+						.map(issues -> issues.stream().map(SprintIssueV2::getKey).collect(Collectors.toSet()))
+						.orElse(Collections.emptySet()));
+
+				issuesOfSprints.addAll(Optional.ofNullable(sprintDetail.getPuntedIssues())
+						.map(issues -> issues.stream().map(SprintIssueV2::getKey).collect(Collectors.toSet()))
+						.orElse(Collections.emptySet()));
+
+				issuesOfSprints.addAll(Optional.ofNullable(sprintDetail.getCompletedIssuesAnotherSprint())
+						.map(issues -> issues.stream().map(SprintIssueV2::getKey).collect(Collectors.toSet()))
+						.orElse(Collections.emptySet()));
+			}
+			jiraIssueV2Page = jiraIssueV2Repository.findByProjectIdAndBoardIdAndKeyIn(dataRequest.getProjectId(),
+					dataRequest.getBoardId(), issuesOfSprints, pageable);
 		}
 		if (dataRequest.getProjectKey() != null) {
 			jiraIssueV2Page = jiraIssueV2Repository.findByProjectKey(dataRequest.getProjectKey(), pageable);

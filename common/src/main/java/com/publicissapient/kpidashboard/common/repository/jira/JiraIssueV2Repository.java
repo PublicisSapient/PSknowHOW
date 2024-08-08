@@ -219,9 +219,9 @@ public interface JiraIssueV2Repository
 	Page<JiraIssueV2> findByBasicProjectConfigIdAndIssueIdIn(String basicProjectConfigId, List<String> issueIds,
 			Pageable pageable);
 
-	@Query("{ 'basicProjectConfigId' : ?0, 'boardId' : ?1, 'sprintID' : { $in: ?2 } }")
-	Page<JiraIssueV2> findByProjectIdAndBoardIdAndSprintIdIn(String basicProjectConfigId, String boardId,
-			List<String> sprintIds, Pageable pageable);
+	@Query("{ 'basicProjectConfigId' : ?0, 'boardId' : ?1, 'key' : { $in: ?2 } }")
+	Page<JiraIssueV2> findByProjectIdAndBoardIdAndKeyIn(String basicProjectConfigId, String boardId,
+														Set<String> keys, Pageable pageable);
 
 	Page<JiraIssueV2> findByProjectKey(String projectKey, Pageable pageable);
 }

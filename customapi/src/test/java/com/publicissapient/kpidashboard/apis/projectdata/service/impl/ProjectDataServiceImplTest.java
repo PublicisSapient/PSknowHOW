@@ -170,15 +170,15 @@ class ProjectDataServiceImplTest {
 		dataRequest.setSprintIds(Collections.singletonList("sprintId"));
 
 		Page<JiraIssueV2> mockPage = Mockito.mock(Page.class);
-		when(jiraIssueV2Repository.findByProjectIdAndBoardIdAndSprintIdIn(anyString(), anyString(), anyList(),
+		when(jiraIssueV2Repository.findByProjectIdAndBoardIdAndKeyIn(anyString(), anyString(), any(),
 				any(Pageable.class))).thenReturn(mockPage);
 
 		// Act
 		projectDataService.getProjectJiraIssues(dataRequest, 0, 10);
 
 		// Assert
-		verify(jiraIssueV2Repository, times(1)).findByProjectIdAndBoardIdAndSprintIdIn(eq(dataRequest.getProjectId()),
-				eq(dataRequest.getBoardId()), eq(dataRequest.getSprintIds()), any(PageRequest.class));
+		verify(jiraIssueV2Repository, times(1)).findByProjectIdAndBoardIdAndKeyIn(eq(dataRequest.getProjectId()),
+				eq(dataRequest.getBoardId()), any(), any(PageRequest.class));
 	}
 
 	@Test
