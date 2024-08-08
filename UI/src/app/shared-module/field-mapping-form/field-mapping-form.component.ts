@@ -93,9 +93,33 @@ private setting = {
         fieldMappingConfigration[field.section].push(field);
       }
     });
-    this.fieldMappingSectionList = [...new Set(fieldMappingSections)].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-    this.formConfig = fieldMappingConfigration;
+   const sectionsInCorrectOrder = ["Custom Fields Mapping","Issue Types Mapping", "Defects Mapping","WorkFlow Status Mapping","Additional Filter Identifier","Project Level Threshold"]
+       const sectionsList = [...new Set(fieldMappingSections)].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+       this.fieldMappingSectionList = this.getSectionsInCorrectOrder(sectionsList,sectionsInCorrectOrder)
+       this.formConfig = this.sortingOfFieldMapping(fieldMappingConfigration)
 
+  }
+
+  sortingOfFieldMapping(data) {
+    const sortedData = {};
+    for (const category in data) {
+      if (data.hasOwnProperty(category)) {
+        sortedData[category] = data[category].sort((a, b) => a?.fieldDisplayOrder - b?.fieldDisplayOrder);
+      }
+    }
+    return sortedData;
+  }
+
+  getSectionsInCorrectOrder(incorrectOrder, correctOrder) {
+    const orderMap = new Map();
+
+    // Create a map with the correct order
+    correctOrder.forEach((item, index) => {
+      orderMap.set(item, index);
+    });
+
+    // Sort the incorrect order list based on the correct order map
+    return incorrectOrder.sort((a, b) => orderMap.get(a) - orderMap.get(b));
   }
 
   initializeForm(){
