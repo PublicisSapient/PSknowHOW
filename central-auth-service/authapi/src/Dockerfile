@@ -1,4 +1,4 @@
-FROM psknowhow/amazoncorretto:8
+FROM amazoncorretto:17
 
 ENV JAVA_OPTS="" \
     SPRING_CONFIG_LOCATION="/app/properties/authnauth.properties"

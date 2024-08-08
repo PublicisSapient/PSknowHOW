@@ -18,9 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.filters.standard;
 
-import java.time.LocalDateTime;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
+import com.publicissapient.kpidashboard.apis.service.StandardAuthenticationService;
+import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
@@ -28,59 +28,35 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.apis.config.AuthProperties;
-import com.publicissapient.kpidashboard.apis.enums.AuthType;
-import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
-import com.publicissapient.kpidashboard.apis.service.UserService;
+import java.time.LocalDateTime;
 
-/**
- * Provides Standard Login Authentication Provider.
- *
- * @author Hiren Babariya
- */
 @Component
+@AllArgsConstructor
 public class StandardAuthenticationProvider implements AuthenticationProvider {
+	private final StandardAuthenticationService standardAuthenticationService;
 
-	private final UserService userService;
-	private final AuthProperties authProperties;
-
-	@Autowired
-	public StandardAuthenticationProvider(UserService userService, AuthProperties authProperties) {
-		this.userService = userService;
-		this.authProperties = authProperties;
-	}
-
-	/**
-	 * Performs Authentication
-	 *
-	 * @param authentication
-	 * @return Authentication
-	 */
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		try {
-			Authentication auth = userService.authenticate(authentication, AuthType.STANDARD.name());
-			userService.resetFailAttempts(authentication.getName());
-			return auth;
+			return standardAuthenticationService.authenticateUser(authentication);
 		} catch (BadCredentialsException e) {
-			userService.updateFailAttempts(authentication.getName(), LocalDateTime.now());
+			standardAuthenticationService.updateFailAttempts(authentication.getName(), LocalDateTime.now());
 			throw e;
 		} catch (LockedException e) {
-			String error = "User account is locked for " + authProperties.getAccountLockedPeriod() + " minutes";
-			throw new LockedException(error, e);
+			throw new LockedException(e.getMessage());
 		} catch (PendingApprovalException e) {
 			throw new PendingApprovalException(e.getMessage());
+		} catch (Exception e) {
+			throw new BadCredentialsException("Invalid username or password");
 		}
-
 	}
 
+	// TODO: what is this?
 	/**
-	 * @return true if this AuthenticationProvider supports theindicated
-	 *         Authentication object.
+	 * @return true if this AuthenticationProvider supports the indicated Authentication object.
 	 */
 	@Override
 	public boolean supports(Class<?> authentication) {
 		return StandardAuthenticationToken.class.isAssignableFrom(authentication);
 	}
-
 }

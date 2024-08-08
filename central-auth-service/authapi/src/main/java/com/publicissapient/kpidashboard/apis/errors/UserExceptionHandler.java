@@ -23,13 +23,13 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.publicissapient.kpidashboard.common.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
 
 @ControllerAdvice
 public class UserExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(GenericException.class)
-	protected ResponseEntity<ServiceResponse> handleGenericException(GenericException ex) {
-		ServiceResponse serviceResponse = new ServiceResponse(false, ex.getMessage(), null);
+	protected ResponseEntity<ServiceResponseDTO> handleGenericException(GenericException ex) {
+		ServiceResponseDTO serviceResponse = new ServiceResponseDTO(false, ex.getMessage(), null);
 		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(serviceResponse);
 	}
 }
