@@ -170,9 +170,9 @@ class ProjectDataServiceImplTest {
 		dataRequest.setSprintIds(Collections.singletonList("sprintId"));
 
 		Page<JiraIssueV2> mockPage = Mockito.mock(Page.class);
+		when(sprintV2Repository.findBySprintIDIn(anyList())).thenReturn(List.of(new SprintDetailsV2()));
 		when(jiraIssueV2Repository.findByProjectIdAndBoardIdAndKeyIn(anyString(), anyString(), any(),
 				any(Pageable.class))).thenReturn(mockPage);
-
 		// Act
 		projectDataService.getProjectJiraIssues(dataRequest, 0, 10);
 
