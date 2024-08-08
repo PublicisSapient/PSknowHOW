@@ -46,7 +46,7 @@
                     <div class="table-header">
                         Configured Tools
                         <button *ngIf="showAddNewBtn" pButton pRipple type="button" class="p-button p-button-success p-button-raised" icon="pi pi-plus"
-                        iconPos="left" label="Add New" (click)="handleToolConfiguration()"></button>
+                        iconPos="left" label="Add New" (click)="handleToolConfiguration('new')"></button>
                     </div>
                 </ng-template>
                 <ng-container *ngIf="configuredToolTableCols?.length; else noConfiguredTool">
@@ -57,7 +57,8 @@
                             </th>
                             <th class="p-text-center" scope="col" *ngIf="formTitle?.toLowerCase() == 'jira' || formTitle?.toLowerCase() == 'jiratest' ||
                             formTitle?.toLowerCase() == 'azure' || formTitle?.toLowerCase() == 'zephyr'">Edit</th>
-                            <th class="p-text-center" scope="col">Delete</th>
+                            <th class="p-text-center" scope="col" *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'jiratest' &&
+                            formTitle?.toLowerCase() !== 'azure' && formTitle?.toLowerCase() !== 'zephyr'">Delete</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-tool let-columns="columns">
@@ -71,7 +72,8 @@
                                     <i class="far fa-edit"></i>
                                 </div>
                             </td>
-                            <td>
+                            <td *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'jiratest' &&
+                            formTitle?.toLowerCase() !== 'azure' && formTitle?.toLowerCase() !== 'zephyr'">
                                 <div  class="action-btns p-d-flex p-justify-center" (click)="confirmDeteleTool(tool)">
                                     <i class="far fa-trash-alt"></i>
                                 </div>

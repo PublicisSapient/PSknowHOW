@@ -162,7 +162,7 @@
                                 [type]="(connectionFieldLabels.inputFields[i] === 'patOAuthToken' || connectionFieldLabels.inputFields[i] === 'password' || connectionFieldLabels.inputFields[i] === 'pat' || connectionFieldLabels.inputFields[i] === 'accessToken' ) ? 'password': 'text'"
                                 pInputText id="connection_{{connectionFieldLabels.inputFields[i]}}"
                                 [(ngModel)]="connection[ connectionFieldLabels.inputFields[i] ]"
-                                [placeholder]="connectionFieldLabels.placeholder[i]"
+                                [placeholder]="connectionFieldLabels.placeholder ? connectionFieldLabels.placeholder[i] : ''"
                                 [pTooltip]="showInfo(connectionFieldLabels.connectionType.toLowerCase(), connectionFieldLabels.inputFields[i])"
                                 autofocus
                                 autocomplete="new-password" />
