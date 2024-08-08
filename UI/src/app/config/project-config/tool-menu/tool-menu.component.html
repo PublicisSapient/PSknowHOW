@@ -83,6 +83,20 @@
                                 </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper"></span>
                         </label>
                     </div>
+
+                    <div class="mar-t-10" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
+                        <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch" [(ngModel)]="isAssigneeSwitchChecked"
+                            [disabled]="isAssigneeSwitchDisabled" (onChange)="onAssigneeSwitchChange($event)">
+                        </p-inputSwitch>
+                        <label for="repoToolEnabled" class="p-mr-5" style="font-family: 'FuturaNext_Medium', sans-serif;">
+                            &nbsp;&nbsp;Enable Developers KPIs
+                            <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
+                                pTooltip='<div class="inner-content">
+                                    {{developerKpiInfo}}
+                                </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper"></span>
+                        </label>
+                    </div>
+                    
                     <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
                 </div>
 

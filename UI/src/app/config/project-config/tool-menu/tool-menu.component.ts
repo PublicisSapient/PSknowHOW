@@ -47,6 +47,7 @@ export class ToolMenuComponent implements OnInit {
   isAssigneeSwitchChecked: boolean = false;
   isAssigneeSwitchDisabled: boolean = false;
   assigneeSwitchInfo = "Turn ON to retrieve people-related information, such as assignees, developer profiles from all relevant source tools connected to your project.";
+  developerKpiInfo = "By enabling repo cloning, you consent to clone your code repositories (BitBucket, GitLab, GitHub) to avoid API rate-limiting issues. The repository for this project will be cloned on the KH Server. This will grant access to more valuable KPIs on the Developer dashboard. If cloning is disabled, only 2 KPIs will be accessible";
   userName: string;
   repoTools = ['BitBucket', 'GitLab', 'GitHub', 'Azure Repo'];
   repoToolsEnabled: boolean;
