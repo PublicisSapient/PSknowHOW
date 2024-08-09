@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { MultiSelect } from 'primeng/multiselect';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-primary-filter',
@@ -22,7 +23,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   @Output() onPrimaryFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
 
-  constructor(private service: SharedService, public helperService: HelperService) {
+  constructor(private service: SharedService, public helperService: HelperService,private router: Router) {
     this.service.selectedTrendsEvent.subscribe(filters => {
       if (filters?.length && this.primaryFilterConfig['type'] !== 'singleSelect') {
         this.selectedFilters = filters;
@@ -178,6 +179,10 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
       this.service.setSelectedLevel({ hierarchyLevelName: this.selectedLevel['nodeType']?.toLowerCase() })
     }
+  }
+
+  hideSprintOnIteration():boolean{
+    return this.router.url.includes('/iteration') && this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() !== 'sprint'
   }
 
 }
