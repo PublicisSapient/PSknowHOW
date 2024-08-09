@@ -409,15 +409,22 @@ export class HelperService {
     }
 
     sortByField(objArray, propArr): any {
-        propArr.forEach(prop => {
-            if (objArray?.[0]?.[prop]) {
-                objArray.sort((a, b) => {
-                    const propA = a[prop].toLowerCase();
-                    const propB = b[prop].toLowerCase();
-                    return propA.localeCompare(propB);
-                });
+        objArray.sort((a, b) => {
+            if (objArray?.[0]?.[propArr[0]] && propArr[0].indexOf('Date') === -1) {
+                const propA = a[propArr[0]];
+                const propB = b[propArr[0]];
+                return propA.localeCompare(propB);
             }
         });
+
+        objArray.sort((a, b) => {
+            if (objArray?.[0]?.[propArr[1]] && propArr[1].indexOf('Date') !== -1) {
+                const propA = new Date(a[propArr[1]].substring(0, a[propArr[1]].indexOf('T')));
+                const propB = new Date(b[propArr[1]].substring(0, b[propArr[1]].indexOf('T')));
+                return +propB - +propA;
+            }
+        });
+
         return objArray;
     }
 
@@ -681,7 +688,7 @@ export class HelperService {
     setBackupOfFilterSelectionState = (selectedFilterObj) => {
         if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
             this.selectedFilters = { ...selectedFilterObj };
-        } else if(selectedFilterObj){
+        } else if (selectedFilterObj) {
             this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
         } else {
             this.selectedFilters = null;
@@ -743,35 +750,35 @@ export class HelperService {
         return kpiSelectedFilterObj;
     }
 
-    logoutHttp(){
-      this.httpService.logout().subscribe((responseData) => {
-        if (responseData?.success) {
-          if(!environment['AUTHENTICATION_SERVICE']){
-          this.isKanban = false;
-          // Set blank selectedProject after logged out state
-          this.sharedService.setSelectedProject(null);
-          this.sharedService.setCurrentUserDetails({});
-          this.sharedService.setVisibleSideBar(false);
-          this.sharedService.setAddtionalFilterBackup({});
-          this.sharedService.setKpiSubFilterObj({});
-          localStorage.clear();
-          this.router.navigate(['./authentication/login']);
-        } else{
-          let obj = {
-            'resource': environment.RESOURCE
-          };
-          this.httpService.getUserValidation(obj).toPromise()
-          .then((response) => {
-            if (response && !response['success']) {
-              let redirect_uri = window.location.href;
-              window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+    logoutHttp() {
+        this.httpService.logout().subscribe((responseData) => {
+            if (responseData?.success) {
+                if (!environment['AUTHENTICATION_SERVICE']) {
+                    this.isKanban = false;
+                    // Set blank selectedProject after logged out state
+                    this.sharedService.setSelectedProject(null);
+                    this.sharedService.setCurrentUserDetails({});
+                    this.sharedService.setVisibleSideBar(false);
+                    this.sharedService.setAddtionalFilterBackup({});
+                    this.sharedService.setKpiSubFilterObj({});
+                    localStorage.clear();
+                    this.router.navigate(['./authentication/login']);
+                } else {
+                    let obj = {
+                        'resource': environment.RESOURCE
+                    };
+                    this.httpService.getUserValidation(obj).toPromise()
+                        .then((response) => {
+                            if (response && !response['success']) {
+                                let redirect_uri = window.location.href;
+                                window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+                            }
+                        })
+                        .catch((error) => {
+                            console.log("cookie not clear on error");
+                        });
+                }
             }
-          })
-          .catch((error) => {
-            console.log("cookie not clear on error");
-          });
-        }
-      }
-    })
+        })
     }
 }
