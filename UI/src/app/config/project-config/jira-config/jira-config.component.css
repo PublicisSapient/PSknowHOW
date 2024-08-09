@@ -84,3 +84,7 @@ display: block !important;
   color : var(--color-secondary-blue);
   cursor: pointer;
 }
+:host ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody>tr>td{
+  word-break: break-word;
+}
+ 
