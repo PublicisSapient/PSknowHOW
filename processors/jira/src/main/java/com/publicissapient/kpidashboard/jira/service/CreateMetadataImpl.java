@@ -357,6 +357,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 				issueTypeMap.getOrDefault(CommonConstant.JIRASPRINTVELOCITYISSUETYPEKPI138, new ArrayList<>()));
 		fieldMapping.setJiraStoryIdentificationKpi40(
 				issueTypeMap.getOrDefault(CommonConstant.JIRASTORYIDENTIFICATIONKPI40, new ArrayList<>()));
+		fieldMapping.setJiraStoryCategoryKpi40(
+				issueTypeMap.getOrDefault(CommonConstant.JIRASTORYCATEGORYKPI40, new ArrayList<>()));
 		fieldMapping.setJiraStoryIdentificationKPI164(
 				issueTypeMap.getOrDefault(CommonConstant.JIRA_STORY_IDENTIFICATION_KPI164, new ArrayList<>()));
 		fieldMapping.setJiraIssueEpicType(
@@ -432,6 +434,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONKPI14, new ArrayList<>()));
 		fieldMapping.setResolutionTypeForRejectionQAKPI111(
 				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONQAKPI111, new ArrayList<>()));
+		fieldMapping.setResolutionTypeForRejectionKPI34(
+				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONKPI34, new ArrayList<>()));
 		fieldMapping.setResolutionTypeForRejectionKPI133(
 				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONKPI133, new ArrayList<>()));
 		fieldMapping.setResolutionTypeForRejectionKPI82(
@@ -490,6 +494,10 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setJiraDefectRejectionStatusQAKPI111(
 				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSQAKPI111))
 						? workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSQAKPI111).get(0)
+						: null);
+		fieldMapping.setJiraDefectRejectionStatusKPI34(
+				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI34))
+						? workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI34).get(0)
 						: null);
 		fieldMapping.setJiradefecttype(issueTypeMap.getOrDefault(CommonConstant.JIRADEFECTTYPE, new ArrayList<>()));
 		fieldMapping.setJiraDefectClosedStatusKPI137(
@@ -655,6 +663,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationKpi40(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraStoryCategoryKpi40(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationKPI164(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraKPI82StoryIdentification(
@@ -673,6 +683,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setResolutionTypeForRejectionKPI14(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionQAKPI111(
+					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
+			fieldMapping.setResolutionTypeForRejectionKPI34(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionKPI133(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));

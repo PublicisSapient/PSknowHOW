@@ -723,7 +723,7 @@ export class HttpService {
   }
 
   /** Get all Tool Configs */
-  getAllToolConfigs(basicConfigId) {
+  getAllToolConfigs(basicConfigId): Observable<any> {
     return this.http.get(this.basicConfigUrl + '/' + basicConfigId + '/tools');
   }
 
@@ -770,7 +770,7 @@ export class HttpService {
   }
 
     /** Get all Field Mappings with history */
-    getFieldMappingsWithHistory(toolId,kpiId, data) {
+    getFieldMappingsWithHistory(toolId,kpiId, data): Observable<any> {
       return this.http.post(
         this.fieldMappingsUrl + '/fieldMapping/' + toolId + '/'+ kpiId, data
       );

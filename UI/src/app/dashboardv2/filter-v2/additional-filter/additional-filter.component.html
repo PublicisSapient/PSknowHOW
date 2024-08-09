@@ -1,6 +1,8 @@
 <div style="display: flex; overflow-y: visible; overflow-x: visible;" #addnlFilterDiv *ngIf="selectedTab !== 'value'">
     <ng-container *ngFor="let config of additionalFilterConfig; let i = index;">
         <span class="p-float-label"
+            [pTooltip]="config.defaultLevel.labelName === 'sqd' && 'Squad selection applies to Sprint KPIs only'"
+            tooltipPosition="bottom"
             *ngIf="filterData?.length && filterData[i]?.length && config['type'] !== 'singleSelect'"
             style="margin-left: 10px;">
             <p-multiSelect #multiSelect inputId="multiselectFilter" [disabled]="config.defaultLevel.labelName === 'sqd' && selectedTrends?.length > 1"

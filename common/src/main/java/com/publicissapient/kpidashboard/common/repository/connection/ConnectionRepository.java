@@ -57,7 +57,7 @@ public interface ConnectionRepository
 
 	Connection findByConnectionName(String connectionName);
 
-	List<Connection> findByTypeAndConnPrivate(String type, Boolean connPrivate);
+	List<Connection> findByTypeAndSharedConnection(String type, Boolean sharedConnection);
 
 	/**
 	 * s Returns List Of connection based on connection id's

@@ -40,7 +40,7 @@
                                             [loader]="kpiLoader.has(kpi?.kpiId)" [trendData]="kpiTrendsObj[kpi?.kpiId]"
                                             [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders"
                                             [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
-                                            (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
+                                            (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban, kpi?.kpiDetail?.isAdditionalFilterSupport)"
                                             [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                                             (optionSelected)="handleSelectedOption($event, kpi)"
                                             [showExport]="(showChart === 'chart' || showChart === 'large')"
@@ -51,7 +51,7 @@
                                             [showCommentIcon]="showCommentIcon"
                                             [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                                             (getCommentCountByKpi)="getKpiCommentsCount($event)"
-                                            (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail.kpiSize">
+                                            (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail.kpiSize" [kpiChartData]="kpiChartData">
                                             <ng-container *ngIf="!noTabAccess else noDataAccess">
                                                 <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length">
                                                     <div [ngSwitch]="kpi?.kpiDetail?.chartType">

@@ -67,7 +67,7 @@ public class Connection extends BasicModel {
 	private String createdAt;
 	private String updatedAt;
 	private String createdBy;
-	private boolean connPrivate;
+	private boolean sharedConnection;// shared with everyone
 	private String updatedBy;
 	private List<String> connectionUsers;
 	private boolean vault;// GS requirement

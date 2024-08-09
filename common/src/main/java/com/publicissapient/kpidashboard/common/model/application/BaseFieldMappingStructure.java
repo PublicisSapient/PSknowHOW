@@ -42,12 +42,15 @@ import lombok.Setter;
 public class BaseFieldMappingStructure extends BasicModel {
 	private String fieldName;
 	private String fieldLabel;
+	private String placeHolderText;
+	private Integer fieldDisplayOrder;
 	private String fieldType;
 	private String fieldCategory;
 	private String toggleLabel;
 	private String toggleLabelLeft;
 	private String toggleLabelRight;
 	private String section;
+	private Integer sectionOrder;
 	private boolean processorCommon;
 	private boolean mandatory;
 	private MappingToolTip tooltip;

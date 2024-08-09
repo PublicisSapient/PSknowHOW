@@ -143,6 +143,7 @@
                               class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"
                               [ngClass]="{'active': toggleDropdownObj[item?.hierarchyLevelId], 'disabled': isAddFilterDisabled(item?.hierarchyLevelId)}"
                               (click)="toggleDropdownObj[item.hierarchyLevelId] = !toggleDropdownObj[item.hierarchyLevelId]"
+                              pTooltip="Squad selection applies to Sprint KPIs only" tooltipPosition="bottom"
                               [id]="item.hierarchyLevelId+'Btn'">
                               {{item?.hierarchyLevelName}}
                            </div>

@@ -107,6 +107,8 @@ export class JiraConfigComponent implements OnInit {
   gitActionWorkflowNameList: any[];
   cloudEnv: any;
   isGitlabToolFieldEnabled : boolean;
+  isConfigureTool: boolean = false;
+  showAddNewBtn: boolean = true;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -463,6 +465,11 @@ export class JiraConfigComponent implements OnInit {
                 }
               });
             });
+
+            if(this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest' 
+            || this.urlParam?.toLowerCase() == 'zephyr' || this.urlParam?.toLowerCase() == 'azure'){
+              this.showAddNewBtn = false;
+            }
           }
 
           // prefetch boards if projectKey is present
@@ -520,7 +527,7 @@ export class JiraConfigComponent implements OnInit {
     const postData = {
       connectionId: self.selectedConnection.id,
       projectKey: self.toolForm.controls['projectKey'].value,
-      boardType: self.selectedProject['Type']
+      boardType: self.selectedProject['type']
     };
 
     self.isLoading = true;
@@ -543,7 +550,7 @@ export class JiraConfigComponent implements OnInit {
       });
 
       // If boards already has value
-      if (self.toolForm.controls['boards'].value.length) {
+      if (self.toolForm.controls['boards']?.value?.length) {
         self.toolForm.controls['boards'].value.forEach((val) => {
           self.boardsData = self.boardsData.filter((data) => (data.boardId + '') !== (val.boardId + ''));
         });
@@ -977,7 +984,15 @@ export class JiraConfigComponent implements OnInit {
             { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
             { field: 'isOAuth', header: 'OAuth', class: 'small-text' }
           ];
-
+          this.configuredToolTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'projectKey', header: 'Project Key', class: 'long-text' },
+            { field: 'queryEnabled', header: 'Query Enabled', class: 'small-text' },
+          ];
           this.formTemplate = {
             group: 'Jira',
             elements: [
@@ -986,8 +1001,9 @@ export class JiraConfigComponent implements OnInit {
                 label: 'JIRA Project Key',
                 id: 'projectKey',
                 validators: ['required'],
-                containerClass: 'p-sm-6',
+                containerClass: 'p-sm-8',
                 show: true,
+                placeholder: 'E.g. “DTS” in publicissapient.atlassian.net/jira/software/c/projects/DTS/boards/22',
                 tooltip: `User can get this value from JIRA/AZURE.<br />
                Generally all issues name are started with Project key<br /> <i>
                 Impacted : Jira/Azure Collector and all Kpi</i>`,
@@ -1061,6 +1077,17 @@ export class JiraConfigComponent implements OnInit {
             { field: 'apiKey', header: 'API Key', class: 'normal' },
             { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
             { field: 'isOAuth', header: 'OAuth', class: 'small-text' },
+          ];
+          this.configuredToolTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'projectKey', header: 'Project Key', class: 'long-text' },
+            { field: 'apiVersion', header: 'API Version', class: 'small-text' },
+            { field: 'queryEnabled', header: 'WIQL Query', class: 'small-text' },
+            { field: 'boardQuery', header: 'Board Query', class: 'small-text' },
           ];
           this.formTemplate = {
             group: 'Azure',
@@ -1151,7 +1178,15 @@ export class JiraConfigComponent implements OnInit {
               class: 'small-text'
             }
           ];
-
+          this.configuredToolTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'projectKey', header: 'Project Key', class: 'long-text' },
+            { field: 'projectComponent', header: 'Component', class: 'small-text' },
+          ];
           this.formTemplate = {
             group: 'Zephyr',
             elements: [
@@ -2051,7 +2086,14 @@ export class JiraConfigComponent implements OnInit {
             { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
             { field: 'isOAuth', header: 'OAuth', class: 'small-text' },
           ];
-
+          this.configuredToolTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'projectKey', header: 'JIRATEST Project Key', class: 'long-text' },
+          ];
           this.formTemplate = {
             group: 'JiraTest',
             elements: [
@@ -2372,13 +2414,11 @@ export class JiraConfigComponent implements OnInit {
         self.toolForm.controls['boards'].setValue([]);
         self.toolForm.controls['boards'].clearValidators();
         self.toolForm.controls['boards'].updateValueAndValidity();
-
         self.toolForm.controls['boardQuery'].setValidators([Validators.required]);
         self.toolForm.controls['boardQuery'].updateValueAndValidity();
       } else {
         self.toolForm.controls['boards'].setValidators([Validators.required]);
         self.toolForm.controls['boards'].updateValueAndValidity();
-
         self.toolForm.controls['boardQuery'].clearValidators();
         self.toolForm.controls['boardQuery'].updateValueAndValidity();
       }
@@ -2457,7 +2497,7 @@ export class JiraConfigComponent implements OnInit {
     }
 
     if (this.urlParam === 'Jira') {
-      submitData['metadataTemplateCode'] = submitData['metadataTemplateCode'].templateCode;
+      submitData['metadataTemplateCode'] = submitData['metadataTemplateCode']?.templateCode;
     } else {
       delete submitData['metadataTemplateCode'];
     }
@@ -2509,7 +2549,6 @@ export class JiraConfigComponent implements OnInit {
               severity: 'success',
               summary: `${this.urlParam} config submitted!!  ${successAlert}`,
             });
-            if (this.urlParam !== 'Jira' && this.urlParam !== 'Azure' && this.urlParam !== 'Zephyr') {
               // update the table
               if (!this.configuredTools || !this.configuredTools.length) {
                 this.configuredTools = [];
@@ -2524,13 +2563,16 @@ export class JiraConfigComponent implements OnInit {
 
               this.configuredTools.push(response['data']);
               this.configuredTools.forEach((tool) => {
-                this.connections.forEach((connection) => {
+                this.connections?.forEach((connection) => {
                   if (tool.connectionId === connection.id) {
                     tool['connectionName'] = connection.connectionName;
                   }
                 });
               });
-            }
+              if (this.urlParam == 'Jira' || this.urlParam === 'Azure' || this.urlParam === 'Zephyr' || this.urlParam === 'JiraTest') {
+                this.isConfigureTool = false;
+                this.showAddNewBtn = false;
+              }
           } else {
             this.messenger.add({
               severity: 'error',
@@ -2585,8 +2627,10 @@ export class JiraConfigComponent implements OnInit {
               });
             }
             // empty the form
-            if (this.urlParam !== 'Jira' && this.urlParam !== 'Azure' && this.urlParam !== 'Zephyr') {
+            if (this.urlParam !== 'Jira' && this.urlParam !== 'Azure' && this.urlParam !== 'Zephyr' && this.urlParam !== 'JiraTest') {
               this.toolForm.reset();
+            }else{
+                this.isConfigureTool = false;
             }
           } else {
             this.messenger.add({
@@ -2607,6 +2651,7 @@ export class JiraConfigComponent implements OnInit {
   }
 
   editTool(tool) {
+    this.handleToolConfiguration();
     this.isEdit = true;
     this.selectedToolConfig = [tool];
     for (const obj in tool) {
@@ -2657,6 +2702,10 @@ export class JiraConfigComponent implements OnInit {
               severity: 'success',
               summary: response['message'] || 'Tool deleted successfully',
             });
+            this.showAddNewBtn = true;
+            this.isConfigureTool = false;
+            this.toolForm.reset();
+            this.selectedConnection = {};
           } else {
             this.messenger.add({
               severity: 'error',
@@ -2767,5 +2816,16 @@ export class JiraConfigComponent implements OnInit {
 
   redirectToConnections() {
     this.router.navigate(['./dashboard/Config/connection-list']);
+  }
+
+  handleToolConfiguration(type?){
+    this.isConfigureTool = true;
+    if(type == 'new'){
+      this.isEdit = false;  
+    }
+    setTimeout(() => {
+      const element = document.getElementById("tool-configuration");
+      element.scrollIntoView({behavior: "smooth", inline: "nearest"});
+    }, 100);
   }
 }

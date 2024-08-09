@@ -221,6 +221,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(NAME);
 		query.fields().include(TYPE_NAME);
 		query.fields().include(PRIORITY);
+		query.fields().include(ROOT_CAUSE);
 		query.fields().include(AGGREGATE_TIME_REMAINING_ESTIMATE_MINUTES);
 		query.fields().include(AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES);
 		query.fields().include(LOGGED_WORK_MINUTES);
@@ -622,7 +623,13 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(URL);
 		query.fields().include(RESOLUTION);
 		query.fields().include(JIRA_ISSUE_STATUS);
+		query.fields().include(DEFECT_STORY_ID);
+		query.fields().include(TYPE_NAME);
+		query.fields().include(PRIORITY);
+		query.fields().include(ROOT_CAUSE);
 		query.fields().include(AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES);
+		query.fields().include(SPRINT_ASSET_STATE);
+		query.fields().include(SPRINT_END_DATE);
 		query.fields().include(ADDITIONAL_FILTER);
 		return operations.find(query, JiraIssue.class);
 

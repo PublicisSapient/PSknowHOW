@@ -44,6 +44,7 @@ public class HierarchyLevelsController {
 			hierarchyLevelDTO.setLevel(hierarchyLevel.getLevel());
 			hierarchyLevelDTO.setHierarchyLevelId(hierarchyLevel.getHierarchyLevelId());
 			hierarchyLevelDTO.setHierarchyLevelName(hierarchyLevel.getHierarchyLevelName());
+			hierarchyLevelDTO.setHierarchyLevelInfo(hierarchyLevel.getHierarchyInfo());
 			HierarchyLevelSuggestion hierarchyLevelSuggestion = suggestions.stream()
 					.filter(value -> value.getHierarchyLevelId().equals(hierarchyLevel.getHierarchyLevelId()))
 					.findFirst().orElse(null);

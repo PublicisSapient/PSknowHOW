@@ -157,10 +157,6 @@ public class CustomApiConfig {// NOPMD
 	private String feedbackEmailSubject;
 	@Value("${approval.categories.emailSubject}")
 	private String approvalEmailSubject;
-
-	@Value("${issueCount.story.categories}")
-	private List<String> issueCountStoryCategories;
-
 	@Value("${certhostpath}")
 	private String hostPath;
 
@@ -849,14 +845,6 @@ public class CustomApiConfig {// NOPMD
 	 */
 	public void setCorsFilterValidOrigin(List<String> corsFilterValidOrigin) {
 		this.corsFilterValidOrigin = corsFilterValidOrigin;
-	}
-
-	public List<String> getIssueCountStoryCategories() {
-		return issueCountStoryCategories;
-	}
-
-	public void setIssueCountStoryCategories(List<String> issueCountStoryCategories) {
-		this.issueCountStoryCategories = issueCountStoryCategories;
 	}
 
 	/**

@@ -223,7 +223,7 @@ public class KpiHelperService { // NOPMD
 			List<String> priorities = projectWisePriority.getOrDefault(projectId, Collections.emptyList());
 			Set<String> rcas = projectWiseRCA.getOrDefault(projectId, Collections.emptySet());
 
-			if ((priorities.isEmpty() || !priorities.contains(jiraIssue.getPriority().toLowerCase())) && (rcas.isEmpty()
+			if ((priorities.isEmpty() || (StringUtils.isNotEmpty(jiraIssue.getPriority()) && !priorities.contains(jiraIssue.getPriority().toLowerCase()))) && (rcas.isEmpty()
 					|| rcas.stream().anyMatch(rca -> jiraIssue.getRootCauseList().contains(rca.toLowerCase())))) {
 				remainingDefects.add(jiraIssue);
 			}
@@ -490,6 +490,10 @@ public class KpiHelperService { // NOPMD
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraQAKPI111IssueType()));
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsQAKPI111())) {
+				mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
+						CommonUtils.convertToPatternList(fieldMapping.getJiraLabelsQAKPI111()));
+			}
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 			getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
 					fieldMapping.getResolutionTypeForRejectionQAKPI111(),
@@ -520,11 +524,10 @@ public class KpiHelperService { // NOPMD
 		List<String> dodStoryIdList = storyDataList.stream().map(JiraIssueCustomHistory::getStoryID)
 				.collect(Collectors.toList());
 
-		List<JiraIssue> storyList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
-		storyList = storyList.stream().filter(feature -> dodStoryIdList.contains(feature.getNumber()))
+		issuesBySprintAndType = issuesBySprintAndType.stream().filter(feature -> dodStoryIdList.contains(feature.getNumber()))
 				.collect(Collectors.toList());
 
-		sprintWiseStoryList.stream().forEach(story -> {
+		sprintWiseStoryList.forEach(story -> {
 			List<String> storyNumberList = story.getStoryList().stream().filter(dodStoryIdList::contains)
 					.collect(Collectors.toList());
 			story.setStoryList(storyNumberList);
@@ -541,7 +544,7 @@ public class KpiHelperService { // NOPMD
 		List<JiraIssue> defectDataList = jiraIssueRepository.findIssuesByType(mapOfFiltersWithStoryIds);
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
 		getDefectsWithoutDrop(droppedDefects, defectDataList, defectListWoDrop);
-		resultListMap.put(STORY_POINTS_DATA, storyList);
+		resultListMap.put(STORY_POINTS_DATA, issuesBySprintAndType);
 		resultListMap.put(STORY_DATA, sprintWiseStoryList);
 		resultListMap.put(DEFECT_DATA,
 				excludePriorityAndIncludeRCA(defectListWoDrop, projectWisePriority, projectWiseRCA));

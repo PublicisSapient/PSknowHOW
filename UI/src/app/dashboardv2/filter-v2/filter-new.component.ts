@@ -460,7 +460,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
       if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'release') {
         this.setSprintDetails(event);
-        this.service.setSprintForRnR(event[0]);
       } else {
         this.additionalData = false;
       }
@@ -502,9 +501,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event && event[0]?.labelName === 'project') {
       const allSprints = this.filterDataArr[this.selectedType]['sprint'];
-      const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId))
-      if (currentProjectSprints.length) {
-        this.service.setSprintForRnR(currentProjectSprints[0])
+      const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed');
+      if (currentProjectSprints?.length) {
+        currentProjectSprints.sort((a, b) => new Date(a.sprintEndDate).getTime() - new Date(b.sprintEndDate).getTime());
+        this.service.setSprintForRnR(currentProjectSprints[currentProjectSprints?.length - 1])
       }
     }
     this.compileGAData(event);
@@ -546,7 +546,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.previousFilterEvent['additional_level'] = {};
       }
       this.previousFilterEvent['additional_level'][event[0].labelName] = event;
-      this.service.setSprintForRnR(event[event.length - 1])
     }
     if (!event?.length) {
       this.filterApplyData['selectedMap'][level] = [];
@@ -575,15 +574,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
     // Promise.resolve(() => {
     if (!this.selectedLevel) {
-      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, true, true, this.boardData['configDetails'], true, this.dashConfigData);
       return;
     }
-
     if (typeof this.selectedLevel === 'string') {
-      this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, true, true, this.boardData['configDetails'], true, this.dashConfigData);
       return;
     }
-    this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+    this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, true, true, this.boardData['configDetails'], true, this.dashConfigData);
     // });
   }
 

@@ -355,6 +355,12 @@
       ]
     },
     {
+      "type": "jiraDefectRejectionStatusKPI34",
+      "value": [
+        "Rejected"
+      ]
+    },
+    {
       "type": "jiraDefectRemovalStatusKPI34",
       "value": [
         "Closed",

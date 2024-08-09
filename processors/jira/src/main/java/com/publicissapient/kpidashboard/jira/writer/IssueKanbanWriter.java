@@ -69,28 +69,32 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 	 */
 	@Override
 	public void write(Chunk<? extends CompositeResult> kanbanCompositeResults) throws Exception {
-		List<KanbanJiraIssue> jiraIssues = new ArrayList<>();
-		List<KanbanIssueCustomHistory> kanbanIssueCustomHistory = new ArrayList<>();
+		Map<String, KanbanJiraIssue> jiraIssues = new HashMap<>();
+		Map<String, KanbanIssueCustomHistory> kanbanIssueCustomHistory = new HashMap<>();
 		Set<KanbanAccountHierarchy> accountHierarchies = new HashSet<>();
 		Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
 		Set<Assignee> assignee = new HashSet<>();
 
 		for (CompositeResult kanbanCompositeResult : kanbanCompositeResults) {
 			if (null != kanbanCompositeResult.getKanbanJiraIssue()) {
-				jiraIssues.add(kanbanCompositeResult.getKanbanJiraIssue());
+				String key = kanbanCompositeResult.getKanbanJiraIssue().getNumber() + ","
+						+ kanbanCompositeResult.getKanbanJiraIssue().getBasicProjectConfigId();
+				jiraIssues.putIfAbsent(key, kanbanCompositeResult.getKanbanJiraIssue());
 			}
 			if (null != kanbanCompositeResult.getKanbanIssueCustomHistory()) {
-				kanbanIssueCustomHistory.add(kanbanCompositeResult.getKanbanIssueCustomHistory());
+				String key = kanbanCompositeResult.getKanbanIssueCustomHistory().getStoryID() + ","
+						+ kanbanCompositeResult.getKanbanIssueCustomHistory().getBasicProjectConfigId();
+				kanbanIssueCustomHistory.putIfAbsent(key, kanbanCompositeResult.getKanbanIssueCustomHistory());
 			}
 			if (CollectionUtils.isNotEmpty(kanbanCompositeResult.getKanbanAccountHierarchies())) {
 				accountHierarchies.addAll(kanbanCompositeResult.getKanbanAccountHierarchies());
 			}
 			addAssignees(assigneesToSave, assignee, kanbanCompositeResult);
 		}
-		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+		if (MapUtils.isNotEmpty(jiraIssues)) {
 			writeKanbanJiraItem(jiraIssues);
 		}
-		if (CollectionUtils.isNotEmpty(kanbanIssueCustomHistory)) {
+		if (MapUtils.isNotEmpty(kanbanIssueCustomHistory)) {
 			writeKanbanJiraHistory(kanbanIssueCustomHistory);
 		}
 		if (CollectionUtils.isNotEmpty(accountHierarchies)) {
@@ -120,14 +124,16 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 		}
 	}
 
-	public void writeKanbanJiraItem(List<KanbanJiraIssue> jiraItems) {
+	public void writeKanbanJiraItem(Map<String, KanbanJiraIssue> jiraItems) {
 		log.info("Writing issues to kanban_jira_Issue Collection");
-		kanbanJiraIssueRepository.saveAll(jiraItems);
+		List<KanbanJiraIssue> jiraIssues = new ArrayList<>(jiraItems.values());
+		kanbanJiraIssueRepository.saveAll(jiraIssues);
 	}
 
-	public void writeKanbanJiraHistory(List<KanbanIssueCustomHistory> kanbanIssueCustomHistory) {
+	public void writeKanbanJiraHistory(Map<String, KanbanIssueCustomHistory> kanbanIssueCustomHistory) {
 		log.info("Writing issues to kanban_jira_Issue_custom_history Collection");
-		kanbanJiraIssueHistoryRepository.saveAll(kanbanIssueCustomHistory);
+		List<KanbanIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>(kanbanIssueCustomHistory.values());
+		kanbanJiraIssueHistoryRepository.saveAll(jiraIssueCustomHistories);
 	}
 
 	public void writeKanbanAccountHierarchy(Set<KanbanAccountHierarchy> accountHierarchies) {

@@ -81,8 +81,6 @@ export class DeveloperComponent implements OnInit {
   showChart = 'chart';
   iSAdditionalFilterSelected = false;
   kpiThresholdObj = {};
-  kpiList:Array<string> = [];
-  isRecommendationsEnabled: boolean = false;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService) {
 
@@ -159,11 +157,6 @@ export class DeveloperComponent implements OnInit {
           this.service.setGlobalConfigData(filterData);
         }
       });
-
-      /** Get recommendations flag */
-      this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
-          this.isRecommendationsEnabled = item;
-      }));
 
     this.service.getEmptyData().subscribe((val) => {
       if (val) {
@@ -248,7 +241,6 @@ export class DeveloperComponent implements OnInit {
     this.enableByeUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
-    this.kpiList = this.configGlobalData.map((kpi) => kpi.kpiId)
     const shownKpis = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
     if (shownKpis?.length === 0) {
       this.noKpis = true;

@@ -17,6 +17,8 @@ import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.c
 export class KpiCardV2Component implements OnInit, OnChanges {
   isTooltip = false;
   @Input() kpiData: any;
+  @Input() kpiChartData: any;
+  @Input() iSAdditionalFilterSelected: boolean;
   @Input() showChartView = 'chart';
   @Input() trendData: Array<object>;
   @Input() showTrendIndicator = true;
@@ -77,7 +79,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService) { }
 
   ngOnInit(): void {
-
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
       if (Object.keys(x)?.length > 1) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
@@ -380,7 +381,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
         //     hoverObjectListTemp.push(tempObj);
         //   });
-        // } else 
+        // } else
         {
           selectedProjectTrend.value.forEach(element => {
             let tempObj = {};

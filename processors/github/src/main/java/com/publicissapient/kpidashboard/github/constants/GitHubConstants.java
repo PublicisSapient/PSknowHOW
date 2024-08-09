@@ -66,7 +66,6 @@ public final class GitHubConstants {
 	public static final String RESP_CLOSED = "closed";
 	public static final String RESP_CREATED_AT = "created_at";
 	public static final String RESP_UPDATED_AT = "updated_at";
-	public static final String RESP_CLOSED_AT = "closed_at";
 	public static final String OWNER = "owner";
 	public static final String MERGED = "MERGED";
 	public static final String RESP_COMMIT = "commit";

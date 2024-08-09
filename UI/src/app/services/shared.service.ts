@@ -100,6 +100,7 @@ export class SharedService {
   sprintQueryParamObs = this.sprintQueryParamSubject.asObservable();
   processorTraceLogs = [];
   selectedTrendsEvent;
+  projectList = [];
 
   public currentIssue = new BehaviorSubject({});
   public currentData = this.currentIssue.asObservable();
@@ -424,6 +425,14 @@ export class SharedService {
 
   setAuthToken(value) {
     this.authToken = value;
+  }
+
+  setProjectList(projects) {
+    this.projectList = projects;
+  }
+
+  getProjectList() {
+    return this.projectList;
   }
 
   getAuthToken() {

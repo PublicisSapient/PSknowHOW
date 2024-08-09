@@ -471,6 +471,9 @@ describe('JiraConfigComponent', () => {
       ]
     };
     component.configuredTools = fakeConfiguredTools;
+    component.showAddNewBtn = true;
+    component.isConfigureTool = false;
+    component.toolForm = new UntypedFormGroup({});
     spyOn(httpService, 'deleteProjectToolConfig').and.returnValue(of({"message":"Tool deleted successfully","success":true}));
     component.deleteTool(tool);
     tick();
@@ -495,6 +498,7 @@ describe('JiraConfigComponent', () => {
           null
       ]
     };
+    spyOn(component, 'handleToolConfiguration');
     component.connections = fakeJiraConnections.data;
     component.editTool(tool);
     expect(component.isEdit).toBeTruthy();

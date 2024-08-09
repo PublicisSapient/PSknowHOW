@@ -217,6 +217,7 @@ public class KanbanAzureIssueClientImplTest {
 		fieldMapping.setJiraDefectRejectionStatusKPI82("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI135("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusQAKPI111("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI34("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI133("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusRCAKPI36("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
@@ -306,6 +307,7 @@ public class KanbanAzureIssueClientImplTest {
 		fieldMapping.setJiraDefectRejectionStatusKPI82("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI135("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusQAKPI111("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI34("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI133("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusRCAKPI36("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");

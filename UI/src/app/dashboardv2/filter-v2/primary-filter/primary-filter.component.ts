@@ -34,7 +34,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     if ((!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue)) ||
       ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) ||
         (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange))) {
-        // (changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange)) {
+      // (changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange)) {
       this.applyDefaultFilters();
       return;
     }
@@ -119,8 +119,8 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         }
       }
       // if (!this.stateFilters['additional_level']) {
-        this.applyPrimaryFilters({});
-        this.setProjectAndLevelBackupBasedOnSelectedLevel();
+      this.applyPrimaryFilters({});
+      this.setProjectAndLevelBackupBasedOnSelectedLevel();
       // }
     }, 100);
   }
@@ -137,12 +137,20 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     if (this.selectedLevel && typeof this.selectedLevel === 'string' && this.selectedLevel.length) {
       this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
       if (this.primaryFilterConfig['defaultLevel'].sortBy) {
-        this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel], [this.primaryFilterConfig['defaultLevel'].sortBy]);
+        if (this.selectedTab.toLowerCase() === 'iteration') {
+          this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
+        } else {
+          this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel], [this.primaryFilterConfig['defaultLevel'].sortBy]);
+        }
       }
     } else if (this.selectedLevel && Object.keys(this.selectedLevel).length) {
       // check for iterations and releases
       if (this.primaryFilterConfig['defaultLevel'].sortBy) {
-        this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy]);
+        if (this.selectedTab.toLowerCase() === 'iteration') {
+          this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
+        } else {
+          this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy]);
+        }
       } else {
         this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId));
       }

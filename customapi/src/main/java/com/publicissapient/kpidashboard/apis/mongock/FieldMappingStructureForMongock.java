@@ -38,10 +38,13 @@ import lombok.Setter;
 public class FieldMappingStructureForMongock {
 	private String fieldName;
 	private String fieldLabel;
+	private String placeHolderText;
+	private Integer fieldDisplayOrder;
 	private String fieldType;
 	private String fieldCategory;
 	private String toggleLabel;
 	private String section;
+	private Integer sectionOrder;
 	private boolean processorCommon;
 	private MappingToolTip tooltip;
 	private List<Options> options;
