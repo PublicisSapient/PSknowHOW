@@ -40,10 +40,6 @@ max-width: unset;
 width: 80px;
 }
 
-.long-text {
-word-break: break-all;
-}
-
 input:disabled, textarea:disabled {
 background-color: #dee2e6;
 }

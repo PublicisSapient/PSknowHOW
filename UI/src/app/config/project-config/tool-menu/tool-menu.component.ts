@@ -17,13 +17,14 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { SharedService } from '../../../services/shared.service';
 import { HttpService } from '../../../services/http.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { KeyValue } from '@angular/common';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
+import { SelectButtonModule } from 'primeng/selectbutton';
 @Component({
   selector: 'app-tool-menu',
   templateUrl: './tool-menu.component.html',
@@ -52,6 +53,9 @@ export class ToolMenuComponent implements OnInit {
   repoToolsEnabled: boolean;
   userProjects = [];
   activeProject: any;
+  configOptions: { name: string; value: string; }[];
+  selectedTab: string = 'projectConfig';
+  uniqueTools: any = [];
 
   constructor(
     public router: Router,
@@ -60,8 +64,18 @@ export class ToolMenuComponent implements OnInit {
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     public getAuthorizationService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService) {
-
+    private ga: GoogleAnalyticsService,
+    private route: ActivatedRoute) {
+      this.configOptions = [
+        {
+          'name': 'Tools Connected',
+          'value': 'toolsConnected'
+        },
+        {
+          'name': 'Project Configuration',
+          'value': 'projectConfig'
+        }
+      ]
   }
 
   ngOnInit() {
@@ -93,7 +107,15 @@ export class ToolMenuComponent implements OnInit {
       this.isAssigneeSwitchDisabled = true;
     }
 
+
   }
+
+  // onTabChange() {
+  //   console.log(this.selectedTab)
+  //   if(this.selectedTab === 'toolsConnected') {
+  //     this.router.navigate(['/dashboard/Config/connection-list'], { queryParams: { 'pid': this.selectedProject.id } })
+  //   }
+  // }
 
   getToolsConfigured() {
     this.httpService.getAllToolConfigs(this.selectedProject.id).subscribe(response => {
@@ -102,12 +124,188 @@ export class ToolMenuComponent implements OnInit {
         this.sharedService.setSelectedToolConfig(response['data']);
         this.selectedTools = response['data'];
         this.setGaData();
+
+        this.uniqueTools = Array.from(
+          this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
+        );
+        console.log(this.router.url, this.selectedProject.id)
+        if (this.router.url === `/dashboard/Config/connection-list/${this.selectedProject.id}/ToolMenu?tab=1` || this.router.url === '/dashboard/Config/connection-list?tab=1') {
+          this.buttonText = 'Set Up';
+          this.tools = [
+            {
+              toolName: 'Jira',
+              category: 'ABC',
+              description: '-',
+              icon: 'fab fa-atlassian',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'Jira',
+              routerLink2: `/dashboard/Config/connection-list/${this.selectedProject.id}/FieldMapping`,
+              index: 0,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
+            },
+            {
+              toolName: 'JiraTest',
+              category: 'ABC',
+              description: '-',
+              icon: 'fab fa-atlassian',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'JiraTest',
+              index: 11,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'JiraTest')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'JiraTest')[0]?.updatedAt
+            },
+            {
+              toolName: 'Zephyr',
+              category: 'ABC',
+              description: '-',
+              icon: '',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'Zephyr',
+              index: 1,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Zephyr')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Zephyr')[0]?.updatedAt
+            },
+            {
+              toolName: 'Jenkins',
+              category: 'ABC',
+              description: '-',
+              icon: 'fab fa-jenkins',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'Jenkins',
+              index: 2,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Jenkins')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Jenkins')[0]?.updatedAt
+            },
+            {
+              toolName: 'BitBucket',
+              category: 'ABC',
+              description: '-',
+              icon: 'fab fa-bitbucket',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'Bitbucket',
+              index: 3,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'BitBucket')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'BitBucket')[0]?.updatedAt
+            },
+            {
+              toolName: 'GitLab',
+              category: 'ABC',
+              description: '-',
+              icon: 'fab fa-gitlab',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'GitLab',
+              index: 4,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'GitLab')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'GitLab')[0]?.updatedAt
+            },
+            {
+              toolName: 'Sonar',
+              category: 'ABC',
+              description: '-',
+              icon: '',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'Sonar',
+              index: 5,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Sonar')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Sonar')[0]?.updatedAt
+            },
+            {
+              toolName: 'TeamCity',
+              category: 'ABC',
+              description: '-',
+              icon: '',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'Teamcity',
+              index: 6,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'TeamCity')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'TeamCity')[0]?.updatedAt
+            },
+            {
+              toolName: 'Bamboo',
+              category: 'ABC',
+              description: '-',
+              icon: '',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'Bamboo',
+              index: 7,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Bamboo')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Bamboo')[0]?.updatedAt
+            },
+            {
+              toolName: 'Azure Pipeline',
+              category: 'ABC',
+              description: '-',
+              icon: 'fab fa-windows',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'AzurePipeline',
+              index: 8,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'AzurePipeline')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'AzurePipeline')[0]?.updatedAt
+            },
+            {
+              toolName: 'Azure Repo',
+              category: 'ABC',
+              description: '-',
+              icon: 'fab fa-windows',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'AzureRepository',
+              index: 9,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'AzureRepository')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'AzureRepository')[0]?.updatedAt
+            },
+            {
+              toolName: 'GitHub',
+              category: 'ABC',
+              description: '-',
+              icon: 'fab fa-github',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'GitHub',
+              index: 10,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'GitHub')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'GitHub')[0]?.updatedAt
+            },
+            {
+              toolName: 'GitHub Action',
+              category: 'ABC',
+              description: '-',
+              icon: 'fab fa-github',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'GitHubAction',
+              index: 11,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'GitHubAction')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'GitHubAction')[0]?.updatedAt
+            },
+            {
+              toolName: 'RepoTool',
+              category: 'ABC',
+              description: '-',
+              icon: '',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'RepoTool',
+              index: 12,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'RepoTool')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'RepoTool')[0]?.updatedAt
+            },
+            {
+              toolName: 'ArgoCD',
+              category: 'ABC',
+              description: '-',
+              icon: '',
+              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              queryParams1: 'ArgoCD',
+              index: 13,
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'ArgoCD')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'ArgoCD')[0]?.updatedAt
+            }
+
+          ];
+        }
+
         const jiraOrAzure = response['data']?.filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
         if (jiraOrAzure.length) {
           const fakeEvent = {
-            value: {
-              value: jiraOrAzure[0].toolName === 'Azure'
-            }
+            value: jiraOrAzure[0].toolName === 'Azure'
           };
           this.projectTypeChange(fakeEvent, false);
           this.selectedType = jiraOrAzure[0].toolName === 'Azure';
@@ -125,178 +323,7 @@ export class ToolMenuComponent implements OnInit {
           });
         }
 
-        if (this.router.url === `/dashboard/Config/ProjectList/${this.selectedProject.id}/ToolMenu`) {
-          this.buttonText = 'Set Up';
-          this.tools = [
-            {
-              toolName: 'Jira',
-              category: 'ABC',
-              description: '-',
-              icon: 'fab fa-atlassian',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'Jira',
-              routerLink2: `/dashboard/Config/ProjectList/${this.selectedProject.id}/FieldMapping`,
-              index: 0,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'Jira')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
-            },
-            {
-              toolName: 'JiraTest',
-              category: 'ABC',
-              description: '-',
-              icon: 'fab fa-atlassian',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'JiraTest',
-              index: 11,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'JiraTest')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'JiraTest')[0]?.updatedAt
-            },
-            {
-              toolName: 'Zephyr',
-              category: 'ABC',
-              description: '-',
-              icon: '',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'Zephyr',
-              index: 1,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'Zephyr')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'Zephyr')[0]?.updatedAt
-            },
-            {
-              toolName: 'Jenkins',
-              category: 'ABC',
-              description: '-',
-              icon: 'fab fa-jenkins',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'Jenkins',
-              index: 2,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'Jenkins')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'Jenkins')[0]?.updatedAt
-            },
-            {
-              toolName: 'BitBucket',
-              category: 'ABC',
-              description: '-',
-              icon: 'fab fa-bitbucket',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'Bitbucket',
-              index: 3,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'BitBucket')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'BitBucket')[0]?.updatedAt
-            },
-            {
-              toolName: 'GitLab',
-              category: 'ABC',
-              description: '-',
-              icon: 'fab fa-gitlab',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'GitLab',
-              index: 4,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'GitLab')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'GitLab')[0]?.updatedAt
-            },
-            {
-              toolName: 'Sonar',
-              category: 'ABC',
-              description: '-',
-              icon: '',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'Sonar',
-              index: 5,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'Sonar')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'Sonar')[0]?.updatedAt
-            },
-            {
-              toolName: 'TeamCity',
-              category: 'ABC',
-              description: '-',
-              icon: '',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'Teamcity',
-              index: 6,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'TeamCity')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'TeamCity')[0]?.updatedAt
-            },
-            {
-              toolName: 'Bamboo',
-              category: 'ABC',
-              description: '-',
-              icon: '',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'Bamboo',
-              index: 7,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'Bamboo')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'Bamboo')[0]?.updatedAt
-            },
-            {
-              toolName: 'Azure Pipeline',
-              category: 'ABC',
-              description: '-',
-              icon: 'fab fa-windows',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'AzurePipeline',
-              index: 8,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'AzurePipeline')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'AzurePipeline')[0]?.updatedAt
-            },
-            {
-              toolName: 'Azure Repo',
-              category: 'ABC',
-              description: '-',
-              icon: 'fab fa-windows',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'AzureRepository',
-              index: 9,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'AzureRepository')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'AzureRepository')[0]?.updatedAt
-            },
-            {
-              toolName: 'GitHub',
-              category: 'ABC',
-              description: '-',
-              icon: 'fab fa-github',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'GitHub',
-              index: 10,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'GitHub')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'GitHub')[0]?.updatedAt
-            },
-            {
-              toolName: 'GitHub Action',
-              category: 'ABC',
-              description: '-',
-              icon: 'fab fa-github',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'GitHubAction',
-              index: 11,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'GitHubAction')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'GitHubAction')[0]?.updatedAt
-            },
-            {
-              toolName: 'RepoTool',
-              category: 'ABC',
-              description: '-',
-              icon: '',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'RepoTool',
-              index: 12,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'RepoTool')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'RepoTool')[0]?.updatedAt
-            },
-            {
-              toolName: 'ArgoCD',
-              category: 'ABC',
-              description: '-',
-              icon: '',
-              routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'ArgoCD',
-              index: 13,
-              connectionName: this.selectedTools.filter(tool => tool.toolName === 'ArgoCD')[0]?.connectionName,
-              updatedAt: this.selectedTools.filter(tool => tool.toolName === 'ArgoCD')[0]?.updatedAt
-            }
 
-          ];
-        }
       }
       // filtering tools based on repoToolFlag
       this.tools = this.tools.filter(details => {
@@ -315,30 +342,34 @@ export class ToolMenuComponent implements OnInit {
       category: 'ABC',
       description: '-',
       icon: 'fab fa-windows',
-      routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
+      routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
       queryParams1: 'Azure',
-      routerLink2: `/dashboard/Config/ProjectList/${this.selectedProject.id}/FieldMapping`,
-      index: 0
+      routerLink2: `/dashboard/Config/connection-list/${this.selectedProject.id}/FieldMapping`,
+      index: 0,
+      connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Azure')[0]?.connectionName,
+      updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Azure')[0]?.updatedAt
     };
     const jiraType = {
       toolName: 'Jira',
       category: 'ABC',
       description: '-',
       icon: 'fab fa-atlassian',
-      routerLink: `/dashboard/Config/ProjectList/${this.selectedProject.id}/JiraConfig`,
+      routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
       queryParams1: 'Jira',
-      routerLink2: `/dashboard/Config/ProjectList/${this.selectedProject.id}/FieldMapping`,
-      index: 0
+      routerLink2: `/dashboard/Config/connection-list/${this.selectedProject.id}/FieldMapping`,
+      index: 0,
+      connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.connectionName,
+      updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
     };
     this.tools = this.tools.filter((tool) => tool.toolName !== 'Azure' && tool.toolName !== 'Jira');
     if (isClicked) {
-      if (!!event && !!event.value) {
+      if (event && event.value) {
         this.tools.unshift(azureType);
       } else {
         this.tools.unshift(jiraType);
       }
     } else {
-      if (!!event && !!event.value && !!event.value.value) {
+      if (event && event.value) {
         this.tools.unshift(azureType);
       } else {
         this.tools.unshift(jiraType);
@@ -434,8 +465,8 @@ export class ToolMenuComponent implements OnInit {
     updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
     updatedDetails['id'] = this.selectedProject['id'];
     updatedDetails["createdAt"] = new Date().toISOString();
-    for(let element of hierarchyData){
-      if(element.hierarchyLevelId == 'project'){
+    for (let element of hierarchyData) {
+      if (element.hierarchyLevelId == 'project') {
         break;
       }
       updatedDetails['hierarchy'].push({
@@ -494,11 +525,17 @@ export class ToolMenuComponent implements OnInit {
       this.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
       // this.selectedProject = this.userProjects[0];
     }
-    this.selectedProject = this.userProjects.filter((x) => x.id == this.selectedProject.id)[0]
+    if(this.selectedProject && this.router.url.includes('ToolMenu')) {
+      this.selectedProject = this.userProjects.filter((x) => x.id == this.selectedProject?.id)[0]
+    } else {
+      this.selectedProject = this.userProjects[0];
+    }
   }
 
   updateProjectSelection() {
-    this.router.navigate([`/dashboard/Config/ProjectList/${this.selectedProject['id']}/ToolMenu`]);
+    console.log(this.selectedProject);
+    this.setSelectedProject();
+    this.router.navigate([`/dashboard/Config/connection-list/${this.selectedProject['id']}/ToolMenu`], { queryParams: { tab: 1 } });
     this.getToolsConfigured();
   }
 

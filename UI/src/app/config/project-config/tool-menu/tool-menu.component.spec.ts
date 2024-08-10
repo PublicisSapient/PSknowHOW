@@ -150,7 +150,7 @@ describe('ToolMenuComponent', () => {
   it('should handle the router url and set tools', () => {
     spyOn(component, 'setGaData');
     const selectedProjectId = component.selectedProject.id;
-    Object.defineProperty(router, 'url', { value: `/dashboard/Config/ProjectList/${selectedProjectId}/ToolMenu` });
+    Object.defineProperty(router, 'url', { value: `/dashboard/Config/connection-list/${selectedProjectId}/ToolMenu?tab=1` });
 
     const response = {
       success: true,

@@ -24,6 +24,7 @@ import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
 import { MenuItem } from 'primeng/api';
+import { Router } from '@angular/router';
 declare const require: any;
 
 @Component({
@@ -56,7 +57,13 @@ export class BasicConfigComponent implements OnInit {
   isProjectSetupPopup : boolean = false;
   isProjectCOmpletionPopup : boolean = false;
 
-  constructor(private formBuilder: UntypedFormBuilder, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService, private ga: GoogleAnalyticsService) {
+  constructor(private formBuilder: UntypedFormBuilder,
+    private sharedService: SharedService,
+    private http: HttpService,
+    private messenger: MessageService,
+    private getAuthorizationService: GetAuthorizationService,
+    private ga: GoogleAnalyticsService,
+    public router: Router) {
     this.projectTypeOptions = [
       { name: 'Scrum', value: false },
       { name: 'Kanban', value: true }
@@ -82,6 +89,11 @@ export class BasicConfigComponent implements OnInit {
     this.selectedProject = this.sharedService.getSelectedProject();
     this.sharedService.setSelectedFieldMapping(null);
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
+    console.log(this.selectedProject)
+  }
+
+  getNewProjectId() {
+    this.router.navigate(['/dashboard/Config/connection-list'], { queryParams: { 'pid': this.selectedProject.id } })
   }
 
   getFields() {

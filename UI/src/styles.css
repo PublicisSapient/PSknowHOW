@@ -317,9 +317,7 @@ h3{
   font-weight: 500;
 }
 .long-text {
-  word-break: break-all;
   padding-right: 16px;
-  /* display: inline-block; */
 }
 
 .fnt-size-12 {
@@ -1857,7 +1855,7 @@ p-dialog .p-button-cancel.p-button-secondary {
   width: 100%;
 }
 .squad-err-msg {
-  width: 250px;
+  width: 300px;
 }
 .font-small{
   font-size: .9rem;
