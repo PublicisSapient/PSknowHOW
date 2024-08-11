@@ -115,6 +115,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiList: Array<string> = [];
   releaseEndDate: string = '';
   timeRemaining = 0;
+  immediateLoader = true;
   
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
@@ -122,6 +123,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
       this.noFilterApplyData = false;
       this.kpiLoader = new Set();
+      this.immediateLoader = true;
       this.processedKPI11Value = {};
       this.selectedBranchFilter = 'Select';
       this.serviceObject = {};
@@ -281,6 +283,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiTrendsObj = {};
       this.kpiTableDataObj = {};
       this.kpiLoader = new Set();
+      this.immediateLoader = true;
       for (const key in this.colorObj) {
         const idx = key.lastIndexOf('_');
         const nodeName = key.slice(0, idx);
@@ -324,6 +327,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               this.groupZypherKpi(kpiIdsForCurrentBoard);
               this.groupBitBucketKpi(kpiIdsForCurrentBoard)
             }
+            this.immediateLoader = false;
             this.createKpiTableHeads(this.selectedtype.toLowerCase());
 
             let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;

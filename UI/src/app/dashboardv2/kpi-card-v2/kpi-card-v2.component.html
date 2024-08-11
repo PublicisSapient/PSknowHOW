@@ -71,10 +71,10 @@
   'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
     <!--place for chart to be rendered-->
 
-    <ng-content *ngIf="checkIfDataPresent(trendValueList) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
+    <ng-content *ngIf="!loader && !immediateLoader && checkIfDataPresent(trendValueList) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
     <ng-template #noData>
       <!-- <div class="min-ht" *ngIf="(!checkIfDataPresent(trendValueList) && !iSAdditionalFilterSelected) || (!checkIfDataPresent(trendValueList) && kpi?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)"> -->
-      <div class="min-ht" *ngIf="!checkIfDataPresent(trendValueList)">
+      <div class="min-ht" *ngIf="!loader && !immediateLoader && !checkIfDataPresent(trendValueList)">
         <div class="p-w-100  p-d-flex p-justify-center">
           <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
         </div>
@@ -86,7 +86,7 @@
         <div class="err squad-err-msg">KPI cannot be measured for a Squad</div>
       </div>
     </ng-template>
-    <div class="overlay loader" *ngIf="loader">
+    <div class="overlay loader" *ngIf="loader || immediateLoader">
       <div class="loading-img"></div>
     </div>
   </div>
