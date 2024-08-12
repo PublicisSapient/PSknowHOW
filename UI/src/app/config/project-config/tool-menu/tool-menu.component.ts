@@ -448,8 +448,6 @@ export class ToolMenuComponent implements OnInit {
   updateProjectDetails() {
 
     let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject['type']?.toLowerCase()];
-    console.log("hierarchyData", hierarchyData);
-    console.log("selectedProject", this.selectedProject);
 
     const updatedDetails = {};
     updatedDetails['projectName'] = this.selectedProject['name'] || this.selectedProject['Project'];
@@ -471,7 +469,6 @@ export class ToolMenuComponent implements OnInit {
         value: this.selectedProject[element.hierarchyLevelId]
       });
     }
-    console.log("updatedDetails", updatedDetails);
     this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
       if (response && response.serviceResponse && response.serviceResponse.success) {
         this.isAssigneeSwitchDisabled = true;
@@ -526,7 +523,6 @@ export class ToolMenuComponent implements OnInit {
   }
 
   updateProjectSelection() {
-    console.log(this.selectedProject);
     this.setSelectedProject();
     this.router.navigate([`/dashboard/Config/connection-list/${this.selectedProject['id']}/ToolMenu`], { queryParams: { tab: 1 } });
     this.getToolsConfigured();
