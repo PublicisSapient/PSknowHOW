@@ -194,8 +194,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.isTooltip = val;
   }
 
-  handleChange(type, value) {
-    console.log(value);
+  handleChange(type, value = null, filterIndex = 0) {
+    if (value) {
+      value?.value.forEach(selectedItem => {
+        this.dropdownArr[filterIndex]?.options.splice(this.dropdownArr[filterIndex]?.options.indexOf(selectedItem), 1) // remove the item from list
+        this.dropdownArr[filterIndex]?.options.unshift(selectedItem)// this will add selected item on the top 
+      });
+    }
     if (typeof value === 'object') {
       value = value.value;
     }
