@@ -313,10 +313,9 @@ export class BacklogComponent implements OnInit, OnDestroy {
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
       if (Object.values(this.kpiSelectedFilterObj[kpiId]).length > 1) {
         const tempArr = {};
-        /** This loop schenario is not possible practically inside this if block*/
-        // for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-        //   tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
-        // }
+        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+          tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+        }
         if (this.getChartType(kpiId) === 'progress-bar') {
           this.kpiChartData[kpiId] = this.applyAggregationLogicForProgressBar(tempArr);
         } else {
