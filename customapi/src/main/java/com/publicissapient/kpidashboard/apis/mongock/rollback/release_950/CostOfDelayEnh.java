@@ -34,7 +34,7 @@ public class CostOfDelayEnh {
 		Document filter = new Document("kpiId", "kpi113");
 
 		Document update = new Document("$set",
-				new Document("kpiName", "Value Delivered (Cost of Delay)").append("yaxisLabel", "Count(Days)"));
+				new Document("kpiName", "Value Delivered (Cost of Delay)").append("yAxisLabel", "Count(Days)"));
 
 		// Perform the update
 		kpiMaster.updateOne(filter, update);
