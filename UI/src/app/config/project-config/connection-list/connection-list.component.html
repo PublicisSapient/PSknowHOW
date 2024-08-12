@@ -16,95 +16,95 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<p-selectButton [options]="configOptions" [(ngModel)]="selectedTab" (onChange)="onTabChange()" optionLabel="name" optionValue="value" styleClass="p-mb-5"></p-selectButton>
+<div class="selectbtn-container">
+    <p-selectButton [options]="configOptions" [(ngModel)]="selectedTab" (onChange)="onTabChange()" optionLabel="name" optionValue="value" styleClass="p-mb-5"></p-selectButton>
+</div>
 <ng-container *ngIf="selectedTab === 'toolsConnected'">
   <p-toast [style]="{marginTop: '80px'}"></p-toast>
   <div class="main">
-    <div class="p-mt-5">
-      <h1>Tools Connected</h1>
-      <div class="toolsconfig-content">
-        <p-toolbar *ngIf="isConnectionAddEditAccess" styleClass="p-mb-5 bg-grey">
-            <ng-template pTemplate="left">
-                <p-dropdown [options]="addEditConnectionFieldsNlabels" class="connectionDdwn"
-                    [(ngModel)]="selectedConnectionType" placeholder="Select a Connection" (onChange)="onChangeConnection()"
-                    optionValue="connectionType" optionLabel="connectionLabel">
-                </p-dropdown>
-                <button pButton pRipple label="New Connection" icon="pi pi-plus" class="p-button-success p-mr-2"
-                    (click)="createConnection()" [disabled]="selectedConnectionType == ''"></button>
-            </ng-template>
+    <h1>Tools Connected</h1>
+    <div class="toolsconfig-content">
+      <p-toolbar *ngIf="isConnectionAddEditAccess" styleClass="p-mb-5 bg-grey">
+          <ng-template pTemplate="left">
+              <p-dropdown [options]="addEditConnectionFieldsNlabels" class="connectionDdwn"
+                  [(ngModel)]="selectedConnectionType" placeholder="Select a Connection" (onChange)="onChangeConnection()"
+                  optionValue="connectionType" optionLabel="connectionLabel">
+              </p-dropdown>
+              <button pButton pRipple label="New Connection" icon="pi pi-plus" class="p-button-success p-mr-2"
+                  (click)="createConnection()" [disabled]="selectedConnectionType == ''"></button>
+          </ng-template>
 
-            <ng-template pTemplate="right" style="display: none;">
-                <button style="display: none;" pButton pRipple label="Export" icon="pi pi-upload"
-                    class="p-button-help"></button>
-            </ng-template>
-        </p-toolbar>
+          <ng-template pTemplate="right" style="display: none;">
+              <button style="display: none;" pButton pRipple label="Export" icon="pi pi-upload"
+                  class="p-button-help"></button>
+          </ng-template>
+      </p-toolbar>
 
-        <p-accordion [expandIcon]="'pi pi-plus'" [collapseIcon]="'pi pi-minus'">
-            <p-accordionTab *ngFor="let eachConnection of connectionTypeCompleteList; let i = index"
-                [header]="eachConnection.label" [disabled]="connectionListAllType[eachConnection.value] &&
-                connectionListAllType[eachConnection.value].length == 0">
-                <p-toast></p-toast>
+      <p-accordion [expandIcon]="'pi pi-plus'" [collapseIcon]="'pi pi-minus'">
+          <p-accordionTab *ngFor="let eachConnection of connectionTypeCompleteList; let i = index"
+              [header]="eachConnection.label" [disabled]="connectionListAllType[eachConnection.value] &&
+              connectionListAllType[eachConnection.value].length == 0">
+              <p-toast></p-toast>
 
-                <div class="card">
-                    <p-table #dt [value]="connectionListAllType[eachConnection.value]" [rows]="5" [paginator]="true"
-                        [globalFilterFields]="eachConnection.connectionTableCols" [(selection)]="selectedConnectionList"
-                        [rowHover]="true" dataKey="id"
-                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                        [showCurrentPageReport]="true" styleClass="p-datatable-striped" [alwaysShowPaginator]="false"  loadingIcon="loading-img">
-                        <ng-template pTemplate="caption">
-                            <div class="p-d-flex p-ai-center p-jc-between">
-                                <h5 class="p-m-0">Connections</h5>
-                                <span class="p-input-icon-left">
-                                    <i class="pi pi-search"></i>
-                                    <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
-                                        placeholder="Search..." />
-                                </span>
-                            </div>
-                        </ng-template>
-                        <ng-template pTemplate="header">
-                            <tr>
-                                <th id="connectionHeader" style="width: 3rem; display: none;" scope="col">
-                                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                                </th>
+              <div class="card">
+                  <p-table #dt [value]="connectionListAllType[eachConnection.value]" [rows]="5" [paginator]="true"
+                      [globalFilterFields]="eachConnection.connectionTableCols" [(selection)]="selectedConnectionList"
+                      [rowHover]="true" dataKey="id"
+                      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                      [showCurrentPageReport]="true" styleClass="p-datatable-striped" [alwaysShowPaginator]="false"  loadingIcon="loading-img">
+                      <ng-template pTemplate="caption">
+                          <div class="p-d-flex p-ai-center p-jc-between">
+                              <h5 class="p-m-0">Connections</h5>
+                              <span class="p-input-icon-left">
+                                  <i class="pi pi-search"></i>
+                                  <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                      placeholder="Search..." />
+                              </span>
+                          </div>
+                      </ng-template>
+                      <ng-template pTemplate="header">
+                          <tr>
+                              <th id="connectionHeader" style="width: 3rem; display: none;" scope="col">
+                                  <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                              </th>
 
 
-                                <th *ngFor="let connectionHeader of eachConnection.connectionTableCols" [pSortableColumn]="connectionHeader.field" scope="col">{{ connectionHeader.header }} <p-sortIcon
-                                        [field]="connectionHeader.field"></p-sortIcon>
-                                </th>
-                                <th *ngIf="isConnectionAddEditAccess" pSortableColumn="editConnectionColumn" scope="col">Actions</th>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-connection>
-                            <tr [ngClass]="{'broken-conn-row': connection.brokenConnection}" tooltipPosition="top" [pTooltip]="connection.brokenConnection ? connection.connectionErrorMsg : null">
-                                <td style="display: none;">
-                                    <p-tableCheckbox [value]="connection"></p-tableCheckbox>
-                                </td>
-                                <td *ngFor="let connectionRow of eachConnection.connectionTableCols">
-                                    {{connection[connectionRow.field]}}</td>
-                                <td *ngIf="isConnectionAddEditAccess">
-                                    <div class="p-d-flex p-align-center">
-                                        <div class="action-btns p-mr-5"
-                                            (click)="editConnection(connection)"
-                                            [ngClass]="{'not-allowed': isRoleViewer && connection['createdBy'] !== currentUser}">
-                                            <i class="far fa-edit"></i></div>
-                                        <div class="action-btns"
-                                            (click)="deleteConnection(connection)"
-                                            [ngClass]="{'not-allowed': isRoleViewer && connection['createdBy'] !== currentUser}"><i
-                                                class="far fa-trash-alt"></i></div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </ng-template>
+                              <th *ngFor="let connectionHeader of eachConnection.connectionTableCols" [pSortableColumn]="connectionHeader.field" scope="col">{{ connectionHeader.header }} <p-sortIcon
+                                      [field]="connectionHeader.field"></p-sortIcon>
+                              </th>
+                              <th *ngIf="isConnectionAddEditAccess" pSortableColumn="editConnectionColumn" scope="col">Actions</th>
+                          </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-connection>
+                          <tr [ngClass]="{'broken-conn-row': connection.brokenConnection}" tooltipPosition="top" [pTooltip]="connection.brokenConnection ? connection.connectionErrorMsg : null">
+                              <td style="display: none;">
+                                  <p-tableCheckbox [value]="connection"></p-tableCheckbox>
+                              </td>
+                              <td *ngFor="let connectionRow of eachConnection.connectionTableCols">
+                                  {{connection[connectionRow.field]}}</td>
+                              <td *ngIf="isConnectionAddEditAccess">
+                                  <div class="p-d-flex p-align-center">
+                                      <div class="action-btns p-mr-5"
+                                          (click)="editConnection(connection)"
+                                          [ngClass]="{'not-allowed': isRoleViewer && connection['createdBy'] !== currentUser}">
+                                          <i class="far fa-edit"></i></div>
+                                      <div class="action-btns"
+                                          (click)="deleteConnection(connection)"
+                                          [ngClass]="{'not-allowed': isRoleViewer && connection['createdBy'] !== currentUser}"><i
+                                              class="far fa-trash-alt"></i></div>
+                                  </div>
+                              </td>
+                          </tr>
+                      </ng-template>
 
-                    </p-table>
-                </div>
-
+                  </p-table>
+              </div>
 
 
 
-            </p-accordionTab>
-        </p-accordion>
-      </div>
+
+          </p-accordionTab>
+      </p-accordion>
     </div>
   </div>
 

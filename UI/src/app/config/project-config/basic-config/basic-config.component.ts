@@ -89,11 +89,6 @@ export class BasicConfigComponent implements OnInit {
     this.selectedProject = this.sharedService.getSelectedProject();
     this.sharedService.setSelectedFieldMapping(null);
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
-    console.log(this.selectedProject)
-  }
-
-  getNewProjectId() {
-    this.router.navigate(['/dashboard/Config/connection-list'], { queryParams: { 'pid': this.selectedProject.id } })
   }
 
   getFields() {
