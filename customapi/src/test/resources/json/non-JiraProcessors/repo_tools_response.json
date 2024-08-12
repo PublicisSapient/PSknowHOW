@@ -140,6 +140,53 @@
       ],
       "date_label": "2023-07-01"
     }
-  ]
+  ],
+    [
+      {
+        "project_name": "TestP1_64748074f15d7843b3735db5",
+        "project_code": "TestP1_64748074f15d7843b3735db5",
+        "projectRevertPercentage": 1,
+        "repositories": [
+          {
+            "name": "PSknowHOW",
+            "repoRevertRatePercentage": 1,
+            "branches": [
+              {
+                "branchName": "develop",
+                "revertRateGrade": 0,
+                "branchRevertRatePercentage": null,
+                "mergeRequests": 0,
+                "users": [
+                  {
+                    "userEmail": "abc@gmail.com",
+                    "userRevertRatePercentage": 0
+                  },
+                  {
+                    "userEmail": "def@gmail.com",
+                    "userRevertRatePercentage": 0
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "email": "abc@gmail.com",
+            "grade": null,
+            "userRevertRatePercentage": 1,
+            "mergeRequests": 0
+          },
+          {
+            "email": "def@gmail.com",
+            "grade": null,
+            "userRevertRatePercentage": 1,
+            "mergeRequests": 0
+          }
+        ],
+        "date_label": "2023-07-01"
+      }
+
+    ]
   ]
 }

@@ -277,6 +277,7 @@ public class CustomApiConfig {// NOPMD
 	@Value("${exposed_api_key}")
 	private String xApiKey;
 	private String repoToolReworkRateUrl;
+	private String repoToolRevertRateUrl;
 
 	@Value("${max-age-seconds}")
 	private long maxAgeInSeconds;
@@ -302,6 +303,14 @@ public class CustomApiConfig {// NOPMD
 
 	public void setRepoToolReworkRateUrl(String repoToolReworkRateUrl) {
 		this.repoToolReworkRateUrl = repoToolReworkRateUrl;
+	}
+
+	public String getRepoToolRevertRateUrl() {
+		return repoToolRevertRateUrl;
+	}
+
+	public void setRepoToolRevertRateUrl(String repoToolRevertRateUrl) {
+		this.repoToolRevertRateUrl = repoToolRevertRateUrl;
 	}
 
 	public String getxApiKey() {

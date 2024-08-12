@@ -508,7 +508,10 @@ public enum KPICode {
      * Defect Count By (Release->Quality)
      */
     DEFECT_COUNT_BY("kpi178", KPISource.JIRA.name()),
-
+    /**
+     * Revert Rate (Developer)
+     */
+    REVERT_RATE("kpi180", KPISource.BITBUCKET.name()),
 
 
 

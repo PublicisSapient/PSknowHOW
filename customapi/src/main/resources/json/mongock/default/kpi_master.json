@@ -4592,5 +4592,45 @@
     "kpiFilter" : "" ,
     "boxType" : "chart" ,
     "calculateMaturity" : false
+  },
+  {
+    "kpiId" : "kpi180",
+    "kpiName" : "Revert Rate",
+    "maxValue" : "",
+    "kpiUnit" : "%",
+    "isDeleted" : false,
+    "defaultOrder" : 5,
+    "groupId" : 2,
+    "kpiSource" : "BitBucket",
+    "combinedKpiSource": "RepoTool",
+    "kanban" : false,
+    "chartType" : "line",
+    "kpiInfo" : {
+      "definition" : "The percentage of total pull requests opened that are reverts.",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/197263361/Developer+Revert+Rate"
+          }
+        }
+      ]
+    },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
+    "thresholdValue" : "50",
+    "xAxisLabel" : "Weeks",
+    "yAxisLabel" : "Percentage",
+    "isPositiveTrend" : false,
+    "showTrend" : true,
+    "kpiFilter" : "dropDown",
+    "aggregationCriteria" : "average",
+    "isAdditionalFilterSupport" : false,
+    "calculateMaturity" : false,
+    "hideOverallFilter" : true,
+    "isRepoToolKpi" : true,
+    "kpiCategory" : "Developer",
+    "maturityRange" : [ "-80", "80-50", "50-20", "20-5", "5-" ]
   }
 ]
