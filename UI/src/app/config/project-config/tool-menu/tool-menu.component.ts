@@ -110,13 +110,6 @@ export class ToolMenuComponent implements OnInit {
 
   }
 
-  // onTabChange() {
-  //   console.log(this.selectedTab)
-  //   if(this.selectedTab === 'toolsConnected') {
-  //     this.router.navigate(['/dashboard/Config/connection-list'], { queryParams: { 'pid': this.selectedProject.id } })
-  //   }
-  // }
-
   getToolsConfigured() {
     this.httpService.getAllToolConfigs(this.selectedProject.id).subscribe(response => {
       this.dataLoading = false;
@@ -128,7 +121,7 @@ export class ToolMenuComponent implements OnInit {
         this.uniqueTools = Array.from(
           this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
         );
-        console.log(this.router.url, this.selectedProject.id)
+
         if (this.router.url === `/dashboard/Config/connection-list/${this.selectedProject.id}/ToolMenu?tab=1` || this.router.url === '/dashboard/Config/connection-list?tab=1') {
           this.buttonText = 'Set Up';
           this.tools = [

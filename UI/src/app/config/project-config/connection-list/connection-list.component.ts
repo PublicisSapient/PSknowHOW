@@ -490,7 +490,7 @@ export class ConnectionListComponent implements OnInit {
   jiraConnectionDialog: boolean;
   repoConnections = ['Bitbucket', 'GitLab', 'Azure Repository'];
   repoToolsEnabled: boolean;
-  configOptions: { name: string; value: string; }[];
+  configOptions: { tab: string; tabValue: string; }[];
   selectedTab: string = 'toolsConnected';
   pid: any;
   tab: any;
@@ -506,12 +506,12 @@ export class ConnectionListComponent implements OnInit {
     public router: Router) {
     this.configOptions = [
       {
-        'name': 'Tools Connected',
-        'value': 'toolsConnected'
+        'tab': 'Tools Connected',
+        'tabValue': 'toolsConnected'
       },
       {
-        'name': 'Project Configuration',
-        'value': 'projectConfig'
+        'tab': 'Project Configuration',
+        'tabValue': 'projectConfig'
       }
     ]
 
@@ -524,10 +524,10 @@ export class ConnectionListComponent implements OnInit {
         this.selectedTab = 'toolsConnected';
       }
     });
+
   }
 
   ngOnInit(): void {
-    console.log('Connection List');
 
     this.roleAccessAssign();
     this.getConnectionList();

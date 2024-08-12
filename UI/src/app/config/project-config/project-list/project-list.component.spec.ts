@@ -437,7 +437,7 @@ describe('ProjectListComponent', () => {
     spyOn(sharedService , 'setSelectedProject');
     component.editConfiguration(fakeProject);
     expect(sharedService.setSelectedProject).toHaveBeenCalled();
-    expect(navigateSpy).toHaveBeenCalledOnceWith(['/dashboard/Config/connection-list/63b3f9098ec44416b3ce9699/ToolMenu?tab=1']);
+    expect(navigateSpy).toHaveBeenCalledOnceWith(['/dashboard/Config/connection-list/63b3f9098ec44416b3ce9699/ToolMenu'], { queryParams: { tab: 1 } });
   })
 
   it("should get success response while getting project list",()=>{

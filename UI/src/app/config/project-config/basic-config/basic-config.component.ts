@@ -56,6 +56,7 @@ export class BasicConfigComponent implements OnInit {
   steps: MenuItem[] | undefined;
   isProjectSetupPopup : boolean = false;
   isProjectCOmpletionPopup : boolean = false;
+  allProjectList: any[];
 
   constructor(private formBuilder: UntypedFormBuilder,
     private sharedService: SharedService,
@@ -89,6 +90,8 @@ export class BasicConfigComponent implements OnInit {
     this.selectedProject = this.sharedService.getSelectedProject();
     this.sharedService.setSelectedFieldMapping(null);
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
+
+    this.allProjectList = this.sharedService.getProjectList();
   }
 
   getFields() {
@@ -192,6 +195,8 @@ export class BasicConfigComponent implements OnInit {
         });
 
         this.sharedService.setSelectedProject(this.selectedProject);
+        this.allProjectList?.push(this.selectedProject);
+        this.sharedService.setProjectList(this.allProjectList);
         if (!this.ifSuperUser) {
           if (response['projectsAccess']) {
             const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
@@ -246,6 +251,5 @@ export class BasicConfigComponent implements OnInit {
       this.getFields();
     });
   }
-
 
 }

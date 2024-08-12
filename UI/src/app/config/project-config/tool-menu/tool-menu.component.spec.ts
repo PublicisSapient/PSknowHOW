@@ -143,7 +143,7 @@ describe('ToolMenuComponent', () => {
 
     component.getToolsConfigured();
 
-    expect(component.projectTypeChange).toHaveBeenCalledWith({ value: { value: true } }, false);
+    expect(component.projectTypeChange).toHaveBeenCalledWith({ value: true }, false);
     expect(component.selectedType).toBe(true);
   });
 

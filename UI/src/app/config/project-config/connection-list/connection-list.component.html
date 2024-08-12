@@ -17,7 +17,7 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <div class="selectbtn-container">
-    <p-selectButton [options]="configOptions" [(ngModel)]="selectedTab" (onChange)="onTabChange()" optionLabel="name" optionValue="value" styleClass="p-mb-5"></p-selectButton>
+    <p-selectButton [options]="configOptions" [(ngModel)]="selectedTab" (onChange)="onTabChange()" optionLabel="tab" optionValue="tabValue" styleClass="p-mb-5" ngDefaultControl></p-selectButton>
 </div>
 <ng-container *ngIf="selectedTab === 'toolsConnected'">
   <p-toast [style]="{marginTop: '80px'}"></p-toast>
