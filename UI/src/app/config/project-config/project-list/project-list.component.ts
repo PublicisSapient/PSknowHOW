@@ -252,7 +252,7 @@ export class ProjectListComponent implements OnInit {
     newProjectObj['id'] = project['id'];
     newProjectObj['saveAssigneeDetails']= project["saveAssigneeDetails"];
     this.sharedService.setSelectedProject(newProjectObj);
-    this.router.navigate([`/dashboard/Config/ProjectList/${newProjectObj['id']}/ToolMenu`]);
+    this.router.navigate([`/dashboard/Config/connection-list/${newProjectObj['id']}/ToolMenu`], { queryParams: { tab: 1 } });
 
   }
 }
