@@ -26,10 +26,6 @@
       <h4 class="form_title">Configured email:</h4>
       <span class="sub-text">{{userEmail}}</span>
     </div>
-    <div class="p-md-4 long-text pull-right pad-r-0 pad-l-0" *ngIf="userRole !== '--'">
-      <h4 class="form_title">Current Role:</h4>
-      <span class="sub-text">{{userRole}}</span>
-    </div>
   </div>
 
 
@@ -44,11 +40,11 @@
         (onChange)="toggleNotificationEmail($event, 'accessAlertNotification')"></p-inputSwitch>
       <div>
         <label class="switch-label" for="accessManageToggle">Access alerts</label>
-        
+
         <p class="switch-desc">Email notifications about access permission requests/grants</p>
       </div>
     </div>
-  
+
     <div class="p-d-flex p-ml-2">
       <p-inputSwitch formControlName="errorAlertNotification" id="errorAlertToggle"
         styleClass="custom-switch" (onChange)="toggleNotificationEmail($event, 'errorAlertNotification')"></p-inputSwitch>

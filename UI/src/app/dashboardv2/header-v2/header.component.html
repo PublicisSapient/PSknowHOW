@@ -24,9 +24,9 @@
       <div class="back-btn-wraper" *ngIf="!userDetails['authorities']?.includes('ROLE_VIEWER')">
         <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')"
           class="back-btn-container rounded p-mr-3">
-          <button pButton pRipple class="back-btn" [disabled]="backToDashboardLoader" routerLinkActive="active"
-            icon="{{ backToDashboardLoader ? 'pi pi-spin pi-spinner' : '' }}" iconPos="left" label="BACK TO DASHBOARD"
-            (click)="navigateToDashboard()"></button>
+          <button pButton pRipple class="back-btn" [ngClass]="noToolsConfigured ? 'p-d-none' : ''" [disabled]="backToDashboardLoader" routerLinkActive="active"
+            icon="{{ backToDashboardLoader ? 'pi pi-spin pi-spinner' : '' }}" iconPos="left" label="DASHBOARD"
+            (click)="navigateToDashboard()" ></button>
         </div>
       </div>
 
@@ -36,8 +36,6 @@
           <div>
             {{userDetails['user_name']}}
           </div>
-          <p class="p-mt-0 p-mb-0 profile-budge">{{userDetails['authorities']?.length>0 ? userDetails['authorities'][0]
-            : ''}}</p>
         </div>
       </div>
       <p-menu #usermenu [popup]="true" [model]="userMenuItems">
