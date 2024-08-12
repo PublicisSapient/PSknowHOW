@@ -107,8 +107,6 @@ export class IterationComponent implements OnInit, OnDestroy {
   kpiThresholdObj = {};
   dailyStandupData: object = {};
   selectedProjectId: string;
-  kpiList: Array<string> = [];
-  isRecommendationsEnabled: boolean = false;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService,
     private featureFlagService: FeatureFlagsService) {
@@ -155,7 +153,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
-    this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId);
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item?.shown);
     this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.isEnabled);
@@ -390,11 +387,6 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.service.setGlobalConfigData(filterData);
       }
     });
-
-    /** Get recommendations flag */
-    this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
-      this.isRecommendationsEnabled = item;
-    }));
 
     this.service.getEmptyData().subscribe((val) => {
       if (val) {

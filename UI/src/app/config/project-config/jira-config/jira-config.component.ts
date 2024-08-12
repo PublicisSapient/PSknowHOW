@@ -2496,9 +2496,7 @@ export class JiraConfigComponent implements OnInit {
 
     }
 
-    if (this.urlParam === 'Jira') {
-      submitData['metadataTemplateCode'] = submitData['metadataTemplateCode']?.templateCode;
-    } else {
+    if (this.urlParam !== 'Jira') {
       delete submitData['metadataTemplateCode'];
     }
     if (this.urlParam === 'GitHubAction') {
@@ -2555,7 +2553,6 @@ export class JiraConfigComponent implements OnInit {
               }
 
               // empty the form
-              this.toolForm.reset();
               if (this.urlParam === 'Sonar') {
                 this.tool['apiVersion'].enable();
                 this.tool['projectKey'].enable();
@@ -2572,6 +2569,8 @@ export class JiraConfigComponent implements OnInit {
               if (this.urlParam == 'Jira' || this.urlParam === 'Azure' || this.urlParam === 'Zephyr' || this.urlParam === 'JiraTest') {
                 this.isConfigureTool = false;
                 this.showAddNewBtn = false;
+              }else{
+                this.toolForm.reset();
               }
           } else {
             this.messenger.add({
@@ -2754,10 +2753,12 @@ export class JiraConfigComponent implements OnInit {
       this.jiraTemplate = resp.filter(temp => temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
       if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
         const selectedTemplate = this.jiraTemplate.find(tem => tem.templateCode === this.selectedToolConfig[0]['metadataTemplateCode'])
-        this.toolForm.get('metadataTemplateCode')?.setValue(selectedTemplate);
+        this.toolForm.get('metadataTemplateCode')?.setValue(selectedTemplate?.templateCode);
         if (selectedTemplate?.templateName === 'Custom Template') {
           this.toolForm.get('metadataTemplateCode').disable();
         }
+      }else{
+        this.toolForm.get('metadataTemplateCode')?.setValue(this.jiraTemplate[0]?.templateCode);
       }
     })
   }
