@@ -1080,6 +1080,24 @@ public class KPIExcelUtility {
 
 	}
 
+	public static void populateRevertRateExcelData(List<RepoToolValidationData> repoToolValidationDataList, List<KPIExcelData> kpiExcelData) {
+
+		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
+			repoToolValidationDataList.forEach(repoToolValidationData -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setProject(repoToolValidationData.getProjectName());
+				excelData.setRepo(repoToolValidationData.getRepoUrl());
+				excelData.setBranch(repoToolValidationData.getBranchName());
+				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setDaysWeeks(repoToolValidationData.getDate());
+				excelData.setRevertRate(repoToolValidationData.getRevertRate());
+				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
+				kpiExcelData.add(excelData);
+			});
+		}
+
+	}
+
 	public static void populateCodeCommit(List<RepoToolValidationData>repoToolValidationDataList, List<KPIExcelData> kpiExcelData) {
 
 		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
