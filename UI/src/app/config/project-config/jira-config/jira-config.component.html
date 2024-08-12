@@ -265,7 +265,7 @@
                                     <div *ngSwitchCase="'basicDropdown'" class="p-mb-3">
                                         <ng-container>
                                             <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                            <p-dropdown [options]="jiraTemplate" optionLabel="templateName"
+                                            <p-dropdown [options]="jiraTemplate" optionLabel="templateName" optionValue="templateCode"
                                                 id="{{form_elem.id}}" formControlName="{{form_elem.id}}"></p-dropdown>
                                         </ng-container>
                                     </div>
