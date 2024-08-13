@@ -158,13 +158,13 @@ export class AccessMgmtComponent implements OnInit {
 	// fetches the roles list
 	getRolesList() {
 		this.rolesRequest = this.httpService.getRolesList().subscribe((roles) => {
+      console.log(roles)
 			this.rolesData = roles;
 			if (this.rolesData['success']) {
 				this.roleList = roles.data.map((role) => ({
-						label: role.roleName,
+						label: role.displayName,
 						value: role.roleName,
 					}));
-
 				this.searchRoleList = [
 					{
 						label: 'Select Role',

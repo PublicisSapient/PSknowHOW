@@ -32,7 +32,7 @@
   <form class="notification-toggle" [formGroup]="notificationEmailForm" *ngIf="isSuperAdmin || isProjectAdmin">
     <div>
     <span class="switch-label">Notification preferences:</span>
-    <p class="switch-desc">*Applicable to PROJECT_ADMIN and SUPERADMIN roles only</p>
+    <p class="switch-desc">*Applicable to PROJECT ADMIN and SUPERADMIN roles only</p>
   </div>
     <div class="p-d-flex p-ml-2">
       <p-inputSwitch formControlName="accessAlertNotification" id="accessManageToggle"
@@ -231,7 +231,11 @@
               <ng-template pTemplate="body" let-project let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
                 <tr>
                   <td *ngIf="rowgroup" [attr.rowspan]="rowspan" class='border-bottom border-right'>
-                    <div>{{project['role']}}</div>
+                    <!-- <div>{{project['role']}}</div> -->
+                    <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_PROJECT_ADMIN'">Project Admin</div>
+                    <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_PROJECT_VIEWER'">Project Viewer</div>
+                    <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_SUPERADMIN'">Superadmin</div>
+                    <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_GUEST'">Guest</div>
                   </td>
                   <td class="p-p-3 border-bottom border-right" *ngFor="let col of dynamicCols">
                     <span [ngClass]="{'info-block':col.id === 'projectName'}">{{project[col.id]}}</span>
