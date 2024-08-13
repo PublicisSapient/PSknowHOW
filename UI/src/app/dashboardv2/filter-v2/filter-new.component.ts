@@ -114,11 +114,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
 
-          /**TODO: resetting the date filter on tab change for now */
-          // this.selectedDayType = 'Weeks';
-          // this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
-          // this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
-          /** */
+         
+          this.selectedDayType = 'Weeks';
+          this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+          this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+          
 
           if (this.selectedType.toLowerCase() === 'kanban') {
             this.kanban = true;
@@ -371,11 +371,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
 
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
-      /**TODO: resetting the date filter on filter change for now */
-      // this.selectedDayType = 'Weeks';
-      // this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
-      // this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
-      /** */
+      
+      this.selectedDayType = 'Weeks';
+      this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+      this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+
 
       // set selected projects(trends)
       if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
