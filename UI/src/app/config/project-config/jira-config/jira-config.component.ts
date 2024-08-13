@@ -303,10 +303,11 @@ export class JiraConfigComponent implements OnInit {
         this.messenger.add({
           severity: 'error',
           summary: error.message,
-        });
+        }); 
       }
     }, (err) => {
-      console.log(err);
+      this.jenkinsJobNameList = [];
+      this.hideLoadingOnFormElement('jobName');
       this.messenger.add({
         severity: 'error',
         summary: err.error.message,
