@@ -169,7 +169,10 @@
                     </td>
                     <td class="nested-td" style="width: 140px;">
                       <div class="role-box">
-                        {{ access.role }}
+                        <div class="p-text-uppercase" *ngIf="access.role === 'ROLE_PROJECT_ADMIN'">Project Admin</div>
+                        <div class="p-text-uppercase" *ngIf="access.role === 'ROLE_PROJECT_VIEWER'">Project Viewer</div>
+                        <div class="p-text-uppercase" *ngIf="access.role === 'ROLE_SUPERADMIN'">Superadmin</div>
+                        <div class="p-text-uppercase" *ngIf="access.role === 'ROLE_GUEST'">Guest</div>
                       </div>
                     </td>
                   </tr>
