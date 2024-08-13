@@ -327,7 +327,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 			List<JiraIssue> jiraIssueList = sprintWiseDefectDataListMap.get(currentNodeIdentifier);
 			Map<String, Long> finalMap = new HashMap<>();
 			Map<String, Object> overAllHoverValueMap = new HashMap<>();
-			if (allRCA.size() > 1) {
+			if (allRCA.size() >= 1) {
 				allRCA.forEach(rca -> {
 					finalMap.put(StringUtils.capitalize(rca), rcaMap.getOrDefault(rca, 0L));
 					Long rcaCount = rcaMap.values().stream().mapToLong(val -> val).sum();
