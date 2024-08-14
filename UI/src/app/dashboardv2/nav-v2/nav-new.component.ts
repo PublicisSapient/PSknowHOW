@@ -54,6 +54,36 @@ export class NavNewComponent implements OnInit, OnDestroy {
       (response) => {
         if (response.success === true) {
           let data = response.data.userBoardConfigDTO;
+          const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
+          data[this.selectedType].forEach((board) => {
+            if (board?.filters) {
+              board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0].hierarchyLevelName;
+              if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
+                board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
+              }
+              if (board.filters.parentFilter?.emittedLevel) {
+                board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
+              }
+
+              if (board.boardSlug !== 'developer') {
+                board.filters.additionalFilters.forEach(element => {
+                  element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
+                });
+              }
+            }
+          });
+
+          data['others'].forEach((board) => {
+            if (board?.filters) {
+              board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.primaryFilter.defaultLevel.labelName)[0].hierarchyLevelName;
+              if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
+                board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
+              }
+              if (board.filters.parentFilter?.emittedLevel) {
+                board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
+              }
+            }
+          });
           data['configDetails'] = response.data.configDetails;
           if (!this.deepEqual(this.dashConfigData, data)) {
             this.sharedService.setDashConfigData(data);
