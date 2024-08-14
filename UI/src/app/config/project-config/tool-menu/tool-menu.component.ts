@@ -102,15 +102,19 @@ export class ToolMenuComponent implements OnInit {
         name: x['hierarchyLevelName']
       }
     });
+
     setTimeout(() => {
-      Object.keys(this.selectedProject).forEach(key => {
-        if (levelDetails.map(x => x.id).includes(key)) {
-          let propertyName = levelDetails.filter(x => x.id === key)[0].name;
-          this.selectedProject[propertyName] = this.selectedProject[key];
-          delete this.selectedProject[key];
-        }
-      });
+      if (this.selectedProject && Object.keys(this.selectedProject)?.length) {
+        Object.keys(this.selectedProject).forEach(key => {
+          if (levelDetails.map(x => x.id).includes(key)) {
+            let propertyName = levelDetails.filter(x => x.id === key)[0].name;
+            this.selectedProject[propertyName] = this.selectedProject[key];
+            delete this.selectedProject[key];
+          }
+        });
+      }
     });
+
     this.getProjects();
 
     if (!this.selectedProject) {
