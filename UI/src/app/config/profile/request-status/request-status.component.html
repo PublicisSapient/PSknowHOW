@@ -48,9 +48,10 @@
                   </div>
                 </td>
                 <td class='custom-table-cell'>
-                  <span>
-                    {{request.role}}
-                  </span>
+                  <div class="p-text-uppercase" *ngIf="request.role === 'ROLE_PROJECT_ADMIN'">Project Admin</div>
+                  <div class="p-text-uppercase" *ngIf="request.role === 'ROLE_PROJECT_VIEWER'">Project Viewer</div>
+                  <div class="p-text-uppercase" *ngIf="request.role === 'ROLE_SUPERADMIN'">Superadmin</div>
+                  <div class="p-text-uppercase" *ngIf="request.role === 'ROLE_GUEST'">Guest</div>
                 </td>
                 <td class='custom-table-cell' title={{request.reviewComments}}>
                   {{ (request.reviewComments.length>200)? (request.reviewComments.substring(0,199) +

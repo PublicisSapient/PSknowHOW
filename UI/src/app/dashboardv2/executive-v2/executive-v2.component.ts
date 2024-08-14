@@ -274,7 +274,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
       this.tooltip = $event.configDetails;
       this.additionalFiltersArr = {};
-      this.noOfDataPoints = this.coundMaxNoOfSprintSelectedForProject($event);
+      this.noOfDataPoints = this.selectedTab.toLowerCase() !== 'developer' && this.coundMaxNoOfSprintSelectedForProject($event);
       this.allKpiArray = [];
       this.kpiChartData = {};
       this.chartColorList = {};

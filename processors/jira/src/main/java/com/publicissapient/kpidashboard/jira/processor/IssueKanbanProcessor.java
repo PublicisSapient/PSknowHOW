@@ -85,7 +85,7 @@ public class IssueKanbanProcessor implements ItemProcessor<ReadData, CompositeRe
 
 	private KanbanJiraIssue convertIssueToKanbanJiraIssue(ReadData readData) throws JSONException {
 		return kanbanJiraIssueProcessor.convertToKanbanJiraIssue(readData.getIssue(),
-				readData.getProjectConfFieldMapping(), readData.getBoardId());
+				readData.getProjectConfFieldMapping(), readData.getBoardId(), readData.getProcessorId());
 	}
 
 	private KanbanIssueCustomHistory convertIssueToKanbanIssueHistory(ReadData readData,

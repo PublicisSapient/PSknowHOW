@@ -31,7 +31,11 @@
       <span class="fab fa-superpowers" aria-hidden="true" *ngIf="data.roleName === 'ROLE_SUPERADMIN'"></span>
       <span class="far fa-user" aria-hidden="true" *ngIf="data.roleName === 'ROLE_GUEST'"></span>
       <div class="role-name">
-        {{ (data.roleName.length>20)? (data.roleName.substring(0,19) + "..."):(data.roleName) }}
+        <!-- {{ (data.roleName.length>20)? (data.roleName.substring(0,19) + "..."):(data.roleName) }} -->
+        <div class="p-text-uppercase" *ngIf="data.roleName === 'ROLE_PROJECT_ADMIN'">Project Admin</div>
+        <div class="p-text-uppercase" *ngIf="data.roleName === 'ROLE_PROJECT_VIEWER'">Project Viewer</div>
+        <div class="p-text-uppercase" *ngIf="data.roleName === 'ROLE_SUPERADMIN'">Superadmin</div>
+        <div class="p-text-uppercase" *ngIf="data.roleName === 'ROLE_GUEST'">Guest</div>
       </div>
       <div class="role-desc">
         {{ (data.roleDescription.length>40)? (data.roleName.substring(0,39) + "..."):(data.roleDescription) }}

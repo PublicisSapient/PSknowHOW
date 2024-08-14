@@ -197,18 +197,17 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   handleChange(type, value = null, filterIndex = 0) {
     if (value) {
-      value?.value.forEach(selectedItem => {
+      value?.value?.forEach(selectedItem => {
         this.dropdownArr[filterIndex]?.options.splice(this.dropdownArr[filterIndex]?.options.indexOf(selectedItem), 1) // remove the item from list
-        this.dropdownArr[filterIndex]?.options.unshift(selectedItem)// this will add selected item on the top 
+        this.dropdownArr[filterIndex]?.options.unshift(selectedItem)// this will add selected item on the top
       });
     }
     if (typeof value === 'object') {
-      value = value.value;
+      value = value?.value;
     }
     if (value && type?.toLowerCase() == 'radio') {
       this.optionSelected.emit(value);
     } else if (type?.toLowerCase() == 'single') {
-      console.log(this.filterOptions);
       this.optionSelected.emit(this.filterOptions);
     } else {
       if (this.filterOptions && Object.keys(this.filterOptions)?.length == 0) {

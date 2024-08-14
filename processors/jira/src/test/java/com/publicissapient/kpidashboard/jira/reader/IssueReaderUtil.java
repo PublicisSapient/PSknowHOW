@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
+import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
@@ -67,6 +69,9 @@ import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
 public class IssueReaderUtil {
 
 	public static ReadData getMockReadData(String boardId, ProjectConfFieldMapping projectConfFieldMapping)
@@ -76,6 +81,7 @@ public class IssueReaderUtil {
 		readData.setIssue(createIssue().get(1));
 		readData.setProjectConfFieldMapping(projectConfFieldMapping);
 		readData.setSprintFetch(true);
+		readData.setProcessorId(new ObjectId("5ba8e182d3735010e7f1fa45"));
 		return readData;
 	}
 
