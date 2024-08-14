@@ -70,11 +70,10 @@
   <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': kpiSize === 12 ? '250px' : '220px',
   'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
     <!--place for chart to be rendered-->
-
     <ng-content *ngIf="!loader && !immediateLoader && checkIfDataPresent(trendValueList) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
     <ng-template #noData>
       <!-- <div class="min-ht" *ngIf="(!checkIfDataPresent(trendValueList) && !iSAdditionalFilterSelected) || (!checkIfDataPresent(trendValueList) && kpi?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)"> -->
-      <div class="min-ht" *ngIf="!loader && !immediateLoader && !checkIfDataPresent(trendValueList)">
+      <div class="min-ht" *ngIf="!loader && !immediateLoader && !checkIfDataPresent(trendValueList) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
         <div class="p-w-100  p-d-flex p-justify-center">
           <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
         </div>
@@ -82,7 +81,15 @@
           <h4 class="p-text-center">No data available. Contact your administrator.</h4>
         </div>
       </div>
-      <div class="min-ht" *ngIf="checkIfDataPresent(trendValueList) && !kpi?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected">
+      <div class="min-ht" *ngIf="!loader && !immediateLoader && !checkIfDataPresent(trendValueList) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected">
+        <div class="p-w-100  p-d-flex p-justify-center">
+          <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+        </div>
+        <div class="p-w-100">
+          <h4 class="p-text-center">No data available. Contact your administrator.</h4>
+        </div>
+      </div>
+      <div class="min-ht" *ngIf="!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected">
         <div class="err squad-err-msg">KPI cannot be measured for a Squad</div>
       </div>
     </ng-template>
