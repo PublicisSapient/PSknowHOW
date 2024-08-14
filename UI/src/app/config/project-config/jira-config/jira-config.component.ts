@@ -303,10 +303,11 @@ export class JiraConfigComponent implements OnInit {
         this.messenger.add({
           severity: 'error',
           summary: error.message,
-        });
+        }); 
       }
     }, (err) => {
-      console.log(err);
+      this.jenkinsJobNameList = [];
+      this.hideLoadingOnFormElement('jobName');
       this.messenger.add({
         severity: 'error',
         summary: err.error.message,
@@ -2748,7 +2749,7 @@ export class JiraConfigComponent implements OnInit {
   }
 
   getJiraTemplate() {
-    const isKanban = this.selectedProject?.Type?.toLowerCase() === 'kanban' ? true : false;
+    const isKanban = this.selectedProject?.type?.toLowerCase() === 'kanban' ? true : false;
     this.http.getJiraTemplate(this.selectedProject?.id).subscribe(resp => {
       this.jiraTemplate = resp.filter(temp => temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
       if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {

@@ -29,7 +29,7 @@
     </div>
     <div class="p-ml-3">
         <div class="p-d-flex p-align-center position-relative p-pb-3">
-            <a [routerLink]="['/dashboard/Config/ProjectList/' + selectedProject.id + '/ToolMenu']" pButton pRipple type="button" icon="pi pi-arrow-left"
+            <a [routerLink]="['/dashboard/Config/connection-list/' + selectedProject.id + '/ToolMenu']" [queryParams]="{tab: 1}" pButton pRipple type="button" icon="pi pi-arrow-left"
                 class="p-button-raised p-button-secondary back-button p-mr-4"></a>
             <h5 class="card__primary__title__text p-m-0">{{formTitle}} Configuration</h5>
         </div>
@@ -384,13 +384,13 @@
 
 
 
-        
 
 
 
 
 
-        
+
+
     </div>
 </div>
 <app-page-loader *ngIf="isLoading"></app-page-loader>

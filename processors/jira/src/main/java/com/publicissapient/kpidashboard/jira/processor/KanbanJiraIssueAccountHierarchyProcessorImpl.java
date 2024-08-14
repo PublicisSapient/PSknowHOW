@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -71,16 +72,17 @@ public class KanbanJiraIssueAccountHierarchyProcessorImpl implements KanbanJiraI
 				.collect(Collectors.toList());
 
 		log.info("Fetching all hierarchy levels");
-		List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo.findAll();
+		List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 		Map<Pair<String, String>, KanbanAccountHierarchy> existingKanbanHierarchy = accountHierarchyList.stream()
 				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
 
 		Set<KanbanAccountHierarchy> accHierarchyToSave = new HashSet<>();
 		if (StringUtils.isNotBlank(kanbanJiraIssue.getProjectName())) {
-			KanbanAccountHierarchy projectHierarchy = kanbanAccountHierarchyRepo
-					.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
-							new ObjectId(kanbanJiraIssue.getBasicProjectConfigId()))
-					.get(0);
+			KanbanAccountHierarchy projectHierarchy= null;
+			Optional<KanbanAccountHierarchy> first = accountHierarchyList.stream().filter(hierarchy -> hierarchy.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)).findFirst();
+			if(first.isPresent()){
+				projectHierarchy=first.get();
+			}
 
 			List<KanbanAccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(
 					kanbanJiraIssue, projectHierarchy, additionalFilterCategoryIds);
