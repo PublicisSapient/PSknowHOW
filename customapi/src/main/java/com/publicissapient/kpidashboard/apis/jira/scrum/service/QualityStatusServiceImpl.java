@@ -170,13 +170,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 							sprintReportIssueList);//has present sprint issue based on getJiraItrQSIssueTypeKPI133 and defectType
 
 
-					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI133()) && CollectionUtils.isNotEmpty(defectTypes)) {
-						sprintReportIssueList = sprintReportIssueList.stream()
-								.filter(jiraIssue -> defectTypes.contains(jiraIssue.getTypeName())
-										|| fieldMapping.getJiraLabelsKPI133().stream()
-												.anyMatch(label -> jiraIssue.getLabels().contains(label)))
-								.collect(Collectors.toSet());
-					}
+					sprintReportIssueList = getLableFilteredJiraIssues(fieldMapping, defectTypes, sprintReportIssueList);
 
 					// fetched all defects which is linked to current sprint report stories
 					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
@@ -221,13 +215,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getCompletedIssues(), completedIssueList);
 					completedJiraIssue = getTypeNameFilterJiraIssueList(defectTypes, typeNameList, completedJiraIssue);
-					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI133()) && CollectionUtils.isNotEmpty(defectTypes)) {
-						completedJiraIssue = completedJiraIssue.stream()
-								.filter(jiraIssue -> defectTypes.contains(jiraIssue.getTypeName())
-										|| fieldMapping.getJiraLabelsKPI133().stream()
-												.anyMatch(label -> jiraIssue.getLabels().contains(label)))
-								.collect(Collectors.toSet());
-					}
+					completedJiraIssue = getLableFilteredJiraIssues(fieldMapping, defectTypes, completedJiraIssue);
 					resultListMap.put(COMPLETED_ISSUES, new ArrayList<>(completedJiraIssue));
 				} else
 					resultListMap.put(COMPLETED_ISSUES, new ArrayList<>());
@@ -236,6 +224,17 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 		}
 		return resultListMap;
 
+	}
+
+	private static Set<JiraIssue> getLableFilteredJiraIssues(FieldMapping fieldMapping, List<String> defectTypes, Set<JiraIssue> completedJiraIssue) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI133()) && CollectionUtils.isNotEmpty(defectTypes)) {
+			completedJiraIssue = completedJiraIssue.stream()
+					.filter(jiraIssue -> defectTypes.contains(jiraIssue.getTypeName())
+							|| fieldMapping.getJiraLabelsKPI133().stream()
+									.anyMatch(label -> jiraIssue.getLabels().contains(label)))
+					.collect(Collectors.toSet());
+		}
+		return completedJiraIssue;
 	}
 
 	private static void seperateDefectAndStories(SprintIssue sprintIssue, List<String> defectTypes, Set<String> totalSprintReportDefects, Set<String> totalSprintReportStories) {
