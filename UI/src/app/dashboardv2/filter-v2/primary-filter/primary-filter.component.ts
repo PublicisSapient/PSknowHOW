@@ -181,8 +181,4 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     }
   }
 
-  hideSprintOnIteration():boolean{
-    return this.router.url.includes('/iteration') && this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() !== 'sprint'
-  }
-
 }
