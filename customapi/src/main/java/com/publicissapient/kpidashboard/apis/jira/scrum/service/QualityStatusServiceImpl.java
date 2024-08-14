@@ -337,12 +337,6 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 							unlinkedDefectList, jiraIssue, totalJiraIssues, fieldMapping, completedIssueList,
 							linkedIssueMap);
 				}
-//				if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI133())) {
-//					linkedDefectList = linkedDefectList.stream()
-//							.filter(jiraIssue -> fieldMapping.getJiraLabelsKPI133().stream()
-//									.anyMatch(label -> jiraIssue.getLabels().contains(label)))
-//							.toList();
-//				}
 				Set<String> linkedStoriesSet = linkedDefectList.stream().map(JiraIssue::getDefectStoryID)
 						.flatMap(Set::stream).collect(Collectors.toSet());
 
