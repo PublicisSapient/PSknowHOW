@@ -226,15 +226,15 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 
 	}
 
-	private static Set<JiraIssue> getLableFilteredJiraIssues(FieldMapping fieldMapping, List<String> defectTypes, Set<JiraIssue> completedJiraIssue) {
+	private static Set<JiraIssue> getLableFilteredJiraIssues(FieldMapping fieldMapping, List<String> defectTypes, Set<JiraIssue> jiraIssueSet) {
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI133()) && CollectionUtils.isNotEmpty(defectTypes)) {
-			completedJiraIssue = completedJiraIssue.stream()
+			jiraIssueSet = jiraIssueSet.stream()
 					.filter(jiraIssue -> defectTypes.contains(jiraIssue.getTypeName())
 							|| fieldMapping.getJiraLabelsKPI133().stream()
 									.anyMatch(label -> jiraIssue.getLabels().contains(label)))
 					.collect(Collectors.toSet());
 		}
-		return completedJiraIssue;
+		return jiraIssueSet;
 	}
 
 	private static void seperateDefectAndStories(SprintIssue sprintIssue, List<String> defectTypes, Set<String> totalSprintReportDefects, Set<String> totalSprintReportStories) {
