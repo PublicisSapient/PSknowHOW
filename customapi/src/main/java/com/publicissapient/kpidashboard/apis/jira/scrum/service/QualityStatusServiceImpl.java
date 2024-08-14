@@ -198,7 +198,8 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 					List<JiraIssue> totalIssues = new ArrayList<>();
 					totalIssues.addAll(sprintReportIssueList);
 					totalIssues.addAll(subTaskDefects);
-					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI133()) && CollectionUtils.isNotEmpty(defectTypes)) {
+					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI133())
+							&& CollectionUtils.isNotEmpty(defectTypes)) {
 						jiraIssueLinkedStories = jiraIssueLinkedStories.stream()
 								.filter(jiraIssue -> defectTypes.contains(jiraIssue.getTypeName())
 										|| fieldMapping.getJiraLabelsKPI133().stream()
@@ -226,12 +227,12 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 
 	}
 
-	private static Set<JiraIssue> getLableFilteredJiraIssues(FieldMapping fieldMapping, List<String> defectTypes, Set<JiraIssue> jiraIssueSet) {
+	private static Set<JiraIssue> getLableFilteredJiraIssues(FieldMapping fieldMapping, List<String> defectTypes,
+			Set<JiraIssue> jiraIssueSet) {
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI133()) && CollectionUtils.isNotEmpty(defectTypes)) {
 			jiraIssueSet = jiraIssueSet.stream()
-					.filter(jiraIssue -> defectTypes.contains(jiraIssue.getTypeName())
-							|| fieldMapping.getJiraLabelsKPI133().stream()
-									.anyMatch(label -> jiraIssue.getLabels().contains(label)))
+					.filter(jiraIssue -> defectTypes.contains(jiraIssue.getTypeName()) || fieldMapping
+							.getJiraLabelsKPI133().stream().anyMatch(label -> jiraIssue.getLabels().contains(label)))
 					.collect(Collectors.toSet());
 		}
 		return jiraIssueSet;
