@@ -252,7 +252,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setColors(data) {
-    let colorsArr = ['#6079C5', '#FFB587', '#D48DEF', '#A4F6A5', '#FBCF5F', '#9FECFF']
+    let colorsArr = ['#6079C5', '#FFB587', '#D48DEF', '#FBCF5F', '#A4F6A5', '#9FECFF']
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
       if (data[i]?.nodeId) {
