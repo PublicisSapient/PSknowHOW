@@ -55,6 +55,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -131,7 +133,13 @@ public class RevertRateServiceImplTest {
                 .newInstance();
         accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
         RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
-        repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
+        repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsRevertRate();
+        LocalDate monday = LocalDate.now();
+        while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
+            monday = monday.minusDays(1);
+        }
+        LocalDate finalMonday = monday;
+        repoToolKpiMetricResponseList.forEach(a->a.setDateLabel(finalMonday.toString()));
 
         projectConfigList.forEach(projectConfig -> {
             projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
@@ -154,17 +162,17 @@ public class RevertRateServiceImplTest {
         assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
         assigneeDetails.setSource("Jira");
         Set<Assignee> assigneeSet = new HashSet<>();
-        assigneeSet.add(new Assignee("aks", "Akshat Shrivastava",
-                new HashSet<>(Arrays.asList("akshat.shrivastav@publicissapient.com"))));
-        assigneeSet.add(new Assignee("llid", "Hiren",
-                new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
+        assigneeSet.add(new Assignee("aks", "abc",
+                new HashSet<>(Arrays.asList("abc@gmail.com"))));
+        assigneeSet.add(new Assignee("llid", "def",
+                new HashSet<>(Arrays.asList("def@gmail.com"))));
         assigneeDetails.setAssignee(assigneeSet);
         when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 
     }
     @Test
     public void getQualifierType() {
-        assertThat("KPI name: ", revertRateService.getQualifierType(), equalTo("REWORK_RATE"));
+        assertThat("KPI name: ", revertRateService.getQualifierType(), equalTo("REVERT_RATE"));
     }
 
     @Test

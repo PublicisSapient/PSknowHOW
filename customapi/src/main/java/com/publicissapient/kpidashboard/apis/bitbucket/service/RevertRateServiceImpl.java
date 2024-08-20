@@ -173,7 +173,7 @@ public class RevertRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = kpiHelperService.getRepoToolsKpiMetricResponse(
 				localEndDate, toolMap, projectLeafNode, duration, dataPoints,
-				customApiConfig.getRepoToolReworkRateUrl());
+				customApiConfig.getRepoToolRevertRateUrl());
 
 		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
@@ -209,11 +209,11 @@ public class RevertRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricResponseList.stream()
 					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
 
-			Double overallPickupTime = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getProjectReworkRatePercent).orElse(0.0d);
+			Double overallRevertRatePercentage = repoToolKpiMetricResponse.map(
+					RepoToolKpiMetricResponse::getProjectRevertPercentage).orElse(0.0d);
 
 			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
-					overallPickupTime, aggDataMap);
+					overallRevertRatePercentage, aggDataMap);
 			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
 					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
 			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
@@ -223,7 +223,7 @@ public class RevertRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 						.getId() != null) {
 					List<RepoToolUserDetails> repoToolUserDetailsList = new ArrayList<>();
 					String branchName = getBranchSubFilter(repo, projectName);
-					Double reworkRate = 0.0d;
+					Double revertRate = 0.0d;
 					String overallKpiGroup = branchName + "#" + Constant.AGGREGATED_VALUE;
 					if (repoToolKpiMetricResponse.isPresent()) {
 						Optional<Branches> matchingBranch = repoToolKpiMetricResponse.get().getRepositories().stream()
@@ -231,13 +231,13 @@ public class RevertRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 								.flatMap(repository -> repository.getBranches().stream())
 								.filter(branch -> branch.getName().equals(repo.getBranch())).findFirst();
 
-						reworkRate = matchingBranch.map(Branches::getBranchReworkRateScore).orElse(0.0d);
+						revertRate = matchingBranch.map(Branches::getBranchRevertRatePercentage).orElse(0.0d);
 						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
 					}
 					repoToolValidationDataList.addAll(
 							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, repo, projectName,
 									date, aggDataMap));
-					setDataCount(projectName, date, overallKpiGroup, reworkRate, aggDataMap);
+					setDataCount(projectName, date, overallKpiGroup, revertRate, aggDataMap);
 				}
 			});
 
@@ -303,8 +303,7 @@ public class RevertRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 			Optional<Assignee> assignee = assignees.stream().filter(assign -> assign.getEmail().contains(userEmail))
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
-			//todo
-			Double userReworkRate = repoToolUserDetails.map(RepoToolUserDetails::getUserReworkRatePercent).orElse(0.0d);
+			Double userRevertRatePercentage = repoToolUserDetails.map(RepoToolUserDetails::getUserRevertRatePercentage).orElse(0.0d);
 			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
 			String userKpiGroup = branchName + "#" + developerName;
 			if(repoToolUserDetails.isPresent() && repo != null) {
@@ -314,11 +313,11 @@ public class RevertRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
 				repoToolValidationData.setDeveloperName(developerName);
 				repoToolValidationData.setDate(date);
-				repoToolValidationData.setRevertRate(userReworkRate);
+				repoToolValidationData.setRevertRate(userRevertRatePercentage);
 				repoToolValidationDataList.add(repoToolValidationData);
 			}
 
-			setDataCount(projectName, date, userKpiGroup, userReworkRate, dateUserWiseAverage);
+			setDataCount(projectName, date, userKpiGroup, userRevertRatePercentage, dateUserWiseAverage);
 
 		});
 		return repoToolValidationDataList;
