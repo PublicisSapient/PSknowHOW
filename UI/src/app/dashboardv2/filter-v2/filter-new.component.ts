@@ -408,7 +408,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         event = event['primary_level'];
       }
     }
-
+    this.noSprint = false;
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
 
       this.selectedDayType = 'Weeks';
@@ -541,7 +541,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.noSprint = true;
       }
     }
-
     if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event && event[0]?.labelName === 'project') {
       const allSprints = this.filterDataArr[this.selectedType]['sprint'];
       const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed');
@@ -549,6 +548,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         currentProjectSprints.sort((a, b) => new Date(a.sprintEndDate).getTime() - new Date(b.sprintEndDate).getTime());
         this.service.setSprintForRnR(currentProjectSprints[currentProjectSprints?.length - 1])
         this.noSprint = false;
+      } else {
+        this.noSprint = true;
       }
     }
     this.compileGAData(event);
