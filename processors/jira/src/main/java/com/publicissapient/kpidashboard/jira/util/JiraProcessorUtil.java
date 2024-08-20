@@ -27,7 +27,10 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.joda.time.DateTime;
@@ -53,7 +56,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JiraProcessorUtil {
 
-	private  JiraProcessorUtil(){}
+	private JiraProcessorUtil() {
+	}
 
 	// not static because not thread safe
 	private static final String SPRINT_SPLIT = "(?=,\\w+=)";
@@ -68,6 +72,19 @@ public class JiraProcessorUtil {
 	private static final String ACTIVATEDDATE = "activatedDate";
 	private static final String GOAL = "goal";
 	private static final String BOARDID = "boardId";
+	private static final Pattern EXCEPTION_WITH_MESSAGE_PATTERN = Pattern
+			.compile("^(\\w+(?:\\.\\w+)*Exception):\\s*(.+)$");
+
+	private static final Pattern EXCEPTION_WITH_STATUS_CODE_PATTERN = Pattern
+			.compile("(\\w+(?:\\.\\w+)*Exception)\\{[^}]*statusCode=Optional\\.of\\((\\d+)\\)");
+
+	private static final Pattern ERROR_COLLECTION_PATTERN = Pattern
+			.compile("\\[ErrorCollection\\{status=(\\d+), errors=\\{.*\\}, errorMessages=\\[.*\\]\\}\\]");
+
+	private static final Pattern ERROR_WITH_STATUS_CODE_PATTERN = Pattern.compile("Error:\\s*(\\d+)\\s*-\\s*(.*)");
+
+	private static final String UNAUTHORIZED = "Sorry, you are not authorized to access the requested resource.";
+	private static final String OTHER_CLIENT_ERRORS = "An unexpected error has occurred. Please contact the KnowHow Support for assistance.";
 
 	/**
 	 * This method return UTF-8 decoded string response
@@ -354,4 +371,38 @@ public class JiraProcessorUtil {
 		return processorExecutionTraceLog;
 	}
 
+	public static String generateLogMessage(Throwable exception) {
+		String exceptionMessage = exception.getMessage();
+
+		String logMessage = matchPattern(exceptionMessage, EXCEPTION_WITH_STATUS_CODE_PATTERN, true);
+		if (logMessage != null)
+			return logMessage;
+
+		logMessage = matchPattern(exceptionMessage, EXCEPTION_WITH_MESSAGE_PATTERN, false);
+		if (logMessage != null)
+			return logMessage;
+
+		logMessage = matchPattern(exceptionMessage, ERROR_COLLECTION_PATTERN, true);
+		if (logMessage != null)
+			return logMessage;
+
+		logMessage = matchPattern(exceptionMessage, ERROR_WITH_STATUS_CODE_PATTERN, true);
+		if (logMessage != null)
+			return logMessage;
+
+		return "No matching exception pattern found";
+	}
+
+	private static String matchPattern(String exceptionMessage, Pattern pattern, boolean hasStatusCode) {
+		Matcher matcher = pattern.matcher(exceptionMessage);
+		if (matcher.find()) {
+			if (hasStatusCode) {
+				int statusCode = Integer.parseInt(matcher.group(1));
+				return (statusCode >= 400 && statusCode < 500) ? UNAUTHORIZED : OTHER_CLIENT_ERRORS;
+			} else {
+				return OTHER_CLIENT_ERRORS;
+			}
+		}
+		return null;
+	}
 }

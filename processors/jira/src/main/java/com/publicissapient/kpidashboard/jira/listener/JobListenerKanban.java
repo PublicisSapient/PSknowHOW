@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.jira.listener;
 
 import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDateToCustomFormat;
+import static com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil.generateLogMessage;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -146,15 +147,15 @@ public class JobListenerKanban implements JobExecutionListener {
 			log.info("removing project with basicProjectConfigId {}", projectId);
 			// Mark the execution as completed
 			ongoingExecutionsService.markExecutionAsCompleted(projectId);
-            if (jiraClientService.isContainRestClient(projectId)){
-                try {
-                    jiraClientService.getRestClientMap(projectId).close();
-                } catch (IOException e) {
-					throw new RuntimeException("Failed to close rest client",e);// NOSONAR
-                }
-                jiraClientService.removeRestClientMapClientForKey(projectId);
-                jiraClientService.removeKerberosClientMapClientForKey(projectId);
-            }
+			if (jiraClientService.isContainRestClient(projectId)) {
+				try {
+					jiraClientService.getRestClientMap(projectId).close();
+				} catch (IOException e) {
+					throw new RuntimeException("Failed to close rest client", e);// NOSONAR
+				}
+				jiraClientService.removeRestClientMapClientForKey(projectId);
+				jiraClientService.removeKerberosClientMapClientForKey(projectId);
+			}
 		}
 	}
 
@@ -180,12 +181,11 @@ public class JobListenerKanban implements JobExecutionListener {
 				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Collections.singletonList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
-				checkDeltaIssues(processorExecutionTraceLog,status);
+				checkDeltaIssues(processorExecutionTraceLog, status);
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(status);
 				if (stepFailureException != null && processorExecutionTraceLog.isProgressStats()) {
-					String failureMessage = "An error occurred. Please check logs.";
-					processorExecutionTraceLog.setErrorMessage(failureMessage);
+					processorExecutionTraceLog.setErrorMessage(generateLogMessage(stepFailureException));
 					processorExecutionTraceLog.setFailureLog(stepFailureException.getMessage());
 				}
 			}
