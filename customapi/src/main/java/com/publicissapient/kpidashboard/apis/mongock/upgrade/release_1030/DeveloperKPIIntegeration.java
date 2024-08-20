@@ -46,7 +46,7 @@ public class DeveloperKPIIntegeration {
                         + "minimum a project should maintain for a KPI. User should just input the number and"
                         + " the unit like percentage, hours will automatically be considered."
                         + " If the threshold is empty, then a common target KPI line will be shown");
-        fieldMappingStructureInsert("thresholdValueKPI180",
+        fieldMappingStructureInsert("thresholdValueKPI182",
 				"Target KPI value denotes the bare "
 						+ "minimum a project should maintain for a KPI. User should just input the number and"
 						+ " the unit like percentage, hours will automatically be considered."
