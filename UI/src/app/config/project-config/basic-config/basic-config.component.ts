@@ -24,6 +24,7 @@ import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
 import { MenuItem } from 'primeng/api';
+import { Router } from '@angular/router';
 declare const require: any;
 
 @Component({
@@ -56,8 +57,15 @@ export class BasicConfigComponent implements OnInit {
   steps: MenuItem[] | undefined;
   isProjectSetupPopup : boolean = false;
   isProjectCOmpletionPopup : boolean = false;
+  allProjectList: any[];
 
-  constructor(private formBuilder: UntypedFormBuilder, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService, private ga: GoogleAnalyticsService) {
+  constructor(private formBuilder: UntypedFormBuilder,
+    private sharedService: SharedService,
+    private http: HttpService,
+    private messenger: MessageService,
+    private getAuthorizationService: GetAuthorizationService,
+    private ga: GoogleAnalyticsService,
+    public router: Router) {
     this.projectTypeOptions = [
       { name: 'Scrum', value: false },
       { name: 'Kanban', value: true }
@@ -83,6 +91,8 @@ export class BasicConfigComponent implements OnInit {
     this.selectedProject = this.sharedService.getSelectedProject();
     this.sharedService.setSelectedFieldMapping(null);
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
+
+    this.allProjectList = this.sharedService.getProjectList();
   }
 
   getFields() {
@@ -166,6 +176,7 @@ export class BasicConfigComponent implements OnInit {
     submitData['kanban'] = formValue['kanban'];
     submitData['hierarchy'] = [];
     submitData['saveAssigneeDetails'] = formValue['assigneeDetails'];
+    submitData['repoToolEnabled'] = formValue['repoToolEnabled']
     let gaObj = {
       name: formValue['projectName'],
       kanban: formValue['kanban'],
@@ -193,11 +204,14 @@ export class BasicConfigComponent implements OnInit {
         this.selectedProject['name'] = response.serviceResponse.data['projectName'];
         this.selectedProject['Type'] = response.serviceResponse.data['kanban'] ? 'Kanban' : 'Scrum';
         this.selectedProject['saveAssigneeDetails'] = response.serviceResponse.data['saveAssigneeDetails'];
+        this.selectedProject['repoToolEnabled'] = response.serviceResponse.data['repoToolEnabled'];
         response.serviceResponse.data['hierarchy'].forEach(element => {
           this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
         });
 
         this.sharedService.setSelectedProject(this.selectedProject);
+        this.allProjectList?.push(this.selectedProject);
+        this.sharedService.setProjectList(this.allProjectList);
         if (!this.ifSuperUser) {
           if (response['projectsAccess']) {
             const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
@@ -252,6 +266,5 @@ export class BasicConfigComponent implements OnInit {
       this.getFields();
     });
   }
-
 
 }

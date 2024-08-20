@@ -92,7 +92,6 @@ public class ToolDataCleanUpServiceFactory {
 		case ProcessorConstants.BITBUCKET:
 		case ProcessorConstants.GITLAB:
 		case ProcessorConstants.AZUREREPO:
-		case ProcessorConstants.REPO_TOOLS:
 		case ProcessorConstants.GITHUB:
 			toolCategory = ProcessorType.SCM.toString();
 			break;

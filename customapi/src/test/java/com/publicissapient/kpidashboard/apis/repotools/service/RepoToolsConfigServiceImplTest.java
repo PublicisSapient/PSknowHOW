@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.repotools.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -183,16 +184,18 @@ public class RepoToolsConfigServiceImplTest {
 
     @Test
     public void testTriggerScanRepoToolProject() {
-        when(processorRepository.findByProcessorName(CommonConstant.REPO_TOOLS)).thenReturn(new Processor());
-        when(projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(CommonConstant.REPO_TOOLS,
+        Processor processor = new Processor();
+        processor.setProcessorName("GitHub");
+        when(processorRepository.findByProcessorName("GitHub")).thenReturn(processor);
+        when(projectToolConfigRepository.findByToolNameAndBasicProjectConfigId("GitHub",
                 new ObjectId("5fb364612064a31c9ccd517a"))).thenReturn(Arrays.asList(projectToolConfig));
         when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
         when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
                 .thenReturn(projectBasicConfig);
         when(repoToolsClient.triggerScanCall(anyString(), anyString(), anyString())).thenReturn(HttpStatus.OK.value());
 
-        int result = repoToolsConfigService.triggerScanRepoToolProject(Arrays.asList("5fb364612064a31c9ccd517a"));
-        verify(processorRepository, Mockito.times(1)).findByProcessorName("RepoTool");
+        int result = repoToolsConfigService.triggerScanRepoToolProject("GitHub", "5fb364612064a31c9ccd517a");
+        verify(processorRepository, Mockito.times(1)).findByProcessorName("GitHub");
         assertEquals(HttpStatus.OK.value(), result);
     }
 
@@ -248,8 +251,6 @@ public class RepoToolsConfigServiceImplTest {
         repoToolsStatusResponse.setStatus("SUCCESS");
         ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
         processorExecutionTraceLog.setLastEnableAssigneeToggleState(false);
-        when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(anyString(),
-                anyString())).thenReturn(Optional.of(processorExecutionTraceLog));
         repoToolsConfigService.saveRepoToolProjectTraceLog(repoToolsStatusResponse);
 
         verify(processorExecutionTraceLogService, times(1)).save(any(ProcessorExecutionTraceLog.class));

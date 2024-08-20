@@ -195,7 +195,6 @@ public final class CommonConstant {
 
 	public static final String RELEASED = "Released";
 	public static final String UNRELEASED = "Unreleased";
-	public static final String REPO_TOOLS = "RepoTool";
     public static final String CACHE_FIELD_MAPPING_STUCTURE = "cache_field_mapping_stucture";
 	public static final String CACHE_PROJECT_TOOL_CONFIG= "cache_project_tool_config";
 	public static final String CUSTOM_TEMPLATE_CODE_SCRUM="10";

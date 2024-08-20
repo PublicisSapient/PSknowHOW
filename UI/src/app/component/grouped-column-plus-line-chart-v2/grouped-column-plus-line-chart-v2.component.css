@@ -46,7 +46,7 @@
     color: #F5F9FF;
     border-radius: 5px;
     /* box-shadow: 0px 0px 6px #b9b9bb; */
-    z-index: 1;
+    z-index: 900;
 }
 
 ::ng-deep div.tooltip p {

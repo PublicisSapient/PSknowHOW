@@ -32,7 +32,7 @@ public class RepoToolsStatusResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String project;
-	private String repository;
+	private String repositoryProvider;
 	private String source;
 	private String status;
 	private String timestamp;

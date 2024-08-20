@@ -19,10 +19,12 @@
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.core.Context;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -83,24 +85,15 @@ public class ProcessorServiceImpl implements ProcessorService {
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	private ConfigHelperService configHelperService;
 
 	@Override
 	public ServiceResponse getAllProcessorDetails() {
 		List<Processor> listProcessor = new ArrayList<>();
-		Boolean repoToolFlag = customApiConfig.getIsRepoToolEnable();
 		processorRepository.findAll().iterator().forEachRemaining(p -> {
 			if (null != p) {
-				String processorName = p.getProcessorName();
-				boolean isRepoTool = processorName.equalsIgnoreCase(ProcessorConstants.REPO_TOOLS);
-				boolean shouldAddToList = (repoToolFlag.equals(Boolean.FALSE) && !isRepoTool)
-						|| (repoToolFlag.equals(Boolean.TRUE)
-								&& !processorName.equalsIgnoreCase(ProcessorConstants.GITLAB)
-								&& !processorName.equalsIgnoreCase(ProcessorConstants.GITHUB)
-								&& !processorName.equalsIgnoreCase(ProcessorConstants.BITBUCKET)
-								&& !processorName.equalsIgnoreCase(ProcessorConstants.AZUREREPO));
-				if (shouldAddToList) {
-					listProcessor.add(p);
-				}
+				listProcessor.add(p);
 			}
 		});
 		log.debug("Returning list of Processors having size: {}", listProcessor.size());
@@ -112,12 +105,19 @@ public class ProcessorServiceImpl implements ProcessorService {
 			ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
 
 		String url = processorUrlConfig.getProcessorUrl(processorName);
+		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
+				ProcessorConstants.GITHUB);
 		boolean isSuccess = true;
 		int statuscode = HttpStatus.NOT_FOUND.value();
 		String body = "";
-		if (processorName.equalsIgnoreCase(ProcessorConstants.REPO_TOOLS)) {
+		boolean isSCMToolEnabled = false;
+		if(processorExecutionBasicConfig != null) {
+			isSCMToolEnabled = configHelperService.getProjectConfig(
+					processorExecutionBasicConfig.getProjectBasicConfigIds().get(0)).isRepoToolEnabled();
+		}
+		if (scmToolList.contains(processorName) && isSCMToolEnabled) {
 			statuscode = repoToolsConfigService
-					.triggerScanRepoToolProject(processorExecutionBasicConfig.getProjectBasicConfigIds());
+					.triggerScanRepoToolProject(processorName, processorExecutionBasicConfig.getProjectBasicConfigIds().get(0));
 		} else {
 			httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
 					.getRequest();

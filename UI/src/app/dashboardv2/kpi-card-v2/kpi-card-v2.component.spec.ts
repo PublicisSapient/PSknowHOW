@@ -85,6 +85,7 @@ describe('KpiCardV2Component', () => {
 
   it('checkIfDataPresent should return true when data is an array with length greater than 0', () => {
     const data = [1, 2, 3];
+    component.loader = false;
 
     const result = component.checkIfDataPresent(data);
 
@@ -93,6 +94,7 @@ describe('KpiCardV2Component', () => {
 
   it('checkIfDataPresent should return true when data is an object with at least one key', () => {
     const data = { key1: 'value1', key2: 'value2' };
+    component.loader = false;
 
     const result = component.checkIfDataPresent(data);
 

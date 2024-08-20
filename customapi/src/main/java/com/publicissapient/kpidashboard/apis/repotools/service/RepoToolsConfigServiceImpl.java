@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.repotools.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -127,7 +128,7 @@ public class RepoToolsConfigServiceImpl {
 					connection.getEmail());
 			LocalDateTime fistScan = LocalDateTime.now().minusMonths(6);
 			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
-					.findByToolName(connection.getRepoToolProvider().toLowerCase());
+					.findByToolName(projectToolConfig.getToolName().toLowerCase());
 			String[] split = projectToolConfig.getGitFullUrl().split("/");
 			String name = split[split.length - 1];
 			if (name.contains("."))
@@ -145,9 +146,9 @@ public class RepoToolsConfigServiceImpl {
 			RepoToolConfig repoToolConfig = new RepoToolConfig(name, projectToolConfig.getIsNew(),
 					projectToolConfig.getBasicProjectConfigId().toString().concat(name),
 					projectToolConfig.getGitFullUrl(), apiEndPoint, repoToolsProvider.getRepoToolProvider(),
-					projectToolConfig.getDefaultBranch(),
+					projectToolConfig.getBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
-					fistScan.toString().replace("T", " "), toolCredential, branchNames, false, organization);
+					fistScan.toString().replace("T", " "), toolCredential, branchNames, true, organization);
 
 			// api call to enroll the project
 			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig,
@@ -163,26 +164,27 @@ public class RepoToolsConfigServiceImpl {
 	}
 
 	/**
-	 * trigger repo tool scanning process
-	 * 
-	 * @param basicProjectconfigIdList
-	 * @return
+	 * Triggers a scan for a repo tool project.
+	 *
+	 * @param processorName the name of the processor
+	 * @param basicProjectConfigId the ID of the basic project configuration
+	 * @return the HTTP status code of the scan trigger request
 	 */
-	public int triggerScanRepoToolProject(List<String> basicProjectconfigIdList) {
+	public int triggerScanRepoToolProject(String processorName, String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
-		Processor processor = processorRepository.findByProcessorName(CommonConstant.REPO_TOOLS);
+		Processor processor = processorRepository.findByProcessorName(processorName);
 
 		// get repo tools configuration from ProjectToolConfig
-		List<ProjectToolConfig> projectRepos = projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(
-				CommonConstant.REPO_TOOLS, new ObjectId(basicProjectconfigIdList.get(0)));
+		List<ProjectToolConfig> projectRepos = projectToolConfigRepository
+				.findByToolNameAndBasicProjectConfigId(processorName, new ObjectId(basicProjectConfigId));
 		try {
 
 			List<ProjectToolConfig> projectToolConfigList = projectRepos.stream()
 					.filter(projectToolConfig -> projectToolConfig.getBasicProjectConfigId()
-							.equals(new ObjectId(basicProjectconfigIdList.get(0))))
+							.equals(new ObjectId(basicProjectConfigId)))
 					.toList();
 			if (CollectionUtils.isNotEmpty(projectToolConfigList)) {
-				String projectCode = createProjectCode(basicProjectconfigIdList.get(0));
+				String projectCode = createProjectCode(basicProjectConfigId);
 
 				// api call to start project scanning
 				httpStatus = repoToolsClient.triggerScanCall(projectCode,
@@ -190,11 +192,11 @@ public class RepoToolsConfigServiceImpl {
 						customApiConfig.getRepoToolAPIKey());
 
 				// save ProcessorItemRepository for all the ProjectToolConfig
-				processorItemRepository.saveAll(createProcessorItemList(projectToolConfigList, processor.getId()));
+				processorItemRepository.saveAll(createProcessorItemList(projectToolConfigList, processor));
 
 			}
 		} catch (Exception ex) {
-			log.error("Exception occcured while scanning project {}", basicProjectconfigIdList, ex);
+			log.error("Exception occurred while scanning project {}", basicProjectConfigId, ex);
 		}
 		return httpStatus;
 	}
@@ -281,18 +283,18 @@ public class RepoToolsConfigServiceImpl {
 	}
 
 	/**
-	 * create ProcessorItemList for scanning
-	 * 
-	 * @param toolList
-	 * @param processorId
-	 * @return
+	 * Creates a list of ProcessorItem objects from a list of ProjectToolConfig objects and a Processor.
+	 *
+	 * @param toolList  the list of ProjectToolConfig objects
+	 * @param processor the Processor object
+	 * @return a list of ProcessorItem objects
 	 */
-	private List<ProcessorItem> createProcessorItemList(List<ProjectToolConfig> toolList, ObjectId processorId) {
+	private List<ProcessorItem> createProcessorItemList(List<ProjectToolConfig> toolList, Processor processor) {
 		List<ProcessorItem> processorItemList = new ArrayList<>();
 		toolList.forEach(tool -> {
 			ProcessorItem item = new ProcessorItem();
 			item.setToolConfigId(tool.getId());
-			item.setProcessorId(processorId);
+			item.setProcessorId(processor.getId());
 			item.setActive(Boolean.TRUE);
 			item.getToolDetailsMap().put(TOOL_BRANCH, tool.getBranch());
 			item.getToolDetailsMap().put(SCM, tool.getToolName());
@@ -312,10 +314,10 @@ public class RepoToolsConfigServiceImpl {
 	 * @return
 	 */
 	public int deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean onlyData) {
-		String projectCode = (projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId()).replaceAll("\\s", "");
+		String projectCode = (projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId()).replaceAll("\\s",
+				"");
 		String deleteUrl = customApiConfig.getRepoToolURL()
-				+ String.format(customApiConfig.getRepoToolDeleteProjectUrl(),
-						projectCode, onlyData);
+				+ String.format(customApiConfig.getRepoToolDeleteProjectUrl(), projectCode, onlyData);
 		int httpStatus = HttpStatus.NOT_FOUND.value();
 		try {
 			httpStatus = repoToolsClient.deleteProject(deleteUrl, customApiConfig.getRepoToolAPIKey());
@@ -336,16 +338,17 @@ public class RepoToolsConfigServiceImpl {
 		String basicProjectConfigId = repoToolsStatusResponse.getProject()
 				.substring(repoToolsStatusResponse.getProject().lastIndexOf('_') + 1);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-		processorExecutionTraceLog.setProcessorName(ProcessorConstants.REPO_TOOLS);
+		processorExecutionTraceLog.setProcessorName(repoToolsStatusResponse.getRepositoryProvider());
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
-				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.REPO_TOOLS, basicProjectConfigId);
+				.findByProcessorNameAndBasicProjectConfigId(repoToolsStatusResponse.getRepositoryProvider(),
+						basicProjectConfigId);
 		existingTraceLogOptional.ifPresent(
 				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-		processorExecutionTraceLog.setExecutionSuccess(
-				Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()));
+		processorExecutionTraceLog
+				.setExecutionSuccess(Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()));
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
 	}

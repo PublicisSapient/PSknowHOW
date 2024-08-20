@@ -471,6 +471,9 @@ describe('JiraConfigComponent', () => {
       ]
     };
     component.configuredTools = fakeConfiguredTools;
+    component.showAddNewBtn = true;
+    component.isConfigureTool = false;
+    component.toolForm = new UntypedFormGroup({});
     spyOn(httpService, 'deleteProjectToolConfig').and.returnValue(of({"message":"Tool deleted successfully","success":true}));
     component.deleteTool(tool);
     tick();
@@ -784,8 +787,12 @@ describe('JiraConfigComponent', () => {
     const templateList = fakeTemplateList;
     component.selectedProject = {
       id: "641cc51bd830154a05d77370",
-      Type: "kanban"
+      type: "kanban"
     }
+    component.jiraTemplate = [];
+    component.toolForm = new UntypedFormGroup({
+      metadataTemplateCode : new UntypedFormControl()
+    })
     spyOn(httpService, 'getJiraTemplate').and.returnValue(of(templateList))
     component.getJiraTemplate()
     expect(component.jiraTemplate.length).toBeGreaterThan(0);

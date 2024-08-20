@@ -38,6 +38,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -521,11 +522,15 @@ public class ProjectToolConfigServiceImplTest {
 	@Test
 	public void testSaveToolDetails_RepoTool() {
 		listProjectTool2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac3c"));
-		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setToolName(ProcessorConstants.GITHUB);
 		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
 		listProjectTool2.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
 		listProjectTool2.setBranch("master");
 		listProjectTool2.setDefaultBranch("master");
+		ProjectBasicConfig projectBasicConfig  = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		projectBasicConfig.setRepoToolEnabled(true);
+		when(configHelperService.getProjectConfig("5fc4d61e80b6350f048a9381")).thenReturn(projectBasicConfig);
 		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any())).thenReturn(Arrays.asList(listProjectTool2));
 		when(connectionRepository.findById(any()))
 				.thenReturn(Optional.ofNullable(connection));
@@ -538,10 +543,14 @@ public class ProjectToolConfigServiceImplTest {
 	@Test
 	public void testSaveToolDetails_RepoTool_404() {
 		listProjectTool2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac3c"));
-		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setToolName(ProcessorConstants.GITHUB);
 		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
 		listProjectTool2.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
 		listProjectTool2.setDefaultBranch("master");
+		ProjectBasicConfig projectBasicConfig  = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		projectBasicConfig.setRepoToolEnabled(true);
+		when(configHelperService.getProjectConfig("5fc4d61e80b6350f048a9381")).thenReturn(projectBasicConfig);
 		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any())).thenReturn(Arrays.asList(listProjectTool2));
 		when(connectionRepository.findById(any()))
 				.thenReturn(Optional.ofNullable(connection));
@@ -555,11 +564,15 @@ public class ProjectToolConfigServiceImplTest {
 	@Test
 	public void testSaveToolDetails_RepoTool_400() {
 		listProjectTool2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac3c"));
-		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setToolName(ProcessorConstants.GITHUB);
 		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
 		listProjectTool2.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
 		listProjectTool2.setBranch("master");
 		listProjectTool2.setDefaultBranch("master");
+		ProjectBasicConfig projectBasicConfig  = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		projectBasicConfig.setRepoToolEnabled(true);
+		when(configHelperService.getProjectConfig("5fc4d61e80b6350f048a9381")).thenReturn(projectBasicConfig);
 		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any())).thenReturn(Arrays.asList(listProjectTool2));
 		when(connectionRepository.findById(any()))
 				.thenReturn(Optional.ofNullable(connection));
@@ -573,11 +586,15 @@ public class ProjectToolConfigServiceImplTest {
 	@Test
 	public void testSaveToolDetails_RepoTool_500() {
 		listProjectTool2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac3c"));
-		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setToolName(ProcessorConstants.GITHUB);
 		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
 		listProjectTool2.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
 		listProjectTool2.setBranch("master");
 		listProjectTool2.setDefaultBranch("master");
+		ProjectBasicConfig projectBasicConfig  = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		projectBasicConfig.setRepoToolEnabled(true);
+		when(configHelperService.getProjectConfig("5fc4d61e80b6350f048a9381")).thenReturn(projectBasicConfig);
 		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any())).thenReturn(Arrays.asList(listProjectTool2));
 		when(connectionRepository.findById(any()))
 				.thenReturn(Optional.ofNullable(connection));
@@ -603,7 +620,11 @@ public class ProjectToolConfigServiceImplTest {
 	@Test
 	public void testCleanToolData_Repo() {
 		listProjectTool2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac3c"));
-		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setToolName(ProcessorConstants.GITHUB);
+		ProjectBasicConfig projectBasicConfig  = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		projectBasicConfig.setRepoToolEnabled(true);
+		when(configHelperService.getProjectConfig("5fc4d61e80b6350f048a9381")).thenReturn(projectBasicConfig);
 		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
 		listProjectTool2.setConnectionId(new ObjectId("5fc4d61f80b6350f048a93da"));
 		when(toolRepositroy.findById(anyString())).thenReturn(listProjectTool2);
@@ -617,7 +638,11 @@ public class ProjectToolConfigServiceImplTest {
 		String basicProjectId = "5fc4d61e80b6350f048a9381";
 
 		listProjectTool2.setId(new ObjectId("5fc4d61f80b6350f048a93e3"));
-		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setToolName(ProcessorConstants.GITHUB);
+		ProjectBasicConfig projectBasicConfig  = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		projectBasicConfig.setRepoToolEnabled(true);
+		when(configHelperService.getProjectConfig("5fc4d61e80b6350f048a9381")).thenReturn(projectBasicConfig);
 		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
 		listProjectTool2.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
 		listProjectTool2.setBranch("master");
@@ -638,12 +663,15 @@ public class ProjectToolConfigServiceImplTest {
 		String basicProjectId = "5fc4d61e80b6350f048a9381";
 
 		listProjectTool2.setId(new ObjectId("5fc4d61f80b6350f048a93e3"));
-		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setToolName(ProcessorConstants.GITHUB);
 		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
 		listProjectTool2.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
 		listProjectTool2.setBranch("master");
 		listProjectTool2.setDefaultBranch("master");
-
+		ProjectBasicConfig projectBasicConfig  = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		projectBasicConfig.setRepoToolEnabled(true);
+		when(configHelperService.getProjectConfig("5fc4d61e80b6350f048a9381")).thenReturn(projectBasicConfig);
 		when(toolRepositroy.findByBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381")))
 				.thenReturn(Arrays.asList(listProjectTool2));
 //		when(dataCleanUpServiceFactory.getService(anyString())).thenReturn(sonarDataCleanUpService);

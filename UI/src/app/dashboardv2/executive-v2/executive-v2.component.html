@@ -51,7 +51,8 @@
                                             [showCommentIcon]="showCommentIcon"
                                             [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                                             (getCommentCountByKpi)="getKpiCommentsCount($event)"
-                                            (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail.kpiSize" [kpiChartData]="kpiChartData">
+                                            (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail.kpiSize" [kpiChartData]="kpiChartData"
+                                            [immediateLoader]='immediateLoader'>
                                             <ng-container *ngIf="!noTabAccess else noDataAccess">
                                                 <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length">
                                                     <div [ngSwitch]="kpi?.kpiDetail?.chartType">

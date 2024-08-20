@@ -1100,11 +1100,7 @@ describe('ConnectionListComponent', () => {
     sharedService.setGlobalConfigData({repoToolFlag: true});
     let connTobeShown;
     const totalConnectionList = 14;
-    if(component.repoToolsEnabled){
-      connTobeShown = totalConnectionList - 4;
-    }else{
-      connTobeShown = totalConnectionList - 1;
-    }
+    connTobeShown = totalConnectionList - 1;
     expect(component.addEditConnectionFieldsNlabels.length).toEqual(connTobeShown);
   });
 
@@ -2125,13 +2121,6 @@ describe('ConnectionListComponent', () => {
     expect(testConnectionService.testZephyr).toHaveBeenCalled();
     expect(component.testConnectionMsg).toBe("Connection Invalid");
     expect(component.testConnectionValid).toBeFalsy();
-  })
-
-  it('should filter list based on flag',()=>{
-    sharedService.setGlobalConfigData({repoToolFlag: true});
-    component.ngOnInit();
-    component.filterConnections(component.addEditConnectionFieldsNlabels,'connectionLabel')
-    expect(component.addEditConnectionFieldsNlabels.length).toEqual(10);
   })
 
   it("should give success response, while testing for ArgoCD",()=>{

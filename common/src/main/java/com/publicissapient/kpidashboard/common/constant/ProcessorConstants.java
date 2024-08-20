@@ -19,6 +19,9 @@
 
 package com.publicissapient.kpidashboard.common.constant;
 
+import java.util.Arrays;
+import java.util.List;
+
 public final class ProcessorConstants {
 	/**
 	 * The constant JIRA.
@@ -73,9 +76,9 @@ public final class ProcessorConstants {
 
 	public static final String GITHUBACTION = "GitHubAction";
 
-	public static final String REPO_TOOLS = "RepoTool";
-
 	public static final String ARGOCD = "ArgoCD";
+	public static final List<String> SCM_TOOL_LIST = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
+			ProcessorConstants.GITHUB, ProcessorConstants.AZUREREPO);
 
 	private ProcessorConstants() {
 		// This class should not be instantiable

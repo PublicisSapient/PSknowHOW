@@ -13,6 +13,19 @@
     "mandatory": true
   },
   {
+    "fieldName": "epicLink",
+    "fieldLabel": "Custom field for Epic Link",
+    "fieldDisplayOrder": 2,
+    "fieldType": "text",
+    "fieldCategory": "fields",
+    "sectionOrder": 2,
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA applications let you add custom fields in addition to the built-in fields.Provide value of Epic Linkage to the story/defect<br />Example:customfield_11111<hr>"
+    },
+    "mandatory": true
+  },
+  {
     "fieldName": "workingHoursDayCPT",
     "fieldLabel": "Working Hours in a Day",
     "fieldDisplayOrder": 2,
@@ -293,16 +306,6 @@
     "mandatory": true
   },
   {
-    "fieldName": "workingHoursDayCPT",
-    "fieldLabel": "Working Hours in a Day",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-      "definition": "Working hours in a day"
-    }
-  },
-  {
     "fieldName": "epicPlannedValue",
     "fieldLabel": "Custom field for Epic Planned Value",
     "fieldType": "text",
@@ -380,7 +383,7 @@
   },
   {
     "fieldName": "jiraIssueTypeNames",
-    "fieldLabel": "All issue types used by your Jira project",
+    "fieldLabel": "Issue types to be included",
     "fieldDisplayOrder": 1,
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -388,46 +391,46 @@
     "section": "Issue Types Mapping",
     "sectionOrder": 2,
     "tooltip": {
-      "definition": "All the issue types used by a project in Jira."
+      "definition": "All issue types used by your Jira project"
     },
     "mandatory": true
   },
   {
     "fieldName": "jiraSubTaskIdentification",
-    "fieldLabel": "Issue types used to create child sub-tasks",
+    "fieldLabel": "Sub-Task Issue Types",
     "fieldDisplayOrder": 2,
     "fieldType": "chips",
     "section": "Issue Types Mapping",
     "sectionOrder": 2,
     "fieldCategory": "Issue_Type",
     "tooltip": {
-      "definition": "Any issue type mentioned will be considered as sub-task linked with story"
+      "definition": "Issue types used to create child sub-tasks"
     },
     "mandatory": true
   },
   {
     "fieldName": "jiraSubTaskDefectType",
-    "fieldLabel": "Issue type used to create sub-task defects for tracking release defects",
+    "fieldLabel": "Issue type for sub-task defect",
     "fieldDisplayOrder": 3,
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "sectionOrder": 2,
     "tooltip": {
-      "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
+      "definition": "Issue type used to create sub-task defects for tracking release defects"
     },
     "mandatory": true
   },
   {
     "fieldName": "jiraIssueEpicType",
-    "fieldLabel": "Issue types used to create an Epic",
+    "fieldLabel": "Epic Issue Types",
     "fieldDisplayOrder": 4,
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "sectionOrder": 2,
     "tooltip": {
-      "definition": "This field is used to identify Epic Issue type."
+      "definition": "Issue types used to create an Epic."
     },
     "mandatory": true
   },
@@ -3325,7 +3328,7 @@
     "processorCommon": false,
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "All the issue types used by a project in Jira."
+      "definition": "All issue types used by your Jira project"
     }
   },
   {
@@ -3336,7 +3339,7 @@
     "processorCommon": false,
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "All the issue types used by a project in Jira."
+      "definition": "All issue types used by your Jira project"
     },
     "mandatory": true
   },
@@ -3348,7 +3351,7 @@
     "processorCommon": false,
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "All the issue types used by a project in Jira."
+      "definition": "All issue types used by your Jira project"
     },
     "mandatory": true
   },
@@ -3360,7 +3363,7 @@
     "processorCommon": false,
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "All the issue types used by a project in Jira."
+      "definition": "All issue types used by your Jira project"
     }
   },
   {
@@ -3371,7 +3374,7 @@
     "processorCommon": false,
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "All the issue types used by a project in Jira."
+      "definition": "All issue types used by your Jira project"
     }
   },
   {
@@ -3654,7 +3657,6 @@
     "fieldName": "jiraLabelsQAKPI111",
     "fieldLabel": "Labels to filter issues in consideration",
     "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
     "fieldDisplayOrder": 2,
     "sectionOrder": 2,
     "section": "Issue Types Mapping",
@@ -3666,7 +3668,6 @@
     "fieldName": "jiraLabelsKPI133",
     "fieldLabel": "Labels to filter issues in consideration",
     "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
     "fieldDisplayOrder": 2,
     "sectionOrder": 2,
     "section": "Issue Types Mapping",
