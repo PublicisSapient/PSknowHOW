@@ -66,16 +66,6 @@ export class ToolMenuComponent implements OnInit {
     public getAuthorizationService: GetAuthorizationService,
     private ga: GoogleAnalyticsService,
     private route: ActivatedRoute) {
-      this.configOptions = [
-        {
-          'name': 'Tools Connected',
-          'value': 'toolsConnected'
-        },
-        {
-          'name': 'Project Configuration',
-          'value': 'projectConfig'
-        }
-      ]
   }
 
   ngOnInit() {
@@ -121,8 +111,7 @@ export class ToolMenuComponent implements OnInit {
         this.uniqueTools = Array.from(
           this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
         );
-
-        if (this.router.url === `/dashboard/Config/connection-list/${this.selectedProject.id}/ToolMenu?tab=1` || this.router.url === '/dashboard/Config/connection-list?tab=1') {
+        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?tab=2` || this.router.url === '/dashboard/Config/ConfigSettings?tab=2') {
           this.buttonText = 'Set Up';
           this.tools = [
             {
@@ -130,9 +119,9 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: 'fab fa-atlassian',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Jira',
-              routerLink2: `/dashboard/Config/connection-list/${this.selectedProject.id}/FieldMapping`,
+              routerLink2: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/FieldMapping`,
               index: 0,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.connectionName,
               updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
@@ -142,7 +131,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: 'fab fa-atlassian',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'JiraTest',
               index: 11,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'JiraTest')[0]?.connectionName,
@@ -153,7 +142,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: '',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Zephyr',
               index: 1,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Zephyr')[0]?.connectionName,
@@ -164,7 +153,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: 'fab fa-jenkins',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Jenkins',
               index: 2,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Jenkins')[0]?.connectionName,
@@ -175,7 +164,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: 'fab fa-bitbucket',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Bitbucket',
               index: 3,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'BitBucket')[0]?.connectionName,
@@ -186,7 +175,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: 'fab fa-gitlab',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'GitLab',
               index: 4,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'GitLab')[0]?.connectionName,
@@ -197,7 +186,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: '',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Sonar',
               index: 5,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Sonar')[0]?.connectionName,
@@ -208,7 +197,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: '',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Teamcity',
               index: 6,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'TeamCity')[0]?.connectionName,
@@ -219,7 +208,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: '',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Bamboo',
               index: 7,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Bamboo')[0]?.connectionName,
@@ -230,7 +219,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: 'fab fa-windows',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'AzurePipeline',
               index: 8,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'AzurePipeline')[0]?.connectionName,
@@ -241,7 +230,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: 'fab fa-windows',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'AzureRepository',
               index: 9,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'AzureRepository')[0]?.connectionName,
@@ -252,7 +241,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: 'fab fa-github',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'GitHub',
               index: 10,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'GitHub')[0]?.connectionName,
@@ -263,7 +252,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: 'fab fa-github',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'GitHubAction',
               index: 11,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'GitHubAction')[0]?.connectionName,
@@ -274,7 +263,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: '',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'RepoTool',
               index: 12,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'RepoTool')[0]?.connectionName,
@@ -285,7 +274,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'ABC',
               description: '-',
               icon: '',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'ArgoCD',
               index: 13,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'ArgoCD')[0]?.connectionName,
@@ -335,9 +324,9 @@ export class ToolMenuComponent implements OnInit {
       category: 'ABC',
       description: '-',
       icon: 'fab fa-windows',
-      routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+      routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
       queryParams1: 'Azure',
-      routerLink2: `/dashboard/Config/connection-list/${this.selectedProject.id}/FieldMapping`,
+      routerLink2: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/FieldMapping`,
       index: 0,
       connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Azure')[0]?.connectionName,
       updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Azure')[0]?.updatedAt
@@ -347,9 +336,9 @@ export class ToolMenuComponent implements OnInit {
       category: 'ABC',
       description: '-',
       icon: 'fab fa-atlassian',
-      routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+      routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
       queryParams1: 'Jira',
-      routerLink2: `/dashboard/Config/connection-list/${this.selectedProject.id}/FieldMapping`,
+      routerLink2: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/FieldMapping`,
       index: 0,
       connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.connectionName,
       updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
@@ -515,7 +504,7 @@ export class ToolMenuComponent implements OnInit {
       this.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
       // this.selectedProject = this.userProjects[0];
     }
-    if(this.selectedProject && this.router.url.includes('ToolMenu')) {
+    if(this.selectedProject && this.router.url.includes(this.selectedProject['id'])) {
       this.selectedProject = this.userProjects.filter((x) => x.id == this.selectedProject?.id)[0]
     } else {
       this.selectedProject = this.userProjects[0];
@@ -524,7 +513,7 @@ export class ToolMenuComponent implements OnInit {
 
   updateProjectSelection() {
     this.setSelectedProject();
-    this.router.navigate([`/dashboard/Config/connection-list/${this.selectedProject['id']}/ToolMenu`], { queryParams: { tab: 1 } });
+    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject['id']}`], { queryParams: { tab: 2 } });
     this.getToolsConfigured();
   }
 

@@ -52,6 +52,8 @@ import { ToolMenuComponent } from './tool-menu/tool-menu.component';
 import { ProjectListComponent } from './project-list/project-list.component';
 import { FieldMappingComponent } from './field-mapping/field-mapping.component';
 import { ConnectionListComponent } from './connection-list/connection-list.component';
+import { ConfigSettingsComponent } from './config-settings/config-settings.component';
+import { ProjectControlsComponent } from './project-controls/project-controls.component'
 import { JiraConfigComponent } from './jira-config/jira-config.component';
 import { BlockUIModule } from 'primeng/blockui';
 import { PanelModule } from 'primeng/panel';
@@ -60,6 +62,7 @@ import { BadgeModule } from 'primeng/badge';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { PasswordModule } from 'primeng/password';
 import {StepsModule} from 'primeng/steps';
+import { SplitButtonModule } from 'primeng/splitbutton';
 @NgModule({
   declarations: [ProjectConfigComponent,
     BasicConfigComponent,
@@ -67,6 +70,8 @@ import {StepsModule} from 'primeng/steps';
     ProjectListComponent,
     FieldMappingComponent,
     ConnectionListComponent,
+    ConfigSettingsComponent,
+    ProjectControlsComponent,
     FieldMappingComponent,
     JiraConfigComponent],
   imports: [
@@ -104,7 +109,8 @@ import {StepsModule} from 'primeng/steps';
     SharedModuleModule,
     BadgeModule,
     RadioButtonModule,
-    PasswordModule
+    PasswordModule,
+    SplitButtonModule
   ],
   providers: [MessageService, ConfirmationService]
 })

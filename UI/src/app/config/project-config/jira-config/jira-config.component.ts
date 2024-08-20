@@ -303,7 +303,7 @@ export class JiraConfigComponent implements OnInit {
         this.messenger.add({
           severity: 'error',
           summary: error.message,
-        }); 
+        });
       }
     }, (err) => {
       this.jenkinsJobNameList = [];
@@ -467,7 +467,7 @@ export class JiraConfigComponent implements OnInit {
               });
             });
 
-            if(this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest' 
+            if(this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest'
             || this.urlParam?.toLowerCase() == 'zephyr' || this.urlParam?.toLowerCase() == 'azure'){
               this.showAddNewBtn = false;
             }
@@ -2817,13 +2817,14 @@ export class JiraConfigComponent implements OnInit {
   }
 
   redirectToConnections() {
-    this.router.navigate(['./dashboard/Config/connection-list']);
+    const currProjId = this.sharedService.getSelectedProject();
+    this.router.navigate([`./dashboard/Config/ConfigSettings/${currProjId.id}`], {queryParams: { tab: 0, toolName: this.formTitle }});
   }
 
   handleToolConfiguration(type?){
     this.isConfigureTool = true;
     if(type == 'new'){
-      this.isEdit = false;  
+      this.isEdit = false;
     }
     setTimeout(() => {
       const element = document.getElementById("tool-configuration");
