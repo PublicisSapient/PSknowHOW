@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.jira.listener;
 
 import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDateToCustomFormat;
+import static com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil.generateLogMessage;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -184,8 +185,7 @@ public class JobListenerKanban implements JobExecutionListener {
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(status);
 				if (stepFailureException != null && processorExecutionTraceLog.isProgressStats()) {
-					String failureMessage = "An error occurred. Please check logs.";
-					processorExecutionTraceLog.setErrorMessage(failureMessage);
+					processorExecutionTraceLog.setErrorMessage(generateLogMessage(stepFailureException));
 					processorExecutionTraceLog.setFailureLog(stepFailureException.getMessage());
 				}
 			}
