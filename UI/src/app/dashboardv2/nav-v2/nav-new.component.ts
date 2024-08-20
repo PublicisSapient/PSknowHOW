@@ -52,55 +52,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   getBoardConfig(projectList) {
     this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
       (response) => {
-        if (response.success === true) {
-          let data = response.data.userBoardConfigDTO;
-          const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
-          data[this.selectedType].forEach((board) => {
-            if (board?.filters) {
-              board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0].hierarchyLevelName;
-              if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
-                board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
-              }
-              if (board.filters.parentFilter?.emittedLevel) {
-                board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
-              }
-
-              if (board.boardSlug !== 'developer') {
-                board.filters.additionalFilters.forEach(element => {
-                  element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
-                });
-              }
-            }
-          });
-
-          data['others'].forEach((board) => {
-            if (board?.filters) {
-              board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.primaryFilter.defaultLevel.labelName)[0].hierarchyLevelName;
-              if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
-                board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
-              }
-              if (board.filters.parentFilter?.emittedLevel) {
-                board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
-              }
-            }
-          });
-          data['configDetails'] = response.data.configDetails;
-          if (!this.deepEqual(this.dashConfigData, data)) {
-            this.sharedService.setDashConfigData(data);
-            this.dashConfigData = data;
-          }
-
-          this.items = [...this.dashConfigData['scrum'], ...this.dashConfigData['others']].map((obj) => {
-            return {
-              label: obj['boardName'],
-              slug: obj['boardSlug'],
-              command: () => {
-                this.handleMenuTabFunctionality(obj)
-              },
-            };
-          });
-          this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
-        }
+        this.setBoards(response);
       },
       (error) => {
         this.messageService.add({
@@ -109,6 +61,67 @@ export class NavNewComponent implements OnInit, OnDestroy {
         });
       },
     );
+  }
+
+  setBoards(response) {
+    if (response.success === true) {
+      let data = response.data.userBoardConfigDTO;
+      if (JSON.parse(localStorage.getItem('completeHierarchyData'))) {
+        const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
+        data[this.selectedType].forEach((board) => {
+          if (board?.filters) {
+            board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0].hierarchyLevelName;
+            if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
+              board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
+            }
+            if (board.filters.parentFilter?.emittedLevel) {
+              board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
+            }
+
+            if (board.boardSlug !== 'developer') {
+              board.filters.additionalFilters.forEach(element => {
+                element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
+              });
+            }
+          }
+        });
+
+        data['others'].forEach((board) => {
+          if (board?.filters) {
+            board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.primaryFilter.defaultLevel.labelName)[0].hierarchyLevelName;
+            if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
+              board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
+            }
+            if (board.filters.parentFilter?.emittedLevel) {
+              board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
+            }
+          }
+        });
+        data['configDetails'] = response.data.configDetails;
+        if (!this.deepEqual(this.dashConfigData, data)) {
+          this.sharedService.setDashConfigData(data);
+          this.dashConfigData = data;
+        }
+
+        this.items = [...this.dashConfigData['scrum'], ...this.dashConfigData['others']].map((obj) => {
+          return {
+            label: obj['boardName'],
+            slug: obj['boardSlug'],
+            command: () => {
+              this.handleMenuTabFunctionality(obj)
+            },
+          };
+        });
+        this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
+      } else {
+        this.httpService.getAllHierarchyLevels().subscribe((res) => {
+          if (res.data) {          
+            localStorage.setItem('completeHierarchyData', JSON.stringify(res.data));
+            this.setBoards(response);
+          }
+        });
+      }
+    }
   }
 
   handleMenuTabFunctionality(obj) {
