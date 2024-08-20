@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.jira.tasklet;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -63,6 +64,9 @@ public class SprintScrumBoardTasklet implements Tasklet {
 	@Value("#{jobParameters['projectId']}")
 	private String projectId;
 
+	@Value("#{jobParameters['processorId']}")
+	private String processorId;
+
 	/**
 	 * @param sc
 	 *            StepContribution
@@ -82,7 +86,7 @@ public class SprintScrumBoardTasklet implements Tasklet {
 		List<BoardDetails> boardDetailsList = projConfFieldMapping.getProjectToolConfig().getBoards();
 		for (BoardDetails boardDetails : boardDetailsList) {
 			List<SprintDetails> sprintDetailsList = fetchSprintReport
-					.createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client, boardDetails);
+					.createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client, boardDetails, new ObjectId(processorId));
 			sprintRepository.saveAll(sprintDetailsList);
 		}
 

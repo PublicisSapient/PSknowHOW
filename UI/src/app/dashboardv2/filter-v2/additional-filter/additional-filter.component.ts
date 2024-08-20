@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewC
 import { MultiSelect } from 'primeng/multiselect';
 import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
-import {TooltipModule} from 'primeng/tooltip';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-additional-filter',
@@ -119,7 +119,7 @@ export class AdditionalFilterComponent implements OnChanges {
       }
     } else {
       // this.appliedFilters[filterKey] = this.appliedFilters[filterKey] || [];
-      this.appliedFilters[filterKey] =  e &&  e.value ? [e.value] : [];
+      this.appliedFilters[filterKey] = e && e.value ? [e.value] : [];
 
       const filterValue = this.appliedFilters[filterKey][0];
       const nodeId = filterValue?.nodeId || filterValue;
@@ -132,6 +132,15 @@ export class AdditionalFilterComponent implements OnChanges {
         e.stopPropagation = () => { };
       }
       this.multiSelect.close(e);
+    }
+  }
+
+  moveSelectedOptionToTop(event, index) {
+    if (event?.value) {
+      event?.value.forEach(selectedItem => {
+        this.filterData[index] = this.filterData[index].filter(x => x.nodeName !== selectedItem.nodeName); // remove the item from list
+        this.filterData[index].unshift(selectedItem)// this will add selected item on the top 
+      });
     }
   }
 }

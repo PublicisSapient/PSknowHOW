@@ -57,7 +57,16 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         // if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
         this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
         // }
-        this.onPrimaryFilterChange.emit(this.selectedFilters);
+        if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
+          this.onPrimaryFilterChange.emit(this.selectedFilters);
+        } else {
+          if (this.selectedFilters[0].sprintState?.toLowerCase() === 'active') {
+            this.onPrimaryFilterChange.emit(this.selectedFilters);
+          } else {
+            this.service.setNoSprints(true);
+            this.onPrimaryFilterChange.emit([]);
+          }
+        }
         this.setProjectAndLevelBackupBasedOnSelectedLevel();
       } else if (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && this.stateFilters['additional_level'] && Object.keys(this.stateFilters['additional_level'])?.length) {
 
@@ -92,6 +101,17 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         obj['primary_level'] = this.selectedFilters;
         obj['additional_level'] = this.selectedAdditionalFilters;
         this.onPrimaryFilterChange.emit(obj);
+
+        if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
+          this.onPrimaryFilterChange.emit(obj);
+        } else {
+          if (this.selectedFilters[0].sprintState?.toLowerCase() === 'active') {
+            this.onPrimaryFilterChange.emit(obj);
+          } else {
+            this.service.setNoSprints(true);
+            this.onPrimaryFilterChange.emit([]);
+          }
+        }
       } else {
         this.applyDefaultFilters();
       }
@@ -147,16 +167,16 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       // check for iterations and releases
       if (this.primaryFilterConfig['defaultLevel'].sortBy) {
         if (this.selectedTab.toLowerCase() === 'iteration') {
-          this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
+          this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel.emittedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
         } else {
-          this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy]);
+          this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel.emittedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy]);
         }
       } else {
-        this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()].filter((filter) => filter.parentId === this.selectedLevel.nodeId));
+        this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.emittedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId));
       }
     } else {
-      this.selectedLevel = 'project';
-      this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.toLowerCase()]);
+      this.selectedLevel = 'Project';
+      this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
     }
   }
 
@@ -167,7 +187,17 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     // if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
     this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
     // }
-    this.onPrimaryFilterChange.emit([...this.selectedFilters]);
+   
+    if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
+      this.onPrimaryFilterChange.emit([...this.selectedFilters]);
+    } else {
+      if(this.selectedFilters[0].sprintState?.toLowerCase() === 'active') {
+        this.onPrimaryFilterChange.emit([...this.selectedFilters]);
+      } else {
+        this.service.setNoSprints(true);
+        this.onPrimaryFilterChange.emit([]);
+      }
+    }
     this.setProjectAndLevelBackupBasedOnSelectedLevel();
     if (this.multiSelect?.overlayVisible) {
       this.multiSelect.close(event);
@@ -185,6 +215,15 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     } else {
       this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
       this.service.setSelectedLevel({ hierarchyLevelName: this.selectedLevel['nodeType']?.toLowerCase() })
+    }
+  }
+
+  moveSelectedOptionToTop(event) {
+    if (event?.value) {
+      event?.value.forEach(selectedItem => {
+        this.filters = this.filters.filter(x => x.nodeName !== selectedItem.nodeName); // remove the item from list
+        this.filters.unshift(selectedItem)// this will add selected item on the top 
+      });
     }
   }
 

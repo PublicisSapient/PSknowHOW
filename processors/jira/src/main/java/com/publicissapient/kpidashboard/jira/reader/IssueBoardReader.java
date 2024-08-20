@@ -24,8 +24,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.bson.types.ObjectId;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.NonTransientResourceException;
@@ -85,6 +88,8 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	private ReaderRetryHelper retryHelper;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
+	@Autowired
+	private JiraProcessorRepository jiraProcessorRepository;
 	private Iterator<BoardDetails> boardIterator;
 	private Iterator<Issue> issueIterator;
 	ProjectConfFieldMapping projectConfFieldMapping;
@@ -94,12 +99,16 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	@Value("#{jobParameters['projectId']}")
 	private String projectId;
 
+	@Value("#{jobParameters['processorId']}")
+	private String processorId;
+
     public void initializeReader(String projectId) {
         pageSize = jiraProcessorConfig.getPageSize();
         projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
         retryHelper = new ReaderRetryHelper();
         krb5Client = jiraClientService.getKerberosClientMap(projectId);
         client = jiraClientService.getRestClientMap(projectId);
+
     }
 
 	/*
@@ -149,6 +158,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 				readData.setProjectConfFieldMapping(projectConfFieldMapping);
 				readData.setBoardId(boardId);
 				readData.setSprintFetch(false);
+				readData.setProcessorId(new ObjectId(processorId));
 			}
 
 			if ((null == projectConfFieldMapping)

@@ -25,6 +25,7 @@ import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import org.bson.types.ObjectId;
 
 /**
  * @author pankumar8
@@ -40,12 +41,13 @@ public interface FetchSprintReport {
 	 *            krb5Client
 	 * @param isSprintFetch
 	 *            isSprintFetch
+	 * @param processorId
 	 * @return Set of SprintDetails
 	 * @throws IOException
 	 *             throws IOException
 	 */
 	Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			KerberosClient krb5Client, boolean isSprintFetch) throws IOException;
+									KerberosClient krb5Client, boolean isSprintFetch, ObjectId processorId) throws IOException;
 
 	/**
 	 * @param projectConfig
@@ -54,12 +56,13 @@ public interface FetchSprintReport {
 	 *            krb5Client
 	 * @param boardDetails
 	 *            boardDetails
+	 * @param objectId
 	 * @return List of SprintDetails
 	 * @throws IOException
 	 *             throws IOException
 	 */
 	List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client,
-			BoardDetails boardDetails) throws IOException;
+													   BoardDetails boardDetails, ObjectId objectId) throws IOException;
 
 	/**
 	 * @param projectConfig
