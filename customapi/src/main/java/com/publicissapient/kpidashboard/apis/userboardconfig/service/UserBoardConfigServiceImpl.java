@@ -475,7 +475,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 							.filter(kpisDTO -> kpisDTO.getKpiDetail().getIsRepoToolKpi()).toList();
 				} else {
 					boardKpisDTO = boardDTO.getKpis().stream()
-							.filter(kpisDTO -> !kpisDTO.getKpiDetail().getIsRepoToolKpi()).toList();
+							.filter(kpisDTO -> Boolean.FALSE.equals(kpisDTO.getKpiDetail().getIsRepoToolKpi())).toList();
 				}
 				boardDTO.setKpis(boardKpisDTO);
 			}
