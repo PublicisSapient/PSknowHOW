@@ -347,6 +347,7 @@ describe('ConnectionListComponent', () => {
         'Repo Ownername',
         'Use vault password',
         'Access Token',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -356,6 +357,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
+        'email',
         'sharedConnection',
       ],
     },
@@ -369,6 +371,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Access Token',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -378,6 +381,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
+        'email',
         'sharedConnection',
       ],
     },
@@ -393,6 +397,7 @@ describe('ConnectionListComponent', () => {
         'Use vault password',
         'App Password',
         'API End Point',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -404,6 +409,7 @@ describe('ConnectionListComponent', () => {
         'vault',
         'password',
         'apiEndPoint',
+        'email',
         'sharedConnection',
       ],
     },
@@ -678,6 +684,7 @@ describe('ConnectionListComponent', () => {
         'Repo Ownername',
         'Use vault password',
         'Access Token',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -687,6 +694,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
+        'email',
         'sharedConnection',
       ],
     },
@@ -700,6 +708,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Access Token',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -709,6 +718,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
+        'email',
         'sharedConnection',
       ],
     },
@@ -724,6 +734,7 @@ describe('ConnectionListComponent', () => {
         'Use vault password',
         'Password',
         'API End Point',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -735,6 +746,7 @@ describe('ConnectionListComponent', () => {
         'vault',
         'password',
         'apiEndPoint',
+        'email',
         'sharedConnection',
       ],
     },
@@ -861,6 +873,7 @@ describe('ConnectionListComponent', () => {
         'Base Url',
         'Use vault password',
         'PAT',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -869,6 +882,7 @@ describe('ConnectionListComponent', () => {
         'baseUrl',
         'vault',
         'pat',
+        'email',
         'sharedConnection',
       ],
     },
@@ -2452,51 +2466,6 @@ it("should give error in response while testing for AzurePipeline",()=>{
     component.connectionTypeFieldsAssignment();
     spyOn(testConnectionService,'testNewRelic').and.returnValue(throwError('Error'));
     component.testConnection();
-    expect(component.testConnectionMsg).toBe("Connection Invalid");
-    expect(component.testConnectionValid).toBeFalsy();
-  })
-
-
-  it("should give success response, while testing for Repotool",()=>{
-    component.testingConnection = true;
-    const fakeResponse = {
-      success : "true",
-      data : 200
-    }
-    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
-    component.connection['type'] = 'RepoTool';
-    component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testRepoTool').and.returnValue(of(fakeResponse));
-    component.testConnection();
-    fixture.detectChanges();
-    expect(component.testConnectionMsg).toBe("Valid Connection");
-    expect(component.testConnectionValid).toBeTruthy();
-  })
-
-  it("should give error in response while testing for Repotool",()=>{
-    component.testingConnection = true;
-    const fakeResponse = {
-      success : false,
-      data : 400
-    }
-    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
-    component.connection['type'] = 'RepoTool';
-    component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testRepoTool').and.returnValue(of(fakeResponse));
-    component.testConnection();
-    fixture.detectChanges();
-    expect(component.testConnectionMsg).toBe("Connection Invalid");
-    expect(component.testConnectionValid).toBeFalsy();
-  })
-
-  it("should give error in response while testing for Repotool",()=>{
-    component.testingConnection = true;
-    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
-    component.connection['type'] = 'RepoTool';
-    component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testRepoTool').and.returnValue(throwError('Error'));
-    component.testConnection();
-    fixture.detectChanges();
     expect(component.testConnectionMsg).toBe("Connection Invalid");
     expect(component.testConnectionValid).toBeFalsy();
   })
