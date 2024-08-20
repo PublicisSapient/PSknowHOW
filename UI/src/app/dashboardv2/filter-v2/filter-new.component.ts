@@ -61,6 +61,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   isRecommendationsEnabled: boolean = false;
   selectedBoard: any;
   hierarchies: any;
+  noSprint: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -115,11 +116,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
 
-         
+
           this.selectedDayType = 'Weeks';
           this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
           this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
-          
+
 
           if (this.selectedType.toLowerCase() === 'kanban') {
             this.kanban = true;
@@ -409,7 +410,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
 
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
-      
+
       this.selectedDayType = 'Weeks';
       this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
       this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
@@ -501,7 +502,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       } else {
         this.additionalData = false;
       }
-      
+
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
       if (this.filterDataArr[this.selectedType]) {
         // Promise.resolve(() => {
@@ -535,6 +536,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.handleAdditionalChange({ [key]: event['additional_level'][key] })
         });
       }
+    } else if (!event.length) {
+      if (this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'sprint') {
+        this.noSprint = true;
+      }
     }
 
     if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event && event[0]?.labelName === 'project') {
@@ -543,6 +548,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       if (currentProjectSprints?.length) {
         currentProjectSprints.sort((a, b) => new Date(a.sprintEndDate).getTime() - new Date(b.sprintEndDate).getTime());
         this.service.setSprintForRnR(currentProjectSprints[currentProjectSprints?.length - 1])
+        this.noSprint = false;
       }
     }
     this.compileGAData(event);
