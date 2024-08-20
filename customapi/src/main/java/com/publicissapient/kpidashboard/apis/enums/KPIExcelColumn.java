@@ -319,6 +319,8 @@ public enum KPIExcelColumn {
 
 	REVERT_RATE("kpi180", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Revert Rate")),
 
+	PR_SUCCESS_RATE("kpi182", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Success Rate")),
+
 	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee")),
 
 	RELEASE_PLAN("kpi179", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",

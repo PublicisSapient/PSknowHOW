@@ -512,6 +512,10 @@ public enum KPICode {
      * Revert Rate (Developer)
      */
     REVERT_RATE("kpi180", KPISource.BITBUCKET.name()),
+    /**
+     * Success Rate (Developer)
+     */
+    PR_SUCCESS_RATE("kpi182", KPISource.BITBUCKET.name()),
 
 
 

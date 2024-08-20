@@ -40,7 +40,13 @@ public class DeveloperKPIIntegeration {
 	@Execution
 	public void execution() {
 		insertKpis("kpi180", "Revert Rate", "", "", Arrays.asList("-80", "80-50", "50-20", "20-5", "5-"));
-		fieldMappingStructureInsert("thresholdValueKPI173",
+		insertKpis("kpi182", "PR Success Rate", "PR success rate measures the number of pull requests that went through the process without being abandoned or discarded as against the total PRs raised in a defined period  A low or declining Pull Request Success Rate represents high or increasing waste", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/75726849/Developer+PR+Success+Rate", Arrays.asList("-80", "80-50", "50-20", "20-5", "5-"));
+		fieldMappingStructureInsert("thresholdValueKPI180",
+				"Target KPI value denotes the bare "
+						+ "minimum a project should maintain for a KPI. User should just input the number and"
+						+ " the unit like percentage, hours will automatically be considered."
+						+ " If the threshold is empty, then a common target KPI line will be shown");
+		fieldMappingStructureInsert("thresholdValueKPI182",
 				"Target KPI value denotes the bare "
 						+ "minimum a project should maintain for a KPI. User should just input the number and"
 						+ " the unit like percentage, hours will automatically be considered."
@@ -76,7 +82,9 @@ public class DeveloperKPIIntegeration {
 	@RollbackExecution
 	public void rollBack() {
 		deleteKpiMaster("kpi180");
-		fieldMappingStructureDelete("thresholdValueKPI173");
+		deleteKpiMaster("kpi182");
+		fieldMappingStructureDelete("thresholdValueKPI180");
+		fieldMappingStructureDelete("thresholdValueKPI182");
 	}
 
 	public void deleteKpiMaster(String kpiId) {
