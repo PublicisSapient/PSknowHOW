@@ -38,15 +38,14 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
-import com.publicissapient.kpidashboard.apis.model.Node;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.jira.scrum.service.CommittmentReliabilityServiceImpl;
@@ -82,6 +81,7 @@ import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExe
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The class contains mapping of kpi and Excel columns.
@@ -98,6 +98,9 @@ public class KPIExcelUtility {
 	private static final String STATUS = "Status";
 	private static final String WEEK = "Week";
 	private static final String UNDEFINED = "Undefined";
+
+	@Autowired
+	private static CustomApiConfig customApiConfig;
 
 	private KPIExcelUtility() {
 	}
@@ -289,7 +292,7 @@ public class KPIExcelUtility {
 	 * @param kpiId
 	 */
 	public static void populateDefectRelatedExcelData(String sprint, List<JiraIssue> jiraIssues,
-			List<KPIExcelData> kpiExcelData, String kpiId) {
+			List<KPIExcelData> kpiExcelData, String kpiId, CustomApiConfig customApiConfig) {
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			jiraIssues.stream().forEach(jiraIssue -> {
 				KPIExcelData excelData = new KPIExcelData();
@@ -300,7 +303,25 @@ public class KPIExcelUtility {
 				defectIdDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
 				excelData.setDefectId(defectIdDetails);
 				if (kpiId.equalsIgnoreCase(KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId())) {
-					excelData.setPriority(jiraIssue.getPriority());
+					if (StringUtils.containsIgnoreCase(
+							customApiConfig.getpriorityP1().replaceAll(Constant.WHITESPACE, "").trim(),
+							jiraIssue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+						excelData.setPriority(Constant.P1 +"- "+ jiraIssue.getPriority());
+					} else if (StringUtils.containsIgnoreCase(
+							customApiConfig.getpriorityP2().replaceAll(Constant.WHITESPACE, "").trim(),
+							jiraIssue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+						excelData.setPriority(Constant.P2 +"- "+ jiraIssue.getPriority());
+					} else if (StringUtils.containsIgnoreCase(
+							customApiConfig.getpriorityP3().replaceAll(Constant.WHITESPACE, "").trim(),
+							jiraIssue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+						excelData.setPriority(Constant.P3 +"- "+ jiraIssue.getPriority());
+					} else if (StringUtils.containsIgnoreCase(
+							customApiConfig.getpriorityP4().replaceAll(Constant.WHITESPACE, "").trim(),
+							jiraIssue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+						excelData.setPriority(Constant.P4 +"- "+ jiraIssue.getPriority());
+					} else {
+						excelData.setPriority(Constant.MISC +"- "+ jiraIssue.getPriority());
+					}
 				}
 				if (kpiId.equalsIgnoreCase(KPICode.DEFECT_COUNT_BY_RCA.getKpiId())) {
 					excelData.setRootCause(jiraIssue.getRootCauseList());
