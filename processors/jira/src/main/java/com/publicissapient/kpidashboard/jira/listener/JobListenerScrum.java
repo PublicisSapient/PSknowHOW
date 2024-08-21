@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.jira.listener;
 
 import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDateToCustomFormat;
+import static com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil.generateLogMessage;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -137,7 +138,7 @@ public class JobListenerScrum implements JobExecutionListener {
 						break;
 					}
 				}
-				setExecutionInfoInTraceLog(false,	stepFaliureException);
+				setExecutionInfoInTraceLog(false, stepFaliureException);
 				sendNotification(stepFaliureException);
 			} else {
 				setExecutionInfoInTraceLog(true, null);
@@ -150,15 +151,15 @@ public class JobListenerScrum implements JobExecutionListener {
 			ongoingExecutionsService.markExecutionAsCompleted(projectId);
 
 			log.info("removing client for basicProjectConfigId {}", projectId);
-            if (jiraClientService.isContainRestClient(projectId)){
-                try {
-                    jiraClientService.getRestClientMap(projectId).close();
-                } catch (IOException e) {
-					throw new RuntimeException("Failed to close rest client",e);// NOSONAR
-                }
-                jiraClientService.removeRestClientMapClientForKey(projectId);
-                jiraClientService.removeKerberosClientMapClientForKey(projectId);
-            }
+			if (jiraClientService.isContainRestClient(projectId)) {
+				try {
+					jiraClientService.getRestClientMap(projectId).close();
+				} catch (IOException e) {
+					throw new RuntimeException("Failed to close rest client", e);// NOSONAR
+				}
+				jiraClientService.removeRestClientMapClientForKey(projectId);
+				jiraClientService.removeKerberosClientMapClientForKey(projectId);
+			}
 		}
 	}
 
@@ -179,18 +180,16 @@ public class JobListenerScrum implements JobExecutionListener {
 		return projectBasicConfig == null ? "" : projectBasicConfig.getProjectName();
 	}
 
-
 	private void setExecutionInfoInTraceLog(boolean status, Throwable stepFailureException) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
 				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Collections.singletonList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
-				checkDeltaIssues(processorExecutionTraceLog,status);
+				checkDeltaIssues(processorExecutionTraceLog, status);
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(status);
 				if (stepFailureException != null && processorExecutionTraceLog.isProgressStats()) {
-					String failureMessage = "An error occurred. Please check logs.";
-					processorExecutionTraceLog.setErrorMessage(failureMessage);
+					processorExecutionTraceLog.setErrorMessage(generateLogMessage(stepFailureException));
 					processorExecutionTraceLog.setFailureLog(stepFailureException.getMessage());
 				}
 			}
