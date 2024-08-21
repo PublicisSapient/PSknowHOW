@@ -531,7 +531,7 @@ export class ConnectionListComponent implements OnInit {
     /* this.httpService.getAllToolConfigs().subscribe(res => {
       console.log(res)
     }) */
-
+    this.selectedToolName = this.selectedToolName !== undefined ? this.selectedToolName : this.addEditConnectionFieldsNlabels[0].connectionType;
     this.selectedConnectionType = this.addEditConnectionFieldsNlabels.filter(el => el.connectionLabel === this.selectedToolName)[0]?.connectionType;
 
   }

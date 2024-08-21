@@ -19,8 +19,8 @@
 <div class="selectbtn-container">
     <p-selectButton [options]="configOptions" [(ngModel)]="selectedTab" (onChange)="onTabChange()" optionLabel="tab" optionValue="tabValue" styleClass="p-mb-5" ngDefaultControl></p-selectButton>
 </div>
-<ng-container *ngIf="selectedTab === 'projectControls'">
-  <app-project-controls></app-project-controls>
+<ng-container *ngIf="selectedTab === 'projectSettings'">
+  <app-project-settings></app-project-settings>
 </ng-container>
 <ng-container *ngIf="selectedTab === 'availableConnections'">
   <app-connection-list [selectedToolName]="selectedToolName"></app-connection-list>

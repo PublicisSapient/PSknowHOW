@@ -1,0 +1,87 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<div class="main">
+  <div class="p-d-flex p-jc-between p-align-center p-mb-5">
+    <h1>Project Settings</h1>
+    <div>
+      <span class="p-text-capitalize" style="font-size: 1.2rem;">
+        Select Project
+      </span>
+      <span class="p-ml-3">
+        <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name"
+          [style]="{'min-width':'300px', 'max-width':'300px'}"
+          [panelStyle]="{'min-width':'inherit', 'max-width':'inherit'}" [filter]="true" filterBy="name"
+          [showClear]="false" placeholder="Select a Project" (onChange)="updateProjectSelection()">
+          <ng-template pTemplate="selectedItem">
+            <div class="userProject-item userProject-item-value" *ngIf="selectedProject">
+              <div>{{selectedProject.name}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-userProject pTemplate="item">
+            <div class="userProject-item">
+              <div>{{userProject.name}}</div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </span>
+    </div>
+  </div>
+  <div class="p-p-3 p-mb-4 p-grid bg-cyan" *ngIf="selectedProject">
+    <ng-container *ngFor="let project of selectedProject | keyvalue : originalOrder">
+      <div class="p-md-2 long-text float-left pad-r-0 pad-l-0 inline-div"
+        *ngIf="project?.key?.toLowerCase() !== 'id' && project?.key != 'saveAssigneeDetails' ">
+        <p class="form_title p-text-capitalize">{{project?.key}}</p>
+        <strong class="sub-text p-text-capitalize">{{project?.value}}</strong>
+      </div>
+    </ng-container>
+  </div>
+  <p-accordion [multiple]="true" [activeIndex]="[0]">
+    <p-accordionTab header="Project Controls">
+      <p-table [value]="contrlOptions" styleClass="p-datatable-gridlines">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Settings</th>
+            <th>Description</th>
+            <th>Note</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-contrlOption>
+          <tr>
+            <td>{{ contrlOption.name }}</td>
+            <td>{{ contrlOption.description }}</td>
+            <td>{{ contrlOption.note }}</td>
+            <td>SWITCH/CTA</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-accordionTab>
+    <p-accordionTab header="Security">
+      <p>
+        More controls coming soon...
+      </p>
+    </p-accordionTab>
+    <p-accordionTab header="Header III">
+      <p>
+        More controls coming soon...
+      </p>
+    </p-accordionTab>
+  </p-accordion>
+
+</div>

@@ -2818,7 +2818,7 @@ export class JiraConfigComponent implements OnInit {
 
   redirectToConnections() {
     const currProjId = this.sharedService.getSelectedProject();
-    this.router.navigate([`./dashboard/Config/ConfigSettings/${currProjId.id}`], {queryParams: { tab: 0, toolName: this.formTitle }});
+    this.router.navigate([`./dashboard/Config/ConfigSettings/${currProjId.id}`], {queryParams: { tab: 1, toolName: this.formTitle }});
   }
 
   handleToolConfiguration(type?){

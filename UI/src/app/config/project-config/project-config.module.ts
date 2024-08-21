@@ -53,7 +53,7 @@ import { ProjectListComponent } from './project-list/project-list.component';
 import { FieldMappingComponent } from './field-mapping/field-mapping.component';
 import { ConnectionListComponent } from './connection-list/connection-list.component';
 import { ConfigSettingsComponent } from './config-settings/config-settings.component';
-import { ProjectControlsComponent } from './project-controls/project-controls.component'
+import { ProjectSettingsComponent } from './project-settings/project-settings.component'
 import { JiraConfigComponent } from './jira-config/jira-config.component';
 import { BlockUIModule } from 'primeng/blockui';
 import { PanelModule } from 'primeng/panel';
@@ -71,7 +71,7 @@ import { SplitButtonModule } from 'primeng/splitbutton';
     FieldMappingComponent,
     ConnectionListComponent,
     ConfigSettingsComponent,
-    ProjectControlsComponent,
+    ProjectSettingsComponent,
     FieldMappingComponent,
     JiraConfigComponent],
   imports: [

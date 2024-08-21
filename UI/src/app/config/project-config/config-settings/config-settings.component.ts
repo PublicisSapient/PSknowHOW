@@ -29,14 +29,14 @@ import { HttpService } from 'src/app/services/http.service';
 export class ConfigSettingsComponent implements OnInit {
 
   configOptions: { tab: string; tabValue: string; }[];
-  selectedTab: string = 'projectControls';
+  selectedTab: string = 'projectSettings';
   tab: any;
   selectedToolName: string = null;
   constructor(private route: ActivatedRoute, public router: Router, public httpService: HttpService) {
     this.configOptions = [
       {
-        'tab': 'Project Controls',
-        'tabValue': 'projectControls'
+        'tab': 'Project Settings',
+        'tabValue': 'projectSettings'
       },
       {
         'tab': 'Available Connections',
@@ -59,7 +59,7 @@ export class ConfigSettingsComponent implements OnInit {
           this.selectedTab = 'projectConfig';
           break;
         default:
-          this.selectedTab = 'projectControls';
+          this.selectedTab = 'projectSettings';
           break;
       }
     });

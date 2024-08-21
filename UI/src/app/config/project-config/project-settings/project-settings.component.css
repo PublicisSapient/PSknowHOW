@@ -16,26 +16,24 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+.main {
+    min-height: calc(100vh - 188px);
+    position: relative;
+    background-color: var(--color-white);
+    width: calc(100% - 4px);
+    padding: 16px;
+    margin: 4px 0;
+    border-radius: 4px;
+    box-shadow:0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
 
-@Component({
-  selector: 'app-project-controls',
-  templateUrl: './project-controls.component.html',
-  styleUrls: ['./project-controls.component.css']
-})
-export class ProjectControlsComponent implements OnInit {
-  contrlOptions: { name: string; description: string; action: boolean; }[];
+div.main {
+    width: calc(100% - 16px);
+    margin: 8px;
+}
 
-  constructor() {
-  }
-
-  ngOnInit(): void {
-    this.contrlOptions = [
-      { name: 'Control 1', description: 'Enable fetching info from Agile PM tool', action: true },
-      { name: 'Control 2', description: 'Enable fetching info from Repo tool', action: false },
-      { name: 'Control 3', description: 'Enable fetching info from Jira tool', action: false },
-      { name: 'Control 4', description: 'Enable fetching info from Zephyr tool', action: true }
-    ]
-  }
-
+::ng-deep .p-accordion-header {
+  text-transform: uppercase;
+  font-size: 1.4rem;
+  color: var(--color-black);
 }
