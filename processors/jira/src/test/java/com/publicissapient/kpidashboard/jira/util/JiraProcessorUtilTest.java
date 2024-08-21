@@ -234,4 +234,32 @@ public class JiraProcessorUtilTest {
 		assertEquals("Process Issues 0 to 0 out of 0", progressStatusList.get(0).getStepName());
 		assertEquals(BatchStatus.COMPLETED.toString(), progressStatusList.get(0).getStatus());
 	}
+	@Test
+	public void testGenerateLogMessage_withExceptionMessage() {
+		Throwable exception = new Throwable("java.lang.NullPointerException: null");
+		String expectedMessage = "An unexpected error has occurred. Please contact the KnowHow Support for assistance.";
+		String actualMessage = JiraProcessorUtil.generateLogMessage(exception);
+		assertEquals(expectedMessage, actualMessage);
+	}
+	@Test
+	public void testGenerateLogMessage_withErrorCollection() {
+		Throwable exception = new Throwable("org.codehaus.jettison.json.JSONException: A JSONObject text must begin with '{'");
+		String expectedMessage = "An unexpected error has occurred. Please contact the KnowHow Support for assistance.";
+		String actualMessage = JiraProcessorUtil.generateLogMessage(exception);
+		assertEquals(expectedMessage, actualMessage);
+	}
+	@Test
+	public void testGenerateLogMessage_withErrorStatusCode() {
+		Throwable exception = new Throwable("[ErrorCollection{status=401, errors={}, errorMessages=[]}]");
+		String expectedMessage = "Sorry, you are not authorized to access the requested resource.";
+		String actualMessage = JiraProcessorUtil.generateLogMessage(exception);
+		assertEquals(expectedMessage, actualMessage);
+	}
+	@Test
+	public void testGenerateLogMessage_noMatchingPattern() {
+		Throwable exception = new Throwable("Some random exception message");
+		String expectedMessage = "No matching exception pattern found";
+		String actualMessage = JiraProcessorUtil.generateLogMessage(exception);
+		assertEquals(expectedMessage, actualMessage);
+	}
 }
