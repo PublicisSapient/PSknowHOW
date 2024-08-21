@@ -249,9 +249,23 @@ public class JiraProcessorUtilTest {
 		assertEquals(expectedMessage, actualMessage);
 	}
 	@Test
-	public void testGenerateLogMessage_withErrorStatusCode() {
+	public void testGenerateLogMessage_withErrorStatusCode401() {
 		Throwable exception = new Throwable("[ErrorCollection{status=401, errors={}, errorMessages=[]}]");
 		String expectedMessage = "Sorry, you are not authorized to access the requested resource.";
+		String actualMessage = JiraProcessorUtil.generateLogMessage(exception);
+		assertEquals(expectedMessage, actualMessage);
+	}
+	@Test
+	public void testGenerateLogMessage_withErrorStatusCode403() {
+		Throwable exception = new Throwable("[ErrorCollection{status=403, errors={}, errorMessages=[]}]");
+		String expectedMessage = "Forbidden, check your credentials.";
+		String actualMessage = JiraProcessorUtil.generateLogMessage(exception);
+		assertEquals(expectedMessage, actualMessage);
+	}
+	@Test
+	public void testGenerateLogMessage_withErrorStatusCode429() {
+		Throwable exception = new Throwable("[ErrorCollection{status=429, errors={}, errorMessages=[]}]");
+		String expectedMessage = "Too many request try after sometime.";
 		String actualMessage = JiraProcessorUtil.generateLogMessage(exception);
 		assertEquals(expectedMessage, actualMessage);
 	}

@@ -84,7 +84,9 @@ public class JiraProcessorUtil {
 	private static final Pattern ERROR_WITH_STATUS_CODE_PATTERN = Pattern.compile("Error:\\s*(\\d+)\\s*-\\s*(.*)");
 
 	private static final String UNAUTHORIZED = "Sorry, you are not authorized to access the requested resource.";
+	private static final String TO_MANY_REQUEST = "Too many request try after sometime.";
 	private static final String OTHER_CLIENT_ERRORS = "An unexpected error has occurred. Please contact the KnowHow Support for assistance.";
+	private static final String FORBIDDEN="Forbidden, check your credentials.";
 
 	/**
 	 * This method return UTF-8 decoded string response
@@ -398,11 +400,20 @@ public class JiraProcessorUtil {
 		if (matcher.find()) {
 			if (hasStatusCode) {
 				int statusCode = Integer.parseInt(matcher.group(1));
-				return (statusCode >= 400 && statusCode < 500) ? UNAUTHORIZED : OTHER_CLIENT_ERRORS;
-			} else {
-				return OTHER_CLIENT_ERRORS;
+				switch (statusCode) {
+				case 401:
+					return UNAUTHORIZED;
+				case 429:
+					return TO_MANY_REQUEST;
+				case 403:
+					return FORBIDDEN;
+				default:
+					return OTHER_CLIENT_ERRORS;
+				}
 			}
+			return OTHER_CLIENT_ERRORS;
 		}
 		return null;
 	}
+
 }
