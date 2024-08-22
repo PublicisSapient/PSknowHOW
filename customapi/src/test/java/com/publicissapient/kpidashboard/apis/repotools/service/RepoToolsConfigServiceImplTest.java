@@ -156,15 +156,10 @@ public class RepoToolsConfigServiceImplTest {
         projectBasicConfig.setId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectBasicConfig.setProjectName("testProj");
 
-        when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(repoToolsProvider);
-
         when(customApiConfig.getRepoToolAPIKey()).thenReturn("repoToolAPIKey");
         when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
-        when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(repoToolsProvider);
         when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
                 .thenReturn(projectBasicConfig);
-        when(repoToolsProviderRepository.findByToolName(anyString()))
-                .thenReturn(repoToolsProvider);;
 
     }
 

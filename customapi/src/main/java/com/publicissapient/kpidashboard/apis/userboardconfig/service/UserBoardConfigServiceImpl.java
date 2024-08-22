@@ -468,7 +468,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				if (basicProjectConfigId != null) {
 					ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(
 							basicProjectConfigId.substring(basicProjectConfigId.lastIndexOf('_') + 1));
-					isSCMToolEnable = projectBasicConfig != null ?projectBasicConfig.isRepoToolEnabled():false;
+					isSCMToolEnable = projectBasicConfig != null && projectBasicConfig.isRepoToolEnabled();
 				}
 				if (isSCMToolEnable) {
 					boardKpisDTO = boardDTO.getKpis().stream()

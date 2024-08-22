@@ -104,9 +104,10 @@ public class RepoToolsConfigServiceImpl {
 	public static final String REPO_NAME = "repoName";
 	public static final String REPO_BRANCH = "defaultBranch";
 	public static final String BITBUCKET = "bitbucket";
-	public static final String BITBUCKET_CLOUD_IDENTIFIER = "bitbucket.org";
 	public static final String PROJECT = "/projects/";
 	public static final String REPOS = "/repos/";
+	public static final String AZURE_PROVIDER = "azure";
+	public static final String BITBUCKET_PROVIDER = "bitbucket_oauth2";
 
 
 
@@ -122,33 +123,17 @@ public class RepoToolsConfigServiceImpl {
 			List<String> branchNames) {
 		int httpStatus;
 		try {
-			// create scanning account
-			ToolCredential toolCredential = new ToolCredential(connection.getUsername(),
-					aesEncryptionService.decrypt(connection.getAccessToken(), customApiConfig.getAesEncryptionKey()),
-					connection.getEmail());
-			LocalDateTime fistScan = LocalDateTime.now().minusMonths(6);
-			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
-					.findByToolName(projectToolConfig.getToolName().toLowerCase());
-			String[] split = projectToolConfig.getGitFullUrl().split("/");
-			String name = split[split.length - 1];
-			if (name.contains("."))
-				name = name.split(".git")[0];
-			projectToolConfig.setRepositoryName(name);
-			String apiEndPoint = null;
-			String organization = null;
-			if (repoToolsProvider.getToolName().equalsIgnoreCase(BITBUCKET)
-					&& !projectToolConfig.getGitFullUrl().contains(BITBUCKET_CLOUD_IDENTIFIER)) {
-				apiEndPoint = connection.getApiEndPoint() + PROJECT + split[split.length - 2] + REPOS + name;
-			} else if(repoToolsProvider.getToolName().equalsIgnoreCase(Constant.TOOL_AZUREREPO)) {
-				organization = split[3];
-			}
+			RepoToolConfig repoToolConfig = new RepoToolConfig();
+
 			// create configuration details for repo tool
-			RepoToolConfig repoToolConfig = new RepoToolConfig(name, projectToolConfig.getIsNew(),
-					projectToolConfig.getBasicProjectConfigId().toString().concat(name),
-					projectToolConfig.getGitFullUrl(), apiEndPoint, repoToolsProvider.getRepoToolProvider(),
-					projectToolConfig.getBranch(),
-					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
-					fistScan.toString().replace("T", " "), toolCredential, branchNames, true, organization);
+			setToolWiseRepoToolConfig(connection, projectToolConfig, repoToolConfig);
+			repoToolConfig.setIsNew(projectToolConfig.getIsNew());
+			repoToolConfig.setHttpUrl(projectToolConfig.getGitFullUrl());
+			repoToolConfig.setDefaultBranch(projectToolConfig.getBranch());
+			repoToolConfig.setProjectCode(createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()));
+			repoToolConfig.setFirstScanFrom(LocalDateTime.now().minusMonths(3).toString().replace("T", " "));
+			repoToolConfig.setScanningBranches(branchNames);
+			repoToolConfig.setIsCloneable(true);
 
 			// api call to enroll the project
 			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig,
@@ -161,6 +146,61 @@ public class RepoToolsConfigServiceImpl {
 			httpStatus = ex.getStatusCode().value();
 		}
 		return httpStatus;
+	}
+
+	/**
+	 * Configures the RepoToolConfig object based on the tool-specific details.
+	 *
+	 * @param connection the Connection object containing connection details
+	 * @param projectToolConfig the ProjectToolConfig object containing project tool configuration
+	 * @param repoToolConfig the RepoToolConfig object to be configured
+	 */
+	private void setToolWiseRepoToolConfig(Connection connection, ProjectToolConfig projectToolConfig,
+			RepoToolConfig repoToolConfig) {
+		// Split the Git URL to extract the repository name
+		String[] split = projectToolConfig.getGitFullUrl().split("/");
+		String name = split[split.length - 1];
+		if (name.contains("."))
+			name = name.split(".git")[0];
+
+		// Set the repository name in the project tool configuration
+		projectToolConfig.setRepositoryName(name);
+		repoToolConfig.setName(name);
+
+		String accessToken = "";
+
+		// Configure the RepoToolConfig based on the tool name
+		switch (projectToolConfig.getToolName()) {
+		case ProcessorConstants.GITHUB:
+			accessToken = connection.getAccessToken();
+			repoToolConfig.setProvider(ProcessorConstants.GITHUB.toLowerCase());
+			break;
+		case ProcessorConstants.BITBUCKET:
+			accessToken = connection.getPassword();
+			repoToolConfig
+					.setApiEndPoint(connection.getApiEndPoint() + PROJECT + split[split.length - 2] + REPOS + name);
+			repoToolConfig.setProvider(BITBUCKET_PROVIDER);
+			break;
+		case ProcessorConstants.GITLAB:
+			accessToken = connection.getAccessToken();
+			repoToolConfig.setProvider(ProcessorConstants.GITLAB.toLowerCase());
+			break;
+		case ProcessorConstants.AZUREREPO:
+			accessToken = connection.getPat();
+			repoToolConfig.setProvider(AZURE_PROVIDER);
+			repoToolConfig.setOrganization(split[3]);
+			break;
+		default:
+			throw new IllegalStateException("Unexpected value: " + projectToolConfig.getToolName());
+		}
+
+		// Set the scanning account details in the RepoToolConfig
+		repoToolConfig.setScanningAccount(new ToolCredential(connection.getUsername(),
+				aesEncryptionService.decrypt(accessToken, customApiConfig.getAesEncryptionKey()),
+				connection.getEmail()));
+
+		// Set the project code in the RepoToolConfig
+		repoToolConfig.setProjectCode(projectToolConfig.getBasicProjectConfigId().toString().concat(name));
 	}
 
 	/**
@@ -196,7 +236,7 @@ public class RepoToolsConfigServiceImpl {
 
 			}
 		} catch (Exception ex) {
-			log.error("Exception occurred while scanning project {}", basicProjectConfigId, ex);
+			log.error("Exception occurred while scanning project", ex);
 		}
 		return httpStatus;
 	}
