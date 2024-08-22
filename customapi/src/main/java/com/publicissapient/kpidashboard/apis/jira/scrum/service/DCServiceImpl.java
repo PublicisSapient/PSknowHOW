@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -37,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -100,7 +100,6 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 
 	@Autowired
 	private CacheService cacheService;
-
 
 	/**
 	 * {@inheritDoc}
@@ -192,7 +191,9 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectCountlIssueTypeKPI28()));
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping.getResolutionTypeForRejectionKPI28(),fieldMapping.getJiraDefectRejectionStatusKPI28());
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
+					fieldMapping.getResolutionTypeForRejectionKPI28(),
+					fieldMapping.getJiraDefectRejectionStatusKPI28());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 		});
@@ -345,7 +346,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 				});
 
 				populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,
-						sprintWiseDefectDataListMap.get(currentNodeIdentifier));
+						sprintWiseDefectDataListMap.get(currentNodeIdentifier), customApiConfig);
 			}
 			log.debug("[DC-SPRINT-WISE][{}]. DC for sprint {}  is {} and trend value is {}", requestTrackerId,
 					node.getSprintFilter().getName(), sprintWiseDCPriorityMap.get(currentNodeIdentifier),
@@ -355,7 +356,8 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		});
 
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY.getColumns(sprintLeafNodeList, cacheService,
+				flterHelperService));
 
 	}
 
@@ -388,11 +390,11 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, String sprintName, List<KPIExcelData> excelData,
-			List<JiraIssue> sprintWiseDefectDataList) {
+			List<JiraIssue> sprintWiseDefectDataList, CustomApiConfig customApiConfig) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateDefectRelatedExcelData(sprintName, sprintWiseDefectDataList, excelData,
-					KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId());
+					KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId(), customApiConfig);
 
 		}
 	}
@@ -472,7 +474,8 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI28(),KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI28(),
+				KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId());
 	}
 }

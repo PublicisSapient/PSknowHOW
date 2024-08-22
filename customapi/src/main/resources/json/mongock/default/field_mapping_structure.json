@@ -1205,8 +1205,8 @@
     "nestedFields": [
       {
         "fieldName": "jiraBugRaisedByCustomField",
-        "fieldLabel": "UAT Defect Custom Field",
-        "placeHolderText": "UAT Defect Custom Field",
+        "fieldLabel": "Custom field to identify escaped defects",
+        "placeHolderText": "Custom field to identify escaped defects",
         "fieldType": "text",
         "fieldCategory": "fields",
         "filterGroup": [
@@ -1218,8 +1218,8 @@
       },
       {
         "fieldName": "jiraBugRaisedByValue",
-        "fieldLabel": "UAT Defect Values",
-        "placeHolderText": "UAT Defect Custom Field",
+        "fieldLabel": "Field values that denote escaped defects",
+        "placeHolderText": "Field values that denote escaped defects",
         "fieldType": "chips",
         "filterGroup": [
           "CustomField",
