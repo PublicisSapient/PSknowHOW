@@ -20,10 +20,8 @@ package com.publicissapient.kpidashboard.apis.repotools.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -47,7 +45,6 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricRe
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiRequestBody;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
 import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;

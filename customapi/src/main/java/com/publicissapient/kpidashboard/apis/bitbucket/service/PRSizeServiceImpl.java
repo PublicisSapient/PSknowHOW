@@ -72,7 +72,10 @@ import lombok.extern.slf4j.Slf4j;
 public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, Map<String, Object>> {
 
 	public static final String MR_COUNT = "No of PRs";
-	private static final String REPO_TOOLS = "RepoTool";
+	private static final String AZURE_REPO = "AzureRepository";
+	private static final String BITBUCKET = "Bitbucket";
+	private static final String GITLAB = "GitLab";
+	private static final String GITHUB = "GitHub";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -156,7 +159,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = kpiHelperService.getRepoToolsKpiMetricResponse(
-				localEndDate, toolMap, projectLeafNode, duration, dataPoints, customApiConfig.getRepoToolPRSizeUrl());
+				localEndDate, getScmToolJobs(toolMap, projectLeafNode), projectLeafNode, duration, dataPoints, customApiConfig.getRepoToolPRSizeUrl());
 
 		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
@@ -167,9 +170,9 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 
 		ProjectFilter accountHierarchyData = projectLeafNode.getProjectFilter();
 		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-		List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null
-				? Collections.emptyList()
-				: toolMap.get(configId).get(REPO_TOOLS);
+		Map<String, List<Tool>> mapOfListOfTools = toolMap.get(configId);
+		List<Tool> reposList = new ArrayList<>();
+		populateRepoList(reposList, mapOfListOfTools);
 		if (CollectionUtils.isEmpty(reposList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}",
 					projectLeafNode.getProjectFilter());
@@ -239,6 +242,56 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		populateExcelDataObject(requestTrackerId, repoToolValidationDataList, excelData);
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.PR_SIZE.getColumns());
+	}
+
+	/**
+	 * Retrieves a list of SCM (Source Control Management) tool jobs for a given project node.
+	 *
+	 * @param toolMap a map containing tool configurations, where the key is the ObjectId of the project configuration
+	 *                and the value is another map with tool names as keys and lists of Tool objects as values.
+	 * @param node    the project node for which to retrieve the SCM tool jobs.
+	 * @return a list of Tool objects representing the SCM tool jobs for the given project node.
+	 */
+	private List<Tool> getScmToolJobs(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
+		ProjectFilter accountHierarchyData = node.getProjectFilter();
+		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(configId);
+		List<Tool> bitbucketJob = new ArrayList<>();
+		if (null != toolListMap) {
+			bitbucketJob
+					.addAll(toolListMap.get(BITBUCKET) == null ? Collections.emptyList() : toolListMap.get(BITBUCKET));
+			bitbucketJob.addAll(
+					toolListMap.get(AZURE_REPO) == null ? Collections.emptyList() : toolListMap.get(AZURE_REPO));
+			bitbucketJob.addAll(toolListMap.get(GITLAB) == null ? Collections.emptyList() : toolListMap.get(GITLAB));
+			bitbucketJob.addAll(toolListMap.get(GITHUB) == null ? Collections.emptyList() : toolListMap.get(GITHUB));
+		}
+		if (CollectionUtils.isEmpty(bitbucketJob)) {
+			log.error("[BITBUCKET]. No repository found for this project {}", node.getProjectFilter());
+		}
+		return bitbucketJob;
+	}
+
+	/**
+	 * Populates the given list of repositories with tools from the provided map of
+	 * tool lists.
+	 *
+	 * @param reposList
+	 *            the list to be populated with tools.
+	 * @param mapOfListOfTools
+	 *            a map containing lists of tools, where the key is the tool type
+	 *            and the value is a list of tools.
+	 */
+	private void populateRepoList(List<Tool> reposList, Map<String, List<Tool>> mapOfListOfTools) {
+		if (null != mapOfListOfTools) {
+			reposList.addAll(mapOfListOfTools.get(BITBUCKET) == null ? Collections.emptyList()
+					: mapOfListOfTools.get(BITBUCKET));
+			reposList.addAll(mapOfListOfTools.get(AZURE_REPO) == null ? Collections.emptyList()
+					: mapOfListOfTools.get(AZURE_REPO));
+			reposList.addAll(
+					mapOfListOfTools.get(GITLAB) == null ? Collections.emptyList() : mapOfListOfTools.get(GITLAB));
+			reposList.addAll(
+					mapOfListOfTools.get(GITHUB) == null ? Collections.emptyList() : mapOfListOfTools.get(GITHUB));
+		}
 	}
 
 	/**

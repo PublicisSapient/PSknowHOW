@@ -1871,14 +1871,12 @@ public class KpiHelperService { // NOPMD
 	 * @return lis of RepoToolKpiMetricResponse object
 	 */
 	public List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
-			Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node, String duration, Integer dataPoint,
+			List<Tool> tools, Node node, String duration, Integer dataPoint,
 			String repoToolKpi) {
 
 		List<String> projectCodeList = new ArrayList<>();
 		ProjectFilter accountHierarchyData = node.getProjectFilter();
 		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-		List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(Constant.REPO_TOOLS,
-				Collections.emptyList());
 		if (!CollectionUtils.isEmpty(tools)) {
 			projectCodeList.add(node.getId());
 		}

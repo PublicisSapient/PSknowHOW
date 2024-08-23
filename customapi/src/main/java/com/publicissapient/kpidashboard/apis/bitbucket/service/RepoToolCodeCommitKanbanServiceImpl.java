@@ -134,7 +134,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseCommitList = kpiHelperService.getRepoToolsKpiMetricResponse(
-				dateRange.getEndDate(), toolMap, projectNode, kpiRequest.getDuration(), kpiRequest.getXAxisDataPoints(),
+				dateRange.getEndDate(), new ArrayList<>(), projectNode, kpiRequest.getDuration(), kpiRequest.getXAxisDataPoints(),
 				customApiConfig.getRepoToolCodeCommmitsUrl());
 		if (CollectionUtils.isNotEmpty(repoToolKpiMetricResponseCommitList))
 			kpiWithFilter(repoToolKpiMetricResponseCommitList, mapTmp, projectNode, kpiElement, kpiRequest);
