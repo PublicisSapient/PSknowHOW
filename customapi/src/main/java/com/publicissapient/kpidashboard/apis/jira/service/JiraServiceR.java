@@ -245,11 +245,7 @@ public class JiraServiceR {
 		@SuppressWarnings("PMD.AvoidCatchingGenericException")
 		@Override
 		public void compute() {
-			try {
-				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
-			} catch (Exception e) {
-				log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", e);
-			}
+			responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, treeAggregatorDetail));
 		}
 
 		/**
@@ -258,39 +254,50 @@ public class JiraServiceR {
 		 *
 		 * @param kpiRequest
 		 *            JIRA KPI request
-		 * @param responseList
-		 *            List of KpiElements having data of each KPI
 		 * @param kpiElement
 		 *            kpiElement object
 		 * @param treeAggregatorDetail
 		 *            filter tree object
-		 * @throws ApplicationException
-		 *             ApplicationException
+		 * @return KpiElement kpiElement
 		 */
-		private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-				KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+		@SuppressWarnings("PMD.AvoidCatchingGenericException")
+		private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
+				TreeAggregatorDetail treeAggregatorDetail) {
 
 			JiraKPIService<?, ?, ?> jiraKPIService = null;
 
 			KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+			try {
+				jiraKPIService = JiraKPIServiceFactory.getJiraKPIService(kpi.name());
+				long startTime = System.currentTimeMillis();
 
-			jiraKPIService = JiraKPIServiceFactory.getJiraKPIService(kpi.name());
+				if (KPICode.THROUGHPUT.equals(kpi)) {
+					log.info("No need to fetch Throughput KPI data");
+				} else {
+					TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
+							.clone(treeAggregatorDetail);
+					List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
+							.get(CommonConstant.PROJECT.toLowerCase());
+					if (!projectNodes.isEmpty() && (projectNodes.size() > 1 || kpiHelperService
+							.isKpiSpecificCheckValid(kpi, kpiElement, projectNodes.get(0)))) {
+						kpiElement = jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
+						kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
+					}
+					long processTime = System.currentTimeMillis() - startTime;
+					log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+							processTime);
 
-			long startTime = System.currentTimeMillis();
-
-			if (KPICode.THROUGHPUT.equals(kpi)) {
-				log.info("No need to fetch Throughput KPI data");
-			} else {
-				TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-						.clone(treeAggregatorDetail);
-				responseList.add(jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
-
-				long processTime = System.currentTimeMillis() - startTime;
-				log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-						processTime);
+				}
+			} catch (ApplicationException exception) {
+				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+				log.error("Kpi not found", exception);
+			} catch (Exception exception) {
+				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+				log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", exception);
+				return kpiElement;
 			}
+			return kpiElement;
 		}
-
 	}
 
 	/**

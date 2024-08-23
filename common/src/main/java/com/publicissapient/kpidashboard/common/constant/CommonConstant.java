@@ -343,6 +343,14 @@ public final class CommonConstant {
 
 	//-- auth-N-auth changes ends here --
 
+	public static final String KPI_PASSED= "200";
+	public static final String KPI_FAILED= "400";
+	public static final String MANDATORY_FIELD_MAPPING= "201";
+	public static final String TOOL_NOT_CONFIGURED= "202";
+	public static final String KPI_COMBINED_SORCE= "kpi_combined_source";
+
+
+
 
 	private CommonConstant() {
 
