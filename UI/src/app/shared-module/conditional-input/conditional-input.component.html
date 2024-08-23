@@ -15,7 +15,7 @@
   ~    limitations under the License.
   -->
 
-<p-multiSelect id="fieldConfig?.fieldName" [options]="fieldConfig?.options" placeholder="Select Priority"
+<p-multiSelect id="fieldConfig?.fieldName" [options]="fieldConfig?.options" placeholder="{{fieldConfig?.placeHolderText ? fieldConfig?.placeHolderText : fieldConfig?.fieldLabel}}"
     styleClass="p-w-100" [showHeader]="false" [(ngModel)]="finalValue" optionLabel="labelValue" (onChange)="setValue($event)">
     <ng-template let-value pTemplate="selectedItems">
         <span class="country-item country-item-value" *ngFor="let option of templateData">
