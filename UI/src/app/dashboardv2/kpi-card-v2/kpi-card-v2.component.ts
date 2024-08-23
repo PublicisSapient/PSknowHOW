@@ -27,7 +27,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() selectedTab: any;
   @Input() dropdownArr: any;
   @Input() trendBoxColorObj: any;
-  @Input() loader: boolean;
+  @Input() loader: boolean = true;
   @Input() trendValueList: any;
   @Input() sprintsOverlayVisible: boolean;
   @Input() showCommentIcon: boolean;
@@ -74,6 +74,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   colorCssClassArray = ['sprint-hover-project1', 'sprint-hover-project2', 'sprint-hover-project3', 'sprint-hover-project4', 'sprint-hover-project5', 'sprint-hover-project6'];
   commentDialogRef: DynamicDialogRef | undefined;
   disableSettings: boolean = false;
+  @Input() immediateLoader : boolean = true;
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService) { }
@@ -194,15 +195,19 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.isTooltip = val;
   }
 
-  handleChange(type, value) {
-    console.log(value);
+  handleChange(type, value = null, filterIndex = 0) {
+    if (value) {
+      value?.value?.forEach(selectedItem => {
+        this.dropdownArr[filterIndex]?.options.splice(this.dropdownArr[filterIndex]?.options.indexOf(selectedItem), 1) // remove the item from list
+        this.dropdownArr[filterIndex]?.options.unshift(selectedItem)// this will add selected item on the top
+      });
+    }
     if (typeof value === 'object') {
-      value = value.value;
+      value = value?.value;
     }
     if (value && type?.toLowerCase() == 'radio') {
       this.optionSelected.emit(value);
     } else if (type?.toLowerCase() == 'single') {
-      console.log(this.filterOptions);
       this.optionSelected.emit(this.filterOptions);
     } else {
       if (this.filterOptions && Object.keys(this.filterOptions)?.length == 0) {
@@ -338,7 +343,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkIfDataPresent(data) {
-    return (Array.isArray(data) || typeof data === 'object') && Object.keys(data)?.length > 0;
+    return (Array.isArray(data) || typeof data === 'object') && Object.keys(data)?.length > 0 && (!this.loader);
   }
 
   getColorCssClasses(index) {

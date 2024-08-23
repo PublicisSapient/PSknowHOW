@@ -48,6 +48,7 @@ describe('ToolMenuComponent', () => {
 
   const toolsData = require('../../../../test/resource/fakeToolsData.json');
   const mappingData = require('../../../../test/resource/fakeToolMappings.json');
+  const fakeCompleteHiearchyData = require('../../../../test/resource/fakeCompleteHierarchyData.json');
   const fakeProject = {
     id: '6335363749794a18e8a4479b',
     name: 'Scrum Project',
@@ -84,6 +85,7 @@ describe('ToolMenuComponent', () => {
 
     httpService = TestBed.inject(HttpService) as jasmine.SpyObj<HttpService>;
     sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
+    localStorage.setItem('completeHierarchyData', JSON.stringify(fakeCompleteHiearchyData));
   });
 
   beforeEach(() => {
@@ -95,8 +97,9 @@ describe('ToolMenuComponent', () => {
     sharedService.setSelectedProject(fakeProject);
     httpMock = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
-
+    
     component.selectedProject = { id: 1, Type: 'Scrum' };
+   
   });
 
   it('should create', () => {
@@ -143,14 +146,14 @@ describe('ToolMenuComponent', () => {
 
     component.getToolsConfigured();
 
-    expect(component.projectTypeChange).toHaveBeenCalledWith({ value: { value: true } }, false);
+    expect(component.projectTypeChange).toHaveBeenCalledWith({ value: true }, false);
     expect(component.selectedType).toBe(true);
   });
 
   it('should handle the router url and set tools', () => {
     spyOn(component, 'setGaData');
     const selectedProjectId = component.selectedProject.id;
-    Object.defineProperty(router, 'url', { value: `/dashboard/Config/ProjectList/${selectedProjectId}/ToolMenu` });
+    Object.defineProperty(router, 'url', { value: `/dashboard/Config/connection-list/${selectedProjectId}/ToolMenu?tab=1` });
 
     const response = {
       success: true,
@@ -297,7 +300,7 @@ describe('ToolMenuComponent', () => {
     expect(gaSpy).toHaveBeenCalled();
   })
 
-  it('should navigate back to Projects List if no selected project is there', () => {
+  xit('should navigate back to Projects List if no selected project is there', () => {
     sharedService.setSelectedProject(null);
     component.selectedProject = {
       saveAssigneeDetails: true

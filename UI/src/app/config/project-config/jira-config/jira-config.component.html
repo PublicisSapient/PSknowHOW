@@ -29,7 +29,7 @@
     </div>
     <div class="p-ml-3">
         <div class="p-d-flex p-align-center position-relative p-pb-3">
-            <a [routerLink]="['/dashboard/Config/ProjectList/' + selectedProject.id + '/ToolMenu']" pButton pRipple type="button" icon="pi pi-arrow-left"
+            <a [routerLink]="['/dashboard/Config/connection-list/' + selectedProject.id + '/ToolMenu']" [queryParams]="{tab: 1}" pButton pRipple type="button" icon="pi pi-arrow-left"
                 class="p-button-raised p-button-secondary back-button p-mr-4"></a>
             <h5 class="card__primary__title__text p-m-0">{{formTitle}} Configuration</h5>
         </div>
@@ -104,13 +104,16 @@
                                     (click)="redirectToConnections()"><em class="fas fa-plug"></em>Connections</span>"
                                 )</small>
                         </div>
-                        <span class="p-input-icon-left p-mr-3">
-                            <i class="pi pi-search"></i>
-                            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" (click)="$event.stopPropagation();"
-                                placeholder="Global Search" class="search-box-custom-width" />
-                        </span>
+                        
                     </span>
                 </ng-template>
+                <div class="p-d-flex p-justify-end">
+                    <span class="p-input-icon-left p-mr-3 p-float-right p-mt-3 p-mb-3 global-search">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                            placeholder="Global Search" class="search-box-custom-width" />
+                    </span>
+                </div>
                 <p-table #dt [value]="connections" [columns]="connectionTableCols" [(selection)]="selectedConnection"
                     dataKey="id" [rows]="5" [loading]="loading" [paginator]="true"
                     styleClass="p-datatable-striped p-mb-5" [alwaysShowPaginator]="false" loadingIcon="loading-img">
@@ -262,7 +265,7 @@
                                     <div *ngSwitchCase="'basicDropdown'" class="p-mb-3">
                                         <ng-container>
                                             <label for="{{form_elem.id}}">{{form_elem.label}}</label>
-                                            <p-dropdown [options]="jiraTemplate" optionLabel="templateName"
+                                            <p-dropdown [options]="jiraTemplate" optionLabel="templateName" optionValue="templateCode"
                                                 id="{{form_elem.id}}" formControlName="{{form_elem.id}}"></p-dropdown>
                                         </ng-container>
                                     </div>
@@ -381,13 +384,13 @@
 
 
 
-        
 
 
 
 
 
-        
+
+
     </div>
 </div>
 <app-page-loader *ngIf="isLoading"></app-page-loader>

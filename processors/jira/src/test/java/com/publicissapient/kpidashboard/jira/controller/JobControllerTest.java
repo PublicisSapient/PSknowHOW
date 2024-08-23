@@ -33,6 +33,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +44,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionException;
@@ -88,10 +93,16 @@ public class JobControllerTest {
 	private FetchProjectConfigurationImpl fetchProjectConfiguration;
 	@Mock
 	private Job fetchIssueScrumJqlJob;
+	@Mock
+	private JiraProcessor jiraProcessor;
+
+	@Mock
+	private JiraProcessorRepository jiraProcessorRepository;
 
 	@Before
 	public void init() {
-		MockitoAnnotations.openMocks(this);
+		when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
+		when(jiraProcessor.getId()).thenReturn(new ObjectId("63bfa0d5b7617e260763ca21"));
 	}
 
 	@Test
@@ -101,9 +112,6 @@ public class JobControllerTest {
 		projectIds.add("projectId1");
 		projectIds.add("projectId2");
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
-
-		// Mocking jobLauncher.run() to return a JobExecution instance
-		when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
 
 		// Calling the method
 		ResponseEntity<String> response = jobController.startScrumBoardJob();

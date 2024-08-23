@@ -19,24 +19,15 @@
 package com.publicissapient.kpidashboard.jira.reader;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,7 +49,6 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectToo
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfigurationImpl;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -67,6 +57,7 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.service.FetchEpicData;
 import com.publicissapient.kpidashboard.jira.service.FetchIssueSprint;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueSprintReaderTest {
@@ -147,7 +138,13 @@ public class IssueSprintReaderTest {
 		issueIterator = issues.iterator();
 		when(jiraProcessorConfig.getPageSize()).thenReturn(1);
 		when(fetchProjectConfiguration.fetchConfigurationBasedOnSprintId(null)).thenReturn(projectConfFieldMapping);
+		setPrivateField(issueSprintReader, "processorId", "63bfa0d5b7617e260763ca21");
+	}
 
+	private void setPrivateField(Object targetObject, String fieldName, String fieldValue) throws Exception {
+		Field field = targetObject.getClass().getDeclaredField(fieldName);
+		field.setAccessible(true);
+		field.set(targetObject, fieldValue);
 	}
 
 	@Test

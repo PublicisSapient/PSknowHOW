@@ -32,6 +32,7 @@ export class HeaderComponent implements OnInit {
   auth_service = environment.AUTHENTICATION_SERVICE;
   isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
   userRole: string = '';
+  noToolsConfigured: boolean;
 
   constructor(
     private httpService: HttpService,
@@ -101,6 +102,12 @@ export class HeaderComponent implements OnInit {
     this.sharedService.passEventToNav.subscribe(() => {
       this.getNotification();
     })
+
+    this.httpService.getAllConnections().subscribe(response => {
+      if(response['data'].length < 1) {
+        this.noToolsConfigured = true;
+      }
+    });
   }
 
   // when user would want to give access on project from notification list

@@ -223,13 +223,14 @@
     "nestedFields": [
       {
         "fieldName": "storyPointToHourMapping",
-        "fieldLabel": "Story Point to Hour Conversion",
+        "fieldLabel": "Hour to Story Point",
         "fieldType": "text",
         "filterGroup": [
-          "Story Point"
+          "Story Point",
+          "Actual Estimation"
         ],
         "tooltip": {
-          "definition": "Estimation technique used by teams for e.g. story points, Hours etc."
+          "definition": "Estimation technique used by teams. Eg., enter 8 if 1 Story Point is equivalent to 8hrs of effort spent per day."
         }
       }
     ],
@@ -1204,8 +1205,8 @@
     "nestedFields": [
       {
         "fieldName": "jiraBugRaisedByCustomField",
-        "fieldLabel": "UAT Defect Custom Field",
-        "placeHolderText": "UAT Defect Custom Field",
+        "fieldLabel": "Custom field to identify escaped defects",
+        "placeHolderText": "Custom field to identify escaped defects",
         "fieldType": "text",
         "fieldCategory": "fields",
         "filterGroup": [
@@ -1217,8 +1218,8 @@
       },
       {
         "fieldName": "jiraBugRaisedByValue",
-        "fieldLabel": "UAT Defect Values",
-        "placeHolderText": "UAT Defect Custom Field",
+        "fieldLabel": "Field values that denote escaped defects",
+        "placeHolderText": "Field values that denote escaped defects",
         "fieldType": "chips",
         "filterGroup": [
           "CustomField",
@@ -3657,7 +3658,6 @@
     "fieldName": "jiraLabelsQAKPI111",
     "fieldLabel": "Labels to filter issues in consideration",
     "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
     "fieldDisplayOrder": 2,
     "sectionOrder": 2,
     "section": "Issue Types Mapping",
@@ -3669,7 +3669,6 @@
     "fieldName": "jiraLabelsKPI133",
     "fieldLabel": "Labels to filter issues in consideration",
     "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
     "fieldDisplayOrder": 2,
     "sectionOrder": 2,
     "section": "Issue Types Mapping",

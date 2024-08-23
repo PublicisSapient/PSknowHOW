@@ -65,6 +65,7 @@ describe('JiraConfigComponent', () => {
   const fakeProjectKeyList = require('../../../../test/resource/fakeProjectKeyList.json');
   const fakeBranchesForProject = require('../../../../test/resource/fakeBranchesForProject.json');
   const fakeConfiguredTools = require('../../../../test/resource/fakeConfiguredTools.json');
+  const fakeCompleteHiearchyData = require('../../../../test/resource/fakeCompleteHierarchyData.json');
   const fakeSelectedTool = [{
     id: '5fc086b9410df80001701334',
     toolName: 'Jira',
@@ -186,6 +187,7 @@ describe('JiraConfigComponent', () => {
     sharedService.setSelectedToolConfig(fakeSelectedTool);
     httpMock = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
+    localStorage.setItem('completeHierarchyData', JSON.stringify(fakeCompleteHiearchyData));
   });
 
 
@@ -787,8 +789,12 @@ describe('JiraConfigComponent', () => {
     const templateList = fakeTemplateList;
     component.selectedProject = {
       id: "641cc51bd830154a05d77370",
-      Type: "kanban"
+      type: "kanban"
     }
+    component.jiraTemplate = [];
+    component.toolForm = new UntypedFormGroup({
+      metadataTemplateCode : new UntypedFormControl()
+    })
     spyOn(httpService, 'getJiraTemplate').and.returnValue(of(templateList))
     component.getJiraTemplate()
     expect(component.jiraTemplate.length).toBeGreaterThan(0);

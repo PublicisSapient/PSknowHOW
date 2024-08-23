@@ -38,6 +38,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -100,6 +101,8 @@ public class ProjectToolConfigServiceImplTest {
 	private ConfigHelperService configHelperService;
 	@Mock
 	private AuthenticationService authenticationService;
+	@Mock
+	private CustomApiConfig customApiConfig;
 
 	/**
 	 * method includes preprocesses for test cases

@@ -27,6 +27,7 @@ import java.util.Set;
 import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,7 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 	JiraClientService jiraClientService;
 
 	@Override
-	public Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId)
+	public Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId, ObjectId processorId)
 			throws IOException {
 		log.info("creating sprint report for the project : {}", projectConfig.getProjectName());
 		Set<SprintDetails> sprintDetailsSet = new HashSet<>();
@@ -86,7 +87,7 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 		}
 		KerberosClient krb5Client = jiraClientService.getKerberosClientMap(projectConfig.getBasicProjectConfigId().toString());
 		if (StringUtils.isEmpty(boardId)) {
-			return fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client, false);
+			return fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client, false, processorId);
 		}
 
 		return sprintDetailsSet;
