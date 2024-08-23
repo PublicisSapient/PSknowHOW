@@ -1,0 +1,13 @@
+.sticky-header{
+  background: #F5F9FF;
+  display: flex; 
+  justify-content: center;
+  padding: 16px;
+  margin: 8px;
+}
+
+.text-container {
+  font-size: 12px;
+  color: var(--color-black);
+  vertical-align: middle;
+}

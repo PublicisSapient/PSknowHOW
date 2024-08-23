@@ -28,6 +28,17 @@
     z-index: 900;
 }
 
+.header {
+    transition: height 0.3s; /* add a smooth transition effect */
+    height: 80px; /* initial height of the header */
+    display: none;
+  }
+  
+  .header.scrolled {
+    height: 40px; /* shrunk height of the header */
+    display: block;
+  }
+
 :host ::ng-deep .main-container .kpi-summary,
 :host ::ng-deep .main-container .kpi-card-container {
     box-shadow: none;
