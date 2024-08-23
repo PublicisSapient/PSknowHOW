@@ -71,7 +71,7 @@ import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SuccessRateServiceImplTest {
+public class PRSuccessRateServiceImplTest {
 
 	private static final String OVERALL = "Overall";
 
@@ -85,7 +85,7 @@ public class SuccessRateServiceImplTest {
 	List<Tool> toolList2;
 	List<Tool> toolList3;
 	@InjectMocks
-	SuccessRateServiceImpl revertRateService;
+	PRSuccessRateServiceImpl revertRateService;
 	@Mock
 	CacheService cacheService;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();

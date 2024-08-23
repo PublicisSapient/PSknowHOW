@@ -46,5 +46,6 @@ public class Branches {
     private double revertRateGrade;
     private double branchReworkRateScore;
     private double branchRevertRatePercentage;
+    private double branchPercentage;
     private List<RepoToolUserDetails> users;
 }

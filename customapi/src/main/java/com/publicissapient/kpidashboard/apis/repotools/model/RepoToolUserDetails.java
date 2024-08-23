@@ -17,6 +17,7 @@ public class RepoToolUserDetails {
 	private Double userReworkRatePercent;
 	private Double userRevertRateGrade;
 	private Double userRevertRatePercentage;
+	private Double percentage;
 	private Long count;
 	@JsonProperty("mr_count")
 	private Long mrCount;

@@ -278,6 +278,7 @@ public class CustomApiConfig {// NOPMD
 	private String xApiKey;
 	private String repoToolReworkRateUrl;
 	private String repoToolRevertRateUrl;
+	private String repoToolPRSuccessRateUrl;
 
 	@Value("${max-age-seconds}")
 	private long maxAgeInSeconds;
@@ -1285,5 +1286,9 @@ public class CustomApiConfig {// NOPMD
 
 	public void setZephyrCloudBaseUrl(String zephyrCloudBaseUrl) {
 		this.zephyrCloudBaseUrl = zephyrCloudBaseUrl;
+	}
+
+	public String getRepoToolPRSuccessRateUrl() {
+		return repoToolPRSuccessRateUrl;
 	}
 }

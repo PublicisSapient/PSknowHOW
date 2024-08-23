@@ -68,11 +68,11 @@ import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRe
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author shi6
+ * @author purgupta2
  */
 @Component
 @Slf4j
-public class SuccessRateServiceImpl extends BitBucketKPIService<Double, List<Object>, Map<String, Object>> {
+public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<Object>, Map<String, Object>> {
 
 	private static final String REPO_TOOLS = "RepoTool";
 	private static final String ASSIGNEE = "assignee";
@@ -174,7 +174,7 @@ public class SuccessRateServiceImpl extends BitBucketKPIService<Double, List<Obj
 
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = kpiHelperService.getRepoToolsKpiMetricResponse(
 				localEndDate, toolMap, projectLeafNode, duration, dataPoints,
-				customApiConfig.getRepoToolReworkRateUrl());
+				customApiConfig.getRepoToolPRSuccessRateUrl());
 
 		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
@@ -210,7 +210,7 @@ public class SuccessRateServiceImpl extends BitBucketKPIService<Double, List<Obj
 					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
 
 			Double overallPickupTime = repoToolKpiMetricResponse
-					.map(RepoToolKpiMetricResponse::getProjectReworkRatePercent).orElse(0.0d);
+					.map(RepoToolKpiMetricResponse::getProjectPercentage).orElse(0.0d);
 
 			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
 					overallPickupTime, aggDataMap);
@@ -230,7 +230,7 @@ public class SuccessRateServiceImpl extends BitBucketKPIService<Double, List<Obj
 								.flatMap(repository -> repository.getBranches().stream())
 								.filter(branch -> branch.getName().equals(repo.getBranch())).findFirst();
 
-						successRate = matchingBranch.map(Branches::getBranchReworkRateScore).orElse(0.0d);
+						successRate = matchingBranch.map(Branches::getBranchPercentage).orElse(0.0d);
 						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
 					}
 					repoToolValidationDataList.addAll(setUserDataCounts(overAllUsers, repoToolUserDetailsList,
@@ -301,8 +301,7 @@ public class SuccessRateServiceImpl extends BitBucketKPIService<Double, List<Obj
 			Optional<Assignee> assignee = assignees.stream().filter(assign -> assign.getEmail().contains(userEmail))
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
-			// todo
-			Double userReworkRate = repoToolUserDetails.map(RepoToolUserDetails::getUserReworkRatePercent).orElse(0.0d);
+			Double userPRSuccessRate = repoToolUserDetails.map(RepoToolUserDetails::getPercentage).orElse(0.0d);
 			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
 			String userKpiGroup = branchName + "#" + developerName;
 			if (repoToolUserDetails.isPresent() && repo != null) {
@@ -312,11 +311,11 @@ public class SuccessRateServiceImpl extends BitBucketKPIService<Double, List<Obj
 				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
 				repoToolValidationData.setDeveloperName(developerName);
 				repoToolValidationData.setDate(date);
-				repoToolValidationData.setRevertRate(userReworkRate);
+				repoToolValidationData.setPRSuccessRate(userPRSuccessRate);
 				repoToolValidationDataList.add(repoToolValidationData);
 			}
 
-			setDataCount(projectName, date, userKpiGroup, userReworkRate, dateUserWiseAverage);
+			setDataCount(projectName, date, userKpiGroup, userPRSuccessRate, dateUserWiseAverage);
 
 		});
 		return repoToolValidationDataList;
@@ -361,7 +360,7 @@ public class SuccessRateServiceImpl extends BitBucketKPIService<Double, List<Obj
 	private void populateExcelDataObject(String requestTrackerId, List<RepoToolValidationData> repoToolUserDetails,
 			List<KPIExcelData> validationDataMap) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			KPIExcelUtility.populateRevertRateExcelData(repoToolUserDetails, validationDataMap);
+			KPIExcelUtility.populatePRSuccessRateExcelData(repoToolUserDetails, validationDataMap);
 		}
 	}
 

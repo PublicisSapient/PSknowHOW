@@ -49,5 +49,6 @@ public class RepoToolValidationData {
 	private Double pickupTime;
 	private Double reworkRate;
 	private Double revertRate;
+	private Double pRSuccessRate;
 
 }
