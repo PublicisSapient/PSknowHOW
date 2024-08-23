@@ -250,9 +250,13 @@ public class ConfigHelperService {
 	}
 
 	@Cacheable(CommonConstant.KPI_COMBINED_SORCE)
-	public Map<String, String> loadKpiSource(){
+	public Map<String, String> loadKpiSource() {
 		List<KpiMaster> masterList = (List<KpiMaster>) loadKpiMaster();
-		return masterList.stream().filter(d-> StringUtils.isNotEmpty(d.getCombinedKpiSource())).collect(Collectors.toMap(k->k.getKpiId().toUpperCase(), k->k.getCombinedKpiSource().toUpperCase()));
+		return masterList.stream()
+				.filter(d-> StringUtils.isNotEmpty(d.getCombinedKpiSource())|| StringUtils.isNotEmpty(d.getKpiSource()) )
+				.collect(Collectors.toMap(k -> k.getKpiId().toUpperCase(),
+						k -> (StringUtils.isNotEmpty(k.getCombinedKpiSource()) ? k.getCombinedKpiSource().toUpperCase()
+								: k.getKpiSource().toUpperCase())));
 	}
 
 	@Cacheable(CommonConstant.CACHE_MATURITY_RANGE)
