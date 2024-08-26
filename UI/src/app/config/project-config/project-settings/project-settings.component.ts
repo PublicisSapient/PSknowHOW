@@ -38,7 +38,8 @@ interface Control {
 export class ProjectSettingsComponent implements OnInit {
   userProjects = [];
   selectedProject: any;
-  isProjectActive: boolean = true;
+  isProjectInActive: boolean = false;
+  developerKpiEnabled: boolean = false;
   generalControls: Control[];
   oneTimeControls: Control[];
   apiControls: Control[];
@@ -58,6 +59,7 @@ export class ProjectSettingsComponent implements OnInit {
   isProjectAdmin: boolean = false;
   isSuperAdmin: boolean = false;
   isDeleteClicked: boolean = false;
+  isDeveloperKpiSwitchDisabled: boolean;
 
   constructor(
     public sharedService: SharedService,
@@ -118,13 +120,45 @@ export class ProjectSettingsComponent implements OnInit {
     }
     // this.selectedProject = this.sharedService.getSelectedProject();
     // this.selectedProject = this.selectedProject !== undefined ? this.selectedProject : this.userProjects[0];
-    this.isProjectActive = true;
     console.log(this.selectedProject)
     console.log(this.isDeleteClicked)
   }
 
   onProjectActiveStatusChange(event) {
-    this.isProjectActive = event.checked;
+    this.isProjectInActive = event.checked;
+    const payload = { isProjectActive: !this.isProjectInActive };
+    console.log(this.selectedProject)
+    this.httpService.updateProjectSettings(this.selectedProject['id'], payload).subscribe(response => {
+      if (response) {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Project data collection paused.'
+        });
+      }
+    }, error => {
+      this.isProjectInActive = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Some error occurred. Please try again later.'
+      });
+    })
+  }
+
+  onProjectDevKpiStatusChange(event) {
+    this.developerKpiEnabled = event.checked;
+    const payload = { developerKpiEnabled: this.developerKpiEnabled };
+    console.log(this.selectedProject)
+    this.httpService.updateProjectSettings(this.selectedProject['id'], payload).subscribe(response => {
+      if (response) {
+        this.isDeveloperKpiSwitchDisabled = true;
+        console.log('project settings updated', response)
+        this.messageService.add({ severity: 'success', summary: 'Service Message' });
+      }
+    }, error => {
+      this.developerKpiEnabled = false;
+      this.isDeveloperKpiSwitchDisabled = false;
+      this.messageService.add({ severity: 'error', summary: 'Error' });
+    })
   }
 
   getData() {
@@ -317,13 +351,16 @@ export class ProjectSettingsComponent implements OnInit {
       });
     }
     this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
+      console.log(response)
       if (response && response.serviceResponse && response.serviceResponse.success) {
+        console.log('here')
         this.isAssigneeSwitchDisabled = true;
         this.messageService.add({
           severity: 'success',
           summary: 'Assignee Switch Enabled  successfully.'
         });
       } else {
+        console.log('else')
         this.isAssigneeSwitchChecked = false;
         this.isAssigneeSwitchDisabled = false;
         this.messageService.add({

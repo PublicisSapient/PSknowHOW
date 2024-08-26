@@ -141,7 +141,7 @@
                   (click)="deleteProject(selectedProject)"></button>
               </ng-container>
               <ng-container *ngIf="generalControl.actionItem === 'switch'">
-                <p-inputSwitch [(ngModel)]="isProjectActive" (onChange)="onProjectActiveStatusChange($event)"></p-inputSwitch>
+                <p-inputSwitch [(ngModel)]="isProjectInActive" (onChange)="onProjectActiveStatusChange($event)"></p-inputSwitch>
               </ng-container>
             </td>
           </tr>
@@ -167,7 +167,7 @@
                 </div>
               </ng-container>
               <ng-container *ngIf="oneTimeControl.actionItem === 'switch-developer-kpi'">
-                <p-inputSwitch name="developerSwitch" id="developerSwitch" [disabled]="true"></p-inputSwitch>
+                <p-inputSwitch [(ngModel)]="developerKpiEnabled" (onChange)="onProjectDevKpiStatusChange($event)" [disabled]="isDeveloperKpiSwitchDisabled"></p-inputSwitch>
               </ng-container>
             </td>
           </tr>
