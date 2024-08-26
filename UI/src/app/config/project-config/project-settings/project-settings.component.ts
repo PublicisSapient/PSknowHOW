@@ -38,7 +38,7 @@ interface Control {
 export class ProjectSettingsComponent implements OnInit {
   userProjects = [];
   selectedProject: any;
-  pauseDataCollection: boolean = false;
+  isProjectActive: boolean = true;
   generalControls: Control[];
   oneTimeControls: Control[];
   apiControls: Control[];
@@ -118,9 +118,13 @@ export class ProjectSettingsComponent implements OnInit {
     }
     // this.selectedProject = this.sharedService.getSelectedProject();
     // this.selectedProject = this.selectedProject !== undefined ? this.selectedProject : this.userProjects[0];
-    this.pauseDataCollection = false;
+    this.isProjectActive = true;
     console.log(this.selectedProject)
     console.log(this.isDeleteClicked)
+  }
+
+  onProjectActiveStatusChange(event) {
+    this.isProjectActive = event.checked;
   }
 
   getData() {

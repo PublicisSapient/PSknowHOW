@@ -141,7 +141,7 @@
                   (click)="deleteProject(selectedProject)"></button>
               </ng-container>
               <ng-container *ngIf="generalControl.actionItem === 'switch'">
-                <p-inputSwitch [(ngModel)]="pauseDataCollection" [disabled]="true"></p-inputSwitch>
+                <p-inputSwitch [(ngModel)]="isProjectActive" (onChange)="onProjectActiveStatusChange($event)"></p-inputSwitch>
               </ng-container>
             </td>
           </tr>
