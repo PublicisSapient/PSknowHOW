@@ -147,7 +147,7 @@ export class ToolMenuComponent implements OnInit {
           this.tools = [
             {
               toolName: 'Jira',
-              category: 'ABC',
+              category: 'Project Management',
               description: '-',
               icon: 'fab fa-atlassian',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -159,7 +159,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'JiraTest',
-              category: 'ABC',
+              category: 'Test Management',
               description: '-',
               icon: 'fab fa-atlassian',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -170,7 +170,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'Zephyr',
-              category: 'ABC',
+              category: 'Test Management',
               description: '-',
               icon: '',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -181,7 +181,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'Jenkins',
-              category: 'ABC',
+              category: 'Build',
               description: '-',
               icon: 'fab fa-jenkins',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -192,7 +192,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'BitBucket',
-              category: 'ABC',
+              category: 'Souce Code Management',
               description: '-',
               icon: 'fab fa-bitbucket',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -203,7 +203,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'GitLab',
-              category: 'ABC',
+              category: 'Souce Code Management',
               description: '-',
               icon: 'fab fa-gitlab',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -214,7 +214,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'Sonar',
-              category: 'ABC',
+              category: 'Seurity',
               description: '-',
               icon: '',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -225,7 +225,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'TeamCity',
-              category: 'ABC',
+              category: 'Build',
               description: '-',
               icon: '',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -236,7 +236,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'Bamboo',
-              category: 'ABC',
+              category: 'Build',
               description: '-',
               icon: '',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -247,7 +247,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'Azure Pipeline',
-              category: 'ABC',
+              category: 'Build',
               description: '-',
               icon: 'fab fa-windows',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -258,7 +258,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'Azure Repo',
-              category: 'ABC',
+              category: 'Souce Code Management',
               description: '-',
               icon: 'fab fa-windows',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -269,7 +269,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'GitHub',
-              category: 'ABC',
+              category: 'Souce Code Management',
               description: '-',
               icon: 'fab fa-github',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -280,7 +280,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'GitHub Action',
-              category: 'ABC',
+              category: 'Build',
               description: '-',
               icon: 'fab fa-github',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -291,7 +291,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'RepoTool',
-              category: 'ABC',
+              category: 'Souce Code Management',
               description: '-',
               icon: '',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -302,7 +302,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'ArgoCD',
-              category: 'ABC',
+              category: 'Build',
               description: '-',
               icon: '',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -364,7 +364,7 @@ export class ToolMenuComponent implements OnInit {
     };
     const jiraType = {
       toolName: 'Jira',
-      category: 'ABC',
+      category: 'Project Management',
       description: '-',
       icon: 'fab fa-atlassian',
       routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
