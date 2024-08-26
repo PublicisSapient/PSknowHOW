@@ -1153,6 +1153,22 @@ public class KPIExcelUtility {
 
     }
 
+    public static void populatePRDeclineRateExcelData(List<RepoToolValidationData> repoToolValidationDataList, List<KPIExcelData> kpiExcelData) {
+
+		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
+			repoToolValidationDataList.forEach(repoToolValidationData -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setProject(repoToolValidationData.getProjectName());
+				excelData.setRepo(repoToolValidationData.getRepoUrl());
+				excelData.setBranch(repoToolValidationData.getBranchName());
+				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setDaysWeeks(repoToolValidationData.getDate());
+				excelData.setPrDeclineRate(repoToolValidationData.getPrDeclineRate());
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
+
 	public static void populateKanbanLeadTime(List<KPIExcelData> kpiExcelData, String projectName,
 			LeadTimeData leadTimeDataKanban) {
 

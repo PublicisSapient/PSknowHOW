@@ -415,6 +415,9 @@ public class KPIExcelData {
 	@JsonProperty("PR Success Rate")
 	private Double pRSccessRate;
 
+	@JsonProperty("PR Decline Rate")
+	private Double prDeclineRate;
+
 	@JsonProperty("To Do(Value/Percentage)")
 	private String toDo;
 

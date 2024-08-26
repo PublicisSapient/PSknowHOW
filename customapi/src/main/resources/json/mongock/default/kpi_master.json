@@ -4672,5 +4672,45 @@
     "isRepoToolKpi" : true,
     "kpiCategory" : "Developer",
     "maturityRange" : [ "-80", "80-50", "50-20", "20-5", "5-" ]
+  },
+  {
+    "kpiId" : "kpi181",
+    "kpiName" : "PR Decline Rate",
+    "maxValue" : "",
+    "kpiUnit" : "%",
+    "isDeleted" : false,
+    "defaultOrder" : 5,
+    "groupId" : 2,
+    "kpiSource" : "BitBucket",
+    "combinedKpiSource": "RepoTool",
+    "kanban" : false,
+    "chartType" : "line",
+    "kpiInfo" : {
+      "definition" : "The percentage of opened Pull Requests that are declined within a timeframe.",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/205357058/Developer+PR+Decline+Rate"
+          }
+        }
+      ]
+    },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
+    "thresholdValue" : "50",
+    "xAxisLabel" : "Weeks",
+    "yAxisLabel" : "Percentage",
+    "isPositiveTrend" : false,
+    "showTrend" : true,
+    "kpiFilter" : "dropDown",
+    "aggregationCriteria" : "average",
+    "isAdditionalFilterSupport" : false,
+    "calculateMaturity" : false,
+    "hideOverallFilter" : true,
+    "isRepoToolKpi" : true,
+    "kpiCategory" : "Developer",
+    "maturityRange" : [ "-80", "80-50", "50-20", "20-5", "5-" ]
   }
 ]

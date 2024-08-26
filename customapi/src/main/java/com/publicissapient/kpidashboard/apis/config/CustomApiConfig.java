@@ -242,6 +242,7 @@ public class CustomApiConfig {// NOPMD
 	private String repoToolPRSizeUrl;
 	private String repoToolPickupTimeUrl;
 	private String repoToolMeanTimeToMergeUrl;
+	private String repoToolPRDeclineRateUrl;
 	private List<String> flowEfficiencyXAxisRange;
 	private List<String> leadTimeRange;
 	private List<String> cycleTimeRange;
@@ -1291,4 +1292,12 @@ public class CustomApiConfig {// NOPMD
 	public String getRepoToolPRSuccessRateUrl() {
 		return repoToolPRSuccessRateUrl;
 	}
+
+    public String getRepoToolPRDeclineRateUrl() {
+        return repoToolPRDeclineRateUrl;
+    }
+
+    public void setRepoToolPRDeclineRateUrl(String repoToolPRDeclineRateUrl) {
+        this.repoToolPRDeclineRateUrl = repoToolPRDeclineRateUrl;
+    }
 }

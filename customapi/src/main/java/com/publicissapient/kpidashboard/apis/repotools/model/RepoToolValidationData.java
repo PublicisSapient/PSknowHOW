@@ -50,5 +50,6 @@ public class RepoToolValidationData {
 	private Double reworkRate;
 	private Double revertRate;
 	private Double pRSuccessRate;
+	private Double prDeclineRate;
 
 }

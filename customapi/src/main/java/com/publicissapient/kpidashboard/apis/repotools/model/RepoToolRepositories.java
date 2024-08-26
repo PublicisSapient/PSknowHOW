@@ -41,5 +41,6 @@ public class RepoToolRepositories {
     private double repositoryReworkRateGrade;
     private double repoRevertRatePercentage;
     private double revertRateGrade;
+    private double repositoryPercentage;
 
 }

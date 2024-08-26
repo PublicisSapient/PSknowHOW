@@ -321,6 +321,8 @@ public enum KPIExcelColumn {
 
 	PR_SUCCESS_RATE("kpi182", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Success Rate")),
 
+	PR_DECLINE_RATE("kpi181", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "PR Decline Rate")),
+
 	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee")),
 
 	RELEASE_PLAN("kpi179", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",

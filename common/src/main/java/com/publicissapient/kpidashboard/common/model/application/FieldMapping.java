@@ -473,6 +473,7 @@ public class FieldMapping extends FieldMappingHistory {
 	private String thresholdValueKPI166;
 	private String thresholdValueKPI173;
 	private String thresholdValueKPI180;
+	private String thresholdValueKPI181;
 	private String thresholdValueKPI182;
 
 	// Production Incident Mapping
