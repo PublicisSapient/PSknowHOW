@@ -84,7 +84,7 @@
     </p-table>
 </div>
 
-<p-dialog [(visible)]="isNewProject" [modal]="true" styleClass="field-mapping">
+<p-dialog [(visible)]="isNewProject" [modal]="true" styleClass="field-mapping" (onHide)="isNewProject = false;getData()">
     <app-basic-config *ngIf="isNewProject" (closeProjectSetupPopup)="isNewProject = false;getData()"></app-basic-config>
 </p-dialog>
 

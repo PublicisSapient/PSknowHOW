@@ -195,19 +195,14 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 
 					jiraIssueLinkedStories = getJiraIssueLinkedStories(typeNameList, jiraIssueLinkedStories);
 
+					Set<JiraIssue> jiraIssueLinkedStoriesSet = new HashSet<>(jiraIssueLinkedStories);
+
 					List<JiraIssue> totalIssues = new ArrayList<>();
 					totalIssues.addAll(sprintReportIssueList);
 					totalIssues.addAll(subTaskDefects);
-					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI133())
-							&& CollectionUtils.isNotEmpty(defectTypes)) {
-						jiraIssueLinkedStories = jiraIssueLinkedStories.stream()
-								.filter(jiraIssue -> defectTypes.contains(jiraIssue.getTypeName())
-										|| fieldMapping.getJiraLabelsKPI133().stream()
-												.anyMatch(label -> jiraIssue.getLabels().contains(label)))
-								.collect(Collectors.toList());
-					}
+					jiraIssueLinkedStoriesSet = getLableFilteredJiraIssues(fieldMapping, defectTypes, jiraIssueLinkedStoriesSet);
 					resultListMap.put(TOTAL_ISSUES, totalIssues);
-					resultListMap.put(LINKED_ISSUES, new ArrayList<>(jiraIssueLinkedStories));
+					resultListMap.put(LINKED_ISSUES, new ArrayList<>(jiraIssueLinkedStoriesSet));
 				}
 				if (CollectionUtils.isNotEmpty(completedIssue)) {
 					List<JiraIssue> completedIssueList = IterationKpiHelper.getFilteredJiraIssue(completedIssue,

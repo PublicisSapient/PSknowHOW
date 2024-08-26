@@ -617,40 +617,8 @@ export class DeveloperComponent implements OnInit {
 
   handleSelectedOption(event, kpi) {
     this.kpiSelectedFilterObj[kpi?.kpiId] = [];
-    if (kpi.kpiId === "kpi72") {
-      if (event.hasOwnProperty('filter1') || event.hasOwnProperty('filter2')) {
-        if (!Array.isArray(event.filter1) || !Array.isArray(event.filter2)) {
-          const outputObject = {};
-          for (const key in event) {
-            outputObject[key] = [event[key]];
-          }
-          event = outputObject;
-        }
-      }
-      if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
-
-        for (const key in event) {
-          if (key !== 'filter1' && key !== 'filter2') {
-            delete event[key];
-          }
-        }
-        this.kpiSelectedFilterObj[kpi?.kpiId] = event;
-      } else {
-        this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
-      }
-
-    }
-    else {
-      if (event && Object.keys(event)?.length !== 0 && !Array.isArray(event)) {
-        for (const key in event) {
-          if (key !== 'filter1' && key !== 'filter2') {
-            delete event[key];
-          }
-        }
-        this.kpiSelectedFilterObj[kpi?.kpiId] = [event];
-      } else {
-        this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
-      }
+    for (const key in event) {
+      this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
     this.kpiSelectedFilterObj['action'] = 'update';

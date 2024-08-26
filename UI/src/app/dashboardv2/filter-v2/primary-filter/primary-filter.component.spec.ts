@@ -149,7 +149,7 @@ describe('PrimaryFilterComponent', () => {
 
   it('should populate filters based on selectedLevel when it is an object', () => {
     component.selectedLevel = { nodeId: 1, nodeType: 'Level1', emittedLevel: 'Level2' };
-    component.filterData = { level2: [{ nodeId: 1, nodeName: 'Node1', parentId: 1 }, { nodeId: 2, nodeName: 'Node2', parentId: 1 }] };
+    component.filterData = { Level2: [{ nodeId: 1, nodeName: 'Node1', parentId: 1 }, { nodeId: 2, nodeName: 'Node2', parentId: 1 }] };
     component.primaryFilterConfig = {
       "type": "multiSelect",
       "defaultLevel": {
@@ -168,7 +168,7 @@ describe('PrimaryFilterComponent', () => {
   it('should populate filters with defaultLevel when selectedLevel is not provided', () => {
     component.selectedLevel = null;
     component.primaryFilterConfig = { defaultLevel: { sortBy: 'sortByField' } };
-    component.filterData = { project: [{ nodeId: 1, nodeName: 'Node1' }] };
+    component.filterData = { Project: [{ nodeId: 1, nodeName: 'Node1' }] };
     spyOn(helperService, 'sortAlphabetically');
 
     component.populateFilters();

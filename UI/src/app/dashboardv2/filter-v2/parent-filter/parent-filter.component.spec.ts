@@ -85,7 +85,7 @@ describe('ParentFilterComponent', () => {
       }
     });
 
-    expect(component.filterLevels).toEqual(['LEVEL1']);
+    expect(component.filterLevels).toEqual(['Level1']);
     // expect(component.selectedLevel).toEqual('LEVEL1');
     expect(helperService.getBackupOfFilterSelectionState).toHaveBeenCalledWith('parent_level');
     // expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': 'LEVEL1' });
@@ -150,19 +150,19 @@ describe('ParentFilterComponent', () => {
 
   it('should emit selectedNode when parentFilterConfig labelName is not Organization Level', () => {
     component.parentFilterConfig = { labelName: 'Level1' };
-    component.filterData = { level1: [{ nodeId: 1, nodeName: 'Node 1' }] };
+    component.filterData = { Level1: [{ nodeId: 1, nodeName: 'Node 1' }] };
     component.selectedLevel = 'Node 1';
     spyOn(component.onSelectedLevelChange, 'emit');
     spyOn(helperService, 'setBackupOfFilterSelectionState');
 
     component.handleSelectedLevelChange();
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': component.selectedLevel.toLowerCase(), 'primary_level': null });
+    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': component.selectedLevel, 'primary_level': null });
   });
 
 
   it('should fill additionalFilterLevels with keys that have a higher level than project', () => {
     component.filterData = {
-      project: [{ level: 2 }],
+      Project: [{ level: 2 }],
       department: [{ level: 3 }],
       team: [{ level: 4 }],
     };

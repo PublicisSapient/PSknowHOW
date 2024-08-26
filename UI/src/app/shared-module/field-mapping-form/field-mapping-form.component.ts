@@ -34,7 +34,7 @@ export class FieldMappingFormComponent implements OnInit {
   @Input() selectedToolConfig;
   @Input() thresholdUnit;
   @Output() reloadKPI = new EventEmitter();
-  disableSave = false;
+  //disableSave = false;
   populateDropdowns = true;
   selectedField = '';
   singleSelectionDropdown = false;
@@ -50,7 +50,7 @@ export class FieldMappingFormComponent implements OnInit {
   form: FormGroup;
   fieldMappingSectionList = [];
   formConfig: any;
-  isFormDirty : boolean = false;
+  //isFormDirty : boolean = false;
   historyList = [];
   showSpinner: boolean = false;
   isHistoryPopup : any = {};
@@ -78,7 +78,7 @@ private setting = {
     this.initializeForm();
     this.generateFieldMappingConfiguration();
     this.form.valueChanges.subscribe(()=>{
-     this.isFormDirty = true;
+     //this.isFormDirty = true;
     })
   }
 
@@ -313,7 +313,7 @@ private setting = {
 
   /** Responsible for handle template popup */
   save() {
-    this.disableSave = true;
+    //this.disableSave = true;
     const finalList = [];
 
     this.formData.forEach(element => {
@@ -362,6 +362,11 @@ private setting = {
           severity: 'success',
           summary: 'Field Mappings submitted!!',
         });
+      //#region Bug:39044
+      this.form.markAsPristine();
+      this.form.markAsUntouched();
+      this.form.updateValueAndValidity();
+      //#endregion
         this.uploadedFileName = '';
         if(this.parentComp === 'kpicard'){
           this.reloadKPI.emit();

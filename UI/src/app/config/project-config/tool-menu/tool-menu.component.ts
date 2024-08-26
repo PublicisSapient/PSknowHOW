@@ -79,11 +79,30 @@ export class ToolMenuComponent implements OnInit {
       { name: 'Jira', value: false },
       { name: 'Azure Boards', value: true }
     ];
-    this.selectedProject = this.sharedService.getSelectedProject();
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
     this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();
     this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
     this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
+    this.selectedProject = this.sharedService.getSelectedProject();
+    const selectedType = this.selectedProject.type !== 'Scrum' ? 'kanban' : 'scrum';
+    const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType].map((x) => {
+      return {
+        id: x['hierarchyLevelId'],
+        name: x['hierarchyLevelName']
+      }
+    });
+
+    setTimeout(() => {
+      if (this.selectedProject && Object.keys(this.selectedProject)?.length) {
+        Object.keys(this.selectedProject).forEach(key => {
+          if (levelDetails.map(x => x.id).includes(key)) {
+            let propertyName = levelDetails.filter(x => x.id === key)[0].name;
+            this.selectedProject[propertyName] = this.selectedProject[key];
+            delete this.selectedProject[key];
+          }
+        });
+      }
+    });
 
     this.getProjects();
 
