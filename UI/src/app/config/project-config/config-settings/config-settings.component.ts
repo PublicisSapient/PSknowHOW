@@ -17,9 +17,9 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpService } from 'src/app/services/http.service';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-config-settings',
@@ -32,7 +32,12 @@ export class ConfigSettingsComponent implements OnInit {
   selectedTab: string = 'projectSettings';
   tab: any;
   selectedToolName: string = null;
-  constructor(private route: ActivatedRoute, public router: Router, public httpService: HttpService) {
+  constructor(
+    private route: ActivatedRoute,
+    public router: Router,
+    public httpService: HttpService,
+    public sharedService: SharedService,
+  ) {
     this.configOptions = [
       {
         'tab': 'Project Settings',
@@ -63,10 +68,6 @@ export class ConfigSettingsComponent implements OnInit {
           break;
       }
     });
-
-  }
-
-  ngOnInit(): void {
 
   }
 

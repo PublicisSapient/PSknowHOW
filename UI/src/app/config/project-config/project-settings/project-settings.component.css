@@ -37,3 +37,7 @@ div.main {
   font-size: 1.4rem;
   color: var(--color-black);
 }
+
+::ng-deep .p-datatable .p-datatable-tbody > tr > td:last-child {
+  text-align: right;
+}

@@ -51,37 +51,182 @@
       </div>
     </ng-container>
   </div>
-  <p-accordion [multiple]="true" [activeIndex]="[0]">
-    <p-accordionTab header="Project Controls">
-      <p-table [value]="contrlOptions" styleClass="p-datatable-gridlines">
-        <ng-template pTemplate="header">
+
+  <!-- <div class="p-mt-3">
+    <h2 class="p-mb-3">General</h2>
+    <p>These settings allow you to manage your project’s lifecycle in knowHOW, including options to delete, pause, or
+      resume your project.</p>
+    <p-table [value]="generalControls" styleClass="p-datatable-gridlines">
+      <ng-template pTemplate="body" let-generalControl>
+        <tr>
+          <td>{{generalControl.name}}</td>
+          <td>{{generalControl.description}}</td>
+          <td>
+            <ng-container *ngIf="generalControl.actionItem === 'cta'">
+              <button pButton pRipple type="button" label="Delete Project" class="p-button-danger"
+                (click)="deleteProject(selectedProject)"></button>
+            </ng-container>
+            <ng-container *ngIf="generalControl.actionItem === 'switch'">
+              <p-inputSwitch [(ngModel)]="pauseDataCollection" [disabled]="true"></p-inputSwitch>
+            </ng-container>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <div class="p-mt-3">
+    <h2 class="p-mb-3">One-Time Settings</h2>
+    <p>These are permanent configurations that cannot be altered once enabled. Please review your choices carefully, as
+      these settings will directly impact how your project data is managed and cannot be modified later.</p>
+    <p-table [value]="oneTimeControls" styleClass="p-datatable-gridlines">
+      <ng-template pTemplate="body" let-oneTimeControl>
+        <tr>
+          <td>{{oneTimeControl.name}}</td>
+          <td>{{oneTimeControl.description}}</td>
+          <td>
+            <ng-container *ngIf="oneTimeControl.actionItem === 'switch-people-kpi'">
+              <div class="mar-t-10" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
+                <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch" [(ngModel)]="isAssigneeSwitchChecked"
+                  [disabled]="isAssigneeSwitchDisabled" (onChange)="onAssigneeSwitchChange($event)">
+                </p-inputSwitch>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="oneTimeControl.actionItem === 'switch-developer-kpi'">
+              <p-inputSwitch name="developerSwitch" id="developerSwitch" [disabled]="true"></p-inputSwitch>
+            </ng-container>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <div class="p-mt-3">
+    <h2 class="p-mb-3">API</h2>
+    <p></p>
+    <p-table [value]="apiControls" styleClass="p-datatable-gridlines">
+      <ng-template pTemplate="body" let-apiControl>
+        <tr>
+          <td>{{apiControl.name}}</td>
+          <td>{{apiControl.description}}</td>
+          <td>
+            <div class="p-d-flex" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
+              <button pButton type="button" label="Generate Token" iconPos="right" (click)="generateTokenConfirmation()"
+                [loading]="generateTokenLoader" class="p-mt-0 p-mr-3"
+                [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" [style]="{'height':'2.5rem'}"
+                pTooltip="You can generate the token to submit tools data via knowHOW POST APIs."
+                tooltipPosition="top"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div> -->
+
+  <p-tabView>
+    <p-tabPanel header="General" tooltip="These settings allow you to manage your project">
+      <p>These settings allow you to manage your project’s lifecycle in knowHOW, including options to delete, pause, or
+        resume your project.
+      </p>
+      <p-table [value]="generalControls">
+        <ng-template pTemplate="body" let-generalControl>
           <tr>
-            <th>Settings</th>
-            <th>Description</th>
-            <th>Note</th>
-            <th>Actions</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-contrlOption>
-          <tr>
-            <td>{{ contrlOption.name }}</td>
-            <td>{{ contrlOption.description }}</td>
-            <td>{{ contrlOption.note }}</td>
-            <td>SWITCH/CTA</td>
+            <td>
+              <h3>{{generalControl.name}}</h3>
+              <p>{{generalControl.description}}</p>
+            </td>
+            <td>
+              <ng-container *ngIf="generalControl.actionItem === 'cta'">
+                <button pButton pRipple type="button" label="Delete Project" class="p-button-danger"
+                  (click)="deleteProject(selectedProject)"></button>
+              </ng-container>
+              <ng-container *ngIf="generalControl.actionItem === 'switch'">
+                <p-inputSwitch [(ngModel)]="pauseDataCollection" [disabled]="true"></p-inputSwitch>
+              </ng-container>
+            </td>
           </tr>
         </ng-template>
       </p-table>
-    </p-accordionTab>
-    <p-accordionTab header="Security">
-      <p>
-        More controls coming soon...
-      </p>
-    </p-accordionTab>
-    <p-accordionTab header="Header III">
-      <p>
-        More controls coming soon...
-      </p>
-    </p-accordionTab>
-  </p-accordion>
-
+    </p-tabPanel>
+    <p-tabPanel header="One-Time Settings" tooltip="These are permanent configurations that cannot be altered once enabled">
+      <p>These are permanent configurations that cannot be altered once enabled. Please review your choices carefully,
+        as these settings will directly impact how your project data is managed and cannot be modified later.</p>
+      <p-table [value]="oneTimeControls">
+        <ng-template pTemplate="body" let-oneTimeControl>
+          <tr>
+            <td>
+              <h3>{{oneTimeControl.name}}</h3>
+              <p>{{oneTimeControl.description}}</p>
+            </td>
+            <td>
+              <ng-container *ngIf="oneTimeControl.actionItem === 'switch-people-kpi'">
+                <div class="mar-t-10" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
+                  <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch" [(ngModel)]="isAssigneeSwitchChecked"
+                    [disabled]="isAssigneeSwitchDisabled" (onChange)="onAssigneeSwitchChange($event)">
+                  </p-inputSwitch>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="oneTimeControl.actionItem === 'switch-developer-kpi'">
+                <p-inputSwitch name="developerSwitch" id="developerSwitch" [disabled]="true"></p-inputSwitch>
+              </ng-container>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="API" tooltip="...">
+      <p></p>
+      <p-table [value]="apiControls">
+        <ng-template pTemplate="body" let-apiControl>
+          <tr>
+            <td>
+              <h3>{{apiControl.name}}</h3>
+              <p>{{apiControl.description}}</p>
+            </td>
+            <td>
+              <div class="p-d-block" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
+                <button pButton type="button" label="Generate Token" iconPos="right"
+                  (click)="generateTokenConfirmation()" [loading]="generateTokenLoader" class="p-button-primary"
+                  [disabled]="getAuthorizationService.checkIfViewer(selectedProject)"
+                  pTooltip="You can generate the token to submit tools data via knowHOW POST APIs."
+                  tooltipPosition="top"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+  </p-tabView>
 </div>
+
+<p-confirmDialog #cd>
+  <p-footer>
+    <button *ngIf="projectConfirm" type="button" (click)="cd.accept()" pButton label="Yes"></button>
+    <button *ngIf="projectConfirm" type="button" (click)="cd.reject()" pButton label="No"></button>
+    <button *ngIf="!projectConfirm" type="button" (click)="cd.reject()" pButton label="OK"></button>
+  </p-footer>
+</p-confirmDialog>
+
+<p-confirmDialog #confirmToEnableDialog key="confirmToEnableDialog" [style]="{width: '50vw'}">
+  <p-footer>
+    <button type="button" (click)="confirmToEnableDialog.reject()" pButton label="Cancel"
+      class="enable-dialog-btn"></button>
+    <button type="button" (click)="confirmToEnableDialog.accept()" pButton label="Enable"></button>
+  </p-footer>
+</p-confirmDialog>
+
+<p-dialog header="Token Generated" [(visible)]="displayGeneratedToken" [responsive]="true" showEffect="fade"
+  [modal]="true" [style]="{width: '80vw'}" styleClass="p-fluid">
+  <p>Token has been generated successfully!</p>
+
+  <div class="p-inputgroup p-mb-2">
+    <input type="text" pInputText [(ngModel)]="generatedToken" readonly #inputGeneratedToken>
+    <span class="p-inputgroup-addon p-p-1" (click)="copyToken()" tooltipPosition="top" tooltipEvent="focus">
+      <i class="pi pi-copy p-p-1" style="font-size: 1.5rem"
+        [ngClass]="{'pi-check': tokenCopied,'color-green':tokenCopied }"></i></span>
+  </div>
+  <i>Please copy the token to submit the data, you will not be able to view the token once the screen is closed.</i>
+  <ng-template pTemplate="footer">
+    <button pButton type="button" label="Ok" (click)="displayGeneratedToken=false"></button>
+  </ng-template>
+</p-dialog>

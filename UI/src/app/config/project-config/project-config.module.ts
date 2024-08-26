@@ -34,6 +34,7 @@ import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { RippleModule } from 'primeng/ripple';
 import { DialogModule } from 'primeng/dialog';
+import { TabViewModule } from 'primeng/tabview';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -110,7 +111,8 @@ import { SplitButtonModule } from 'primeng/splitbutton';
     BadgeModule,
     RadioButtonModule,
     PasswordModule,
-    SplitButtonModule
+    SplitButtonModule,
+    TabViewModule,
   ],
   providers: [MessageService, ConfirmationService]
 })
