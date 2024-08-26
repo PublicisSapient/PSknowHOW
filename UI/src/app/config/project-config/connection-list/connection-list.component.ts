@@ -491,6 +491,56 @@ export class ConnectionListComponent implements OnInit {
   repoConnections = ['Bitbucket', 'GitLab', 'Azure Repository'];
   repoToolsEnabled: boolean;
   @Input() selectedToolName: string;
+  groupedToolsGroup = [
+      {
+          label: 'Project Management',
+          value: 'projectManagement',
+          items: [
+              { label: 'Jira', value: 'Jira' },
+              { label: 'Azure Boards', value: 'Azure' },
+          ]
+      },
+      {
+          label: 'Test Management',
+          value: 'testManagement',
+          items: [
+              { label: 'Zephyr Scale', value: 'Zephyr' },
+          ]
+      },
+      {
+          label: 'Source Code Management',
+          value: 'sourceCodeManagement',
+          items: [
+              { label: 'GitHub', value: 'GitHub' },
+              { label: 'GitLab', value: 'GitLab' },
+              { label: 'Bitbucket', value: 'Bitbucket' },
+              { label: 'Azure Repository', value: 'AzureRepository' },
+              {label: 'RepoTool', value: 'RepoTool'}
+
+              
+          ]
+      },
+      {
+        label: 'Security',
+        value: 'security',
+        items: [
+            { label: 'Sonar', value: 'Sonar' },
+        ]
+    },
+    {
+      label: 'Build',
+      value: 'build',
+      items: [
+          { label: 'Bamboo', value: 'Bamboo' },
+          { label: 'Teamcity', value: 'Teamcity' },
+          { label: 'GitHub Action', value: 'GitHub' },
+          { label: 'Azure Pipeline', value: 'AzurePipeline' },
+          {label: 'ArgoCD', value: 'ArgoCD'},
+          {label: 'Jenkins', value: 'Jenkins'}
+      ]
+  }
+
+  ];
 
   constructor(private httpService: HttpService,
     private formBuilder: UntypedFormBuilder,
