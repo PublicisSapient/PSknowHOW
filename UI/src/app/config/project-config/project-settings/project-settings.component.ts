@@ -120,45 +120,16 @@ export class ProjectSettingsComponent implements OnInit {
     }
     // this.selectedProject = this.sharedService.getSelectedProject();
     // this.selectedProject = this.selectedProject !== undefined ? this.selectedProject : this.userProjects[0];
-    console.log(this.selectedProject)
-    console.log(this.isDeleteClicked)
   }
 
   onProjectActiveStatusChange(event) {
     this.isProjectInActive = event.checked;
-    const payload = { isProjectActive: !this.isProjectInActive };
-    console.log(this.selectedProject)
-    this.httpService.updateProjectSettings(this.selectedProject['id'], payload).subscribe(response => {
-      if (response) {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Project data collection paused.'
-        });
-      }
-    }, error => {
-      this.isProjectInActive = false;
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Some error occurred. Please try again later.'
-      });
-    })
+    this.updateProjectDetails();
   }
 
   onProjectDevKpiStatusChange(event) {
     this.developerKpiEnabled = event.checked;
-    const payload = { developerKpiEnabled: this.developerKpiEnabled };
-    console.log(this.selectedProject)
-    this.httpService.updateProjectSettings(this.selectedProject['id'], payload).subscribe(response => {
-      if (response) {
-        this.isDeveloperKpiSwitchDisabled = true;
-        console.log('project settings updated', response)
-        this.messageService.add({ severity: 'success', summary: 'Service Message' });
-      }
-    }, error => {
-      this.developerKpiEnabled = false;
-      this.isDeveloperKpiSwitchDisabled = false;
-      this.messageService.add({ severity: 'error', summary: 'Error' });
-    })
+    this.updateProjectDetails();
   }
 
   getData() {
@@ -337,6 +308,8 @@ export class ProjectSettingsComponent implements OnInit {
     updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
     updatedDetails['id'] = this.selectedProject['id'];
     updatedDetails["createdAt"] = new Date().toISOString();
+    updatedDetails["developerKpiEnabled"] = this.developerKpiEnabled;
+    updatedDetails["isProjectActive"] = !this.isProjectInActive;
     for (let element of hierarchyData) {
       if (element.hierarchyLevelId == 'project') {
         break;

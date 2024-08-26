@@ -1097,11 +1097,6 @@ export class HttpService {
     return this.http.put<any>(this.basicConfigUrl + '/' + id, updatedDetails);
   }
 
-  /* Update project settings  */
-  updateProjectSettings(pid, payload) {
-    return this.http.put<any>(this.basicConfigUrl + '/' + pid, payload);
-  }
-
   /** POST: Upload ldap certificate file */
   uploadCertificate(file): Observable<object> {
     const fileFormData = new FormData();
