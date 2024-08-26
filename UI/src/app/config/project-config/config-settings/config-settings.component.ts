@@ -71,6 +71,9 @@ export class ConfigSettingsComponent implements OnInit {
 
   }
 
+  ngOnInit(): void {
+  }
+
   onTabChange() {
     if (this.selectedTab === 'projectConfig') {
       this.router.navigate(['.'], { queryParams: { 'tab': 2 }, relativeTo: this.route });
