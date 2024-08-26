@@ -536,7 +536,7 @@ export class ConnectionListComponent implements OnInit {
       items: [
           { label: 'Bamboo', value: 'Bamboo' },
           { label: 'Teamcity', value: 'Teamcity' },
-          { label: 'GitHub', value: 'GitHub' },
+          { label: 'GitHub Action', value: 'GitHub' },
           { label: 'Azure Pipeline', value: 'AzurePipeline' },
           {label: 'ArgoCD', value: 'ArgoCD'},
           {label: 'Jenkins', value: 'Jenkins'}
