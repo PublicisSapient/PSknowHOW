@@ -54,6 +54,7 @@ public class ProjectBasicConfig extends BasicModel {
 	private boolean kanban;
 	private List<HierarchyValue> hierarchy;
 	private boolean saveAssigneeDetails;
+	private boolean developerKpiEnabled;
 
 	/**
 	 * @return isKanban value
