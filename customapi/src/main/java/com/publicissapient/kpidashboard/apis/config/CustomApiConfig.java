@@ -1289,6 +1289,10 @@ public class CustomApiConfig {// NOPMD
 		this.zephyrCloudBaseUrl = zephyrCloudBaseUrl;
 	}
 
+	public void setRepoToolPRSuccessRateUrl(String repoToolPRSuccessRateUrl) {
+		this.repoToolPRSuccessRateUrl = repoToolPRSuccessRateUrl;
+	}
+
 	public String getRepoToolPRSuccessRateUrl() {
 		return repoToolPRSuccessRateUrl;
 	}
