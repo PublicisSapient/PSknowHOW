@@ -352,7 +352,7 @@ export class ToolMenuComponent implements OnInit {
   projectTypeChange(event, isClicked) {
     const azureType = {
       toolName: 'Azure',
-      category: 'ABC',
+      category: 'Project Management',
       description: '-',
       icon: 'fab fa-windows',
       routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
