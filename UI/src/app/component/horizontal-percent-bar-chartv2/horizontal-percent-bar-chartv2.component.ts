@@ -167,7 +167,7 @@ export class HorizontalPercentBarChartv2Component implements OnChanges {
           // color palette = one color per subgroup
           const color = d3.scaleOrdinal()
             .domain(subgroups)
-            .range(subgroups.length > 3 ? d3.schemePaired : ['#6079C5', '#A4F6A5', '#FBCF5F'])
+            .range(subgroups.length > 3 ? d3.schemePaired : ['#6079C5', '#FBCF5F', '#A4F6A5'])
             .unknown("#ccc");
   
           // Normalize the data -> sum of each group must be 100!

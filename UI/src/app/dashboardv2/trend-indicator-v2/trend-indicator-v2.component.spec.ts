@@ -52,7 +52,7 @@ describe('TrendIndicatorV2Component', () => {
     component.ngOnChanges(changes);
 
     expect(component.dataObj).toEqual([
-      ["#6079C5"], ["66.7 % (+ve)"], ["M4"]
+      ["#6079C5"], ["66.7 % (+ve)"], ["65.03 % (M4)"]
     ]);
     expect(component.headerObj).toEqual(['Project', 'Latest Trend', 'KPI Maturity']);
   });

@@ -26,9 +26,12 @@
     <div class="toolsconfig-content">
       <p-toolbar *ngIf="isConnectionAddEditAccess" styleClass="p-mb-5 bg-grey">
           <ng-template pTemplate="left">
-              <p-dropdown [options]="addEditConnectionFieldsNlabels" class="connectionDdwn"
+              <p-dropdown [options]="groupedToolsGroup" class="connectionDdwn"
                   [(ngModel)]="selectedConnectionType" placeholder="Select a Connection" (onChange)="onChangeConnection()"
-                  optionValue="connectionType" optionLabel="connectionLabel">
+                  [group]="true">
+                  <ng-template let-group pTemplate="group">
+                        <span>{{ group.label }}</span>
+                  </ng-template>
               </p-dropdown>
               <button pButton pRipple label="New Connection" icon="pi pi-plus" class="p-button-success p-mr-2"
                   (click)="createConnection()" [disabled]="selectedConnectionType == ''"></button>

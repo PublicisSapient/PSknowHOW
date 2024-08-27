@@ -70,6 +70,8 @@
           <ng-template pTemplate="header">
             <tr>
               <th id="processorName">Processor Name</th>
+              <th id="processorName">Processor Category</th>
+              <th id="connectionName">Connection Name</th>
               <th id="executionTime">Last Executed On</th>
               <th></th>
               <th id="state">Status</th>
@@ -81,12 +83,20 @@
               <td class='custom-table-cell'>
                 {{ processor.toolName === 'Azure' ? 'Azure Board' : processor.toolName }}
               </td>
+              <td class='custom-table-cell'>
+                {{ getToolCategory(processor.toolName) }}
+              </td>
 
+              <td class='custom-table-cell'>
+                {{  processor.connectionName }}
+              </td>
               <td class='custom-table-cell'>
                 <span
                   *ngIf="(!findTraceLogForTool(processor.toolName)?.executionOngoing && processor.toolName === 'Jira') || processor.toolName !== 'Jira'">{{
                   showExecutionDate(processor.toolName) }}</span>
               </td>
+
+
               <td class="custom-table-cell">
                 <p-progressBar mode="indeterminate"
                   *ngIf="processor.toolName === 'Jira' && findTraceLogForTool(processor.toolName)?.executionOngoing === true "
