@@ -398,6 +398,23 @@ export class AdvancedSettingsComponent implements OnInit {
     this.router.navigate(['/dashboard/Config/ProjectList']);
   }
 
+  getToolCategory(ProcessorName){
+   const categoryWiseTool = {
+    'Project Management' : ['jira','azure'],
+    'Test Management' : ['zephyr'],
+    'Source Code Management' : ['github','gitLab','bitbucket','azurerepository','repotool'],
+    'Security' : ['sonar'],
+    'Build' : ['bamboo','teamcity','azurepipeline','argoCD','githubaction','jenkins']
+   }
+
+   for (const category in categoryWiseTool) {
+    if (categoryWiseTool[category].includes(ProcessorName?.toLowerCase())) {
+      return category;
+    }
+  }
+  return '';
+  }
+
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
