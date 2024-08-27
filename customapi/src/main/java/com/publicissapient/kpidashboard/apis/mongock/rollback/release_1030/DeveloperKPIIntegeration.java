@@ -73,7 +73,7 @@ public class DeveloperKPIIntegeration {
 	public void insertKpis(String kpiId, String kpiName, String kpiInfo, String link, List<String> maturityRange) {
 		Document kpiDocument = new Document().append("kpiId", kpiId).append("kpiName", kpiName).append("maxValue", "")
 				.append("kpiUnit", "%").append("isDeleted", false).append("defaultOrder", 5).append("groupId", 2)
-				.append("kpiSource", "BitBucket").append("kanban", false).append("chartType", "line")
+				.append("kpiSource", "BitBucket").append("combinedKpiSource","RepoTool").append("kanban", false).append("chartType", "line")
 				.append("kpiInfo", new Document().append("definition", kpiInfo).append("details",
 						Arrays.asList(new Document().append("type", "link").append("kpiLinkDetail",
 								new Document().append("text", "Detailed Information at").append("link", link)))))
