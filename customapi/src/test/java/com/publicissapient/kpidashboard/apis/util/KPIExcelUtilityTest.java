@@ -745,9 +745,12 @@ public class KPIExcelUtilityTest {
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
 		List<String> priority = new ArrayList<>();
 		Map<String, List<String>> pr = new HashMap<>();
-		priority.add("1");
-		priority.add("2");
-		pr.put("P1", priority);
+		priority.add("p4");
+		priority.add("4");
+		priority.add("P4 - Minor");
+		priority.add("minor");
+		priority.add("Low");
+		pr.put("P4", priority);
 		customApiConfig.setPriority(pr);
 		Map<String, JiraIssue> issueData = defects.stream().collect(Collectors.toMap(JiraIssue::getNumber, x -> x));
 		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
