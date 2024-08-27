@@ -961,7 +961,7 @@ public class KPIExcelUtility {
 				for (Map.Entry<String, Double> m : repoWiseMap.entrySet()) {
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProject(projectName);
-					excelData.setRepo(repoList.get(0));
+					excelData.setRepo(repoList.get(i));
 					excelData.setBranch(branchList.get(i));
 					excelData.setDaysWeeks(m.getKey());
 					excelData.setMeanTimetoMerge(m.getValue().toString());
