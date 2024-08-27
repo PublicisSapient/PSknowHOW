@@ -745,18 +745,18 @@ public class KPIExcelUtilityTest {
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
 		List<String> priority = new ArrayList<>();
 		Map<String, List<String>> pr = new HashMap<>();
-		priority.add("p4");
+		priority.add("p4-minor");
 		priority.add("4");
-		priority.add("P4 - Minor");
+		priority.add("p4");
 		priority.add("minor");
 		priority.add("Low");
-		pr.put("P4", priority);
+		pr.put("p4-minor", priority);
 		customApiConfig.setPriority(pr);
 		Map<String, JiraIssue> issueData = defects.stream().collect(Collectors.toMap(JiraIssue::getNumber, x -> x));
 		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
 		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
-		when(customApiConfig.getpriorityP4()).thenReturn(Constant.P4);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Act
 		KPIExcelUtility.populateDefectRelatedExcelData(sprint, defects, kpiExcelData, "kpi28", customApiConfig);
 
