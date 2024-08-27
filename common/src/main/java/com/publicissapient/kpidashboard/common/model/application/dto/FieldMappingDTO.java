@@ -467,6 +467,7 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	private String thresholdValueKPI173;
 	private String thresholdValueKPI180;
 	private String thresholdValueKPI181;
+	private String thresholdValueKPI182;
 
 	private String jiraProductionIncidentIdentification;
 	private String jiraProdIncidentRaisedByCustomField;

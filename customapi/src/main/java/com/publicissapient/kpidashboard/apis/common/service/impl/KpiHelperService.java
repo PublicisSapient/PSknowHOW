@@ -1885,10 +1885,20 @@ public class KpiHelperService { // NOPMD
 
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(projectCodeList)) {
-			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
+			LocalDate startDate = LocalDate.now();
 			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
 				startDate = LocalDate.now().minusWeeks(dataPoint);
 				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+					startDate = startDate.minusDays(1);
+				}
+			} else {
+				int daysSubtracted = 0;
+				while (daysSubtracted < dataPoint) {
+					// Skip the weekend days
+					if (!(startDate.getDayOfWeek() == DayOfWeek.SATURDAY
+							|| startDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
+						daysSubtracted++;
+					}
 					startDate = startDate.minusDays(1);
 				}
 			}
