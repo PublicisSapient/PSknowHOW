@@ -70,6 +70,7 @@
           <ng-template pTemplate="header">
             <tr>
               <th id="processorName">Processor Name</th>
+              <th id="processorName">Processor Category</th>
               <th id="connectionName">Connection Name</th>
               <th id="executionTime">Last Executed On</th>
               <th></th>
@@ -81,6 +82,9 @@
             <tr>
               <td class='custom-table-cell'>
                 {{ processor.toolName === 'Azure' ? 'Azure Board' : processor.toolName }}
+              </td>
+              <td class='custom-table-cell'>
+                {{ getToolCategory(processor.toolName) }}
               </td>
 
               <td class='custom-table-cell'>
