@@ -233,9 +233,8 @@ public class ReworkRateServiceImplTest {
 
 		toolList3.add(tool3);
 
-		toolGroup.put(Constant.TOOL_BITBUCKET, toolList1);
 		toolGroup.put(Constant.TOOL_AZUREREPO, toolList2);
-		toolGroup.put(Constant.REPO_TOOLS, toolList3);
+		toolGroup.put(Constant.TOOL_BITBUCKET, toolList3);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
 
 	}

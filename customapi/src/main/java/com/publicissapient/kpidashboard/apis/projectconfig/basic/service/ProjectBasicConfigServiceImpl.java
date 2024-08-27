@@ -448,7 +448,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		List<ProjectToolConfig> tools = toolRepository.findByBasicProjectConfigId(projectBasicConfig.getId());
 		Boolean isRepoTool = tools.stream()
 				.anyMatch(toolConfig -> ProcessorConstants.SCM_TOOL_LIST.contains(toolConfig.getToolName())
-						&& projectBasicConfig.isRepoToolEnabled());
+						&& projectBasicConfig.isDeveloperKpiEnabled());
 		deleteRepoToolProject(projectBasicConfig, isRepoTool);
 		CollectionUtils.emptyIfNull(tools).forEach(tool -> {
 

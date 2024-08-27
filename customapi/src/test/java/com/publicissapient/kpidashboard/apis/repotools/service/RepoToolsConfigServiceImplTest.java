@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -70,7 +71,6 @@ public class RepoToolsConfigServiceImplTest {
     ProjectToolConfig projectToolConfig1 = new ProjectToolConfig();
     ProjectToolConfig projectToolConfig2 = new ProjectToolConfig();
     Connection connection = new Connection();
-    String toolName;
     ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 
     @InjectMocks
@@ -118,23 +118,22 @@ public class RepoToolsConfigServiceImplTest {
     @Before
     public void setUp() {
 
-        toolName = "RepoTool";
         projectToolConfig.setId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
-        projectToolConfig.setToolName(toolName);
+        projectToolConfig.setToolName(Constant.TOOL_BITBUCKET);
         projectToolConfig.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
         projectToolConfig.setBasicProjectConfigId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectToolConfig.setBranch("test1");
-        projectToolConfig.setGitFullUrl("testHttpUrl");
+        projectToolConfig.setGitFullUrl("https://kumbl@bitbucket.org/thend/cass.git");
 
         projectToolConfig1.setId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
-        projectToolConfig1.setToolName(toolName);
+        projectToolConfig1.setToolName(Constant.TOOL_GITHUB);
         projectToolConfig1.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
         projectToolConfig1.setBasicProjectConfigId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectToolConfig1.setBranch("test2");
         projectToolConfig1.setGitFullUrl("testRepo2");
 
         projectToolConfig2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
-        projectToolConfig2.setToolName(toolName);
+        projectToolConfig2.setToolName(Constant.TOOL_GITLAB);
         projectToolConfig2.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
         projectToolConfig2.setBasicProjectConfigId(new ObjectId("5fb364612064a31c9ccd517a"));
         projectToolConfig2.setBranch("test3");
@@ -143,7 +142,7 @@ public class RepoToolsConfigServiceImplTest {
         connection.setUsername("test1");
         connection.setAccessToken("testToken");
         connection.setEmail("testEmail");
-        connection.setType(toolName);
+        connection.setType(Constant.TOOL_BITBUCKET);
         connection.setBaseUrl("testSshUrl");
         connection.setApiEndPoint("testHttpUrl.git");
         connection.setRepoToolProvider("github");

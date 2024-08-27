@@ -112,7 +112,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 		boolean isSCMToolEnabled = false;
 		if(processorExecutionBasicConfig != null) {
 			isSCMToolEnabled = configHelperService.getProjectConfig(
-					processorExecutionBasicConfig.getProjectBasicConfigIds().get(0)).isRepoToolEnabled();
+					processorExecutionBasicConfig.getProjectBasicConfigIds().get(0)).isDeveloperKpiEnabled();
 		}
 		if (scmToolList.contains(processorName) && isSCMToolEnabled) {
 			statuscode = repoToolsConfigService

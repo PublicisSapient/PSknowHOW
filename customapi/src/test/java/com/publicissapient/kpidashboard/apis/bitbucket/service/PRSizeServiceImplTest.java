@@ -178,13 +178,13 @@ public class PRSizeServiceImplTest {
         List<ProcessorItem> collectorItemList1 = new ArrayList<>();
         collectorItemList1.add(processorItem1);
 
-        tool3 = createTool("url3", "RepoTool", collectorItemList1);
+        tool3 = createTool("url3", "Bitbucket", collectorItemList1);
 
         toolList3.add(tool3);
 
-        toolGroup.put(Constant.TOOL_BITBUCKET, toolList1);
-        toolGroup.put(Constant.TOOL_AZUREREPO, toolList2);
-        toolGroup.put(Constant.REPO_TOOLS, toolList3);
+        toolGroup.put(Constant.TOOL_BITBUCKET, toolList3);
+        toolGroup.put(Constant.TOOL_AZUREREPO, toolList1);
+        toolGroup.put(Constant.REPO_TOOLS, toolList2);
         toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
 
     }

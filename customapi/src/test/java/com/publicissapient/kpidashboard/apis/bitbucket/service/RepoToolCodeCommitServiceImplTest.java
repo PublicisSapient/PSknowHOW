@@ -210,25 +210,26 @@ public class RepoToolCodeCommitServiceImplTest {
 		List<ProcessorItem> collectorItemList1 = new ArrayList<>();
 		collectorItemList1.add(processorItem1);
 
-		tool3 = createTool("url3", "RepoTool", "PSknowHOW", "master", collectorItemList1);
+		tool3 = createTool("url3", "Bitbucket", collectorItemList1);
 
 		toolList3.add(tool3);
 
-		toolGroup.put(Constant.REPO_TOOLS, toolList3);
+		toolGroup.put(Constant.TOOL_BITBUCKET, toolList3);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
 
 	}
 
-	private Tool createTool(String url, String toolType, String repoName, String branch,
-			List<ProcessorItem> collectorItemList) {
+	private Tool createTool(String url, String toolType, List<ProcessorItem> collectorItemList) {
 		Tool tool = new Tool();
 		tool.setTool(toolType);
 		tool.setUrl(url);
-		tool.setRepositoryName(repoName);
-		tool.setBranch(branch);
+		tool.setBranch("master");
+		tool.setRepositoryName("PSknowHOW");
+
 		tool.setProcessorItemList(collectorItemList);
 		return tool;
 	}
+
 
 	@Test
 	public void testGetQualifierType() {

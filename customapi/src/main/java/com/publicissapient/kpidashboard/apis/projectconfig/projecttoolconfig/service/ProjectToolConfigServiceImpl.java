@@ -179,7 +179,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		}
 		ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId()
 				.toString());
-		if (scmToolList.contains(projectToolConfig.getToolName()) && projectBasicConfig.isRepoToolEnabled()) {
+		if (scmToolList.contains(projectToolConfig.getToolName()) && projectBasicConfig.isDeveloperKpiEnabled()) {
 			ServiceResponse repoToolServiceResponse = setRepoToolConfig(projectToolConfig);
 			if (Boolean.FALSE.equals(repoToolServiceResponse.getSuccess()))
 				return repoToolServiceResponse;
@@ -353,7 +353,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
 		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
 				ProcessorConstants.GITHUB, ProcessorConstants.AZUREREPO);
-		return scmToolList.contains(tool.getToolName()) && projectBasicConfig.isRepoToolEnabled();
+		return scmToolList.contains(tool.getToolName()) && projectBasicConfig.isDeveloperKpiEnabled();
 	}
 
 	private void cleanData(ProjectToolConfig tool) {
@@ -499,13 +499,13 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		} else
 			branchList.add(projectToolConfig.getBranch());
 		int httpStatus = repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, branchList);
-		if (httpStatus == HttpStatus.NOT_FOUND.value())
-			return new ServiceResponse(false, "", null);
 		if (httpStatus == HttpStatus.BAD_REQUEST.value())
 			return new ServiceResponse(false, "Project with similar configuration already exists", null);
 		if (httpStatus == HttpStatus.INTERNAL_SERVER_ERROR.value())
 			return new ServiceResponse(false, "Invalid Repository Name", null);
-		return new ServiceResponse(true, "", null);
+		if (httpStatus == HttpStatus.CREATED.value())
+			return new ServiceResponse(true, "", null);
+		return new ServiceResponse(false, "", null);
 	}
 
 	@Override

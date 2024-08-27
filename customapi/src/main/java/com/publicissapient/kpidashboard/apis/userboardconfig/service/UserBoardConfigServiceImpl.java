@@ -82,6 +82,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private static final String ITERATION = "Iteration";
 	private static final String DEFAULT_BOARD_NAME = "My KnowHow";
 	public static final String SUPER_ADMIN_ALL_PROJ_SELECTED = "all";
+	private boolean handleDeveloperKpi = false;
 	@Autowired
 	private UserBoardConfigRepository userBoardConfigRepository;
 	@Autowired
@@ -123,10 +124,11 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		UserBoardConfigDTO defaultUserBoardConfigDTO = new UserBoardConfigDTO();
 		String basicProjectConfigId = CollectionUtils.isNotEmpty(listOfRequestedProj.getBasicProjectConfigIds())
 				? listOfRequestedProj.getBasicProjectConfigIds().get(0)
+						.substring(listOfRequestedProj.getBasicProjectConfigIds().get(0).lastIndexOf('_') + 1)
 				: null;
-		defaultUserBoardConfigDTO.setBasicProjectConfigId(
-				basicProjectConfigId != null ? basicProjectConfigId.substring(basicProjectConfigId.lastIndexOf('_') + 1)
-						: null);
+
+		handleDeveloperKpi = basicProjectConfigId != null && configHelperService.getProjectConfig(basicProjectConfigId)
+				.isDeveloperKpiEnabled();
 		// method to fetch all the project level board configs by their respective
 		// admins
 		final List<UserBoardConfig> adminProjectBoardConfig = getProjectBoardConfigs(listOfRequestedProj,
@@ -453,13 +455,10 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		setUserBoardInfo(kpiCategoryBoardId, otherBoardNameList, otherBoards, false);
 
 		setFiltersInfoInBoard(scrumBoards, kanbanBoards, otherBoards);
-//		setDeveloperKpis(newUserBoardConfig.getBasicProjectConfigId(), scrumBoards);
 		newUserBoardConfig.setScrum(scrumBoards);
 		newUserBoardConfig.setKanban(kanbanBoards);
 		newUserBoardConfig.setOthers(otherBoards);
 	}
-
-
 
 	/**
 	 * Sets the filters for the provided scrum, kanban, and other boards. Filters
@@ -674,6 +673,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 *            kpiMaster
 	 */
 	private void setKpiUserBoardDefaultFromKpiMaster(List<BoardKpisDTO> boardKpisList, KpiMaster kpiMaster) {
+		Boolean isRepoToolFlag = handleDeveloperKpi;
+		if ((kpiMaster.getIsRepoToolKpi() == null) || (kpiMaster.getIsRepoToolKpi().equals(isRepoToolFlag))) {
 			BoardKpisDTO boardKpis = new BoardKpisDTO();
 			boardKpis.setKpiId(kpiMaster.getKpiId());
 			boardKpis.setKpiName(kpiMaster.getKpiName());
@@ -683,6 +684,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			boardKpis.setSubCategoryBoard(kpiMaster.getKpiSubCategory());
 			boardKpis.setKpiDetail(kpiMaster);
 			boardKpisList.add(boardKpis);
+		}
 	}
 
 	/**
@@ -833,18 +835,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				}
 			}));
 		});
-
-		// Update userBoardConfig with kpiWiseIsShownFlag values
-		ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(
-				userBoardConfig.getBasicProjectConfigId());
-		boolean enableDeveloperKpis = projectBasicConfig != null && projectBasicConfig.isRepoToolEnabled();
 		userBoardConfig.getScrum().forEach(boardDTO -> boardDTO.getKpis().forEach(boardKpis -> {
 			if(boardDTO.getBoardId() == 6) {
-				boolean isRepoToolKpi = boardKpis.getKpiDetail().getIsRepoToolKpi();
-				boolean isShown = kpiWiseIsShownFlag.getOrDefault(boardKpis.getKpiId(), true) &&
-						((isRepoToolKpi && enableDeveloperKpis) || (!isRepoToolKpi && !enableDeveloperKpis));
-				boardKpis.setShown(isShown);
-			} else {
 				boolean isShown = kpiWiseIsShownFlag.getOrDefault(boardKpis.getKpiId(), true);
 				boardKpis.setShown(isShown);
 			}
@@ -858,32 +850,6 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			boardKpis.setShown(isShown);
 		}));
 	}
-
-//	public void setDeveloperKpis(String basicProjectConfigId, List<BoardDTO> scrumBoard) {
-//		scrumBoard.forEach(boardDTO -> {
-//			if (boardDTO.getBoardId() == 6) {
-//				boolean isSCMToolEnable = false;
-//				if (basicProjectConfigId != null) {
-//					ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(
-//							basicProjectConfigId.substring(basicProjectConfigId.lastIndexOf('_') + 1));
-//					isSCMToolEnable = projectBasicConfig != null && projectBasicConfig.isRepoToolEnabled();
-//				}
-//				if (isSCMToolEnable) {
-//					boardDTO.getKpis().forEach(kpisDTO -> {
-//						if (!kpisDTO.getKpiDetail().getIsRepoToolKpi()) {
-//							kpisDTO.setShown(false);
-//						}
-//					});
-//				} else {
-//					boardDTO.getKpis().forEach(kpisDTO -> {
-//						if (kpisDTO.getKpiDetail().getIsRepoToolKpi()) {
-//							kpisDTO.setShown(false);
-//						}
-//					});
-//				}
-//			}
-//		});
-//	}
 
 	/**
 	 * This method convert userBoardConfigDTO to its userBoardConfig K
