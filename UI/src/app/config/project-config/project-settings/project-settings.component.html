@@ -141,7 +141,7 @@
                   (click)="deleteProject(selectedProject)"></button>
               </ng-container>
               <ng-container *ngIf="generalControl.actionItem === 'switch'">
-                <p-inputSwitch [(ngModel)]="isProjectInActive" (onChange)="onProjectActiveStatusChange($event)"></p-inputSwitch>
+                <p-inputSwitch [(ngModel)]="projectOnHold" (onChange)="onProjectActiveStatusChange($event)"></p-inputSwitch>
               </ng-container>
             </td>
           </tr>
@@ -161,13 +161,19 @@
             <td>
               <ng-container *ngIf="oneTimeControl.actionItem === 'switch-people-kpi'">
                 <div class="mar-t-10" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
-                  <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch" [(ngModel)]="isAssigneeSwitchChecked"
-                    [disabled]="isAssigneeSwitchDisabled" (onChange)="onAssigneeSwitchChange($event)">
+                  <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch"
+                  [(ngModel)]="isAssigneeSwitchChecked"
+                  [disabled]="isAssigneeSwitchDisabled"
+                  (onChange)="onAssigneeSwitchChange($event)">
                   </p-inputSwitch>
                 </div>
               </ng-container>
               <ng-container *ngIf="oneTimeControl.actionItem === 'switch-developer-kpi'">
-                <p-inputSwitch [(ngModel)]="developerKpiEnabled" (onChange)="onProjectDevKpiStatusChange($event)" [disabled]="isDeveloperKpiSwitchDisabled"></p-inputSwitch>
+                <p-inputSwitch
+                [(ngModel)]="developerKpiEnabled"
+                (onChange)="onProjectDevKpiStatusChange($event)"
+                [disabled]="isDeveloperKpiSwitchDisabled">
+                </p-inputSwitch>
               </ng-container>
             </td>
           </tr>

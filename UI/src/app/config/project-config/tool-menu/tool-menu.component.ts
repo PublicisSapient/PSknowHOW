@@ -39,8 +39,8 @@ export class ToolMenuComponent implements OnInit {
   dataLoading = false;
   disableSwitch = false;
   selectedTools: Array<any> = [];
-  isProjectAdmin = false;
-  isSuperAdmin = false;
+  // isProjectAdmin = false;
+  // isSuperAdmin = false;
   generateTokenLoader = false;
   displayGeneratedToken = false;
   generatedToken = '';
@@ -69,7 +69,7 @@ export class ToolMenuComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.selectedProject = this.sharedService.getSelectedProject();
     this.sharedService.currentUserDetailsObs.subscribe(details => {
       if (details) {
         this.userName = details['user_name'];
@@ -79,12 +79,9 @@ export class ToolMenuComponent implements OnInit {
       { name: 'Jira', value: false },
       { name: 'Azure Boards', value: true }
     ];
-    this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
-    this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();
-    this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
     this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
-    this.selectedProject = this.sharedService.getSelectedProject();
-    const selectedType = this.selectedProject.type !== 'Scrum' ? 'kanban' : 'scrum';
+
+    const selectedType = this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
     const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType].map((x) => {
       return {
         id: x['hierarchyLevelId'],
@@ -112,9 +109,9 @@ export class ToolMenuComponent implements OnInit {
       this.dataLoading = true;
       this.getToolsConfigured();
     }
-    if (this.isAssigneeSwitchChecked) {
-      this.isAssigneeSwitchDisabled = true;
-    }
+    // if (this.isAssigneeSwitchChecked) {
+    //   this.isAssigneeSwitchDisabled = true;
+    // }
 
 
   }
@@ -395,108 +392,109 @@ export class ToolMenuComponent implements OnInit {
     return (configuredProject && configuredProject.length > 0 ? true : false);
   }
 
-  generateTokenConfirmation() {
-    this.confirmationService.confirm({
-      message: `If you create a token, all previously generated tokens will expire, do you want to continue?`,
-      header: `Generate Token?`,
-      icon: 'pi pi-info-circle',
-      accept: () => {
-        this.generateToken();
-      },
-      reject: null
-    });
-  }
+  // generateTokenConfirmation() {
+  //   this.confirmationService.confirm({
+  //     message: `If you create a token, all previously generated tokens will expire, do you want to continue?`,
+  //     header: `Generate Token?`,
+  //     icon: 'pi pi-info-circle',
+  //     accept: () => {
+  //       this.generateToken();
+  //     },
+  //     reject: null
+  //   });
+  // }
 
-  generateToken() {
-    this.tokenCopied = false;
-    this.generateTokenLoader = true;
-    const projectDetails = this.sharedService.getSelectedProject();
-    const postData = {
-      basicProjectConfigId: projectDetails['id'],
-      projectName: projectDetails['Project'],
-      userName: this.userName
-    };
+  // generateToken() {
+  //   this.tokenCopied = false;
+  //   this.generateTokenLoader = true;
+  //   const projectDetails = this.sharedService.getSelectedProject();
+  //   const postData = {
+  //     basicProjectConfigId: projectDetails['id'],
+  //     projectName: projectDetails['Project'],
+  //     userName: this.userName
+  //   };
 
-    this.httpService.generateToken(postData).subscribe(response => {
-      this.generateTokenLoader = false;
-      this.displayGeneratedToken = true;
-      if (response['success'] && response['data']) {
-        this.generatedToken = response['data'].apiToken;
-      } else {
-        this.messageService.add({ severity: 'error', summary: 'Error occured while generating token. Please try after some time' });
-      }
-    });
-  }
+  //   this.httpService.generateToken(postData).subscribe(response => {
+  //     this.generateTokenLoader = false;
+  //     this.displayGeneratedToken = true;
+  //     if (response['success'] && response['data']) {
+  //       this.generatedToken = response['data'].apiToken;
+  //     } else {
+  //       this.messageService.add({ severity: 'error', summary: 'Error occured while generating token. Please try after some time' });
+  //     }
+  //   });
+  // }
 
-  copyToken() {
-    this.tokenCopied = true;
-    navigator.clipboard.writeText(this.generatedToken);
-  }
+  // copyToken() {
+  //   this.tokenCopied = true;
+  //   navigator.clipboard.writeText(this.generatedToken);
+  // }
+
   // Preserve original property order
   originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => 0;
 
-  onAssigneeSwitchChange() {
-    if (this.isAssigneeSwitchChecked) {
-      this.isAssigneeSwitchDisabled = true;
-    }
-    this.confirmationService.confirm({
-      message: `Once enabled, it cannot be disabled. Do you want to enable individual KPIs for this project, are you sure?`,
-      header: 'Enable Individual KPIs',
-      key: 'confirmToEnableDialog',
-      accept: () => {
-        this.updateProjectDetails();
-      },
-      reject: () => {
-        this.isAssigneeSwitchChecked = false;
-        this.isAssigneeSwitchDisabled = false;
-      }
-    });
-  }
+  // onAssigneeSwitchChange() {
+  //   if (this.isAssigneeSwitchChecked) {
+  //     this.isAssigneeSwitchDisabled = true;
+  //   }
+  //   this.confirmationService.confirm({
+  //     message: `Once enabled, it cannot be disabled. Do you want to enable individual KPIs for this project, are you sure?`,
+  //     header: 'Enable Individual KPIs',
+  //     key: 'confirmToEnableDialog',
+  //     accept: () => {
+  //       this.updateProjectDetails();
+  //     },
+  //     reject: () => {
+  //       this.isAssigneeSwitchChecked = false;
+  //       this.isAssigneeSwitchDisabled = false;
+  //     }
+  //   });
+  // }
 
-  updateProjectDetails() {
+  // updateProjectDetails() {
 
-    let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject['type']?.toLowerCase()];
+  //   let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject['type']?.toLowerCase()];
 
-    const updatedDetails = {};
-    updatedDetails['projectName'] = this.selectedProject['name'] || this.selectedProject['Project'];
-    updatedDetails['kanban'] = this.selectedProject['type'] === 'Kanban' ? true : false;
-    updatedDetails['hierarchy'] = [];
-    updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
-    updatedDetails['id'] = this.selectedProject['id'];
-    updatedDetails["createdAt"] = new Date().toISOString();
-    for (let element of hierarchyData) {
-      if (element.hierarchyLevelId == 'project') {
-        break;
-      }
-      updatedDetails['hierarchy'].push({
-        hierarchyLevel: {
-          level: element.level,
-          hierarchyLevelId: element.hierarchyLevelId,
-          hierarchyLevelName: element.hierarchyLevelName
-        },
-        value: this.selectedProject[element.hierarchyLevelId]
-      });
-    }
-    this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
-      if (response && response.serviceResponse && response.serviceResponse.success) {
-        this.isAssigneeSwitchDisabled = true;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Assignee Switch Enabled  successfully.'
-        });
-      } else {
-        this.isAssigneeSwitchChecked = false;
-        this.isAssigneeSwitchDisabled = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Some error occurred. Please try again later.'
-        });
+  //   const updatedDetails = {};
+  //   updatedDetails['projectName'] = this.selectedProject['name'] || this.selectedProject['Project'];
+  //   updatedDetails['kanban'] = this.selectedProject['type'] === 'Kanban' ? true : false;
+  //   updatedDetails['hierarchy'] = [];
+  //   updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
+  //   updatedDetails['id'] = this.selectedProject['id'];
+  //   updatedDetails["createdAt"] = new Date().toISOString();
+  //   for (let element of hierarchyData) {
+  //     if (element.hierarchyLevelId == 'project') {
+  //       break;
+  //     }
+  //     updatedDetails['hierarchy'].push({
+  //       hierarchyLevel: {
+  //         level: element.level,
+  //         hierarchyLevelId: element.hierarchyLevelId,
+  //         hierarchyLevelName: element.hierarchyLevelName
+  //       },
+  //       value: this.selectedProject[element.hierarchyLevelId]
+  //     });
+  //   }
+  //   this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
+  //     if (response && response.serviceResponse && response.serviceResponse.success) {
+  //       this.isAssigneeSwitchDisabled = true;
+  //       this.messageService.add({
+  //         severity: 'success',
+  //         summary: 'Assignee Switch Enabled  successfully.'
+  //       });
+  //     } else {
+  //       this.isAssigneeSwitchChecked = false;
+  //       this.isAssigneeSwitchDisabled = false;
+  //       this.messageService.add({
+  //         severity: 'error',
+  //         summary: 'Some error occurred. Please try again later.'
+  //       });
 
-      }
+  //     }
 
-    })
+  //   })
 
-  }
+  // }
 
   setGaData() {
     let gaObj = {};
@@ -521,7 +519,6 @@ export class ToolMenuComponent implements OnInit {
     this.userProjects = this.sharedService.getProjectList();
     if (this.userProjects != null && this.userProjects.length > 0) {
       this.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
-      // this.selectedProject = this.userProjects[0];
     }
     if(this.selectedProject && this.router.url.includes(this.selectedProject['id'])) {
       this.selectedProject = this.userProjects.filter((x) => x.id == this.selectedProject?.id)[0]

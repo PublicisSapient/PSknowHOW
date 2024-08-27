@@ -76,12 +76,11 @@ export class ProjectListComponent implements OnInit {
           this.editConfiguration(this.selectedProductForExecutingAction, 2);
         }
       },
-      {
-        label: 'Delete Project', icon: 'pi pi-trash', command: () => {
-          this.deleteProject(this.selectedProductForExecutingAction);
-        }
-      },
-      { separator: true },
+      // {
+      //   label: 'Delete Project', icon: 'pi pi-trash', command: () => {
+      //     this.deleteProject(this.selectedProductForExecutingAction);
+      //   }
+      // },
       {
         label: 'Settings', icon: 'pi pi-wrench', command: () => {
           this.allProjectList.forEach(project => {
@@ -165,6 +164,8 @@ export class ProjectListComponent implements OnInit {
               name: this.projectList[i]?.projectName,
               type: this.projectList[i]?.kanban ? 'Kanban' : 'Scrum',
               saveAssigneeDetails: this.projectList[i]?.saveAssigneeDetails,
+              developerKpiEnabled: this.projectList[i]?.developerKpiEnabled,
+              projectOnHold: this.projectList[i]?.projectOnHold,
             };
             for (let j = 0; j < this.projectList[i]?.hierarchy?.length; j++) {
               obj[this.projectList[i]?.hierarchy[j]?.hierarchyLevel['hierarchyLevelId']] = this.projectList[i]?.hierarchy[j]?.value;

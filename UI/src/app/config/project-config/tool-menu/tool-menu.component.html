@@ -71,10 +71,10 @@
               <p-selectButton optionValue="value" [options]="projectTypeOptions" optionLabel="name"
                   [(ngModel)]="selectedType" (onChange)="projectTypeChange($event, true)" [disabled]="disableSwitch">
               </p-selectButton>
-              <div class="p-d-flex" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
+              <!-- <div class="p-d-flex" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
               <button pButton type="button" label="Generate Token" iconPos="right" (click)="generateTokenConfirmation()"
               [loading]="generateTokenLoader" class="p-mt-0 p-mr-3" [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" [style]="{'height':'2.5rem'}" pTooltip="You can generate the token to submit tools data via knowHOW POST APIs." tooltipPosition="top"></button>
-              </div>
+              </div> -->
               <div class="p-d-flex">
                   <!-- <div class="mar-t-10" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
                       <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch" [(ngModel)]="isAssigneeSwitchChecked"
@@ -106,10 +106,6 @@
                                   <p class="form_title p-text-capitalize">Tool Name</p>
                                   <p><strong class="sub-text p-text-capitalize">{{ tool.toolName }}</strong></p>
                               </div>
-                              <div class="p-md-4 inline-div">
-                                <p class="form_title p-text-capitalize">Tool Type</p>
-                                <p><strong class="sub-text p-text-capitalize">{{ tool.category }}</strong></p>
-                            </div>
                               <div class="p-md-4 inline-div">
                                   <p class="form_title p-text-capitalize">Connection Name</p>
                                   <p><strong class="sub-text p-text-capitalize">{{ tool.connectionName ? tool.connectionName : '-' }}</strong></p>
@@ -178,15 +174,15 @@
   </div>
 </div>
 
-<p-confirmDialog #cd [transitionOptions]="'0ms'">
+<!-- <p-confirmDialog #cd [transitionOptions]="'0ms'">
     <p-footer>
         <button type="button" (click)="cd.reject()" pButton label="Cancel" class="p-button-secondary" [style]="{'line-height': 'unset'}"></button>
         <button type="button" (click)="cd.accept()" pButton label="Continue"></button>
     </p-footer>
-  </p-confirmDialog>
+  </p-confirmDialog> -->
 
 
-<p-dialog header="Token Generated" [(visible)]="displayGeneratedToken" [responsive]="true" showEffect="fade" [modal]="true"
+<!-- <p-dialog header="Token Generated" [(visible)]="displayGeneratedToken" [responsive]="true" showEffect="fade" [modal]="true"
 [style]="{width: '80vw'}" styleClass="p-fluid">
     <p>Token has been generated successfully!</p>
 
@@ -207,4 +203,4 @@
         <button type="button" (click)="confirmToEnableDialog.reject()" pButton label="Cancel" class="enable-dialog-btn"></button>
         <button type="button" (click)="confirmToEnableDialog.accept()" pButton label="Enable"></button>
     </p-footer>
-</p-confirmDialog>
+</p-confirmDialog> -->
