@@ -214,7 +214,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'Sonar',
-              category: 'Seurity',
+              category: 'Security',
               description: '-',
               icon: '',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
