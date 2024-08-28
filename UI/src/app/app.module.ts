@@ -144,6 +144,7 @@ import { HorizontalPercentBarChartv2Component } from './component/horizontal-per
 import { RecommendationsComponent } from './component/recommendations/recommendations.component';
 import { ChartWithFiltersComponent } from './component/chart-with-filters/chart-with-filters.component';
 import { KpiAdditionalFilterComponent } from './component/kpi-additional-filter/kpi-additional-filter.component';
+import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
 
 
 /******************************************************/
@@ -231,7 +232,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         PageNotFoundComponent,
         RecommendationsComponent,
         ChartWithFiltersComponent,
-        KpiAdditionalFilterComponent
+        KpiAdditionalFilterComponent,
+        StickyHeaderV2Component
     ],
     imports: [
         DropdownModule,

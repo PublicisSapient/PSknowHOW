@@ -72,8 +72,8 @@ export class ExportExcelComponent implements OnInit {
         )
         .subscribe((getData) => {
           if (
-            getData['excelData'] ||
-            !getData?.hasOwnProperty('validationData')
+            getData['excelData'] 
+            || !getData?.hasOwnProperty('validationData')
           ) {
             if (chartType == 'stacked-area') {
               let kpiObj = JSON.parse(JSON.stringify(getData));
@@ -96,7 +96,8 @@ export class ExportExcelComponent implements OnInit {
 
             this.modalDetails['tableHeadings'] =
               this.kpiExcelData.headerNames.map((column) => column.header);
-            this.modalDetails['tableValues'] = additionalFilterSupport ? this.kpiExcelData.excelData : [];
+            // this.modalDetails['tableValues'] = additionalFilterSupport ? this.kpiExcelData.excelData : [];
+            this.modalDetails['tableValues'] = this.kpiExcelData.excelData;
             this.generateTableColumnData();
             this.modalDetails['header'] = kpiName;
             this.displayModal = true;

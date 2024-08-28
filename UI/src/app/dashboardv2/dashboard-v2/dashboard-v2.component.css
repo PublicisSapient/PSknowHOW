@@ -28,9 +28,37 @@
     z-index: 900;
 }
 
+.header {
+    transition: height 0.3s; /* add a smooth transition effect */
+    height: 80px; /* initial height of the header */
+    display: none;
+  }
+  
+  .header.scrolled {
+    height: 40px; /* shrunk height of the header */
+    display: block;
+  }
+
 :host ::ng-deep .main-container .kpi-summary,
 :host ::ng-deep .main-container .kpi-card-container {
     box-shadow: none;
     border: 1px solid #D5DBE1;
     border-radius: 10px;
 }
+
+#go-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 9999;
+  }
+  
+  #go-to-top:hover {
+    background-color: #444;
+  }

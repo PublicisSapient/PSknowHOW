@@ -60,42 +60,56 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Jira',
       connectionLabel: 'Jira',
+      categoryValue : 'projectManagement',
+      categoryLabel: 'Project Management',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Share connection with everyone', 'Use bearer token', 'PAT OAuthToken', 'Is jaasKrbAuth', 'Jaas Config FilePath', 'Krb5 Config FilePath', 'Jaas User', 'Saml Endpoint', 'Select Authentication Type'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'sharedConnection', 'bearerToken', 'patOAuthToken', 'jaasKrbAuth', 'jaasConfigFilePath', 'krb5ConfigFilePath', 'jaasUser', 'samlEndPoint', 'jiraAuthType']
     },
     {
       connectionType: 'Azure',
       connectionLabel: 'Azure Boards',
+      categoryValue : 'projectManagement',
+      categoryLabel: 'Project Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'PAT', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'pat', 'sharedConnection']
     },
     {
       connectionType: 'GitHub',
       connectionLabel: 'GitHub',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Profile Username', 'Use vault password', 'App Password', 'API End Point', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'sharedConnection']
     },
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
+      categoryValue : 'security',
+      categoryLabel: 'Security',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', ['Use Password', 'Use Token'], 'Password', 'Access Token', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'accessTokenEnabled', 'password', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'Jenkins',
       connectionLabel: 'Jenkins',
+      categoryValue : 'build',
+      categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Api Key', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'apiKey', 'sharedConnection'],
       placeholder: ['', '', 'Enter a public URL', '', '', '', '']
@@ -103,42 +117,56 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Bamboo',
       connectionLabel: 'Bamboo',
+      categoryValue : 'build',
+      categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
     },
     {
       connectionType: 'Teamcity',
       connectionLabel: 'Teamcity',
+      categoryValue : 'build',
+      categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
     },
     {
       connectionType: 'AzurePipeline',
       connectionLabel: 'Azure Pipeline',
+      categoryValue : 'build',
+      categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
     },
     {
       connectionType: 'AzureRepository',
       connectionLabel: 'Azure Repository',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
     },
     {
       connectionType: 'Zephyr',
       connectionLabel: 'Zephyr',
+      categoryValue : 'testManagement',
+      categoryLabel: 'Test Management',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Use Bearer Token', 'PatOAuthToken', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'bearerToken', 'patOAuthToken', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'RepoTool',
       connectionLabel: 'RepoTool',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Base Url', 'Api End Point', 'Username', 'Access Token', 'User Email', 'Share connection with everyone'],
       inputFields: ['type', 'repoToolProvider', 'connectionName', 'baseUrl', 'apiEndPoint', 'username', 'accessToken', 'email', 'sharedConnection']
     },
     {
       connectionType: 'ArgoCD',
       connectionLabel: 'ArgoCD',
+      categoryValue : 'build',
+      categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
     }
@@ -494,6 +522,7 @@ export class ConnectionListComponent implements OnInit {
   selectedTab: string = 'toolsConnected';
   pid: any;
   tab: any;
+  groupedToolsGroup : any;
 
   constructor(private httpService: HttpService,
     private formBuilder: UntypedFormBuilder,
@@ -551,6 +580,9 @@ export class ConnectionListComponent implements OnInit {
     // filtering connections based on repoToolFlag
     this.connectionTypeCompleteList = this.filterConnections(this.connectionTypeCompleteList, 'label')
     this.addEditConnectionFieldsNlabels = this.filterConnections(this.addEditConnectionFieldsNlabels, 'connectionLabel')
+     
+    /** formating data for connection dropdown */
+    this.groupedToolsGroup = this.createFormatCategoryWise(this.addEditConnectionFieldsNlabels);
 
     /* this.httpService.getAllToolConfigs().subscribe(res => {
       console.log(res)
@@ -1605,5 +1637,26 @@ export class ConnectionListComponent implements OnInit {
       }
     }
     return filteredList;
+  }
+
+  createFormatCategoryWise(addEditConnectionFieldsNlabels){
+    const formatedData =  addEditConnectionFieldsNlabels.reduce((acc, curr) => {
+      // Find the category in the accumulator
+      let category = acc.find(item => item.label === curr.categoryLabel);
+      
+      // If the category doesn't exist, create a new one
+      if (!category) {
+        category = {
+          label: curr.categoryLabel,
+          value: curr.categoryValue,
+          items: []
+        };
+        acc.push(category);
+      }
+      // Add the connection label and type to the category's items
+      category.items.push({ label: curr.connectionLabel, value: curr.connectionType });
+      return acc;
+    }, []);   
+    return formatedData;
   }
 }
