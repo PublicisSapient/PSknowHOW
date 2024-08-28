@@ -41,3 +41,15 @@ div.main {
 ::ng-deep .p-datatable .p-datatable-tbody > tr > td:last-child {
   text-align: right;
 }
+
+:host::ng-deep .p-dropdown-label {
+  text-transform: uppercase;
+}
+
+.enable-dialog-btn {
+  background-color: white;
+  color: black;
+  border: 1px solid;
+  box-sizing: border-box;
+  padding: 9px 13px;
+}
