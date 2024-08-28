@@ -109,10 +109,6 @@ export class ToolMenuComponent implements OnInit {
       this.dataLoading = true;
       this.getToolsConfigured();
     }
-    // if (this.isAssigneeSwitchChecked) {
-    //   this.isAssigneeSwitchDisabled = true;
-    // }
-
 
   }
 
@@ -431,6 +427,7 @@ export class ToolMenuComponent implements OnInit {
   // }
 
   // Preserve original property order
+
   originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => 0;
 
   // onAssigneeSwitchChange() {

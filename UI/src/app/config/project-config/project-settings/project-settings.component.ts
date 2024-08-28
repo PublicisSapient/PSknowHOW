@@ -18,10 +18,11 @@
 
 import { Component, OnInit } from '@angular/core';
 import { SharedService } from '../../../services/shared.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { KeyValue } from '@angular/common';
 
 interface Control {
   name: string;
@@ -242,6 +243,26 @@ export class ProjectSettingsComponent implements OnInit {
       this.isDeveloperKpiSwitchDisabled = true;
     }
     this.projectOnHold = this.selectedProject?.projectOnHold;
+
+    const selectedType = this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
+    const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType].map((x) => {
+      return {
+        id: x['hierarchyLevelId'],
+        name: x['hierarchyLevelName']
+      }
+    });
+
+    setTimeout(() => {
+      if (this.selectedProject && Object.keys(this.selectedProject)?.length) {
+        Object.keys(this.selectedProject).forEach(key => {
+          if (levelDetails.map(x => x.id).includes(key)) {
+            let propertyName = levelDetails.filter(x => x.id === key)[0].name;
+            this.selectedProject[propertyName] = this.selectedProject[key];
+            delete this.selectedProject[key];
+          }
+        });
+      }
+    });
   }
 
   updateProjectSelection() {
@@ -431,5 +452,7 @@ export class ProjectSettingsComponent implements OnInit {
     this.tokenCopied = true;
     navigator.clipboard.writeText(this.generatedToken);
   }
+
+  originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => 0;
 
 }
