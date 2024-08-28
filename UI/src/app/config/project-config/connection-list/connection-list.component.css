@@ -96,6 +96,3 @@ input[type="text"]:disabled, input[type="password"]:disabled {
     width: 150px;
 }
 
-:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item{
-    padding: 1rem 2rem;
-}
