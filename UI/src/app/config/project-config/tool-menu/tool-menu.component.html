@@ -45,7 +45,8 @@
   </div>
   <div class="p-p-3 p-mb-4 p-grid bg-cyan" *ngIf="selectedProject">
       <ng-container *ngFor="let project of selectedProject | keyvalue : originalOrder">
-          <div class="p-md-2 long-text float-left pad-r-0 pad-l-0 inline-div" *ngIf="project?.key?.toLowerCase() !== 'id' && project?.key != 'saveAssigneeDetails' ">
+          <div class="p-md-2 long-text float-left pad-r-0 pad-l-0 inline-div"
+          *ngIf="project?.key?.toLowerCase() !== 'id' && project?.key != 'saveAssigneeDetails' && project?.key != 'developerKpiEnabled' && project?.key != 'projectOnHold'">
               <p class="form_title p-text-capitalize">{{project?.key}}</p>
               <strong class="sub-text p-text-capitalize">{{project?.value}}</strong>
           </div>

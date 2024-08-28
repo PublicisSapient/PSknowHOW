@@ -18,10 +18,11 @@
 
 import { Component, OnInit } from '@angular/core';
 import { SharedService } from '../../../services/shared.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { KeyValue } from '@angular/common';
 
 interface Control {
   name: string;
@@ -119,23 +120,35 @@ export class ProjectSettingsComponent implements OnInit {
     // this.selectedProject = this.selectedProject !== undefined ? this.selectedProject : this.userProjects[0];
   }
 
-  onProjectActiveStatusChange() {
-    // this.updateProjectDetails();
-    this.confirmationService.confirm({
-      message: `Are you sure you want to keep this project on hold?`,
-      header: 'Pause data collection',
-      key: 'confirmToEnableDialog',
-      accept: () => {
-        this.updateProjectDetails();
-      },
-      reject: () => {
-        this.projectOnHold = false;
-      }
-    });
+  onProjectActiveStatusChange(event) {
+    if(event.checked) {
+      this.confirmationService.confirm({
+        message: `Are you sure you want to keep this project on hold?`,
+        header: 'Pause data collection',
+        key: 'confirmToEnableDialog',
+        accept: () => {
+          this.updateProjectDetails();
+        },
+        reject: () => {
+          this.projectOnHold = false;
+        }
+      });
+    } else {
+      this.confirmationService.confirm({
+        message: `Are you sure you want to resume activities for this project?`,
+        header: 'Resume data collection',
+        key: 'confirmToEnableDialog',
+        accept: () => {
+          this.updateProjectDetails();
+        },
+        reject: () => {
+          this.projectOnHold = true;
+        }
+      });
+    }
   }
 
   onProjectDevKpiStatusChange() {
-    // this.updateProjectDetails();
     if (this.developerKpiEnabled) {
       this.isDeveloperKpiSwitchDisabled = true;
     }
@@ -229,12 +242,32 @@ export class ProjectSettingsComponent implements OnInit {
     if(this.developerKpiEnabled) {
       this.isDeveloperKpiSwitchDisabled = true;
     }
+    this.projectOnHold = this.selectedProject?.projectOnHold;
+
+    const selectedType = this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
+    const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType].map((x) => {
+      return {
+        id: x['hierarchyLevelId'],
+        name: x['hierarchyLevelName']
+      }
+    });
+
+    setTimeout(() => {
+      if (this.selectedProject && Object.keys(this.selectedProject)?.length) {
+        Object.keys(this.selectedProject).forEach(key => {
+          if (levelDetails.map(x => x.id).includes(key)) {
+            let propertyName = levelDetails.filter(x => x.id === key)[0].name;
+            this.selectedProject[propertyName] = this.selectedProject[key];
+            delete this.selectedProject[key];
+          }
+        });
+      }
+    });
   }
 
   updateProjectSelection() {
     this.sharedService.setSelectedProject(this.selectedProject);
     this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject['id']}`], { queryParams: { tab: 0 } });
-
     this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
     this.developerKpiEnabled = this.selectedProject?.developerKpiEnabled;
     this.projectOnHold = this.selectedProject?.projectOnHold;
@@ -358,19 +391,19 @@ export class ProjectSettingsComponent implements OnInit {
         value: this.selectedProject[element.hierarchyLevelId]
       });
     }
+
     this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
-      console.log(response)
       if (response && response.serviceResponse && response.serviceResponse.success) {
-        console.log('here')
         this.isAssigneeSwitchDisabled = true;
+        this.selectedProject.projectOnHold = this.projectOnHold;
         this.messageService.add({
           severity: 'success',
           summary: 'Assignee Switch Enabled  successfully.'
         });
       } else {
-        console.log('else')
         this.isAssigneeSwitchChecked = false;
         this.isAssigneeSwitchDisabled = false;
+        this.projectOnHold = false;
         this.messageService.add({
           severity: 'error',
           summary: 'Some error occurred. Please try again later.'
@@ -419,5 +452,7 @@ export class ProjectSettingsComponent implements OnInit {
     this.tokenCopied = true;
     navigator.clipboard.writeText(this.generatedToken);
   }
+
+  originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => 0;
 
 }
