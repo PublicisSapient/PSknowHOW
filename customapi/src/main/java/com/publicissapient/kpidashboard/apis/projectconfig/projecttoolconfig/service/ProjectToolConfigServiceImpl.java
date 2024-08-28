@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -80,7 +81,8 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	private ToolDataCleanUpServiceFactory dataCleanUpServiceFactory;
 	@Autowired
 	private ConfigHelperService configHelperService;
-
+	@Autowired
+	private CustomApiConfig customApiConfig;
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
 	@Autowired

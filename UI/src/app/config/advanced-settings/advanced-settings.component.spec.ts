@@ -888,4 +888,14 @@ describe('AdvancedSettingsComponent', () => {
     component.endTimeConversion('2023-01-04T06:02:20');
     expect(component.endTimeConversion).not.toBeNull();
   })
+
+  it('should get toll category',()=>{
+    const spyobj = component.getToolCategory('azure');
+    expect(spyobj).toBe('Project Management');
+  })
+
+  it('should get blank string if tollname dies not match',()=>{
+    const spyobj = component.getToolCategory('testtool');
+    expect(spyobj).toBe('');
+  })
 });
