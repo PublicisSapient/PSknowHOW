@@ -1889,6 +1889,16 @@ public class KpiHelperService { // NOPMD
 				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
 					startDate = startDate.minusDays(1);
 				}
+			} else {
+				int daysSubtracted = 0;
+				while (daysSubtracted < dataPoint) {
+					// Skip the weekend days
+					if (!(startDate.getDayOfWeek() == DayOfWeek.SATURDAY
+							|| startDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
+						daysSubtracted++;
+					}
+					startDate = startDate.minusDays(1);
+				}
 			}
 			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
 			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList, repoToolKpi,

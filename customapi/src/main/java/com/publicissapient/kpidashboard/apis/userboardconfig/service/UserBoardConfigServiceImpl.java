@@ -127,8 +127,9 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 						.substring(listOfRequestedProj.getBasicProjectConfigIds().get(0).lastIndexOf('_') + 1)
 				: null;
 
-		handleDeveloperKpi = basicProjectConfigId != null && configHelperService.getProjectConfig(basicProjectConfigId)
-				.isDeveloperKpiEnabled();
+		handleDeveloperKpi = basicProjectConfigId != null
+				&& configHelperService.getProjectConfig(basicProjectConfigId) != null
+				&& configHelperService.getProjectConfig(basicProjectConfigId).isDeveloperKpiEnabled();
 		// method to fetch all the project level board configs by their respective
 		// admins
 		final List<UserBoardConfig> adminProjectBoardConfig = getProjectBoardConfigs(listOfRequestedProj,

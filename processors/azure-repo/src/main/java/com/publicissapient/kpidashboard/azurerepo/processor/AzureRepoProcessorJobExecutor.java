@@ -611,7 +611,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 			return allProjects;
 		}
 		return CollectionUtils.emptyIfNull(allProjects).stream()
-				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isRepoToolEnabled())
+				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled())
 						&& selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.collect(Collectors.toList());
 	}
