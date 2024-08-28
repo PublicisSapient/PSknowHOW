@@ -192,7 +192,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'BitBucket',
-              category: 'Souce Code Management',
+              category: 'Source Code Management',
               description: '-',
               icon: 'fab fa-bitbucket',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -203,7 +203,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'GitLab',
-              category: 'Souce Code Management',
+              category: 'Source Code Management',
               description: '-',
               icon: 'fab fa-gitlab',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -214,7 +214,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'Sonar',
-              category: 'Seurity',
+              category: 'Security',
               description: '-',
               icon: '',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -258,7 +258,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'Azure Repo',
-              category: 'Souce Code Management',
+              category: 'Source Code Management',
               description: '-',
               icon: 'fab fa-windows',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -269,7 +269,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'GitHub',
-              category: 'Souce Code Management',
+              category: 'Source Code Management',
               description: '-',
               icon: 'fab fa-github',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
@@ -291,7 +291,7 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'RepoTool',
-              category: 'Souce Code Management',
+              category: 'Source Code Management',
               description: '-',
               icon: '',
               routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
