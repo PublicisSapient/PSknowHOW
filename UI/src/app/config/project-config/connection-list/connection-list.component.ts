@@ -77,7 +77,7 @@ export class ConnectionListComponent implements OnInit {
       connectionType: 'GitHub',
       connectionLabel: 'GitHub',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'sharedConnection']
     },
@@ -85,7 +85,7 @@ export class ConnectionListComponent implements OnInit {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'sharedConnection']
     },
@@ -93,7 +93,7 @@ export class ConnectionListComponent implements OnInit {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Profile Username', 'Use vault password', 'App Password', 'API End Point', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'sharedConnection']
     },
@@ -142,7 +142,7 @@ export class ConnectionListComponent implements OnInit {
       connectionType: 'AzureRepository',
       connectionLabel: 'Azure Repository',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
     },
@@ -158,7 +158,7 @@ export class ConnectionListComponent implements OnInit {
       connectionType: 'RepoTool',
       connectionLabel: 'RepoTool',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Base Url', 'Api End Point', 'Username', 'Access Token', 'User Email', 'Share connection with everyone'],
       inputFields: ['type', 'repoToolProvider', 'connectionName', 'baseUrl', 'apiEndPoint', 'username', 'accessToken', 'email', 'sharedConnection']
     },

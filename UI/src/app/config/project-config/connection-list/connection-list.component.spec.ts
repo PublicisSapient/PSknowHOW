@@ -652,7 +652,7 @@ describe('ConnectionListComponent', () => {
       connectionType: 'Azure',
       connectionLabel: 'Azure Boards',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -676,7 +676,7 @@ describe('ConnectionListComponent', () => {
       connectionType: 'GitHub',
       connectionLabel: 'GitHub',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -700,7 +700,7 @@ describe('ConnectionListComponent', () => {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -724,7 +724,7 @@ describe('ConnectionListComponent', () => {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -752,7 +752,7 @@ describe('ConnectionListComponent', () => {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -782,7 +782,7 @@ describe('ConnectionListComponent', () => {
       connectionType: 'Jenkins',
       connectionLabel: 'Jenkins',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -807,7 +807,7 @@ describe('ConnectionListComponent', () => {
       connectionType: 'Bamboo',
       connectionLabel: 'Bamboo',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -831,7 +831,7 @@ describe('ConnectionListComponent', () => {
       connectionType: 'Teamcity',
       connectionLabel: 'Teamcity',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -855,7 +855,7 @@ describe('ConnectionListComponent', () => {
       connectionType: 'AzurePipeline',
       connectionLabel: 'Azure Pipeline',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -877,7 +877,7 @@ describe('ConnectionListComponent', () => {
       connectionType: 'AzureRepository',
       connectionLabel: 'Azure Repository',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -899,7 +899,7 @@ describe('ConnectionListComponent', () => {
       connectionType: 'Zephyr',
       connectionLabel: 'Zephyr',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -933,7 +933,7 @@ describe('ConnectionListComponent', () => {
       connectionType: 'ArgoCD',
       connectionLabel: 'ArgoCD',
       categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Souce Code Management',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
