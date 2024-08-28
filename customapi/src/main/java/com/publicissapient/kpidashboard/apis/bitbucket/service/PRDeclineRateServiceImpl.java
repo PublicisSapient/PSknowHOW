@@ -190,7 +190,7 @@ public class PRDeclineRateServiceImpl extends BitBucketKPIService<Double, List<O
 			String date = KpiHelperService.getDateRange(weekRange, duration);
 
 			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricResponseList.stream()
-					.filter(value -> value.getDateLabel().equals(dateRange.getStartDate().toString())).findFirst();
+					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
 
 			Double overallPickupTime = repoToolKpiMetricResponse.map(RepoToolKpiMetricResponse::getProjectPercentage)
 					.orElse(0.0d);
@@ -209,7 +209,7 @@ public class PRDeclineRateServiceImpl extends BitBucketKPIService<Double, List<O
 					String overallKpiGroup = branchName + "#" + Constant.AGGREGATED_VALUE;
 					if (repoToolKpiMetricResponse.isPresent()) {
 						Optional<Branches> matchingBranch = repoToolKpiMetricResponse.get().getRepositories().stream()
-								.filter(repository -> repository.getName().equals(repo.getRepositoryName()))
+								.filter(repository -> repository.getRepositoryName().equals(repo.getRepositoryName()))
 								.flatMap(repository -> repository.getBranches().stream())
 								.filter(branch -> branch.getName().equals(repo.getBranch())).findFirst();
 
@@ -324,6 +324,7 @@ public class PRDeclineRateServiceImpl extends BitBucketKPIService<Double, List<O
 		dataCount.setDate(week);
 		dataCount.setValue(value);
 		dataCount.setKpiGroup(kpiGroup);
+		dataCount.setHoverValue(new HashMap<>());
 		dataCountMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dataCount);
 	}
 

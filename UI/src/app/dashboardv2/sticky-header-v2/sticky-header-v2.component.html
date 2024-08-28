@@ -1,0 +1,6 @@
+  <div class="sticky-header">
+    <ng-container *ngFor="let field of fields | keyvalue">
+      <span class="text-container p-d-inline-block p-mr-2">{{ field.key }}:</span>
+      <span class="p-text-bold p-d-inline-block p-mr-3">{{ field.value }}</span>
+    </ng-container>
+  </div>

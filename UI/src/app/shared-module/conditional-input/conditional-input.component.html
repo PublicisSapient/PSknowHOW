@@ -27,7 +27,7 @@
             </ng-container>
         </span>
         <div *ngIf="!templateData || templateData.length === 0" class="country-placeholder">
-            Select Priority
+            {{fieldConfig?.placeHolderText ? fieldConfig?.placeHolderText : fieldConfig?.fieldLabel}}
         </div>
     </ng-template>
     <ng-template let-option pTemplate="item">
