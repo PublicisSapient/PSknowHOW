@@ -189,7 +189,7 @@ describe('ProjectSettingsComponent', () => {
 
     }
     localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
-    component.updateProjectDetails();
+    component.updateProjectDetails('text');
   })
 
   it('should update project details successfully', () => {
@@ -234,7 +234,7 @@ describe('ProjectSettingsComponent', () => {
     spyOn(httpService, 'updateProjectDetails').and.returnValue(of(response));
     component.isAssigneeSwitchDisabled = false;
     spyOn(messageService, 'add');
-    component.updateProjectDetails();
+    component.updateProjectDetails('text');
     expect(messageService.add).toHaveBeenCalled();
     expect(component.isAssigneeSwitchDisabled).toBeTruthy();
   });
@@ -271,7 +271,7 @@ describe('ProjectSettingsComponent', () => {
     component.isAssigneeSwitchChecked = true;
     component.isAssigneeSwitchDisabled = true;
     spyOn(messageService, 'add');
-    component.updateProjectDetails();
+    component.updateProjectDetails('text');
     expect(messageService.add).toHaveBeenCalled();
     expect(component.isAssigneeSwitchChecked).toBeFalsy();
     expect(component.isAssigneeSwitchDisabled).toBeFalsy();

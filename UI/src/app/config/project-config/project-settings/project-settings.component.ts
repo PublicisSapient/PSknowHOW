@@ -127,7 +127,7 @@ export class ProjectSettingsComponent implements OnInit {
         header: 'Pause data collection',
         key: 'confirmToEnableDialog',
         accept: () => {
-          this.updateProjectDetails();
+          this.updateProjectDetails('Project data collection paused!');
         },
         reject: () => {
           this.projectOnHold = false;
@@ -139,7 +139,7 @@ export class ProjectSettingsComponent implements OnInit {
         header: 'Resume data collection',
         key: 'confirmToEnableDialog',
         accept: () => {
-          this.updateProjectDetails();
+          this.updateProjectDetails('Project data collection resumed!');
         },
         reject: () => {
           this.projectOnHold = true;
@@ -157,7 +157,7 @@ export class ProjectSettingsComponent implements OnInit {
       header: 'Enable Developer KPIs',
       key: 'confirmToEnableDialog',
       accept: () => {
-        this.updateProjectDetails();
+        this.updateProjectDetails('Developer KPI for this project enabled!');
       },
       reject: () => {
         this.developerKpiEnabled = false;
@@ -356,7 +356,7 @@ export class ProjectSettingsComponent implements OnInit {
       header: 'Enable Individual KPIs',
       key: 'confirmToEnableDialog',
       accept: () => {
-        this.updateProjectDetails();
+        this.updateProjectDetails('Assignee Switch Enabled  successfully.');
       },
       reject: () => {
         this.isAssigneeSwitchChecked = false;
@@ -365,7 +365,7 @@ export class ProjectSettingsComponent implements OnInit {
     });
   }
 
-  updateProjectDetails() {
+  updateProjectDetails(successMsg) {
 
     let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject?.type?.toLowerCase()];
 
@@ -398,7 +398,7 @@ export class ProjectSettingsComponent implements OnInit {
         this.selectedProject.projectOnHold = this.projectOnHold;
         this.messageService.add({
           severity: 'success',
-          summary: 'Assignee Switch Enabled  successfully.'
+          summary: successMsg
         });
       } else {
         this.isAssigneeSwitchChecked = false;
@@ -442,6 +442,7 @@ export class ProjectSettingsComponent implements OnInit {
       this.displayGeneratedToken = true;
       if (response['success'] && response['data']) {
         this.generatedToken = response['data'].apiToken;
+        this.messageService.add({ severity: 'success', summary: 'Token copied!' });
       } else {
         this.messageService.add({ severity: 'error', summary: 'Error occured while generating token. Please try after some time' });
       }
