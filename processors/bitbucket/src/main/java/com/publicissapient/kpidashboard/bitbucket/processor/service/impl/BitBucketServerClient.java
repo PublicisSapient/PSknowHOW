@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -226,8 +227,8 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 			boolean isClosed = Boolean.parseBoolean(getString(mergReqObj, BitBucketConstants.RESP_CLOSED));
 			long createdDate = Long.parseLong(getString(mergReqObj, BitBucketConstants.RESP_CREATED_DATE));
 			long updatedDate = Long.parseLong(getString(mergReqObj, BitBucketConstants.RESP_UPDATED_DATE));
-			if (getString(mergReqObj, BitBucketConstants.RESP_CLOSED_DATE) != null) {
-				closedDate = Long.parseLong(getString(mergReqObj, BitBucketConstants.RESP_CLOSED_DATE));
+			if (StringUtils.isNotBlank(state) && state.equalsIgnoreCase(BitBucketConstants.RESP_MERGED)) {
+				closedDate = updatedDate;
 			}
 			JSONObject fromRefObj = (JSONObject) mergReqObj.get(BitBucketConstants.RESP_FROM_REF);
 			String fromBranch = getString(fromRefObj, BitBucketConstants.RESP_DISP_ID);

@@ -282,8 +282,7 @@ describe('ConnectionListComponent', () => {
         'IsOAuth',
         'Private Key',
         'Consumer Key',
-        'Is Offline',
-        'Is Connection Private',
+        'Share connection with everyone',
         'Use bearer token',
         'PAT OAuthToken',
         'Is jaasKrbAuth',
@@ -305,8 +304,7 @@ describe('ConnectionListComponent', () => {
         'isOAuth',
         'privateKey',
         'consumerKey',
-        'offline',
-        'connPrivate',
+        'sharedConnection',
         'bearerToken',
         'patOAuthToken',
         'jaasKrbAuth',
@@ -327,7 +325,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -336,7 +334,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -349,7 +347,7 @@ describe('ConnectionListComponent', () => {
         'Repo Ownername',
         'Use vault password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -358,7 +356,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -371,7 +369,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -380,7 +378,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -391,11 +389,11 @@ describe('ConnectionListComponent', () => {
         'Connection Name',
         'Is Cloud Environment',
         'Base Url',
-        'Username',
+        'Profile Username',
         'Use vault password',
-        'Password',
+        'App Password',
         'API End Point',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -406,7 +404,7 @@ describe('ConnectionListComponent', () => {
         'vault',
         'password',
         'apiEndPoint',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -422,7 +420,7 @@ describe('ConnectionListComponent', () => {
         ['Use Password', 'Use Token'],
         'Password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -434,7 +432,7 @@ describe('ConnectionListComponent', () => {
         'accessTokenEnabled',
         'password',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -447,7 +445,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Api Key',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -456,7 +454,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'apiKey',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -469,7 +467,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -478,7 +476,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -491,7 +489,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -500,7 +498,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -512,7 +510,7 @@ describe('ConnectionListComponent', () => {
         'Base Url',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -520,7 +518,7 @@ describe('ConnectionListComponent', () => {
         'baseUrl',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -532,7 +530,7 @@ describe('ConnectionListComponent', () => {
         'Base Url',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -540,7 +538,7 @@ describe('ConnectionListComponent', () => {
         'baseUrl',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -558,7 +556,7 @@ describe('ConnectionListComponent', () => {
         'Password',
         'Api End Point',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -572,7 +570,7 @@ describe('ConnectionListComponent', () => {
         'password',
         'apiEndPoint',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -585,7 +583,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -594,7 +592,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
   ];
@@ -603,6 +601,8 @@ describe('ConnectionListComponent', () => {
     {
       connectionType: 'Jira',
       connectionLabel: 'Jira',
+      categoryValue : 'projectManagement',
+      categoryLabel: 'Project Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -615,8 +615,7 @@ describe('ConnectionListComponent', () => {
         'IsOAuth',
         'Private Key',
         'Consumer Key',
-        'Is Offline',
-        'Is Connection Private',
+        'Share connection with everyone',
         'Use bearer token',
         'PAT (OAuth Token)',
         'Is jaasKrbAuth',
@@ -638,8 +637,7 @@ describe('ConnectionListComponent', () => {
         'isOAuth',
         'privateKey',
         'consumerKey',
-        'offline',
-        'connPrivate',
+        'sharedConnection',
         'bearerToken',
         'patOAuthToken',
         'jaasKrbAuth',
@@ -653,6 +651,8 @@ describe('ConnectionListComponent', () => {
     {
       connectionType: 'Azure',
       connectionLabel: 'Azure Boards',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -660,7 +660,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -669,12 +669,14 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'GitHub',
       connectionLabel: 'GitHub',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -682,7 +684,7 @@ describe('ConnectionListComponent', () => {
         'Repo Ownername',
         'Use vault password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -691,12 +693,14 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -704,7 +708,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -713,12 +717,14 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -728,7 +734,7 @@ describe('ConnectionListComponent', () => {
         'Use vault password',
         'Password',
         'API End Point',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -739,12 +745,14 @@ describe('ConnectionListComponent', () => {
         'vault',
         'password',
         'apiEndPoint',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -755,7 +763,7 @@ describe('ConnectionListComponent', () => {
         ['Use Password', 'Use Token'],
         'Password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -766,13 +774,15 @@ describe('ConnectionListComponent', () => {
         'vault',
         'password',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
         "accessTokenEnabled",
       ],
     },
     {
       connectionType: 'Jenkins',
       connectionLabel: 'Jenkins',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -780,7 +790,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Api Key',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -789,12 +799,15 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'apiKey',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
+    
     {
       connectionType: 'Bamboo',
       connectionLabel: 'Bamboo',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -802,7 +815,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -811,12 +824,14 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'Teamcity',
       connectionLabel: 'Teamcity',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -824,7 +839,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -833,19 +848,21 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'AzurePipeline',
       connectionLabel: 'Azure Pipeline',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
         'Base Url',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -853,19 +870,21 @@ describe('ConnectionListComponent', () => {
         'baseUrl',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'AzureRepository',
       connectionLabel: 'Azure Repository',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
         'Base Url',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -873,12 +892,14 @@ describe('ConnectionListComponent', () => {
         'baseUrl',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'Zephyr',
       connectionLabel: 'Zephyr',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -891,7 +912,7 @@ describe('ConnectionListComponent', () => {
         'Password',
         'Api End Point',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -905,12 +926,14 @@ describe('ConnectionListComponent', () => {
         'password',
         'apiEndPoint',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'ArgoCD',
       connectionLabel: 'ArgoCD',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -918,7 +941,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -927,7 +950,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
   ];
@@ -949,7 +972,6 @@ describe('ConnectionListComponent', () => {
   const enableDisableMatrix = {
     enableDisableEachTime: {
       cloudEnv: [],
-      offline: [],
       isOAuth: [
         {
           field: 'privateKey',
@@ -994,49 +1016,49 @@ describe('ConnectionListComponent', () => {
     },
     enableDisableAnotherTime: {
       cloudEnv: [],
-      offline: [
-        {
-          field: 'cloudEnv',
-          isEnabled: true,
-        },
-        {
-          field: 'baseUrl',
-          isEnabled: true,
-        },
-        {
-          field: 'username',
-          isEnabled: true,
-        },
-        {
-          field: 'password',
-          isEnabled: true,
-        },
+      // offline: [
+      //   {
+      //     field: 'cloudEnv',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'baseUrl',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'username',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'password',
+      //     isEnabled: true,
+      //   },
 
-        {
-          field: 'apiEndPoint',
-          isEnabled: true,
-        },
-        {
-          field: 'isOAuth',
-          isEnabled: true,
-        },
-        {
-          field: 'bearerToken',
-          isEnabled: true
-        },
-        {
-          field: 'patOAuthToken',
-          isEnabled: true
-        },
-        {
-          field: 'privateKey',
-          isEnabled: false,
-        },
-        {
-          field: 'consumerKey',
-          isEnabled: false,
-        },
-      ],
+      //   {
+      //     field: 'apiEndPoint',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'isOAuth',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'bearerToken',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'patOAuthToken',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'privateKey',
+      //     isEnabled: false,
+      //   },
+      //   {
+      //     field: 'consumerKey',
+      //     isEnabled: false,
+      //   },
+      // ],
       isOAuth: [],
       bearerToken: [],
       vault: [
@@ -1153,12 +1175,11 @@ describe('ConnectionListComponent', () => {
       apiEndPoint: undefined,
       baseUrl: undefined,
       cloudEnv: false,
-      connPrivate: true,
+      sharedConnection: true,
       connectionName: undefined,
       consumerKey: undefined,
       isOAuth: false,
       bearerToken:false,
-      offline: false,
       password: undefined,
       pat: undefined,
       privateKey: undefined,
@@ -1238,8 +1259,7 @@ describe('ConnectionListComponent', () => {
       'rest/api/2',
     );
     component.basicConnectionForm.controls['isOAuth'].setValue(false);
-    component.basicConnectionForm.controls['offline'].setValue(false);
-    component.basicConnectionForm.controls['connPrivate'].setValue(true);
+    component.basicConnectionForm.controls['sharedConnection'].setValue(true);
     component.basicConnectionForm.controls['vault'].setValue(false);
     component.basicConnectionForm.controls['bearerToken'].setValue(false);
     component.basicConnectionForm.controls['privateKey'].disable();
@@ -1280,10 +1300,9 @@ describe('ConnectionListComponent', () => {
       apiEndPoint: 'rest/api/2',
       isOAuth: false,
       bearerToken:false,
-      offline: false,
       createdAt: '2021-04-02T07:42:09',
       createdBy: 'SUPERADMIN',
-      connPrivate: true,
+      sharedConnection: true,
       updatedBy: 'SUPERADMIN',
       connectionUsers: ['SUPERADMIN'],
       vault: false,
@@ -1564,22 +1583,14 @@ describe('ConnectionListComponent', () => {
 
   it("should be fields enable when checkbox is checked", () => {
     const fakeEvent = { originalEvent: { isTrusted: true }, checked: true };
-    const field = 'offline';
+    const field = 'vault';
     component.enableDisableOnToggle = enableDisableMatrix;
-    component.enableDisableSwitch(fakeEvent, field);
-    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
-      (element) => {
-        expect(
-          component.basicConnectionForm.controls[element.field].enabled,
-        ).toBeTruthy();
-      },
-    );
-  })
-
-  it("should be fields disabled when checkbox is unchecked", () => {
-    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
-    const field = 'offline';
-    component.enableDisableOnToggle = enableDisableMatrix;
+    component.basicConnectionForm = new FormGroup({
+      pat: new FormControl(),
+      password: new FormControl(),
+      accessToken: new FormControl(),
+      apiKey: new FormControl()
+    });
     component.enableDisableSwitch(fakeEvent, field);
     component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
       (element) => {
@@ -1590,22 +1601,42 @@ describe('ConnectionListComponent', () => {
     );
   })
 
+  it("should be fields disabled when checkbox is unchecked", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'vault';
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.basicConnectionForm = new FormGroup({
+      pat: new FormControl(),
+      password: new FormControl(),
+      accessToken: new FormControl(),
+      apiKey: new FormControl()
+    });
+    component.enableDisableSwitch(fakeEvent, field);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeTruthy();
+      },
+    );
+  })
+
 
   it("should be privatekey enabled when isOAuth key is true", () => {
     const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
-    const field = 'offline';
+    const field = 'isOAuth';
     component.basicConnectionForm.controls['isOAuth'].setValue(true);
     component.enableDisableOnToggle = enableDisableMatrix;
     component.enableDisableSwitch(fakeEvent, field);
 
     expect(
       component.basicConnectionForm.controls['privateKey'].enabled,
-    ).toBeTruthy();
+    ).toBeFalsy();
   })
 
   it("should be privatekey disabled when isOAuth key is false", () => {
     const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
-    const field = 'offline';
+    const field = 'isOAuth';
     component.basicConnectionForm.controls['isOAuth'].setValue(false);
     component.enableDisableOnToggle = enableDisableMatrix;
     component.enableDisableSwitch(fakeEvent, field);
@@ -2273,10 +2304,9 @@ describe('ConnectionListComponent', () => {
       apiEndPoint: 'rest/api/2',
       isOAuth: false,
       bearerToken:false,
-      offline: false,
       createdAt: '2021-04-02T07:42:09',
       createdBy: 'SUPERADMIN',
-      connPrivate: true,
+      sharedConnection: true,
       updatedBy: 'SUPERADMIN',
       connectionUsers: ['SUPERADMIN'],
       vault: false,

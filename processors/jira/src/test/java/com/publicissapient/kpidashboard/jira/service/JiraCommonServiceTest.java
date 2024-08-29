@@ -20,7 +20,9 @@ package com.publicissapient.kpidashboard.jira.service;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.AssertJUnit.assertEquals;
@@ -44,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
@@ -85,12 +88,15 @@ import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.Worklog;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.ErrorDetail;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.client.CustomAsynchronousIssueRestClient;
@@ -150,6 +156,8 @@ public class JiraCommonServiceTest {
 	private ExecutionContext mockExecutionContext;
 	@Mock
 	private StepExecution mockStepExecution;
+	@Mock
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 
 	private ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
@@ -222,11 +230,13 @@ public class JiraCommonServiceTest {
 		when(projectConfFieldMapping1.getJira()).thenReturn(jiraToolConfig);
 		when(jiraToolConfig.getConnection()).thenReturn(Optional.of(connection1));
 		when(jiraToolConfig.getProjectKey()).thenReturn("1234567");
-		HttpURLConnection mockedConnection = Mockito.mock(HttpURLConnection.class);
+		HttpURLConnection mockedConnection = mock(HttpURLConnection.class);
 		String responseData = "Sample response data";
 		InputStream inputStream = new ByteArrayInputStream(responseData.getBytes(StandardCharsets.UTF_8));
-		List<ProjectVersion> versions = jiraCommonService.getVersion(projectConfFieldMapping1, krb5Client);
-		Assert.assertEquals(0, versions.size());
+		assertThrows(IOException.class, () -> {
+			jiraCommonService.getVersion(projectConfFieldMapping1, krb5Client);
+		});
+//		Assert.assertEquals(0, versions.size());
 	}
 	// @Test(expected = RestClientException.class)
 	// public void getVersionTest1() throws IOException, ParseException {
@@ -495,4 +505,63 @@ public class JiraCommonServiceTest {
 		// Assert
 		verify(mockExecutionContext).putInt(JiraConstants.TOTAL_ISSUES, totalIssues);
 		verify(mockExecutionContext).putInt(JiraConstants.PAGE_START, pageStart);
+	}
+
+	@Test
+	public void testProcessClientError() throws IOException {
+		// Arrange
+		int responseCode = 401;
+		String errorMessage = "Not Found";
+		String contentMsg = "dummy content message";
+
+		HttpURLConnection mockConnection = mock(HttpURLConnection.class);
+		URL mockUrl = mock(URL.class);
+		when(mockConnection.getResponseCode()).thenReturn(responseCode);
+		when(mockConnection.getErrorStream()).thenReturn(new ByteArrayInputStream(errorMessage.getBytes(StandardCharsets.UTF_8)));
+		when(mockUrl.openConnection()).thenReturn(mockConnection);
+
+		Connection mockConnectionObject = mock(Connection.class);
+		when(mockConnectionObject.getId()).thenReturn(new ObjectId("668517f812811950be19353f"));
+		Optional<Connection> connectionOptional = Optional.of(mockConnectionObject);
+
+		// Act
+		Exception exception = assertThrows(IOException.class, () -> {
+			jiraCommonService.getDataFromServer(mockUrl, connectionOptional, new ObjectId("668517f812811950be19353f"));
+		});
+
+		// Assert
+		String expectedMessage = "Error: 401 - Not Found";
+		assertEquals(expectedMessage, exception.getMessage());
+	}
+
+	@Test
+	public void testGetDataFromServerWith404Error() throws IOException {
+		// Arrange
+		int responseCode = 404;
+		String errorMessage = "Not Found";
+		String contentMsg = "dummy content message";
+
+		HttpURLConnection mockConnection = mock(HttpURLConnection.class);
+		URL mockUrl = mock(URL.class);
+		when(mockUrl.toString()).thenReturn("http://example.com");
+		when(mockConnection.getURL()).thenReturn(mockUrl);
+		when(mockConnection.getResponseCode()).thenReturn(responseCode);
+		when(mockConnection.getErrorStream()).thenReturn(new ByteArrayInputStream(errorMessage.getBytes(StandardCharsets.UTF_8)));
+		when(mockConnection.getContent()).thenReturn(new ByteArrayInputStream(contentMsg.getBytes(StandardCharsets.UTF_8)));
+		when(mockUrl.openConnection()).thenReturn(mockConnection);
+		ProcessorExecutionTraceLog mockTraceLog = mock(ProcessorExecutionTraceLog.class);
+		List<ErrorDetail> mockErrorDetailList = new ArrayList<>();
+		when(mockTraceLog.getErrorDetailList()).thenReturn(mockErrorDetailList);
+		Optional<ProcessorExecutionTraceLog> existingTraceLog = Optional.of(mockTraceLog);
+		Connection mockConnectionObject = mock(Connection.class);
+		when(mockConnectionObject.getId()).thenReturn(new ObjectId("668517f812811950be19353f"));
+		when(processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsTrue(anyString(),any())).thenReturn(existingTraceLog);
+		Optional<Connection> connectionOptional = Optional.of(mockConnectionObject);
+
+		// Act
+		String result = jiraCommonService.getDataFromServer(mockUrl, connectionOptional, new ObjectId("668517f812811950be19353f"));
+		// Assert
+		assertEquals(contentMsg, result);
+		verify(processorExecutionTraceLogRepository).save(mockTraceLog);
 	}}

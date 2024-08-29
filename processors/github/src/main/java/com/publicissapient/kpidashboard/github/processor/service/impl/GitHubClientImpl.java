@@ -228,14 +228,10 @@ public class GitHubClientImpl implements GitHubClient {
 			long createdDate = getDateTimeStamp(getString(mergReqObj, GitHubConstants.RESP_CREATED_AT));
 			long updatedDate = getDateTimeStamp(getString(mergReqObj, GitHubConstants.RESP_UPDATED_AT));
 			String mergeReqUrl = getString(mergReqObj, GitHubConstants.HTTP_URL);
-			if (getString(mergReqObj, GitHubConstants.RESP_CLOSED_AT) != null) {
-				closedDate = getDateTimeStamp(getString(mergReqObj, GitHubConstants.RESP_CLOSED_AT));
-			}
 			if (getString(mergReqObj, GitHubConstants.RESP_MERGED_AT) != null) {
 				closedDate = getDateTimeStamp(getString(mergReqObj, GitHubConstants.RESP_MERGED_AT));
 				state = GitHubConstants.MERGED;
 			}
-
 			JSONObject fromBranchObj = (JSONObject) mergReqObj.get(GitHubConstants.RESP_HEAD);
 			JSONObject toBranchObj = (JSONObject) mergReqObj.get(GitHubConstants.RESP_BASE);
 			String fromBranch = getString(fromBranchObj, GitHubConstants.RESP_REF);

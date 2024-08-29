@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -143,8 +144,14 @@ public class IssueJqlReaderTest {
 		when(jiraProcessorConfig.getPageSize()).thenReturn(1);
 		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
 		when(jiraClientService.getRestClientMap(null)).thenReturn(client);
+		setPrivateField(issueJqlReader, "processorId", "63bfa0d5b7617e260763ca21");
 	}
 
+	private void setPrivateField(Object targetObject, String fieldName, String fieldValue) throws Exception {
+		Field field = targetObject.getClass().getDeclaredField(fieldName);
+		field.setAccessible(true);
+		field.set(targetObject, fieldValue);
+	}
 	@Test
 	public void testReadData() throws Exception {
 		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndProgressStatsFalse(anyString(), anyString()))

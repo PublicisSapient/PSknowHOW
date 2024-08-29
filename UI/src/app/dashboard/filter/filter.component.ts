@@ -32,6 +32,7 @@ import { first, switchMap, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { interval, Subject } from 'rxjs';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+import {TooltipModule} from 'primeng/tooltip';
 
 @Component({
   selector: 'app-filter',
@@ -766,21 +767,8 @@ this.resetAddtionalFIlters();
       this.setMarker();
       this.getKpiOrderListProjectLevel();
       if(this.copyFilteredAddFilters['sprint']?.length > 0){
-        let addFilters = this.service.getAddtionalFilterBackup()
-        let lastSelectedSprint = {};
-        if(addFilters['sprint']){
-          for(let key in addFilters['sprint']){
-            if(Object.values(addFilters['sprint'][key] > 0)){
-              lastSelectedSprint = addFilters['sprint'][key][addFilters['sprint'][key].length - 1];
-            }
-          }
-          if(lastSelectedSprint){
-            this.service.setSprintForRnR(lastSelectedSprint);
-          }
-        }else{
-          let len = this.copyFilteredAddFilters['sprint']?.length;
-          this.service.setSprintForRnR(this.copyFilteredAddFilters['sprint'][len-1]);
-        }
+        let len = this.copyFilteredAddFilters['sprint']?.length;
+        this.service.setSprintForRnR(this.copyFilteredAddFilters['sprint'][len-1]);
       }
     }
   }
@@ -1387,7 +1375,6 @@ this.resetAddtionalFIlters();
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
       if (this.selectedSprint && Object.keys(this.selectedSprint)?.length > 0) {
         this.service.setCurrentSelectedSprint(this.selectedSprint);
-        this.service.setSprintForRnR(this.selectedSprint);
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
          if(this.filterForm.get('sqd')){

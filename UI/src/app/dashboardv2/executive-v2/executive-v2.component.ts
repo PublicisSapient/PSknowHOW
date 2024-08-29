@@ -115,13 +115,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiList: Array<string> = [];
   releaseEndDate: string = '';
   timeRemaining = 0;
-  
+  immediateLoader = true;
+
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
     this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
       this.noFilterApplyData = false;
       this.kpiLoader = new Set();
+      this.immediateLoader = true;
       this.processedKPI11Value = {};
       this.selectedBranchFilter = 'Select';
       this.serviceObject = {};
@@ -263,7 +265,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
       if (!this.configGlobalData?.length && $event.dashConfigData) {
         this.configGlobalData = $event.dashConfigData[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
-        if(!this.configGlobalData) {
+        if (!this.configGlobalData) {
           this.configGlobalData = $event.dashConfigData['others'].filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
         }
       }
@@ -272,7 +274,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
       this.tooltip = $event.configDetails;
       this.additionalFiltersArr = {};
-      this.noOfDataPoints = this.coundMaxNoOfSprintSelectedForProject($event);
+      this.noOfDataPoints = this.selectedTab.toLowerCase() !== 'developer' && this.coundMaxNoOfSprintSelectedForProject($event);
       this.allKpiArray = [];
       this.kpiChartData = {};
       this.chartColorList = {};
@@ -281,6 +283,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiTrendsObj = {};
       this.kpiTableDataObj = {};
       this.kpiLoader = new Set();
+      this.immediateLoader = true;
       for (const key in this.colorObj) {
         const idx = key.lastIndexOf('_');
         const nodeName = key.slice(0, idx);
@@ -324,6 +327,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               this.groupZypherKpi(kpiIdsForCurrentBoard);
               this.groupBitBucketKpi(kpiIdsForCurrentBoard)
             }
+            this.immediateLoader = false;
             this.createKpiTableHeads(this.selectedtype.toLowerCase());
 
             let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
@@ -344,10 +348,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   setUpTabs() {
-    this.tabsArr = new Set();
-    this.configGlobalData.forEach(element => {
-      this.tabsArr.add(element?.kpiDetail?.kpiSubCategory);
-    });
+    const tabsArray = new Set(this.configGlobalData.map(element => element?.kpiDetail?.kpiSubCategory));
+    const tempArray = [...this.service.getDashConfigData()['scrum'], ...this.service.getDashConfigData()['others']];
+    const tabTempSet = tempArray.filter(element => tabsArray.has(element.boardName));
+    this.tabsArr = new Set(tabTempSet.map(element => element.boardName));
     let it = this.tabsArr.values();
     //get first entry:
     let first = it.next();
@@ -666,13 +670,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         .subscribe(getData => {
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
 
-            const releaseFrequencyInd = getData.findIndex(de=>de.kpiId === 'kpi73')
-            if(releaseFrequencyInd !== -1){
-              getData[releaseFrequencyInd].trendValueList?.map(trendData=>{
-                  const valueLength = trendData.value.length;
-                  if(valueLength > this.tooltip.sprintCountForKpiCalculation){
-                      trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
-                  }
+            const releaseFrequencyInd = getData.findIndex(de => de.kpiId === 'kpi73')
+            if (releaseFrequencyInd !== -1) {
+              getData[releaseFrequencyInd].trendValueList?.map(trendData => {
+                const valueLength = trendData.value.length;
+                if (valueLength > this.tooltip.sprintCountForKpiCalculation) {
+                  trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
+                }
               })
             }
             // creating array into object where key is kpi id
@@ -1466,12 +1470,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           arr = Array.from(arr);
           const obj = {};
           const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
-          if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
-            const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
-            if (index > -1) {
-              arr?.splice(index, 1);
-            }
-          }
+          // if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
+          //   const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
+          //   if (index > -1) {
+          //     arr?.splice(index, 1);
+          //   }
+          // }
 
           obj['filterType'] = 'Select a filter';
           if (arr.length > 0) {

@@ -19,11 +19,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { HttpService } from '../../../services/http.service';
 import { TestConnectionService } from '../../../services/test-connection.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 interface JiraConnectionField {
   'type': string,
@@ -39,8 +41,7 @@ interface JiraConnectionField {
   'isOAuth': boolean,
   'privateKey': string,
   'consumerKey': string,
-  'offline': boolean,
-  'connPrivate': boolean,
+  'sharedConnection': boolean,
   'jaasKrbAuth': boolean,
   'jaasConfigFilePath': string,
   'krb5ConfigFilePath': string,
@@ -59,94 +60,123 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Jira',
       connectionLabel: 'Jira',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Is Offline', 'Is Connection Private','Use bearer token', 'PAT OAuthToken', 'Is jaasKrbAuth', 'Jaas Config FilePath', 'Krb5 Config FilePath', 'Jaas User', 'Saml Endpoint', 'Select Authentication Type'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'offline', 'connPrivate', 'bearerToken', 'patOAuthToken', 'jaasKrbAuth', 'jaasConfigFilePath', 'krb5ConfigFilePath', 'jaasUser', 'samlEndPoint', 'jiraAuthType']
+      categoryValue : 'projectManagement',
+      categoryLabel: 'Project Management',
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Share connection with everyone', 'Use bearer token', 'PAT OAuthToken', 'Is jaasKrbAuth', 'Jaas Config FilePath', 'Krb5 Config FilePath', 'Jaas User', 'Saml Endpoint', 'Select Authentication Type'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'sharedConnection', 'bearerToken', 'patOAuthToken', 'jaasKrbAuth', 'jaasConfigFilePath', 'krb5ConfigFilePath', 'jaasUser', 'samlEndPoint', 'jiraAuthType']
     },
     {
       connectionType: 'Azure',
       connectionLabel: 'Azure Boards',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'PAT', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'pat', 'connPrivate']
+      categoryValue : 'projectManagement',
+      categoryLabel: 'Project Management',
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'PAT', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'pat', 'sharedConnection']
     },
     {
       connectionType: 'GitHub',
       connectionLabel: 'GitHub',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'connPrivate']
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'connPrivate']
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'connPrivate']
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Profile Username', 'Use vault password', 'App Password', 'API End Point', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'sharedConnection']
     },
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', ['Use Password', 'Use Token'], 'Password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault','accessTokenEnabled', 'password', 'accessToken', 'connPrivate']
+      categoryValue : 'security',
+      categoryLabel: 'Security',
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', ['Use Password', 'Use Token'], 'Password', 'Access Token', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'accessTokenEnabled', 'password', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'Jenkins',
       connectionLabel: 'Jenkins',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Api Key', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'apiKey', 'connPrivate']
+      categoryValue : 'build',
+      categoryLabel: 'Build',
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Api Key', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'apiKey', 'sharedConnection'],
+      placeholder: ['', '', 'Enter a public URL', '', '', '', '']
     },
     {
       connectionType: 'Bamboo',
       connectionLabel: 'Bamboo',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'connPrivate']
+      categoryValue : 'build',
+      categoryLabel: 'Build',
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
     },
     {
       connectionType: 'Teamcity',
       connectionLabel: 'Teamcity',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'connPrivate']
+      categoryValue : 'build',
+      categoryLabel: 'Build',
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
     },
     {
       connectionType: 'AzurePipeline',
       connectionLabel: 'Azure Pipeline',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'connPrivate']
+      categoryValue : 'build',
+      categoryLabel: 'Build',
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
     },
     {
       connectionType: 'AzureRepository',
       connectionLabel: 'Azure Repository',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'connPrivate']
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
     },
     {
       connectionType: 'Zephyr',
       connectionLabel: 'Zephyr',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Use Bearer Token', 'PatOAuthToken', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'bearerToken', 'patOAuthToken', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'connPrivate']
+      categoryValue : 'testManagement',
+      categoryLabel: 'Test Management',
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Use Bearer Token', 'PatOAuthToken', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'bearerToken', 'patOAuthToken', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'RepoTool',
       connectionLabel: 'RepoTool',
-      labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Base Url', 'Api End Point', 'Username', 'Access Token', 'User Email', 'Is Connection Private'],
-      inputFields: ['type', 'repoToolProvider', 'connectionName', 'baseUrl', 'apiEndPoint', 'username', 'accessToken', 'email', 'connPrivate']
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
+      labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Base Url', 'Api End Point', 'Username', 'Access Token', 'User Email', 'Share connection with everyone'],
+      inputFields: ['type', 'repoToolProvider', 'connectionName', 'baseUrl', 'apiEndPoint', 'username', 'accessToken', 'email', 'sharedConnection']
     },
     {
       connectionType: 'ArgoCD',
       connectionLabel: 'ArgoCD',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'connPrivate']
+      categoryValue : 'build',
+      categoryLabel: 'Build',
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
     }
   ];
 
   enableDisableOnToggle = {
     enableDisableEachTime: {
       cloudEnv: [],
-      offline: [
-      ],
+      // offline: [
+      // ],
       isOAuth: [
         {
           field: 'privateKey',
@@ -175,13 +205,13 @@ export class ConnectionListComponent implements OnInit {
           isEnabled: false
         }
       ],
-      isCloneable:[
+      isCloneable: [
         {
           field: 'sshUrl',
           isEnabled: false
         },
       ],
-      accessTokenEnabled:[],
+      accessTokenEnabled: [],
       bearerToken: [
         {
           field: 'patOAuthToken',
@@ -191,40 +221,40 @@ export class ConnectionListComponent implements OnInit {
     },
     enableDisableAnotherTime: {
       cloudEnv: [],
-      offline: [
-        {
-          field: 'cloudEnv',
-          isEnabled: true
-        },
-        {
-          field: 'baseUrl',
-          isEnabled: true
-        },
-        {
-          field: 'username',
-          isEnabled: true
-        },
-        {
-          field: 'password',
-          isEnabled: true
-        },
-        {
-          field: 'apiEndPoint',
-          isEnabled: true
-        },
-        {
-          field: 'isOAuth',
-          isEnabled: true
-        },
-        {
-          field: 'privateKey',
-          isEnabled: false
-        },
-        {
-          field: 'consumerKey',
-          isEnabled: false
-        }
-      ],
+      // offline: [
+      //   {
+      //     field: 'cloudEnv',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'baseUrl',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'username',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'password',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'apiEndPoint',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'isOAuth',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'privateKey',
+      //     isEnabled: false
+      //   },
+      //   {
+      //     field: 'consumerKey',
+      //     isEnabled: false
+      //   }
+      // ],
       isOAuth: [],
       vault: [
         {
@@ -244,8 +274,8 @@ export class ConnectionListComponent implements OnInit {
           isEnabled: false
         }
       ],
-      isCloneable:[],
-      accessTokenEnabled:[]
+      isCloneable: [],
+      accessTokenEnabled: []
     }
   };
 
@@ -258,7 +288,6 @@ export class ConnectionListComponent implements OnInit {
       connectionTableCols: [
         { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
         { field: 'username', header: 'User Name', class: 'normal' },
-        { field: 'offline', header: 'Is Offline?', class: 'small-text' },
         { field: 'apiEndPoint', header: 'API Endpoint', class: 'long-text' },
         // { field: 'apiKey', header: 'API Key', class: 'normal' },
         { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
@@ -426,7 +455,7 @@ export class ConnectionListComponent implements OnInit {
   isRoleViewer = false;
   currentUser = '';
   zephyrUrl = '';
-  jiraForm:FormGroup<any> = new FormGroup({});
+  jiraForm: FormGroup<any> = new FormGroup({});
   jiraAuthDdwn = [{
     'label': 'Basic Authentication',
     'key': 'basic'
@@ -483,42 +512,92 @@ export class ConnectionListComponent implements OnInit {
     'krb5ConfigFilePath': '',
     'jaasUser': '',
     'samlEndPoint': '',
-    'offline': false,
-    'connPrivate': false,
+    'sharedConnection': false,
     'jiraAuthType': ''
   }
   jiraConnectionDialog: boolean;
-  repoConnections = ['Bitbucket','GitLab','Azure Repository'];
-  repoToolsEnabled : boolean;
+  repoConnections = ['Bitbucket', 'GitLab', 'Azure Repository'];
+  repoToolsEnabled: boolean;
+  configOptions: { tab: string; tabValue: string; }[];
+  selectedTab: string = 'toolsConnected';
+  pid: any;
+  tab: any;
+  groupedToolsGroup : any;
 
-  constructor(private httpService: HttpService, private formBuilder: UntypedFormBuilder, private confirmationService: ConfirmationService, private testConnectionService: TestConnectionService
-    , private authorization: GetAuthorizationService,private sharedService : SharedService,
-    private helper : HelperService) { }
+  constructor(private httpService: HttpService,
+    private formBuilder: UntypedFormBuilder,
+    private confirmationService: ConfirmationService,
+    private testConnectionService: TestConnectionService,
+    private authorization: GetAuthorizationService,
+    private sharedService: SharedService,
+    private helper: HelperService,
+    private route: ActivatedRoute,
+    public router: Router) {
+    this.configOptions = [
+      {
+        'tab': 'Tools Connected',
+        'tabValue': 'toolsConnected'
+      },
+      {
+        'tab': 'Project Configuration',
+        'tabValue': 'projectConfig'
+      }
+    ]
+
+    this.route.queryParams.subscribe(params => {
+      // this.pid = params['pid'];
+      this.tab = params['tab'];
+      if (this.tab === "1") {
+        this.selectedTab = 'projectConfig';
+      } else {
+        this.selectedTab = 'toolsConnected';
+      }
+    });
+
+  }
 
   ngOnInit(): void {
+
     this.roleAccessAssign();
     this.getConnectionList();
     this.connectionTypeFieldsAssignment();
     this.isRoleViewer = this.authorization.getRole() === 'roleViewer' ? true : false;
-    this.sharedService.currentUserDetailsObs.subscribe(details=>{
-      if(details){
+    this.sharedService.currentUserDetailsObs.subscribe(details => {
+      if (details) {
         this.currentUser = details['user_name'] ? details['user_name'] : '';
       }
     });
     this.getZephyrUrl();
     this.initializeForms(this.jiraConnectionFields);
 
-    if(this.sharedService.getGlobalConfigData()){
+    if (this.sharedService.getGlobalConfigData()) {
       this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
-    }else{
+    } else {
       this.helper.getGlobalConfig();
       this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
     }
 
     // filtering connections based on repoToolFlag
-    this.connectionTypeCompleteList = this.filterConnections(this.connectionTypeCompleteList,'label')
-    this.addEditConnectionFieldsNlabels = this.filterConnections(this.addEditConnectionFieldsNlabels,'connectionLabel')
+    this.connectionTypeCompleteList = this.filterConnections(this.connectionTypeCompleteList, 'label')
+    this.addEditConnectionFieldsNlabels = this.filterConnections(this.addEditConnectionFieldsNlabels, 'connectionLabel')
+     
+    /** formating data for connection dropdown */
+    this.groupedToolsGroup = this.createFormatCategoryWise(this.addEditConnectionFieldsNlabels);
 
+    /* this.httpService.getAllToolConfigs().subscribe(res => {
+      console.log(res)
+    }) */
+
+
+
+  }
+
+  onTabChange() {
+    if(this.selectedTab === 'projectConfig') {
+      this.router.navigate(['.'], { queryParams: { 'tab': 1 }, relativeTo: this.route });
+    } else {
+      this.router.navigate(['.'], { queryParams: { 'tab': 0 }, relativeTo: this.route });
+    }
   }
 
   initializeForms(connection, isEdit?) {
@@ -542,7 +621,7 @@ export class ConnectionListComponent implements OnInit {
         this.jiraForm.controls['jiraAuthType'].setValue('basic');
         this.onChangeAuthType('basic')
       }
-    }else{
+    } else {
       this.jiraForm.controls['jiraAuthType'].setValue('basic');
       this.onChangeAuthType('basic')
     }
@@ -690,11 +769,11 @@ export class ConnectionListComponent implements OnInit {
     this.addEditConnectionFieldsNlabels.forEach(connectionObj => {
       if (!!this.selectedConnectionType && !!connectionObj.connectionType && this.selectedConnectionType.toLowerCase() === connectionObj.connectionType.toLowerCase()) {
         connectionObj.inputFields.forEach(field => {
-            if (!this.isNewlyConfigAdded && this.nonMendatoryFieldsOnEditConnection.indexOf(field) > -1) {
-              this.fieldsObj[field] = [{ value: '', disabled: false }];
-            } else {
-              this.fieldsObj[field] = [{ value: '', disabled: false }, Validators.required];
-            }
+          if (!this.isNewlyConfigAdded && this.nonMendatoryFieldsOnEditConnection.indexOf(field) > -1) {
+            this.fieldsObj[field] = [{ value: '', disabled: false }];
+          } else {
+            this.fieldsObj[field] = [{ value: '', disabled: false }, Validators.required];
+          }
         });
       }
     });
@@ -709,7 +788,7 @@ export class ConnectionListComponent implements OnInit {
   }
 
   createConnection() {
-    this.connection = { type: this.selectedConnectionType, connPrivate: true };
+    this.connection = { type: this.selectedConnectionType, sharedConnection: true };
     this.isNewlyConfigAdded = true;
     if (this.selectedConnectionType?.toLowerCase() === 'jira') {
       this.jiraConnectionDialog = true;
@@ -818,7 +897,7 @@ export class ConnectionListComponent implements OnInit {
     }
     if (this.connection?.type?.toLowerCase() == 'jira') {
       for (let key in this.jiraForm.controls) {
-        if(this.jiraForm.controls[key]?.value){
+        if (this.jiraForm.controls[key]?.value) {
           reqData[key] = this.jiraForm.controls[key]?.value;
         }
       }
@@ -843,7 +922,7 @@ export class ConnectionListComponent implements OnInit {
     }
 
     if (!!this.connection['patOAuthToken']) {
-          reqData['patOAuthToken'] = this.connection['patOAuthToken'];
+      reqData['patOAuthToken'] = this.connection['patOAuthToken'];
     }
 
     if (!!this.connection['pat']) {
@@ -862,8 +941,8 @@ export class ConnectionListComponent implements OnInit {
       reqData['baseUrl'] = this.basicConnectionForm.controls['baseUrl']['value'];
     }
 
-    if(this.connection['type'].toLowerCase() === 'sonar' && this.connection['cloudEnv'] === true){
-      reqData['accessTokenEnabled'] =true;
+    if (this.connection['type'].toLowerCase() === 'sonar' && this.connection['cloudEnv'] === true) {
+      reqData['accessTokenEnabled'] = true;
     }
 
     if (this.isNewlyConfigAdded) {
@@ -874,7 +953,7 @@ export class ConnectionListComponent implements OnInit {
 
   }
 
-  updateForm(){
+  updateForm() {
     this.jiraForm.updateValueAndValidity();
   }
 
@@ -935,10 +1014,10 @@ export class ConnectionListComponent implements OnInit {
   }
 
   disableEnableCheckBox() {
-    if (!this.connection.connPrivate) {
-      this.basicConnectionForm.controls['connPrivate'].disable();
+    if (!this.connection.sharedConnection) {
+      this.basicConnectionForm.controls['sharedConnection'].disable();
     } else {
-      this.basicConnectionForm.controls['connPrivate'].enable();
+      this.basicConnectionForm.controls['sharedConnection'].enable();
     }
   }
 
@@ -1023,17 +1102,17 @@ export class ConnectionListComponent implements OnInit {
       this.basicConnectionForm.controls['accessTokenEnabled'].enable();
       this.basicConnectionForm.controls['accessToken'].disable();
     } else if (this.selectedConnectionType.toLowerCase() === 'repotool') {
-      if(this.connection && this.connection['repoToolProvider'] === 'bitbucket')
-      this.basicConnectionForm.controls['apiEndPoint'].enable();
-      else {this.basicConnectionForm.controls['apiEndPoint'].disable()};
+      if (this.connection && this.connection['repoToolProvider'] === 'bitbucket')
+        this.basicConnectionForm.controls['apiEndPoint'].enable();
+      else { this.basicConnectionForm.controls['apiEndPoint'].disable() };
     }
 
-    if(this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true){
+    if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true) {
       this.basicConnectionForm.controls['password'].disable();
       this.basicConnectionForm.controls['accessToken'].disable();
       this.basicConnectionForm.controls['accessTokenEnabled'].disable();
     }
-    if(this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['accessTokenEnabled'] && !!this.connection['accessTokenEnabled'] === true){
+    if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['accessTokenEnabled'] && !!this.connection['accessTokenEnabled'] === true) {
       this.basicConnectionForm.controls['username'].disable();
       this.basicConnectionForm.controls['password'].disable();
       this.basicConnectionForm.controls['accessToken'].enable();
@@ -1041,77 +1120,77 @@ export class ConnectionListComponent implements OnInit {
   }
 
   enableDisableSwitch(event, field, type?) {
-    if (field === 'offline') {
-      /* Enable/Disable fields on the basis of flag selection at one time */
-      if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {
-        this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
-          if (event.checked) {
-            this.basicConnectionForm.controls[element.field]?.enable();
-          } else {
-            this.basicConnectionForm.controls[element.field]?.disable();
-          }
-        });
-      }
-      /* Enable/Disable fields on the basis of flag selection at second time */
-      if (!!this.enableDisableOnToggle.enableDisableAnotherTime[field] && this.enableDisableOnToggle.enableDisableAnotherTime[field].length) {
-        this.enableDisableOnToggle.enableDisableAnotherTime[field].forEach(element => {
-          if (event.checked) {
-            this.basicConnectionForm.controls[element.field]?.disable();
-          } else {
-            this.basicConnectionForm.controls[element.field]?.enable();
-          }
-        });
-      }
+    // if (field === 'offline') {
+    //   /* Enable/Disable fields on the basis of flag selection at one time */
+    //   if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {
+    //     this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
+    //       if (event.checked) {
+    //         this.basicConnectionForm.controls[element.field]?.enable();
+    //       } else {
+    //         this.basicConnectionForm.controls[element.field]?.disable();
+    //       }
+    //     });
+    //   }
+    //   /* Enable/Disable fields on the basis of flag selection at second time */
+    //   if (!!this.enableDisableOnToggle.enableDisableAnotherTime[field] && this.enableDisableOnToggle.enableDisableAnotherTime[field].length) {
+    //     this.enableDisableOnToggle.enableDisableAnotherTime[field].forEach(element => {
+    //       if (event.checked) {
+    //         this.basicConnectionForm.controls[element.field]?.disable();
+    //       } else {
+    //         this.basicConnectionForm.controls[element.field]?.enable();
+    //       }
+    //     });
+    //   }
 
-      if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === true) {
-        this.basicConnectionForm.controls['privateKey'].enable();
-        this.basicConnectionForm.controls['consumerKey'].enable();
-      } else if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === false) {
-        this.basicConnectionForm.controls['privateKey'].disable();
-        this.basicConnectionForm.controls['consumerKey'].disable();
-      }
+    //   if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === true) {
+    //     this.basicConnectionForm.controls['privateKey'].enable();
+    //     this.basicConnectionForm.controls['consumerKey'].enable();
+    //   } else if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === false) {
+    //     this.basicConnectionForm.controls['privateKey'].disable();
+    //     this.basicConnectionForm.controls['consumerKey'].disable();
+    //   }
 
-    } else {
-      /* Enable/Disable fields on the basis of flag selection at one time */
-      if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {
-        this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
-          if (event.checked) {
-            this.basicConnectionForm.controls[element.field]?.enable();
-          } else {
-            this.basicConnectionForm.controls[element.field]?.disable();
-          }
-        });
-      }
-      /* Enable/Disable fields on the basis of flag selection at second time */
-      if (!!this.enableDisableOnToggle.enableDisableAnotherTime[field] && this.enableDisableOnToggle.enableDisableAnotherTime[field].length) {
-        this.enableDisableOnToggle.enableDisableAnotherTime[field].forEach(element => {
-          if (event.checked) {
-            this.basicConnectionForm.controls[element.field]?.disable();
-          } else {
-            this.basicConnectionForm.controls[element.field]?.enable();
-          }
-        });
-      }
-
-      if (field === 'cloudEnv' && type.toLowerCase() === 'sonar') {
+    // } else {
+    /* Enable/Disable fields on the basis of flag selection at one time */
+    if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {
+      this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
         if (event.checked) {
-          this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(true);
+          this.basicConnectionForm.controls[element.field]?.enable();
         } else {
-          this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(false);
+          this.basicConnectionForm.controls[element.field]?.disable();
         }
-      }
+      });
+    }
+    /* Enable/Disable fields on the basis of flag selection at second time */
+    if (!!this.enableDisableOnToggle.enableDisableAnotherTime[field] && this.enableDisableOnToggle.enableDisableAnotherTime[field].length) {
+      this.enableDisableOnToggle.enableDisableAnotherTime[field].forEach(element => {
+        if (event.checked) {
+          this.basicConnectionForm.controls[element.field]?.disable();
+        } else {
+          this.basicConnectionForm.controls[element.field]?.enable();
+        }
+      });
+    }
 
-      if (this.connection.type === "RepoTool") {
-         if(event.toLowerCase() === 'bitbucket'){
-          this.basicConnectionForm.controls[field]?.enable();
-         }else{
-          this.basicConnectionForm.controls[field]?.disable();
-         }
+    if (field === 'cloudEnv' && type.toLowerCase() === 'sonar') {
+      if (event.checked) {
+        this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(true);
+      } else {
+        this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(false);
       }
     }
 
+    if (this.connection.type === "RepoTool") {
+      if (event.toLowerCase() === 'bitbucket') {
+        this.basicConnectionForm.controls[field]?.enable();
+      } else {
+        this.basicConnectionForm.controls[field]?.disable();
+      }
+    }
+    // }
+
     this.checkBitbucketValue(event.checked, field, type);
-    if(type?.toLowerCase() == 'zephyr'){
+    if (type?.toLowerCase() == 'zephyr') {
       this.checkZephyr();
     }
     this.enableDisableFieldsOnIsCloudSwithChange();
@@ -1146,15 +1225,15 @@ export class ConnectionListComponent implements OnInit {
       reqData['apiKey'] = '';
     }
 
-    if(this.connection['type'].toLowerCase() === 'sonar' && this.connection['cloudEnv'] === true){
-      reqData['accessTokenEnabled'] =true;
+    if (this.connection['type'].toLowerCase() === 'sonar' && this.connection['cloudEnv'] === true) {
+      reqData['accessTokenEnabled'] = true;
     }
 
     this.testConnectionMsg = '';
     this.testConnectionValid = true;
     switch (this.connection.type) {
       case 'Jira':
-        this.testConnectionService.testJira(reqData['baseUrl'], reqData['apiEndPoint'], reqData['username'], reqData['password'], reqData['vault'], reqData['bearerToken'], reqData['patOAuthToken'],reqData['jaasKrbAuth'], reqData['jaasConfigFilePath'], reqData['krb5ConfigFilePath'],reqData['jaasUser'], reqData['samlEndPoint']).subscribe(next => {
+        this.testConnectionService.testJira(reqData['baseUrl'], reqData['apiEndPoint'], reqData['username'], reqData['password'], reqData['vault'], reqData['bearerToken'], reqData['patOAuthToken'], reqData['jaasKrbAuth'], reqData['jaasConfigFilePath'], reqData['krb5ConfigFilePath'], reqData['jaasUser'], reqData['samlEndPoint']).subscribe(next => {
           if (next.success && next.data === 200) {
             this.testConnectionMsg = 'Valid Connection';
             this.testConnectionValid = true;
@@ -1218,7 +1297,7 @@ export class ConnectionListComponent implements OnInit {
       });
         break;
       case 'Sonar':
-        this.testConnectionService.testSonar(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['accessToken'], reqData['cloudEnv'], reqData['vault'],reqData['accessTokenEnabled']).subscribe(next => {
+        this.testConnectionService.testSonar(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['accessToken'], reqData['cloudEnv'], reqData['vault'], reqData['accessTokenEnabled']).subscribe(next => {
           if (next.success && next.data === 200) {
             this.testConnectionMsg = 'Valid Connection';
             this.testConnectionValid = true;
@@ -1356,7 +1435,7 @@ export class ConnectionListComponent implements OnInit {
         break;
 
       case 'RepoTool':
-        this.testConnectionService.testRepoTool(reqData['baseUrl'],reqData['apiEndPoint'], reqData['repoToolProvider'], reqData['username'], reqData['accessToken'], reqData['email']).subscribe(next => {
+        this.testConnectionService.testRepoTool(reqData['baseUrl'], reqData['apiEndPoint'], reqData['repoToolProvider'], reqData['username'], reqData['accessToken'], reqData['email']).subscribe(next => {
           if (next.success && next.data === 200) {
             this.testConnectionMsg = 'Valid Connection';
             this.testConnectionValid = true;
@@ -1372,20 +1451,20 @@ export class ConnectionListComponent implements OnInit {
         });
 
         break;
-        case 'ArgoCD': this.testConnectionService.testArgoCD(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['vault']).subscribe(next => {
-          if (next.success && next.data === 200) {
-            this.testConnectionMsg = 'Valid Connection';
-            this.testConnectionValid = true;
-          } else {
-            this.testConnectionMsg = 'Connection Invalid';
-            this.testConnectionValid = false;
-          }
-          this.testingConnection = false;
-        }, error => {
+      case 'ArgoCD': this.testConnectionService.testArgoCD(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['vault']).subscribe(next => {
+        if (next.success && next.data === 200) {
+          this.testConnectionMsg = 'Valid Connection';
+          this.testConnectionValid = true;
+        } else {
           this.testConnectionMsg = 'Connection Invalid';
           this.testConnectionValid = false;
-          this.testingConnection = false;
-        });
+        }
+        this.testingConnection = false;
+      }, error => {
+        this.testConnectionMsg = 'Connection Invalid';
+        this.testConnectionValid = false;
+        this.testingConnection = false;
+      });
         break;
     }
   }
@@ -1407,9 +1486,9 @@ export class ConnectionListComponent implements OnInit {
       const tempArr = [...this.addEditConnectionFieldsNlabels];
       const bitbucketObj = tempArr.filter((item) => item.connectionLabel.toLowerCase() == 'bitbucket')[0];
       if (this.basicConnectionForm.controls['cloudEnv'].value) {
-        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username (Profile Username)', 'Use vault password', 'Password (App Password)', 'API End Point', 'Is Connection Private'];
+        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username (Profile Username)', 'Use vault password', 'Password (App Password)', 'API End Point', 'Share connection with everyone'];
       } else {
-        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'Is Connection Private'];
+        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'Share connection with everyone'];
       }
       const index = tempArr.findIndex((item) => item.connectionLabel.toLowerCase() == 'bitbucket');
       tempArr[index] = bitbucketObj;
@@ -1458,7 +1537,7 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['patOAuthToken'].setValue('');
         this.basicConnectionForm.controls['patOAuthToken'].disable();
         this.basicConnectionForm.controls['bearerToken'].disable();
-      } else if(this.connection['bearerToken'] == true){
+      } else if (this.connection['bearerToken'] == true) {
         this.basicConnectionForm.controls['patOAuthToken'].enable();
         this.basicConnectionForm.controls['password'].setValue('');
         this.basicConnectionForm.controls['password'].disable();
@@ -1543,20 +1622,41 @@ export class ConnectionListComponent implements OnInit {
   }
 
   /** Filter connections based on list based on repo flag*/
-  filterConnections(list,label){
-    const filteredList  = list.filter(details=>{
-      if(this.repoToolsEnabled){
-         return !this.repoConnections.includes(details[label])
-      }else{
+  filterConnections(list, label) {
+    const filteredList = list.filter(details => {
+      if (this.repoToolsEnabled) {
+        return !this.repoConnections.includes(details[label])
+      } else {
         return details[label] !== 'RepoTool';
       }
     })
-    if(this.repoToolsEnabled){
-      const githubIndex = filteredList.findIndex(de=>de[label].toLowerCase() === 'github');
-      if(githubIndex !== -1){
+    if (this.repoToolsEnabled) {
+      const githubIndex = filteredList.findIndex(de => de[label].toLowerCase() === 'github');
+      if (githubIndex !== -1) {
         filteredList[githubIndex][label] = 'GitHub Action'
       }
     }
     return filteredList;
+  }
+
+  createFormatCategoryWise(addEditConnectionFieldsNlabels){
+    const formatedData =  addEditConnectionFieldsNlabels.reduce((acc, curr) => {
+      // Find the category in the accumulator
+      let category = acc.find(item => item.label === curr.categoryLabel);
+      
+      // If the category doesn't exist, create a new one
+      if (!category) {
+        category = {
+          label: curr.categoryLabel,
+          value: curr.categoryValue,
+          items: []
+        };
+        acc.push(category);
+      }
+      // Add the connection label and type to the category's items
+      category.items.push({ label: curr.connectionLabel, value: curr.connectionType });
+      return acc;
+    }, []);   
+    return formatedData;
   }
 }

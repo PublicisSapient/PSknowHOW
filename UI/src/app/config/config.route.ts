@@ -69,7 +69,7 @@ export const ConfigRoutes: Routes = [
             {
                 path: 'AdvancedSettings',
                 component: AdvancedSettingsComponent,
-                canActivate: [ViewerGuard, GuestGuard]
+                canActivate: [GuestGuard]
             }
         ]
     }
