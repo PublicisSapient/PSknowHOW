@@ -256,9 +256,7 @@ public class GitLabClient {
 			if (getString(mergReqObj, GitLabConstants.RESP_MERGED_AT) != null) {
 				closedDate = getDateTimeStamp(getString(mergReqObj, GitLabConstants.RESP_MERGED_AT));
 			}
-			if (Objects.equals(getString(mergReqObj, GitLabConstants.RESP_STATE), GitLabConstants.MERGED)) {
-				closedDate = getDateTimeStamp(getString(mergReqObj, GitLabConstants.RESP_CLOSED_AT));
-			}
+			String mergeUrl = getString(mergReqObj, GitLabConstants.WEB_URL);
 			String fromBranch = getString(mergReqObj, GitLabConstants.RESP_SOURCE_BRANCH);
 			String toBranch = getString(mergReqObj, GitLabConstants.RESP_TARGET_BRANCH);
 			String repoSlug = "NA";
@@ -290,6 +288,7 @@ public class GitLabClient {
 			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);
 			mergeReq.setReviewers(reviewersList);
+			mergeReq.setMergeRequestUrl(mergeUrl);
 			mergeRequestList.add(mergeReq);
 		}
 	}
