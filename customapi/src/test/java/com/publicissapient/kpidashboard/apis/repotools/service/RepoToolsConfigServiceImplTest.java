@@ -240,6 +240,7 @@ public class RepoToolsConfigServiceImplTest {
         RepoToolsStatusResponse repoToolsStatusResponse = new RepoToolsStatusResponse();
         repoToolsStatusResponse.setProject("example_project_123");
         repoToolsStatusResponse.setStatus("SUCCESS");
+        repoToolsStatusResponse.setRepositoryProvider("github");
         ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
         processorExecutionTraceLog.setLastEnableAssigneeToggleState(false);
         repoToolsConfigService.saveRepoToolProjectTraceLog(repoToolsStatusResponse);

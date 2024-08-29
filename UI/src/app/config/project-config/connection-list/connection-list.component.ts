@@ -135,16 +135,16 @@ export class ConnectionListComponent implements OnInit {
       connectionLabel: 'Azure Pipeline',
       categoryValue : 'build',
       categoryLabel: 'Build',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'User Email', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'email', 'sharedConnection']
     },
     {
       connectionType: 'AzureRepository',
       connectionLabel: 'Azure Repository',
       categoryValue : 'sourceCodeManagement',
       categoryLabel: 'Source Code Management',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'User Email', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'email', 'sharedConnection']
     },
     {
       connectionType: 'Zephyr',
@@ -325,6 +325,7 @@ export class ConnectionListComponent implements OnInit {
         { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
         { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
         { field: 'username', header: 'User Name', class: 'normal' },
+        { field: 'email', header: 'User Email', class: 'normal' },
         // { field: 'apiKey', header: 'API Key', class: 'normal' },
       ]
     },
@@ -384,6 +385,7 @@ export class ConnectionListComponent implements OnInit {
         { field: 'username', header: 'User Name', class: 'normal' },
         { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
         { field: 'isOAuth', header: 'OAuth', class: 'small-text' },
+        { field: 'email', header: 'User Email', class: 'normal' },
       ]
     },
     {

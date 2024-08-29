@@ -888,6 +888,9 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		List<KpiCategory> kpiCategoryList = kpiCategoryRepository.findAll();
 		UserBoardConfigDTO defaultUserBoardConfigDTO = new UserBoardConfigDTO();
 		defaultUserBoardConfigDTO.setBasicProjectConfigId(basicProjectConfigId);
+
+		handleDeveloperKpi = configHelperService.getProjectConfig(basicProjectConfigId) != null
+				&& configHelperService.getProjectConfig(basicProjectConfigId).isDeveloperKpiEnabled();
 		if (null == existingProjBoardConfigDTO) {
 			setUserBoardConfigBasedOnCategoryForFreshUser(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 			defaultUserBoardConfigDTO.setBasicProjectConfigId(basicProjectConfigId);

@@ -225,6 +225,8 @@ export class AdvancedSettingsComponent implements OnInit {
     const traceLog = this.findTraceLogForTool(processorName);
     if (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) {
       return 'NA';
+    } else if(traceLog.executionWarning){
+      return 'Warning';
     } else {
       return traceLog.executionSuccess ? 'Success' : 'Failure';
     }
@@ -402,7 +404,7 @@ export class AdvancedSettingsComponent implements OnInit {
    const categoryWiseTool = {
     'Project Management' : ['jira','azure'],
     'Test Management' : ['zephyr'],
-    'Source Code Management' : ['github','gitLab','bitbucket','azurerepository','repotool'],
+    'Source Code Management' : ['github','gitLab','bitbucket','azurerepository'],
     'Security' : ['sonar'],
     'Build' : ['bamboo','teamcity','azurepipeline','argoCD','githubaction','jenkins']
    }
@@ -413,6 +415,16 @@ export class AdvancedSettingsComponent implements OnInit {
     }
   }
   return '';
+  }
+
+  getSCMToolTimeDetails(processorName) {
+    const traceLog = this.findTraceLogForTool(processorName);
+    return (traceLog == undefined || traceLog == null || traceLog.executionResumesAt == 0) ? 'NA' : new DatePipe('en-US').transform(traceLog.executionResumesAt, 'dd-MMM-yyyy (EEE) - hh:mmaaa');
+  }
+
+  isSCMToolProcessor(processorName) {
+    const scmTools = ['GitHub','GitLab','Bitbucket','AzureRepository'];
+    return scmTools.includes(processorName)
   }
 
   ngOnDestroy(): void {

@@ -137,7 +137,7 @@ export class BasicConfigComponent implements OnInit {
     this.formData.push(
       {
         level: this.formData.length,
-        hierarchyLevelId: 'repoToolEnabled',
+        hierarchyLevelId: 'developerKpiEnabled',
         label1:'Enable Developers KPIs',
         label2: this.developerKpiInfo,
         inputType: 'boolean',
@@ -176,7 +176,7 @@ export class BasicConfigComponent implements OnInit {
     submitData['kanban'] = formValue['kanban'];
     submitData['hierarchy'] = [];
     submitData['saveAssigneeDetails'] = formValue['assigneeDetails'];
-    submitData['repoToolEnabled'] = formValue['repoToolEnabled']
+    submitData['developerKpiEnabled'] = formValue['developerKpiEnabled']
     let gaObj = {
       name: formValue['projectName'],
       kanban: formValue['kanban'],
@@ -204,7 +204,7 @@ export class BasicConfigComponent implements OnInit {
         this.selectedProject['name'] = response.serviceResponse.data['projectName'];
         this.selectedProject['Type'] = response.serviceResponse.data['kanban'] ? 'Kanban' : 'Scrum';
         this.selectedProject['saveAssigneeDetails'] = response.serviceResponse.data['saveAssigneeDetails'];
-        this.selectedProject['repoToolEnabled'] = response.serviceResponse.data['repoToolEnabled'];
+        this.selectedProject['developerKpiEnabled'] = response.serviceResponse.data['developerKpiEnabled'];
         response.serviceResponse.data['hierarchy'].forEach(element => {
           this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
         });

@@ -100,11 +100,11 @@ public class RepoToolsConfigServiceImpl {
 	public static final String SCM = "scm";
 	public static final String REPO_NAME = "repoName";
 	public static final String REPO_BRANCH = "defaultBranch";
-	public static final String BITBUCKET = "bitbucket";
 	public static final String PROJECT = "/projects/";
 	public static final String REPOS = "/repos/";
 	public static final String AZURE_PROVIDER = "azure";
 	public static final String BITBUCKET_PROVIDER = "bitbucket_oauth2";
+	public static final String WARNING = "WARNING";
 
 
 
@@ -168,21 +168,21 @@ public class RepoToolsConfigServiceImpl {
 
 		// Configure the RepoToolConfig based on the tool name
 		switch (projectToolConfig.getToolName()) {
-		case ProcessorConstants.GITHUB:
+		case Constant.TOOL_GITHUB:
 			accessToken = connection.getAccessToken();
-			repoToolConfig.setProvider(ProcessorConstants.GITHUB.toLowerCase());
+			repoToolConfig.setProvider(Constant.TOOL_GITHUB.toLowerCase());
 			break;
-		case ProcessorConstants.BITBUCKET:
+		case Constant.TOOL_BITBUCKET:
 			accessToken = connection.getPassword();
 			repoToolConfig
 					.setApiEndPoint(connection.getApiEndPoint() + PROJECT + split[split.length - 2] + REPOS + name);
 			repoToolConfig.setProvider(BITBUCKET_PROVIDER);
 			break;
-		case ProcessorConstants.GITLAB:
+		case Constant.TOOL_GITLAB:
 			accessToken = connection.getAccessToken();
 			repoToolConfig.setProvider(ProcessorConstants.GITLAB.toLowerCase());
 			break;
-		case ProcessorConstants.AZUREREPO:
+		case Constant.TOOL_AZUREREPO:
 			accessToken = connection.getPat();
 			repoToolConfig.setProvider(AZURE_PROVIDER);
 			repoToolConfig.setOrganization(split[3]);
@@ -262,7 +262,7 @@ public class RepoToolsConfigServiceImpl {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
 		if (toolList.size() > 1) {
 			toolList.remove(tool);
-			if (toolList.size() > 0) {
+			if (CollectionUtils.isNotEmpty(toolList)) {
 				// configure debbie project with
 				List<String> branch = new ArrayList<>();
 				toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
@@ -375,7 +375,15 @@ public class RepoToolsConfigServiceImpl {
 		String basicProjectConfigId = repoToolsStatusResponse.getProject()
 				.substring(repoToolsStatusResponse.getProject().lastIndexOf('_') + 1);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-		processorExecutionTraceLog.setProcessorName(repoToolsStatusResponse.getRepositoryProvider());
+		String repoToolProvider = repoToolsStatusResponse.getRepositoryProvider();
+		if(repoToolProvider.equalsIgnoreCase(Constant.TOOL_GITHUB))
+			processorExecutionTraceLog.setProcessorName(Constant.TOOL_GITHUB);
+		else if (repoToolProvider.equalsIgnoreCase(Constant.TOOL_GITLAB))
+			processorExecutionTraceLog.setProcessorName(Constant.TOOL_GITLAB);
+		else if (repoToolProvider.equalsIgnoreCase(BITBUCKET_PROVIDER))
+			processorExecutionTraceLog.setProcessorName(Constant.TOOL_BITBUCKET);
+		else if (repoToolProvider.equalsIgnoreCase(AZURE_PROVIDER))
+			processorExecutionTraceLog.setProcessorName(Constant.TOOL_AZUREREPO);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(repoToolsStatusResponse.getRepositoryProvider(),
@@ -383,9 +391,13 @@ public class RepoToolsConfigServiceImpl {
 		existingTraceLogOptional.ifPresent(
 				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
-		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+		boolean isWarning = WARNING.equalsIgnoreCase(repoToolsStatusResponse.getStatus());
+		processorExecutionTraceLog.setExecutionWarning(isWarning);
 		processorExecutionTraceLog
 				.setExecutionSuccess(Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()));
+		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+		if(Boolean.TRUE.equals(isWarning))
+			processorExecutionTraceLog.setExecutionResumesAt(repoToolsStatusResponse.getTimestamp());
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
 	}

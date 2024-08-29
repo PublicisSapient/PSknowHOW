@@ -23,6 +23,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @Data
@@ -30,11 +31,13 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class RepoToolsStatusResponse implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private String project;
 	private String repositoryProvider;
 	private String source;
 	private String status;
-	private String timestamp;
+	private Long timestamp;
+
 
 }

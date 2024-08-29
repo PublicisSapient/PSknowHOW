@@ -216,7 +216,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
 		populateExcelDataObject(requestTrackerId, repoToolValidationDataList, excelData);
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.MEAN_TIME_TO_MERGE.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.REPO_TOOL_MEAN_TIME_TO_MERGE.getColumns());
 	}
 
 	/**
@@ -303,14 +303,17 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
 			String userKpiGroup = branchName + "#" + developerName;
 			if (repoToolUserDetails.isPresent() && repo != null) {
-				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
-				repoToolValidationData.setProjectName(projectName);
-				repoToolValidationData.setBranchName(repo.getBranch());
-				repoToolValidationData.setDeveloperName(developerName);
-				repoToolValidationData.setDate(date);
-				repoToolValidationData.setMeanTimeToMerge(userAverageHrs);
-				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
-				repoToolValidationDataList.add(repoToolValidationData);
+				repoToolUserDetails.get().getMergeRequestList().forEach(mr -> {
+					RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+					repoToolValidationData.setProjectName(projectName);
+					repoToolValidationData.setBranchName(repo.getBranch());
+					repoToolValidationData.setDeveloperName(developerName);
+					repoToolValidationData.setDate(date);
+					repoToolValidationData.setMeanTimeToMerge(userAverageHrs);
+					repoToolValidationData.setMergeRequestUrl(mr.getLink());
+					repoToolValidationData.setRepoUrl(repo.getRepositoryName());
+					repoToolValidationDataList.add(repoToolValidationData);
+				});
 			}
 			setDataCount(projectName, date, userKpiGroup, userAverageHrs, aggDataMap);
 		});
