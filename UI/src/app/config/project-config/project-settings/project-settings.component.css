@@ -53,3 +53,7 @@ div.main {
   box-sizing: border-box;
   padding: 9px 13px;
 }
+
+::ng-deep .p-tabview .p-tabview-nav .p-tabview-ink-bar {
+  display: block !important;
+}

@@ -367,14 +367,14 @@ export class ProjectSettingsComponent implements OnInit {
 
   updateProjectDetails() {
 
-    let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject['type']?.toLowerCase()];
+    let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject?.type?.toLowerCase()];
 
     const updatedDetails = {};
-    updatedDetails['projectName'] = this.selectedProject['name'] || this.selectedProject['Project'];
-    updatedDetails['kanban'] = this.selectedProject['type'] === 'Kanban' ? true : false;
+    updatedDetails['projectName'] = this.selectedProject?.name || this.selectedProject?.Project;
+    updatedDetails['kanban'] = this.selectedProject?.type === 'Kanban' ? true : false;
     updatedDetails['hierarchy'] = [];
     updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
-    updatedDetails['id'] = this.selectedProject['id'];
+    updatedDetails['id'] = this.selectedProject?.id;
     updatedDetails["createdAt"] = new Date().toISOString();
     updatedDetails["developerKpiEnabled"] = this.developerKpiEnabled;
     updatedDetails["projectOnHold"] = this.projectOnHold;

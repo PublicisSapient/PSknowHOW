@@ -40,6 +40,7 @@ describe('ProjectSettingsComponent', () => {
   let router: Router;
   let httpMock;
   const baseUrl = environment.baseUrl;
+  const navigateSpy = jasmine.createSpy('router.navigate');
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -52,18 +53,21 @@ describe('ProjectSettingsComponent', () => {
         HttpService,
         GetAuthorizationService,
         { provide: APP_CONFIG, useValue: AppConfig },
-        { provide: Router, useValue: jasmine.createSpyObj('Router', ['navigate']) }
+        { provide: Router, useValue: navigateSpy }
       ]
     }).compileComponents();
+
+    httpService = TestBed.inject(HttpService) as jasmine.SpyObj<HttpService>;
+    messageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectSettingsComponent);
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService);
-    httpService = TestBed.inject(HttpService);
+    // httpService = TestBed.inject(HttpService);
     httpMock = TestBed.inject(HttpTestingController);
-    messageService = TestBed.inject(MessageService);
+    // messageService = TestBed.inject(MessageService);
     confirmationService = TestBed.inject(ConfirmationService);
     getAuthorizationService = TestBed.inject(GetAuthorizationService);
     router = TestBed.inject(Router);
@@ -518,7 +522,6 @@ describe('ProjectSettingsComponent', () => {
   });
 
   it('should call router.navigate with correct URL when deletion is successful', () => {
-    const navigateSpy = spyOn(router, 'navigate');
     component.deleteProject({ id: 1, name: 'Test Project' });
     confirmationService.confirm({
       message: component.getAlertMessageOnClickDelete(),
@@ -575,5 +578,6 @@ describe('ProjectSettingsComponent', () => {
       }
     });
   });
+
 
 });
