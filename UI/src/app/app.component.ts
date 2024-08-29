@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { SharedService } from './services/shared.service';
 import { GetAuthService } from './services/getauth.service';
 import { HttpService } from './services/http.service';
@@ -41,6 +41,16 @@ export class AppComponent implements OnInit {
 
   newUI: boolean = false;
   isNewUISwitch: boolean = false;
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(event) {
+    const header = document.querySelector('.header');
+    if (window.scrollY > 200) { // adjust the scroll position threshold as needed
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  }
 
   constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
     public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private feature: FeatureFlagsService) {
