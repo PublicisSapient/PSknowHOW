@@ -536,6 +536,7 @@ describe('ConnectionListComponent', () => {
         'Base Url',
         'Use vault password',
         'PAT',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -544,6 +545,7 @@ describe('ConnectionListComponent', () => {
         'baseUrl',
         'vault',
         'pat',
+        'email',
         'sharedConnection',
       ],
     },

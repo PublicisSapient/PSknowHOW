@@ -17,9 +17,15 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1010;
 
+import com.mongodb.client.MongoCollection;
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
+import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author kunkambl
@@ -27,18 +33,31 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 @ChangeUnit(id = "remove_repo_tool_project_configs", order = "101010", author = "kunkambl", systemVersion = "10.1.0")
 public class RemoveRepoToolProjectConfigs {
 	private final MongoTemplate mongoTemplate;
+	private List<Document> deletedDocuments;
 
 	public RemoveRepoToolProjectConfigs(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
+		this.deletedDocuments = new ArrayList<>();
 	}
 
 	@Execution
 	public void execution() {
 
+		MongoCollection<Document> processorExecutionTraceLog = mongoTemplate
+				.getCollection("project_tool_configs");
+		// Find and store the documents to be deleted
+		deletedDocuments = processorExecutionTraceLog.find(new Document("toolName", "RepoTool"))
+				.into(new ArrayList<>());
+
+		// Delete the documents
+		processorExecutionTraceLog.deleteMany(new Document("toolName", "RepoTool"));
 	}
 
-	public void removeRepoToolProjectToolConfig() {
-
+	@RollbackExecution
+	public void rollback() {
+		// Restore the deleted documents
+		if (deletedDocuments != null && !deletedDocuments.isEmpty()) {
+			mongoTemplate.getCollection("project_tool_configs").insertMany(deletedDocuments);
+		}
 	}
-
 }

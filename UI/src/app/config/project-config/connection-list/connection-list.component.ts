@@ -135,8 +135,8 @@ export class ConnectionListComponent implements OnInit {
       connectionLabel: 'Azure Pipeline',
       categoryValue : 'build',
       categoryLabel: 'Build',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'User Email', 'Share connection with everyone'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'email', 'sharedConnection']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
     },
     {
       connectionType: 'AzureRepository',
@@ -325,7 +325,6 @@ export class ConnectionListComponent implements OnInit {
         { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
         { field: 'cloudEnv', header: 'Cloud Env.?', class: 'small-text' },
         { field: 'username', header: 'User Name', class: 'normal' },
-        { field: 'email', header: 'User Email', class: 'normal' },
         // { field: 'apiKey', header: 'API Key', class: 'normal' },
       ]
     },
@@ -385,7 +384,6 @@ export class ConnectionListComponent implements OnInit {
         { field: 'username', header: 'User Name', class: 'normal' },
         { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
         { field: 'isOAuth', header: 'OAuth', class: 'small-text' },
-        { field: 'email', header: 'User Email', class: 'normal' },
       ]
     },
     {
@@ -1071,10 +1069,6 @@ export class ConnectionListComponent implements OnInit {
       this.basicConnectionForm.controls['password'].enable();
       this.basicConnectionForm.controls['accessTokenEnabled'].enable();
       this.basicConnectionForm.controls['accessToken'].disable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'repotool') {
-      if (this.connection && this.connection['repoToolProvider'] === 'bitbucket')
-        this.basicConnectionForm.controls['apiEndPoint'].enable();
-      else { this.basicConnectionForm.controls['apiEndPoint'].disable() };
     }
 
     if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true) {
@@ -1150,13 +1144,6 @@ export class ConnectionListComponent implements OnInit {
       }
     }
 
-    if (this.connection.type === "RepoTool") {
-      if (event.toLowerCase() === 'bitbucket') {
-        this.basicConnectionForm.controls[field]?.enable();
-      } else {
-        this.basicConnectionForm.controls[field]?.disable();
-      }
-    }
     // }
 
     this.checkBitbucketValue(event.checked, field, type);
@@ -1438,9 +1425,9 @@ export class ConnectionListComponent implements OnInit {
       const tempArr = [...this.addEditConnectionFieldsNlabels];
       const bitbucketObj = tempArr.filter((item) => item.connectionLabel.toLowerCase() == 'bitbucket')[0];
       if (this.basicConnectionForm.controls['cloudEnv'].value) {
-        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username (Profile Username)', 'Use vault password', 'Password (App Password)', 'API End Point', 'Share connection with everyone'];
+        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username (Profile Username)', 'Use vault password', 'Password (App Password)', 'API End Point', 'User Email', 'Share connection with everyone'];
       } else {
-        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'Share connection with everyone'];
+        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'User Email', 'Share connection with everyone'];
       }
       const index = tempArr.findIndex((item) => item.connectionLabel.toLowerCase() == 'bitbucket');
       tempArr[index] = bitbucketObj;

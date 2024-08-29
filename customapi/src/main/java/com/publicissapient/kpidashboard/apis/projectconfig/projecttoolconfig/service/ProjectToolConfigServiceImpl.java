@@ -163,8 +163,6 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 	@Override
 	public ServiceResponse saveProjectToolDetails(ProjectToolConfig projectToolConfig) {
-		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
-				ProcessorConstants.GITHUB);
 		if (null == projectToolConfig) {
 			log.info("projectToolConfig object is empty");
 			return new ServiceResponse(false, "projectToolConfig  cannot be empty", null);
@@ -179,9 +177,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 				&& hasTool(projectToolConfig.getBasicProjectConfigId(), ProcessorConstants.JIRA)) {
 			return new ServiceResponse(false, "Jira already configured for this project", null);
 		}
-		ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId()
-				.toString());
-		if (scmToolList.contains(projectToolConfig.getToolName()) && projectBasicConfig.isDeveloperKpiEnabled()) {
+		if (isRepoTool(projectToolConfig, projectToolConfig.getBasicProjectConfigId().toString())) {
 			ServiceResponse repoToolServiceResponse = setRepoToolConfig(projectToolConfig);
 			if (Boolean.FALSE.equals(repoToolServiceResponse.getSuccess()))
 				return repoToolServiceResponse;
