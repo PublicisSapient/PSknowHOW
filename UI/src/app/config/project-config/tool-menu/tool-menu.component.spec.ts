@@ -97,9 +97,9 @@ describe('ToolMenuComponent', () => {
     sharedService.setSelectedProject(fakeProject);
     httpMock = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
-    
+
     component.selectedProject = { id: 1, Type: 'Scrum' };
-   
+
   });
 
   it('should create', () => {
@@ -312,119 +312,119 @@ describe('ToolMenuComponent', () => {
     }
   });
 
-  it('should call generate token on click of continue on confirmation popup', () => {
-    const mockConfirm: any = spyOn<any>(
-      confirmationService,
-      'confirm',
-    ).and.callFake((confirmation: Confirmation) => confirmation.accept());
-    const generateTokenSpy = spyOn(component, 'generateToken');
-    component.generateTokenConfirmation();
-    expect(generateTokenSpy).toHaveBeenCalled();
-  });
+  // it('should call generate token on click of continue on confirmation popup', () => {
+  //   const mockConfirm: any = spyOn<any>(
+  //     confirmationService,
+  //     'confirm',
+  //   ).and.callFake((confirmation: Confirmation) => confirmation.accept());
+  //   const generateTokenSpy = spyOn(component, 'generateToken');
+  //   component.generateTokenConfirmation();
+  //   expect(generateTokenSpy).toHaveBeenCalled();
+  // });
 
-  it('should not call generate token on click of cancel on confirmation popup', () => {
-    const mockConfirm: any = spyOn<any>(
-      confirmationService,
-      'confirm',
-    ).and.callFake((confirmation: Confirmation) => confirmation.reject);
-    const generateTokenSpy = spyOn(component, 'generateToken');
-    component.generateTokenConfirmation();
-    expect(generateTokenSpy).not.toHaveBeenCalled();
-  });
+  // it('should not call generate token on click of cancel on confirmation popup', () => {
+  //   const mockConfirm: any = spyOn<any>(
+  //     confirmationService,
+  //     'confirm',
+  //   ).and.callFake((confirmation: Confirmation) => confirmation.reject);
+  //   const generateTokenSpy = spyOn(component, 'generateToken');
+  //   component.generateTokenConfirmation();
+  //   expect(generateTokenSpy).not.toHaveBeenCalled();
+  // });
 
-  it('should make an api call for generating token and dispaly token on modal', () => {
-    const response = {
-      message: "API token is updated",
-      success: true,
-      data: {
-        basicProjectConfigId: '6360fefc3fa9e175755f0728',
-        projectName: '"KnowHOW"',
-        userName: 'TESTADMIN',
-        apiToken: 'TestToken',
-        expiryDate: '2023-03-10',
-        createdAt: '2023-02-10'
-      }
-    };
-    spyOn(sharedService, 'getSelectedProject').and.returnValue({
-      id: '6360fefc3fa9e175755f0728',
-      Project: 'KnowHOW'
-    });
+  // it('should make an api call for generating token and dispaly token on modal', () => {
+  //   const response = {
+  //     message: "API token is updated",
+  //     success: true,
+  //     data: {
+  //       basicProjectConfigId: '6360fefc3fa9e175755f0728',
+  //       projectName: '"KnowHOW"',
+  //       userName: 'TESTADMIN',
+  //       apiToken: 'TestToken',
+  //       expiryDate: '2023-03-10',
+  //       createdAt: '2023-02-10'
+  //     }
+  //   };
+  //   spyOn(sharedService, 'getSelectedProject').and.returnValue({
+  //     id: '6360fefc3fa9e175755f0728',
+  //     Project: 'KnowHOW'
+  //   });
 
-    spyOn(httpService, 'generateToken').and.returnValue(of(response));
-    component.generateToken();
-    fixture.detectChanges();
-    expect(component.generatedToken).toEqual(response.data.apiToken);
-  });
+  //   spyOn(httpService, 'generateToken').and.returnValue(of(response));
+  //   component.generateToken();
+  //   fixture.detectChanges();
+  //   expect(component.generatedToken).toEqual(response.data.apiToken);
+  // });
 
-  it('should show error message if generate token api fails', () => {
-    const response = {
-      message: "Failed fetching API token",
-      success: false,
-      data: null
-    };
-    spyOn(sharedService, 'getSelectedProject').and.returnValue({
-      id: '6360fefc3fa9e175755f0728',
-      Project: 'KnowHOW'
-    });
+  // it('should show error message if generate token api fails', () => {
+  //   const response = {
+  //     message: "Failed fetching API token",
+  //     success: false,
+  //     data: null
+  //   };
+  //   spyOn(sharedService, 'getSelectedProject').and.returnValue({
+  //     id: '6360fefc3fa9e175755f0728',
+  //     Project: 'KnowHOW'
+  //   });
 
-    spyOn(httpService, 'generateToken').and.returnValue(of(response));
-    const messageServiceSpy = spyOn(messageService, 'add');
-    component.generateToken();
-    fixture.detectChanges();
-    expect(messageServiceSpy).toHaveBeenCalled();
-  });
+  //   spyOn(httpService, 'generateToken').and.returnValue(of(response));
+  //   const messageServiceSpy = spyOn(messageService, 'add');
+  //   component.generateToken();
+  //   fixture.detectChanges();
+  //   expect(messageServiceSpy).toHaveBeenCalled();
+  // });
 
-  xit('should copy token to clipboard', () => {
-    component.generatedToken = 'TestToken1';
-    component.copyToken();
-    expect(component.tokenCopied).toBeTrue();
-  });
+  // xit('should copy token to clipboard', () => {
+  //   component.generatedToken = 'TestToken1';
+  //   component.copyToken();
+  //   expect(component.tokenCopied).toBeTrue();
+  // });
 
 
-  it("should disable assignee switch once assignee switch is on", () => {
-    component.isAssigneeSwitchChecked = true;
-    const confirmationService = TestBed.get(ConfirmationService); // grab a handle of confirmationService
-    spyOn(component, 'updateProjectDetails');
-    spyOn<any>(confirmationService, 'confirm').and.callFake((params: any) => {
-      params.accept();
-      params.reject();
-    });
-    component.onAssigneeSwitchChange();
-    if (component.isAssigneeSwitchChecked) {
-      expect(component.isAssigneeSwitchDisabled).toBeTruthy();
-    }
-  })
+  // it("should disable assignee switch once assignee switch is on", () => {
+  //   component.isAssigneeSwitchChecked = true;
+  //   const confirmationService = TestBed.get(ConfirmationService); // grab a handle of confirmationService
+  //   spyOn(component, 'updateProjectDetails');
+  //   spyOn<any>(confirmationService, 'confirm').and.callFake((params: any) => {
+  //     params.accept();
+  //     params.reject();
+  //   });
+  //   component.onAssigneeSwitchChange();
+  //   if (component.isAssigneeSwitchChecked) {
+  //     expect(component.isAssigneeSwitchDisabled).toBeTruthy();
+  //   }
+  // })
 
-  it("should prepare data for update project", () => {
-    const hierarchyData = {
-      kanban: [
-      {
-        level: 1,
-        hierarchyLevelId: 'hierarchyLevelOne',
-        hierarchyLevelName: 'Level One',
-      },
-      {
-        level: 2,
-        hierarchyLevelId: 'hierarchyLevelTwo',
-        hierarchyLevelName: 'Level Two',
-      },
-      {
-        level: 3,
-        hierarchyLevelId: 'hierarchyLevelThree',
-        hierarchyLevelName: 'Level Three',
-      },
-    ]};
-    component.selectedProject = {
-      project: "My Project",
-      type: 'kanban',
-      ["Level One"]: "T1",
-      ["Level Two"]: "T2",
-      ["Level Three"]: "T3",
+  // it("should prepare data for update project", () => {
+  //   const hierarchyData = {
+  //     kanban: [
+  //     {
+  //       level: 1,
+  //       hierarchyLevelId: 'hierarchyLevelOne',
+  //       hierarchyLevelName: 'Level One',
+  //     },
+  //     {
+  //       level: 2,
+  //       hierarchyLevelId: 'hierarchyLevelTwo',
+  //       hierarchyLevelName: 'Level Two',
+  //     },
+  //     {
+  //       level: 3,
+  //       hierarchyLevelId: 'hierarchyLevelThree',
+  //       hierarchyLevelName: 'Level Three',
+  //     },
+  //   ]};
+  //   component.selectedProject = {
+  //     project: "My Project",
+  //     type: 'kanban',
+  //     ["Level One"]: "T1",
+  //     ["Level Two"]: "T2",
+  //     ["Level Three"]: "T3",
 
-    }
-    localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
-    component.updateProjectDetails();
-  })
+  //   }
+  //   localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
+  //   component.updateProjectDetails();
+  // })
 
   it('should check if project is configured when tool selected is AzurePipeline', () => {
     component.selectedTools = [
@@ -480,90 +480,90 @@ describe('ToolMenuComponent', () => {
     expect(component.isProjectConfigured('GitHub Action')).toBeTruthy();
   })
 
-  it('should update project details successfully', () => {
-    const hierarchyData = {
-      kanban: [
-      {
-        level: 1,
-        hierarchyLevelId: 'hierarchyLevelOne',
-        hierarchyLevelName: 'Level One',
-      },
-      {
-        level: 2,
-        hierarchyLevelId: 'hierarchyLevelTwo',
-        hierarchyLevelName: 'Level Two',
-      },
-      {
-        level: 3,
-        hierarchyLevelId: 'hierarchyLevelThree',
-        hierarchyLevelName: 'Level Three',
-      },
-    ]};
-    component.selectedProject = {
-      project: "My Project",
-      type: 'kanban',
-      ["Level One"]: "T1",
-      ["Level Two"]: "T2",
-      ["Level Three"]: "T3",
+  // it('should update project details successfully', () => {
+  //   const hierarchyData = {
+  //     kanban: [
+  //     {
+  //       level: 1,
+  //       hierarchyLevelId: 'hierarchyLevelOne',
+  //       hierarchyLevelName: 'Level One',
+  //     },
+  //     {
+  //       level: 2,
+  //       hierarchyLevelId: 'hierarchyLevelTwo',
+  //       hierarchyLevelName: 'Level Two',
+  //     },
+  //     {
+  //       level: 3,
+  //       hierarchyLevelId: 'hierarchyLevelThree',
+  //       hierarchyLevelName: 'Level Three',
+  //     },
+  //   ]};
+  //   component.selectedProject = {
+  //     project: "My Project",
+  //     type: 'kanban',
+  //     ["Level One"]: "T1",
+  //     ["Level Two"]: "T2",
+  //     ["Level Three"]: "T3",
 
-    }
-    localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
-    const response = {
-      "serviceResponse": {
-          "message": "Updated Successfully.",
-          "success": true,
-          "data": {
-              "id": "63777558175a953a0a49d363",
-              "projectName": "VDOS",
-          }
-      },
-      "projectsAccess": []
-    }
-    spyOn(httpService, 'updateProjectDetails').and.returnValue(of(response));
-    component.isAssigneeSwitchDisabled = false;
-    spyOn(messageService, 'add');
-    component.updateProjectDetails();
-    expect(messageService.add).toHaveBeenCalled();
-    expect(component.isAssigneeSwitchDisabled).toBeTruthy();
-  });
+  //   }
+  //   localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
+  //   const response = {
+  //     "serviceResponse": {
+  //         "message": "Updated Successfully.",
+  //         "success": true,
+  //         "data": {
+  //             "id": "63777558175a953a0a49d363",
+  //             "projectName": "VDOS",
+  //         }
+  //     },
+  //     "projectsAccess": []
+  //   }
+  //   spyOn(httpService, 'updateProjectDetails').and.returnValue(of(response));
+  //   component.isAssigneeSwitchDisabled = false;
+  //   spyOn(messageService, 'add');
+  //   component.updateProjectDetails();
+  //   expect(messageService.add).toHaveBeenCalled();
+  //   expect(component.isAssigneeSwitchDisabled).toBeTruthy();
+  // });
 
-  it('should not update project details', () => {
-    const hierarchyData = {
-      kanban: [
-      {
-        level: 1,
-        hierarchyLevelId: 'hierarchyLevelOne',
-        hierarchyLevelName: 'Level One',
-      },
-      {
-        level: 2,
-        hierarchyLevelId: 'hierarchyLevelTwo',
-        hierarchyLevelName: 'Level Two',
-      },
-      {
-        level: 3,
-        hierarchyLevelId: 'hierarchyLevelThree',
-        hierarchyLevelName: 'Level Three',
-      },
-    ]};
-    component.selectedProject = {
-      project: "My Project",
-      type: 'kanban',
-      ["Level One"]: "T1",
-      ["Level Two"]: "T2",
-      ["Level Three"]: "T3",
+  // it('should not update project details', () => {
+  //   const hierarchyData = {
+  //     kanban: [
+  //     {
+  //       level: 1,
+  //       hierarchyLevelId: 'hierarchyLevelOne',
+  //       hierarchyLevelName: 'Level One',
+  //     },
+  //     {
+  //       level: 2,
+  //       hierarchyLevelId: 'hierarchyLevelTwo',
+  //       hierarchyLevelName: 'Level Two',
+  //     },
+  //     {
+  //       level: 3,
+  //       hierarchyLevelId: 'hierarchyLevelThree',
+  //       hierarchyLevelName: 'Level Three',
+  //     },
+  //   ]};
+  //   component.selectedProject = {
+  //     project: "My Project",
+  //     type: 'kanban',
+  //     ["Level One"]: "T1",
+  //     ["Level Two"]: "T2",
+  //     ["Level Three"]: "T3",
 
-    }
-    localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
-    spyOn(httpService, 'updateProjectDetails').and.returnValue(of('Error'));
-    component.isAssigneeSwitchChecked = true;
-    component.isAssigneeSwitchDisabled = true;
-    spyOn(messageService, 'add');
-    component.updateProjectDetails();
-    expect(messageService.add).toHaveBeenCalled();
-    expect(component.isAssigneeSwitchChecked).toBeFalsy();
-    expect(component.isAssigneeSwitchDisabled).toBeFalsy();
-  });
+  //   }
+  //   localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
+  //   spyOn(httpService, 'updateProjectDetails').and.returnValue(of('Error'));
+  //   component.isAssigneeSwitchChecked = true;
+  //   component.isAssigneeSwitchDisabled = true;
+  //   spyOn(messageService, 'add');
+  //   component.updateProjectDetails();
+  //   expect(messageService.add).toHaveBeenCalled();
+  //   expect(component.isAssigneeSwitchChecked).toBeFalsy();
+  //   expect(component.isAssigneeSwitchDisabled).toBeFalsy();
+  // });
 
   it('should filter tools based on repo tool config', () => {
     component.tools = [

@@ -147,7 +147,7 @@
                       <div class="card__primary__title">
                           <h4 class="card__primary__title__text">{{ tool.toolName }}</h4>
                           <p class="card__primary__title__subtext">Connection: <strong>{{ tool.connectionName ? tool.connectionName : '-' }}</strong></p>
-                          <p class="card__primary__title__subtext">Last Sync:
+                          <p class="card__primary__title__subtext">Last Updated:
                             <strong *ngIf="tool.updatedAt">{{ tool.updatedAt | date: 'dd-MMM-yyyy (EE) - h:mm a' }}</strong>
                             <strong *ngIf="!tool.updatedAt">-</strong>
                           </p>
