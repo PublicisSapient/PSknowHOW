@@ -1886,18 +1886,23 @@ public class KpiHelperService { // NOPMD
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(projectCodeList)) {
 			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
-			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-				startDate = LocalDate.now().minusWeeks(dataPoint);
-				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
-					startDate = startDate.minusDays(1);
-				}
-			}
+			startDate = getStartDate(duration, dataPoint, startDate);
 			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
 			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList, repoToolKpi,
 					startDate.toString(), endDate.toString(), debbieDuration);
 		}
 
 		return repoToolKpiMetricResponseList;
+	}
+
+	private static LocalDate getStartDate(String duration, Integer dataPoint, LocalDate startDate) {
+		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+			startDate = LocalDate.now().minusWeeks(dataPoint);
+			while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+				startDate = startDate.minusDays(1);
+			}
+		}
+		return startDate;
 	}
 
 	/**
