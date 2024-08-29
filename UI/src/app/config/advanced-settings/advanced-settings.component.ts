@@ -401,10 +401,10 @@ export class AdvancedSettingsComponent implements OnInit {
   getToolCategory(ProcessorName){
    const categoryWiseTool = {
     'Project Management' : ['jira','azure'],
-    'Test Management' : ['zephyr'],
-    'Source Code Management' : ['github','gitLab','bitbucket','azurerepository','repotool'],
+    'Test Management' : ['zephyr','jiratest'],
+    'Source Code Management' : ['github','gitlab','bitbucket','azurerepository','repotool'],
     'Security' : ['sonar'],
-    'Build' : ['bamboo','teamcity','azurepipeline','argoCD','githubaction','jenkins']
+    'Build' : ['bamboo','teamcity','azurepipeline','argocd','githubaction','jenkins']
    }
 
    for (const category in categoryWiseTool) {
