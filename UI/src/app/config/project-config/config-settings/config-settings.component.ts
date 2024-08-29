@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
@@ -26,7 +26,7 @@ import { SharedService } from 'src/app/services/shared.service';
   templateUrl: './config-settings.component.html',
   styleUrls: ['./config-settings.component.css']
 })
-export class ConfigSettingsComponent implements OnInit {
+export class ConfigSettingsComponent {
 
   configOptions: { tab: string; tabValue: string; }[];
   selectedTab: string = 'projectSettings';
@@ -69,9 +69,6 @@ export class ConfigSettingsComponent implements OnInit {
       }
     });
 
-  }
-
-  ngOnInit(): void {
   }
 
   onTabChange() {

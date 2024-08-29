@@ -115,9 +115,6 @@ export class ProjectSettingsComponent implements OnInit {
 
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
     this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();
-
-    // this.selectedProject = this.sharedService.getSelectedProject();
-    // this.selectedProject = this.selectedProject !== undefined ? this.selectedProject : this.userProjects[0];
   }
 
   onProjectActiveStatusChange(event) {
@@ -229,7 +226,7 @@ export class ProjectSettingsComponent implements OnInit {
       this.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
     }
     this.selectedProject = this.sharedService.getSelectedProject();
-    if (this.selectedProject && this.router.url.includes(this.selectedProject['id']) && !this.isDeleteClicked) {
+    if (this.selectedProject && this.router.url?.includes(this.selectedProject['id']) && !this.isDeleteClicked) {
       this.selectedProject = this.userProjects.filter((x) => x.id == this.selectedProject?.id)[0]
     } else {
       this.selectedProject = this.userProjects[0];
@@ -245,7 +242,7 @@ export class ProjectSettingsComponent implements OnInit {
     this.projectOnHold = this.selectedProject?.projectOnHold;
 
     const selectedType = this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
-    const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType].map((x) => {
+    const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType]?.map((x) => {
       return {
         id: x['hierarchyLevelId'],
         name: x['hierarchyLevelName']
@@ -255,7 +252,7 @@ export class ProjectSettingsComponent implements OnInit {
     setTimeout(() => {
       if (this.selectedProject && Object.keys(this.selectedProject)?.length) {
         Object.keys(this.selectedProject).forEach(key => {
-          if (levelDetails.map(x => x.id).includes(key)) {
+          if (levelDetails?.map(x => x.id).includes(key)) {
             let propertyName = levelDetails.filter(x => x.id === key)[0].name;
             this.selectedProject[propertyName] = this.selectedProject[key];
             delete this.selectedProject[key];
@@ -450,8 +447,10 @@ export class ProjectSettingsComponent implements OnInit {
   }
 
   copyToken() {
-    this.tokenCopied = true;
-    navigator.clipboard.writeText(this.generatedToken);
+    if (this.generatedToken) {
+      this.tokenCopied = true;
+      navigator.clipboard.writeText(this.generatedToken);
+    }
   }
 
   originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => 0;

@@ -40,7 +40,8 @@ describe('ProjectSettingsComponent', () => {
   let router: Router;
   let httpMock;
   const baseUrl = environment.baseUrl;
-  const navigateSpy = jasmine.createSpy('router.navigate');
+  const navigateSpy = jasmine.createSpyObj('Router', ['navigate']);
+  const projectListData = require('../../../../test/resource/projectListData.json');
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -579,5 +580,221 @@ describe('ProjectSettingsComponent', () => {
     });
   });
 
+  it('should set tokenCopied to true when copyToken is called', () => {
+    component.generatedToken = 'test-token';
+    component.copyToken();
+    expect(component.tokenCopied).toBe(true);
+  });
+
+  it('should call navigator.clipboard.writeText with the correct token value', () => {
+    const writeTextSpy = spyOn(navigator.clipboard, 'writeText');
+    component.generatedToken = 'test-token';
+    component.copyToken();
+    expect(writeTextSpy).toHaveBeenCalledWith('test-token');
+  });
+
+  // it('should call navigator.clipboard.writeText with an empty string when generatedToken is empty or null', () => {
+  //   const writeTextSpy = spyOn(navigator.clipboard, 'writeText');
+  //   component.generatedToken = '';
+  //   component.copyToken();
+  //   expect(writeTextSpy).toHaveBeenCalledWith('');
+
+  //   component.generatedToken = null;
+  //   component.copyToken();
+  //   expect(writeTextSpy).toHaveBeenCalledWith('');
+  // });
+
+  // it('should set the cols and allProjectList properties when the response is successful', () => {
+  //   const responseList = [{
+  //     success: true,
+  //     data: [{
+  //       id: 'projectId',
+  //       projectName: 'Project Name',
+  //       hierarchy: [{
+  //         hierarchyLevel: {
+  //           level: 1,
+  //           hierarchyLevelId: 'country',
+  //           hierarchyLevelName: 'Country'
+  //         },
+  //         value: 'India'
+  //       }]
+  //     }]
+  //   }];
+  //   spyOn(httpService, 'getProjectListData').and.returnValue(of(responseList));
+  //   component.getData();
+  //   expect(component.cols).toEqual([{ id: 'country', heading: 'Country' }]);
+  //   expect(component.allProjectList).toEqual([{
+  //     id: 'projectId',
+  //     name: 'Project Name',
+  //     type: 'Scrum',
+  //     saveAssigneeDetails: false,
+  //     developerKpiEnabled: false,
+  //     projectOnHold: false,
+  //     country: 'India'
+  //   }]);
+  // });
+
+  it("should get success response while getting project list",()=>{
+    const fakeResponse = [{
+      message: "Fetched successfully",
+      success: true,
+      data: [
+        {
+          id: "631f394dcfef11709d7ddc7b",
+          projectName: "MAP",
+          createdAt: "2022-09-12T19:21:09",
+          kanban: false,
+          hierarchy: [
+            {
+              hierarchyLevel: {
+                level: 1,
+                hierarchyLevelId: "country",
+                hierarchyLevelName: "Country"
+              },
+              value: "India"
+            },
+            {
+              hierarchyLevel: {
+                level: 2,
+                hierarchyLevelId: "state",
+                hierarchyLevelName: "State"
+              },
+              value: "Haryana"
+            },
+            {
+              hierarchyLevel: {
+                level: 3,
+                hierarchyLevelId: "city",
+                hierarchyLevelName: "City"
+              },
+              value: "Gurgaon"
+            }
+          ],
+          isKanban: false
+        }
+      ]
+    }];
+    spyOn(httpService,'getProjectListData').and.returnValue(of(fakeResponse));
+    component.getData();
+    expect(component.loading).toBeFalse();
+    expect(component.projectList.length).toBeGreaterThan(0);
+  })
+
+  // it("should project list zero while getting project list",()=>{
+
+  //   spyOn(httpService,'getProjectListData').and.returnValue(of(projectListData.data));
+  //   component.getData();
+  //   expect(component.loading).toBeFalse();
+  //   expect(component.projectList?.length).toBe(0)
+  // })
+
+  it('should set the loading property to false when the response is not successful', () => {
+    const responseList = [{ success: false }];
+    spyOn(httpService, 'getProjectListData').and.returnValue(of(responseList));
+    component.getData();
+    expect(component.loading).toBe(false);
+  });
+
+  it('should call the messageService.add method when the response is not successful', () => {
+    const responseList = [{ success: false }];
+    spyOn(httpService, 'getProjectListData').and.returnValue(of(responseList));
+    spyOn(messageService, 'add');
+    component.getData();
+    expect(messageService.add).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Some error occurred. Please try again later.'
+    });
+  });
+
+  it('should assign userProjects correctly', () => {
+    const projectList = [
+      { id: 1, name: 'Project 1' },
+      { id: 2, name: 'Project 2' }
+    ];
+    spyOn(sharedService, 'getProjectList').and.returnValue(projectList);
+    component.getProjects();
+    expect(component.userProjects).toEqual(projectList);
+  });
+
+  it('should sort userProjects by name', () => {
+    const projectList = [
+      { id: 1, name: 'Project 2' },
+      { id: 2, name: 'Project 1' }
+    ];
+    spyOn(sharedService, 'getProjectList').and.returnValue(projectList);
+    component.getProjects();
+    expect(component.userProjects).toEqual([
+      { id: 2, name: 'Project 1' },
+      { id: 1, name: 'Project 2' }
+    ]);
+  });
+
+  it('should assign selectedProject to the first project in userProjects when sharedService.getSelectedProject() returns null', () => {
+    const projectList = [
+      { id: 1, name: 'Project 1' },
+      { id: 2, name: 'Project 2' }
+    ];
+    spyOn(sharedService, 'getProjectList').and.returnValue(projectList);
+    spyOn(sharedService, 'getSelectedProject').and.returnValue(null);
+    component.getProjects();
+    expect(component.selectedProject).toEqual(projectList[0]);
+  });
+
+  // it('should assign isAssigneeSwitchChecked, isAssigneeSwitchDisabled, developerKpiEnabled, isDeveloperKpiSwitchDisabled, and projectOnHold correctly', () => {
+  //   const project = {
+  //     id: 1,
+  //     name: 'Project 1',
+  //     saveAssigneeDetails: true,
+  //     developerKpiEnabled: true,
+  //     projectOnHold: true
+  //   };
+  //   spyOn(sharedService, 'getSelectedProject').and.returnValue(project);
+  //   component.getProjects();
+  //   expect(component.isAssigneeSwitchChecked).toBe(true);
+  //   expect(component.isAssigneeSwitchDisabled).toBe(true);
+  //   expect(component.developerKpiEnabled).toBe(true);
+  //   expect(component.isDeveloperKpiSwitchDisabled).toBe(true);
+  //   expect(component.projectOnHold).toBe(true);
+  // });
+
+  // it('should rename selectedProject properties correctly', () => {
+  //   const project = {
+  //     id: 1,
+  //     name: 'Project 1',
+  //     hierarchyLevelId: 'hierarchyLevelName'
+  //   };
+  //   const levelDetails = [
+  //     { id: 'hierarchyLevelId', name: 'hierarchyLevelName' }
+  //   ];
+  //   spyOn(sharedService, 'getSelectedProject').and.returnValue(project);
+  //   localStorage.setItem('completeHierarchyData', JSON.stringify({ kanban: levelDetails }));
+  //   component.getProjects();
+  //   expect(component.selectedProject).toEqual({
+  //     id: 1,
+  //     name: 'Project 1',
+  //     hierarchyLevelName: 'hierarchyLevelName'
+  //   });
+  // });
+
+  // it('should set selected project', () => {
+  //   component.updateProjectSelection();
+  //   expect(component.sharedService.getSelectedProject()).toEqual(component.selectedProject);
+  // });
+
+  // it('should navigate to correct route', () => {
+  //   // spyOn(component.router, 'navigate');
+  //   component.updateProjectSelection();
+  //   expect(component.router.navigate).toHaveBeenCalledWith(['/dashboard/Config/ConfigSettings/project1'], { queryParams: { tab: 0 } });
+  // });
+
+  // it('should update isAssigneeSwitchChecked', () => {
+  //   component.updateProjectSelection();
+  //   expect(component.isAssigneeSwitchChecked).toBeTrue();
+  // });
+
+  // it('should update isDeveloperKpiSwitchDisabled', () => {
+  //   component.updateProjectSelection();
+  //   expect(component.isDeveloperKpiSwitchDisabled).toBeTrue();
+  // });
 
 });
