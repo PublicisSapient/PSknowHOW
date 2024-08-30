@@ -358,30 +358,13 @@ export class ProjectSettingsComponent implements OnInit {
         break;
       }
 
-      let hierarchy: string;
-      switch(element.hierarchyLevelId) {
-        case 'bu':
-          hierarchy = 'BU';
-          break;
-        case 'ver':
-          hierarchy = 'Vertical';
-          break;
-        case 'acc':
-          hierarchy = 'Account';
-          break;
-        case 'port':
-          hierarchy = 'Portfolio';
-          break;
-        default:
-          break;
-      }
       updatedDetails['hierarchy'].push({
         hierarchyLevel: {
           level: element.level,
           hierarchyLevelId: element.hierarchyLevelId,
           hierarchyLevelName: element.hierarchyLevelName
         },
-        value: this.selectedProject[hierarchy]
+        value: this.selectedProject[element.hierarchyLevelName]
       });
     }
 
