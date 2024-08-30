@@ -163,7 +163,7 @@
                 <div class="mar-t-10" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
                   <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch"
                   [(ngModel)]="isAssigneeSwitchChecked"
-                  [disabled]="isAssigneeSwitchDisabled"
+                  [disabled]="isAssigneeSwitchChecked"
                   (onChange)="onAssigneeSwitchChange($event)">
                   </p-inputSwitch>
                 </div>
@@ -172,7 +172,7 @@
                 <p-inputSwitch
                 [(ngModel)]="developerKpiEnabled"
                 (onChange)="onProjectDevKpiStatusChange($event)"
-                [disabled]="isDeveloperKpiSwitchDisabled">
+                [disabled]="developerKpiEnabled">
                 </p-inputSwitch>
               </ng-container>
             </td>

@@ -51,7 +51,6 @@ export class ProjectSettingsComponent implements OnInit {
   projectList: any;
   globalSearchFilter: any;
   isAssigneeSwitchChecked: boolean = false;
-  isAssigneeSwitchDisabled: boolean;
   tokenCopied: boolean = false;
   generateTokenLoader: boolean = false;
   userName: string;
@@ -60,7 +59,6 @@ export class ProjectSettingsComponent implements OnInit {
   isProjectAdmin: boolean = false;
   isSuperAdmin: boolean = false;
   isDeleteClicked: boolean = false;
-  isDeveloperKpiSwitchDisabled: boolean;
 
   constructor(
     public sharedService: SharedService,
@@ -146,9 +144,6 @@ export class ProjectSettingsComponent implements OnInit {
   }
 
   onProjectDevKpiStatusChange() {
-    if (this.developerKpiEnabled) {
-      this.isDeveloperKpiSwitchDisabled = true;
-    }
     this.confirmationService.confirm({
       message: `Once enabled, it cannot be disabled. Do you want to enable Developer KPIs for this project, are you sure?`,
       header: 'Enable Developer KPIs',
@@ -158,7 +153,6 @@ export class ProjectSettingsComponent implements OnInit {
       },
       reject: () => {
         this.developerKpiEnabled = false;
-        this.isDeveloperKpiSwitchDisabled = false;
       }
     });
   }
@@ -232,13 +226,9 @@ export class ProjectSettingsComponent implements OnInit {
       this.selectedProject = this.userProjects[0];
     }
     this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
-    if (this.isAssigneeSwitchChecked) {
-      this.isAssigneeSwitchDisabled = true;
-    }
+
     this.developerKpiEnabled = this.selectedProject?.developerKpiEnabled;
-    if(this.developerKpiEnabled) {
-      this.isDeveloperKpiSwitchDisabled = true;
-    }
+
     this.projectOnHold = this.selectedProject?.projectOnHold;
 
     const selectedType = this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
@@ -268,13 +258,6 @@ export class ProjectSettingsComponent implements OnInit {
     this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
     this.developerKpiEnabled = this.selectedProject?.developerKpiEnabled;
     this.projectOnHold = this.selectedProject?.projectOnHold;
-
-    if (this.isAssigneeSwitchChecked) {
-      this.isAssigneeSwitchDisabled = true;
-    }
-    if(this.developerKpiEnabled) {
-      this.isDeveloperKpiSwitchDisabled = true;
-    }
   }
 
   deleteProject(project) {
@@ -295,7 +278,7 @@ export class ProjectSettingsComponent implements OnInit {
               item.projects = item.projects.filter(x => x.projectId != project.id);
             });
             arr = arr?.filter(item => item.projects?.length > 0);
-            console.log(arr)
+
             this.sharedService.setCurrentUserDetails({ projectsAccess: arr });
           }
         }, error => {
@@ -309,7 +292,6 @@ export class ProjectSettingsComponent implements OnInit {
   }
 
   projectDeletionStatus(data) {
-    // console.log(this.userProjects[this.userProjects.length-1]['id'])
     this.projectConfirm = false;
     if (data.success) {
       this.getData();
@@ -345,9 +327,6 @@ export class ProjectSettingsComponent implements OnInit {
   }
 
   onAssigneeSwitchChange() {
-    if (this.isAssigneeSwitchChecked) {
-      this.isAssigneeSwitchDisabled = true;
-    }
     this.confirmationService.confirm({
       message: `Once enabled, it cannot be disabled. Do you want to enable individual KPIs for this project, are you sure?`,
       header: 'Enable Individual KPIs',
@@ -357,7 +336,6 @@ export class ProjectSettingsComponent implements OnInit {
       },
       reject: () => {
         this.isAssigneeSwitchChecked = false;
-        this.isAssigneeSwitchDisabled = false;
       }
     });
   }
@@ -379,19 +357,37 @@ export class ProjectSettingsComponent implements OnInit {
       if (element.hierarchyLevelId == 'project') {
         break;
       }
+
+      let hierarchy: string;
+      switch(element.hierarchyLevelId) {
+        case 'bu':
+          hierarchy = 'BU';
+          break;
+        case 'ver':
+          hierarchy = 'Vertical';
+          break;
+        case 'acc':
+          hierarchy = 'Account';
+          break;
+        case 'port':
+          hierarchy = 'Portfolio';
+          break;
+        default:
+          break;
+      }
       updatedDetails['hierarchy'].push({
         hierarchyLevel: {
           level: element.level,
           hierarchyLevelId: element.hierarchyLevelId,
           hierarchyLevelName: element.hierarchyLevelName
         },
-        value: this.selectedProject[element.hierarchyLevelId]
+        value: this.selectedProject[hierarchy]
       });
     }
 
     this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
+
       if (response && response.serviceResponse && response.serviceResponse.success) {
-        this.isAssigneeSwitchDisabled = true;
         this.selectedProject.projectOnHold = this.projectOnHold;
         this.messageService.add({
           severity: 'success',
@@ -399,7 +395,6 @@ export class ProjectSettingsComponent implements OnInit {
         });
       } else {
         this.isAssigneeSwitchChecked = false;
-        this.isAssigneeSwitchDisabled = false;
         this.projectOnHold = false;
         this.messageService.add({
           severity: 'error',

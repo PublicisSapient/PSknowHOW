@@ -157,9 +157,6 @@ describe('ProjectSettingsComponent', () => {
       params.reject();
     });
     component.onAssigneeSwitchChange();
-    if (component.isAssigneeSwitchChecked) {
-      expect(component.isAssigneeSwitchDisabled).toBeTruthy();
-    }
   })
 
   it("should prepare data for update project", () => {
@@ -233,11 +230,9 @@ describe('ProjectSettingsComponent', () => {
       "projectsAccess": []
     }
     spyOn(httpService, 'updateProjectDetails').and.returnValue(of(response));
-    component.isAssigneeSwitchDisabled = false;
     spyOn(messageService, 'add');
     component.updateProjectDetails('text');
     expect(messageService.add).toHaveBeenCalled();
-    expect(component.isAssigneeSwitchDisabled).toBeTruthy();
   });
 
   it('should not update project details', () => {
@@ -270,12 +265,10 @@ describe('ProjectSettingsComponent', () => {
     localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
     spyOn(httpService, 'updateProjectDetails').and.returnValue(of('Error'));
     component.isAssigneeSwitchChecked = true;
-    component.isAssigneeSwitchDisabled = true;
     spyOn(messageService, 'add');
     component.updateProjectDetails('text');
     expect(messageService.add).toHaveBeenCalled();
     expect(component.isAssigneeSwitchChecked).toBeFalsy();
-    expect(component.isAssigneeSwitchDisabled).toBeFalsy();
   });
 
   it('should call getData on initialization', () => {
