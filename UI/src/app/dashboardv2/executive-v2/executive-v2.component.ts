@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
@@ -31,7 +31,7 @@ import { ExportExcelComponent } from 'src/app/component/export-excel/export-exce
   templateUrl: './executive-v2.component.html',
   styleUrls: ['./executive-v2.component.css']
 })
-export class ExecutiveV2Component implements OnInit, OnDestroy {
+export class ExecutiveV2Component implements OnInit, OnDestroy, OnChanges {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   filterData = [];
   sonarKpiData = {};
@@ -173,14 +173,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.handleMaturityTableLoader();
     }));
 
-    if (this.selectedTab.toLowerCase() === 'developer') {
-      this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
-        Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
-          this.handleSelectedOption(data, kpi);
-        });
-      }));
-    }
-
     /**observable to get the type of view */
     this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
       this.showChart = view;
@@ -232,6 +224,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.noTabAccess = false;
       }
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.selectedTab.toLowerCase() === 'developer') {
+      this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
+        Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
+          this.handleSelectedOption(data, kpi);
+        });
+      }));
+    }
   }
 
 
