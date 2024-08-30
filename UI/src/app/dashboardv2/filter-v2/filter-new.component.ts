@@ -542,8 +542,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.service.setAdditionalFilters([]);
       }
     }
-    if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event && event[0]?.labelName === 'project') {
-      const allSprints = this.filterDataArr[this.selectedType]['sprint'];
+    if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['Sprint'] && event && event[0]?.labelName === 'project') {
+      const allSprints = this.filterDataArr[this.selectedType]['Sprint'];
       const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed');
       if (currentProjectSprints?.length) {
         currentProjectSprints.sort((a, b) => new Date(a.sprintEndDate).getTime() - new Date(b.sprintEndDate).getTime());
