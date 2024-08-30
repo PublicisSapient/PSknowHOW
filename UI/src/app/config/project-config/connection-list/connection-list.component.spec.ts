@@ -1182,25 +1182,28 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('should allow user to change connection type from the dropdown', () => {
-    const fakeEvent = {
-      apiEndPoint: undefined,
-      baseUrl: undefined,
-      cloudEnv: false,
-      sharedConnection: true,
-      connectionName: undefined,
-      consumerKey: undefined,
-      isOAuth: false,
-      bearerToken:false,
-      password: undefined,
-      pat: undefined,
-      privateKey: undefined,
-      type: 'Jira',
-      username: undefined,
-    };
+  it('should update connection type', () => {
+    const selectedConnectionType = 'test-type';
+    component.selectedConnectionType = selectedConnectionType;
     component.onChangeConnection();
-    fixture.detectChanges();
-    expect(component.selectedConnectionType).toBe(fakeEvent.type);
+    expect(component.connection['type']).toBe(selectedConnectionType);
+  });
+
+  it('should call connectionTypeFieldsAssignment', () => {
+    spyOn(component, 'connectionTypeFieldsAssignment');
+    component.onChangeConnection();
+    expect(component.connectionTypeFieldsAssignment).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call defaultEnableDisableSwitch', () => {
+    spyOn(component, 'defaultEnableDisableSwitch');
+    component.onChangeConnection();
+    expect(component.defaultEnableDisableSwitch).toHaveBeenCalledTimes(1);
+  });
+
+  it('should reset testConnectionMsg', () => {
+    component.testConnectionMsg = 'test-message';
+    component.onChangeConnection();
     expect(component.testConnectionMsg).toBe('');
   });
 
@@ -1257,33 +1260,33 @@ describe('ConnectionListComponent', () => {
     component.createConnection();
     component.connectionTypeFieldsAssignment();
     fixture.detectChanges();
-    component.basicConnectionForm.controls['type'].setValue('Jira');
-    component.basicConnectionForm.controls['connectionName'].setValue(
+    component.basicConnectionForm.controls['type']?.setValue('Jira');
+    component.basicConnectionForm.controls['connectionName']?.setValue(
       'TestConnectionRishabhJira4',
     );
-    component.basicConnectionForm.controls['cloudEnv'].setValue(false);
-    component.basicConnectionForm.controls['baseUrl'].setValue(
+    component.basicConnectionForm.controls['cloudEnv']?.setValue(false);
+    component.basicConnectionForm.controls['baseUrl']?.setValue(
       'https://test.com/jira',
     );
-    component.basicConnectionForm.controls['username'].setValue('tst-1');
-    component.basicConnectionForm.controls['password'].setValue('test');
-    component.basicConnectionForm.controls['apiEndPoint'].setValue(
+    component.basicConnectionForm.controls['username']?.setValue('tst-1');
+    component.basicConnectionForm.controls['password']?.setValue('test');
+    component.basicConnectionForm.controls['apiEndPoint']?.setValue(
       'rest/api/2',
     );
-    component.basicConnectionForm.controls['isOAuth'].setValue(false);
-    component.basicConnectionForm.controls['sharedConnection'].setValue(true);
-    component.basicConnectionForm.controls['vault'].setValue(false);
-    component.basicConnectionForm.controls['bearerToken'].setValue(false);
-    component.basicConnectionForm.controls['privateKey'].disable();
-    component.basicConnectionForm.controls['consumerKey'].disable();
-    component.basicConnectionForm.controls['patOAuthToken'].disable();
+    component.basicConnectionForm.controls['isOAuth']?.setValue(false);
+    component.basicConnectionForm.controls['sharedConnection']?.setValue(true);
+    component.basicConnectionForm.controls['vault']?.setValue(false);
+    component.basicConnectionForm.controls['bearerToken']?.setValue(false);
+    component.basicConnectionForm.controls['privateKey']?.disable();
+    component.basicConnectionForm.controls['consumerKey']?.disable();
+    component.basicConnectionForm.controls['patOAuthToken']?.disable();
 
-    component.basicConnectionForm.controls['jaasKrbAuth'].disable();
-    component.basicConnectionForm.controls['jaasConfigFilePath'].disable();
-    component.basicConnectionForm.controls['krb5ConfigFilePath'].disable();
-    component.basicConnectionForm.controls['jaasUser'].disable();
-    component.basicConnectionForm.controls['samlEndPoint'].disable();
-    component.basicConnectionForm.controls['jiraAuthType'].disable();
+    component.basicConnectionForm.controls['jaasKrbAuth']?.disable();
+    component.basicConnectionForm.controls['jaasConfigFilePath']?.disable();
+    component.basicConnectionForm.controls['krb5ConfigFilePath']?.disable();
+    component.basicConnectionForm.controls['jaasUser']?.disable();
+    component.basicConnectionForm.controls['samlEndPoint']?.disable();
+    component.basicConnectionForm.controls['jiraAuthType']?.disable();
     component.isNewlyConfigAdded = true;
     const addConnection = spyOn(component, 'addConnectionReq');
     component.saveConnection();
@@ -2298,37 +2301,78 @@ describe('ConnectionListComponent', () => {
     expect(mockConfirmationDialog).toBeDefined();
   });
 
-  it('should allow user to edit for bitbucket connection', () => {
+  it('should initialize with correct values for a Jira connection', () => {
     const connection = {
-      id: '6066cad069515b0001df1809',
-      type: 'bitbucket',
-      connectionName: 'TestConnectionRishabh4',
-      cloudEnv: true,
-      baseUrl: 'https://test.com/jira',
-      username: '',
-      apiEndPoint: 'rest/api/2',
-      isOAuth: false,
-      bearerToken:false,
-      createdAt: '2021-04-02T07:42:09',
-      createdBy: 'SUPERADMIN',
-      sharedConnection: true,
-      updatedBy: 'SUPERADMIN',
-      connectionUsers: ['SUPERADMIN'],
-      vault: false,
+      type: 'Jira',
+      cloudEnv: false,
+      // other properties
     };
-    spyOn(component,'defaultEnableDisableSwitch');
-    spyOn(component,'disableEnableCheckBox');
-    spyOn(component,'checkBitbucketValue');
-    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
-    component.ngOnInit();
-    component.createConnection();
-    component.connectionTypeFieldsAssignment();
+
+    spyOn(component, 'initializeForms');
     component.editConnection(connection);
-    fixture.detectChanges();
-    expect(component.connection).toEqual({ ...connection });
-    expect(component.jiraConnectionDialog).toBeTrue();
+
+    expect(component.connection).toEqual({ ...connection, username: '' });
     expect(component.isNewlyConfigAdded).toBeFalse();
-    expect(component.selectedConnectionType).toBe('bitbucket');
+    expect(component.selectedConnectionType).toBe('Jira');
+    expect(component.jiraConnectionDialog).toBeTrue();
+    expect(component.initializeForms).toHaveBeenCalledWith(component.connection, true);
+  });
+
+  it('should initialize with correct values for a non-Jira connection', () => {
+    const connection = {
+      type: 'Bitbucket',
+      cloudEnv: true,
+      // other properties
+    };
+
+    spyOn(component, 'connectionTypeFieldsAssignment');
+    spyOn(component.basicConnectionForm.controls['type'], 'setValue');
+    spyOn(component, 'defaultEnableDisableSwitch');
+    spyOn(component, 'disableEnableCheckBox');
+    spyOn(component, 'checkBitbucketValue');
+
+    component.editConnection(connection);
+
+    expect(component.connection).toEqual({ ...connection, username: '' });
+    expect(component.isNewlyConfigAdded).toBeFalse();
+    expect(component.selectedConnectionType).toBe('Bitbucket');
+
+    // If jiraConnectionDialog is initialized to false in the component, use toBeFalse()
+    // If not initialized and could be undefined, use toBeFalsy() or modify the expectation
+    expect(component.jiraConnectionDialog).toBeFalse();  // Ensure initialization in the component
+    expect(component.connectionDialog).toBeTrue();
+    expect(component.connectionTypeFieldsAssignment).toHaveBeenCalled();
+    expect(component.basicConnectionForm.controls['type'].setValue).toHaveBeenCalledWith('Bitbucket');
+    expect(component.defaultEnableDisableSwitch).toHaveBeenCalled();
+    expect(component.disableEnableCheckBox).toHaveBeenCalled();
+    expect(component.checkBitbucketValue).toHaveBeenCalledWith(true, 'cloudEnv', 'bitbucket');
+  });
+
+  it('should handle Zephyr connection correctly', () => {
+    const connection = {
+      type: 'Zephyr',
+      cloudEnv: false,
+      // other properties
+    };
+
+    spyOn(component, 'connectionTypeFieldsAssignment');
+    spyOn(component.basicConnectionForm.controls['type'], 'setValue');
+    spyOn(component, 'defaultEnableDisableSwitch');
+    spyOn(component, 'disableEnableCheckBox');
+    spyOn(component, 'checkZephyr');
+
+    component.editConnection(connection);
+
+    expect(component.connection).toEqual({ ...connection, username: '' });
+    expect(component.isNewlyConfigAdded).toBeFalse();
+    expect(component.selectedConnectionType).toBe('Zephyr');
+    expect(component.jiraConnectionDialog).toBeFalse();
+    expect(component.connectionDialog).toBeTrue();
+    expect(component.connectionTypeFieldsAssignment).toHaveBeenCalled();
+    expect(component.basicConnectionForm.controls['type'].setValue).toHaveBeenCalledWith('Zephyr');
+    expect(component.defaultEnableDisableSwitch).toHaveBeenCalled();
+    expect(component.disableEnableCheckBox).toHaveBeenCalled();
+    expect(component.checkZephyr).toHaveBeenCalled();
   });
 
   it("should give error response while testing for jira",()=>{

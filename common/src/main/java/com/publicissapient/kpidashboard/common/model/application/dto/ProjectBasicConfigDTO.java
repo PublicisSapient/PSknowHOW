@@ -51,6 +51,7 @@ public class ProjectBasicConfigDTO {
 	private List<HierarchyValueDTO> hierarchy;
 	private boolean saveAssigneeDetails;
 	private boolean developerKpiEnabled;
+	private boolean projectOnHold;
 
 	/**
 	 * @return isKanban value

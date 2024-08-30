@@ -88,6 +88,7 @@ public final class GitLabConstants {
 	public static final String RESP_TARGET_BRANCH = "target_branch";
 	public static final String RESP_PROJECT_ID = "project_id";
 	public static final String REPOSITORY_NAME = "name";
+	public static final String WEB_URL = "web_url";
 	public static final String RESP_MERGED_AT = "merged_at";
 
 	/**

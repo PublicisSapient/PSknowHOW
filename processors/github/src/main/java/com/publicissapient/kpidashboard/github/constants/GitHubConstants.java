@@ -78,6 +78,7 @@ public final class GitHubConstants {
 	public static final String RESP_NUMBER = "number";
 	public static final String RESP_REQUESTED_REVIEWERS = "requested_reviewers";
 	public static final String RESP_ID = "id";
+	public static final String HTTP_URL = "html_url";
 
 	/**
 	 * Instantiates a new bit bucket constants.

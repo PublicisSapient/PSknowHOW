@@ -487,8 +487,8 @@ export class JiraConfigComponent implements OnInit {
               });
             });
 
-            if (this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest'
-              || this.urlParam?.toLowerCase() == 'zephyr' || this.urlParam?.toLowerCase() == 'azure') {
+            if(this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest'
+            || this.urlParam?.toLowerCase() == 'zephyr' || this.urlParam?.toLowerCase() == 'azure'){
               this.showAddNewBtn = false;
             }
           }
@@ -2864,12 +2864,13 @@ export class JiraConfigComponent implements OnInit {
   }
 
   redirectToConnections() {
-    this.router.navigate(['./dashboard/Config/connection-list']);
+    const currProjId = this.sharedService.getSelectedProject();
+    this.router.navigate([`./dashboard/Config/ConfigSettings/${currProjId.id}`], {queryParams: { tab: 1, toolName: this.formTitle }});
   }
 
   handleToolConfiguration(type?) {
     this.isConfigureTool = true;
-    if (type == 'new') {
+    if(type == 'new'){
       this.isEdit = false;
     }
     setTimeout(() => {

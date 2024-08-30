@@ -21,7 +21,7 @@
     <div class="p-d-flex p-align-center p-jc-between position-relative p-pb-3">
         <div class="p-d-flex p-align-center">
 
-            <a [routerLink]="['/dashboard/Config/connection-list/' + selectedProject.id + '/ToolMenu']" [queryParams]="{tab: 1}" pButton pRipple type="button" icon="pi pi-arrow-left"
+            <a [routerLink]="['/dashboard/Config/ConfigSettings/' + selectedProject.id]" [queryParams]="{tab: 2}" pButton pRipple type="button" icon="pi pi-arrow-left"
                 class="p-button-raised p-button-secondary back-button p-mr-4"></a>
             <h5 class="card__primary__title__text p-m-0">Field Mappings ({{selectedConfig?.Type?.toLowerCase() === 'kanban' ? 'Kanban' : 'Scrum'}})</h5>
         </div>

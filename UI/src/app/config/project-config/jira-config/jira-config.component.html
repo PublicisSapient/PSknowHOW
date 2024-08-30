@@ -21,7 +21,7 @@
     <div class="p-p-3 p-mb-5 p-grid bg-cyan" *ngIf="selectedProject">
         <ng-container *ngFor="let project of selectedProject | keyvalue : originalOrder">
             <div class="p-md-2 long-text float-left pad-r-0 pad-l-0 inline-div"
-                *ngIf="project?.key?.toLowerCase() !== 'id'">
+                *ngIf="project?.key?.toLowerCase() !== 'id' && project?.key != 'saveAssigneeDetails' && project?.key != 'developerKpiEnabled' && project?.key != 'projectOnHold'">
                 <p class="form_title p-text-capitalize">{{project?.key}}</p>
                 <strong class="sub-text p-text-capitalize">{{project?.value}}</strong>
             </div>
@@ -29,7 +29,7 @@
     </div>
     <div class="p-ml-3">
         <div class="p-d-flex p-align-center position-relative p-pb-3">
-            <a [routerLink]="['/dashboard/Config/connection-list/' + selectedProject.id + '/ToolMenu']" [queryParams]="{tab: 1}" pButton pRipple type="button" icon="pi pi-arrow-left"
+            <a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject.id]" [queryParams]="{tab: 2}" pButton pRipple type="button" icon="pi pi-arrow-left"
                 class="p-button-raised p-button-secondary back-button p-mr-4"></a>
             <h5 class="card__primary__title__text p-m-0">{{formTitle}} Configuration</h5>
         </div>
@@ -104,7 +104,7 @@
                                     (click)="redirectToConnections()"><em class="fas fa-plug"></em>Connections</span>"
                                 )</small>
                         </div>
-                        
+
                     </span>
                 </ng-template>
                 <div class="p-d-flex p-justify-end">
