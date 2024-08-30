@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { SelectButtonModule } from 'primeng/selectbutton';
@@ -515,13 +515,10 @@ export class ConnectionListComponent implements OnInit {
     'sharedConnection': false,
     'jiraAuthType': ''
   }
-  jiraConnectionDialog: boolean;
+  jiraConnectionDialog: boolean = false;
   repoConnections = ['Bitbucket', 'GitLab', 'Azure Repository'];
   repoToolsEnabled: boolean;
-  configOptions: { tab: string; tabValue: string; }[];
-  selectedTab: string = 'toolsConnected';
-  pid: any;
-  tab: any;
+  @Input() selectedToolName: string;
   groupedToolsGroup : any;
 
   constructor(private httpService: HttpService,
@@ -533,27 +530,6 @@ export class ConnectionListComponent implements OnInit {
     private helper: HelperService,
     private route: ActivatedRoute,
     public router: Router) {
-    this.configOptions = [
-      {
-        'tab': 'Tools Connected',
-        'tabValue': 'toolsConnected'
-      },
-      {
-        'tab': 'Project Configuration',
-        'tabValue': 'projectConfig'
-      }
-    ]
-
-    this.route.queryParams.subscribe(params => {
-      // this.pid = params['pid'];
-      this.tab = params['tab'];
-      if (this.tab === "1") {
-        this.selectedTab = 'projectConfig';
-      } else {
-        this.selectedTab = 'toolsConnected';
-      }
-    });
-
   }
 
   ngOnInit(): void {
@@ -580,24 +556,16 @@ export class ConnectionListComponent implements OnInit {
     // filtering connections based on repoToolFlag
     this.connectionTypeCompleteList = this.filterConnections(this.connectionTypeCompleteList, 'label')
     this.addEditConnectionFieldsNlabels = this.filterConnections(this.addEditConnectionFieldsNlabels, 'connectionLabel')
-     
+
     /** formating data for connection dropdown */
     this.groupedToolsGroup = this.createFormatCategoryWise(this.addEditConnectionFieldsNlabels);
 
     /* this.httpService.getAllToolConfigs().subscribe(res => {
       console.log(res)
     }) */
+    this.selectedToolName = this.selectedToolName !== undefined ? this.selectedToolName : this.addEditConnectionFieldsNlabels[0].connectionType;
+    this.selectedConnectionType = this.addEditConnectionFieldsNlabels.filter(el => el.connectionLabel === this.selectedToolName)[0]?.connectionType;
 
-
-
-  }
-
-  onTabChange() {
-    if(this.selectedTab === 'projectConfig') {
-      this.router.navigate(['.'], { queryParams: { 'tab': 1 }, relativeTo: this.route });
-    } else {
-      this.router.navigate(['.'], { queryParams: { 'tab': 0 }, relativeTo: this.route });
-    }
   }
 
   initializeForms(connection, isEdit?) {
@@ -798,7 +766,7 @@ export class ConnectionListComponent implements OnInit {
       this.submitted = false;
       this.connectionDialog = true;
       this.connectionTypeFieldsAssignment();
-      this.basicConnectionForm.controls['type'].setValue(this.connection.type);
+      this.basicConnectionForm.controls['type']?.setValue(this.connection.type);
       this.defaultEnableDisableSwitch();
       this.disableEnableCheckBox();
     }
@@ -937,11 +905,11 @@ export class ConnectionListComponent implements OnInit {
       reqData['apiKey'] = this.connection['apiKey'];
     }
 
-    if (this.connection['type'].toLowerCase() === 'zephyr' && this.connection['cloudEnv']) {
+    if (this.connection['type']?.toLowerCase() === 'zephyr' && this.connection['cloudEnv']) {
       reqData['baseUrl'] = this.basicConnectionForm.controls['baseUrl']['value'];
     }
 
-    if (this.connection['type'].toLowerCase() === 'sonar' && this.connection['cloudEnv'] === true) {
+    if (this.connection['type']?.toLowerCase() === 'sonar' && this.connection['cloudEnv'] === true) {
       reqData['accessTokenEnabled'] = true;
     }
 
@@ -1002,7 +970,7 @@ export class ConnectionListComponent implements OnInit {
     } else {
       this.connectionDialog = true;
       this.connectionTypeFieldsAssignment();
-      this.basicConnectionForm.controls['type'].setValue(this.selectedConnectionType);
+      this.basicConnectionForm.controls['type']?.setValue(this.selectedConnectionType);
       this.defaultEnableDisableSwitch();
       this.disableEnableCheckBox();
       if (connection.type.toLowerCase() == 'bitbucket' && connection.cloudEnv == true) {
@@ -1015,9 +983,9 @@ export class ConnectionListComponent implements OnInit {
 
   disableEnableCheckBox() {
     if (!this.connection.sharedConnection) {
-      this.basicConnectionForm.controls['sharedConnection'].disable();
+      this.basicConnectionForm.controls['sharedConnection']?.disable();
     } else {
-      this.basicConnectionForm.controls['sharedConnection'].enable();
+      this.basicConnectionForm.controls['sharedConnection']?.enable();
     }
   }
 
@@ -1082,37 +1050,37 @@ export class ConnectionListComponent implements OnInit {
     } else if (!!this.basicConnectionForm.controls['isOAuth'] && this.connection['isOAuth'] === false) {
       this.basicConnectionForm.controls['privateKey'].disable();
       this.basicConnectionForm.controls['consumerKey'].disable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'zephyr' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === true) {
+    } else if (this.selectedConnectionType?.toLowerCase() === 'zephyr' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === true) {
       this.basicConnectionForm.controls['username'].disable();
       this.basicConnectionForm.controls['password'].disable();
       this.basicConnectionForm.controls['baseUrl'].disable();
       this.basicConnectionForm.controls['accessToken'].enable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'zephyr' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === false) {
+    } else if (this.selectedConnectionType?.toLowerCase() === 'zephyr' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === false) {
       this.basicConnectionForm.controls['accessToken'].disable();
       this.basicConnectionForm.controls['username'].enable();
       this.basicConnectionForm.controls['password'].enable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === true) {
+    } else if (this.selectedConnectionType?.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === true) {
       this.basicConnectionForm.controls['username'].disable();
       this.basicConnectionForm.controls['password'].disable();
       this.basicConnectionForm.controls['accessTokenEnabled'].disable();
       this.basicConnectionForm.controls['accessToken'].enable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === false) {
+    } else if (this.selectedConnectionType?.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === false) {
       this.basicConnectionForm.controls['username'].enable();
       this.basicConnectionForm.controls['password'].enable();
       this.basicConnectionForm.controls['accessTokenEnabled'].enable();
       this.basicConnectionForm.controls['accessToken'].disable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'repotool') {
+    } else if (this.selectedConnectionType?.toLowerCase() === 'repotool') {
       if (this.connection && this.connection['repoToolProvider'] === 'bitbucket')
         this.basicConnectionForm.controls['apiEndPoint'].enable();
       else { this.basicConnectionForm.controls['apiEndPoint'].disable() };
     }
 
-    if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true) {
+    if (this.selectedConnectionType?.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true) {
       this.basicConnectionForm.controls['password'].disable();
       this.basicConnectionForm.controls['accessToken'].disable();
       this.basicConnectionForm.controls['accessTokenEnabled'].disable();
     }
-    if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['accessTokenEnabled'] && !!this.connection['accessTokenEnabled'] === true) {
+    if (this.selectedConnectionType?.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['accessTokenEnabled'] && !!this.connection['accessTokenEnabled'] === true) {
       this.basicConnectionForm.controls['username'].disable();
       this.basicConnectionForm.controls['password'].disable();
       this.basicConnectionForm.controls['accessToken'].enable();
@@ -1643,7 +1611,7 @@ export class ConnectionListComponent implements OnInit {
     const formatedData =  addEditConnectionFieldsNlabels.reduce((acc, curr) => {
       // Find the category in the accumulator
       let category = acc.find(item => item.label === curr.categoryLabel);
-      
+
       // If the category doesn't exist, create a new one
       if (!category) {
         category = {
@@ -1656,7 +1624,7 @@ export class ConnectionListComponent implements OnInit {
       // Add the connection label and type to the category's items
       category.items.push({ label: curr.connectionLabel, value: curr.connectionType });
       return acc;
-    }, []);   
+    }, []);
     return formatedData;
   }
 }

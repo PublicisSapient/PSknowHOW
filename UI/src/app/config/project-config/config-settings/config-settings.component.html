@@ -1,0 +1,30 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<div class="selectbtn-container">
+    <p-selectButton [options]="configOptions" [(ngModel)]="selectedTab" (onChange)="onTabChange()" optionLabel="tab" optionValue="tabValue" styleClass="p-mb-5" ngDefaultControl></p-selectButton>
+</div>
+<ng-container *ngIf="selectedTab === 'projectSettings'">
+  <app-project-settings></app-project-settings>
+</ng-container>
+<ng-container *ngIf="selectedTab === 'availableConnections'">
+  <app-connection-list [selectedToolName]="selectedToolName"></app-connection-list>
+</ng-container>
+<ng-container *ngIf="selectedTab === 'projectConfig'">
+  <app-tool-menu></app-tool-menu>
+</ng-container>

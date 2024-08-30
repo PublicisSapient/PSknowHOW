@@ -433,11 +433,12 @@ describe('ProjectListComponent', () => {
       name: 'JIRAPROJ',
       type: 'Scrum',
     };
+    const tabNum = 2;
     const navigateSpy = spyOn(router, 'navigate');
     spyOn(sharedService , 'setSelectedProject');
-    component.editConfiguration(fakeProject);
+    component.editConfiguration(fakeProject, tabNum);
     expect(sharedService.setSelectedProject).toHaveBeenCalled();
-    expect(navigateSpy).toHaveBeenCalledOnceWith(['/dashboard/Config/connection-list/63b3f9098ec44416b3ce9699/ToolMenu'], { queryParams: { tab: 1 } });
+    expect(navigateSpy).toHaveBeenCalledOnceWith(['/dashboard/Config/ConfigSettings/63b3f9098ec44416b3ce9699'], { queryParams: { tab: 2 } });
   })
 
   it("should get success response while getting project list",()=>{
