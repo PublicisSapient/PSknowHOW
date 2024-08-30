@@ -1061,6 +1061,9 @@ public class KPIExcelUtility {
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setMeanTimetoMerge(repoToolValidationData.getMeanTimeToMerge().toString());
+				Map<String, String> mergeUrl = new HashMap<>();
+				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
+				excelData.setMergeRequestUrl(mergeUrl);
 				kpiExcelData.add(excelData);
 			});
 		}

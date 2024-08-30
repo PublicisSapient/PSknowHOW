@@ -19,9 +19,14 @@
 package com.publicissapient.kpidashboard.bitbucket.processor.service.impl.common;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -139,6 +144,27 @@ public class BasicBitBucketClient {
 		final Object objectVal = jsonObject.get(key);
 		if (objectVal != null) {
 			val = objectVal.toString();
+		}
+		return val;
+	}
+
+	protected String getLinks(JSONObject jsonObject, String key) {
+		String val = null;
+		JSONObject objectVal = (JSONObject) jsonObject.get(BitBucketConstants.LINKS);
+		if (objectVal != null) {
+			if (objectVal.get(key) instanceof JSONArray) {
+				Optional<Map<String, Object>> obj = ((ArrayList<Map<String, Object>>) objectVal.get(key)).stream()
+						.filter(jsonmap -> jsonmap.containsKey(BitBucketConstants.HREF)).findFirst();
+				if (obj.isPresent()) {
+					val = obj.get().get(BitBucketConstants.HREF).toString();
+				}
+			} else {
+				JSONObject objectLink = (JSONObject) objectVal.get(key);
+				if (objectLink != null) {
+					Object objectHref = objectLink.get(BitBucketConstants.HREF);
+					val = objectHref.toString();
+				}
+			}
 		}
 		return val;
 	}
