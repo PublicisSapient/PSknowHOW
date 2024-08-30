@@ -227,7 +227,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.noProjects = res;
             this.kanbanActivated = this.service.getSelectedType()?.toLowerCase() === 'kanban' ? true : false;
           }));
-       
+
         /** Get recommendations flag */
         this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
             this.isRecommendationsEnabled = item;
@@ -1057,16 +1057,12 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.chartColorList[kpiId] = [];
             for (let i = 0; i < arr?.length; i++) {
                 for (const key in this.colorObj) {
-                    if(kpiId == 'kpi17'){
-                        if(this.colorObj[key]?.nodeName == arr[i].value[0].sprojectName){
-                            this.chartColorList[kpiId].push(this.colorObj[key]?.color);
-                            finalArr.push(JSON.parse(JSON.stringify(arr[i])));
-                        }
-
-                    }else if (this.colorObj[key]?.nodeName == arr[i]?.data) {
-                        this.chartColorList[kpiId].push(this.colorObj[key]?.color);
-                        finalArr.push(arr.filter((a) => a.data === this.colorObj[key].nodeName)[0]);
-                        // break;
+                    if (kpiId == 'kpi17' && this.colorObj[key]?.nodeName == arr[i].value[0].sprojectName){
+                      this.chartColorList[kpiId].push(this.colorObj[key]?.color);
+                      finalArr.push(JSON.parse(JSON.stringify(arr[i])));
+                    } else if (this.colorObj[key]?.nodeName == arr[i]?.data) {
+                      this.chartColorList[kpiId].push(this.colorObj[key]?.color);
+                      finalArr.push(arr.filter((a) => a.data === this.colorObj[key].nodeName)[0]);
                     }
                 }
             }
