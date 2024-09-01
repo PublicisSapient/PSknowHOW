@@ -51,7 +51,6 @@ public class ProjectBasicConfig extends BasicModel {
 	private String createdBy;
 	private String updatedAt;
 	private String updatedBy;
-	private boolean developerKpiEnabled;
 	private boolean kanban;
 	private List<HierarchyValue> hierarchy;
 	private boolean saveAssigneeDetails;

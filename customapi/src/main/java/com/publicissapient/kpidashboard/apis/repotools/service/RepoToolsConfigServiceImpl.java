@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnectionDetail;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
@@ -95,6 +97,8 @@ public class RepoToolsConfigServiceImpl {
 	private AesEncryptionService aesEncryptionService;
 	@Autowired
 	private RepoToolsClient repoToolsClient;
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	public static final String TOOL_BRANCH = "branch";
 	public static final String SCM = "scm";
@@ -106,22 +110,18 @@ public class RepoToolsConfigServiceImpl {
 	public static final String BITBUCKET_PROVIDER = "bitbucket_oauth2";
 	public static final String WARNING = "WARNING";
 
-
-
 	/**
-	 * enroll a project to the repo tool
-	 * 
-	 * @param projectToolConfig
-	 * @param connection
-	 * @param branchNames
-	 * @return
+	 * Configures and enrolls a project in the repo tool.
+	 *
+	 * @param projectToolConfig the ProjectToolConfig object containing project tool configuration
+	 * @param connection the Connection object containing connection details
+	 * @param branchNames the list of branch names to be scanned
+	 * @return a ServiceResponse object indicating the success or failure of the operation
 	 */
-	public int configureRepoToolProject(ProjectToolConfig projectToolConfig, Connection connection,
+	public ServiceResponse configureRepoToolProject(ProjectToolConfig projectToolConfig, Connection connection,
 			List<String> branchNames) {
-		int httpStatus;
 		try {
 			RepoToolConfig repoToolConfig = new RepoToolConfig();
-
 			// create configuration details for repo tool
 			setToolWiseRepoToolConfig(connection, projectToolConfig, repoToolConfig);
 			repoToolConfig.setIsNew(projectToolConfig.getIsNew());
@@ -131,18 +131,25 @@ public class RepoToolsConfigServiceImpl {
 			repoToolConfig.setFirstScanFrom(LocalDateTime.now().minusMonths(3).toString().replace("T", " "));
 			repoToolConfig.setScanningBranches(branchNames);
 			repoToolConfig.setIsCloneable(true);
-
 			// api call to enroll the project
-			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig,
+			repoToolsClient.enrollProjectCall(repoToolConfig,
 					customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolEnrollProjectUrl(),
 					customApiConfig.getRepoToolAPIKey());
-
 		} catch (HttpClientErrorException | HttpServerErrorException ex) {
 			log.error("Exception occcured while enrolling project {}",
 					projectToolConfig.getBasicProjectConfigId().toString(), ex);
-			httpStatus = ex.getStatusCode().value();
+			String errorMessage = ex.getResponseBodyAsString();
+			try {
+				errorMessage = objectMapper.readTree(errorMessage).get("error").asText();
+			} catch (Exception e) {
+				log.error("Error parsing JSON response", e);
+				errorMessage = ex.getStatusCode().value() == HttpStatus.BAD_REQUEST.value()
+						? "Project with similar configuration already exists"
+						: "";
+			}
+			return new ServiceResponse(false, errorMessage, null);
 		}
-		return httpStatus;
+		return new ServiceResponse(true, "", null);
 	}
 
 	/**
@@ -210,7 +217,6 @@ public class RepoToolsConfigServiceImpl {
 	public int triggerScanRepoToolProject(String processorName, String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
 		Processor processor = processorRepository.findByProcessorName(processorName);
-
 		// get repo tools configuration from ProjectToolConfig
 		List<ProjectToolConfig> projectRepos = projectToolConfigRepository
 				.findByToolNameAndBasicProjectConfigId(processorName, new ObjectId(basicProjectConfigId));
@@ -250,25 +256,20 @@ public class RepoToolsConfigServiceImpl {
 	}
 
 	/**
-	 * update a project enrolled in repo tool
-	 * 
-	 * @param toolList
-	 * @param tool
-	 * @param basicProjectConfigId
-	 * @return
+	 * Updates the configuration of a project enrolled in the repo tool.
+	 *
+	 * @param toolList the list of ProjectToolConfig objects representing the tools associated with the project
+	 * @param tool the ProjectToolConfig object representing the tool to be updated
+	 * @param basicProjectConfigId the ID of the basic project configuration
+	 * @return true if the project configuration was successfully updated, false otherwise
 	 */
 	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool,
 			String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
 		if (toolList.size() > 1) {
 			toolList.remove(tool);
-			if (CollectionUtils.isNotEmpty(toolList)) {
-				// configure debbie project with
-				List<String> branch = new ArrayList<>();
-				toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
-				Connection connection = connectionRepository.findById(tool.getConnectionId()).orElse(new Connection());
-				toolList.get(0).setIsNew(false);
-				httpStatus = configureRepoToolProject(toolList.get(0), connection, branch);
+			if (CollectionUtils.isNotEmpty(getToolByRepo(tool, toolList))) {
+				return true;
 			} else {
 				// delete only the repository
 				String deleteRepoUrl = customApiConfig.getRepoToolURL()
@@ -288,6 +289,26 @@ public class RepoToolsConfigServiceImpl {
 		return httpStatus == HttpStatus.OK.value();
 	}
 
+	/**
+	 * Filters the list of ProjectToolConfig objects based on the tool's repository details.
+	 *
+	 * @param tool the ProjectToolConfig object representing the tool to be matched
+	 * @param projectToolConfigList the list of ProjectToolConfig objects to be filtered
+	 * @return a list of ProjectToolConfig objects that match the repository details of the given tool
+	 */
+	private List<ProjectToolConfig> getToolByRepo(ProjectToolConfig tool,
+			List<ProjectToolConfig> projectToolConfigList) {
+		if (tool.getToolName().equalsIgnoreCase(Constant.TOOL_GITLAB))
+			return projectToolConfigList.stream()
+					.filter(toolConfig -> toolConfig.getProjectId().equals(tool.getProjectId())).toList();
+		else if (tool.getToolName().equalsIgnoreCase(Constant.TOOL_BITBUCKET))
+			return projectToolConfigList.stream()
+					.filter(toolConfig -> toolConfig.getRepoSlug().equals(tool.getRepoSlug())).toList();
+		else {
+			return projectToolConfigList.stream()
+					.filter(toolConfig -> toolConfig.getRepositoryName().equals(tool.getRepositoryName())).toList();
+		}
+	}
 
 
 	/**

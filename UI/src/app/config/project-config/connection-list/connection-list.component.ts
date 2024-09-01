@@ -143,8 +143,8 @@ export class ConnectionListComponent implements OnInit {
       connectionLabel: 'Azure Repository',
       categoryValue : 'sourceCodeManagement',
       categoryLabel: 'Source Code Management',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'User Email', 'Share connection with everyone'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'email', 'sharedConnection']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'PAT', 'User Email', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'pat', 'email', 'sharedConnection']
     },
     {
       connectionType: 'Zephyr',

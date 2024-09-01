@@ -496,14 +496,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectToolConfig.setBranch(projectToolConfig.getDefaultBranch());
 		} else
 			branchList.add(projectToolConfig.getBranch());
-		int httpStatus = repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, branchList);
-		if (httpStatus == HttpStatus.BAD_REQUEST.value())
-			return new ServiceResponse(false, "Project with similar configuration already exists", null);
-		if (httpStatus == HttpStatus.INTERNAL_SERVER_ERROR.value())
-			return new ServiceResponse(false, "Invalid Repository Name", null);
-		if (httpStatus == HttpStatus.CREATED.value())
-			return new ServiceResponse(true, "", null);
-		return new ServiceResponse(false, "", null);
+		return repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, branchList);
 	}
 
 	@Override

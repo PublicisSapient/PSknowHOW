@@ -188,11 +188,11 @@ public class RepoToolCodeCommitKanbanServiceImplTest {
 		List<ProcessorItem> processorItemList = new ArrayList<>();
 		processorItemList.add(processorItem);
 
-		tool = createTool("URL1", "BRANCH3", "RepoTool", "USER3", "PASS3", processorItemList);
+		tool = createTool("URL1", "BRANCH3", "Bitbucket", "USER3", "PASS3", processorItemList);
 
 		toolList.add(tool);
 
-		toolGroup.put(Constant.REPO_TOOLS, toolList);
+		toolGroup.put(Constant.TOOL_BITBUCKET, toolList);
 
 		toolMap.put(new ObjectId("6335368249794a18e8a4479f"), toolGroup);
 	}
