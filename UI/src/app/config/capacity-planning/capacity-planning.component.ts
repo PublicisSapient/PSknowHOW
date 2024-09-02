@@ -371,12 +371,11 @@ export class CapacityPlanningComponent implements OnInit {
             this.projectJiraAssignees = response['data'];
             this.http_service.getAssigneeEmails(projectId)
               .subscribe(response => {
-                if (response[0] && response[0]?.success && response[0]?.data) {
-                  this.projectAssigneeEmails = response[1].data;
+                if (response && response?.success && response?.data) {
+                  this.projectAssigneeEmails = response.data;
                   this.projectAssigneeEmailsCopy = [...this.projectAssigneeEmails].map((x) => {
                     return {
-                      email: x,
-                      inactive: false
+                      email: x
                     }
                   });
                 } else {
