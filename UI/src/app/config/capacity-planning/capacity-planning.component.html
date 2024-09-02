@@ -366,8 +366,7 @@
 
                                         <p-multiSelect [options]="projectAssigneeEmailsCopy"
                                             *ngIf="projectCapacityEditMode;else showUserEmail"
-                                            defaultLabel="Select Emails" optionLabel="email"
-                                            optionDisabled="inactive" class="multiselect-custom"
+                                            defaultLabel="Select Emails" class="multiselect-custom"
                                             [style]="{'width':'150px'}" display="chip" showClear="true"
                                             [formControl]="selectedSprintAssigneFormArray[rowIndex]?.email"
                                             (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email')"
