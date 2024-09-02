@@ -657,6 +657,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
+  closeDateFilterModel() {
+    this.toggleDateDropdown = false;
+  }
+
   populateAdditionalFilters(event) {
     if (!Array.isArray(event)) {
       event = [event];
