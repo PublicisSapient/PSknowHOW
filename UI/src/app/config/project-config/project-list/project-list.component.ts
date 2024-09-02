@@ -59,10 +59,11 @@ export class ProjectListComponent implements OnInit {
   @ViewChild(Table) table: Table;
   isNewProject = false;
   items: MenuItem[];
+  roleBasedItems: MenuItem[];
   selectedProductForExecutingAction: any;
 
   constructor(private http: HttpService, private sharedService: SharedService, private messenger: MessageService, private router: Router, private confirmationService: ConfirmationService,
-    private authorization: GetAuthorizationService, private helper: HelperService) { }
+    private getAuthorizationService: GetAuthorizationService, private helper: HelperService) { }
 
   ngOnInit(): void {
     this.getData();
@@ -76,11 +77,11 @@ export class ProjectListComponent implements OnInit {
           this.editConfiguration(this.selectedProductForExecutingAction, 2);
         }
       },
-      // {
-      //   label: 'Delete Project', icon: 'pi pi-trash', command: () => {
-      //     this.deleteProject(this.selectedProductForExecutingAction);
-      //   }
-      // },
+      {
+        label: 'Delete Project', icon: 'pi pi-trash', command: () => {
+          this.deleteProject(this.selectedProductForExecutingAction);
+        }
+      },
       {
         label: 'Settings', icon: 'pi pi-wrench', command: () => {
           this.allProjectList.forEach(project => {
@@ -89,10 +90,19 @@ export class ProjectListComponent implements OnInit {
         }
       }
     ];
+
+    this.roleBasedItems = [
+      {
+        label: 'Edit Config', icon: 'pi pi-file-edit', command: () => {
+          this.editConfiguration(this.selectedProductForExecutingAction, 2);
+        }
+      },
+    ];
+
   }
 
-  public handleActionsClick(product) {
-    this.selectedProductForExecutingAction = product;
+  public handleActionsClick(currentProject) {
+    this.selectedProductForExecutingAction = currentProject;
   }
 
   /* Assign role along with project Id */
