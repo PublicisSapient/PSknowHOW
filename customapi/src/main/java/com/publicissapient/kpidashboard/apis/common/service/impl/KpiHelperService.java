@@ -130,6 +130,10 @@ public class KpiHelperService { // NOPMD
 	public static final String DAY_FREQUENCY = "day";
 	private static final String STORY_LIST = "stories";
 	private static final String SPRINTSDETAILS = "sprints";
+	private static final String AZURE_REPO = "AzureRepository";
+	private static final String BITBUCKET = "Bitbucket";
+	private static final String GITLAB = "GitLab";
+	private static final String GITHUB = "GitHub";
 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
@@ -1954,4 +1958,53 @@ public class KpiHelperService { // NOPMD
 		}
 		return remainingDefects;
 	}
+
+	/**
+	 * Retrieves a list of SCM (Source Control Management) tool jobs for a given project node.
+	 *
+	 * @param toolMap a map containing tool configurations, where the key is the ObjectId of the project configuration
+	 *                and the value is another map with tool names as keys and lists of Tool objects as values.
+	 * @param node    the project node for which to retrieve the SCM tool jobs.
+	 * @return a list of Tool objects representing the SCM tool jobs for the given project node.
+	 */
+	public List<Tool> getScmToolJobs(Map<String, List<Tool>> toolListMap, Node node) {
+
+		List<Tool> bitbucketJob = new ArrayList<>();
+		if (null != toolListMap) {
+			bitbucketJob
+					.addAll(toolListMap.get(BITBUCKET) == null ? Collections.emptyList() : toolListMap.get(BITBUCKET));
+			bitbucketJob.addAll(
+					toolListMap.get(AZURE_REPO) == null ? Collections.emptyList() : toolListMap.get(AZURE_REPO));
+			bitbucketJob.addAll(toolListMap.get(GITLAB) == null ? Collections.emptyList() : toolListMap.get(GITLAB));
+			bitbucketJob.addAll(toolListMap.get(GITHUB) == null ? Collections.emptyList() : toolListMap.get(GITHUB));
+		}
+		if (CollectionUtils.isEmpty(bitbucketJob)) {
+			log.error("[BITBUCKET]. No repository found for this project {}", node.getProjectFilter());
+		}
+		return bitbucketJob;
+	}
+
+	/**
+	 * Populates the given list of repositories with tools from the provided map of
+	 * tool lists.
+	 *
+	 * @param mapOfListOfTools
+	 *            a map containing lists of tools, where the key is the tool type
+	 *            and the value is a list of tools.
+	 */
+	public List<Tool> populateSCMToolsRepoList(Map<String, List<Tool>> mapOfListOfTools) {
+		List<Tool> reposList = new ArrayList<>();
+		if (null != mapOfListOfTools) {
+			reposList.addAll(mapOfListOfTools.get(BITBUCKET) == null ? Collections.emptyList()
+					: mapOfListOfTools.get(BITBUCKET));
+			reposList.addAll(mapOfListOfTools.get(AZURE_REPO) == null ? Collections.emptyList()
+					: mapOfListOfTools.get(AZURE_REPO));
+			reposList.addAll(
+					mapOfListOfTools.get(GITLAB) == null ? Collections.emptyList() : mapOfListOfTools.get(GITLAB));
+			reposList.addAll(
+					mapOfListOfTools.get(GITHUB) == null ? Collections.emptyList() : mapOfListOfTools.get(GITHUB));
+		}
+		return reposList;
+	}
+
 }

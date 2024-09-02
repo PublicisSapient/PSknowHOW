@@ -81,6 +81,7 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	public List<Tool> toolList1 = new ArrayList<>();
 
 	@Mock
 	ConfigHelperService configHelperService;
@@ -147,6 +148,7 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 				new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
 		assigneeDetails.setAssignee(assigneeSet);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
+		when(kpiHelperService.populateSCMToolsRepoList(anyMap())).thenReturn(toolList1);
 
 	}
 
@@ -167,8 +169,6 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 	}
 
 	private void setToolMap() {
-		List<Tool> toolList1 = new ArrayList<>();
-
 		ProcessorItem processorItem = new ProcessorItem();
 		processorItem.setProcessorId(new ObjectId("63242d00aaf87a5b01de7ad6"));
 		processorItem.setId(new ObjectId("63316e5667446e5ec838b67e"));

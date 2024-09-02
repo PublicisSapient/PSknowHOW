@@ -173,6 +173,7 @@ public class RepoToolCodeCommitServiceImplTest {
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
 				repoToolKpiMetricResponseList);
+		when(kpiHelperService.populateSCMToolsRepoList(anyMap())).thenReturn(toolList3);
 
 	}
 
