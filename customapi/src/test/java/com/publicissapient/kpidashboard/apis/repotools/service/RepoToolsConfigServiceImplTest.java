@@ -249,5 +249,11 @@ public class RepoToolsConfigServiceImplTest {
         verify(processorExecutionTraceLogService, times(1)).save(any(ProcessorExecutionTraceLog.class));
     }
 
+    @Test
+    public void testUpdateConnection() {
+        when(repoToolsProviderRepository.findByToolName("github")).thenReturn(repoToolsProvider);
+        assertEquals(HttpStatus.OK.value(), repoToolsConfigService.updateRepoToolConnection(connection));
+    }
+
 
 }

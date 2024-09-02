@@ -1860,7 +1860,7 @@ public class KpiHelperService { // NOPMD
 	 *
 	 * @param endDate
 	 *            end date
-	 * @param toolMap
+	 * @param tools
 	 *            tool map from cache
 	 * @param node
 	 *            project node
@@ -1875,8 +1875,6 @@ public class KpiHelperService { // NOPMD
 			String repoToolKpi) {
 
 		List<String> projectCodeList = new ArrayList<>();
-		ProjectFilter accountHierarchyData = node.getProjectFilter();
-		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
 		if (!CollectionUtils.isEmpty(tools)) {
 			projectCodeList.add(node.getId());
 		}
