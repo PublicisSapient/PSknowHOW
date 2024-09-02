@@ -12885,7 +12885,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = '-- --';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -12921,7 +12921,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = '-ve';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -12947,7 +12947,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = 'NA';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -12975,7 +12975,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = 'NA';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -12996,7 +12996,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = 'NA';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
