@@ -52,79 +52,8 @@
     </ng-container>
   </div>
 
-  <!-- <div class="p-mt-3">
-    <h2 class="p-mb-3">General</h2>
-    <p>These settings allow you to manage your project’s lifecycle in knowHOW, including options to delete, pause, or
-      resume your project.</p>
-    <p-table [value]="generalControls" styleClass="p-datatable-gridlines">
-      <ng-template pTemplate="body" let-generalControl>
-        <tr>
-          <td>{{generalControl.name}}</td>
-          <td>{{generalControl.description}}</td>
-          <td>
-            <ng-container *ngIf="generalControl.actionItem === 'cta'">
-              <button pButton pRipple type="button" label="Delete Project" class="p-button-danger"
-                (click)="deleteProject(selectedProject)"></button>
-            </ng-container>
-            <ng-container *ngIf="generalControl.actionItem === 'switch'">
-              <p-inputSwitch [(ngModel)]="pauseDataCollection" [disabled]="true"></p-inputSwitch>
-            </ng-container>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <div class="p-mt-3">
-    <h2 class="p-mb-3">One-Time Settings</h2>
-    <p>These are permanent configurations that cannot be altered once enabled. Please review your choices carefully, as
-      these settings will directly impact how your project data is managed and cannot be modified later.</p>
-    <p-table [value]="oneTimeControls" styleClass="p-datatable-gridlines">
-      <ng-template pTemplate="body" let-oneTimeControl>
-        <tr>
-          <td>{{oneTimeControl.name}}</td>
-          <td>{{oneTimeControl.description}}</td>
-          <td>
-            <ng-container *ngIf="oneTimeControl.actionItem === 'switch-people-kpi'">
-              <div class="mar-t-10" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
-                <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch" [(ngModel)]="isAssigneeSwitchChecked"
-                  [disabled]="isAssigneeSwitchDisabled" (onChange)="onAssigneeSwitchChange($event)">
-                </p-inputSwitch>
-              </div>
-            </ng-container>
-            <ng-container *ngIf="oneTimeControl.actionItem === 'switch-developer-kpi'">
-              <p-inputSwitch name="developerSwitch" id="developerSwitch" [disabled]="true"></p-inputSwitch>
-            </ng-container>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <div class="p-mt-3">
-    <h2 class="p-mb-3">API</h2>
-    <p></p>
-    <p-table [value]="apiControls" styleClass="p-datatable-gridlines">
-      <ng-template pTemplate="body" let-apiControl>
-        <tr>
-          <td>{{apiControl.name}}</td>
-          <td>{{apiControl.description}}</td>
-          <td>
-            <div class="p-d-flex" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
-              <button pButton type="button" label="Generate Token" iconPos="right" (click)="generateTokenConfirmation()"
-                [loading]="generateTokenLoader" class="p-mt-0 p-mr-3"
-                [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" [style]="{'height':'2.5rem'}"
-                pTooltip="You can generate the token to submit tools data via knowHOW POST APIs."
-                tooltipPosition="top"></button>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div> -->
-
   <p-tabView>
-    <p-tabPanel header="General" tooltip="These settings allow you to manage your project">
+    <p-tabPanel [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" header="General" tooltip="These settings allow you to manage your project">
       <p>These settings allow you to manage your project’s lifecycle in knowHOW, including options to delete, pause, or
         resume your project.
       </p>
@@ -137,18 +66,18 @@
             </td>
             <td>
               <ng-container *ngIf="generalControl.actionItem === 'cta'">
-                <button pButton pRipple type="button" label="Delete Project" class="p-button-danger"
+                <button [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" pButton pRipple type="button" label="Delete Project" class="p-button-danger"
                   (click)="deleteProject(selectedProject)"></button>
               </ng-container>
               <ng-container *ngIf="generalControl.actionItem === 'switch'">
-                <p-inputSwitch [(ngModel)]="projectOnHold" (onChange)="onProjectActiveStatusChange($event)"></p-inputSwitch>
+                <p-inputSwitch [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" [(ngModel)]="projectOnHold" (onChange)="onProjectActiveStatusChange($event)"></p-inputSwitch>
               </ng-container>
             </td>
           </tr>
         </ng-template>
       </p-table>
     </p-tabPanel>
-    <p-tabPanel header="One-Time Settings" tooltip="These are permanent configurations that cannot be altered once enabled">
+    <p-tabPanel [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" header="One-Time Settings" tooltip="These are permanent configurations that cannot be altered once enabled">
       <p>These are permanent configurations that cannot be altered once enabled. Please review your choices carefully,
         as these settings will directly impact how your project data is managed and cannot be modified later.</p>
       <p-table [value]="oneTimeControls">
@@ -158,29 +87,34 @@
               <h3>{{oneTimeControl.name}}</h3>
               <p>{{oneTimeControl.description}}</p>
             </td>
-            <td>
-              <ng-container *ngIf="oneTimeControl.actionItem === 'switch-people-kpi'">
-                <div class="mar-t-10" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
-                  <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch"
-                  [(ngModel)]="isAssigneeSwitchChecked"
-                  [disabled]="isAssigneeSwitchChecked"
-                  (onChange)="onAssigneeSwitchChange($event)">
+            <td>.
+              <ng-container *ngIf="!getAuthorizationService.checkIfViewer(selectedProject)">
+                <ng-container *ngIf="oneTimeControl.actionItem === 'switch-people-kpi'">
+                  <div class="mar-t-10" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
+                    <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch"
+                    [(ngModel)]="isAssigneeSwitchChecked"
+                    [disabled]="isAssigneeSwitchChecked"
+                    (onChange)="onAssigneeSwitchChange($event)">
+                    </p-inputSwitch>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="oneTimeControl.actionItem === 'switch-developer-kpi'">
+                  <p-inputSwitch
+                  [(ngModel)]="developerKpiEnabled"
+                  (onChange)="onProjectDevKpiStatusChange($event)"
+                  [disabled]="developerKpiEnabled">
                   </p-inputSwitch>
-                </div>
+                </ng-container>
               </ng-container>
-              <ng-container *ngIf="oneTimeControl.actionItem === 'switch-developer-kpi'">
-                <p-inputSwitch
-                [(ngModel)]="developerKpiEnabled"
-                (onChange)="onProjectDevKpiStatusChange($event)"
-                [disabled]="developerKpiEnabled">
-                </p-inputSwitch>
+              <ng-container *ngIf="getAuthorizationService.checkIfViewer(selectedProject)">
+                <p-inputSwitch [disabled]="true"></p-inputSwitch>
               </ng-container>
             </td>
           </tr>
         </ng-template>
       </p-table>
     </p-tabPanel>
-    <p-tabPanel header="API" tooltip="...">
+    <p-tabPanel [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" header="API" tooltip="...">
       <p></p>
       <p-table [value]="apiControls">
         <ng-template pTemplate="body" let-apiControl>
