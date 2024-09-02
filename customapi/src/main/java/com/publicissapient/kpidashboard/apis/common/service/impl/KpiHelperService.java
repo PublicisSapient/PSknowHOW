@@ -1960,12 +1960,18 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * Retrieves a list of SCM (Source Control Management) tool jobs for a given project node.
+	 * Retrieves a list of SCM (Source Control Management) tool jobs for a given
+	 * project node.
 	 *
-	 * @param toolMap a map containing tool configurations, where the key is the ObjectId of the project configuration
-	 *                and the value is another map with tool names as keys and lists of Tool objects as values.
-	 * @param node    the project node for which to retrieve the SCM tool jobs.
-	 * @return a list of Tool objects representing the SCM tool jobs for the given project node.
+	 * @param toolListMap
+	 *            a map where the key is a string representing the SCM tool type
+	 *            (e.g., "Bitbucket", "AzureRepository", "GitLab", "GitHub") and the
+	 *            value is a list of Tool objects associated with that SCM tool
+	 *            type.
+	 * @param node
+	 *            the project node for which the SCM tool jobs are to be retrieved.
+	 * @return a list of Tool objects representing the SCM tool jobs for the given
+	 *         project node.
 	 */
 	public List<Tool> getScmToolJobs(Map<String, List<Tool>> toolListMap, Node node) {
 
@@ -1985,12 +1991,12 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * Populates the given list of repositories with tools from the provided map of
-	 * tool lists.
+	 * Populates a list of SCM (Source Control Management) tools repositories.
 	 *
-	 * @param mapOfListOfTools
-	 *            a map containing lists of tools, where the key is the tool type
-	 *            and the value is a list of tools.
+	 * @param mapOfListOfTools a map where the key is a string representing the SCM tool type
+	 *                         (e.g., "Bitbucket", "AzureRepository", "GitLab", "GitHub")
+	 *                         and the value is a list of Tool objects associated with that SCM tool type.
+	 * @return a list of Tool objects representing the SCM tool repositories.
 	 */
 	public List<Tool> populateSCMToolsRepoList(Map<String, List<Tool>> mapOfListOfTools) {
 		List<Tool> reposList = new ArrayList<>();
