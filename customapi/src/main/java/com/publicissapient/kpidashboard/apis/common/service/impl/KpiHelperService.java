@@ -1870,9 +1870,8 @@ public class KpiHelperService { // NOPMD
 	 *            time duration
 	 * @return lis of RepoToolKpiMetricResponse object
 	 */
-	public List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
-			List<Tool> tools, Node node, String duration, Integer dataPoint,
-			String repoToolKpi) {
+	public List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate, List<Tool> tools, Node node,
+			String duration, Integer dataPoint, String repoToolKpi) {
 
 		List<String> projectCodeList = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(tools)) {
@@ -1882,28 +1881,32 @@ public class KpiHelperService { // NOPMD
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(projectCodeList)) {
 			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
-			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-				startDate = LocalDate.now().minusWeeks(dataPoint);
-				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
-					startDate = startDate.minusDays(1);
-				}
-			} else {
-				int daysSubtracted = 0;
-				while (daysSubtracted < dataPoint) {
-					// Skip the weekend days
-					if (!(startDate.getDayOfWeek() == DayOfWeek.SATURDAY
-							|| startDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
-						daysSubtracted++;
-					}
-					startDate = startDate.minusDays(1);
-				}
-			}
+			startDate = getStartDate(duration, dataPoint, startDate);
 			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
 			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList, repoToolKpi,
 					startDate.toString(), endDate.toString(), debbieDuration);
 		}
 
 		return repoToolKpiMetricResponseList;
+	}
+
+	private static LocalDate getStartDate(String duration, Integer dataPoint, LocalDate startDate) {
+		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+			startDate = LocalDate.now().minusWeeks(dataPoint);
+			while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+				startDate = startDate.minusDays(1);
+			}
+		} else {
+			int daysSubtracted = 0;
+			while (daysSubtracted < dataPoint) {
+				// Skip the weekend days
+				if (!(startDate.getDayOfWeek() == DayOfWeek.SATURDAY || startDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
+					daysSubtracted++;
+				}
+				startDate = startDate.minusDays(1);
+			}
+		}
+		return startDate;
 	}
 
 	/**

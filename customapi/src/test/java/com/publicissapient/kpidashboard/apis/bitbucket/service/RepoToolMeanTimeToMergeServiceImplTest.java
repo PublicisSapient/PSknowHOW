@@ -182,11 +182,11 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 		List<ProcessorItem> collectorItemList1 = new ArrayList<>();
 		collectorItemList1.add(processorItem1);
 
-		tool1 = createTool("URL3", "BRANCH3", "Repo_Tools", "USER3", "PASS3", collectorItemList1);
+		tool1 = createTool("URL3", "BRANCH3", "Github", "USER3", "PASS3", collectorItemList1);
 
 		toolList1.add(tool1);
 
-		toolGroup.put(Constant.REPO_TOOLS, toolList1);
+		toolGroup.put(Constant.TOOL_GITHUB, toolList1);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
 
 	}
@@ -230,7 +230,8 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 		kpiRequest.setDuration(Constant.DAYS);
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-
+		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
+				repoToolKpiMetricResponseList);
 		Map<String, String> aggregationMap = new HashMap<>();
 		aggregationMap.put("meanTimeToMerge", "average");
 
