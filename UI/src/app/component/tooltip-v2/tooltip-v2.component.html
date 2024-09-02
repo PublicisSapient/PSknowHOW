@@ -34,16 +34,14 @@
               </tr>
             </thead>
             <ng-container *ngFor="let element of item?.tableRows;last as isLast">
-              <ng-container [ngSwitch]="element?.type">
-                <div *ngSwitchCase="'header'" class="border-bottom w-100">
-                  <b>{{element?.value}}</b>
-                  <ng-container *ngTemplateOutlet="tableRow; context: { element: element }"></ng-container>
-                </div>
-                <div *ngSwitchCase="'body'" class="w-100" [ngClass]="{'border-bottom':!isLast}">
-                  {{element?.value}}
-                  <ng-container *ngTemplateOutlet="tableRow; context: { element: element }"></ng-container>
-                </div>
-              </ng-container>
+
+              <tr class='w-100' [ngClass]="{'border-bottom':!isLast || element?.type === 'header'}">
+                <td *ngFor="let cell of element?.value" class="p-p-1"
+                  [ngStyle]="{'width': (100/element?.value?.length)+'%'}">
+                  <ng-container *ngIf="element?.type === 'header'"><b>{{cell}}</b></ng-container>
+                  <ng-container *ngIf="element?.type === 'body'">{{cell}}</ng-container>
+                </td>
+              </tr>
             </ng-container>
 
           </table>
@@ -67,10 +65,3 @@
     </div>
   </div>
 </div>
-
-<ng-template #tableRow>
-  <tr>
-    <td *ngFor="let cell of element?.value" class="p-p-1" [ngStyle]="{'width': (100/element?.value?.length)+'%'}">
-      {{cell}}</td>
-  </tr>
-</ng-template>
