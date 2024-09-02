@@ -116,7 +116,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   releaseEndDate: string = '';
   timeRemaining = 0;
   immediateLoader = true;
-  projectCount : number = 0;
+  projectCount: number = 0;
 
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
@@ -1642,19 +1642,19 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   //   return [latest, trend, unit];
   // }
 
-  checkLatestAndTrendValue(kpiData, item, isKpi = false) {
+  checkLatestAndTrendValue(kpiData, item) {
     let latest: string = '';
     let trend: string = '';
-    const unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
-    const modUnit = (unit ? ' ' + unit : '');
+    let unit = '';
     if (item?.value?.length > 0) {
-      if (!isKpi) {
-        let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
-        latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
+      let tempVal;
+      if (item?.value[item?.value?.length - 1]?.dataValue) {
+        tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
       } else {
-        let tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
-        latest = tempVal > 0 ? ((Math.round(tempVal * 10) / 10) + modUnit) : (tempVal + modUnit);
+        tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
       }
+      unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
+      latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
     }
     if (item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
       if (kpiData?.kpiDetail?.trendCalculative) {
@@ -1670,8 +1670,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           trend = 'NA';
         }
       } else {
-        let lastVal = !isKpi ? item?.value[item?.value?.length - 1]?.value : item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;;
-        let secondLastVal = !isKpi ? item?.value[item?.value?.length - 2]?.value : item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'solid')?.value;
+        let lastVal, secondLastVal;
+        if (item?.value[item?.value?.length - 1]?.dataValue) {
+          lastVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
+          secondLastVal = item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'solid')?.value;
+        } else {
+          lastVal = item?.value[item?.value?.length - 1]?.value;
+          secondLastVal = item?.value[item?.value?.length - 2]?.value;
+        }
         let isPositive = kpiData?.kpiDetail?.isPositiveTrend;
         if (secondLastVal > lastVal && !isPositive) {
           trend = '+ve';
@@ -1699,7 +1705,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         for (let i = 0; i < this.kpiChartData[kpiId]?.length; i++) {
           if (this.kpiChartData[kpiId][i]?.value?.length > 0) {
             let trendObj = {};
-            const [latest, trend, unit] = !this.kpiChartData[kpiId][i].value[0]?.dataValue ? this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]) : this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i], true);
+            const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
             trendObj = {
               "hierarchyName": this.kpiChartData[kpiId][i]?.data,
               "value": latest,

@@ -155,7 +155,7 @@ export class HttpService {
   private getCommentCountUrl = this.baseUrl + '/api/comments/getCommentCount';
   private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
   private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
-  private getAssingeeEmailsUrl = this.baseUrl + 'repotool/assignees/email/';
+  private getAssingeeEmailsUrl = this.baseUrl + '/repotool/assignees/email/';
   private saveAssigneeForProjectUrl = this.baseUrl + '/api/capacity/assignee';
   private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
   private commentsSummaryUrl = this.baseUrl + '/api/comments/commentsSummary';
@@ -194,6 +194,11 @@ export class HttpService {
   /** getFilterData from the server */
   getFilterData(filterRequestData): Observable<object> {
     return this.http.post<object>(this.filterDataUrl, filterRequestData);
+  }
+
+
+  getAssigneeEmails(basicConfigId): Observable<any> {
+    return this.http.get(this.getAssingeeEmailsUrl + basicConfigId);
   }
 
   /** get individual kpi excel report from the server */

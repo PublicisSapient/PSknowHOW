@@ -369,20 +369,23 @@ export class CapacityPlanningComponent implements OnInit {
           this.jiraAssigneeLoader = false;
           if (response && response?.success && response?.data) {
             this.projectJiraAssignees = response['data'];
+            this.http_service.getAssigneeEmails(projectId)
+              .subscribe(response => {
+                if (response[0] && response[0]?.success && response[0]?.data) {
+                  this.projectAssigneeEmails = response[1].data;
+                  this.projectAssigneeEmailsCopy = [...this.projectAssigneeEmails].map((x) => {
+                    return {
+                      email: x,
+                      inactive: false
+                    }
+                  });
+                } else {
+                  this.messageService.add({ severity: 'error', summary: 'Error in fetching Assignee Emails.' });
+                }
+
+              });
           } else {
             this.messageService.add({ severity: 'error', summary: 'Error in fetching Project Assignee.' });
-          }
-
-          if (response[0] && response[0]?.success && response[0]?.data) {
-            this.projectAssigneeEmails = response[1].data;
-            this.projectAssigneeEmailsCopy = [...this.projectAssigneeEmails].map((x) => {
-              return {
-                email: x,
-                inactive: false
-              }
-            });
-          } else {
-            this.messageService.add({ severity: 'error', summary: 'Error in fetching Assignee Emails.' });
           }
         });
     }
