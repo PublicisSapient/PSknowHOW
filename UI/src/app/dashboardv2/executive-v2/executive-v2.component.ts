@@ -217,6 +217,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy, OnChanges {
       this.isRecommendationsEnabled = item;
     }));
 
+    if (this.selectedTab.toLowerCase() === 'developer') {
+      this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
+        Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
+          this.handleSelectedOption(data, kpi);
+        });
+      }));
+    }
+
     this.service.getEmptyData().subscribe((val) => {
       if (val) {
         this.noTabAccess = true;
