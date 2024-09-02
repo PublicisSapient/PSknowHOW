@@ -43,14 +43,14 @@ public class RemoveRepoToolProjectConfigs {
 	@Execution
 	public void execution() {
 
-		MongoCollection<Document> processorExecutionTraceLog = mongoTemplate
+		MongoCollection<Document> projectToolConfigs = mongoTemplate
 				.getCollection("project_tool_configs");
 		// Find and store the documents to be deleted
-		deletedDocuments = processorExecutionTraceLog.find(new Document("toolName", "RepoTool"))
+		deletedDocuments = projectToolConfigs.find(new Document("toolName", "RepoTool"))
 				.into(new ArrayList<>());
 
 		// Delete the documents
-		processorExecutionTraceLog.deleteMany(new Document("toolName", "RepoTool"));
+		projectToolConfigs.deleteMany(new Document("toolName", "RepoTool"));
 	}
 
 	@RollbackExecution

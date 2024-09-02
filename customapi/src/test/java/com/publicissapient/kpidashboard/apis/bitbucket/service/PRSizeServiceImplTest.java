@@ -159,6 +159,7 @@ public class PRSizeServiceImplTest {
                 new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
         assigneeDetails.setAssignee(assigneeSet);
         when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
+        when(kpiHelperService.populateSCMToolsRepoList(anyMap())).thenReturn(toolList3);
 
     }
 

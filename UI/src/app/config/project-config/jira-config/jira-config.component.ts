@@ -1949,6 +1949,15 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+              },
+              {
+                type: 'text',
                 label: 'API Version',
                 id: 'apiVersion',
                 validators: ['required'],

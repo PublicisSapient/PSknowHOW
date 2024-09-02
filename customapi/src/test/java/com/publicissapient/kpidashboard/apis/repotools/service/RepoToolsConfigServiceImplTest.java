@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -248,6 +247,12 @@ public class RepoToolsConfigServiceImplTest {
         repoToolsConfigService.saveRepoToolProjectTraceLog(repoToolsStatusResponse);
 
         verify(processorExecutionTraceLogService, times(1)).save(any(ProcessorExecutionTraceLog.class));
+    }
+
+    @Test
+    public void testUpdateConnection() {
+        when(repoToolsProviderRepository.findByToolName("github")).thenReturn(repoToolsProvider);
+        assertEquals(HttpStatus.OK.value(), repoToolsConfigService.updateRepoToolConnection(connection));
     }
 
 

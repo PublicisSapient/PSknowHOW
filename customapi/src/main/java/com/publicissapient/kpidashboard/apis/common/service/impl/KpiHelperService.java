@@ -130,6 +130,10 @@ public class KpiHelperService { // NOPMD
 	public static final String DAY_FREQUENCY = "day";
 	private static final String STORY_LIST = "stories";
 	private static final String SPRINTSDETAILS = "sprints";
+	private static final String AZURE_REPO = "AzureRepository";
+	private static final String BITBUCKET = "Bitbucket";
+	private static final String GITLAB = "GitLab";
+	private static final String GITHUB = "GitHub";
 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
@@ -1860,7 +1864,7 @@ public class KpiHelperService { // NOPMD
 	 *
 	 * @param endDate
 	 *            end date
-	 * @param toolMap
+	 * @param tools
 	 *            tool map from cache
 	 * @param node
 	 *            project node
@@ -1870,13 +1874,10 @@ public class KpiHelperService { // NOPMD
 	 *            time duration
 	 * @return lis of RepoToolKpiMetricResponse object
 	 */
-	public List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
-			List<Tool> tools, Node node, String duration, Integer dataPoint,
-			String repoToolKpi) {
+	public List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate, List<Tool> tools, Node node,
+			String duration, Integer dataPoint, String repoToolKpi) {
 
 		List<String> projectCodeList = new ArrayList<>();
-		ProjectFilter accountHierarchyData = node.getProjectFilter();
-		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
 		if (!CollectionUtils.isEmpty(tools)) {
 			projectCodeList.add(node.getId());
 		}
@@ -1884,28 +1885,32 @@ public class KpiHelperService { // NOPMD
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(projectCodeList)) {
 			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
-			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-				startDate = LocalDate.now().minusWeeks(dataPoint);
-				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
-					startDate = startDate.minusDays(1);
-				}
-			} else {
-				int daysSubtracted = 0;
-				while (daysSubtracted < dataPoint) {
-					// Skip the weekend days
-					if (!(startDate.getDayOfWeek() == DayOfWeek.SATURDAY
-							|| startDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
-						daysSubtracted++;
-					}
-					startDate = startDate.minusDays(1);
-				}
-			}
+			startDate = getStartDate(duration, dataPoint, startDate);
 			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
 			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList, repoToolKpi,
 					startDate.toString(), endDate.toString(), debbieDuration);
 		}
 
 		return repoToolKpiMetricResponseList;
+	}
+
+	private static LocalDate getStartDate(String duration, Integer dataPoint, LocalDate startDate) {
+		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+			startDate = LocalDate.now().minusWeeks(dataPoint);
+			while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+				startDate = startDate.minusDays(1);
+			}
+		} else {
+			int daysSubtracted = 0;
+			while (daysSubtracted < dataPoint) {
+				// Skip the weekend days
+				if (!(startDate.getDayOfWeek() == DayOfWeek.SATURDAY || startDate.getDayOfWeek() == DayOfWeek.SUNDAY)) {
+					daysSubtracted++;
+				}
+				startDate = startDate.minusDays(1);
+			}
+		}
+		return startDate;
 	}
 
 	/**
@@ -1953,4 +1958,53 @@ public class KpiHelperService { // NOPMD
 		}
 		return remainingDefects;
 	}
+
+	/**
+	 * Retrieves a list of SCM (Source Control Management) tool jobs for a given project node.
+	 *
+	 * @param toolMap a map containing tool configurations, where the key is the ObjectId of the project configuration
+	 *                and the value is another map with tool names as keys and lists of Tool objects as values.
+	 * @param node    the project node for which to retrieve the SCM tool jobs.
+	 * @return a list of Tool objects representing the SCM tool jobs for the given project node.
+	 */
+	public List<Tool> getScmToolJobs(Map<String, List<Tool>> toolListMap, Node node) {
+
+		List<Tool> bitbucketJob = new ArrayList<>();
+		if (null != toolListMap) {
+			bitbucketJob
+					.addAll(toolListMap.get(BITBUCKET) == null ? Collections.emptyList() : toolListMap.get(BITBUCKET));
+			bitbucketJob.addAll(
+					toolListMap.get(AZURE_REPO) == null ? Collections.emptyList() : toolListMap.get(AZURE_REPO));
+			bitbucketJob.addAll(toolListMap.get(GITLAB) == null ? Collections.emptyList() : toolListMap.get(GITLAB));
+			bitbucketJob.addAll(toolListMap.get(GITHUB) == null ? Collections.emptyList() : toolListMap.get(GITHUB));
+		}
+		if (CollectionUtils.isEmpty(bitbucketJob)) {
+			log.error("[BITBUCKET]. No repository found for this project {}", node.getProjectFilter());
+		}
+		return bitbucketJob;
+	}
+
+	/**
+	 * Populates the given list of repositories with tools from the provided map of
+	 * tool lists.
+	 *
+	 * @param mapOfListOfTools
+	 *            a map containing lists of tools, where the key is the tool type
+	 *            and the value is a list of tools.
+	 */
+	public List<Tool> populateSCMToolsRepoList(Map<String, List<Tool>> mapOfListOfTools) {
+		List<Tool> reposList = new ArrayList<>();
+		if (null != mapOfListOfTools) {
+			reposList.addAll(mapOfListOfTools.get(BITBUCKET) == null ? Collections.emptyList()
+					: mapOfListOfTools.get(BITBUCKET));
+			reposList.addAll(mapOfListOfTools.get(AZURE_REPO) == null ? Collections.emptyList()
+					: mapOfListOfTools.get(AZURE_REPO));
+			reposList.addAll(
+					mapOfListOfTools.get(GITLAB) == null ? Collections.emptyList() : mapOfListOfTools.get(GITLAB));
+			reposList.addAll(
+					mapOfListOfTools.get(GITHUB) == null ? Collections.emptyList() : mapOfListOfTools.get(GITHUB));
+		}
+		return reposList;
+	}
+
 }
