@@ -272,7 +272,7 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void testGenerateLogMessage_noMatchingPattern() {
 		Throwable exception = new Throwable("Some random exception message");
-		String expectedMessage = "No matching exception pattern found";
+		String expectedMessage = "An unexpected error has occurred. Please contact the KnowHow Support for assistance.";
 		String actualMessage = JiraProcessorUtil.generateLogMessage(exception);
 		assertEquals(expectedMessage, actualMessage);
 	}

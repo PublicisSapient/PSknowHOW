@@ -163,8 +163,6 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 	@Override
 	public ServiceResponse saveProjectToolDetails(ProjectToolConfig projectToolConfig) {
-		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
-				ProcessorConstants.GITHUB);
 		if (null == projectToolConfig) {
 			log.info("projectToolConfig object is empty");
 			return new ServiceResponse(false, "projectToolConfig  cannot be empty", null);
@@ -179,9 +177,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 				&& hasTool(projectToolConfig.getBasicProjectConfigId(), ProcessorConstants.JIRA)) {
 			return new ServiceResponse(false, "Jira already configured for this project", null);
 		}
-		ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId()
-				.toString());
-		if (scmToolList.contains(projectToolConfig.getToolName()) && projectBasicConfig.isDeveloperKpiEnabled()) {
+		if (isRepoTool(projectToolConfig, projectToolConfig.getBasicProjectConfigId().toString())) {
 			ServiceResponse repoToolServiceResponse = setRepoToolConfig(projectToolConfig);
 			if (Boolean.FALSE.equals(repoToolServiceResponse.getSuccess()))
 				return repoToolServiceResponse;
@@ -500,14 +496,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectToolConfig.setBranch(projectToolConfig.getDefaultBranch());
 		} else
 			branchList.add(projectToolConfig.getBranch());
-		int httpStatus = repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, branchList);
-		if (httpStatus == HttpStatus.BAD_REQUEST.value())
-			return new ServiceResponse(false, "Project with similar configuration already exists", null);
-		if (httpStatus == HttpStatus.INTERNAL_SERVER_ERROR.value())
-			return new ServiceResponse(false, "Invalid Repository Name", null);
-		if (httpStatus == HttpStatus.CREATED.value())
-			return new ServiceResponse(true, "", null);
-		return new ServiceResponse(false, "", null);
+		return repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, branchList);
 	}
 
 	@Override

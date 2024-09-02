@@ -61,4 +61,6 @@ public class ProcessorExecutionTraceLog {
 	private List<ProgressStatus> progressStatusList;
 	//save any resource not found error
 	private List<ErrorDetail> errorDetailList;
+	private boolean executionWarning;
+	private long executionResumesAt;
 }

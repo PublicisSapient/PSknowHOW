@@ -234,7 +234,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
 		populateExcelData(requestTrackerId, repoToolValidationDataList, excelData);
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.CODE_COMMIT.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.REPO_TOOL_CODE_COMMIT.getColumns());
 	}
 
 	/**

@@ -537,7 +537,8 @@ public class ProjectToolConfigServiceImplTest {
 		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any())).thenReturn(Arrays.asList(listProjectTool2));
 		when(connectionRepository.findById(any()))
 				.thenReturn(Optional.ofNullable(connection));
-		when(repoToolsConfigService.configureRepoToolProject(any(),any(),anyList())).thenReturn(200);
+		when(repoToolsConfigService.configureRepoToolProject(any(), any(), anyList()))
+				.thenReturn(new ServiceResponse(true, "", null));
 		ServiceResponse response = projectToolServiceImpl.saveProjectToolDetails(listProjectTool2);
 		assertNotNull(response);
 	}
@@ -554,10 +555,11 @@ public class ProjectToolConfigServiceImplTest {
 		projectBasicConfig.setId(new ObjectId("5fc4d61e80b6350f048a9381"));
 		projectBasicConfig.setDeveloperKpiEnabled(true);
 		when(configHelperService.getProjectConfig("5fc4d61e80b6350f048a9381")).thenReturn(projectBasicConfig);
-		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any())).thenReturn(Arrays.asList(listProjectTool2));
-		when(connectionRepository.findById(any()))
-				.thenReturn(Optional.ofNullable(connection));
-		when(repoToolsConfigService.configureRepoToolProject(any(),any(),anyList())).thenReturn(404);
+		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any()))
+				.thenReturn(Arrays.asList(listProjectTool2));
+		when(connectionRepository.findById(any()))		.thenReturn(Optional.ofNullable(connection));
+		when(repoToolsConfigService.configureRepoToolProject(any(), any(), anyList()))
+				.thenReturn(new ServiceResponse(false, "", null));
 		ServiceResponse response = projectToolServiceImpl.saveProjectToolDetails(listProjectTool2);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 		assertEquals(null, response.getData());
@@ -579,7 +581,8 @@ public class ProjectToolConfigServiceImplTest {
 		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any())).thenReturn(Arrays.asList(listProjectTool2));
 		when(connectionRepository.findById(any()))
 				.thenReturn(Optional.ofNullable(connection));
-		when(repoToolsConfigService.configureRepoToolProject(any(),any(),anyList())).thenReturn(400);
+		when(repoToolsConfigService.configureRepoToolProject(any(), any(), anyList()))
+				.thenReturn(new ServiceResponse(false, "", null));
 		ServiceResponse response = projectToolServiceImpl.saveProjectToolDetails(listProjectTool2);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 		assertEquals(null, response.getData());
@@ -599,9 +602,9 @@ public class ProjectToolConfigServiceImplTest {
 		projectBasicConfig.setDeveloperKpiEnabled(true);
 		when(configHelperService.getProjectConfig("5fc4d61e80b6350f048a9381")).thenReturn(projectBasicConfig);
 		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any())).thenReturn(Arrays.asList(listProjectTool2));
-		when(connectionRepository.findById(any()))
-				.thenReturn(Optional.ofNullable(connection));
-		when(repoToolsConfigService.configureRepoToolProject(any(),any(),anyList())).thenReturn(500);
+		when(connectionRepository.findById(any())).thenReturn(Optional.ofNullable(connection));
+		when(repoToolsConfigService.configureRepoToolProject(any(), any(), anyList()))
+				.thenReturn(new ServiceResponse(false, "", null));
 		ServiceResponse response = projectToolServiceImpl.saveProjectToolDetails(listProjectTool2);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 		assertEquals(null, response.getData());

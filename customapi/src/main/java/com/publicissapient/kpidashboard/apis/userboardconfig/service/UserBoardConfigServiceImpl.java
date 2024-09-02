@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -104,7 +103,6 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	@Autowired
 	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
 
-
 	/**
 	 * This method return user board config if present in db else return a default
 	 * configuration also mask the proj board config isShown disable flag to it, for
@@ -127,8 +125,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 						.substring(listOfRequestedProj.getBasicProjectConfigIds().get(0).lastIndexOf('_') + 1)
 				: null;
 
-		handleDeveloperKpi = basicProjectConfigId != null
-				&& configHelperService.getProjectConfig(basicProjectConfigId) != null
+		handleDeveloperKpi = configHelperService.getProjectConfig(basicProjectConfigId) != null
 				&& configHelperService.getProjectConfig(basicProjectConfigId).isDeveloperKpiEnabled();
 		// method to fetch all the project level board configs by their respective
 		// admins
@@ -456,6 +453,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		setUserBoardInfo(kpiCategoryBoardId, otherBoardNameList, otherBoards, false);
 
 		setFiltersInfoInBoard(scrumBoards, kanbanBoards, otherBoards);
+
 		newUserBoardConfig.setScrum(scrumBoards);
 		newUserBoardConfig.setKanban(kanbanBoards);
 		newUserBoardConfig.setOthers(otherBoards);
@@ -836,11 +834,11 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				}
 			}));
 		});
+
+		// Update userBoardConfig with kpiWiseIsShownFlag values
 		userBoardConfig.getScrum().forEach(boardDTO -> boardDTO.getKpis().forEach(boardKpis -> {
-			if(boardDTO.getBoardId() == 6) {
-				boolean isShown = kpiWiseIsShownFlag.getOrDefault(boardKpis.getKpiId(), true);
-				boardKpis.setShown(isShown);
-			}
+			boolean isShown = kpiWiseIsShownFlag.getOrDefault(boardKpis.getKpiId(), true);
+			boardKpis.setShown(isShown);
 		}));
 		userBoardConfig.getKanban().forEach(boardDTO -> boardDTO.getKpis().forEach(boardKpis -> {
 			boolean isShown = kpiWiseIsShownFlag.getOrDefault(boardKpis.getKpiId(), true);
@@ -888,6 +886,9 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		List<KpiCategory> kpiCategoryList = kpiCategoryRepository.findAll();
 		UserBoardConfigDTO defaultUserBoardConfigDTO = new UserBoardConfigDTO();
 		defaultUserBoardConfigDTO.setBasicProjectConfigId(basicProjectConfigId);
+
+		handleDeveloperKpi = configHelperService.getProjectConfig(basicProjectConfigId) != null
+				&& configHelperService.getProjectConfig(basicProjectConfigId).isDeveloperKpiEnabled();
 		if (null == existingProjBoardConfigDTO) {
 			setUserBoardConfigBasedOnCategoryForFreshUser(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 			defaultUserBoardConfigDTO.setBasicProjectConfigId(basicProjectConfigId);

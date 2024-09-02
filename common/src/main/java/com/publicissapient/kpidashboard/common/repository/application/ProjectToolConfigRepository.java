@@ -70,7 +70,7 @@ public interface ProjectToolConfigRepository extends MongoRepository<ProjectTool
 	 * 
 	 * @return the list of ProjectToolConfig
 	 */
-	List<ProjectToolConfig>  findByToolNameAndBasicProjectConfigId(String tool, ObjectId basicProjectConfigId);
+	List<ProjectToolConfig> findByToolNameAndBasicProjectConfigId(String tool, ObjectId basicProjectConfigId);
 
 	/**
 	 * Find tools of the project

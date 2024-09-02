@@ -19,12 +19,9 @@
 package com.publicissapient.kpidashboard.common.repository.generic;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
-
-import java.util.List;
 
 /**
  * Generic Processor repository that contains methods common to any model that
@@ -43,8 +40,5 @@ public interface ProcessorRepository<T extends Processor> extends CrudRepository
 	 * @return a {@link Processor}
 	 */
 	T findByProcessorName(String processorName);
-
-	@Query("{ 'processorName' : { $in: ?0 } }")
-	List<T> findAllByProcessorNames(List<String> processorNames);
 
 }

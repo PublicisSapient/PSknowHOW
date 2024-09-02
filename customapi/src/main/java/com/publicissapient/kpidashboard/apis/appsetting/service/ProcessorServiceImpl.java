@@ -105,7 +105,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 
 		String url = processorUrlConfig.getProcessorUrl(processorName);
 		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
-				ProcessorConstants.GITHUB);
+				ProcessorConstants.GITHUB, ProcessorConstants.AZUREREPO);
 		boolean isSuccess = true;
 		int statuscode = HttpStatus.NOT_FOUND.value();
 		String body = "";
