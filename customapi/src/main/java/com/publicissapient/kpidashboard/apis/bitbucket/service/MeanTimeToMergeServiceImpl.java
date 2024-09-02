@@ -195,8 +195,19 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 						.toLocalDate();
 				if (closedDate.compareTo(dateRange.getStartDate()) >= 0 && closedDate.compareTo(
 						dateRange.getEndDate()) <= 0) {
-					double mergeDuration = (double) (mergeReq.getClosedDate()) - mergeReq.getCreatedDate();
+					Double mergeDuration = (double) (mergeReq.getClosedDate()) - mergeReq.getCreatedDate();
 					durationList.add(mergeDuration);
+					if(tool != null) {
+						RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+						repoToolValidationData.setProjectName(projectName);
+						repoToolValidationData.setMeanTimeToMerge(
+								TimeUnit.MILLISECONDS.toHours(mergeDuration.longValue()));
+						repoToolValidationData.setDate(getDateRange(dateRange, duration));
+						repoToolValidationData.setRepoUrl(repoName);
+						repoToolValidationData.setBranchName(tool.getBranch());
+						repoToolValidationData.setMergeRequestUrl(mergeReq.getMergeRequestUrl());
+						repoToolValidationDataList.add(repoToolValidationData);
+					}
 				}
 			}
 			String date = getDateRange(dateRange, duration);
@@ -204,16 +215,6 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			if (null != valueForCurrentLeaf) {
 				DataCount dataCount = setDataCount(projectName, date, valueForCurrentLeaf);
 				dataCountList.add(dataCount);
-				if(tool != null) {
-					RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
-					repoToolValidationData.setProjectName(projectName);
-					repoToolValidationData.setMeanTimeToMerge(
-							TimeUnit.MILLISECONDS.toHours(valueForCurrentLeaf.longValue()));
-					repoToolValidationData.setDate(date);
-					repoToolValidationData.setRepoUrl(repoName);
-					repoToolValidationData.setBranchName(tool.getBranch());
-					repoToolValidationDataList.add(repoToolValidationData);
-				}
 			}
 			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 		}

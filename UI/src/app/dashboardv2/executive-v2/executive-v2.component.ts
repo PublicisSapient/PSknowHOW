@@ -116,6 +116,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   releaseEndDate: string = '';
   timeRemaining = 0;
   immediateLoader = true;
+  projectCount : number = 0;
 
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
@@ -151,6 +152,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
         tempObj[nodeName] = [];
       }
+      this.projectCount = Object.keys(this.trendBoxColorObj)?.length;
       this.kpiTableDataObj = { ...tempObj };
       if (!this.kpiChartData || Object.keys(this.kpiChartData)?.length <= 0) return this.service.passDataToDashboard;
       for (const key in this.kpiChartData) {

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { SelectButtonModule } from 'primeng/selectbutton';
@@ -60,42 +60,56 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Jira',
       connectionLabel: 'Jira',
+      categoryValue : 'projectManagement',
+      categoryLabel: 'Project Management',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Share connection with everyone', 'Use bearer token', 'PAT OAuthToken', 'Is jaasKrbAuth', 'Jaas Config FilePath', 'Krb5 Config FilePath', 'Jaas User', 'Saml Endpoint', 'Select Authentication Type'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'sharedConnection', 'bearerToken', 'patOAuthToken', 'jaasKrbAuth', 'jaasConfigFilePath', 'krb5ConfigFilePath', 'jaasUser', 'samlEndPoint', 'jiraAuthType']
     },
     {
       connectionType: 'Azure',
       connectionLabel: 'Azure Boards',
+      categoryValue : 'projectManagement',
+      categoryLabel: 'Project Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'PAT', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'pat', 'sharedConnection']
     },
     {
       connectionType: 'GitHub',
       connectionLabel: 'GitHub',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Profile Username', 'Use vault password', 'App Password', 'API End Point', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'sharedConnection']
     },
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
+      categoryValue : 'security',
+      categoryLabel: 'Security',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', ['Use Password', 'Use Token'], 'Password', 'Access Token', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'accessTokenEnabled', 'password', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'Jenkins',
       connectionLabel: 'Jenkins',
+      categoryValue : 'build',
+      categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Api Key', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'apiKey', 'sharedConnection'],
       placeholder: ['', '', 'Enter a public URL', '', '', '', '']
@@ -103,42 +117,56 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Bamboo',
       connectionLabel: 'Bamboo',
+      categoryValue : 'build',
+      categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
     },
     {
       connectionType: 'Teamcity',
       connectionLabel: 'Teamcity',
+      categoryValue : 'build',
+      categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
     },
     {
       connectionType: 'AzurePipeline',
       connectionLabel: 'Azure Pipeline',
+      categoryValue : 'build',
+      categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
     },
     {
       connectionType: 'AzureRepository',
       connectionLabel: 'Azure Repository',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
     },
     {
       connectionType: 'Zephyr',
       connectionLabel: 'Zephyr',
+      categoryValue : 'testManagement',
+      categoryLabel: 'Test Management',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Use Bearer Token', 'PatOAuthToken', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'bearerToken', 'patOAuthToken', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'sharedConnection']
     },
     {
       connectionType: 'RepoTool',
       connectionLabel: 'RepoTool',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Base Url', 'Api End Point', 'Username', 'Access Token', 'User Email', 'Share connection with everyone'],
       inputFields: ['type', 'repoToolProvider', 'connectionName', 'baseUrl', 'apiEndPoint', 'username', 'accessToken', 'email', 'sharedConnection']
     },
     {
       connectionType: 'ArgoCD',
       connectionLabel: 'ArgoCD',
+      categoryValue : 'build',
+      categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
     }
@@ -487,63 +515,11 @@ export class ConnectionListComponent implements OnInit {
     'sharedConnection': false,
     'jiraAuthType': ''
   }
-  jiraConnectionDialog: boolean;
+  jiraConnectionDialog: boolean = false;
   repoConnections = ['Bitbucket', 'GitLab', 'Azure Repository'];
   repoToolsEnabled: boolean;
-  configOptions: { tab: string; tabValue: string; }[];
-  selectedTab: string = 'toolsConnected';
-  pid: any;
-  tab: any;
-  groupedToolsGroup = [
-      {
-          label: 'Project Management',
-          value: 'projectManagement',
-          items: [
-              { label: 'Jira', value: 'Jira' },
-              { label: 'Azure Boards', value: 'Azure' },
-          ]
-      },
-      {
-          label: 'Test Management',
-          value: 'testManagement',
-          items: [
-              { label: 'Zephyr Scale', value: 'Zephyr' },
-          ]
-      },
-      {
-          label: 'Source Code Management',
-          value: 'sourceCodeManagement',
-          items: [
-              { label: 'GitHub', value: 'GitHub' },
-              { label: 'GitLab', value: 'GitLab' },
-              { label: 'Bitbucket', value: 'Bitbucket' },
-              { label: 'Azure Repository', value: 'AzureRepository' },
-              {label: 'RepoTool', value: 'RepoTool'}
-
-              
-          ]
-      },
-      {
-        label: 'Security',
-        value: 'security',
-        items: [
-            { label: 'Sonar', value: 'Sonar' },
-        ]
-    },
-    {
-      label: 'Build',
-      value: 'build',
-      items: [
-          { label: 'Bamboo', value: 'Bamboo' },
-          { label: 'Teamcity', value: 'Teamcity' },
-          { label: 'GitHub Action', value: 'GitHub' },
-          { label: 'Azure Pipeline', value: 'AzurePipeline' },
-          {label: 'ArgoCD', value: 'ArgoCD'},
-          {label: 'Jenkins', value: 'Jenkins'}
-      ]
-  }
-
-  ];
+  @Input() selectedToolName: string;
+  groupedToolsGroup : any;
 
   constructor(private httpService: HttpService,
     private formBuilder: UntypedFormBuilder,
@@ -554,27 +530,6 @@ export class ConnectionListComponent implements OnInit {
     private helper: HelperService,
     private route: ActivatedRoute,
     public router: Router) {
-    this.configOptions = [
-      {
-        'tab': 'Tools Connected',
-        'tabValue': 'toolsConnected'
-      },
-      {
-        'tab': 'Project Configuration',
-        'tabValue': 'projectConfig'
-      }
-    ]
-
-    this.route.queryParams.subscribe(params => {
-      // this.pid = params['pid'];
-      this.tab = params['tab'];
-      if (this.tab === "1") {
-        this.selectedTab = 'projectConfig';
-      } else {
-        this.selectedTab = 'toolsConnected';
-      }
-    });
-
   }
 
   ngOnInit(): void {
@@ -602,20 +557,15 @@ export class ConnectionListComponent implements OnInit {
     this.connectionTypeCompleteList = this.filterConnections(this.connectionTypeCompleteList, 'label')
     this.addEditConnectionFieldsNlabels = this.filterConnections(this.addEditConnectionFieldsNlabels, 'connectionLabel')
 
+    /** formating data for connection dropdown */
+    this.groupedToolsGroup = this.createFormatCategoryWise(this.addEditConnectionFieldsNlabels);
+
     /* this.httpService.getAllToolConfigs().subscribe(res => {
       console.log(res)
     }) */
+    this.selectedToolName = this.selectedToolName !== undefined ? this.selectedToolName : this.addEditConnectionFieldsNlabels[0].connectionType;
+    this.selectedConnectionType = this.addEditConnectionFieldsNlabels.filter(el => el.connectionLabel === this.selectedToolName)[0]?.connectionType;
 
-
-
-  }
-
-  onTabChange() {
-    if(this.selectedTab === 'projectConfig') {
-      this.router.navigate(['.'], { queryParams: { 'tab': 1 }, relativeTo: this.route });
-    } else {
-      this.router.navigate(['.'], { queryParams: { 'tab': 0 }, relativeTo: this.route });
-    }
   }
 
   initializeForms(connection, isEdit?) {
@@ -816,7 +766,7 @@ export class ConnectionListComponent implements OnInit {
       this.submitted = false;
       this.connectionDialog = true;
       this.connectionTypeFieldsAssignment();
-      this.basicConnectionForm.controls['type'].setValue(this.connection.type);
+      this.basicConnectionForm.controls['type']?.setValue(this.connection.type);
       this.defaultEnableDisableSwitch();
       this.disableEnableCheckBox();
     }
@@ -955,11 +905,11 @@ export class ConnectionListComponent implements OnInit {
       reqData['apiKey'] = this.connection['apiKey'];
     }
 
-    if (this.connection['type'].toLowerCase() === 'zephyr' && this.connection['cloudEnv']) {
+    if (this.connection['type']?.toLowerCase() === 'zephyr' && this.connection['cloudEnv']) {
       reqData['baseUrl'] = this.basicConnectionForm.controls['baseUrl']['value'];
     }
 
-    if (this.connection['type'].toLowerCase() === 'sonar' && this.connection['cloudEnv'] === true) {
+    if (this.connection['type']?.toLowerCase() === 'sonar' && this.connection['cloudEnv'] === true) {
       reqData['accessTokenEnabled'] = true;
     }
 
@@ -1020,7 +970,7 @@ export class ConnectionListComponent implements OnInit {
     } else {
       this.connectionDialog = true;
       this.connectionTypeFieldsAssignment();
-      this.basicConnectionForm.controls['type'].setValue(this.selectedConnectionType);
+      this.basicConnectionForm.controls['type']?.setValue(this.selectedConnectionType);
       this.defaultEnableDisableSwitch();
       this.disableEnableCheckBox();
       if (connection.type.toLowerCase() == 'bitbucket' && connection.cloudEnv == true) {
@@ -1033,9 +983,9 @@ export class ConnectionListComponent implements OnInit {
 
   disableEnableCheckBox() {
     if (!this.connection.sharedConnection) {
-      this.basicConnectionForm.controls['sharedConnection'].disable();
+      this.basicConnectionForm.controls['sharedConnection']?.disable();
     } else {
-      this.basicConnectionForm.controls['sharedConnection'].enable();
+      this.basicConnectionForm.controls['sharedConnection']?.enable();
     }
   }
 
@@ -1100,37 +1050,37 @@ export class ConnectionListComponent implements OnInit {
     } else if (!!this.basicConnectionForm.controls['isOAuth'] && this.connection['isOAuth'] === false) {
       this.basicConnectionForm.controls['privateKey'].disable();
       this.basicConnectionForm.controls['consumerKey'].disable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'zephyr' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === true) {
+    } else if (this.selectedConnectionType?.toLowerCase() === 'zephyr' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === true) {
       this.basicConnectionForm.controls['username'].disable();
       this.basicConnectionForm.controls['password'].disable();
       this.basicConnectionForm.controls['baseUrl'].disable();
       this.basicConnectionForm.controls['accessToken'].enable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'zephyr' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === false) {
+    } else if (this.selectedConnectionType?.toLowerCase() === 'zephyr' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === false) {
       this.basicConnectionForm.controls['accessToken'].disable();
       this.basicConnectionForm.controls['username'].enable();
       this.basicConnectionForm.controls['password'].enable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === true) {
+    } else if (this.selectedConnectionType?.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === true) {
       this.basicConnectionForm.controls['username'].disable();
       this.basicConnectionForm.controls['password'].disable();
       this.basicConnectionForm.controls['accessTokenEnabled'].disable();
       this.basicConnectionForm.controls['accessToken'].enable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === false) {
+    } else if (this.selectedConnectionType?.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === false) {
       this.basicConnectionForm.controls['username'].enable();
       this.basicConnectionForm.controls['password'].enable();
       this.basicConnectionForm.controls['accessTokenEnabled'].enable();
       this.basicConnectionForm.controls['accessToken'].disable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'repotool') {
+    } else if (this.selectedConnectionType?.toLowerCase() === 'repotool') {
       if (this.connection && this.connection['repoToolProvider'] === 'bitbucket')
         this.basicConnectionForm.controls['apiEndPoint'].enable();
       else { this.basicConnectionForm.controls['apiEndPoint'].disable() };
     }
 
-    if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true) {
+    if (this.selectedConnectionType?.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true) {
       this.basicConnectionForm.controls['password'].disable();
       this.basicConnectionForm.controls['accessToken'].disable();
       this.basicConnectionForm.controls['accessTokenEnabled'].disable();
     }
-    if (this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['accessTokenEnabled'] && !!this.connection['accessTokenEnabled'] === true) {
+    if (this.selectedConnectionType?.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['accessTokenEnabled'] && !!this.connection['accessTokenEnabled'] === true) {
       this.basicConnectionForm.controls['username'].disable();
       this.basicConnectionForm.controls['password'].disable();
       this.basicConnectionForm.controls['accessToken'].enable();
@@ -1655,5 +1605,26 @@ export class ConnectionListComponent implements OnInit {
       }
     }
     return filteredList;
+  }
+
+  createFormatCategoryWise(addEditConnectionFieldsNlabels){
+    const formatedData =  addEditConnectionFieldsNlabels.reduce((acc, curr) => {
+      // Find the category in the accumulator
+      let category = acc.find(item => item.label === curr.categoryLabel);
+
+      // If the category doesn't exist, create a new one
+      if (!category) {
+        category = {
+          label: curr.categoryLabel,
+          value: curr.categoryValue,
+          items: []
+        };
+        acc.push(category);
+      }
+      // Add the connection label and type to the category's items
+      category.items.push({ label: curr.connectionLabel, value: curr.connectionType });
+      return acc;
+    }, []);
+    return formatedData;
   }
 }

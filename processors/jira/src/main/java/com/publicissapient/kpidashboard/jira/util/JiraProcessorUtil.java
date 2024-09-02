@@ -392,7 +392,7 @@ public class JiraProcessorUtil {
 		if (logMessage != null)
 			return logMessage;
 
-		return "No matching exception pattern found";
+		return OTHER_CLIENT_ERRORS;
 	}
 
 	private static String matchPattern(String exceptionMessage, Pattern pattern, boolean hasStatusCode) {

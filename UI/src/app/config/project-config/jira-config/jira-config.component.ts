@@ -131,7 +131,7 @@ export class JiraConfigComponent implements OnInit {
         name: x['hierarchyLevelName']
       }
     });
-    
+
     Object.keys(this.selectedProject).forEach(key => {
       if(levelDetails.map(x => x.id).includes(key)) {
         let propertyName = levelDetails.filter(x=> x.id === key)[0].name;
@@ -139,7 +139,7 @@ export class JiraConfigComponent implements OnInit {
         delete this.selectedProject[key];
       }
     });
-    
+
 
     this.isGitlabToolFieldEnabled = this.sharedService.getGlobalConfigData()?.gitlabToolFieldFlag;
     if (!this.selectedProject) {
@@ -316,6 +316,7 @@ export class JiraConfigComponent implements OnInit {
         }
         this.hideLoadingOnFormElement('jobName');
       } catch (error) {
+        console.log("getJenkinsJobNames in catch block ",error);
         this.jenkinsJobNameList = [];
         this.hideLoadingOnFormElement('jobName');
         this.messenger.add({
@@ -324,6 +325,7 @@ export class JiraConfigComponent implements OnInit {
         });
       }
     }, (err) => {
+      console.log("getJenkinsJobNames in err block ",err);
       this.jenkinsJobNameList = [];
       this.hideLoadingOnFormElement('jobName');
       this.messenger.add({
@@ -485,8 +487,8 @@ export class JiraConfigComponent implements OnInit {
               });
             });
 
-            if (this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest'
-              || this.urlParam?.toLowerCase() == 'zephyr' || this.urlParam?.toLowerCase() == 'azure') {
+            if(this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest'
+            || this.urlParam?.toLowerCase() == 'zephyr' || this.urlParam?.toLowerCase() == 'azure'){
               this.showAddNewBtn = false;
             }
           }
@@ -2835,12 +2837,13 @@ export class JiraConfigComponent implements OnInit {
   }
 
   redirectToConnections() {
-    this.router.navigate(['./dashboard/Config/connection-list']);
+    const currProjId = this.sharedService.getSelectedProject();
+    this.router.navigate([`./dashboard/Config/ConfigSettings/${currProjId.id}`], {queryParams: { tab: 1, toolName: this.formTitle }});
   }
 
   handleToolConfiguration(type?) {
     this.isConfigureTool = true;
-    if (type == 'new') {
+    if(type == 'new'){
       this.isEdit = false;
     }
     setTimeout(() => {

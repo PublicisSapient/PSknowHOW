@@ -39,8 +39,8 @@ export class ToolMenuComponent implements OnInit {
   dataLoading = false;
   disableSwitch = false;
   selectedTools: Array<any> = [];
-  isProjectAdmin = false;
-  isSuperAdmin = false;
+  // isProjectAdmin = false;
+  // isSuperAdmin = false;
   generateTokenLoader = false;
   displayGeneratedToken = false;
   generatedToken = '';
@@ -66,21 +66,10 @@ export class ToolMenuComponent implements OnInit {
     public getAuthorizationService: GetAuthorizationService,
     private ga: GoogleAnalyticsService,
     private route: ActivatedRoute) {
-    this.configOptions = [
-      {
-        'name': 'Tools Connected',
-        'value': 'toolsConnected'
-      },
-      {
-        'name': 'Project Configuration',
-        'value': 'projectConfig'
-      }
-    ]
-
   }
 
   ngOnInit() {
-
+    this.selectedProject = this.sharedService.getSelectedProject();
     this.sharedService.currentUserDetailsObs.subscribe(details => {
       if (details) {
         this.userName = details['user_name'];
@@ -90,12 +79,9 @@ export class ToolMenuComponent implements OnInit {
       { name: 'Jira', value: false },
       { name: 'Azure Boards', value: true }
     ];
-    this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
-    this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();
-    this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
     this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
-    this.selectedProject = this.sharedService.getSelectedProject();
-    const selectedType = this.selectedProject.type !== 'Scrum' ? 'kanban' : 'scrum';
+
+    const selectedType = this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
     const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType].map((x) => {
       return {
         id: x['hierarchyLevelId'],
@@ -123,10 +109,6 @@ export class ToolMenuComponent implements OnInit {
       this.dataLoading = true;
       this.getToolsConfigured();
     }
-    if (this.isAssigneeSwitchChecked) {
-      this.isAssigneeSwitchDisabled = true;
-    }
-
 
   }
 
@@ -141,8 +123,7 @@ export class ToolMenuComponent implements OnInit {
         this.uniqueTools = Array.from(
           this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
         );
-
-        if (this.router.url === `/dashboard/Config/connection-list/${this.selectedProject.id}/ToolMenu?tab=1` || this.router.url === '/dashboard/Config/connection-list?tab=1') {
+        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?tab=2` || this.router.url === '/dashboard/Config/ConfigSettings?tab=2') {
           this.buttonText = 'Set Up';
           this.tools = [
             {
@@ -150,9 +131,9 @@ export class ToolMenuComponent implements OnInit {
               category: 'Project Management',
               description: '-',
               icon: 'fab fa-atlassian',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Jira',
-              routerLink2: `/dashboard/Config/connection-list/${this.selectedProject.id}/FieldMapping`,
+              routerLink2: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/FieldMapping`,
               index: 0,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.connectionName,
               updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
@@ -162,7 +143,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'Test Management',
               description: '-',
               icon: 'fab fa-atlassian',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'JiraTest',
               index: 11,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'JiraTest')[0]?.connectionName,
@@ -173,7 +154,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'Test Management',
               description: '-',
               icon: '',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Zephyr',
               index: 1,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Zephyr')[0]?.connectionName,
@@ -184,7 +165,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'Build',
               description: '-',
               icon: 'fab fa-jenkins',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Jenkins',
               index: 2,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Jenkins')[0]?.connectionName,
@@ -192,10 +173,10 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'BitBucket',
-              category: 'Souce Code Management',
+              category: 'Source Code Management',
               description: '-',
               icon: 'fab fa-bitbucket',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Bitbucket',
               index: 3,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'BitBucket')[0]?.connectionName,
@@ -203,10 +184,10 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'GitLab',
-              category: 'Souce Code Management',
+              category: 'Source Code Management',
               description: '-',
               icon: 'fab fa-gitlab',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'GitLab',
               index: 4,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'GitLab')[0]?.connectionName,
@@ -214,10 +195,10 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'Sonar',
-              category: 'Seurity',
+              category: 'Security',
               description: '-',
               icon: '',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Sonar',
               index: 5,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Sonar')[0]?.connectionName,
@@ -228,7 +209,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'Build',
               description: '-',
               icon: '',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Teamcity',
               index: 6,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'TeamCity')[0]?.connectionName,
@@ -239,7 +220,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'Build',
               description: '-',
               icon: '',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Bamboo',
               index: 7,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Bamboo')[0]?.connectionName,
@@ -250,7 +231,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'Build',
               description: '-',
               icon: 'fab fa-windows',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'AzurePipeline',
               index: 8,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'AzurePipeline')[0]?.connectionName,
@@ -258,10 +239,10 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'Azure Repo',
-              category: 'Souce Code Management',
+              category: 'Source Code Management',
               description: '-',
               icon: 'fab fa-windows',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'AzureRepository',
               index: 9,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'AzureRepository')[0]?.connectionName,
@@ -269,10 +250,10 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'GitHub',
-              category: 'Souce Code Management',
+              category: 'Source Code Management',
               description: '-',
               icon: 'fab fa-github',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'GitHub',
               index: 10,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'GitHub')[0]?.connectionName,
@@ -283,7 +264,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'Build',
               description: '-',
               icon: 'fab fa-github',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'GitHubAction',
               index: 11,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'GitHubAction')[0]?.connectionName,
@@ -291,10 +272,10 @@ export class ToolMenuComponent implements OnInit {
             },
             {
               toolName: 'RepoTool',
-              category: 'Souce Code Management',
+              category: 'Source Code Management',
               description: '-',
               icon: '',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'RepoTool',
               index: 12,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'RepoTool')[0]?.connectionName,
@@ -305,7 +286,7 @@ export class ToolMenuComponent implements OnInit {
               category: 'Build',
               description: '-',
               icon: '',
-              routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'ArgoCD',
               index: 13,
               connectionName: this.uniqueTools.filter(tool => tool.toolName === 'ArgoCD')[0]?.connectionName,
@@ -355,9 +336,9 @@ export class ToolMenuComponent implements OnInit {
       category: 'Project Management',
       description: '-',
       icon: 'fab fa-windows',
-      routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+      routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
       queryParams1: 'Azure',
-      routerLink2: `/dashboard/Config/connection-list/${this.selectedProject.id}/FieldMapping`,
+      routerLink2: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/FieldMapping`,
       index: 0,
       connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Azure')[0]?.connectionName,
       updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Azure')[0]?.updatedAt
@@ -367,9 +348,9 @@ export class ToolMenuComponent implements OnInit {
       category: 'Project Management',
       description: '-',
       icon: 'fab fa-atlassian',
-      routerLink: `/dashboard/Config/connection-list/${this.selectedProject.id}/JiraConfig`,
+      routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
       queryParams1: 'Jira',
-      routerLink2: `/dashboard/Config/connection-list/${this.selectedProject.id}/FieldMapping`,
+      routerLink2: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/FieldMapping`,
       index: 0,
       connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.connectionName,
       updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
@@ -407,108 +388,110 @@ export class ToolMenuComponent implements OnInit {
     return (configuredProject && configuredProject.length > 0 ? true : false);
   }
 
-  generateTokenConfirmation() {
-    this.confirmationService.confirm({
-      message: `If you create a token, all previously generated tokens will expire, do you want to continue?`,
-      header: `Generate Token?`,
-      icon: 'pi pi-info-circle',
-      accept: () => {
-        this.generateToken();
-      },
-      reject: null
-    });
-  }
+  // generateTokenConfirmation() {
+  //   this.confirmationService.confirm({
+  //     message: `If you create a token, all previously generated tokens will expire, do you want to continue?`,
+  //     header: `Generate Token?`,
+  //     icon: 'pi pi-info-circle',
+  //     accept: () => {
+  //       this.generateToken();
+  //     },
+  //     reject: null
+  //   });
+  // }
 
-  generateToken() {
-    this.tokenCopied = false;
-    this.generateTokenLoader = true;
-    const projectDetails = this.sharedService.getSelectedProject();
-    const postData = {
-      basicProjectConfigId: projectDetails['id'],
-      projectName: projectDetails['Project'],
-      userName: this.userName
-    };
+  // generateToken() {
+  //   this.tokenCopied = false;
+  //   this.generateTokenLoader = true;
+  //   const projectDetails = this.sharedService.getSelectedProject();
+  //   const postData = {
+  //     basicProjectConfigId: projectDetails['id'],
+  //     projectName: projectDetails['Project'],
+  //     userName: this.userName
+  //   };
 
-    this.httpService.generateToken(postData).subscribe(response => {
-      this.generateTokenLoader = false;
-      this.displayGeneratedToken = true;
-      if (response['success'] && response['data']) {
-        this.generatedToken = response['data'].apiToken;
-      } else {
-        this.messageService.add({ severity: 'error', summary: 'Error occured while generating token. Please try after some time' });
-      }
-    });
-  }
+  //   this.httpService.generateToken(postData).subscribe(response => {
+  //     this.generateTokenLoader = false;
+  //     this.displayGeneratedToken = true;
+  //     if (response['success'] && response['data']) {
+  //       this.generatedToken = response['data'].apiToken;
+  //     } else {
+  //       this.messageService.add({ severity: 'error', summary: 'Error occured while generating token. Please try after some time' });
+  //     }
+  //   });
+  // }
 
-  copyToken() {
-    this.tokenCopied = true;
-    navigator.clipboard.writeText(this.generatedToken);
-  }
+  // copyToken() {
+  //   this.tokenCopied = true;
+  //   navigator.clipboard.writeText(this.generatedToken);
+  // }
+
   // Preserve original property order
+
   originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => 0;
 
-  onAssigneeSwitchChange() {
-    if (this.isAssigneeSwitchChecked) {
-      this.isAssigneeSwitchDisabled = true;
-    }
-    this.confirmationService.confirm({
-      message: `Once enabled, it cannot be disabled. Do you want to enable individual KPIs for this project, are you sure?`,
-      header: 'Enable Individual KPIs',
-      key: 'confirmToEnableDialog',
-      accept: () => {
-        this.updateProjectDetails();
-      },
-      reject: () => {
-        this.isAssigneeSwitchChecked = false;
-        this.isAssigneeSwitchDisabled = false;
-      }
-    });
-  }
+  // onAssigneeSwitchChange() {
+  //   if (this.isAssigneeSwitchChecked) {
+  //     this.isAssigneeSwitchDisabled = true;
+  //   }
+  //   this.confirmationService.confirm({
+  //     message: `Once enabled, it cannot be disabled. Do you want to enable individual KPIs for this project, are you sure?`,
+  //     header: 'Enable Individual KPIs',
+  //     key: 'confirmToEnableDialog',
+  //     accept: () => {
+  //       this.updateProjectDetails();
+  //     },
+  //     reject: () => {
+  //       this.isAssigneeSwitchChecked = false;
+  //       this.isAssigneeSwitchDisabled = false;
+  //     }
+  //   });
+  // }
 
-  updateProjectDetails() {
+  // updateProjectDetails() {
 
-    let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject['type']?.toLowerCase()];
+  //   let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject['type']?.toLowerCase()];
 
-    const updatedDetails = {};
-    updatedDetails['projectName'] = this.selectedProject['name'] || this.selectedProject['Project'];
-    updatedDetails['kanban'] = this.selectedProject['type'] === 'Kanban' ? true : false;
-    updatedDetails['hierarchy'] = [];
-    updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
-    updatedDetails['id'] = this.selectedProject['id'];
-    updatedDetails["createdAt"] = new Date().toISOString();
-    for (let element of hierarchyData) {
-      if (element.hierarchyLevelId == 'project') {
-        break;
-      }
-      updatedDetails['hierarchy'].push({
-        hierarchyLevel: {
-          level: element.level,
-          hierarchyLevelId: element.hierarchyLevelId,
-          hierarchyLevelName: element.hierarchyLevelName
-        },
-        value: this.selectedProject[element.hierarchyLevelId]
-      });
-    }
-    this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
-      if (response && response.serviceResponse && response.serviceResponse.success) {
-        this.isAssigneeSwitchDisabled = true;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Assignee Switch Enabled  successfully.'
-        });
-      } else {
-        this.isAssigneeSwitchChecked = false;
-        this.isAssigneeSwitchDisabled = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Some error occurred. Please try again later.'
-        });
+  //   const updatedDetails = {};
+  //   updatedDetails['projectName'] = this.selectedProject['name'] || this.selectedProject['Project'];
+  //   updatedDetails['kanban'] = this.selectedProject['type'] === 'Kanban' ? true : false;
+  //   updatedDetails['hierarchy'] = [];
+  //   updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
+  //   updatedDetails['id'] = this.selectedProject['id'];
+  //   updatedDetails["createdAt"] = new Date().toISOString();
+  //   for (let element of hierarchyData) {
+  //     if (element.hierarchyLevelId == 'project') {
+  //       break;
+  //     }
+  //     updatedDetails['hierarchy'].push({
+  //       hierarchyLevel: {
+  //         level: element.level,
+  //         hierarchyLevelId: element.hierarchyLevelId,
+  //         hierarchyLevelName: element.hierarchyLevelName
+  //       },
+  //       value: this.selectedProject[element.hierarchyLevelId]
+  //     });
+  //   }
+  //   this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
+  //     if (response && response.serviceResponse && response.serviceResponse.success) {
+  //       this.isAssigneeSwitchDisabled = true;
+  //       this.messageService.add({
+  //         severity: 'success',
+  //         summary: 'Assignee Switch Enabled  successfully.'
+  //       });
+  //     } else {
+  //       this.isAssigneeSwitchChecked = false;
+  //       this.isAssigneeSwitchDisabled = false;
+  //       this.messageService.add({
+  //         severity: 'error',
+  //         summary: 'Some error occurred. Please try again later.'
+  //       });
 
-      }
+  //     }
 
-    })
+  //   })
 
-  }
+  // }
 
   setGaData() {
     let gaObj = {};
@@ -533,9 +516,8 @@ export class ToolMenuComponent implements OnInit {
     this.userProjects = this.sharedService.getProjectList();
     if (this.userProjects != null && this.userProjects.length > 0) {
       this.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
-      // this.selectedProject = this.userProjects[0];
     }
-    if (this.selectedProject && this.router.url.includes('ToolMenu')) {
+    if(this.selectedProject && this.router.url.includes(this.selectedProject['id'])) {
       this.selectedProject = this.userProjects.filter((x) => x.id == this.selectedProject?.id)[0]
     } else {
       this.selectedProject = this.userProjects[0];
@@ -544,7 +526,7 @@ export class ToolMenuComponent implements OnInit {
 
   updateProjectSelection() {
     this.setSelectedProject();
-    this.router.navigate([`/dashboard/Config/connection-list/${this.selectedProject['id']}/ToolMenu`], { queryParams: { tab: 1 } });
+    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject['id']}`], { queryParams: { tab: 2 } });
     this.getToolsConfigured();
   }
 
