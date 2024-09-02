@@ -308,7 +308,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(
-				leafNodeList.get(0).getId());
+				leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString());
 		Set<Assignee> assignees = assigneeDetails != null ? assigneeDetails.getAssignee() : new HashSet<>();
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put(ASSIGNEE, assignees);
@@ -341,7 +341,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 		overAllUsers.forEach(userEmail -> {
 			Optional<RepoToolUserDetails> repoToolUserDetails = repoToolUserDetailsList.stream()
 					.filter(user -> userEmail.equalsIgnoreCase(user.getEmail())).findFirst();
-			Optional<Assignee> assignee = assignees.stream().filter(assign -> assign.getEmail().contains(userEmail))
+			Optional<Assignee> assignee = assignees.stream().filter(
+					assign -> CollectionUtils.isNotEmpty(assign.getEmail()) && assign.getEmail().contains(userEmail))
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double userHours = repoToolUserDetails.map(RepoToolUserDetails::getHours).orElse(0.0d);
