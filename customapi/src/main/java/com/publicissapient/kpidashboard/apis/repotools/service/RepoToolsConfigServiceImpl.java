@@ -385,9 +385,15 @@ public class RepoToolsConfigServiceImpl {
 	 */
 	public JsonNode getProjectRepoToolMembers(String basicProjectConfigId) {
 		String projectCode = createProjectCode(basicProjectConfigId);
-		String membersUrl = customApiConfig.getRepoToolURL() + String.format(customApiConfig.getRepoToolMembersUrl(),
-				projectCode);
-		return repoToolsClient.fetchProjectRepoToolMembers(membersUrl, customApiConfig.getRepoToolAPIKey());
+		JsonNode jsonNode = null;
+		try {
+			String membersUrl = customApiConfig.getRepoToolURL() + String.format(
+					customApiConfig.getRepoToolMembersUrl(), projectCode);
+			jsonNode = repoToolsClient.fetchProjectRepoToolMembers(membersUrl, customApiConfig.getRepoToolAPIKey());
+		} catch (Exception ex) {
+			log.error("Exception occured while fetching emails ", ex);
+		}
+		return jsonNode;
 	}
 
 }
