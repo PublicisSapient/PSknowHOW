@@ -395,6 +395,7 @@ export class ProjectSettingsComponent implements OnInit {
       message: `If you create a token, all previously generated tokens will expire, do you want to continue?`,
       header: `Generate Token?`,
       icon: 'pi pi-info-circle',
+      key: 'confirmToEnableDialog',
       accept: () => {
         this.generateToken();
       },
@@ -405,12 +406,13 @@ export class ProjectSettingsComponent implements OnInit {
   generateToken() {
     this.tokenCopied = false;
     this.generateTokenLoader = true;
-    const projectDetails = this.sharedService.getSelectedProject();
+    const projectDetails = this.selectedProject;
     const postData = {
       basicProjectConfigId: projectDetails['id'],
-      projectName: projectDetails['Project'],
+      projectName: projectDetails['name'],
       userName: this.userName
     };
+
 
     this.httpService.generateToken(postData).subscribe(response => {
       this.generateTokenLoader = false;
