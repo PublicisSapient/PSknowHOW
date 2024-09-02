@@ -117,6 +117,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     cumulativeTrend = ['kpi17', 'kpi62', 'kpi67', 'kpi27', 'kpi66', 'kpi71', 'kpi42'];
     kpiList:Array<string> = [];
     isRecommendationsEnabled: boolean = false;
+    projectCount : number = 0;
 
     constructor(public service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -153,6 +154,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
                     tempObj[nodeName] = [];
                 }
+                this.projectCount = Object.keys(this.trendBoxColorObj)?.length;
                 this.kpiTableDataObj = {...tempObj};
                 if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
                     for (const key in this.kpiChartData) {
