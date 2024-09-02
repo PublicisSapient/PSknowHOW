@@ -375,7 +375,7 @@ export class CapacityPlanningComponent implements OnInit {
                   this.projectAssigneeEmails = response.data;
                   this.projectAssigneeEmailsCopy = [...this.projectAssigneeEmails];
                 } else {
-                  this.messageService.add({ severity: 'error', summary: 'Error in fetching Assignee Emails.' });
+                  this.messageService.add({ severity: 'error', summary: 'Could not fetch Assignee Emails.' });
                 }
 
               });
