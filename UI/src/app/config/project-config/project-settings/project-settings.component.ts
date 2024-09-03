@@ -226,11 +226,24 @@ export class ProjectSettingsComponent implements OnInit {
       this.selectedProject = this.userProjects[0];
     }
     this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
-
     this.developerKpiEnabled = this.selectedProject?.developerKpiEnabled;
-
     this.projectOnHold = this.selectedProject?.projectOnHold;
 
+    this.hierarchyLabelNameChange();
+
+  }
+
+  updateProjectSelection() {
+    this.sharedService.setSelectedProject(this.selectedProject);
+    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { tab: 0 } });
+    this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
+    this.developerKpiEnabled = this.selectedProject?.developerKpiEnabled;
+    this.projectOnHold = this.selectedProject?.projectOnHold;
+
+    this.hierarchyLabelNameChange();
+  }
+
+  hierarchyLabelNameChange() {
     const selectedType = this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
     const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType]?.map((x) => {
       return {
@@ -250,14 +263,6 @@ export class ProjectSettingsComponent implements OnInit {
         });
       }
     });
-  }
-
-  updateProjectSelection() {
-    this.sharedService.setSelectedProject(this.selectedProject);
-    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { tab: 0 } });
-    this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
-    this.developerKpiEnabled = this.selectedProject?.developerKpiEnabled;
-    this.projectOnHold = this.selectedProject?.projectOnHold;
   }
 
   deleteProject(project) {
@@ -353,6 +358,7 @@ export class ProjectSettingsComponent implements OnInit {
     updatedDetails["createdAt"] = new Date().toISOString();
     updatedDetails["developerKpiEnabled"] = this.developerKpiEnabled;
     updatedDetails["projectOnHold"] = this.projectOnHold;
+
     for (let element of hierarchyData) {
       if (element.hierarchyLevelId == 'project') {
         break;
@@ -408,8 +414,8 @@ export class ProjectSettingsComponent implements OnInit {
     this.generateTokenLoader = true;
     const projectDetails = this.selectedProject;
     const postData = {
-      basicProjectConfigId: projectDetails['id'],
-      projectName: projectDetails['name'],
+      basicProjectConfigId: projectDetails?.id,
+      projectName: projectDetails?.name,
       userName: this.userName
     };
 
