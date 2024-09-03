@@ -45,11 +45,15 @@ export class AdditionalFilterComponent implements OnChanges {
           });
 
           this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
+          const correctLevelMapping = {
+            Sprint : 'sprint',
+            Squad : 'sqd'
+          }
           if (this.stateFilters && Object.keys(this.stateFilters)) {
             Object.keys(this.stateFilters).forEach((key, index) => {
               let correctIndex = 0;
               this.additionalFilterConfig.forEach((config, index) => {
-                if (config.defaultLevel.labelName === key) {
+                if (correctLevelMapping[config.defaultLevel.labelName] === key) {
                   correctIndex = index;
                 }
               });

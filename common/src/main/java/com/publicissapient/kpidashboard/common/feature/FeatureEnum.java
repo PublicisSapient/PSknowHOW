@@ -38,6 +38,7 @@ public enum FeatureEnum implements Feature {
     @Label("Recommendations")
     RECOMMENDATIONS,
 
+    @EnabledByDefault
     @Label("New UI")
     NEW_UI_SWITCH;
 

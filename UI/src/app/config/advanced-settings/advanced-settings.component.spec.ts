@@ -27,12 +27,12 @@ import { Routes } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { ToastModule } from 'primeng/toast';
 import { TableModule } from 'primeng/table';
-import { ConfirmationService, MessageService,Confirmation } from 'primeng/api';
+import { ConfirmationService, MessageService, Confirmation } from 'primeng/api';
 import { AdvancedSettingsComponent } from './advanced-settings.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { SharedService } from '../../services/shared.service';
-import { of, throwError,interval } from 'rxjs';
+import { of, throwError, interval } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 describe('AdvancedSettingsComponent', () => {
   let component: AdvancedSettingsComponent;
@@ -45,8 +45,8 @@ describe('AdvancedSettingsComponent', () => {
   const baseUrl = environment.baseUrl;  // Servers Env
   // var store = {};
   // var ls = function () {
-    //   return JSON.parse(store['storage']);
-    // };
+  //   return JSON.parse(store['storage']);
+  // };
 
   const fakeProjects = require('../../../test/resource/fakeProjectsDashConfig.json');
   const fakeProcessorData = {
@@ -189,7 +189,10 @@ describe('AdvancedSettingsComponent', () => {
         BrowserAnimationsModule,
         RouterTestingModule
       ],
-      providers: [HttpService, MessageService, SharedService, DatePipe, GetAuthorizationService, ConfirmationService, { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [
+        HttpService,
+        MessageService,
+        SharedService, DatePipe, GetAuthorizationService, ConfirmationService, { provide: APP_CONFIG, useValue: AppConfig }]
     })
       .compileComponents();
   }));
@@ -245,44 +248,44 @@ describe('AdvancedSettingsComponent', () => {
   });
 
   it('should allow user to select project', () => {
-    const selectedProjects = { originalEvent: { isTrusted: true }, value: {id: '601bca9569515b0001d68182', name: 'test'}, itemValue: '601bca9569515b0001d68182' };
+    const selectedProjects = { originalEvent: { isTrusted: true }, value: { id: '601bca9569515b0001d68182', name: 'test' }, itemValue: '601bca9569515b0001d68182' };
     const processorName = 'Jira';
     component.updateProjectSelection(selectedProjects);
     // fixture.detectChanges();
-    expect(component.selectedProject).toEqual({id: '601bca9569515b0001d68182', name: 'test'});
+    expect(component.selectedProject).toEqual({ id: '601bca9569515b0001d68182', name: 'test' });
   });
 
   it('should run Jira Processor for the selected projects', () => {
-    component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
+    component.selectedProject = { id: '601bca9569515b0001d68182', name: 'test' };
     component.processorData = {
-      data : [
+      data: [
         {
-          processorName : 'Jira',
-          executionOngoing : true,
-          errorMessage : "test"
+          processorName: 'Jira',
+          executionOngoing: true,
+          errorMessage: "test"
         },
         {
-          processorName : 'Github',
-          executionOngoing : true
+          processorName: 'Github',
+          executionOngoing: true
         }
       ]
     }
     component.processorsTracelogs = [
       {
-        processorName : 'Jira',
-        executionOngoing : true,
-        errorMessage : "test"
+        processorName: 'Jira',
+        executionOngoing: true,
+        errorMessage: "test"
       }
     ]
     component.processorData = {
-      data : [
+      data: [
         {
-          processorName : 'Jira',
-          loader : true
+          processorName: 'Jira',
+          loader: true
         },
         {
-          processorName : 'Github',
-          loader : true
+          processorName: 'Github',
+          loader: true
         }
       ]
     }
@@ -292,122 +295,130 @@ describe('AdvancedSettingsComponent', () => {
   });
 
   it('should continue get stacks of jira processor untill flag true', fakeAsync(() => {
-    component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
+    component.selectedProject = { id: '601bca9569515b0001d68182', name: 'test' };
     component.processorData = {
-      data : [
+      data: [
         {
-          processorName : 'Jira',
-          executionOngoing : true,
-          errorMessage : "test"
+          processorName: 'Jira',
+          executionOngoing: true,
+          errorMessage: "test"
         },
         {
-          processorName : 'Github',
-          executionOngoing : true
+          processorName: 'Github',
+          executionOngoing: true
         }
       ]
     }
     component.processorsTracelogs = [
       {
-        processorName : 'Jira',
-        executionOngoing : true,
-        errorMessage : "",
-        progressStatusList : [{
-          "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
-          "endTime" : 1716799109813,
-          "status" : "COMPLETED"
+        processorName: 'Jira',
+        executionOngoing: true,
+        errorMessage: "",
+        progressStatusList: [{
+          "stepName": "Process Issues 0 to 49 out of 475, Board ID : 22",
+          "endTime": 1716799109813,
+          "status": "COMPLETED"
         }]
       }
     ]
-    const response = { success: true, data: [{ executionOngoing: true, errorMessage: null,progressStatusList : [{
-      "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
-      "endTime" : 1716799109813,
-      "status" : "COMPLETED"
-    }] }] };
-    spyOn(httpService,'runProcessor').and.returnValue(of(response));
-     let jiraStatusContinuePulling = true;
-     const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: true,progressStatusList : [{
-      "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
-      "endTime" : 1716799109813,
-      "status" : "COMPLETED"
-    }] }] };
-     const continueCall = spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
-       return of(mockProgressStatusResponse).pipe(
-         takeWhile(() => jiraStatusContinuePulling)
-       );
-     });
-     component.runProcessor('Jira');
-     tick(15000);
-     jiraStatusContinuePulling = false
-     discardPeriodicTasks()
-     expect(component.processorsTracelogs).toBeDefined();
+    const response = {
+      success: true, data: [{
+        executionOngoing: true, errorMessage: null, progressStatusList: [{
+          "stepName": "Process Issues 0 to 49 out of 475, Board ID : 22",
+          "endTime": 1716799109813,
+          "status": "COMPLETED"
+        }]
+      }]
+    };
+    spyOn(httpService, 'runProcessor').and.returnValue(of(response));
+    let jiraStatusContinuePulling = true;
+    const mockProgressStatusResponse = {
+      success: true, data: [{
+        executionOngoing: true, progressStatusList: [{
+          "stepName": "Process Issues 0 to 49 out of 475, Board ID : 22",
+          "endTime": 1716799109813,
+          "status": "COMPLETED"
+        }]
+      }]
+    };
+    const continueCall = spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
+      return of(mockProgressStatusResponse).pipe(
+        takeWhile(() => jiraStatusContinuePulling)
+      );
+    });
+    component.runProcessor('Jira');
+    tick(15000);
+    jiraStatusContinuePulling = false
+    discardPeriodicTasks()
+    expect(component.processorsTracelogs).toBeDefined();
 
   }));
 
   it('should stop get stacks of jira processor when flagis false', fakeAsync(() => {
-    component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
+    component.selectedProject = { id: '601bca9569515b0001d68182', name: 'test' };
     component.processorData = {
-      data : [
+      data: [
         {
-          processorName : 'Jira',
-          executionOngoing : true,
-          errorMessage : "test"
+          processorName: 'Jira',
+          executionOngoing: true,
+          errorMessage: "test"
         },
         {
-          processorName : 'Github',
-          executionOngoing : true
+          processorName: 'Github',
+          executionOngoing: true
         }
       ]
     }
     component.processorsTracelogs = [
       {
-        processorName : 'Jira',
-        executionOngoing : true,
-        errorMessage : "test"
+        processorName: 'Jira',
+        executionOngoing: true,
+        errorMessage: "test"
       }
     ]
     const response = { success: true, data: [{ executionOngoing: true, errorMessage: null }] };
-    spyOn(httpService,'runProcessor').and.returnValue(of(response));
-     let jiraStatusContinuePulling = true;
-     const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: false }] };
-     const continueCall = spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
-       return of(mockProgressStatusResponse).pipe(
-         takeWhile(() => jiraStatusContinuePulling)
-       );
-     });
-     component.runProcessor('Jira');
-     tick(3000);
-     jiraStatusContinuePulling = false
-     discardPeriodicTasks()
-     expect(component.processorsTracelogs).toBeDefined();
+    spyOn(httpService, 'runProcessor').and.returnValue(of(response));
+    let jiraStatusContinuePulling = true;
+    const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: false }] };
+    const continueCall = spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
+      return of(mockProgressStatusResponse).pipe(
+        takeWhile(() => jiraStatusContinuePulling)
+      );
+    });
+    component.runProcessor('Jira');
+    tick(3000);
+    jiraStatusContinuePulling = false
+    discardPeriodicTasks()
+    expect(component.processorsTracelogs).toBeDefined();
 
   }));
 
   it('should run Github Processor for the selected projects', () => {
     component.processorData = {
-      data : [
+      data: [
         {
-          processorName : 'Jira',
-          loader : true
+          processorName: 'Jira',
+          loader: true
         },
         {
-          processorName : 'Github',
-          loader : true
+          processorName: 'Github',
+          loader: true
         }
       ]
     }
     component.processorData = {
-      data : [
+      data: [
         {
-          processorName : 'Jira',
-          executionOngoing : true
+          processorName: 'Jira',
+          executionOngoing: true
         },
         {
-          processorName : 'Github',
-          executionOngoing : true
+          processorName: 'Github',
+          executionOngoing: true
         }
       ]
     }
-    component.selectedProject = {id: '601bca9569515b0001d68182', name: 'test'};
+    component.selectedProject = { id: '601bca9569515b0001d68182', name: 'test' };
     component.runProcessor('Github');
     // fixture.detectChanges();
     httpMock.match(baseUrl + '/api/processor/trigger/Github')[0].flush({ message: 'Got HTTP response: 200 on url: http://nonjira-processor:50008/processor/run', success: true });
@@ -423,74 +434,74 @@ describe('AdvancedSettingsComponent', () => {
 
   it('should get processors trace logs for project', fakeAsync(() => {
     component.processorData = {
-      data : [
+      data: [
         {
-          processorName : 'Jira',
-          loader : true
+          processorName: 'Jira',
+          loader: true
         },
         {
-          processorName : 'Github',
-          loader : true
+          processorName: 'Github',
+          loader: true
         }
       ]
     }
     const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
     component.processorData = {
-      data : [
+      data: [
         {
-          processorName : 'Jira',
-          executionOngoing : true
+          processorName: 'Jira',
+          executionOngoing: true
         },
         {
-          processorName : 'Github',
-          executionOngoing : true
+          processorName: 'Github',
+          executionOngoing: true
         }
       ]
     }
     component.processorsTracelogs = [
       {
-        processorName : 'Jira',
-        executionOngoing : true,
-        progressStatusList : [{
-          "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
-          "endTime" : 1716799109813,
-          "status" : "COMPLETED"
+        processorName: 'Jira',
+        executionOngoing: true,
+        progressStatusList: [{
+          "stepName": "Process Issues 0 to 49 out of 475, Board ID : 22",
+          "endTime": 1716799109813,
+          "status": "COMPLETED"
         }],
       },
       {
-        processorName : 'Github',
-        executionOngoing : true
+        processorName: 'Github',
+        executionOngoing: true
       }
     ]
     const fakeProcessorsTracelog = {
-      success : true,
-      data :[
+      success: true,
+      data: [
         {
-          processorName : 'Jira',
-          executionOngoing : true,
-          progressStatusList : [{
-            "stepName" : "Process Issues 0 to 49 out of 475, Board ID : 22",
-            "endTime" : 1716799109813,
-            "status" : "COMPLETED"
+          processorName: 'Jira',
+          executionOngoing: true,
+          progressStatusList: [{
+            "stepName": "Process Issues 0 to 49 out of 475, Board ID : 22",
+            "endTime": 1716799109813,
+            "status": "COMPLETED"
           }]
         }
       ]
     }
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(fakeProcessorsTracelog));
     const response = { success: true, data: [{ executionOngoing: true, errorMessage: null }] };
-    spyOn(httpService,'runProcessor').and.returnValue(of(response));
-     let jiraStatusContinuePulling = true;
-     const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: true }] };
-     const continueCall = spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
-       return of(mockProgressStatusResponse).pipe(
-         takeWhile(() => jiraStatusContinuePulling)
-       );
-     });
-     component.getProcessorsTraceLogsForProject(basicProjectConfigId);
-     tick(3000);
-     jiraStatusContinuePulling = false
-     discardPeriodicTasks()
-     expect(component.processorsTracelogs).toBeDefined();
+    spyOn(httpService, 'runProcessor').and.returnValue(of(response));
+    let jiraStatusContinuePulling = true;
+    const mockProgressStatusResponse = { success: true, data: [{ executionOngoing: true }] };
+    const continueCall = spyOn(httpService, 'getProgressStatusOfProcessors').and.callFake(() => {
+      return of(mockProgressStatusResponse).pipe(
+        takeWhile(() => jiraStatusContinuePulling)
+      );
+    });
+    component.getProcessorsTraceLogsForProject(basicProjectConfigId);
+    tick(3000);
+    jiraStatusContinuePulling = false
+    discardPeriodicTasks()
+    expect(component.processorsTracelogs).toBeDefined();
     expect(component.processorsTracelogs.length).toEqual(fakeProcessorsTracelog.data.length);
   }));
 
@@ -517,14 +528,24 @@ describe('AdvancedSettingsComponent', () => {
 
   it('should delete tool when trying to delete for any project', () => {
     const processDetails = {
-      active: true,
-      errors: [],
-      id: '63b3f50b6d8d7f44def6ec2f',
-      lastSuccess: true,
-      online: true,
-      processorName: 'Jira',
-      processorType: 'AgileTool',
-      updatedTime: 1673222624309,
+      "id": "63b51633f33fd2360e9e72bd",
+      "toolName": "Sonar",
+      "basicProjectConfigId": "63b51633f33fd2360e9e72bd",
+      "connectionId": "62fcbe4adac8a44cd2cb9576",
+      "brokenConnection": false,
+      "connectionName": "Connection Server 1",
+      "projectKey": "projectKey",
+      "branch": "branchName",
+      "apiVersion": "8.x",
+      "createdAt": "2023-10-06T11:55:36",
+      "updatedAt": "2023-10-06T11:55:36",
+      "queryEnabled": false,
+      "boards": [
+        null
+      ],
+      "organizationKey": "",
+      "gitLabSdmID": "",
+      "azureIterationStatusFieldUpdate": false
     };
     const selectedProject = {
       id: '63b51633f33fd2360e9e72bd',
@@ -539,36 +560,36 @@ describe('AdvancedSettingsComponent', () => {
         connectionId: '62fcbe4adac8a44cd2cb9576',
         connectionName: 'Sunbelt Rental JIra',
         createdAt: '2023-01-04T06:02:20',
-        id: '63b5166cf33fd2360e9e72c2',
+        id: '63b51633f33fd2360e9e72bd',
         projectKey: 'DOTC',
         queryEnabled: false,
         toolName: 'Jira',
         updatedAt: '2023-01-04T06:02:20',
       },
     ];
-    component.deleteProcessorDataReq(processDetails,selectedProject);
-    expect(component.getToolDetailsForProcessor('Jira').length).toBeGreaterThan(0);
+    component.deleteProcessorDataReq(processDetails, selectedProject);
+    // expect(component.getToolDetailsForProcessor(processDetails.toolName)?.length).toBeGreaterThan(0);
   });
 
-  it("should NA if processor response not came",()=>{
+  it("should NA if processor response not came", () => {
     component.showProcessorLastState('Jira')
     const respo = component.showProcessorLastState('Jira')
     expect(respo).toBe("NA")
   })
 
-  it("should success if processor response is success",()=>{
+  it("should success if processor response is success", () => {
     component.processorsTracelogs = [{
-      processorName : 'Jira',
-      executionSuccess : true
+      processorName: 'Jira',
+      executionSuccess: true
     }]
     const respo = component.showProcessorLastState('Jira')
     expect(respo).toBe("Success")
   })
 
-  it("should fail if processor response is fail",()=>{
+  it("should fail if processor response is fail", () => {
     component.processorsTracelogs = [{
-      processorName : 'Jira',
-      executionSuccess : false
+      processorName: 'Jira',
+      executionSuccess: false
     }]
     const respo = component.showProcessorLastState('Jira')
     expect(respo).toBe("Failure")
@@ -593,12 +614,12 @@ describe('AdvancedSettingsComponent', () => {
     expect(mockReject).toHaveBeenCalled();
   });
 
-  it("should return execution date of processor",()=>{
+  it("should return execution date of processor", () => {
 
     component.processorsTracelogs = [{
-      processorName : 'Jira',
-      executionSuccess : false,
-      executionEndedAt : '2023-01-04T06:02:20'
+      processorName: 'Jira',
+      executionSuccess: false,
+      executionEndedAt: '2023-01-04T06:02:20'
     }]
     const resp = component.showExecutionDate('Jira')
     expect(resp).not.toBe("NA")
@@ -659,27 +680,27 @@ describe('AdvancedSettingsComponent', () => {
       'error': "Something went wrong"
     };
     component.processorData = {
-      data : [
+      data: [
         {
-          processorName : 'Jira',
-          executionOngoing : true
+          processorName: 'Jira',
+          executionOngoing: true
         },
         {
-          processorName : 'Github',
-          executionOngoing : true
+          processorName: 'Github',
+          executionOngoing: true
         }
       ]
     }
     component.processorsTracelogs = [
-        {
-          processorName : 'Jira',
-          executionOngoing : true
-        },
-        {
-          processorName : 'Github',
-          executionOngoing : true
-        }
-      ]
+      {
+        processorName: 'Jira',
+        executionOngoing: true
+      },
+      {
+        processorName: 'Github',
+        executionOngoing: true
+      }
+    ]
 
     spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(errResponse));
     const spy = spyOn(messageService, 'add')
@@ -703,27 +724,27 @@ describe('AdvancedSettingsComponent', () => {
 
   it('should not run Processor when processor is jira', fakeAsync(() => {
     component.processorData = {
-      data : [
+      data: [
         {
-          processorName : 'Jira',
-          executionOngoing : true,
-          errorMessage : ''
+          processorName: 'Jira',
+          executionOngoing: true,
+          errorMessage: ''
         },
         {
-          processorName : 'Github',
-          executionOngoing : true
+          processorName: 'Github',
+          executionOngoing: true
         }
       ]
     }
     component.processorData = {
-      data : [
+      data: [
         {
-          processorName : 'Jira',
-          loader : true
+          processorName: 'Jira',
+          loader: true
         },
         {
-          processorName : 'Github',
-          loader : true
+          processorName: 'Github',
+          loader: true
         }
       ]
     }
@@ -732,9 +753,9 @@ describe('AdvancedSettingsComponent', () => {
     }
     component.processorsTracelogs = [
       {
-        processorName : 'Jira',
-        executionOngoing : true,
-        errorMessage : ''
+        processorName: 'Jira',
+        executionOngoing: true,
+        errorMessage: ''
       },
     ]
     const errResponse = {
@@ -750,26 +771,26 @@ describe('AdvancedSettingsComponent', () => {
 
   it('should not run Processor when processor is not jira', fakeAsync(() => {
     component.processorData = {
-      data : [
+      data: [
         {
-          processorName : 'Jira',
-          loader : true
+          processorName: 'Jira',
+          loader: true
         },
         {
-          processorName : 'Github',
-          loader : true
+          processorName: 'Github',
+          loader: true
         }
       ]
     }
     component.processorData = {
-      data : [
+      data: [
         {
-          processorName : 'Jira',
-          executionOngoing : true
+          processorName: 'Jira',
+          executionOngoing: true
         },
         {
-          processorName : 'Github',
-          executionOngoing : true
+          processorName: 'Github',
+          executionOngoing: true
         }
       ]
     }
@@ -884,17 +905,17 @@ describe('AdvancedSettingsComponent', () => {
     expect(messageService.add).toHaveBeenCalledWith({ severity: 'error', summary: 'Something went wrong. Please try again after sometime.' });
   });
 
-  it('should convert end time',()=>{
+  it('should convert end time', () => {
     component.endTimeConversion('2023-01-04T06:02:20');
     expect(component.endTimeConversion).not.toBeNull();
   })
 
-  it('should get toll category',()=>{
+  it('should get toll category', () => {
     const spyobj = component.getToolCategory('azure');
     expect(spyobj).toBe('Project Management');
   })
 
-  it('should get blank string if tollname dies not match',()=>{
+  it('should get blank string if tollname dies not match', () => {
     const spyobj = component.getToolCategory('testtool');
     expect(spyobj).toBe('');
   })

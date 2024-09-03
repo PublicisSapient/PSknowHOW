@@ -116,7 +116,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   releaseEndDate: string = '';
   timeRemaining = 0;
   immediateLoader = true;
-  
+  projectCount: number = 0;
+
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
@@ -151,6 +152,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
         tempObj[nodeName] = [];
       }
+      this.projectCount = Object.keys(this.trendBoxColorObj)?.length;
       this.kpiTableDataObj = { ...tempObj };
       if (!this.kpiChartData || Object.keys(this.kpiChartData)?.length <= 0) return this.service.passDataToDashboard;
       for (const key in this.kpiChartData) {
@@ -265,7 +267,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
       if (!this.configGlobalData?.length && $event.dashConfigData) {
         this.configGlobalData = $event.dashConfigData[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
-        if(!this.configGlobalData) {
+        if (!this.configGlobalData) {
           this.configGlobalData = $event.dashConfigData['others'].filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
         }
       }
@@ -670,13 +672,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         .subscribe(getData => {
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
 
-            const releaseFrequencyInd = getData.findIndex(de=>de.kpiId === 'kpi73')
-            if(releaseFrequencyInd !== -1){
-              getData[releaseFrequencyInd].trendValueList?.map(trendData=>{
-                  const valueLength = trendData.value.length;
-                  if(valueLength > this.tooltip.sprintCountForKpiCalculation){
-                      trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
-                  }
+            const releaseFrequencyInd = getData.findIndex(de => de.kpiId === 'kpi73')
+            if (releaseFrequencyInd !== -1) {
+              getData[releaseFrequencyInd].trendValueList?.map(trendData => {
+                const valueLength = trendData.value.length;
+                if (valueLength > this.tooltip.sprintCountForKpiCalculation) {
+                  trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
+                }
               })
             }
             // creating array into object where key is kpi id
@@ -1470,12 +1472,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           arr = Array.from(arr);
           const obj = {};
           const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
-          if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
-            const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
-            if (index > -1) {
-              arr?.splice(index, 1);
-            }
-          }
+          // if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
+          //   const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
+          //   if (index > -1) {
+          //     arr?.splice(index, 1);
+          //   }
+          // }
 
           obj['filterType'] = 'Select a filter';
           if (arr.length > 0) {
@@ -1640,19 +1642,19 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   //   return [latest, trend, unit];
   // }
 
-  checkLatestAndTrendValue(kpiData, item, isKpi = false) {
+  checkLatestAndTrendValue(kpiData, item) {
     let latest: string = '';
     let trend: string = '';
-    const unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
-    const modUnit = (unit ? ' ' + unit : '');
+    let unit = '';
     if (item?.value?.length > 0) {
-      if (!isKpi) {
-        let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
-        latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
+      let tempVal;
+      if (item?.value[item?.value?.length - 1]?.dataValue) {
+        tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
       } else {
-        let tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
-        latest = tempVal > 0 ? ((Math.round(tempVal * 10) / 10) + modUnit) : (tempVal + modUnit);
+        tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
       }
+      unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
+      latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
     }
     if (item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
       if (kpiData?.kpiDetail?.trendCalculative) {
@@ -1668,8 +1670,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           trend = 'NA';
         }
       } else {
-        let lastVal = !isKpi ? item?.value[item?.value?.length - 1]?.value : item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;;
-        let secondLastVal = !isKpi ? item?.value[item?.value?.length - 2]?.value : item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'solid')?.value;
+        let lastVal, secondLastVal;
+        if (item?.value[item?.value?.length - 1]?.dataValue) {
+          lastVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
+          secondLastVal = item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'solid')?.value;
+        } else {
+          lastVal = item?.value[item?.value?.length - 1]?.value;
+          secondLastVal = item?.value[item?.value?.length - 2]?.value;
+        }
         let isPositive = kpiData?.kpiDetail?.isPositiveTrend;
         if (secondLastVal > lastVal && !isPositive) {
           trend = '+ve';
@@ -1697,7 +1705,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         for (let i = 0; i < this.kpiChartData[kpiId]?.length; i++) {
           if (this.kpiChartData[kpiId][i]?.value?.length > 0) {
             let trendObj = {};
-            const [latest, trend, unit] = !this.kpiChartData[kpiId][i].value[0]?.dataValue ? this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]) : this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i], true);
+            const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
             trendObj = {
               "hierarchyName": this.kpiChartData[kpiId][i]?.data,
               "value": latest,

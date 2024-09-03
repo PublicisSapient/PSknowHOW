@@ -33,6 +33,10 @@
   left: 10px;
 }
 
+::ng-deep .p-tieredmenu-overlay {
+  left: -100% !important;
+}
+
 div.main {
     width: calc(100% - 16px);
     margin: 8px;

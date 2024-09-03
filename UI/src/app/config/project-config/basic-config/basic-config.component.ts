@@ -190,6 +190,8 @@ export class BasicConfigComponent implements OnInit {
         this.selectedProject['name'] = response.serviceResponse.data['projectName'];
         this.selectedProject['Type'] = response.serviceResponse.data['kanban'] ? 'Kanban' : 'Scrum';
         this.selectedProject['saveAssigneeDetails'] = response.serviceResponse.data['saveAssigneeDetails'];
+        this.selectedProject['developerKpiEnabled'] = response.serviceResponse.data['developerKpiEnabled'];
+        this.selectedProject['projectOnHold'] = response.serviceResponse.data['projectOnHold'];
         response.serviceResponse.data['hierarchy'].forEach(element => {
           this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
         });

@@ -291,7 +291,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setColors(data) {
-    let colorsArr = ['#6079C5', '#FFB587', '#D48DEF',  '#A4F6A5', '#FBCF5F', '#9FECFF']
+    let colorsArr = ['#6079C5', '#FFB587', '#D48DEF', '#A4F6A5', '#FBCF5F', '#9FECFF']
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
       if (data[i]?.nodeId) {
@@ -539,10 +539,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else if (!event.length) {
       if (this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'sprint') {
         this.noSprint = true;
+        this.service.setAdditionalFilters([]);
       }
     }
-    if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event && event[0]?.labelName === 'project') {
-      const allSprints = this.filterDataArr[this.selectedType]['sprint'];
+    if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['Sprint'] && event && event[0]?.labelName === 'project') {
+      const allSprints = this.filterDataArr[this.selectedType]['Sprint'];
       const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed');
       if (currentProjectSprints?.length) {
         currentProjectSprints.sort((a, b) => new Date(a.sprintEndDate).getTime() - new Date(b.sprintEndDate).getTime());
@@ -550,6 +551,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.noSprint = false;
       } else {
         this.noSprint = true;
+        this.service.setAdditionalFilters([]);
       }
     }
     this.compileGAData(event);
@@ -617,16 +619,17 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
+    let additionalFilterSelected = this.filterApplyData['label'] === 'sqd' ? true : false;
     // Promise.resolve(() => {
     if (!this.selectedLevel) {
-      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, true, true, this.boardData['configDetails'], true, this.dashConfigData);
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, additionalFilterSelected, true, this.boardData['configDetails'], true, this.dashConfigData);
       return;
     }
     if (typeof this.selectedLevel === 'string') {
-      this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, true, true, this.boardData['configDetails'], true, this.dashConfigData);
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, additionalFilterSelected, true, this.boardData['configDetails'], true, this.dashConfigData);
       return;
     }
-    this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, true, true, this.boardData['configDetails'], true, this.dashConfigData);
+    this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel], this.filterApplyData, this.selectedTab, additionalFilterSelected, true, this.boardData['configDetails'], true, this.dashConfigData);
     // });
   }
 
@@ -652,6 +655,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       }
     }
+  }
+
+  closeDateFilterModel() {
+    this.toggleDateDropdown = false;
   }
 
   populateAdditionalFilters(event) {
@@ -758,6 +765,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
             this.selectedProjectLastSyncStatus = 'SUCCESS';
             this.subject.next(true);
+
+            this.lastSyncData = {};
+            this.handlePrimaryFilterChange(this.previousFilterEvent);
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Refreshing data',
+            });
+
+
           } else if (response['data']?.errorInFetch) {
             this.lastSyncData = {};
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;

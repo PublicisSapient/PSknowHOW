@@ -299,22 +299,32 @@ public class KPIExcelUtility {
 				defectIdDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
 				excelData.setDefectId(defectIdDetails);
 				if (kpiId.equalsIgnoreCase(KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId())) {
+					List<String> priorities;
+					String priority;
 					if (StringUtils.containsIgnoreCase(
 							customApiConfig.getpriorityP1().replaceAll(Constant.WHITESPACE, "").trim(),
 							jiraIssue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
-						excelData.setPriority(Constant.P1 + "- " + jiraIssue.getPriority());
+						priorities = Arrays.asList("P1 - Blocker", "p1");
+						priority = Constant.P1;
+						setIssuePriority(jiraIssue, excelData, priorities, priority);
 					} else if (StringUtils.containsIgnoreCase(
 							customApiConfig.getpriorityP2().replaceAll(Constant.WHITESPACE, "").trim(),
 							jiraIssue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
-						excelData.setPriority(Constant.P2 + "- " + jiraIssue.getPriority());
+						priorities = Arrays.asList("P2 - Critical", "p2");
+						priority = Constant.P2;
+						setIssuePriority(jiraIssue, excelData, priorities, priority);
 					} else if (StringUtils.containsIgnoreCase(
 							customApiConfig.getpriorityP3().replaceAll(Constant.WHITESPACE, "").trim(),
 							jiraIssue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
-						excelData.setPriority(Constant.P3 + "- " + jiraIssue.getPriority());
+						priorities = Arrays.asList("P3 - Major", "p3");
+						priority = Constant.P3;
+						setIssuePriority(jiraIssue, excelData, priorities, priority);
 					} else if (StringUtils.containsIgnoreCase(
 							customApiConfig.getpriorityP4().replaceAll(Constant.WHITESPACE, "").trim(),
 							jiraIssue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
-						excelData.setPriority(Constant.P4 + "- " + jiraIssue.getPriority());
+						priorities = Arrays.asList("P4 - Minor", "p4");
+						priority = Constant.P4;
+						setIssuePriority(jiraIssue, excelData, priorities, priority);
 					} else {
 						excelData.setPriority(Constant.MISC + "- " + jiraIssue.getPriority());
 					}
@@ -325,6 +335,15 @@ public class KPIExcelUtility {
 
 				kpiExcelData.add(excelData);
 			});
+		}
+	}
+
+	private static void setIssuePriority(JiraIssue jiraIssue, KPIExcelData excelData, List<String> priorities,
+			String priority) {
+		if (priorities.contains(jiraIssue.getPriority())) {
+			excelData.setPriority(jiraIssue.getPriority());
+		} else {
+			excelData.setPriority(priority + "- " + jiraIssue.getPriority());
 		}
 	}
 
@@ -1042,6 +1061,9 @@ public class KPIExcelUtility {
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setMeanTimetoMerge(repoToolValidationData.getMeanTimeToMerge().toString());
+				Map<String, String> mergeUrl = new HashMap<>();
+				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
+				excelData.setMergeRequestUrl(mergeUrl);
 				kpiExcelData.add(excelData);
 			});
 		}
