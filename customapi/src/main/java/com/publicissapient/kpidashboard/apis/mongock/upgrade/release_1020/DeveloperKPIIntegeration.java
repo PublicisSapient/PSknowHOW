@@ -30,6 +30,10 @@ import io.mongock.api.annotations.RollbackExecution;
 
 @ChangeUnit(id = "developer_kpi_integeration", order = "10201", author = "shi6", systemVersion = "10.2.0")
 public class DeveloperKPIIntegeration {
+	private static final String THRESHOLD = "Target KPI value denotes the bare "
+			+ "minimum a project should maintain for a KPI. User should just input the number and"
+			+ " the unit like percentage, hours will automatically be considered."
+			+ " If the threshold is empty, then a common target KPI line will be shown";
 
 	private final MongoTemplate mongoTemplate;
 
@@ -39,24 +43,13 @@ public class DeveloperKPIIntegeration {
 
 	@Execution
 	public void execution() {
-		insertKpis("kpi180", "Revert Rate", "The percentage of total pull requests opened that are reverts.", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/197263361/Developer+Revert+Rate", Arrays.asList("-80", "80-50", "50-20", "20-5", "5-"));
-        insertKpis("kpi181", "PR Decline Rate", "The percentage of opened Pull Requests that are declined within a timeframe.", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/205357058/Developer+PR+Decline+Rate", Arrays.asList("-80", "80-50", "50-20", "20-5", "5-"));
-        insertKpis("kpi182", "PR Success Rate", "PR success rate measures the number of pull requests that went through the process without being abandoned or discarded as against the total PRs raised in a defined period  A low or declining Pull Request Success Rate represents high or increasing waste", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/75726849/Developer+PR+Success+Rate", Arrays.asList("-80", "80-50", "50-20", "20-5", "5-"));
-        fieldMappingStructureInsert("thresholdValueKPI180",
-                "Target KPI value denotes the bare "
-                        + "minimum a project should maintain for a KPI. User should just input the number and"
-                        + " the unit like percentage, hours will automatically be considered."
-                        + " If the threshold is empty, then a common target KPI line will be shown");
-        fieldMappingStructureInsert("thresholdValueKPI181",
-                "Target KPI value denotes the bare "
-                        + "minimum a project should maintain for a KPI. User should just input the number and"
-                        + " the unit like percentage, hours will automatically be considered."
-                        + " If the threshold is empty, then a common target KPI line will be shown");
-        fieldMappingStructureInsert("thresholdValueKPI182",
-				"Target KPI value denotes the bare "
-						+ "minimum a project should maintain for a KPI. User should just input the number and"
-						+ " the unit like percentage, hours will automatically be considered."
-						+ " If the threshold is empty, then a common target KPI line will be shown");
+		List<String> levels = Arrays.asList("-80", "80-50", "50-20", "20-5", "5-");
+		insertKpis("kpi180", "Revert Rate", "The percentage of total pull requests opened that are reverts.", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/197263361/Developer+Revert+Rate", levels);
+        insertKpis("kpi181", "PR Decline Rate", "The percentage of opened Pull Requests that are declined within a timeframe.", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/205357058/Developer+PR+Decline+Rate", levels);
+        insertKpis("kpi182", "PR Success Rate", "PR success rate measures the number of pull requests that went through the process without being abandoned or discarded as against the total PRs raised in a defined period  A low or declining Pull Request Success Rate represents high or increasing waste", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/75726849/Developer+PR+Success+Rate", levels);
+		fieldMappingStructureInsert("thresholdValueKPI182", THRESHOLD);
+		fieldMappingStructureInsert("thresholdValueKPI181", THRESHOLD);
+		fieldMappingStructureInsert("thresholdValueKPI180", THRESHOLD);
 	}
 
 	public void insertKpis(String kpiId, String kpiName, String kpiInfo, String link, List<String> maturityRange) {
