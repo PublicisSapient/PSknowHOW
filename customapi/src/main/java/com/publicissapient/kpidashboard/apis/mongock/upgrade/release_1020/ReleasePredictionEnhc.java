@@ -26,7 +26,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shunaray
  */
-@ChangeUnit(id = "plan_release_filter", order = "10201", author = "shunaray", systemVersion = "10.2.0")
+@ChangeUnit(id = "plan_release_filter", order = "10202", author = "shunaray", systemVersion = "10.2.0")
 public class ReleasePredictionEnhc {
 
 	private final MongoTemplate mongoTemplate;
@@ -38,6 +38,14 @@ public class ReleasePredictionEnhc {
 	@Execution
 	public void execution() {
 		updateFieldMappingStructure("Custom Fields Mapping");
+		updateKpiFilter("radioButton");
+	}
+
+	public void updateKpiFilter(String radioButton) {
+		mongoTemplate.getCollection("kpi_master").updateOne(
+				new Document("kpiId", "kpi179"),
+				new Document("$set", new Document("kpiFilter", radioButton))
+		);
 	}
 
 	public void updateFieldMappingStructure(String section) {
@@ -49,6 +57,7 @@ public class ReleasePredictionEnhc {
 	@RollbackExecution
 	public void rollback() {
 		updateFieldMappingStructure("Issue Types Mapping");
+		updateKpiFilter("");
 	}
 
 }
