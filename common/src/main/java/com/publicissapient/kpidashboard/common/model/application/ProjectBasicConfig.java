@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
@@ -43,10 +44,19 @@ import lombok.Setter;
 @Document(collection = "project_basic_configs")
 public class ProjectBasicConfig extends BasicModel {
 
+	@Deprecated
 	private String emmUpdatedOn;
+
+	@Deprecated
 	private String consumerCreatedOn;
 
+	// link with Hierarchy Master nodeId where Level Is project
+	@Indexed(unique = true)
+	private String projectNodeId;
+
 	private String projectName;
+	private String projectDisplayName;
+
 	private String createdAt;
 	private String createdBy;
 	private String updatedAt;
