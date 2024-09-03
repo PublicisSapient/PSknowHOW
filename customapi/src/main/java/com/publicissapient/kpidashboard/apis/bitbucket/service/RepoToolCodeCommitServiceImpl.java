@@ -175,7 +175,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 		}
 
 		String projectName = projectLeafNode.getProjectFilter().getName();
-		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
+		Map<String, List<DataCount>> aggDataMap = new LinkedHashMap<>();
 		Map<String, Object> resultmap = fetchKPIDataFromDb(List.of(projectLeafNode), null, null, kpiRequest);
 		Set<Assignee> assignees = (Set<Assignee>) resultmap.get(ASSIGNEE);
 		Set<String> overAllUsers = repoToolKpiMetricResponseCommitList.stream()
@@ -216,8 +216,8 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 						mrCount = matchingBranch.map(Branches::getMergeRequestCount).orElse(0L);
 						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
 					}
-					repoToolValidationDataList.addAll(setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, repo, projectName,
-									date, aggDataMap));
+					repoToolValidationDataList.addAll(setUserDataCounts(overAllUsers, repoToolUserDetailsList,
+							assignees, repo, projectName, date, aggDataMap));
 					setDataCount(projectName, date, overallKpiGroup, commitCount, mrCount, aggDataMap);
 				}
 			});

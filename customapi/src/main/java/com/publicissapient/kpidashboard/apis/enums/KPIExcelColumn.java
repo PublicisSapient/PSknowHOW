@@ -298,8 +298,7 @@ public enum KPIExcelColumn {
 			"Sprint Name", "Assignee", "Issue Status", "Testing Phase")),
 
 	PICKUP_TIME("kpi160",
-			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks",
-					"Pickup Time (In Hours)")),
+			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Pickup Time (In Hours)")),
 
 	PR_SIZE("kpi162",
 			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks",

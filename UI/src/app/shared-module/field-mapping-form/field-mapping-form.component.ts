@@ -268,6 +268,7 @@ private setting = {
 
   /** Once user select value and click on save then selected option will be populated on chip/textbox */
   saveDialog() {
+    const preSaveFormValueList = {...this.form.controls[this.selectedField].value}
     if (this.singleSelectionDropdown) {
       if (this.selectedValue.length) {
         this.form.controls[this.selectedField].setValue(this.selectedValue);
@@ -297,6 +298,14 @@ private setting = {
 
       this.form.controls[this.selectedField].setValue(Array.from(new Set(selectedMultiValueLabels)));
     }
+    //#region  DTS-39044 fix
+    const afterSaveFormValueList = {...this.form.controls[this.selectedField].value}
+    if(JSON.stringify(preSaveFormValueList) != JSON.stringify(afterSaveFormValueList)){
+      this.form.markAsDirty();
+      this.form.markAsTouched();
+      this.form.updateValueAndValidity();
+    }
+    //#endregion
     this.populateDropdowns = false;
     this.displayDialog = false;
   }

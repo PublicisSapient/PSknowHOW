@@ -10,22 +10,28 @@ import { SharedService } from 'src/app/services/shared.service';
 export class StickyHeaderV2Component implements OnInit,AfterViewInit, OnDestroy {
 
   fields: Map<string, string> = new Map();
-  subscription: Subscription;
+  subscriptions: Subscription[] = [];
   constructor( public service: SharedService) { }
 
   ngOnInit(): void {
-    this.subscription = this.service.currentSelectedSprintSub.subscribe((item)=>{
-      this.fields.set('Sprint', item?.nodeName);
-    })
+    this.subscriptions.push(
+      this.service.currentSelectedSprintSub.subscribe((item)=>{
+        this.fields.set('Sprint', item?.nodeName);
+      })
+    )
   }
 
   ngAfterViewInit(): void {
-    this.fields.set('Selected Tab', this.service?.selectedTab);
-    this.fields.set('Project Type', this.service?.selectedtype);
+    this.subscriptions.push(
+    this.service.onTypeOrTabRefresh.subscribe((data)=>{
+      this.fields.set('Selected Tab', data.selectedTab);
+    this.fields.set('Project Type', data.selectedType);
+      
+    }))
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
 }

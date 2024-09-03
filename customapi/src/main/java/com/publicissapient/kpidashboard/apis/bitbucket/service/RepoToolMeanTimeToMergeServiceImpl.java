@@ -154,7 +154,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			return;
 		}
 
-		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
+		Map<String, List<DataCount>> aggDataMap = new LinkedHashMap<>();
 		Map<String, Object> resultmap = fetchKPIDataFromDb(List.of(projectLeafNode), null, null, kpiRequest);
 		Set<Assignee> assignees = (Set<Assignee>) resultmap.get(ASSIGNEE);
 
