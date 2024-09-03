@@ -764,16 +764,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           if (response['data']?.fetchSuccessful === true) {
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
             this.selectedProjectLastSyncStatus = 'SUCCESS';
-            this.subject.next(true);
-
-            this.lastSyncData = {};
             this.handlePrimaryFilterChange(this.previousFilterEvent);
             this.messageService.add({
               severity: 'success',
               summary: 'Refreshing data',
             });
-
-
+            this.subject.next(true);
           } else if (response['data']?.errorInFetch) {
             this.lastSyncData = {};
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
