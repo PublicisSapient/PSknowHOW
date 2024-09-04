@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1020;
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1010;
 
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -26,7 +26,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shunaray
  */
-@ChangeUnit(id = "r_plan_release_filter", order = "010202", author = "shunaray", systemVersion = "10.2.0")
+@ChangeUnit(id = "r_plan_release_filter", order = "010202", author = "shunaray", systemVersion = "10.1.0")
 public class ReleasePredictionEnhc {
 
 	private final MongoTemplate mongoTemplate;
