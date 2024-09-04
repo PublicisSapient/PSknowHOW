@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1010;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1010;
 
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -26,25 +26,19 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shunaray
  */
-@ChangeUnit(id = "r_plan_release_filter", order = "010202", author = "shunaray", systemVersion = "10.1.0")
-public class ReleasePredictionEnhc {
+@ChangeUnit(id = "plan_release_filter", order = "101011", author = "shunaray", systemVersion = "10.1.0")
+public class ReleasePlanEnhc {
 
 	private final MongoTemplate mongoTemplate;
 
-	public ReleasePredictionEnhc(MongoTemplate mongoTemplate) {
+	public ReleasePlanEnhc(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 
 	@Execution
 	public void execution() {
-		updateFieldMappingStructure("Issue Types Mapping");
-		updateKpiFilter("");
-	}
-
-	public void updateFieldMappingStructure(String section) {
-		mongoTemplate.getCollection("field_mapping_structure").updateOne(
-				new Document("fieldName", "startDateCountKPI150"),
-				new Document("$set", new Document("section", section)));
+		updateFieldMappingStructure("Custom Fields Mapping");
+		updateKpiFilter("radioButton");
 	}
 
 	public void updateKpiFilter(String radioButton) {
@@ -54,11 +48,16 @@ public class ReleasePredictionEnhc {
 		);
 	}
 
+	public void updateFieldMappingStructure(String section) {
+		mongoTemplate.getCollection("field_mapping_structure").updateOne(
+				new Document("fieldName", "startDateCountKPI150"),
+				new Document("$set", new Document("section", section)));
+	}
+
 	@RollbackExecution
 	public void rollback() {
-
-		updateFieldMappingStructure("Custom Fields Mapping");
-		updateKpiFilter("radioButton");
+		updateFieldMappingStructure("Issue Types Mapping");
+		updateKpiFilter("");
 	}
 
 }
