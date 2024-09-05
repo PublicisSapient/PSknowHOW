@@ -19,11 +19,14 @@ package com.publicissapient.kpidashboard.common.config;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.converter.DateToJodaDateTimeConverter;
+import com.publicissapient.kpidashboard.common.converter.ZonedDateTimeReadConverter;
+import com.publicissapient.kpidashboard.common.converter.ZonedDateTimeWriteConverter;
+import com.publicissapient.kpidashboard.common.mapper.CustomObjectMapper;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -35,10 +38,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.common.converter.DateToJodaDateTimeConverter;
-import com.publicissapient.kpidashboard.common.converter.ZonedDateTimeReadConverter;
-import com.publicissapient.kpidashboard.common.converter.ZonedDateTimeWriteConverter;
-import com.publicissapient.kpidashboard.common.mapper.CustomObjectMapper;
 
 /**
  * An extension of {@link WebMvcConfigurer} to provide project specific
@@ -66,9 +65,6 @@ public class WebMVCConfig implements WebMvcConfigurer {
 		jackson.getObjectMapper().registerModule(new JavaTimeModule());
 
 		converters.add(jackson);
-
-		// Add the ByteArray message converter
-		converters.add(new ByteArrayHttpMessageConverter());
 	}
 
 	@Override
@@ -83,8 +79,9 @@ public class WebMVCConfig implements WebMvcConfigurer {
 	 */
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/swagger-ui/**")
-				.addResourceLocations("classpath:/META-INF/resources/webjars/springdoc-openapi-ui/");
+		String[] staticResourceMappingPath = { "classpath:/static/" };
+
+		registry.addResourceHandler("/**").addResourceLocations(staticResourceMappingPath);
 	}
 	@Override
 	public void addFormatters(FormatterRegistry registry) {
