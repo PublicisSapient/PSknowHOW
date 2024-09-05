@@ -32,13 +32,10 @@ public class HierarchyMaster extends BasicModel implements Serializable {
 
 	private String nodeDisplayName;
 
-	// same as labelName in Account Hierarchy
-	// match with HierarchyLevel.hierarchyLevelId
-	private String levelId;
-	private String parentId;
+	// Todo same as labelName in Account Hierarchy
+	private String hierarchyLevelId;
 
-	// Hierarchy Level of Node
-	private int level;
+	private String parentId;
 
 	private LocalDateTime createdDate;
 	private LocalDateTime modifiedDate;
