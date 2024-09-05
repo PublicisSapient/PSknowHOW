@@ -4589,7 +4589,7 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "" ,
+    "kpiFilter" : "radioButton" ,
     "boxType" : "chart" ,
     "calculateMaturity" : false
   }
