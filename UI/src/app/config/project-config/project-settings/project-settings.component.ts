@@ -425,7 +425,7 @@ export class ProjectSettingsComponent implements OnInit {
       this.displayGeneratedToken = true;
       if (response['success'] && response['data']) {
         this.generatedToken = response['data'].apiToken;
-        this.messageService.add({ severity: 'success', summary: 'Token copied!' });
+        this.messageService.add({ severity: 'success', summary: 'Token generated!' });
       } else {
         this.messageService.add({ severity: 'error', summary: 'Error occured while generating token. Please try after some time' });
       }
@@ -436,6 +436,7 @@ export class ProjectSettingsComponent implements OnInit {
     if (this.generatedToken) {
       this.tokenCopied = true;
       navigator.clipboard.writeText(this.generatedToken);
+      this.messageService.add({ severity: 'success', summary: 'Token copied!' });
     }
   }
 
