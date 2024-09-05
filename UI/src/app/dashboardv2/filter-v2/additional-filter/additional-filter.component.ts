@@ -46,8 +46,8 @@ export class AdditionalFilterComponent implements OnChanges {
 
           this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
           const correctLevelMapping = {
-            Sprint : 'sprint',
-            Squad : 'sqd'
+            Sprint: 'sprint',
+            Squad: 'sqd'
           }
           if (this.stateFilters && Object.keys(this.stateFilters)) {
             Object.keys(this.stateFilters).forEach((key, index) => {
@@ -77,20 +77,24 @@ export class AdditionalFilterComponent implements OnChanges {
 
   applyDefaultFilter() {
     let fakeEvent = {};
-    if (this.filterData.map(f => f.nodeName).includes('Overall')) {
-      this.filterData.splice(this.filterData.map(f => f.nodeName).indexOf('Overall'), 1);
-      this.filterData.unshift({ nodeId: 'Overall', nodeName: 'Overall' });
-      fakeEvent['value'] = 'Overall';
-      this.selectedFilters = ['Overall'];
-    } else {
-      if (this.filterData[0]?.length && this.filterData[0][0]?.nodeId) {
-        fakeEvent['value'] = this.filterData[0][0].nodeId;
-        this.selectedFilters = [this.filterData[0][0]];
-      } else {
+    this.filterData.forEach((filter, index) => {
+      if (filter.map(f => f.nodeName).includes('Overall')) {
+        // filter.splice(this.filterData.map(f => f.nodeName).indexOf('Overall'), 1);
+        // filter.unshift({ nodeId: 'Overall', nodeName: 'Overall' });
         fakeEvent['value'] = 'Overall';
-        this.selectedFilters = ['Overall'];
+
+        this.selectedFilters[index] = { nodeId: 'Overall', nodeName: 'Overall' };
+      } else {
+        if (this.filterData[0]?.length && this.filterData[0][0]?.nodeId) {
+          fakeEvent['value'] = this.filterData[0][0].nodeId;
+          this.selectedFilters = [this.filterData[0][0]];
+        } else {
+          fakeEvent['value'] = 'Overall';
+          this.selectedFilters = ['Overall'];
+        }
       }
-    }
+    });
+
     Promise.resolve().then(() => {
       this.applyAdditionalFilter(fakeEvent, 0 + 1);
     });
