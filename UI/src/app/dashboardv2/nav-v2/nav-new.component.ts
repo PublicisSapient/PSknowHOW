@@ -4,7 +4,7 @@ import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav-new',
@@ -20,13 +20,19 @@ export class NavNewComponent implements OnInit, OnDestroy {
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
 
-  constructor(private httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, private helperService: HelperService) {
+  constructor(
+    private httpService: HttpService,
+    public sharedService: SharedService,
+    public messageService: MessageService,
+    public router: Router,
+    private helperService: HelperService,
+  ) {
   }
 
   ngOnInit(): void {
-    const selectedTab = window.location.hash.substring(1);
+    const selectedTab = decodeURIComponent(window.location.hash.substring(1));
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-    this.selectedTab = this.selectedTab?.split(' ').join('-').toLowerCase();
+    this.selectedTab = this.selectedTab?.split('?')[0].split(' ').join('-').toLowerCase();
     this.subscriptions.push(this.sharedService.onTypeOrTabRefresh.subscribe((data) => {
       this.selectedType = data.selectedType ? data.selectedType : 'scrum';
       this.sharedService.setSelectedType(this.selectedType)
@@ -80,7 +86,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
             if (board.boardSlug !== 'developer') {
               board.filters.additionalFilters.forEach(element => {
-                element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
+                element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]?.hierarchyLevelName;
               });
             }
           }
@@ -112,10 +118,13 @@ export class NavNewComponent implements OnInit, OnDestroy {
             },
           };
         });
+        console.log(this.items)
+        console.log(this.selectedTab)
         this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
+        console.log(this.activeItem)
       } else {
         this.httpService.getAllHierarchyLevels().subscribe((res) => {
-          if (res.data) {          
+          if (res.data) {
             localStorage.setItem('completeHierarchyData', JSON.stringify(res.data));
             this.setBoards(response);
           }
@@ -125,6 +134,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   }
 
   handleMenuTabFunctionality(obj) {
+    console.log(obj)
     this.selectedTab = obj['boardSlug'];
     if (this.selectedTab !== 'unauthorized access') {
       this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
@@ -133,7 +143,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
       || this.selectedTab === 'dora' || this.selectedTab === 'kpi-maturity') {
       this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
     }
-    this.router.navigate(['/dashboard/' + obj['boardSlug']]);
+    this.sharedService.setSelectedTab(this.selectedTab);
+    this.router.navigate(['/dashboard/' + this.selectedTab], { queryParamsHandling: 'merge' });
   }
 
   deepEqual(obj1: any, obj2: any): boolean {

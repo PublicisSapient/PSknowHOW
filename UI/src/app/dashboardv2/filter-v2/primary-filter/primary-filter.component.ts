@@ -127,6 +127,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       } else {
         this.applyDefaultFilters();
       }
+      console.log(this.selectedFilters)
     }
   }
 
@@ -161,6 +162,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((val) => {
       if (this.selectedFilters?.length && this.selectedFilters[0]) {
         this.selectedFilters = this.selectedFilters.filter((filter) => Object.keys(val).includes(filter.nodeId));
+        console.log(this.selectedFilters)
       }
     }));
   }
@@ -201,13 +203,16 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     // }
 
     if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
+      console.log('parent if')
       this.onPrimaryFilterChange.emit([...this.selectedFilters]);
     } else {
       if (this.selectedFilters[0].sprintState?.toLowerCase() === 'active') {
+        console.log('if')
         this.onPrimaryFilterChange.emit([...this.selectedFilters]);
       } else {
         this.service.setNoSprints(true);
         this.onPrimaryFilterChange.emit([]);
+        console.log(this.selectedLevel)
         if (this.filters.length) {
           this.selectedFilters.push({ ...this.filters[0] });
           this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
@@ -216,6 +221,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         }
       }
     }
+    console.log(this.selectedFilters)
     this.setProjectAndLevelBackupBasedOnSelectedLevel();
     if (this.multiSelect?.overlayVisible) {
       this.multiSelect.close(event);
@@ -240,7 +246,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     if (event?.value) {
       event?.value.forEach(selectedItem => {
         this.filters = this.filters.filter(x => x.nodeName !== selectedItem.nodeName); // remove the item from list
-        this.filters.unshift(selectedItem)// this will add selected item on the top 
+        this.filters.unshift(selectedItem)// this will add selected item on the top
       });
     }
   }

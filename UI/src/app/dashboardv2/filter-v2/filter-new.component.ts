@@ -8,6 +8,7 @@ import { Subject, interval } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { MultiSelect } from 'primeng/multiselect';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-filter-new',
@@ -70,7 +71,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     public cdr: ChangeDetectorRef,
     private messageService: MessageService,
     private ga: GoogleAnalyticsService,
-    private featureFlagsService: FeatureFlagsService) { }
+    private featureFlagsService: FeatureFlagsService,
+    public router: Router,
+    private route: ActivatedRoute,
+  ) {
+    const url = decodeURIComponent(this.router.url);
+    if (url !== this.router.url) {
+      this.router.navigateByUrl(url);
+    }
+  }
 
 
   async ngOnInit() {
@@ -102,6 +111,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     this.subscriptions.push(
       this.service.globalDashConfigData.subscribe((boardData) => {
+        // console.log(boardData)
         this.dashConfigData = boardData;
         this.processBoardData(boardData);
       })
@@ -112,7 +122,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh
         .subscribe(data => {
-
+          // console.log(data)
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
 
@@ -131,6 +141,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.kanban = false;
             this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
           }
+          // console.log(this.boardData)
           this.processBoardData(this.boardData);
 
           if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release' || this.selectedTab.toLowerCase() === 'dora' || this.selectedTab.toLowerCase() === 'developer' || this.selectedTab.toLowerCase() === 'kpi-maturity') {
@@ -196,6 +207,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.kanban = false;
     }
     this.filterApplyData = {};
+    // console.log(this.selectedType)
     this.service.setSelectedType(this.selectedType);
     this.helperService.setBackupOfFilterSelectionState({ 'selected_type': this.selectedType })
     this.service.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
@@ -203,11 +215,17 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   processBoardData(boardData) {
     this.boardData = boardData;
-    this.selectedBoard = boardData[this.selectedType ? this.selectedType : 'scrum'].filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
+    // console.log(this.boardData)
+    this.selectedBoard = boardData[this.selectedType ? this.selectedType : 'scrum'].filter((board => {
+      // console.log(board)
+      return board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()
+    }))[0];
+    // console.log(this.selectedTab)
+    // console.log(this.selectedBoard)
     if (!this.selectedBoard) {
       this.selectedBoard = boardData['others']?.filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
     }
-
+    // console.log(this.selectedBoard)
     if (this.selectedBoard) {
       this.kanbanRequired = this.selectedBoard.filters?.projectTypeSwitch;
 
@@ -288,6 +306,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       this.selectedLevel = event;
     }
+    console.log(this.selectedLevel)
+    const selectedLevel = typeof this.selectedLevel === 'string' ? this.selectedLevel : this.selectedLevel?.nodeType;
+    this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'type': this.selectedType, 'org': selectedLevel.toLowerCase() }, relativeTo: this.route });
   }
 
   setColors(data) {
