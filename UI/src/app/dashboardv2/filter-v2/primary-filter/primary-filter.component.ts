@@ -171,6 +171,8 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       if (this.primaryFilterConfig['defaultLevel'].sortBy) {
         if (this.selectedTab.toLowerCase() === 'iteration') {
           this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
+        } else if(this.selectedTab.toLowerCase() === 'release'){
+         this.filters = this.helperService.releaseSorting(this.filterData[this.selectedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId))
         } else {
           this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel], [this.primaryFilterConfig['defaultLevel'].sortBy]);
         }
@@ -180,7 +182,9 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       if (this.primaryFilterConfig['defaultLevel'].sortBy) {
         if (this.selectedTab.toLowerCase() === 'iteration') {
           this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel.emittedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
-        } else {
+        }else if(this.selectedTab.toLowerCase() === 'release'){
+           this.filters = this.helperService.releaseSorting(this.filterData[this.selectedLevel.emittedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId))
+        }else {
           this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel.emittedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy]);
         }
       } else {
