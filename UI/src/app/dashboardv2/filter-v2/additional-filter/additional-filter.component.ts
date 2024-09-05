@@ -33,10 +33,26 @@ export class AdditionalFilterComponent implements OnChanges {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       if (data && Object.keys(data)?.length) {
         this.selectedFilters = [];
-        this.filterData = [];
+        // this.filterData = [];
         this.selectedTrends = this.service.getSelectedTrends();
         Object.keys(data).forEach((f, index) => {
-          this.filterData[index] = data[f];
+          if (this.filterData[index]) {
+            // this.filterData[index].concat(data[f]);
+            // Array.prototype.push.apply(this.filterData[index],data[f]);
+            data[f].forEach(element => {
+              if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
+                this.filterData[index].push(element);
+              }
+            });
+
+
+          } else {
+            this.filterData[index] = data[f];
+          }
+          // remove duplicates
+          // this.filterData[index] = this.filterData[index].filter(function (item, pos, self) {
+          //   return self.indexOf(item) == pos;
+          // });
         });
 
         if (this.selectedTab !== 'developer') {
@@ -77,6 +93,7 @@ export class AdditionalFilterComponent implements OnChanges {
 
   applyDefaultFilter() {
     let fakeEvent = {};
+
     this.filterData.forEach((filter, index) => {
       if (filter.map(f => f.nodeName).includes('Overall')) {
         // filter.splice(this.filterData.map(f => f.nodeName).indexOf('Overall'), 1);
