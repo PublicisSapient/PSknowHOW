@@ -31,7 +31,7 @@ import { ExportExcelComponent } from 'src/app/component/export-excel/export-exce
   templateUrl: './executive-v2.component.html',
   styleUrls: ['./executive-v2.component.css']
 })
-export class ExecutiveV2Component implements OnInit, OnDestroy, OnChanges {
+export class ExecutiveV2Component implements OnInit, OnDestroy {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   filterData = [];
   sonarKpiData = {};
@@ -226,9 +226,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy, OnChanges {
         this.noTabAccess = false;
       }
     });
-  }
 
-  ngOnChanges(changes: SimpleChanges): void {
     if (this.selectedTab.toLowerCase() === 'developer') {
       this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
         Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
@@ -237,7 +235,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy, OnChanges {
       }));
     }
   }
-
 
   // unsubscribing all Kpi Request
   ngOnDestroy() {
@@ -1514,7 +1511,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy, OnChanges {
     if (this.selectedTab.toLowerCase() === 'release') {
       this.handleSelectedOptionOnRelease(event, kpi);
     } else {
-      this.kpiSelectedFilterObj[kpi?.kpiId] = [];
+      // this.kpiSelectedFilterObj[kpi?.kpiId] = [];
       if (kpi.kpiId === "kpi72") {
         if (event.hasOwnProperty('filter1') || event.hasOwnProperty('filter2')) {
           if (!Array.isArray(event.filter1) || !Array.isArray(event.filter2)) {
@@ -1539,7 +1536,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy, OnChanges {
 
       }
       else {
-        if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
+        if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && this.selectedTab.toLowerCase() !== 'developer') {
           for (const key in event) {
             if (event[key]?.length == 0) {
               delete event[key];
@@ -1551,6 +1548,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy, OnChanges {
             } else {
               this.kpiSelectedFilterObj[kpi?.kpiId] = event;
             }
+          }
+        } else if (this.selectedTab.toLowerCase() === 'developer') {
+          if (this.kpiSelectedFilterObj[kpi?.kpiId]) {
+            this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
+          } else {
+            this.kpiSelectedFilterObj[kpi?.kpiId] = {};
+            this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
           }
         } else {
           this.kpiSelectedFilterObj[kpi?.kpiId].push(event);

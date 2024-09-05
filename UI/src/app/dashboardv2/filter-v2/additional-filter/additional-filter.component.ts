@@ -126,7 +126,10 @@ export class AdditionalFilterComponent implements OnChanges {
       this.appliedFilters[filterKey] = e && e.value ? [e.value] : [];
 
       const filterValue = this.appliedFilters[filterKey][0];
-      const nodeId = filterValue?.nodeId || filterValue;
+      const nodeId = {};
+      nodeId['value'] = filterValue?.nodeId || filterValue;
+      nodeId['index'] = index;
+
       this.service.applyAdditionalFilters(nodeId);
     }
 
