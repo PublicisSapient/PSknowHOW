@@ -1587,20 +1587,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
 
   checkMaturity(item) {
+    // let maturity = item.maturity;
+    // if (maturity == undefined) {
+    //   return 'NA';
+    // }
+    // if (item.value.length >= 5) {
+    //   const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
+    //   const tempArr = last5ArrItems.filter(x => x.data != 0);
+    //   if (tempArr.length == 0) {
+    //     maturity = '--';
+    //   }
+    // } else {
+    //   maturity = '--';
+    // }
+    // maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M' + maturity : maturity;
     let maturity = item.maturity;
     if (maturity == undefined) {
       return 'NA';
     }
-    if (item.value.length >= 5) {
-      const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
-      const tempArr = last5ArrItems.filter(x => x.data != 0);
-      if (tempArr.length == 0) {
-        maturity = '--';
-      }
-    } else {
-      maturity = '--';
-    }
-    maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M' + maturity : maturity;
+    maturity = 'M'+maturity;
     return maturity;
   }
 
@@ -1671,7 +1676,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         let operator = lhs < rhs ? '<' : lhs > rhs ? '>' : '=';
         let trendObj = kpiData?.kpiDetail?.trendCalculation?.find((item) => item.operator == operator);
         if (trendObj) {
-          trend = trendObj['type']?.toLowerCase() == 'downwards' ? '-ve' : trendObj['type']?.toLowerCase() == 'upwards' ? '+ve' : '-- --';
+          trend = trendObj['type']?.toLowerCase() == 'downwards' ? '-ve' : trendObj['type']?.toLowerCase() == 'upwards' ? '+ve' : '--';
         } else {
           trend = 'NA';
         }
@@ -1694,7 +1699,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         } else if (secondLastVal > lastVal && isPositive) {
           trend = '-ve';
         } else {
-          trend = '-- --';
+          trend = '--';
         }
       }
     } else {
