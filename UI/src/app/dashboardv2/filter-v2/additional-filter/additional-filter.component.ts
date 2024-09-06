@@ -39,7 +39,7 @@ export class AdditionalFilterComponent implements OnChanges {
 
         if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
           this.filterData = [];
-          this.previousSelectedTrends = this.selectedTrends;
+          this.previousSelectedTrends = [...this.selectedTrends];
         }
 
         Object.keys(data).forEach((f, index) => {
@@ -56,10 +56,6 @@ export class AdditionalFilterComponent implements OnChanges {
           } else {
             this.filterData[index] = data[f];
           }
-          // remove duplicates
-          // this.filterData[index] = this.filterData[index].filter(function (item, pos, self) {
-          //   return self.indexOf(item) == pos;
-          // });
         });
 
         if (this.selectedTab !== 'developer') {
