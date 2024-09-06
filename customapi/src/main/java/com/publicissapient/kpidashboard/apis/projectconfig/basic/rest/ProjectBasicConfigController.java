@@ -50,11 +50,8 @@ import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.Hierarchy
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyLevelDTO;
-import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
-import com.publicissapient.kpidashboard.common.service.HierarchyLevelSuggestionsService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -87,9 +84,6 @@ public class ProjectBasicConfigController {
 
 	@Autowired
 	private AuthenticationService authenticationService;
-
-	@Autowired
-	private HierarchyLevelSuggestionsService hierarchyLevelSuggestionService;
 	
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -147,16 +141,6 @@ public class ProjectBasicConfigController {
 			@RequestBody ProjectBasicConfigDTO projectBasicConfigDTO, HttpServletResponse response) {
 
 		policy.checkPermission(projectBasicConfigDTO, "ADD_PROJECT");
-
-		// add Hierarchy Level Value if not in db HierarchyLevelSuggestion collection
-		List<HierarchyValueDTO> hierarchyValueDTOList = projectBasicConfigDTO.getHierarchy();
-		if (CollectionUtils.isNotEmpty(hierarchyValueDTOList)) {
-			hierarchyValueDTOList.stream().forEach(hierarchy -> {
-				HierarchyLevelDTO hierarchyLevelDTO = hierarchy.getHierarchyLevel();
-				hierarchyLevelSuggestionService.addIfNotPresent(hierarchyLevelDTO.getHierarchyLevelId(),
-						hierarchy.getValue());
-			});
-		}
 
 		log.info(ADDING_PROJECT_CONFIGURATIONS, projectBasicConfigDTO.toString());
 

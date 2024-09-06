@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "hierarchy_master")
-public class HierarchyMaster extends BasicModel implements Serializable {
+@Document(collection = "organization_hierarchy")
+public class OrganizationHierarchy extends BasicModel implements Serializable {
 
 	private static final long serialVersionUID = 67050747445127809L;
 
@@ -35,6 +35,7 @@ public class HierarchyMaster extends BasicModel implements Serializable {
 	// Todo same as labelName in Account Hierarchy
 	private String hierarchyLevelId;
 
+	@Indexed(unique = true)
 	private String parentId;
 
 	private LocalDateTime createdDate;

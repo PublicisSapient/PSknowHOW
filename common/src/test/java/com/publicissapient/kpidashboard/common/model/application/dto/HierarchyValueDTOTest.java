@@ -35,7 +35,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(3);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO1 = new HierarchyValueDTO();
         hierarchyValueDTO1.setHierarchyLevel(hierarchyLevelDTO);
@@ -54,7 +53,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(3);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO1 = new HierarchyValueDTO();
         hierarchyValueDTO1.setHierarchyLevel(hierarchyLevelDTO);
@@ -81,7 +79,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
         actualHierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
         actualHierarchyValueDTO.setValue("42");
         String actualToStringResult = actualHierarchyValueDTO.toString();
@@ -111,7 +108,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
         actualHierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
         actualHierarchyValueDTO.setValue("42");
         String actualToStringResult = actualHierarchyValueDTO.toString();
@@ -131,7 +127,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO = new HierarchyValueDTO();
         hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
@@ -148,7 +143,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO = new HierarchyValueDTO();
         hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
@@ -170,7 +164,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO = new HierarchyValueDTO();
         hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
@@ -194,7 +187,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO = new HierarchyValueDTO();
         hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
@@ -204,7 +196,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO1.setHierarchyLevelId("42");
         hierarchyLevelDTO1.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO1.setLevel(1);
-        hierarchyLevelDTO1.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO1 = new HierarchyValueDTO();
         hierarchyValueDTO1.setHierarchyLevel(hierarchyLevelDTO1);
@@ -223,11 +214,9 @@ public class HierarchyValueDTOTest {
         doNothing().when(hierarchyLevelDTO).setHierarchyLevelId((String) any());
         doNothing().when(hierarchyLevelDTO).setHierarchyLevelName((String) any());
         doNothing().when(hierarchyLevelDTO).setLevel(anyInt());
-        doNothing().when(hierarchyLevelDTO).setSuggestions((TreeSet<String>) any());
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO = new HierarchyValueDTO();
         hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
@@ -237,7 +226,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO1.setHierarchyLevelId("42");
         hierarchyLevelDTO1.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO1.setLevel(1);
-        hierarchyLevelDTO1.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO1 = new HierarchyValueDTO();
         hierarchyValueDTO1.setHierarchyLevel(hierarchyLevelDTO1);
@@ -254,7 +242,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO = new HierarchyValueDTO();
         hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
@@ -271,7 +258,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO = new HierarchyValueDTO();
         hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
@@ -293,7 +279,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO = new HierarchyValueDTO();
         hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
@@ -317,7 +302,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO = new HierarchyValueDTO();
         hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
@@ -327,7 +311,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO1.setHierarchyLevelId("42");
         hierarchyLevelDTO1.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO1.setLevel(1);
-        hierarchyLevelDTO1.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO1 = new HierarchyValueDTO();
         hierarchyValueDTO1.setHierarchyLevel(hierarchyLevelDTO1);
@@ -346,11 +329,9 @@ public class HierarchyValueDTOTest {
         doNothing().when(hierarchyLevelDTO).setHierarchyLevelId((String) any());
         doNothing().when(hierarchyLevelDTO).setHierarchyLevelName((String) any());
         doNothing().when(hierarchyLevelDTO).setLevel(anyInt());
-        doNothing().when(hierarchyLevelDTO).setSuggestions((TreeSet<String>) any());
         hierarchyLevelDTO.setHierarchyLevelId("42");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
-        hierarchyLevelDTO.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO = new HierarchyValueDTO();
         hierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
@@ -360,7 +341,6 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO1.setHierarchyLevelId("42");
         hierarchyLevelDTO1.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO1.setLevel(1);
-        hierarchyLevelDTO1.setSuggestions(new TreeSet<>());
 
         HierarchyValueDTO hierarchyValueDTO1 = new HierarchyValueDTO();
         hierarchyValueDTO1.setHierarchyLevel(hierarchyLevelDTO1);

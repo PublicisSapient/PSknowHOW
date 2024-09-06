@@ -43,8 +43,10 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.OrganizationHierarchyService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,6 +65,10 @@ public class CacheServiceImpl implements CacheService {
 	private AccountHierarchyServiceImpl accountHierarchyService;
 	@Autowired
 	private AccountHierarchyServiceKanbanImpl accountHierarchyServiceKanban;
+
+	@Autowired
+	OrganizationHierarchyService organizationHierarchyService;
+
 	@Autowired
 	@Qualifier("cacheManager")
 	private CacheManager cacheManager;
@@ -102,7 +108,8 @@ public class CacheServiceImpl implements CacheService {
 		return ((List<AccountHierarchyData>) cacheAccountHierarchyData()).stream()
 				.filter(data -> data.getNode().stream()
 						.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-								&& node.getAccountHierarchy().getSprintState() != null)).toList();
+								&& node.getAccountHierarchy().getSprintState() != null))
+				.toList();
 
 	}
 
@@ -130,7 +137,6 @@ public class CacheServiceImpl implements CacheService {
 		return configHelperService.getConfigMapData(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 
 	}
-	
 
 	@Cacheable(CommonConstant.CACHE_TOOL_CONFIG_MAP)
 	@Override
@@ -271,6 +277,12 @@ public class CacheServiceImpl implements CacheService {
 		return hierarchyLevels.stream()
 				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
 
+	}
+
+	@Cacheable(CommonConstant.CACHE_HIERARCHY_MASTER_DATA)
+	@Override
+	public List<OrganizationHierarchy> getCacheOrganizationHierarchies() {
+		return organizationHierarchyService.findAllOrganizationHierarchiesFromDB();
 	}
 
 }

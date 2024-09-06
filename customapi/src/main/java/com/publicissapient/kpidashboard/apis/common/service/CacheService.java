@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 
 /**
  * A Service to manage cache.
@@ -103,4 +104,5 @@ public interface CacheService {
 
 	Map<String, AdditionalFilterCategory> getAdditionalFilterHierarchyLevel();
 
+	List<OrganizationHierarchy> getCacheOrganizationHierarchies();
 }

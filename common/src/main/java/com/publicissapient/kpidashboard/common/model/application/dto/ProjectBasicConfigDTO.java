@@ -41,12 +41,17 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ProjectBasicConfigDTO {
 	private ObjectId id;
+	private String projectNodeId;
+
 	private String projectName;
+	private String projectDisplayName;
+
 	private String createdAt;
 	private String createdBy;
 	private String updatedAt;
 	private String updatedBy;
 
+	@Deprecated
 	private String consumerCreatedOn;
 	private boolean kanban;
 	private List<HierarchyValueDTO> hierarchy;
