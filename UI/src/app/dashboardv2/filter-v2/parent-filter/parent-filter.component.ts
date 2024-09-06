@@ -28,7 +28,7 @@ export class ParentFilterComponent implements OnChanges {
         this.fillAdditionalFilterLevels();
         this.filterLevels = Object.keys(this.filterData);
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level));
-        
+
         this.stringToObject();
         this.stateFilters = this.helperService.getBackupOfFilterSelectionState('parent_level');
         Promise.resolve().then(() => {
@@ -101,11 +101,13 @@ export class ParentFilterComponent implements OnChanges {
   }
 
   fillAdditionalFilterLevels() {
-    if (this.filterData['Project']?.length) {
+    if (this.filterData['Projec']?.length) {
       let projectLevel = this.filterData['Project'][0].level;
       Object.keys(this.filterData).forEach((key) => {
-        if (this.filterData[key][0].level > projectLevel) {
-          this.additionalFilterLevels.push(key);
+        if(this.filterData[key] !== undefined) {
+          if (this.filterData[key][0].level > projectLevel) {
+            this.additionalFilterLevels.push(key);
+          }
         }
       });
     }
