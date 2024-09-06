@@ -517,5 +517,56 @@ describe('PrimaryFilterComponent', () => {
     expect(component.filters[1].nodeName).toBe('item2');
   });
 
+  it('should convert selectedFilters to an array if it\'s not already one', () => {
+    component.selectedFilters = 'test';
+    component.applyPrimaryFilters(null);
+    expect(component.selectedFilters).toBeInstanceOf(Array);
+  });
+
+  it('should call setBackupOfFilterSelectionState with the correct data', () => {
+    spyOn(helperService, 'setBackupOfFilterSelectionState');
+    component.selectedFilters = ['test'];
+    component.applyPrimaryFilters(null);
+    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': ['test'] });
+  });
+
+  it('should emit onPrimaryFilterChange with the correct data when defaultLevel is not \'sprint\'', () => {
+    component.primaryFilterConfig = { 'defaultLevel': { 'labelName': 'test' } };
+    component.selectedFilters = ['test'];
+    spyOn(component.onPrimaryFilterChange, 'emit');
+    component.applyPrimaryFilters(null);
+    expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith(['test']);
+  });
+
+  it('should emit onPrimaryFilterChange with the correct data when defaultLevel is \'sprint\' and sprintState is \'active\'', () => {
+    component.primaryFilterConfig = { 'defaultLevel': { 'labelName': 'sprint' } };
+    component.selectedFilters = [{ sprintState: 'active' }];
+    spyOn(component.onPrimaryFilterChange, 'emit');
+    component.applyPrimaryFilters(null);
+    expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([{ sprintState: 'active' }]);
+  });
+
+  it('should emit onPrimaryFilterChange with an empty array when defaultLevel is \'sprint\' and sprintState is not \'active\'', () => {
+    component.primaryFilterConfig = { 'defaultLevel': { 'labelName': 'sprint' } };
+    component.selectedFilters = [{ sprintState: 'inactive' }];
+    spyOn(component.onPrimaryFilterChange, 'emit');
+    component.applyPrimaryFilters(null);
+    expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([]);
+  });
+
+  it('should call setNoSprints when defaultLevel is \'sprint\' and sprintState is not \'active\'', () => {
+    component.primaryFilterConfig = { 'defaultLevel': { 'labelName': 'sprint' } };
+    component.selectedFilters = [{ sprintState: 'inactive' }];
+    spyOn(sharedService, 'setNoSprints');
+    component.applyPrimaryFilters(null);
+    expect(sharedService.setNoSprints).toHaveBeenCalledWith(true);
+  });
+
+  it('should call setProjectAndLevelBackupBasedOnSelectedLevel', () => {
+    spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
+    component.applyPrimaryFilters(null);
+    expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalledTimes(1);
+  });
+
 });
 
