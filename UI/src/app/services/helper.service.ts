@@ -781,4 +781,12 @@ export class HelperService {
             }
         })
     }
+
+    getObjectKeys(obj) {
+        if (obj && Object.keys(obj).length) {
+          return Object.keys(obj);
+        } else {
+          return [];
+        }
+    }
 }

@@ -306,12 +306,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-  getObjectKeys(obj) {
-    if (obj && Object.keys(obj).length) {
-      return Object.keys(obj);
-    } else {
-      return [];
-    }
+  objectKeys(obj){
+    return this.helperService.getObjectKeys(obj)
   }
 
   removeFilter(id) {

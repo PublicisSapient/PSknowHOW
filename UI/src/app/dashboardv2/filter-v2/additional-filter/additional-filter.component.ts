@@ -21,6 +21,7 @@ export class AdditionalFilterComponent implements OnChanges {
   appliedFilters = {};
   selectedFilters = [];
   selectedTrends = [];
+  previousSelectedTrends = [];
   selectedAdditionalFilterLevel = [];
   @Output() onAdditionalFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
@@ -33,8 +34,14 @@ export class AdditionalFilterComponent implements OnChanges {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       if (data && Object.keys(data)?.length) {
         this.selectedFilters = [];
-        // this.filterData = [];
+
         this.selectedTrends = this.service.getSelectedTrends();
+
+        if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
+          this.filterData = [];
+          this.previousSelectedTrends = [...this.selectedTrends];
+        }
+
         Object.keys(data).forEach((f, index) => {
           if (this.filterData[index]) {
             // this.filterData[index].concat(data[f]);
@@ -49,10 +56,6 @@ export class AdditionalFilterComponent implements OnChanges {
           } else {
             this.filterData[index] = data[f];
           }
-          // remove duplicates
-          // this.filterData[index] = this.filterData[index].filter(function (item, pos, self) {
-          //   return self.indexOf(item) == pos;
-          // });
         });
 
         if (this.selectedTab !== 'developer') {
@@ -91,6 +94,21 @@ export class AdditionalFilterComponent implements OnChanges {
     }));
   }
 
+
+  arrayCompare(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+
+    for (let index = 0; index < arr1.length; index++) {
+      if (arr1[index] !== arr2[index]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   applyDefaultFilter() {
     let fakeEvent = {};
 
@@ -121,10 +139,6 @@ export class AdditionalFilterComponent implements OnChanges {
     if (changes['selectedTab']) {
       this.filterSet = new Set();
       this.selectedFilters = [];
-    } 
-
-    if(changes['additionalFilterConfig'] || changes['selectedLevel']) {
-      this.filterData = [];
     }
   }
 
