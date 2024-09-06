@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
@@ -175,14 +175,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.handleMaturityTableLoader();
     }));
 
-    if (this.selectedTab.toLowerCase() === 'developer') {
-      this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
-        Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
-          this.handleSelectedOption(data, kpi);
-        });
-      }));
-    }
-
     /**observable to get the type of view */
     this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
       this.showChart = view;
@@ -234,8 +226,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.noTabAccess = false;
       }
     });
-  }
 
+    if (this.selectedTab.toLowerCase() === 'developer') {
+      this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
+        Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
+          this.handleSelectedOption(data, kpi);
+        });
+      }));
+    }
+  }
 
   // unsubscribing all Kpi Request
   ngOnDestroy() {
@@ -1512,7 +1511,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (this.selectedTab.toLowerCase() === 'release') {
       this.handleSelectedOptionOnRelease(event, kpi);
     } else {
-      this.kpiSelectedFilterObj[kpi?.kpiId] = [];
+      // this.kpiSelectedFilterObj[kpi?.kpiId] = [];
       if (kpi.kpiId === "kpi72") {
         if (event.hasOwnProperty('filter1') || event.hasOwnProperty('filter2')) {
           if (!Array.isArray(event.filter1) || !Array.isArray(event.filter2)) {
@@ -1537,18 +1536,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
       }
       else {
-        if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
+        if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && this.selectedTab.toLowerCase() !== 'developer') {
           for (const key in event) {
             if (event[key]?.length == 0) {
               delete event[key];
               this.kpiSelectedFilterObj[kpi?.kpiId] = event;
             } else if (Array.isArray(event[key])) {
               for (let i = 0; i < event[key]?.length; i++) {
-                this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], Array.isArray(event[key]) ? event[key][i] : event[key]];
+                this.kpiSelectedFilterObj[kpi?.kpiId][key].concat[Array.isArray(event[key]) ? event[key][i] : event[key]];
               }
             } else {
               this.kpiSelectedFilterObj[kpi?.kpiId] = event;
             }
+          }
+        } else if (this.selectedTab.toLowerCase() === 'developer') {
+          if (this.kpiSelectedFilterObj[kpi?.kpiId]) {
+            this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
+          } else {
+            this.kpiSelectedFilterObj[kpi?.kpiId] = {};
+            this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
           }
         } else {
           this.kpiSelectedFilterObj[kpi?.kpiId].push(event);

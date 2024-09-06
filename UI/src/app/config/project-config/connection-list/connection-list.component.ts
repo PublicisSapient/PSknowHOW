@@ -78,25 +78,25 @@ export class ConnectionListComponent implements OnInit {
       connectionLabel: 'GitHub',
       categoryValue : 'sourceCodeManagement',
       categoryLabel: 'Source Code Management',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'Share connection with everyone'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'sharedConnection']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'User Email', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'email', 'sharedConnection']
     },
     {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
       categoryValue : 'sourceCodeManagement',
       categoryLabel: 'Source Code Management',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'Share connection with everyone'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'sharedConnection']
-    },
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'User Email', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'email', 'sharedConnection']
+     },
     {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
       categoryValue : 'sourceCodeManagement',
       categoryLabel: 'Source Code Management',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Profile Username', 'Use vault password', 'App Password', 'API End Point', 'Share connection with everyone'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'sharedConnection']
-    },
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Profile Username', 'Use vault password', 'App Password', 'API End Point', 'User Email', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'email', 'sharedConnection']
+     },
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
@@ -143,8 +143,8 @@ export class ConnectionListComponent implements OnInit {
       connectionLabel: 'Azure Repository',
       categoryValue : 'sourceCodeManagement',
       categoryLabel: 'Source Code Management',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'PAT', 'User Email', 'Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'pat', 'email', 'sharedConnection']
     },
     {
       connectionType: 'Zephyr',
@@ -153,14 +153,6 @@ export class ConnectionListComponent implements OnInit {
       categoryLabel: 'Test Management',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Use Bearer Token', 'PatOAuthToken', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'bearerToken', 'patOAuthToken', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'sharedConnection']
-    },
-    {
-      connectionType: 'RepoTool',
-      connectionLabel: 'RepoTool',
-      categoryValue : 'sourceCodeManagement',
-      categoryLabel: 'Source Code Management',
-      labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Base Url', 'Api End Point', 'Username', 'Access Token', 'User Email', 'Share connection with everyone'],
-      inputFields: ['type', 'repoToolProvider', 'connectionName', 'baseUrl', 'apiEndPoint', 'username', 'accessToken', 'email', 'sharedConnection']
     },
     {
       connectionType: 'ArgoCD',
@@ -407,17 +399,6 @@ export class ConnectionListComponent implements OnInit {
       ]
     },
     {
-      label: 'RepoTool',
-      value: 'RepoTool',
-      connectionTableCols: [
-        { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
-        { field: 'username', header: 'User Name', class: 'normal' },
-        { field: 'repoToolProvider', header: 'RepoTool Provider', class: 'normal' },
-        { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
-        // { field: 'cloneable', header: 'Is Cloneable', class: 'small-text' },
-      ]
-    },
-    {
       label: 'ArgoCD',
       value: 'ArgoCD',
       connectionTableCols: [
@@ -516,8 +497,6 @@ export class ConnectionListComponent implements OnInit {
     'jiraAuthType': ''
   }
   jiraConnectionDialog: boolean = false;
-  repoConnections = ['Bitbucket', 'GitLab', 'Azure Repository'];
-  repoToolsEnabled: boolean;
   @Input() selectedToolName: string;
   groupedToolsGroup : any;
 
@@ -545,17 +524,6 @@ export class ConnectionListComponent implements OnInit {
     });
     this.getZephyrUrl();
     this.initializeForms(this.jiraConnectionFields);
-
-    if (this.sharedService.getGlobalConfigData()) {
-      this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
-    } else {
-      this.helper.getGlobalConfig();
-      this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
-    }
-
-    // filtering connections based on repoToolFlag
-    this.connectionTypeCompleteList = this.filterConnections(this.connectionTypeCompleteList, 'label')
-    this.addEditConnectionFieldsNlabels = this.filterConnections(this.addEditConnectionFieldsNlabels, 'connectionLabel')
 
     /** formating data for connection dropdown */
     this.groupedToolsGroup = this.createFormatCategoryWise(this.addEditConnectionFieldsNlabels);
@@ -1069,10 +1037,6 @@ export class ConnectionListComponent implements OnInit {
       this.basicConnectionForm.controls['password'].enable();
       this.basicConnectionForm.controls['accessTokenEnabled'].enable();
       this.basicConnectionForm.controls['accessToken'].disable();
-    } else if (this.selectedConnectionType?.toLowerCase() === 'repotool') {
-      if (this.connection && this.connection['repoToolProvider'] === 'bitbucket')
-        this.basicConnectionForm.controls['apiEndPoint'].enable();
-      else { this.basicConnectionForm.controls['apiEndPoint'].disable() };
     }
 
     if (this.selectedConnectionType?.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true) {
@@ -1148,13 +1112,6 @@ export class ConnectionListComponent implements OnInit {
       }
     }
 
-    if (this.connection.type === "RepoTool") {
-      if (event.toLowerCase() === 'bitbucket') {
-        this.basicConnectionForm.controls[field]?.enable();
-      } else {
-        this.basicConnectionForm.controls[field]?.disable();
-      }
-    }
     // }
 
     this.checkBitbucketValue(event.checked, field, type);
@@ -1401,24 +1358,6 @@ export class ConnectionListComponent implements OnInit {
         this.testingConnection = false;
       });
         break;
-
-      case 'RepoTool':
-        this.testConnectionService.testRepoTool(reqData['baseUrl'], reqData['apiEndPoint'], reqData['repoToolProvider'], reqData['username'], reqData['accessToken'], reqData['email']).subscribe(next => {
-          if (next.success && next.data === 200) {
-            this.testConnectionMsg = 'Valid Connection';
-            this.testConnectionValid = true;
-          } else {
-            this.testConnectionMsg = 'Connection Invalid';
-            this.testConnectionValid = false;
-          }
-          this.testingConnection = false;
-        }, error => {
-          this.testConnectionMsg = 'Connection Invalid';
-          this.testConnectionValid = false;
-          this.testingConnection = false;
-        });
-
-        break;
       case 'ArgoCD': this.testConnectionService.testArgoCD(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['vault']).subscribe(next => {
         if (next.success && next.data === 200) {
           this.testConnectionMsg = 'Valid Connection';
@@ -1454,9 +1393,9 @@ export class ConnectionListComponent implements OnInit {
       const tempArr = [...this.addEditConnectionFieldsNlabels];
       const bitbucketObj = tempArr.filter((item) => item.connectionLabel.toLowerCase() == 'bitbucket')[0];
       if (this.basicConnectionForm.controls['cloudEnv'].value) {
-        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username (Profile Username)', 'Use vault password', 'Password (App Password)', 'API End Point', 'Share connection with everyone'];
+        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username (Profile Username)', 'Use vault password', 'Password (App Password)', 'API End Point', 'User Email', 'Share connection with everyone'];
       } else {
-        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'Share connection with everyone'];
+        bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'User Email', 'Share connection with everyone'];
       }
       const index = tempArr.findIndex((item) => item.connectionLabel.toLowerCase() == 'bitbucket');
       tempArr[index] = bitbucketObj;
@@ -1587,24 +1526,6 @@ export class ConnectionListComponent implements OnInit {
     } else {
       return true;
     }
-  }
-
-  /** Filter connections based on list based on repo flag*/
-  filterConnections(list, label) {
-    const filteredList = list.filter(details => {
-      if (this.repoToolsEnabled) {
-        return !this.repoConnections.includes(details[label])
-      } else {
-        return details[label] !== 'RepoTool';
-      }
-    })
-    if (this.repoToolsEnabled) {
-      const githubIndex = filteredList.findIndex(de => de[label].toLowerCase() === 'github');
-      if (githubIndex !== -1) {
-        filteredList[githubIndex][label] = 'GitHub Action'
-      }
-    }
-    return filteredList;
   }
 
   createFormatCategoryWise(addEditConnectionFieldsNlabels){

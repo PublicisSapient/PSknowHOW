@@ -271,17 +271,6 @@ export class ToolMenuComponent implements OnInit {
               updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'GitHubAction')[0]?.updatedAt
             },
             {
-              toolName: 'RepoTool',
-              category: 'Source Code Management',
-              description: '-',
-              icon: '',
-              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'RepoTool',
-              index: 12,
-              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'RepoTool')[0]?.connectionName,
-              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'RepoTool')[0]?.updatedAt
-            },
-            {
               toolName: 'ArgoCD',
               category: 'Build',
               description: '-',
@@ -319,14 +308,6 @@ export class ToolMenuComponent implements OnInit {
 
 
       }
-      // filtering tools based on repoToolFlag
-      this.tools = this.tools.filter(details => {
-        if (this.repoToolsEnabled) {
-          return !this.repoTools.includes(details.toolName)
-        } else {
-          return details.toolName !== 'RepoTool';
-        }
-      })
     });
   }
 

@@ -1717,6 +1717,15 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+              },
+              {
+                type: 'text',
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
@@ -1784,6 +1793,15 @@ export class JiraConfigComponent implements OnInit {
           this.formTemplate = {
             group: 'GitLab',
             elements: [
+              {
+                type: 'text',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+              },
               {
                 type: 'number',
                 label: 'Gitlab Project Id',
@@ -1931,6 +1949,15 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+              },
+              {
+                type: 'text',
                 label: 'API Version',
                 id: 'apiVersion',
                 validators: ['required'],
@@ -1998,6 +2025,15 @@ export class JiraConfigComponent implements OnInit {
           this.formTemplate = {
             group: 'GitHub',
             elements: [
+              {
+                type: 'text',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+              },
               {
                 type: 'text',
                 label: 'Repository Name',

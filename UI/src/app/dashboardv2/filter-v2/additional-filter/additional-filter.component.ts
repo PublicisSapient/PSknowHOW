@@ -33,10 +33,26 @@ export class AdditionalFilterComponent implements OnChanges {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       if (data && Object.keys(data)?.length) {
         this.selectedFilters = [];
-        this.filterData = [];
+        // this.filterData = [];
         this.selectedTrends = this.service.getSelectedTrends();
         Object.keys(data).forEach((f, index) => {
-          this.filterData[index] = data[f];
+          if (this.filterData[index]) {
+            // this.filterData[index].concat(data[f]);
+            // Array.prototype.push.apply(this.filterData[index],data[f]);
+            data[f].forEach(element => {
+              if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
+                this.filterData[index].push(element);
+              }
+            });
+
+
+          } else {
+            this.filterData[index] = data[f];
+          }
+          // remove duplicates
+          // this.filterData[index] = this.filterData[index].filter(function (item, pos, self) {
+          //   return self.indexOf(item) == pos;
+          // });
         });
 
         if (this.selectedTab !== 'developer') {
@@ -46,8 +62,8 @@ export class AdditionalFilterComponent implements OnChanges {
 
           this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
           const correctLevelMapping = {
-            Sprint : 'sprint',
-            Squad : 'sqd'
+            Sprint: 'sprint',
+            Squad: 'sqd'
           }
           if (this.stateFilters && Object.keys(this.stateFilters)) {
             Object.keys(this.stateFilters).forEach((key, index) => {
@@ -77,20 +93,25 @@ export class AdditionalFilterComponent implements OnChanges {
 
   applyDefaultFilter() {
     let fakeEvent = {};
-    if (this.filterData.map(f => f.nodeName).includes('Overall')) {
-      this.filterData.splice(this.filterData.map(f => f.nodeName).indexOf('Overall'), 1);
-      this.filterData.unshift({ nodeId: 'Overall', nodeName: 'Overall' });
-      fakeEvent['value'] = 'Overall';
-      this.selectedFilters = ['Overall'];
-    } else {
-      if (this.filterData[0]?.length && this.filterData[0][0]?.nodeId) {
-        fakeEvent['value'] = this.filterData[0][0].nodeId;
-        this.selectedFilters = [this.filterData[0][0]];
-      } else {
+
+    this.filterData.forEach((filter, index) => {
+      if (filter.map(f => f.nodeName).includes('Overall')) {
+        // filter.splice(this.filterData.map(f => f.nodeName).indexOf('Overall'), 1);
+        // filter.unshift({ nodeId: 'Overall', nodeName: 'Overall' });
         fakeEvent['value'] = 'Overall';
-        this.selectedFilters = ['Overall'];
+
+        this.selectedFilters[index] = { nodeId: 'Overall', nodeName: 'Overall' };
+      } else {
+        if (this.filterData[0]?.length && this.filterData[0][0]?.nodeId) {
+          fakeEvent['value'] = this.filterData[0][0].nodeId;
+          this.selectedFilters = [this.filterData[0][0]];
+        } else {
+          fakeEvent['value'] = 'Overall';
+          this.selectedFilters = ['Overall'];
+        }
       }
-    }
+    });
+
     Promise.resolve().then(() => {
       this.applyAdditionalFilter(fakeEvent, 0 + 1);
     });
@@ -100,6 +121,10 @@ export class AdditionalFilterComponent implements OnChanges {
     if (changes['selectedTab']) {
       this.filterSet = new Set();
       this.selectedFilters = [];
+    } 
+
+    if(changes['additionalFilterConfig'] || changes['selectedLevel']) {
+      this.filterData = [];
     }
   }
 
@@ -126,7 +151,10 @@ export class AdditionalFilterComponent implements OnChanges {
       this.appliedFilters[filterKey] = e && e.value ? [e.value] : [];
 
       const filterValue = this.appliedFilters[filterKey][0];
-      const nodeId = filterValue?.nodeId || filterValue;
+      const nodeId = {};
+      nodeId['value'] = filterValue?.nodeId || filterValue;
+      nodeId['index'] = index;
+
       this.service.applyAdditionalFilters(nodeId);
     }
 

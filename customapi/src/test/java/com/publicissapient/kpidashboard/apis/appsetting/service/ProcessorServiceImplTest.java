@@ -89,6 +89,9 @@ public class ProcessorServiceImplTest {
 	@Mock
 	private CacheService cacheService;
 
+	@Mock
+	private ConfigHelperService configHelperService;
+
 	/**
 	 * method includes preprocesses for test cases
 	 */
@@ -105,7 +108,6 @@ public class ProcessorServiceImplTest {
 	public void testGetAllProcessors() {
 		ProcessorDataFactory processorDataFactory = ProcessorDataFactory.newInstance();
 		when(processorRepository.findAll()).thenReturn(processorDataFactory.getProcessorList());
-		when(customApiConfig.getIsRepoToolEnable()).thenReturn(true);
 		ServiceResponse response = processorService.getAllProcessorDetails();
 		assertThat("Status: ", true, equalTo(response.getSuccess()));
 	}
@@ -272,7 +274,7 @@ public class ProcessorServiceImplTest {
 	public void saveRepoToolTraceLogsTest() {
 
 		processorService.saveRepoToolTraceLogs(new RepoToolsStatusResponse("project", "repo", "src",
-				Constant.SUCCESS, "timestamp"));
+				Constant.SUCCESS, 0l));
 		Mockito.verify(cacheService, Mockito.times(3)).clearCache(Mockito.anyString());
 
 	}

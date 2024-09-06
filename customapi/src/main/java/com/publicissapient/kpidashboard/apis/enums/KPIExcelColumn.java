@@ -44,13 +44,18 @@ public enum KPIExcelColumn {
 	CODE_BUILD_TIME("kpi8",
 			Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url",
 					"Weeks")), ISSUE_COUNT("kpi40",
-			Arrays.asList("Sprint Name", "Story ID", "Issue Description")), CODE_COMMIT("kpi11",
-			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "No Of Commit",
-					"No of Merge")),
+			Arrays.asList("Sprint Name", "Story ID", "Issue Description")),
+	CODE_COMMIT("kpi11", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "No Of Commit",
+			"No of Merge")),
+	REPO_TOOL_CODE_COMMIT("kpi157",
+			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Developer", "No Of Commit", "No of Merge")),
 
 	MEAN_TIME_TO_MERGE("kpi84",
 			Arrays.asList("Project", "Repo", "Branch", "Merge Request Url", "Days/Weeks",
-					"Mean Time To Merge (In Hours)")), AVERAGE_RESOLUTION_TIME(
+					"Mean Time To Merge (In Hours)")),
+	REPO_TOOL_MEAN_TIME_TO_MERGE("kpi158", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Developer",
+			"Merge Request Url", "Mean Time To Merge (In Hours)")),
+	AVERAGE_RESOLUTION_TIME(
 							"kpi83",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Issue Type",
 									"Resolution Time(In Days)")),
@@ -293,8 +298,7 @@ public enum KPIExcelColumn {
 			"Sprint Name", "Assignee", "Issue Status", "Testing Phase")),
 
 	PICKUP_TIME("kpi160",
-			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks",
-					"Pickup Time (In Hours)")),
+			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Pickup Time (In Hours)")),
 
 	PR_SIZE("kpi162",
 			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks",
