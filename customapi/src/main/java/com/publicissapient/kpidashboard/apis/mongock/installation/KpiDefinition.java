@@ -20,13 +20,13 @@ import java.util.List;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import com.publicissapient.kpidashboard.apis.mongock.FieldMappingStructureForMongock;
 import com.publicissapient.kpidashboard.apis.mongock.data.FieldMappingStructureDataFactory;
 import com.publicissapient.kpidashboard.apis.mongock.data.KpiCategoryDataFactory;
 import com.publicissapient.kpidashboard.apis.mongock.data.KpiCategoryMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.mongock.data.KpiColumnConfigDataFactory;
 import com.publicissapient.kpidashboard.apis.mongock.data.KpiDefinationDataFactory;
 import com.publicissapient.kpidashboard.apis.util.MongockUtil;
-import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategoryMapping;
 import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfig;
@@ -57,7 +57,7 @@ public class KpiDefinition {
 	List<KpiColumnConfig> kpiColumnConfigs;
 	List<KpiCategoryMapping> kpiCategoryMappingList;
 	List<KpiCategory> kpiCategoryList;
-	List<FieldMappingStructure> fieldMappingStructureList;
+	List<FieldMappingStructureForMongock> fieldMappingStructureList;
 
 	public KpiDefinition(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
