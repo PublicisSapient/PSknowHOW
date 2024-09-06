@@ -121,10 +121,12 @@ export class AdditionalFilterComponent implements OnChanges {
     if (changes['selectedTab']) {
       this.filterSet = new Set();
       this.selectedFilters = [];
-    } 
+    }
 
-    if(changes['additionalFilterConfig'] || changes['selectedLevel']) {
-      this.filterData = [];
+    if (changes['additionalFilterConfig'] || changes['selectedLevel']) {
+      if (this.selectedTab.toLowerCase() === 'developer') {
+        this.filterData = [];
+      }
     }
   }
 
