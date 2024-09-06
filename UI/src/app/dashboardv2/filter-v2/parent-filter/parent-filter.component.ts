@@ -101,7 +101,7 @@ export class ParentFilterComponent implements OnChanges {
   }
 
   fillAdditionalFilterLevels() {
-    if (this.filterData['Projec']?.length) {
+    if (this.filterData['Project']?.length) {
       let projectLevel = this.filterData['Project'][0].level;
       Object.keys(this.filterData).forEach((key) => {
         if(this.filterData[key] !== undefined) {
