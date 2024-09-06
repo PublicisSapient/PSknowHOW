@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
+import com.publicissapient.kpidashboard.apis.mongock.FieldMappingStructureForMongock;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("java:S1075")
 public class FieldMappingStructureDataFactory {
 	private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/field_mapping_structure.json";
-	private List<FieldMappingStructure> fieldMappingStructureList;
+	private List<FieldMappingStructureForMongock> fieldMappingStructureList;
 	private ObjectMapper mapper;
 
 	private FieldMappingStructureDataFactory() {
@@ -62,7 +62,7 @@ public class FieldMappingStructureDataFactory {
 			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_KPI_LIST : filePath;
 
 			fieldMappingStructureList = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
-					new TypeReference<List<FieldMappingStructure>>() {
+					new TypeReference<List<FieldMappingStructureForMongock>>() {
 					});
 		} catch (IOException e) {
 			log.error("Error in reading from file = " + filePath, e);
@@ -80,7 +80,7 @@ public class FieldMappingStructureDataFactory {
 		}
 	}
 
-	public List<FieldMappingStructure> getFieldMappingStructureList() {
+	public List<FieldMappingStructureForMongock> getFieldMappingStructureList() {
 		return fieldMappingStructureList;
 	}
 
