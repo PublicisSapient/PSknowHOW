@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.apis.data;
 import java.io.IOException;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -26,7 +27,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
+import com.publicissapient.kpidashboard.apis.mongock.FieldMappingStructureForMongock;
 
 import lombok.extern.slf4j.Slf4j;
 
