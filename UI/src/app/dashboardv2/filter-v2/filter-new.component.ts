@@ -308,6 +308,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     console.log(this.selectedLevel)
     const selectedLevel = typeof this.selectedLevel === 'string' ? this.selectedLevel : this.selectedLevel?.nodeType;
+    // const basicProjectConfigIds = this.selectedLevel.fullNodeDetails.map(obj => obj.basicProjectConfigId);
     this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'type': this.selectedType, 'org': selectedLevel.toLowerCase() }, relativeTo: this.route });
   }
 

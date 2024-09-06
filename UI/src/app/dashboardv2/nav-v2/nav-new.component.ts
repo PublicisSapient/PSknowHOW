@@ -118,10 +118,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
             },
           };
         });
-        console.log(this.items)
-        console.log(this.selectedTab)
         this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
-        console.log(this.activeItem)
       } else {
         this.httpService.getAllHierarchyLevels().subscribe((res) => {
           if (res.data) {

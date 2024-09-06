@@ -204,6 +204,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
     if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
       console.log('parent if')
+      console.log(this.selectedFilters)
       this.onPrimaryFilterChange.emit([...this.selectedFilters]);
     } else {
       if (this.selectedFilters[0].sprintState?.toLowerCase() === 'active') {
@@ -213,6 +214,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         this.service.setNoSprints(true);
         this.onPrimaryFilterChange.emit([]);
         console.log(this.selectedLevel)
+        console.log(this.selectedFilters)
         if (this.filters.length) {
           this.selectedFilters.push({ ...this.filters[0] });
           this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
@@ -222,6 +224,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       }
     }
     console.log(this.selectedFilters)
+    // update query param goes here ...
     this.setProjectAndLevelBackupBasedOnSelectedLevel();
     if (this.multiSelect?.overlayVisible) {
       this.multiSelect.close(event);
