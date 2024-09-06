@@ -123,7 +123,7 @@ export class AdditionalFilterComponent implements OnChanges {
       this.selectedFilters = [];
     } 
 
-    if(changes['additionalFilterConfig']) {
+    if(changes['additionalFilterConfig'] || changes['selectedLevel']) {
       this.filterData = [];
     }
   }
