@@ -144,12 +144,6 @@ export class AdditionalFilterComponent implements OnChanges {
       this.filterSet = new Set();
       this.selectedFilters = [];
     }
-
-    if (changes['additionalFilterConfig'] || changes['selectedLevel']) {
-      if (this.selectedTab.toLowerCase() === 'developer') {
-        this.filterData = [];
-      }
-    }
   }
 
   applyAdditionalFilter(e, index, multi = false, fromBackup = false) {
