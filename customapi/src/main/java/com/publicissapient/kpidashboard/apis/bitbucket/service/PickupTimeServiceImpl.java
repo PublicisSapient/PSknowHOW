@@ -71,7 +71,6 @@ import lombok.extern.slf4j.Slf4j;
 public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Object>, Map<String, Object>> {
 
 	public static final String MR_COUNT = "No of PRs";
-	private static final String REPO_TOOLS = "RepoTool";
 	private static final String ASSIGNEE = "assignee";
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -154,20 +153,19 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
+		ProjectFilter projectFilter = projectLeafNode.getProjectFilter();
+		ObjectId projectBasicConfigId = projectFilter == null ? null : projectFilter.getBasicProjectConfigId();
+		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(projectBasicConfigId);
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = kpiHelperService.getRepoToolsKpiMetricResponse(
-				localEndDate, toolMap, projectLeafNode, duration, dataPoints,
-				customApiConfig.getRepoToolPickupTimeUrl());
+				localEndDate, kpiHelperService.getScmToolJobs(toolListMap, projectLeafNode), projectLeafNode, duration,
+				dataPoints, customApiConfig.getRepoToolPickupTimeUrl());
 		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
 			return;
 		}
 
 		List<KPIExcelData> excelData = new ArrayList<>();
-		ProjectFilter accountHierarchyData = projectLeafNode.getProjectFilter();
-		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-		List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null
-				? Collections.emptyList()
-				: toolMap.get(configId).get(REPO_TOOLS);
+		List<Tool> reposList = kpiHelperService.populateSCMToolsRepoList(toolListMap);
 		if (CollectionUtils.isEmpty(reposList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}",
 					projectLeafNode.getProjectFilter());
@@ -190,7 +188,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 			String date = KpiHelperService.getDateRange(weekRange, duration);
 
 			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricResponseList.stream()
-					.filter(value -> value.getDateLabel().equals(dateRange.getStartDate().toString())).findFirst();
+					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
 
 			Double overallPickupTime = repoToolKpiMetricResponse.map(RepoToolKpiMetricResponse::getProjectHours)
 					.orElse(0.0d);
@@ -255,7 +253,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(
-				leafNodeList.get(0).getId());
+				leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString());
 		Set<Assignee> assignees = assigneeDetails != null ? assigneeDetails.getAssignee() : new HashSet<>();
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put(ASSIGNEE, assignees);
@@ -288,7 +286,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 		overAllUsers.forEach(userEmail -> {
 			Optional<RepoToolUserDetails> repoToolUserDetails = repoToolUserDetailsList.stream()
 					.filter(user -> userEmail.equalsIgnoreCase(user.getEmail())).findFirst();
-			Optional<Assignee> assignee = assignees.stream().filter(assign -> assign.getEmail().contains(userEmail))
+			Optional<Assignee> assignee = assignees.stream().filter(
+					assign -> CollectionUtils.isNotEmpty(assign.getEmail()) && assign.getEmail().contains(userEmail))
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double userHours = repoToolUserDetails.map(RepoToolUserDetails::getHours).orElse(0.0d);

@@ -70,7 +70,6 @@ import lombok.extern.slf4j.Slf4j;
 public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<Object>, Map<String, Object>> {
 
 	private static final String NO_CHECKIN = "No. of Checkins";
-	private static final String REPO_TOOLS = "RepoTool";
 	private static final String ASSIGNEE = "assignee";
 
 	@Autowired
@@ -133,9 +132,14 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 
 		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseCommitList = kpiHelperService.getRepoToolsKpiMetricResponse(
-				dateRange.getEndDate(), toolMap, projectNode, kpiRequest.getDuration(), kpiRequest.getXAxisDataPoints(),
-				customApiConfig.getRepoToolCodeCommmitsUrl());
+		ProjectFilter projectFilter = projectNode.getProjectFilter();
+		ObjectId projectBasicConfigId = projectFilter == null ? null : projectFilter.getBasicProjectConfigId();
+		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(projectBasicConfigId);
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseCommitList = kpiHelperService
+				.getRepoToolsKpiMetricResponse(dateRange.getEndDate(),
+						kpiHelperService.getScmToolJobs(toolListMap, projectNode), projectNode,
+						kpiRequest.getDuration(), kpiRequest.getXAxisDataPoints(),
+						customApiConfig.getRepoToolCodeCommmitsUrl());
 		if (CollectionUtils.isNotEmpty(repoToolKpiMetricResponseCommitList))
 			kpiWithFilter(repoToolKpiMetricResponseCommitList, mapTmp, projectNode, kpiElement, kpiRequest);
 
@@ -162,9 +166,8 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 
 		ProjectFilter accountHierarchyData = node.getProjectFilter();
 		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-		List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null
-				? Collections.emptyList()
-				: toolMap.get(configId).get(REPO_TOOLS);
+		Map<String, List<Tool>> mapOfListOfTools = toolMap.get(configId);
+		List<Tool> reposList = kpiHelperService.populateSCMToolsRepoList(mapOfListOfTools);
 		if (CollectionUtils.isEmpty(reposList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getProjectFilter());
 			return;

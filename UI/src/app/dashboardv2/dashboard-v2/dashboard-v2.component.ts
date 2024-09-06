@@ -59,16 +59,9 @@ export class DashboardV2Component implements AfterContentInit {
   ngAfterContentInit() {
     this.cdRef.detectChanges();
 
-    this.goToTopButton = document.getElementById('go-to-top');
-    this.goToTopButton.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
   }
 
   ngOnDestroy() {
     this.isApply = false;
-    this.goToTopButton.removeEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
   }
 }

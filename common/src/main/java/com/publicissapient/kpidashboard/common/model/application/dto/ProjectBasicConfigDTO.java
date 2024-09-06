@@ -46,7 +46,6 @@ public class ProjectBasicConfigDTO {
 	private String createdBy;
 	private String updatedAt;
 	private String updatedBy;
-
 	private String consumerCreatedOn;
 	private boolean kanban;
 	private List<HierarchyValueDTO> hierarchy;

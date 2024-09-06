@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_950;
+
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1010;
 
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -25,51 +26,38 @@ import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
-/**
- * updated kpi name and y-axis label
- *
- * @author aksshriv1
- */
-@ChangeUnit(id = "cod_yaxislabel", order = "9501", author = "aksshriv1", systemVersion = "9.5.0")
-
-public class CostOfDelayEnh {
+@ChangeUnit(id = "r_change_repo_tool_kpi_group_id", order = "0101012", author = "kunkambl", systemVersion = "10.1.0")
+public class ChangeRepoToolKpiGroupId {
 
 	private final MongoTemplate mongoTemplate;
 
-	public CostOfDelayEnh(MongoTemplate mongoTemplate) {
+	public ChangeRepoToolKpiGroupId(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 
 	@Execution
 	public void execution() {
-		updatekpi113();
+		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
+		// Update documents
+		updateDocument(kpiMaster, "kpi84", 1);//mean time to merge kpi
+		updateDocument(kpiMaster, "kpi11", 1);//code commit kpi
 	}
 
-	public void updatekpi113() {
-		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
-		Document filter = new Document("kpiId", "kpi113");
-
-		Document update = new Document("$set",
-				new Document("kpiName", "Value Delivery (Cost of Delay)").append("yaxisLabel", "Cost of Delay"));
-
+	private void updateDocument(MongoCollection<Document> kpiCategoryMapping, String kpiId, int groupId) {
+		// Create the filter
+		Document filter = new Document("kpiId", kpiId);
+		// Create the update
+		Document update = new Document("$set", new Document("groupId", groupId));
 		// Perform the update
-		kpiMaster.updateOne(filter, update);
-
+		kpiCategoryMapping.updateOne(filter, update);
 	}
 
 	@RollbackExecution
 	public void rollback() {
-		rollbackkpi113();
-	}
-
-	public void rollbackkpi113() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
-		Document filter = new Document("kpiId", "kpi113");
-
-		Document update = new Document("$set",
-				new Document("kpiName", "Value Delivered (Cost of Delay)").append("yaxisLabel", "Count(Days)"));
-
-		// Perform the update
-		kpiMaster.updateOne(filter, update);
+		// Update documents
+		updateDocument(kpiMaster, "kpi84", 2);//mean time to merge kpi
+		updateDocument(kpiMaster, "kpi11", 2);//code commit kpi
 	}
+
 }

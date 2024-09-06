@@ -444,10 +444,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	}
 
 	private void deleteToolsAndCleanData(ProjectBasicConfig projectBasicConfig) {
-
+		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
+				ProcessorConstants.GITHUB, ProcessorConstants.AZUREREPO);
 		List<ProjectToolConfig> tools = toolRepository.findByBasicProjectConfigId(projectBasicConfig.getId());
 		Boolean isRepoTool = tools.stream()
-				.anyMatch(toolConfig -> ProcessorConstants.REPO_TOOLS.equals(toolConfig.getToolName()));
+				.anyMatch(toolConfig -> scmToolList.contains(toolConfig.getToolName())
+						&& projectBasicConfig.isDeveloperKpiEnabled());
 		deleteRepoToolProject(projectBasicConfig, isRepoTool);
 		CollectionUtils.emptyIfNull(tools).forEach(tool -> {
 
