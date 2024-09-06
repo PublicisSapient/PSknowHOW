@@ -46,19 +46,6 @@
     border-radius: 10px;
 }
 
-#go-to-top {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    z-index: 9999;
-  }
-  
-  #go-to-top:hover {
-    background-color: #444;
-  }
+:host ::ng-deep .p-scrolltop.p-link {
+  background: #0b4bc8 !important;;
+}
