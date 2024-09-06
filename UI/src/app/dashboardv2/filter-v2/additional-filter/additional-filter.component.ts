@@ -21,6 +21,7 @@ export class AdditionalFilterComponent implements OnChanges {
   appliedFilters = {};
   selectedFilters = [];
   selectedTrends = [];
+  previousSelectedTrends = [];
   selectedAdditionalFilterLevel = [];
   @Output() onAdditionalFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
@@ -33,8 +34,14 @@ export class AdditionalFilterComponent implements OnChanges {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       if (data && Object.keys(data)?.length) {
         this.selectedFilters = [];
-        // this.filterData = [];
+
         this.selectedTrends = this.service.getSelectedTrends();
+
+        if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
+          this.filterData = [];
+          this.previousSelectedTrends = this.selectedTrends;
+        }
+
         Object.keys(data).forEach((f, index) => {
           if (this.filterData[index]) {
             // this.filterData[index].concat(data[f]);
@@ -89,6 +96,21 @@ export class AdditionalFilterComponent implements OnChanges {
         this.filterData = [];
       }
     }));
+  }
+
+
+  arrayCompare(arr1, arr2) {
+    if(arr1.length !== arr2.length) {
+      return false;
+    }
+
+    arr1.forEach((element, index) => {
+      if(element !== arr2[index]) {
+        return false;
+      }
+    });
+
+    return true;
   }
 
   applyDefaultFilter() {
