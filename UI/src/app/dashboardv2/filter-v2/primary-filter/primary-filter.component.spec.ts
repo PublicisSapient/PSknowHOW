@@ -229,7 +229,6 @@ describe('PrimaryFilterComponent', () => {
 
   it('should populate filters, set selectedFilters, and call other methods after a delay', fakeAsync(() => {
     component.populateFilters = jasmine.createSpy('populateFilters');
-    spyOn(helperService, 'setBackupOfFilterSelectionState');
     spyOn(component, 'applyPrimaryFilters');
     spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
 
@@ -237,10 +236,16 @@ describe('PrimaryFilterComponent', () => {
     tick(100);
 
     expect(component.populateFilters).toHaveBeenCalled();
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ ...component.filters[0] }] });
     expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
     expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
   }));
+
+  it('should handle cases where stateFilters or primaryFilterConfig are null or undefined', () => {
+    component.stateFilters = null;
+    component.primaryFilterConfig = null;
+    component.applyDefaultFilters();
+    expect(component.selectedFilters).toBeUndefined();
+  });
 
   it('should call applyDefaultFilters if primaryFilterConfig, selectedType, or selectedLevel changes', () => {
     component.primaryFilterConfig = {

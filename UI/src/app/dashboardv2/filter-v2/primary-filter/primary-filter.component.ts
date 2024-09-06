@@ -190,7 +190,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       }
     } else {
       this.selectedLevel = 'Project';
-      this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
+      this.filters = this.filterData !== null && this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
     }
   }
 
