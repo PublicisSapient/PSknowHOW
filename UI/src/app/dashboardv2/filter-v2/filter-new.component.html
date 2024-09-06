@@ -11,7 +11,7 @@
     </div>
   </div>
   <div class="p-d-flex p-jc-center p-pl-0 p-pr-0 primary-filter-container" *ngIf="filterDataArr[selectedType]">
-    <app-parent-filter *ngIf="getObjectKeys(parentFilterConfig).length" class="p-mr-2"
+    <app-parent-filter *ngIf="objectKeys(parentFilterConfig).length" class="p-mr-2"
       [filterData]="filterDataArr[selectedType]" [selectedTab]="selectedTab"
       (onSelectedLevelChange)="handleParentFilterChange($event)" [selectedType]="selectedType"
       [selectedTab]="selectedTab" [parentFilterConfig]="parentFilterConfig"></app-parent-filter>
@@ -27,8 +27,8 @@
 </div>
 <div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3" *ngIf="!noSprint">
   <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
-    <ng-container *ngIf="getObjectKeys(colorObj).length">
-      <ng-container *ngFor="let item of getObjectKeys(colorObj); let i = index;">
+    <ng-container *ngIf="objectKeys(colorObj).length">
+      <ng-container *ngFor="let item of objectKeys(colorObj); let i = index;">
         <li class="selectedfilter p-mr-3">
           <div class="selected-node">
             <div class="selected-node-label p-pl-0" [title]="colorObj[item]?.nodeName">
