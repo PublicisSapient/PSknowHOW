@@ -19,6 +19,7 @@ describe('PrimaryFilterComponent', () => {
   let httpService: HttpService
   let sharedService: SharedService;
   let helperService: HelperService;
+  let filters: any[];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -29,8 +30,7 @@ describe('PrimaryFilterComponent', () => {
       providers: [SharedService, GetAuthService, HttpService, HelperService, CommonModule, DatePipe,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
-    })
-      .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PrimaryFilterComponent);
     component = fixture.componentInstance;
@@ -38,6 +38,13 @@ describe('PrimaryFilterComponent', () => {
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
     helperService = TestBed.inject(HelperService);
+
+    filters = [
+      { nodeId: 1, nodeName: 'item1' },
+      { nodeId: 2, nodeName: 'item2' },
+      { nodeId: 3, nodeName: 'item3' }
+    ];
+    component.filters = filters;
 
     component.primaryFilterConfig = {
       "type": "multiSelect",
@@ -334,7 +341,7 @@ describe('PrimaryFilterComponent', () => {
 
     component.ngOnChanges(mockChanges);
 
-    expect(component.selectedFilters).toEqual([]);
+    expect([...component.selectedFilters]).toEqual([]);
     expect(component.populateFilters).toHaveBeenCalled();
   });
 
@@ -483,6 +490,31 @@ describe('PrimaryFilterComponent', () => {
     component.ngOnChanges(mockChanges);
 
     expect(mockApplyDefaultFilters).toHaveBeenCalled();
+  });
+
+  it('should not modify filters array when event.value is null', () => {
+    const event = { value: null };
+    component.moveSelectedOptionToTop(event);
+    expect(component.filters).toEqual(filters);
+  });
+
+  it('should remove selected item from its original position', () => {
+    const event = { value: [{ nodeName: 'item2' }] };
+    component.moveSelectedOptionToTop(event);
+    expect(component.filters).not.toContain([{ nodeId: 2, nodeName: 'item2' }]);
+  });
+
+  it('should add selected item to the top of filters array', () => {
+    const event = { value: [{ nodeName: 'item2' }] };
+    component.moveSelectedOptionToTop(event);
+    expect(component.filters[0].nodeName).toBe('item2');
+  });
+
+  it('should handle multiple selected items correctly', () => {
+    const event = { value: [{ nodeName: 'item2' }, { nodeName: 'item3' }] };
+    component.moveSelectedOptionToTop(event);
+    expect(component.filters[0].nodeName).toBe('item3');
+    expect(component.filters[1].nodeName).toBe('item2');
   });
 
 });
