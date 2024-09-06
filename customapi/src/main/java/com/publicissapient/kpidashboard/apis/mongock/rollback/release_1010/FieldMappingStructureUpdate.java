@@ -21,9 +21,9 @@ import java.util.List;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import com.publicissapient.kpidashboard.apis.mongock.FieldMappingStructureForMongock;
 import com.publicissapient.kpidashboard.apis.mongock.data.FieldMappingStructureDataFactory;
 import com.publicissapient.kpidashboard.apis.util.MongockUtil;
-import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FieldMappingStructureUpdate {
 
 	private final MongoTemplate mongoTemplate;
-	private List<FieldMappingStructure> fieldMappingStructureBackupList;
+	private List<FieldMappingStructureForMongock> fieldMappingStructureBackupList;
 	private static final String FIELD_MAPPING_STRUCTURE_COLLECTION = "field_mapping_structure";
 	private static final String FILE_PATH_FIELD_MAPPING_LIST = "/json/mongock/default/field_mapping_structure_backup_10.0.0.json";
 
