@@ -41,6 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -179,6 +180,8 @@ public class ProjectBasicConfigServiceImplTest {
 	private CapacityMasterService capacityMasterService;
 	@Mock
 	private TestExecutionService testExecutionService;
+	@Mock
+	private OrganizationHierarchyRepository organizationHierarchyRepository;
 	private ProjectBasicConfig basicConfig;
 	private Optional<ProjectBasicConfig> basicConfigOpt = Optional.empty();
 	private ProjectBasicConfig diffbasicConfig;

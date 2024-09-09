@@ -32,6 +32,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
+import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -151,6 +153,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Autowired
 	private HappinessKpiDataRepository happinessKpiDataRepository;
 
+	@Autowired
+	private OrganizationHierarchyRepository organizationHierarchyRepository;
+
 	/**
 	 * method to save basic configuration
 	 *
@@ -180,12 +185,14 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				if (!projectAccessManager.getUserInfo(username).getAuthorities().contains(Constant.ROLE_SUPERADMIN)) {
 					addNewProjectIntoUserInfo(savedProjectBasicConfig, username);
 				}
+				addProjectNodeToOrganizationHierarchy(savedProjectBasicConfig);
 				performFilterOperation(basicConfigDtoCreation(savedProjectBasicConfig, mapper), false);
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
 			} else if (Constant.ROLE_SUPERADMIN.equals(accessRoleOfParent)
 					|| Constant.ROLE_PROJECT_ADMIN.equals(accessRoleOfParent)) {
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
+				addProjectNodeToOrganizationHierarchy(savedProjectBasicConfig);
 				performFilterOperation(basicConfigDtoCreation(savedProjectBasicConfig, mapper), false);
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
@@ -196,6 +203,38 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			}
 		}
 		return response;
+	}
+
+	/**
+	 * add new ProjectNode if not already present in OrganizationHierarchy
+	 *
+	 * @param savedProjectBasicConfig
+	 *            ProjectBasicConfig
+	 */
+	//TODO: change maxLvl.getValue() to maxlvl.getOrgHierarchyNodeId()
+	private void addProjectNodeToOrganizationHierarchy(ProjectBasicConfig savedProjectBasicConfig) {
+
+		Optional<HierarchyValue> maxLevel=savedProjectBasicConfig.getHierarchy().stream().max(Comparator.comparing(hierarchyValue->hierarchyValue.getHierarchyLevel().getLevel()));
+        if(maxLevel.isPresent()){
+			HierarchyValue maxLvl=maxLevel.get();
+			Optional<OrganizationHierarchy> existingProjectHierarchy=organizationHierarchyRepository.findByParentId(maxLvl.getValue());
+			if(existingProjectHierarchy.isEmpty()){
+				OrganizationHierarchy newProjectHierarchy=new OrganizationHierarchy();
+				newProjectHierarchy.setParentId(maxLvl.getValue());
+				newProjectHierarchy.setNodeId(savedProjectBasicConfig.getId().toString());
+				newProjectHierarchy.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+				newProjectHierarchy.setNodeName(savedProjectBasicConfig.getProjectName());
+				newProjectHierarchy.setNodeDisplayName(savedProjectBasicConfig.getProjectDisplayName());
+				newProjectHierarchy.setCreatedDate(LocalDateTime.now());
+				newProjectHierarchy.setModifiedDate(LocalDateTime.now());
+				organizationHierarchyRepository.save(newProjectHierarchy);
+				clearOrgHierarchyCache();
+			}
+		}
+	}
+
+	private void clearOrgHierarchyCache() {
+		cacheService.clearCache(CommonConstant.CACHE_ORGANIZATION_HIERARCHY_DATA);
 	}
 
 	private void addNewProjectIntoUserInfo(ProjectBasicConfig basicConfig, String username) {
