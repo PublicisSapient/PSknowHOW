@@ -219,12 +219,11 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		Optional<HierarchyValueDTO> maxLevel = projectBasicConfigDTO.getHierarchy().stream()
 				.max(Comparator.comparing(hierarchyValue -> hierarchyValue.getHierarchyLevel().getLevel()));
 		if (maxLevel.isPresent()) {
-			HierarchyValueDTO maxLvl = maxLevel.get();
 			OrganizationHierarchy existingOrganizationHierarchy = organizationHierarchyRepository
 					.findByNodeId(projectBasicConfigDTO.getProjectNodeId());
 			if (ObjectUtils.isEmpty(existingOrganizationHierarchy)) {
 				OrganizationHierarchy newOrganizationHierarchy = new OrganizationHierarchy();
-				newOrganizationHierarchy.setParentId(maxLvl.getValue());
+				newOrganizationHierarchy.setParentId(maxLevel.get().getValue());
 				newOrganizationHierarchy.setNodeId(projectBasicConfigDTO.getProjectNodeId());
 				newOrganizationHierarchy.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 				newOrganizationHierarchy.setNodeName(projectBasicConfigDTO.getProjectName());
