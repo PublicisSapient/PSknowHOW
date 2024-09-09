@@ -138,14 +138,16 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && (this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'sprint' || this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'release') && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === 'project')) {
         this.selectedFilters = [];
         if (this.stateFilters['primary_level'][0]?.labelName.toLowerCase() === 'project') {
-          this.selectedFilters.push({ ...this.filters.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].nodeId)[0] });
+          this.selectedFilters.push({ ...this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].nodeId)[0] });
         } else {
-          this.selectedFilters.push({ ...this.filters.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].parentId)[0] });
+          this.selectedFilters.push({ ...this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].parentId)[0] });
         }
         this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
       } else {
         this.selectedFilters = [];
-        this.selectedFilters.push({ ...this.filters[0] });
+        if(this.filters?.length) {
+          this.selectedFilters.push({ ...this.filters[0] });
+        }
         if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
           this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
         }
@@ -188,7 +190,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       }
     } else {
       this.selectedLevel = 'Project';
-      this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
+      this.filters = this.filterData !== null && this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
     }
   }
 
@@ -240,7 +242,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     if (event?.value) {
       event?.value.forEach(selectedItem => {
         this.filters = this.filters.filter(x => x.nodeName !== selectedItem.nodeName); // remove the item from list
-        this.filters.unshift(selectedItem)// this will add selected item on the top 
+        this.filters.unshift(selectedItem)// this will add selected item on the top
       });
     }
   }

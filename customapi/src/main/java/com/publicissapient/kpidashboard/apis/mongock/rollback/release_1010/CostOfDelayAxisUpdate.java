@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_950;
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1010;
 
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -26,17 +26,17 @@ import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
 /**
- * updated kpi name and y-axis label
+ * rollback kpiname and y-axis label
  *
  * @author aksshriv1
  */
-@ChangeUnit(id = "cod_yaxislabel", order = "9501", author = "aksshriv1", systemVersion = "9.5.0")
+@ChangeUnit(id = "r_cod_y_axislabel", order = "0101013", author = "aksshriv1", systemVersion = "10.1.0")
 
-public class CostOfDelayEnh {
+public class CostOfDelayAxisUpdate {
 
 	private final MongoTemplate mongoTemplate;
 
-	public CostOfDelayEnh(MongoTemplate mongoTemplate) {
+	public CostOfDelayAxisUpdate(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 
@@ -50,7 +50,7 @@ public class CostOfDelayEnh {
 		Document filter = new Document("kpiId", "kpi113");
 
 		Document update = new Document("$set",
-				new Document("kpiName", "Value Delivery (Cost of Delay)").append("yaxisLabel", "Cost of Delay"));
+				new Document("kpiName", "Value Delivered (Cost of Delay)").append("yAxisLabel", "Count(Days)"));
 
 		// Perform the update
 		kpiMaster.updateOne(filter, update);
@@ -59,17 +59,7 @@ public class CostOfDelayEnh {
 
 	@RollbackExecution
 	public void rollback() {
-		rollbackkpi113();
+		// no implementation required
 	}
 
-	public void rollbackkpi113() {
-		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
-		Document filter = new Document("kpiId", "kpi113");
-
-		Document update = new Document("$set",
-				new Document("kpiName", "Value Delivered (Cost of Delay)").append("yaxisLabel", "Count(Days)"));
-
-		// Perform the update
-		kpiMaster.updateOne(filter, update);
-	}
 }
