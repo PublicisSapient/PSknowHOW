@@ -33,9 +33,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
 import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -185,14 +187,14 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				if (!projectAccessManager.getUserInfo(username).getAuthorities().contains(Constant.ROLE_SUPERADMIN)) {
 					addNewProjectIntoUserInfo(savedProjectBasicConfig, username);
 				}
-				addProjectNodeToOrganizationHierarchy(savedProjectBasicConfig);
+				addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO);
 				performFilterOperation(basicConfigDtoCreation(savedProjectBasicConfig, mapper), false);
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
 			} else if (Constant.ROLE_SUPERADMIN.equals(accessRoleOfParent)
 					|| Constant.ROLE_PROJECT_ADMIN.equals(accessRoleOfParent)) {
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
-				addProjectNodeToOrganizationHierarchy(savedProjectBasicConfig);
+				addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO);
 				performFilterOperation(basicConfigDtoCreation(savedProjectBasicConfig, mapper), false);
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
@@ -208,25 +210,25 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	/**
 	 * add new ProjectNode if not already present in OrganizationHierarchy
 	 *
-	 * @param savedProjectBasicConfig
-	 *            ProjectBasicConfig
+	 * @param projectBasicConfigDTO
+	 *            ProjectBasicConfigDTO
 	 */
-	//TODO: change maxLvl.getValue() to maxlvl.getOrgHierarchyNodeId()
-	private void addProjectNodeToOrganizationHierarchy(ProjectBasicConfig savedProjectBasicConfig) {
+	// TODO: change maxLvl.getValue() to maxlvl.getOrgHierarchyNodeId()
+	private void addProjectNodeToOrganizationHierarchy(ProjectBasicConfigDTO projectBasicConfigDTO) {
 
-		Optional<HierarchyValue> maxLevel = savedProjectBasicConfig.getHierarchy().stream()
+		Optional<HierarchyValueDTO> maxLevel = projectBasicConfigDTO.getHierarchy().stream()
 				.max(Comparator.comparing(hierarchyValue -> hierarchyValue.getHierarchyLevel().getLevel()));
 		if (maxLevel.isPresent()) {
-			HierarchyValue maxLvl = maxLevel.get();
-			Optional<OrganizationHierarchy> existingOrganizationHierarchy = organizationHierarchyRepository
-					.findByParentId(maxLvl.getValue());
-			if (existingOrganizationHierarchy.isEmpty()) {
+			HierarchyValueDTO maxLvl = maxLevel.get();
+			OrganizationHierarchy existingOrganizationHierarchy = organizationHierarchyRepository
+					.findByNodeId(projectBasicConfigDTO.getProjectNodeId());
+			if (ObjectUtils.isEmpty(existingOrganizationHierarchy)) {
 				OrganizationHierarchy newOrganizationHierarchy = new OrganizationHierarchy();
 				newOrganizationHierarchy.setParentId(maxLvl.getValue());
-				newOrganizationHierarchy.setNodeId(savedProjectBasicConfig.getProjectNodeId());
+				newOrganizationHierarchy.setNodeId(projectBasicConfigDTO.getProjectNodeId());
 				newOrganizationHierarchy.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
-				newOrganizationHierarchy.setNodeName(savedProjectBasicConfig.getProjectName());
-				newOrganizationHierarchy.setNodeDisplayName(savedProjectBasicConfig.getProjectDisplayName());
+				newOrganizationHierarchy.setNodeName(projectBasicConfigDTO.getProjectName());
+				newOrganizationHierarchy.setNodeDisplayName(projectBasicConfigDTO.getProjectDisplayName());
 				newOrganizationHierarchy.setCreatedDate(LocalDateTime.now());
 				newOrganizationHierarchy.setModifiedDate(LocalDateTime.now());
 				organizationHierarchyRepository.save(newOrganizationHierarchy);
