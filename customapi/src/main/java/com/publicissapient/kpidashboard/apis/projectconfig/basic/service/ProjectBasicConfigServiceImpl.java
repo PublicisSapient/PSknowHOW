@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
+import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
 import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -158,6 +159,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Autowired
 	private OrganizationHierarchyRepository organizationHierarchyRepository;
 
+	@Autowired
+	private HierarchyLevelRepository hierarchyLevelRepository;
+
 	/**
 	 * method to save basic configuration
 	 *
@@ -255,12 +259,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Override
 	public ServiceResponse updateBasicConfig(String basicConfigId, ProjectBasicConfigDTO projectBasicConfigDTO) {
 		ServiceResponse response;
-		Optional<ProjectBasicConfig> savedConfigOpt = basicConfigRepository.findById(new ObjectId(basicConfigId));
+		ProjectBasicConfig savedConfig = getProjectBasicConfigs(basicConfigId);
+		//AN
 		ProjectBasicConfig diffIdSameName = basicConfigRepository
 				.findByProjectNameAndIdNot(projectBasicConfigDTO.getProjectName(), new ObjectId(basicConfigId));
-		if (savedConfigOpt.isPresent()) {
+		if (savedConfig != null) {
 			if (!Optional.ofNullable(diffIdSameName).isPresent()) {
-				ProjectBasicConfig savedConfig = savedConfigOpt.get();
 				ModelMapper mapper = new ModelMapper();
 				ProjectBasicConfig basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
 				if (isAssigneeUpdated(basicConfig, savedConfig)) {
@@ -362,6 +366,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		log.info("For projectId: {} : Returning getProjectBasicConfig response: {}", basicProjectConfigId, config);
 		if (config.isPresent()) {
 			projectBasicConfig = config.get();
+			projectBasicConfig.setHierarchy(getHierarchy(hierarchyLevelRepository.findAllByOrderByLevel(), projectBasicConfig.getProjectNodeId()));
 			projectBasicConfigSortedBasedOnHierarchyLevel(projectBasicConfig);
 		}
 		return projectBasicConfig;
@@ -394,9 +399,14 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			}
 		}
 		if (CollectionUtils.isNotEmpty(list)) {
+			List<HierarchyLevel> hierarchyLevels = hierarchyLevelRepository.findAllByOrderByLevel();
 			list.stream().forEach(projectBasicConfig -> {
-				projectBasicConfigSortedBasedOnHierarchyLevel(projectBasicConfig);
-				configListSortBasedOnLevels.add(projectBasicConfig);
+				//AN: This is to make sure UI doesn't break, to be removed after migration
+				if(StringUtils.isNotEmpty(projectBasicConfig.getProjectNodeId())) {
+					projectBasicConfig.setHierarchy(getHierarchy(hierarchyLevels, projectBasicConfig.getProjectNodeId()));
+					projectBasicConfigSortedBasedOnHierarchyLevel(projectBasicConfig);
+					configListSortBasedOnLevels.add(projectBasicConfig);
+				}
 			});
 		}
 		log.info("Returning getProjectBasicConfig response: {}", list);
@@ -536,6 +546,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Override
 	public List<ProjectBasicConfigDTO> getAllProjectsBasicConfigsDTOWithoutPermission() {
 		List<ProjectBasicConfigDTO> projectBasicList = Lists.newArrayList();
+		//AN --
 		Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
 				.cacheProjectConfigMapData();
 
@@ -758,5 +769,40 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return sprintDetailsList.stream()
 				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId, Collectors.collectingAndThen(
 						Collectors.toList(), list -> list.stream().limit(5).collect(Collectors.toList()))));
+	}
+
+	private List<HierarchyValue> getHierarchy(List<HierarchyLevel> hierarchyLevels, String nodeId) {
+
+		List<HierarchyValue> hierarchy = new ArrayList<>();
+
+		OrganizationHierarchy organizationHierarchy = organizationHierarchyRepository.findByNodeId(nodeId);
+
+		while (organizationHierarchy != null) {
+			HierarchyValue hierarchyValue = new HierarchyValue();
+
+			HierarchyLevel hierarchyLevel = getHierarchyLevel(hierarchyLevels, organizationHierarchy.getHierarchyLevelId());
+
+			hierarchyValue.setHierarchyLevel(hierarchyLevel);
+			hierarchyValue.setOrgHierarchyNodeId(organizationHierarchy.getNodeId());
+			hierarchyValue.setValue(organizationHierarchy.getNodeDisplayName());
+
+			hierarchy.add(hierarchyValue);
+
+			if (organizationHierarchy.getParentId() == null) {
+				break;
+			}
+			organizationHierarchy = organizationHierarchyRepository.findByNodeId(organizationHierarchy.getParentId());
+		}
+
+		return hierarchy;
+	}
+
+	private HierarchyLevel getHierarchyLevel(List<HierarchyLevel> hierarchyLevels, String hierarchyLevelId) {
+		return hierarchyLevels.stream()
+				.filter(hierarchy -> hierarchy.getHierarchyLevelId().equalsIgnoreCase(hierarchyLevelId))
+				.findFirst()
+				//Setting this explicitly to maintain backward compatibility
+				.map(hierarchyLevel -> {hierarchyLevel.setId(null); return hierarchyLevel;})
+				.orElse(null);
 	}
 }
