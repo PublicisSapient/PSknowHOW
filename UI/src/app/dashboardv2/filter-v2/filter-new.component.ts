@@ -151,7 +151,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.subscriptions.push(this.service.dateFilterSelectedDateType.subscribe(date=>{
+    this.subscriptions.push(this.service.dateFilterSelectedDateType.subscribe(date => {
       this.selectedDayType = date;
     }))
   }
@@ -281,6 +281,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     levelDetails.forEach(level => {
       dataCopy[level.hierarchyLevelName] = this.filterDataArr[this.selectedType][level.hierarchyLevelId];
     });
+    dataCopy = this.removeUndefinedProperties(dataCopy);
     this.filterDataArr[this.selectedType] = dataCopy;
   }
 
@@ -408,7 +409,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     this.noSprint = false;
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
-
       this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
       this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
 
@@ -762,6 +762,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
             this.selectedProjectLastSyncStatus = 'SUCCESS';
             this.handlePrimaryFilterChange(this.previousFilterEvent);
+            this.lastSyncData = {};
             this.messageService.add({
               severity: 'success',
               summary: 'Refreshing data',
@@ -900,4 +901,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.showChart = val;
     this.service.setShowTableView(this.showChart);
   }
+
+  removeUndefinedProperties(obj) {
+    for (let key in obj) {
+      if (obj[key] === undefined) {
+        delete obj[key];
+      }
+    }
+    return obj;
+  }
+
 }

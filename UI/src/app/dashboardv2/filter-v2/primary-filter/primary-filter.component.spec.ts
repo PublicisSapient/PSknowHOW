@@ -19,6 +19,7 @@ describe('PrimaryFilterComponent', () => {
   let httpService: HttpService
   let sharedService: SharedService;
   let helperService: HelperService;
+  let filters: any[];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -29,8 +30,7 @@ describe('PrimaryFilterComponent', () => {
       providers: [SharedService, GetAuthService, HttpService, HelperService, CommonModule, DatePipe,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
-    })
-      .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PrimaryFilterComponent);
     component = fixture.componentInstance;
@@ -38,6 +38,13 @@ describe('PrimaryFilterComponent', () => {
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
     helperService = TestBed.inject(HelperService);
+
+    filters = [
+      { nodeId: 1, nodeName: 'item1' },
+      { nodeId: 2, nodeName: 'item2' },
+      { nodeId: 3, nodeName: 'item3' }
+    ];
+    component.filters = filters;
 
     component.primaryFilterConfig = {
       "type": "multiSelect",
@@ -229,7 +236,6 @@ describe('PrimaryFilterComponent', () => {
 
   it('should populate filters, set selectedFilters, and call other methods after a delay', fakeAsync(() => {
     component.populateFilters = jasmine.createSpy('populateFilters');
-    spyOn(helperService, 'setBackupOfFilterSelectionState');
     spyOn(component, 'applyPrimaryFilters');
     spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
 
@@ -237,10 +243,16 @@ describe('PrimaryFilterComponent', () => {
     tick(100);
 
     expect(component.populateFilters).toHaveBeenCalled();
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': [{ ...component.filters[0] }] });
     expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
     expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
   }));
+
+  it('should handle cases where stateFilters or primaryFilterConfig are null or undefined', () => {
+    component.stateFilters = null;
+    component.primaryFilterConfig = null;
+    component.applyDefaultFilters();
+    expect(component.selectedFilters).toBeUndefined();
+  });
 
   it('should call applyDefaultFilters if primaryFilterConfig, selectedType, or selectedLevel changes', () => {
     component.primaryFilterConfig = {
@@ -329,7 +341,7 @@ describe('PrimaryFilterComponent', () => {
 
     component.ngOnChanges(mockChanges);
 
-    expect(component.selectedFilters).toEqual([]);
+    expect([...component.selectedFilters]).toEqual([]);
     expect(component.populateFilters).toHaveBeenCalled();
   });
 
@@ -478,6 +490,82 @@ describe('PrimaryFilterComponent', () => {
     component.ngOnChanges(mockChanges);
 
     expect(mockApplyDefaultFilters).toHaveBeenCalled();
+  });
+
+  it('should not modify filters array when event.value is null', () => {
+    const event = { value: null };
+    component.moveSelectedOptionToTop(event);
+    expect(component.filters).toEqual(filters);
+  });
+
+  it('should remove selected item from its original position', () => {
+    const event = { value: [{ nodeName: 'item2' }] };
+    component.moveSelectedOptionToTop(event);
+    expect(component.filters).not.toContain([{ nodeId: 2, nodeName: 'item2' }]);
+  });
+
+  it('should add selected item to the top of filters array', () => {
+    const event = { value: [{ nodeName: 'item2' }] };
+    component.moveSelectedOptionToTop(event);
+    expect(component.filters[0].nodeName).toBe('item2');
+  });
+
+  it('should handle multiple selected items correctly', () => {
+    const event = { value: [{ nodeName: 'item2' }, { nodeName: 'item3' }] };
+    component.moveSelectedOptionToTop(event);
+    expect(component.filters[0].nodeName).toBe('item3');
+    expect(component.filters[1].nodeName).toBe('item2');
+  });
+
+  it('should convert selectedFilters to an array if it\'s not already one', () => {
+    component.selectedFilters = 'test';
+    component.applyPrimaryFilters(null);
+    expect(component.selectedFilters).toBeInstanceOf(Array);
+  });
+
+  it('should call setBackupOfFilterSelectionState with the correct data', () => {
+    spyOn(helperService, 'setBackupOfFilterSelectionState');
+    component.selectedFilters = ['test'];
+    component.applyPrimaryFilters(null);
+    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'primary_level': ['test'] });
+  });
+
+  it('should emit onPrimaryFilterChange with the correct data when defaultLevel is not \'sprint\'', () => {
+    component.primaryFilterConfig = { 'defaultLevel': { 'labelName': 'test' } };
+    component.selectedFilters = ['test'];
+    spyOn(component.onPrimaryFilterChange, 'emit');
+    component.applyPrimaryFilters(null);
+    expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith(['test']);
+  });
+
+  it('should emit onPrimaryFilterChange with the correct data when defaultLevel is \'sprint\' and sprintState is \'active\'', () => {
+    component.primaryFilterConfig = { 'defaultLevel': { 'labelName': 'sprint' } };
+    component.selectedFilters = [{ sprintState: 'active' }];
+    spyOn(component.onPrimaryFilterChange, 'emit');
+    component.applyPrimaryFilters(null);
+    expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([{ sprintState: 'active' }]);
+  });
+
+  it('should emit onPrimaryFilterChange with an empty array when defaultLevel is \'sprint\' and sprintState is not \'active\'', () => {
+    component.primaryFilterConfig = { 'defaultLevel': { 'labelName': 'sprint' } };
+    component.selectedFilters = [{ sprintState: 'inactive' }];
+    spyOn(component.onPrimaryFilterChange, 'emit');
+    component.applyPrimaryFilters(null);
+    expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([]);
+  });
+
+  it('should call setNoSprints when defaultLevel is \'sprint\' and sprintState is not \'active\'', () => {
+    component.primaryFilterConfig = { 'defaultLevel': { 'labelName': 'sprint' } };
+    component.selectedFilters = [{ sprintState: 'inactive' }];
+    spyOn(sharedService, 'setNoSprints');
+    component.applyPrimaryFilters(null);
+    expect(sharedService.setNoSprints).toHaveBeenCalledWith(true);
+  });
+
+  it('should call setProjectAndLevelBackupBasedOnSelectedLevel', () => {
+    spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
+    component.applyPrimaryFilters(null);
+    expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalledTimes(1);
   });
 
 });

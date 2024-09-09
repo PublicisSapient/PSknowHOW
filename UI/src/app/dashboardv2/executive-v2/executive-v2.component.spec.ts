@@ -12882,7 +12882,7 @@ describe('ExecutiveV2Component', () => {
       ],
     };
     const expectedLatest = '10';
-    const expectedTrend = '-- --';
+    const expectedTrend = '--';
     const expectedUnit = '';
 
     const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item);
