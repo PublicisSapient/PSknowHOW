@@ -301,7 +301,7 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Pickup Time (In Hours)")),
 
 	PR_SIZE("kpi162",
-			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks",
+			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "No of Merge",
 					"PR Size (No. of lines)")),
 
 	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status",
