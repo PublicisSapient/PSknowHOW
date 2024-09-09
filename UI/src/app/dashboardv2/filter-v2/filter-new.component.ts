@@ -409,7 +409,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     this.noSprint = false;
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
-      this.lastSyncData = {};
       this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
       this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
 
@@ -763,6 +762,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
             this.selectedProjectLastSyncStatus = 'SUCCESS';
             this.handlePrimaryFilterChange(this.previousFilterEvent);
+            this.lastSyncData = {};
             this.messageService.add({
               severity: 'success',
               summary: 'Refreshing data',
