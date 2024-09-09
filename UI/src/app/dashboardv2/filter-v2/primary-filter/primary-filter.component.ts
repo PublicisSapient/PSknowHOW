@@ -205,7 +205,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
       this.onPrimaryFilterChange.emit([...this.selectedFilters]);
     } else {
-      if (this.selectedFilters[0].sprintState?.toLowerCase() === 'active') {
+      if (this.selectedFilters?.length && this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active') {
         this.onPrimaryFilterChange.emit([...this.selectedFilters]);
       } else {
         this.service.setNoSprints(true);

@@ -273,7 +273,7 @@ public class ProcessorServiceImplTest {
 	@Test
 	public void saveRepoToolTraceLogsTest() {
 
-		processorService.saveRepoToolTraceLogs(new RepoToolsStatusResponse("project", "repo", "src",
+		processorService.saveRepoToolTraceLogs(new RepoToolsStatusResponse("project", "repo", "repo", "src",
 				Constant.SUCCESS, 0l));
 		Mockito.verify(cacheService, Mockito.times(3)).clearCache(Mockito.anyString());
 
