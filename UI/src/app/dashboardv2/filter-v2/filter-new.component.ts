@@ -111,7 +111,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh
         .subscribe(data => {
-
+          this.colorObj = {};
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
 
@@ -534,7 +534,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         });
       }
     } else if (!event.length) {
-      if (this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'sprint') {
+      if (this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'sprint' || this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'release') {
         this.noSprint = true;
         this.service.setAdditionalFilters([]);
       }

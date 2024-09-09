@@ -141,6 +141,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }, 500);
     }));
 
+
+    this.subscriptions.push(this.service.noSprintsObs.subscribe((res) => {
+      this.noFilterApplyData = res;
+    }));
+
     this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
       this.maturityTableKpiList = [];
       this.colorObj = x;
