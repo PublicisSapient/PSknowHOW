@@ -60,7 +60,9 @@ export class AdditionalFilterComponent implements OnChanges {
 
         if (this.selectedTab !== 'developer') {
           this.filterData.forEach(filterGroup => {
-            filterGroup = this.helperService.sortByField(filterGroup, ['nodeName', 'parentId']);
+            if (filterGroup) {
+              filterGroup = this.helperService.sortByField(filterGroup, ['nodeName', 'parentId']);
+            }
           });
 
           this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');

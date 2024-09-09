@@ -57,21 +57,26 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         // if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
         this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
         // }
-        if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
-          this.onPrimaryFilterChange.emit(this.selectedFilters);
-        } else {
-          if (this.selectedFilters[0].sprintState?.toLowerCase() === 'active') {
+        if (this.selectedFilters?.length) {
+          if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
             this.onPrimaryFilterChange.emit(this.selectedFilters);
           } else {
-            this.service.setNoSprints(true);
-            this.onPrimaryFilterChange.emit([]);
-            if (this.filters.length) {
-              this.selectedFilters.push({ ...this.filters[0] });
-              this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
+            if (this.selectedFilters[0].sprintState?.toLowerCase() === 'active') {
+              this.onPrimaryFilterChange.emit(this.selectedFilters);
             } else {
-              this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedLevel] })
+              this.service.setNoSprints(true);
+              this.onPrimaryFilterChange.emit([]);
+              if (this.filters.length) {
+                this.selectedFilters.push({ ...this.filters[0] });
+                this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
+              } else {
+                this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedLevel] })
+              }
             }
           }
+        } else {
+          this.service.setNoSprints(true);
+          this.onPrimaryFilterChange.emit([]);
         }
         this.setProjectAndLevelBackupBasedOnSelectedLevel();
       } else if (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && this.stateFilters['additional_level'] && Object.keys(this.stateFilters['additional_level'])?.length) {
@@ -145,7 +150,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
       } else {
         this.selectedFilters = [];
-        if(this.filters?.length) {
+        if (this.filters?.length) {
           this.selectedFilters.push({ ...this.filters[0] });
         }
         if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
@@ -201,22 +206,26 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     // if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
     this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
     // }
-
-    if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
-      this.onPrimaryFilterChange.emit([...this.selectedFilters]);
-    } else {
-      if (this.selectedFilters?.length && this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active') {
+    if (this.selectedFilters?.length) {
+      if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
         this.onPrimaryFilterChange.emit([...this.selectedFilters]);
       } else {
-        this.service.setNoSprints(true);
-        this.onPrimaryFilterChange.emit([]);
-        if (this.filters.length) {
-          this.selectedFilters.push({ ...this.filters[0] });
-          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
+        if (this.selectedFilters?.length && this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active') {
+          this.onPrimaryFilterChange.emit([...this.selectedFilters]);
         } else {
-          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedLevel] })
+          this.service.setNoSprints(true);
+          this.onPrimaryFilterChange.emit([]);
+          if (this.filters.length) {
+            this.selectedFilters.push({ ...this.filters[0] });
+            this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
+          } else {
+            this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedLevel] })
+          }
         }
       }
+    } else {
+      this.service.setNoSprints(true);
+      this.onPrimaryFilterChange.emit([]);
     }
     this.setProjectAndLevelBackupBasedOnSelectedLevel();
     if (this.multiSelect?.overlayVisible) {
