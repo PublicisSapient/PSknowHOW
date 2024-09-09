@@ -1113,8 +1113,7 @@ public class KPIExcelUtility {
 				excelData.setBranch(repoToolValidationData.getBranchName());
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
-				excelData.setReworkRate(String.valueOf(repoToolValidationData.getReworkRate()));
-				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
+				excelData.setReworkRate(String.format("%.2f", repoToolValidationData.getReworkRate()));
 				kpiExcelData.add(excelData);
 			});
 		}
